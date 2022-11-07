@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_registration.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
@@ -21,7 +21,7 @@ void RegisterProtocolHandlersWithOs(
     Profile* profile,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     ResultCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
@@ -29,7 +29,7 @@ void RegisterProtocolHandlersWithOs(
 void UnregisterProtocolHandlersWithOs(const AppId& app_id,
                                       Profile* profile,
                                       ResultCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 #endif

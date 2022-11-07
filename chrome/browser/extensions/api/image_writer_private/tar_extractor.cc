@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
@@ -115,7 +115,7 @@ void TarExtractor::ExtractChunk() {
   properties_.progress_callback.Run(tar_reader_.total_bytes().value(),
                                     tar_reader_.curr_bytes());
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindRepeating(&TarExtractor::ExtractChunk,
                                      weak_ptr_factory_.GetWeakPtr()));
 }

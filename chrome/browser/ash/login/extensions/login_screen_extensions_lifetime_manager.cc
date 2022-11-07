@@ -10,7 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -102,7 +102,7 @@ void LoginScreenExtensionsLifetimeManager::OnExtensionLoaded(
     // extensions subsystem. Therefore forcibly disable this extension.
     // Doing this in an asynchronous job, in order to avoid confusing other
     // observers of OnExtensionLoaded().
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&LoginScreenExtensionsLifetimeManager::DisableExtension,
                        weak_factory_.GetWeakPtr(), extension->id()));

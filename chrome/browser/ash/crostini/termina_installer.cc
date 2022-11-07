@@ -12,9 +12,9 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -75,7 +75,7 @@ void TerminaInstaller::OnInstallDlc(
     dlc_id_ = kCrostiniDlcName;
     termina_location_ = base::FilePath(result.root_path);
   } else if (is_initial_install && result.error == dlcservice::kErrorBusy) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TerminaInstaller::RetryInstallDlc,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),

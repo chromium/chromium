@@ -31,10 +31,10 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -696,7 +696,7 @@ void ChromeMetricsServiceClient::Initialize() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::structured::Recorder::GetInstance()->SetUiTaskRunner(
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   AsyncInitSystemProfileProvider();
 #endif

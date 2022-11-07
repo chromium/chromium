@@ -17,7 +17,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
@@ -177,8 +176,9 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
   void SetupReporting() {
     SetupDlpRulesManager();
     // Set up mock report queue.
-    SetReportQueueForReportingManager(helper_->GetReportingManager(), events_,
-                                      base::SequencedTaskRunnerHandle::Get());
+    SetReportQueueForReportingManager(
+        helper_->GetReportingManager(), events_,
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void CheckEvents(DlpRulesManager::Restriction restriction,

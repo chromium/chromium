@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/printing/automatic_usb_printer_configurer.h"
 #include "chrome/browser/ash/printing/cups_printer_status_creator.h"
 #include "chrome/browser/ash/printing/enterprise_printers_provider.h"
@@ -144,7 +145,7 @@ class CupsPrintersManagerImpl
     // TODO(b/192467856) Remove this metric gathering by M99
     // Creates a ZeroconfScannerDetector, then logs the number of scanners
     // detected after 5 minutes.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&SendScannerCountToUMA,
                        ZeroconfScannerDetector::Create()),

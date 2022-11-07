@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
@@ -150,7 +151,7 @@ void SigninHelper::CloseDialogAndExit() {
 }
 
 void SigninHelper::Exit() {
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
 }
 
 // Check if the account being added is allowed to sign-in. If the account is

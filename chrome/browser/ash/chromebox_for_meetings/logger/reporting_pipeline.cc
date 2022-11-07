@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -49,7 +50,7 @@ constexpr auto kHandlerDestination =
 ReportingPipeline::ReportingPipeline(
     UpdateStatusCallback update_status_callback)
     : update_status_callback_(std::move(update_status_callback)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -144,7 +145,7 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
                                    weak_ptr_factory_.GetWeakPtr()));
 
   // Asynchronously create ReportingQueue.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](std::unique_ptr<reporting::ReportQueueConfiguration> config,

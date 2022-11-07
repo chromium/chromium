@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/media_router/common/media_source.h"
@@ -79,7 +80,7 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
     std::move(callback).Run(absl::nullopt, nullptr, route_error_message_,
                             mojom::RouteRequestResultCode::UNKNOWN_ERROR);
   } else if (!delay_.is_zero()) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TestMediaRouteProvider::CreateRouteTimeOut,
                        GetWeakPtr(), std::move(callback)),

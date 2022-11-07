@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
@@ -25,7 +26,7 @@ void BorealisLaunchWatcher::AwaitLaunch(OnLaunchCallback callback) {
     std::move(callback).Run(container_started_signal_->container_name());
   } else {
     if (callback_queue_.empty()) {
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&BorealisLaunchWatcher::TimeoutCallback,
                          weak_factory_.GetWeakPtr()),

@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -90,7 +91,7 @@ void EmptyTrashIOTask::RemoveTrashSubDirectory(
   progress_.outputs.emplace_back(trash_url, absl::nullopt);
 
   auto complete_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&EmptyTrashIOTask::OnRemoveTrashSubDirectory,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::OwnedRef(trash_location),
@@ -131,7 +132,7 @@ void EmptyTrashIOTask::OnRemoveTrashSubDirectory(
 // accessed after calling this.
 void EmptyTrashIOTask::Complete(State state) {
   progress_.state = state;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));
 }

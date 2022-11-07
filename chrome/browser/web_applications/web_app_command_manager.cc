@@ -14,7 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
@@ -93,7 +93,7 @@ void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id,
   // calling back into Enqueue/Destroy. This can especially be an issue if
   // this task is being run in response to a call to
   // NotifySyncSourceRemoved.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebAppCommandManager::StartCommandOrPrepareForLoad,
                      weak_ptr_factory_.GetWeakPtr(), command_it->second.get(),

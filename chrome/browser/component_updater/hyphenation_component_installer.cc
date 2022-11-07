@@ -7,7 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -62,7 +62,7 @@ class HyphenationDirectory {
     std::swap(callbacks, callbacks_);
     for (base::OnceCallback<void(const base::FilePath&)>& callback :
          callbacks) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), dir_));
     }
   }

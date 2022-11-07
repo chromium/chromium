@@ -12,8 +12,8 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
@@ -164,7 +164,7 @@ TEST_F(DeviceCommandWipeUsersJobTest, TestLogOutCalled) {
   chromeos::user_removal_manager::OverrideLogOutForTesting(
       std::move(log_out_callback));
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, service_->OnCommandAckedCallback());
   run_loop2.Run();
   EXPECT_TRUE(log_out_called);

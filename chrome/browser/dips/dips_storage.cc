@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "sql/init_status.h"
@@ -230,7 +230,7 @@ void DIPSStorage::PrepopulateChunk(PrepopulateArgs args) {
   // Increment chunk offset in args and resubmit task if incomplete.
   args.offset += chunk_size;
   if (args.offset < args.sites.size()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DIPSStorage::PrepopulateChunk,
                                   weak_factory_.GetWeakPtr(), std::move(args)));
   }

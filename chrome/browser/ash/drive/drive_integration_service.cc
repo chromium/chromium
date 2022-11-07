@@ -22,9 +22,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -267,7 +267,7 @@ std::vector<base::FilePath> GetPinnedAndDirtyFiles(
   // list of files to pin to the UI thread without waiting for the remaining
   // data to be cleared.
   metadata_storage.reset();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&CleanupGCacheV1, std::move(cache_directory),
                      std::move(downloads_directory), std::move(dirty_files)));
@@ -794,7 +794,7 @@ void DriveIntegrationService::ClearCacheAndRemountFileSystem(
     // completely. Ideally we'd wait for an unmount complete callback.
     delay = base::Seconds(2);
   }
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &DriveIntegrationService::ClearCacheAndRemountFileSystemAfterDelay,
@@ -971,7 +971,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
                  static_cast<int>(remount_delay.value().InSeconds()));
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DriveIntegrationService::AddDriveMountPoint,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -1414,8 +1414,8 @@ void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
   }
 
   // TODO(b/234921400): Replace this with a call to DriveFS once implemented.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 //===================== DriveIntegrationServiceFactory =======================

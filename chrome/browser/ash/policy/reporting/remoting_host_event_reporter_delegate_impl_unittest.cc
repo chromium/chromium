@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/repeating_test_future.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
@@ -42,7 +43,8 @@ class HostEventReporterDelegateImplTest : public ::testing::Test {
     auto mock_queue = std::unique_ptr<::reporting::MockReportQueue,
                                       base::OnTaskRunnerDeleter>(
         new ::reporting::MockReportQueue(),
-        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+        base::OnTaskRunnerDeleter(
+            base::SequencedTaskRunner::GetCurrentDefault()));
 
     ON_CALL(*mock_queue, AddRecord(_, ::reporting::Priority::FAST_BATCH, _))
         .WillByDefault(

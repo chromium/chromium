@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -136,7 +136,7 @@ void NetworkEventsObserver::CheckForSignalStrengthEvent(
       network_state->path());
   FetchWifiSignalStrengthRssi(
       base::queue<std::string>({network_state->path()}),
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          std::move(wifi_signal_rssi_cb)));
 }
 

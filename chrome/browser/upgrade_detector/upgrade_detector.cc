@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
@@ -433,7 +433,7 @@ void UpgradeDetector::OnRelaunchPrefChanged() {
     return;
 
   pref_change_task_pending_ = true;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<UpgradeDetector> weak_this) {
                        if (weak_this) {

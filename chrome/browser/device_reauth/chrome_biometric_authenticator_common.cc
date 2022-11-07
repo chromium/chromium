@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
 
@@ -29,7 +29,7 @@ bool ChromeBiometricAuthenticatorCommon::RecordAuthenticationResult(
 
     // Holds scoped_refptr for kAuthValidityPeriod seconds, preventing object
     // from being deleted.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             [](scoped_refptr<ChromeBiometricAuthenticatorCommon> ptr) {},

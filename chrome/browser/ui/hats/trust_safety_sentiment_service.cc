@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -448,7 +449,7 @@ TrustSafetySentimentService::SettingsWatcher::SettingsWatcher(
     : web_contents_(web_contents),
       success_callback_(std::move(success_callback)),
       complete_callback_(std::move(complete_callback)) {
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &TrustSafetySentimentService::SettingsWatcher::TimerComplete,

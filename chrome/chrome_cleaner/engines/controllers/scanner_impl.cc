@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/chrome_cleaner/constants/uws_id.h"
 #include "chrome/chrome_cleaner/engines/broker/logging_conversion.h"
 #include "chrome/chrome_cleaner/engines/common/engine_result_codes.h"
@@ -22,7 +22,7 @@ namespace chrome_cleaner {
 
 ScannerImpl::ScannerImpl(EngineClient* engine_client)
     : engine_client_(engine_client),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(engine_client_);
 }
 

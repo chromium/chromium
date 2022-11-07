@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/win_network_fetcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/win_network_fetcher_factory.h"
@@ -90,7 +90,7 @@ void WinKeyNetworkDelegate::FetchCompleted(
           UploadKeyStatus::kFailedRetryable &&
       backoff_entry_.failure_count() != kMaxRetryCount) {
     backoff_entry_.InformOfRequest(/*succeeded=*/false);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WinKeyNetworkDelegate::UploadKey,
                        weak_factory_.GetWeakPtr(),

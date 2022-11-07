@@ -17,8 +17,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "net/base/net_errors.h"
@@ -35,14 +35,14 @@ namespace {
 void PostSignResult(net::SSLPrivateKey::SignCallback callback,
                     net::Error error,
                     const std::vector<uint8_t>& signature) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), error, signature));
 }
 
 void PostIdentities(
     base::OnceCallback<void(net::ClientCertIdentityList)> callback,
     net::ClientCertIdentityList certs) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(certs)));
 }
 

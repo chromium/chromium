@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service.h"
@@ -76,7 +76,7 @@ void OncImportMessageHandler::OnImportONC(const base::Value::List& list) {
           NssServiceFactory::GetForContext(Profile::FromWebUI(web_ui()))
               ->CreateNSSCertDatabaseGetterForIOThread(),
           base::BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
+              base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(&OncImportMessageHandler::ImportONCToNSSDB,
                              weak_factory_.GetWeakPtr(), callback_id,
                              onc_blob))));

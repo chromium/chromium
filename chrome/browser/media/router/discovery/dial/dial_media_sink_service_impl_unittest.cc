@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
@@ -39,7 +40,7 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         media_sink_service_(new DialMediaSinkServiceImpl(
             mock_sink_discovered_cb_.Get(),
-            base::SequencedTaskRunnerHandle::Get())) {}
+            base::SequencedTaskRunner::GetCurrentDefault())) {}
 
   void SetUp() override {
     auto mock_description_service =

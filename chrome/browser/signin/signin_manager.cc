@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -251,7 +252,7 @@ void SigninManager::OnPrimaryAccountChanged(
   // the current OnPrimaryAccountChanged() as all observers should see the same
   // value for the unconsented primary account. Schedule the potential update
   // on the next run loop.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SigninManager::UpdateUnconsentedPrimaryAccount,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
@@ -341,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   PasswordBubbleViewBase* bubble =
       PasswordBubbleViewBase::manage_password_bubble();
   bool ran_event_task = false;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(press_button, bubble, &ran_event_task));
   EXPECT_TRUE(IsBubbleShowing());
 

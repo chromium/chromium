@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -1029,11 +1030,11 @@ TEST(ExtensionAPITest, GetSchemaFromDifferentThreads) {
         another_thread_schema = res;
         run_loop.Quit();
       });
-  auto task =
-      base::BindOnce(&ExtensionAPI::GetSchema,
-                     base::Unretained(shared_instance), "storage")
-          .Then(base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                   std::move(result_cb)));
+  auto task = base::BindOnce(&ExtensionAPI::GetSchema,
+                             base::Unretained(shared_instance), "storage")
+                  .Then(base::BindPostTask(
+                      base::SequencedTaskRunner::GetCurrentDefault(),
+                      std::move(result_cb)));
   t.task_runner()->PostTask(FROM_HERE, std::move(task));
 
   const auto* current_thread_schema = shared_instance->GetSchema("storage");

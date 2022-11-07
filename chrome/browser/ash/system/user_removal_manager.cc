@@ -11,8 +11,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -98,7 +98,7 @@ void InitiateUserRemoval(base::OnceClosure on_pref_persisted_callback) {
   local_state->CommitPendingWrite(base::BindOnce(
       [](base::OnceClosure on_pref_persisted_callback) {
         // Start the failsafe timer.
-        base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&LogOut), kFailsafeTimerTimeout);
 
         if (on_pref_persisted_callback)

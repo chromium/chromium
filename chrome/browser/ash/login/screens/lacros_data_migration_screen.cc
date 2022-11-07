@@ -10,7 +10,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
@@ -98,7 +98,7 @@ void LacrosDataMigrationScreen::ShowImpl() {
         user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
 
     base::RepeatingCallback<void(int)> progress_callback = base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindRepeating(&LacrosDataMigrationScreen::OnProgressUpdate,
                             weak_factory_.GetWeakPtr()),
         FROM_HERE);

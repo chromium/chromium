@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -134,7 +135,8 @@ class LoginLogoutTestHelper {
     auto mock_queue = std::unique_ptr<::reporting::MockReportQueue,
                                       base::OnTaskRunnerDeleter>(
         new ::reporting::MockReportQueue(),
-        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+        base::OnTaskRunnerDeleter(
+            base::SequencedTaskRunner::GetCurrentDefault()));
 
     ON_CALL(*mock_queue, AddRecord(_, ::reporting::Priority::SECURITY, _))
         .WillByDefault([this, status](

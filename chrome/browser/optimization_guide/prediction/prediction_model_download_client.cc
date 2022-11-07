@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/download/public/background_service/download_metadata.h"
@@ -130,7 +130,7 @@ bool PredictionModelDownloadClient::CanServiceRemoveDownloadedFile(
 void PredictionModelDownloadClient::GetUploadData(
     const std::string& guid,
     download::GetUploadDataCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), nullptr));
 }
 

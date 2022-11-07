@@ -10,7 +10,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -65,7 +65,7 @@ void AssistantSetup::MaybeStartAssistantOptInFlow() {
   DCHECK(Prefs());
   if (!Prefs()->GetUserPrefValue(
           ash::assistant::prefs::kAssistantConsentStatus)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AssistantSetup::StartAssistantOptInFlow,
                        weak_factory_.GetWeakPtr(), ash::FlowType::kConsentFlow,

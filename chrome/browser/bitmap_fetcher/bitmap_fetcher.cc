@@ -5,7 +5,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -62,7 +62,7 @@ void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
 
     // Post a task to maintain our guarantee that the delegate will only be
     // called asynchronously.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, BindOnce(std::move(callback), std::move(response_body)));
     return;
   }

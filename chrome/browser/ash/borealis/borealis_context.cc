@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_impl.h"
 #include "chrome/browser/ash/borealis/borealis_engagement_metrics.h"
@@ -46,7 +47,7 @@ class ScopedDelayedCallback {
   explicit ScopedDelayedCallback(base::OnceClosure callback,
                                  base::TimeDelta delay)
       : weak_factory_(this) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ScopedDelayedCallback::OnComplete,
                        weak_factory_.GetWeakPtr(), std::move(callback)),

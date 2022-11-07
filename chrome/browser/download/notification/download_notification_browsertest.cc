@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -145,7 +146,7 @@ class SlowDownloadInterceptor {
    public:
     PendingRequest(content::URLLoaderInterceptor::RequestParams&& params)
         : params_(std::move(params)),
-          task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+          task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
     PendingRequest(const PendingRequest&) = delete;
     PendingRequest& operator=(const PendingRequest&) = delete;

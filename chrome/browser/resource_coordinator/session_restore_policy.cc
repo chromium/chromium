@@ -16,7 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
@@ -182,7 +182,7 @@ void TabDataAccess::SetUsedInBgFromSiteDataDB(
       performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
           contents),
       tab_data->used_in_bg_setter_cancel_callback.callback(),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   performance_manager::PerformanceManager::CallOnGraph(
       FROM_HERE, std::move(call_on_graph_cb));
@@ -445,7 +445,7 @@ void SessionRestorePolicy::DispatchNotifyAllTabsScoredIfNeeded() {
 
   // This is done asynchronously so that this notification doesn't arrive before
   // a tab score is delivered.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SessionRestorePolicy::NotifyAllTabsScored,
                                 weak_factory_.GetWeakPtr()));
   notification_state_ = NotificationState::kEnRoute;

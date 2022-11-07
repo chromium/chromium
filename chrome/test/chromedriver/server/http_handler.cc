@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -155,7 +156,7 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
   WrapperURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : url_loader_factory_(std::move(url_loader_factory)),
-        network_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        network_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   WrapperURLLoaderFactory(const WrapperURLLoaderFactory&) = delete;
   WrapperURLLoaderFactory& operator=(const WrapperURLLoaderFactory&) = delete;

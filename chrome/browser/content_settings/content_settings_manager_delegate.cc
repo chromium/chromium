@@ -5,6 +5,7 @@
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 
 #include "base/feature_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -98,12 +99,12 @@ bool ContentSettingsManagerDelegate::AllowStorageAccess(
                           StorageType::FILE_SYSTEM &&
       extensions::WebViewRendererState::GetInstance()->IsGuest(
           render_process_id)) {
-    base::OnceClosure task =
-        base::BindOnce(&OnFileSystemAccessedInGuestView, render_process_id,
-                       render_frame_id, url, allowed,
-                       base::BindOnce(&RunOrPostTaskOnSequence,
-                                      base::SequencedTaskRunnerHandle::Get(),
-                                      std::move(*callback)));
+    base::OnceClosure task = base::BindOnce(
+        &OnFileSystemAccessedInGuestView, render_process_id, render_frame_id,
+        url, allowed,
+        base::BindOnce(&RunOrPostTaskOnSequence,
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       std::move(*callback)));
     // We may or may not be on the UI thread depending on whether the
     // NavigationThreadingOptimizations feature is enabled.
     // TODO(https://crbug.com/1187753): Clean this up once the feature is

@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
@@ -115,7 +115,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
 
     timeout_.AbandonAndStop();
 
-    base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
   }
 
   MovableScopedKeepAlive keep_alive_;

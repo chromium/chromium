@@ -26,7 +26,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -429,7 +428,7 @@ void ResolveUILanguageList(
       base::BindOnce(&ResolveLanguageListInThreadPool,
                      g_browser_process->GetApplicationLocale(),
                      std::move(language_switch_result),
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      input_method_manager, std::move(callback)));
 }
 

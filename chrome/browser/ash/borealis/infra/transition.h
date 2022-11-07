@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
 
 // TODO(b/172501195): Make these available outside namespace borealis.
@@ -71,7 +71,7 @@ class Transition {
   void Succeed(std::unique_ptr<T> terminating_instance) {
     if (!callback_)
       return;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_),
                                   Result(std::move(terminating_instance))));
   }
@@ -82,7 +82,7 @@ class Transition {
   void Fail(E error) {
     if (!callback_)
       return;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_),
                                   Result::Unexpected(std::move(error))));
   }

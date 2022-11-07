@@ -47,7 +47,7 @@ void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
   // g_browser_process->network_quality_tracker earlier rather than waiting for
   // BEST_EFFORT to run (which happens sometime after startup is completed)
   content::BrowserThread::PostBestEffortTask(
-      FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
+      FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&NetworkQualityEstimatorProviderImpl::
                          AddEffectiveConnectionTypeObserverNow,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

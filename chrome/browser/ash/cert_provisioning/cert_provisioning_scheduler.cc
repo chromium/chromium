@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
@@ -168,7 +169,7 @@ CertProvisioningSchedulerImpl::~CertProvisioningSchedulerImpl() = default;
 void CertProvisioningSchedulerImpl::ScheduleInitialUpdate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&CertProvisioningSchedulerImpl::InitialUpdateCerts,
                      weak_factory_.GetWeakPtr()));
@@ -177,7 +178,7 @@ void CertProvisioningSchedulerImpl::ScheduleInitialUpdate() {
 void CertProvisioningSchedulerImpl::ScheduleDailyUpdate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CertProvisioningSchedulerImpl::DailyUpdateWorkers,
                      weak_factory_.GetWeakPtr()),
@@ -188,7 +189,7 @@ void CertProvisioningSchedulerImpl::ScheduleRetry(
     const CertProfileId& profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CertProvisioningSchedulerImpl::UpdateOneWorkerImpl,
                      weak_factory_.GetWeakPtr(), profile_id),
@@ -204,7 +205,7 @@ void CertProvisioningSchedulerImpl::ScheduleRenewal(
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CertProvisioningSchedulerImpl::InitiateRenewal,
                      weak_factory_.GetWeakPtr(), profile_id),
@@ -744,7 +745,7 @@ void CertProvisioningSchedulerImpl::OnVisibleStateChanged() {
           weak_factory_.GetWeakPtr()));
 
   notify_observers_pending_ = true;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged,

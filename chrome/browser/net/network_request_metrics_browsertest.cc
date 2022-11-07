@@ -11,9 +11,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, CancelDuringBody) {
   // received, so can only wait and hope. If the partial body hasn't been
   // recieved by the time Stop() is called, the test should still pass, however.
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
   run_loop.Run();
 
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
   // received, so can only wait and hope. If the partial body hasn't been
   // recieved by the time Stop() is called, the test should still pass, however.
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
   run_loop.Run();
 

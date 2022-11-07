@@ -11,8 +11,8 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -151,8 +151,8 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserAdded) {
   static constexpr char user_email[] = "affiliated@managed.org";
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   UserAddedRemovedRecord record;
@@ -189,8 +189,8 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
   static constexpr char user_email[] = "unaffiliated@managed.org";
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   ::reporting::UserAddedRemovedRecord record;
@@ -229,8 +229,8 @@ TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
 
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
   EXPECT_CALL(*mock_queue, AddRecord).Times(0);
 
@@ -254,8 +254,8 @@ TEST_F(UserAddedRemovedReporterTest, TestExistingUserLogin) {
   static constexpr char user_email[] = "unaffiliated@managed.org";
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
   EXPECT_CALL(*mock_queue, AddRecord).Times(0);
 
@@ -275,8 +275,8 @@ TEST_F(UserAddedRemovedReporterTest, TestExistingUserLogin) {
 TEST_F(UserAddedRemovedReporterTest, TestGuestSessionLogsIn) {
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
   EXPECT_CALL(*mock_queue, AddRecord).Times(0);
 
@@ -299,8 +299,8 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserLogsIn) {
       AccountId::FromUserEmail(std::string(user_email));
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
   EXPECT_CALL(*mock_queue, AddRecord).Times(0);
 
@@ -323,8 +323,8 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
       AccountId::FromUserEmail(std::string(user_email));
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   ::reporting::UserAddedRemovedRecord record;
@@ -369,8 +369,8 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
       AccountId::FromUserEmail(std::string(user_email));
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   ::reporting::UserAddedRemovedRecord record;
@@ -413,8 +413,8 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserRemoved) {
       AccountId::FromUserEmail(std::string(user_email));
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
   EXPECT_CALL(*mock_queue, AddRecord).Times(0);
 
@@ -441,8 +441,8 @@ TEST_F(UserAddedRemovedReporterTest, TestRemoteRemoval) {
 
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::SequencedTaskRunner::GetCurrentDefault()));
   auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   ::reporting::UserAddedRemovedRecord record;

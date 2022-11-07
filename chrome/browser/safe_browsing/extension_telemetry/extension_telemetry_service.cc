@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -272,7 +273,7 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     }
     // Post this task with a delay to avoid running right at Chrome startup
     // when a lot of other startup tasks are running.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ExtensionTelemetryService::StartUploadCheck,
                        weak_factory_.GetWeakPtr()),

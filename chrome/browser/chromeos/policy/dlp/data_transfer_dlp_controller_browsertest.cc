@@ -8,7 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
@@ -166,8 +166,8 @@ void SetClipboardText(std::u16string text,
 // we need to flush the message loop.
 void FlushMessageLoop() {
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -187,8 +187,9 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
 
     reporting_manager_ = std::make_unique<DlpReportingManager>();
-    SetReportQueueForReportingManager(reporting_manager_.get(), events_,
-                                      base::SequencedTaskRunnerHandle::Get());
+    SetReportQueueForReportingManager(
+        reporting_manager_.get(), events_,
+        base::SequencedTaskRunner::GetCurrentDefault());
     ON_CALL(*rules_manager_, GetReportingManager)
         .WillByDefault(::testing::Return(reporting_manager_.get()));
 
@@ -450,8 +451,9 @@ class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
         g_browser_process->local_state());
 
     reporting_manager_ = std::make_unique<DlpReportingManager>();
-    SetReportQueueForReportingManager(reporting_manager_.get(), events_,
-                                      base::SequencedTaskRunnerHandle::Get());
+    SetReportQueueForReportingManager(
+        reporting_manager_.get(), events_,
+        base::SequencedTaskRunner::GetCurrentDefault());
     ON_CALL(*rules_manager_, GetReportingManager)
         .WillByDefault(::testing::Return(reporting_manager_.get()));
 

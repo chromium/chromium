@@ -9,8 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -62,7 +62,7 @@ void BiometricAuthenticatorWin::AuthenticateWithMessage(
     const std::u16string& message,
     AuthenticateCallback callback) {
   if (!NeedsToAuthenticate()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
     return;
   }

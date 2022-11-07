@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -678,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // Clear the cached data with a task posted to crash the network service.
   // The task should be run while waiting for the cache clearing operation to
   // complete, hopefully it happens before the cache has been cleared.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&content::BrowserTestBase::SimulateNetworkServiceCrash,
                      base::Unretained(this)));

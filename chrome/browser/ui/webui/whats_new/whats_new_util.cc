@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -134,7 +133,7 @@ class WhatsNewFetcher : public BrowserListObserver {
       // Don't fetch network content if this is the case, just pretend the tab
       // was retrieved successfully. Do so asynchronously to simulate the
       // production code better.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&WhatsNewFetcher::OpenWhatsNewTabForTest,
                                     base::Unretained(this)));
       return;

@@ -8,7 +8,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -111,7 +111,7 @@ void PrefetchProxyFromStringURLLoader::BindAndStart(
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   handle_watcher_->Watch(
       producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_WATCH_CONDITION_SATISFIED,

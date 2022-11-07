@@ -6,7 +6,7 @@
 
 #include <type_traits>
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
@@ -71,7 +71,7 @@ void IncomingFramesReader::ReadFrame(
 
   timeout_callback_.Reset(base::BindOnce(&IncomingFramesReader::OnTimeout,
                                          weak_ptr_factory_.GetWeakPtr()));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(timeout_callback_.callback()), timeout);
 
   // Check in cache for frame.

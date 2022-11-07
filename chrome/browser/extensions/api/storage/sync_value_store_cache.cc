@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/extensions/api/storage/sync_storage_backend.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "components/value_store/value_store_factory.h"
@@ -46,12 +47,13 @@ SyncValueStoreCache::SyncValueStoreCache(
   // same message loop, and any potential post of a deletion task must come
   // after the constructor returns.
   GetBackendTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&SyncValueStoreCache::InitOnBackend,
-                                base::Unretained(this), std::move(factory),
-                                GetSequenceBoundSettingsChangedCallback(
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(observer)),
-                                profile_path));
+      FROM_HERE,
+      base::BindOnce(&SyncValueStoreCache::InitOnBackend,
+                     base::Unretained(this), std::move(factory),
+                     GetSequenceBoundSettingsChangedCallback(
+                         base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(observer)),
+                     profile_path));
 }
 
 SyncValueStoreCache::~SyncValueStoreCache() {

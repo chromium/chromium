@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/syslog_logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
@@ -60,12 +60,12 @@ void DeviceCommandRemotePowerwashJob::RunImpl(
 
   // Also set a failsafe timer that starts the powerwash so a faulty network
   // connection doesn't prevent the powerwash from happening.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&StartPowerwash, signed_command()),
       kFailsafeTimerTimeout);
 
   // Ack the command.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(succeeded_callback), nullptr));
 }
 

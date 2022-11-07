@@ -26,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "base/win/scoped_handle.h"
@@ -406,7 +405,7 @@ int MockChromeCleanerProcess::Run() {
          base::OnceClosure quit_closure) {
         main_runner->PostTask(FROM_HERE, std::move(quit_closure));
       },
-      base::SequencedTaskRunnerHandle::Get(), run_loop.QuitClosure());
+      base::SequencedTaskRunner::GetCurrentDefault(), run_loop.QuitClosure());
 
   io_thread.task_runner()->PostTask(
       FROM_HERE,

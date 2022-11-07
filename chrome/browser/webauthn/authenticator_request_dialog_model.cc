@@ -15,7 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -1060,7 +1060,7 @@ void AuthenticatorRequestDialogModel::DispatchRequestAsyncInternal(
   if (!request_callback_)
     return;
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(request_callback_, authenticator_id));
 }
 

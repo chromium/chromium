@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/ash_web_view_impl.h"
 
 #include "ash/public/cpp/window_properties.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -251,7 +252,7 @@ void AshWebViewImpl::NotifyDidSuppressNavigation(
   // Note that we post notification to |observers_| as an observer may cause
   // |this| to be deleted during handling of the event which is unsafe to do
   // until the original navigation sequence has been completed.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](const base::WeakPtr<AshWebViewImpl>& self, GURL url,

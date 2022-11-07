@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/upgrade_detector/installed_version_monitor.h"
 
@@ -82,7 +81,7 @@ void DirectoryMonitor::Start(Callback on_change_callback) {
                 main_sequence->PostTask(
                     FROM_HERE, base::BindOnce(on_change_callback, error));
               },
-              base::RetainedRef(base::SequencedTaskRunnerHandle::Get()),
+              base::RetainedRef(base::SequencedTaskRunner::GetCurrentDefault()),
               on_change_callback)),
       base::BindOnce(
           [](const Callback& on_change_callback, bool start_result) {

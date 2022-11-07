@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
@@ -671,7 +672,7 @@ void BoxChunkedUploader::OnCommitUploadSessionResponse(
   }
 
   if (response.net_or_http_code == net::HTTP_ACCEPTED) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BoxChunkedUploader::OnFileCompletelyUploaded,
                        weak_factory_.GetWeakPtr(), sha1_digest_),

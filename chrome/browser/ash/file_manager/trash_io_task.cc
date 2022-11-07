@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -171,7 +172,7 @@ void TrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
 // accessed after calling this.
 void TrashIOTask::Complete(State state) {
   progress_.state = state;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));
 }
@@ -366,7 +367,7 @@ void TrashIOTask::SetupSubDirectory(
       base::BindOnce(&StartCreateDirectoryOnIOThread, file_system_context_,
                      trash_subdirectory,
                      base::BindPostTask(
-                         base::SequencedTaskRunnerHandle::Get(),
+                         base::SequencedTaskRunner::GetCurrentDefault(),
                          base::BindOnce(&TrashIOTask::SetDirectoryTracking,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         std::move(on_setup_complete_callback),
@@ -536,7 +537,7 @@ void TrashIOTask::TrashFile(size_t source_idx,
       storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified);
 
   auto complete_callback =
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          base::BindOnce(&TrashIOTask::OnMoveComplete,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         source_idx, output_idx + 1));
@@ -562,7 +563,7 @@ void TrashIOTask::OnMoveComplete(size_t source_idx,
     RecordFailedTrashingMetric(
         trash::FailedTrashingUmaType::FAILED_MOVING_FILE);
     auto complete_callback = base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(&TrashIOTask::TrashComplete,
                        weak_ptr_factory_.GetWeakPtr(), source_idx, output_idx));
 

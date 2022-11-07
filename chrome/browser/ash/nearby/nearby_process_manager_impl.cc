@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
@@ -166,7 +167,7 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
           &NearbyProcessManagerImpl::OnMojoPipeDisconnect,
           weak_ptr_factory_.GetWeakPtr(),
           NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   mojo::PendingRemote<sharing::mojom::NearbySharingDecoder> decoder;
   mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder> decoder_receiver =
@@ -177,7 +178,7 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
           &NearbyProcessManagerImpl::OnMojoPipeDisconnect,
           weak_ptr_factory_.GetWeakPtr(),
           NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   // Pass these references to Connect() to start up the process.
   sharing_->Connect(std::move(deps), std::move(connections_receiver),

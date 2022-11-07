@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/browser/win/automation_controller.h"
 #include "chrome/browser/win/ui_automation_util.h"
@@ -266,7 +265,7 @@ SettingsAppMonitor::SettingsAppMonitor(Delegate* delegate)
   // AutomationControllerDelegate.
   auto automation_controller_delegate =
       std::make_unique<SettingsAppMonitor::AutomationControllerDelegate>(
-          base::SequencedTaskRunnerHandle::Get(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
           weak_ptr_factory_.GetWeakPtr());
 
   automation_controller_ = std::make_unique<AutomationController>(

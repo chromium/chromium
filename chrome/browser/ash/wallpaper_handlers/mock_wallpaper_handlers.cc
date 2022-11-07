@@ -9,7 +9,6 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/callback.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -26,7 +25,7 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
              base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback) {
             auto response = FetchGooglePhotosAlbumsResponse::New(
                 std::vector<GooglePhotosAlbumPtr>(), absl::nullopt);
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback), std::move(response)));
           });
@@ -49,7 +48,7 @@ MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
           [](base::OnceCallback<void(GooglePhotosEnablementState)> callback) {
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback),
                                GooglePhotosEnablementState::kEnabled));
@@ -81,7 +80,7 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
              base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
             auto response = FetchGooglePhotosPhotosResponse::New(
                 std::vector<GooglePhotosPhotoPtr>(), absl::nullopt);
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback), std::move(response)));
           });

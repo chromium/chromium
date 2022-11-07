@@ -18,7 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "chrome/browser/extensions/updater/extension_update_client_command_line_config_policy.h"
@@ -104,7 +104,7 @@ void ExtensionActivityDataService::GetActiveBits(
     if (extension_prefs_->GetActiveBit(id))
       actives.insert(id);
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), actives));
 }
 
@@ -127,7 +127,7 @@ void ExtensionActivityDataService::GetAndClearActiveBits(
       actives.insert(id);
     extension_prefs_->SetActiveBit(id, false);
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), actives));
 }
 

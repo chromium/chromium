@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
@@ -222,7 +223,7 @@ TEST_F(NearbyShareCertificateStorageImplTest, DeferredCallbackQueue) {
 
   // These callbacks have to be posted to ensure that they run after the
   // deferred callbacks posted during initialization.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&leveldb_proto::test::FakeDB<
                          nearbyshare::proto::PublicCertificate>::LoadCallback,

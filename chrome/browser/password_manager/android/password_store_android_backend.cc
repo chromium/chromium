@@ -24,7 +24,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
@@ -749,7 +749,7 @@ void PasswordStoreAndroidBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
-  main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   stored_passwords_changed_ = std::move(remote_form_changes_received);
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordStoreAndroidBackend::OnForegroundSessionStart,

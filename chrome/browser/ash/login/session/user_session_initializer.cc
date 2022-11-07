@@ -12,9 +12,9 @@
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
@@ -201,7 +201,7 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
             &GetCertDBOnIOThread,
             NssServiceFactory::GetForContext(profile)
                 ->CreateNSSCertDatabaseGetterForIOThread(),
-            base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                                base::BindOnce(&OnGotNSSCertDatabaseForUser))));
   }
 }

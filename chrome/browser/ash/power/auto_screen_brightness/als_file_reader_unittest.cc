@@ -8,9 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,7 +28,7 @@ class AlsFileReaderTest : public testing::Test {
     CHECK(temp_dir_.CreateUniqueTempDir());
     ambient_light_path_ = temp_dir_.GetPath().Append("test_als");
     als_file_reader_->SetTaskRunnerForTesting(
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
     als_reader_.AddObserver(&fake_observer_);
     als_file_reader_->InitForTesting(ambient_light_path_);
   }

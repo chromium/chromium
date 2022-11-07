@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -104,7 +105,7 @@ HttpsLatencySampler::~HttpsLatencySampler() {
 }
 
 void HttpsLatencySampler::MaybeCollect(OptionalMetricCallback callback) {
-  CHECK(base::SequencedTaskRunnerHandle::IsSet());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsDeviceOnline()) {
@@ -124,8 +125,9 @@ void HttpsLatencySampler::MaybeCollect(OptionalMetricCallback callback) {
   auto routine_callback =
       base::BindOnce(&HttpsLatencySampler::OnHttpsLatencyRoutineCompleted,
                      weak_ptr_factory_.GetWeakPtr());
-  network_diagnostics_service_->RunHttpsLatency(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(routine_callback)));
+  network_diagnostics_service_->RunHttpsLatency(
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(routine_callback)));
 
   is_routine_running_ = true;
 }

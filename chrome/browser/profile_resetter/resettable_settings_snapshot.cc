@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -146,7 +147,7 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
 #else   // BUILDFLAG(IS_WIN)
   // Shortcuts are only supported on Windows.
   std::vector<ShortcutCommand> no_shortcuts;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ResettableSettingsSnapshot::SetShortcutsAndReport,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),

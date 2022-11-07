@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -81,7 +81,7 @@ void RestoreToDestinationIOTask::Execute(
 // end up here so avoid accessing `trash_service_` here.
 void RestoreToDestinationIOTask::Complete(State state) {
   progress_.state = state;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));
 }

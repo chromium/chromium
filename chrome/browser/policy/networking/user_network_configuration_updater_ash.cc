@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -185,7 +185,7 @@ void UserNetworkConfigurationUpdaterAsh::Observe(
           NssServiceFactory::GetForContext(profile)
               ->CreateNSSCertDatabaseGetterForIOThread(),
           base::BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
+              base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(&UserNetworkConfigurationUpdaterAsh::
                                  CreateAndSetClientCertificateImporter,
                              weak_factory_.GetWeakPtr()))));

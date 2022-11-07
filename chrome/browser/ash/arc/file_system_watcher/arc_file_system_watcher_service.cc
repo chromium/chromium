@@ -22,9 +22,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -306,7 +306,7 @@ void ArcFileSystemWatcherService::FileSystemWatcher::OnFilePathChanged(
   }
   if (!outstanding_task_) {
     outstanding_task_ = true;
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FileSystemWatcher::DelayBuildTimestampMap,
                        weak_ptr_factory_.GetWeakPtr()),

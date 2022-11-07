@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/rand_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
 #include "chrome/common/privacy_budget/types.h"
@@ -192,7 +193,7 @@ void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
       uint64_t reid_hash = block_itr->ComputeHashForReidScore();
 
       // Report to UKM in a separate task in order to avoid re-entrancy.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ReportHashForReidScore,
                                     block_itr->reid_surface_key(), reid_hash));
 

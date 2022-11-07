@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "components/download/public/background_service/download_metadata.h"
@@ -94,7 +94,7 @@ bool OfflinePrefetchDownloadClient::CanServiceRemoveDownloadedFile(
 void OfflinePrefetchDownloadClient::GetUploadData(
     const std::string& guid,
     download::GetUploadDataCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), nullptr));
 }
 

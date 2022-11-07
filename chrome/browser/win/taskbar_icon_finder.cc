@@ -20,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/installer/util/install_util.h"
@@ -91,7 +90,7 @@ TaskbarIconFinder::TaskbarIconFinder(
   // for automation clients.
   base::ThreadPool::PostTask(
       FROM_HERE, base::BindOnce(&TaskbarIconFinder::RunOnComTask,
-                                base::SequencedTaskRunnerHandle::Get(),
+                                base::SequencedTaskRunner::GetCurrentDefault(),
                                 base::Unretained(this)));
 }
 

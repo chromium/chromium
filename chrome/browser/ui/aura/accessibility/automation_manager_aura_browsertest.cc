@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   manager->Disable();
 
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitWhenIdleClosure());
   run_loop.Run();
 

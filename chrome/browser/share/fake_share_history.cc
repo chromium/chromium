@@ -5,7 +5,7 @@
 #include "chrome/browser/share/fake_share_history.h"
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace sharing {
 
@@ -18,7 +18,7 @@ void FakeShareHistory::AddShareEntry(const std::string& component_name) {
 
 void FakeShareHistory::GetFlatShareHistory(GetFlatHistoryCallback callback,
                                            int window) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), history_));
 }
 

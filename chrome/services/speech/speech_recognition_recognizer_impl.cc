@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -323,7 +324,7 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
   // Changing the language requires a blocking call to check if the language
   // pack exists on the device.
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
 
   base::FilePath config_file_path =
       GetLatestSodaLanguagePackDirectory(language);

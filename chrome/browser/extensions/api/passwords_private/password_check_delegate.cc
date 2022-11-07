@@ -22,7 +22,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
@@ -571,7 +571,7 @@ void PasswordCheckDelegate::
 
   // Delay the last Check Status update by a second. This avoids flickering of
   // the UI if the full check ran from start to finish almost immediately.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
                      weak_ptr_factory_.GetWeakPtr()),

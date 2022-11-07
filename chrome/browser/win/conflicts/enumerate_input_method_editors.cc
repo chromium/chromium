@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/registry.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
 
@@ -121,7 +120,7 @@ void EnumerateInputMethodEditors(OnImeEnumeratedCallback on_ime_enumerated,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&EnumerateImesOnBlockingSequence,
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(on_ime_enumerated),
                      std::move(on_enumeration_finished)));
 }

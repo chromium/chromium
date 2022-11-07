@@ -19,7 +19,7 @@
 #include "base/format_macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -145,7 +145,7 @@ class NativeMediaFileUtilTest : public testing::Test {
 
     file_system_context_ = storage::FileSystemContext::Create(
         content::GetIOThreadTaskRunner({}),
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         storage::ExternalMountPoints::CreateRefCounted(),
         std::move(storage_policy),
         /* quota_manager_proxy=*/nullptr, std::move(additional_providers),

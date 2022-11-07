@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -107,8 +108,8 @@ void WebAppInstallManagerObserverAdapter::SignalRunLoopAndStoreAppId(
   if (!optional_app_ids_.empty())
     return;
   last_app_id_ = app_id;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   wait_loop_.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, wait_loop_.QuitClosure());
   is_listening_ = false;
 }
 
@@ -185,8 +186,8 @@ void WebAppTestRegistryObserverAdapter::SignalRunLoopAndStoreAppId(
   if (!optional_app_ids_.empty())
     return;
   last_app_id_ = app_id;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   wait_loop_.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, wait_loop_.QuitClosure());
   is_listening_ = false;
 }
 

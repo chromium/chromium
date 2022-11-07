@@ -25,6 +25,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -3938,7 +3939,7 @@ void BrowserView::AddedToWidget() {
   MaybeShowWebUITabStripIPH();
 
   // Want to show this promo, but not right at startup.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BrowserView::MaybeShowReadingListInSidePanelIPH,
                      GetAsWeakPtr()),

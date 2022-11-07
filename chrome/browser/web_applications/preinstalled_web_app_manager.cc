@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -494,8 +495,8 @@ void PreinstalledWebAppManager::DeviceDataInitializedEvent::Post(
   // asynchronous and may not have completed by this point.
   if (!ui::DeviceDataManager::HasInstance() ||
       ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(task));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                             std::move(task));
   } else {
     DCHECK(!device_data_observation_.IsObserving());
     device_data_observation_.Observe(ui::DeviceDataManager::GetInstance());

@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
@@ -258,7 +257,7 @@ void NearbyShareCertificateStorageImpl::FinishInitialization(bool success) {
   // We run deferred callbacks even if initialization failed not to cause
   // possible client-side blocks of next calls to the database.
   while (!deferred_callbacks_.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(deferred_callbacks_.front()));
     deferred_callbacks_.pop();
   }

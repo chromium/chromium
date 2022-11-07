@@ -11,7 +11,6 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
@@ -51,7 +50,7 @@ StandaloneBrowserExtensionAppContextMenu::
 void StandaloneBrowserExtensionAppContextMenu::GetMenuModel(
     GetMenuModelCallback callback) {
   // Always invoke the callback asynchronously to avoid re-entrancy.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

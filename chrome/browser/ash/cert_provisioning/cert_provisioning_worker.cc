@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/syslog_logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
@@ -849,7 +850,7 @@ void CertProvisioningWorkerImpl::ScheduleNextStep(base::TimeDelta delay) {
 
   delay = std::max(delay, kMinumumTryAgainLaterDelay);
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CertProvisioningWorkerImpl::OnShouldContinue,
                      weak_factory_.GetWeakPtr(), ContinueReason::kTimeout),

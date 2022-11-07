@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -128,7 +129,7 @@ class WebAppCommandManagerTest : public WebAppTest {
         shared_contents = command1_ptr->get_shared_web_contents();
         if (check_web_contents_in_first)
           EXPECT_TRUE(shared_contents);
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindLambdaForTesting([&]() {
               command1_ptr->CallSignalCompletionAndSelfDestruct(
                   CommandResult::kSuccess, mock_closure.Get());
@@ -512,7 +513,7 @@ TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
     base::RunLoop loop;
     testing::InSequence in_sequence;
     EXPECT_CALL(*command1_ptr, Start()).Times(1).WillOnce([&]() {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindLambdaForTesting([&]() {
             command1_ptr->CallSignalCompletionAndSelfDestruct(
                 CommandResult::kSuccess, mock_closure.Get());

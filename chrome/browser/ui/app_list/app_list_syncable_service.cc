@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/one_shot_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -1157,7 +1158,7 @@ AppListSyncableService::MergeDataAndStartSyncing(
   if (first_time_user) {
     // Post a task to avoid adding the default page break items which can
     // cause sync changes during sync startup.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AppListSyncableService::InstallDefaultPageBreaks,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -1538,7 +1539,7 @@ AppListSyncableService::SyncItem* AppListSyncableService::CreateSyncItem(
 
   // In case we have pending attributes to apply, process it asynchronously.
   if (base::Contains(pending_transfer_map_, item_id)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppListSyncableService::ApplyAppAttributes,
                                   weak_ptr_factory_.GetWeakPtr(), item_id,
                                   std::move(pending_transfer_map_[item_id])));

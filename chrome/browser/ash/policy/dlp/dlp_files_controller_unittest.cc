@@ -20,6 +20,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
@@ -244,8 +245,9 @@ class DlpFilesControllerTest : public testing::Test {
     event_storage_->SetTaskRunnerForTesting(task_runner);
 
     reporting_manager_ = std::make_unique<DlpReportingManager>();
-    SetReportQueueForReportingManager(reporting_manager_.get(), events,
-                                      base::SequencedTaskRunnerHandle::Get());
+    SetReportQueueForReportingManager(
+        reporting_manager_.get(), events,
+        base::SequencedTaskRunner::GetCurrentDefault());
     ON_CALL(*rules_manager_, GetReportingManager)
         .WillByDefault(::testing::Return(reporting_manager_.get()));
 

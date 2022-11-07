@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -257,7 +257,7 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
   if (!added_bar) {
     is_closing_ = true;
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&GlobalConfirmInfoBar::Close,
                                   weak_factory_.GetWeakPtr()));
     return;

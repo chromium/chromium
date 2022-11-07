@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/diagnostics/app_type_initialized_event.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -26,8 +27,8 @@ bool AppTypeInitializedEvent::Post(base::OnceClosure callback) {
       apps::AppServiceProxyFactory::GetForProfile(profile_.get())
           ->AppRegistryCache();
   if (app_registry_cache.IsAppTypeInitialized(app_type_)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return true;
   }
 

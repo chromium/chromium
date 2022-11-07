@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -389,7 +390,7 @@ void SafetyCheckHandler::HandlePerformSafetyCheck(
   // Run safety check after a delay. This ensures that the "running" state is
   // visible to users for each safety check child, even if a child would
   // otherwise complete in an instant.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SafetyCheckHandler::PerformSafetyCheck,
                      weak_ptr_factory_.GetWeakPtr()),

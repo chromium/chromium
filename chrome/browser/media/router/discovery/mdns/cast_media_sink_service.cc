@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
@@ -47,7 +48,7 @@ void CastMediaSinkService::Start(
   impl_ =
       CreateImpl(base::BindRepeating(
                      &RunSinksDiscoveredCallbackOnSequence,
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      base::BindRepeating(
                          &CastMediaSinkService::RunSinksDiscoveredCallback,
                          weak_ptr_factory_.GetWeakPtr(), sinks_discovered_cb)),

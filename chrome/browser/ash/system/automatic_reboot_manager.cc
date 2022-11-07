@@ -27,9 +27,9 @@
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
@@ -214,7 +214,7 @@ void AutomaticRebootManager::SuspendDone(base::TimeDelta sleep_duration) {
   // is a user session, there is an additional check in the Reboot method below.
   // We post a delayed task to ensure that we run any due grace timers and
   // update |reboot_requested_| flag before we try to reboot.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AutomaticRebootManager::MaybeReboot,
                      base::Unretained(this), true),

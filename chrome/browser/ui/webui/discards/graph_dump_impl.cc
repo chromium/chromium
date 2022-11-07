@@ -12,7 +12,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
@@ -394,7 +394,7 @@ DiscardsGraphDumpImpl::EnsureFaviconRequestHelper() {
 DiscardsGraphDumpImpl::FaviconAvailableCallback
 DiscardsGraphDumpImpl::GetFaviconAvailableCallback(int64_t serialization_id) {
   return base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&DiscardsGraphDumpImpl::SendFaviconNotification,
                      weak_factory_.GetWeakPtr(), serialization_id));
 }

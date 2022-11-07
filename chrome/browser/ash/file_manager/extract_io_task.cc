@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -264,7 +265,7 @@ void ExtractIOTask::GetExtractedSize(base::FilePath source_file) {
 
 void ExtractIOTask::CheckSizeThenExtract() {
   for (const EntryStatus& source : progress_.sources) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ExtractIOTask::GetExtractedSize,
                        weak_ptr_factory_.GetWeakPtr(), source.url.path()));
@@ -309,7 +310,7 @@ void ExtractIOTask::Cancel() {
 // Calls the completion callback for the task. |progress_| should not be
 // accessed after calling this.
 void ExtractIOTask::Complete() {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));
 }

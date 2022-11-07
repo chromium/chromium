@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
@@ -93,7 +93,7 @@ class CastMediaRouteProviderTest : public testing::Test {
     provider_ = std::make_unique<CastMediaRouteProvider>(
         provider_remote_.BindNewPipeAndPassReceiver(), std::move(router_remote),
         &media_sink_service_, &app_discovery_service_, &message_handler_,
-        "hash-token", base::SequencedTaskRunnerHandle::Get());
+        "hash-token", base::SequencedTaskRunner::GetCurrentDefault());
 
     base::RunLoop().RunUntilIdle();
   }

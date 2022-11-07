@@ -14,8 +14,8 @@
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -410,7 +410,7 @@ DevToolsFileHelper::GetFileSystems() {
     file_watcher_.reset(new DevToolsFileWatcher(
         base::BindRepeating(&DevToolsFileHelper::FilePathsChanged,
                             weak_factory_.GetWeakPtr()),
-        base::SequencedTaskRunnerHandle::Get()));
+        base::SequencedTaskRunner::GetCurrentDefault()));
     auto change_handler_on_ui = base::BindRepeating(
         &DevToolsFileHelper::FileSystemPathsSettingChangedOnUI,
         weak_factory_.GetWeakPtr());

@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/default_tick_clock.h"
@@ -216,7 +217,7 @@ media::cast::FrameReceiverConfig WithSharedConfig(
 
 void ContinueBrowserFor(base::TimeDelta duration) {
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), duration);
   run_loop.Run();
 }

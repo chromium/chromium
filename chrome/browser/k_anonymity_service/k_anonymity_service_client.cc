@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
@@ -155,7 +156,7 @@ void KAnonymityServiceClient::JoinSet(std::string id,
   // Fail immediately if the queue is full.
   if (join_queue_.size() >= kMaxQueueSize) {
     RecordJoinSetAction(KAnonymityServiceJoinSetAction::kJoinSetQueueFull);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
@@ -336,7 +337,7 @@ void KAnonymityServiceClient::CompleteJoinSetRequest() {
 
 void KAnonymityServiceClient::DoJoinSetCallback(bool status) {
   DCHECK(!join_queue_.empty());
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(join_queue_.front()->callback), status));
   join_queue_.pop_front();
@@ -351,7 +352,7 @@ void KAnonymityServiceClient::QuerySets(
   // Fail immediately if the queue is full.
   if (query_queue_.size() >= kMaxQueueSize || set_ids.empty()) {
     RecordQuerySetAction(KAnonymityServiceQuerySetAction::kQuerySetQueueFull);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::vector<bool>()));
     return;
   }
@@ -359,7 +360,7 @@ void KAnonymityServiceClient::QuerySets(
   if (!enable_ohttp_requests_) {
     // Trigger a "successful" callback.
     RecordQuerySetAction(KAnonymityServiceQuerySetAction::kQuerySetsSuccess);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<bool>(set_ids.size(), false)));
     return;
@@ -596,7 +597,7 @@ void KAnonymityServiceClient::FailQuerySetsRequests() {
 
 void KAnonymityServiceClient::DoQuerySetsCallback(std::vector<bool> result) {
   DCHECK(!query_queue_.empty());
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(query_queue_.front()->callback),
                                 std::move(result)));
   query_queue_.pop_front();

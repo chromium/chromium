@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/first_run/first_run_dialog.h"
 #include "chrome/browser/first_run/first_run_internal.h"
@@ -82,8 +83,8 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
   // A task run immediately before first_run::DoPostImportPlatformSpecificTasks
   // shows the first-run dialog.
   void SetupNestedTask() {
-    EXPECT_TRUE(base::SequencedTaskRunnerHandle::Get());
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    EXPECT_TRUE(base::SequencedTaskRunner::GetCurrentDefault());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&FirstRunInternalPosixTest::InspectState,
                                   base::Unretained(this)));
   }

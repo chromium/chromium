@@ -19,6 +19,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -398,7 +399,7 @@ class TestPrintRenderFrame
       : frame_host_(frame_host),
         web_contents_(web_contents),
         document_cookie_(document_cookie),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()),
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
         msg_callback_(msg_callback) {}
   ~TestPrintRenderFrame() override = default;
 

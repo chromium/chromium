@@ -18,6 +18,7 @@
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -160,7 +161,7 @@ MainController::GetSandboxConnectionErrorCallback() {
   // Returns a callback bound with the current task runner and the weak pointer
   // of main controller.
   return base::BindRepeating(MainController::CallSandboxConnectionClosed,
-                             base::SequencedTaskRunnerHandle::Get(),
+                             base::SequencedTaskRunner::GetCurrentDefault(),
                              weak_factory_.GetWeakPtr());
 }
 

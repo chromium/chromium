@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
 
 #include "base/containers/flat_map.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
@@ -13,7 +14,7 @@ namespace policy {
 DlpFilesEventStorage::DlpFilesEventStorage(base::TimeDelta cooldown_timeout,
                                            size_t entries_num_limit)
     : cooldown_delta_(cooldown_timeout),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       entries_num_limit_(entries_num_limit) {}
 DlpFilesEventStorage::~DlpFilesEventStorage() = default;
 

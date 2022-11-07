@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_features.h"
@@ -463,7 +464,7 @@ DevToolsWindow::~DevToolsWindow() {
   // via RenderFrameHostImpl method that expects WebContents to live
   // for some time. See http://crbug.com/997299 for details.
   if (owned_main_web_contents_) {
-    base::SequencedTaskRunnerHandle::Get()->DeleteSoon(
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(owned_main_web_contents_));
   }
 

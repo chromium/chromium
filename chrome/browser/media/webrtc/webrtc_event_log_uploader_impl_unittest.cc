@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
@@ -85,7 +86,7 @@ class WebRtcEventLogUploaderImplTest : public ::testing::Test {
     EXPECT_TRUE(base::Time::FromString("30 Dec 1983", &kReasonableTime));
 
     uploader_factory_ = std::make_unique<WebRtcEventLogUploaderImpl::Factory>(
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   ~WebRtcEventLogUploaderImplTest() override {

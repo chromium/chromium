@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -73,7 +74,7 @@ class FakeSignatureVerifier
       web_package::SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback) override {
     on_verify_signatures_.Run();
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), error_));
   }
 

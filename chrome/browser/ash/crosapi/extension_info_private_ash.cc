@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -426,7 +427,7 @@ void ExtensionInfoPrivateAsh::GetSystemProperties(
                     base::Value::FromUniquePtrValue(std::move(value)));
     }
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
@@ -454,13 +455,13 @@ void ExtensionInfoPrivateAsh::SetBool(const std::string& property_name,
     found = true;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(found)));
 }
 
 void ExtensionInfoPrivateAsh::IsTabletModeEnabled(
     IsTabletModeEnabledCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      std::move(ash::TabletMode::Get()->InTabletMode())));

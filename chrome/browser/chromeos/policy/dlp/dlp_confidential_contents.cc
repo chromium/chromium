@@ -9,6 +9,7 @@
 
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -167,7 +168,7 @@ DlpConfidentialContentsCache::Entry::~Entry() = default;
 
 DlpConfidentialContentsCache::DlpConfidentialContentsCache()
     : cache_size_limit_(kDefaultCacheSizeLimit),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 DlpConfidentialContentsCache::~DlpConfidentialContentsCache() = default;
 

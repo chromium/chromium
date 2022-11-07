@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -1042,7 +1042,7 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
             base::BindOnce(&ProcessMemoryMetricsEmitter::ReceivedProcessInfos,
                            pmme, std::move(process_infos)));
       },
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       scoped_refptr<ProcessMemoryMetricsEmitter>(this));
 
   performance_manager::PerformanceManager::CallOnGraph(

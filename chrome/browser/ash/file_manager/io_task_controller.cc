@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
@@ -63,7 +64,7 @@ IOTaskId IOTaskController::Add(std::unique_ptr<IOTask> task) {
       ->Execute(base::BindRepeating(&IOTaskController::OnIOTaskProgress,
                                     weak_ptr_factory_.GetWeakPtr()),
                 base::BindPostTask(
-                    base::SequencedTaskRunnerHandle::Get(),
+                    base::SequencedTaskRunner::GetCurrentDefault(),
                     base::BindOnce(&IOTaskController::OnIOTaskComplete,
                                    weak_ptr_factory_.GetWeakPtr(), task_id)));
   return task_id;

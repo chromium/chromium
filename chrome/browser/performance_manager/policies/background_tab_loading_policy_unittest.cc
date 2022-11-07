@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -84,8 +84,8 @@ class MockSiteDataReader : public SiteDataReader {
   }
   bool DataLoaded() const override { return true; }
   void RegisterDataLoadedCallback(base::OnceClosure&& callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
  private:

@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 
@@ -29,7 +29,7 @@ class WebRtcLogMessageDelegateImpl : public blink::WebRtcLogMessageDelegate {
 
   void Start(
       base::RepeatingCallback<void(mojom::WebRtcLoggingMessagePtr)> callback) {
-    auto task_runner = base::SequencedTaskRunnerHandle::Get();
+    auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
     {
       base::AutoLock locked(lock_);
       task_runner_ = task_runner;
@@ -114,7 +114,7 @@ void WebRtcLoggingAgentImpl::OnNewMessage(
       kMinTimeSinceLastLogBufferSend) {
     SendLogBuffer();
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WebRtcLoggingAgentImpl::SendLogBuffer,
                        weak_factory_.GetWeakPtr()),

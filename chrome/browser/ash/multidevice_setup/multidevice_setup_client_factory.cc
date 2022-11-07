@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,7 +43,7 @@ class MultiDeviceSetupClientHolder : public KeyedService {
     // depend on MultiDeviceSetupServiceFactory at construction time. This is
     // due to a circular dependency among the AndroidSmsServiceFactory,
     // MultiDeviceSetupServiceFactory, and MultiDeviceSetupClientFactory
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MultiDeviceSetupClientHolder::BindService,
                        weak_factory_.GetWeakPtr(), std::move(receiver)));

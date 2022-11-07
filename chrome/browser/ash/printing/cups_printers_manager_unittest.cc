@@ -19,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/enterprise_printers_provider.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
@@ -258,14 +257,14 @@ class FakePpdProvider : public PpdProvider {
   void ResolvePpdReference(const PrinterSearchData& search_data,
                            ResolvePpdReferenceCallback cb) override {
     if (search_data.make_and_model.empty()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(cb), PpdProvider::NOT_FOUND,
                          Printer::PpdReference(), usb_manufacturer_));
     } else {
       Printer::PpdReference ret;
       ret.effective_make_and_model = search_data.make_and_model[0];
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(cb), PpdProvider::SUCCESS, ret,
                                     "" /* usb_manufacturer */));
     }

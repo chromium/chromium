@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace component_updater {
 
@@ -95,7 +95,7 @@ void FakeCrOSComponentManager::Load(const std::string& name,
                                     UpdatePolicy update_policy,
                                     LoadCallback load_callback) {
   if (!supported_components_.count(name)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(load_callback),
                                   Error::UNKNOWN_COMPONENT, base::FilePath()));
     return;
@@ -123,7 +123,7 @@ void FakeCrOSComponentManager::Load(const std::string& name,
 
   // The component has been prevoiusly installed, and mounted as required by
   // this load request - run the callback according to the existing state.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(load_callback), Error::NONE,
                                 mount_policy == MountPolicy::kMount
                                     ? mounted_components_[name]
@@ -195,7 +195,7 @@ void FakeCrOSComponentManager::HandlePendingRequest(const std::string& name,
 
   const auto& component_info = component_infos_.find(name);
   if (component_info == component_infos_.end()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), Error::INSTALL_FAILURE,
                                   base::FilePath()));
     return;
@@ -203,7 +203,7 @@ void FakeCrOSComponentManager::HandlePendingRequest(const std::string& name,
 
   FinishComponentLoad(name, mount_requested, component_info->second);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), component_info->second.load_response,
                      component_info->second.mount_path));

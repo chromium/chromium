@@ -13,11 +13,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,7 +80,7 @@ class ModelConfigLoaderImplTest : public testing::Test {
 
     WriteParamsToFile(model_params);
     model_config_loader_ = ModelConfigLoaderImpl::CreateForTesting(
-        temp_params_path_, base::SequencedTaskRunnerHandle::Get());
+        temp_params_path_, base::SequencedTaskRunner::GetCurrentDefault());
 
     test_observer_ = std::make_unique<TestObserver>();
     model_config_loader_->AddObserver(test_observer_.get());

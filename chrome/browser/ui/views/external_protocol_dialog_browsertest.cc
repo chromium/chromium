@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -72,7 +73,7 @@ class FakeDefaultProtocolClientWorker
   std::u16string GetDefaultClientNameImpl() override { return u"TestApp"; }
 
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_finished_callback));
   }
 };

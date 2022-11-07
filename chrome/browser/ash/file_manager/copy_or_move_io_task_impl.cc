@@ -18,8 +18,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
@@ -208,7 +208,7 @@ void CopyOrMoveIOTaskImpl::Cancel() {
 void CopyOrMoveIOTaskImpl::Complete(State state) {
   completed_ = true;
   progress_.state = state;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));
 }

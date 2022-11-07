@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -62,7 +63,7 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
   if (navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled()) {
     if (!navigation_prefetch_ &&
         SearchPrefetchBlockHeadStart() > base::TimeDelta()) {
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable,
@@ -344,7 +345,7 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   handle_watcher_->Watch(
       producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_WATCH_CONDITION_SATISFIED,
@@ -525,8 +526,8 @@ void StreamingSearchPrefetchURLLoader::PostTaskToDeleteSelf() {
     return;
   }
   // To avoid UAF bugs, post a separate task to delete this object.
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     std::move(self_pointer_));
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(self_pointer_));
 }
 
 void StreamingSearchPrefetchURLLoader::Fallback() {

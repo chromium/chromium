@@ -27,9 +27,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -1008,7 +1008,7 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
     if (drive_internals_) {
       drive_internals_->OnZipDone();
     }
-    base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
   }
 
   Profile* const profile_;

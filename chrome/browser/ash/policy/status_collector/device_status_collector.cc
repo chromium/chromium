@@ -39,7 +39,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -1587,8 +1586,8 @@ DeviceStatusCollector::DeviceStatusCollector(
 
   // Get the task runner of the current thread, so we can queue status responses
   // on this thread.
-  CHECK(base::SequencedTaskRunnerHandle::IsSet());
-  task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
   if (volume_info_fetcher_.is_null())
     volume_info_fetcher_ = base::BindRepeating(&GetVolumeInfo);

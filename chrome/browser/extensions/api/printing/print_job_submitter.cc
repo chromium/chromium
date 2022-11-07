@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
@@ -277,7 +277,7 @@ void PrintJobSubmitter::OnPrintJobConfirmationDialogClosed(bool accepted) {
   if (!accepted || !ExtensionRegistry::Get(browser_context_)
                         ->enabled_extensions()
                         .Contains(extension_->id())) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), absl::nullopt, nullptr,
                                   nullptr, absl::nullopt));
     return;
@@ -311,7 +311,7 @@ void PrintJobSubmitter::OnFailed() {
 void PrintJobSubmitter::FireErrorCallback(const std::string& error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), absl::nullopt, nullptr,
                                 nullptr, error));
 }

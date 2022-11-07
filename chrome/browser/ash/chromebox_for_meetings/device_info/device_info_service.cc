@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/channel_info.h"
@@ -257,7 +258,7 @@ void DeviceInfoService::GetMachineStatisticsInfo(
 
 DeviceInfoService::DeviceInfoService()
     : service_adaptor_(mojom::MeetDevicesInfo::Name_, this),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       on_machine_statistics_loaded_(false) {
   CfmHotlineClient::Get()->AddObserver(this);
   current_policy_info_.reset();

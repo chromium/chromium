@@ -17,8 +17,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -94,7 +94,7 @@ WebRtcLogUploader::UploadDoneData::UploadDoneData(
 WebRtcLogUploader::UploadDoneData::~UploadDoneData() = default;
 
 WebRtcLogUploader::WebRtcLogUploader()
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
 

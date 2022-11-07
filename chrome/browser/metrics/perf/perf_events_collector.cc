@@ -19,7 +19,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 #include "chrome/browser/metrics/perf/process_type_collector.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
@@ -363,7 +362,7 @@ void PerfCollector::SetUp() {
   // current sequence.
   debugd_client_provider_ = std::make_unique<ash::DebugDaemonClientProvider>();
 
-  auto task_runner = base::SequencedTaskRunnerHandle::Get();
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,

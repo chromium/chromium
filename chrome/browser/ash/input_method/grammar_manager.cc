@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
@@ -131,7 +132,7 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
           // first. So we need to call AcceptSuggestion in a post task.
           // TODO(crbug.com/1230961): remove PostTask after we remove the delay
           // logics.
-          base::SequencedTaskRunnerHandle::Get()->PostTask(
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindOnce(&GrammarManager::AcceptSuggestion,
                                         base::Unretained(this)));
           return true;

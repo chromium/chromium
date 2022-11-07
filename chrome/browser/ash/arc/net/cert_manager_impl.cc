@@ -11,6 +11,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -209,7 +210,7 @@ void CertManagerImpl::ImportPrivateKeyAndCert(
           NssServiceFactory::GetForContext(profile_)
               ->CreateNSSCertDatabaseGetterForIOThread(),
           base::BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
+              base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(&CertManagerImpl::ImportPrivateKeyAndCertWithDB,
                              weak_factory_.GetWeakPtr(), key_pem, cert_pem,
                              std::move(callback)))));

@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -70,7 +70,7 @@ void DeleteIOTask::Cancel() {
 // accessed after calling this.
 void DeleteIOTask::Complete(State state) {
   progress_.state = state;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));
 }

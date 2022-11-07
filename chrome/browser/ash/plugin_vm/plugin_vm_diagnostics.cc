@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics_builder.h"
@@ -226,7 +227,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
   }
 
   void Finish() {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), builder_.Build()));
   }
 

@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
@@ -69,7 +70,7 @@ ResultCallback ResultCallbackFromMojom(StatusCallback callback) {
   // sequence.
   return {[callback = std::make_shared<StatusCallback>(std::move(callback)),
            task_runner =
-               base::SequencedTaskRunnerHandle::Get()](Status status) {
+               base::SequencedTaskRunner::GetCurrentDefault()](Status status) {
     if (*callback) {
       task_runner->PostTask(
           FROM_HERE,

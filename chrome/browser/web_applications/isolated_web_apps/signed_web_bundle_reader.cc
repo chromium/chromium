@@ -15,9 +15,9 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
@@ -261,8 +261,8 @@ void SignedWebBundleReader::FulfillWithError(ReadErrorCallback callback,
   // deletes `this` in response to the error, because `parser_` would attempt to
   // access its already freed instance variables when its `OnDisconnect` method
   // continues execution after running this callback.
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     std::move(parser_));
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(parser_));
 
   std::move(callback).Run(std::move(error));
 }
@@ -294,7 +294,7 @@ void SignedWebBundleReader::ReadResponse(
   const GURL& url = net::SimplifyUrlForRequest(resource_request.url);
   auto entry_it = entries_.find(url);
   if (entry_it == entries_.end()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
@@ -416,7 +416,7 @@ void SignedWebBundleReader::ReconnectForFile(base::File file) {
   absl::optional<std::string> error;
   if (file_error != base::File::FILE_OK)
     error = base::File::ErrorToString(file_error);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SignedWebBundleReader::DidReconnect,
                      weak_ptr_factory_.GetWeakPtr(), std::move(error)));
@@ -433,7 +433,7 @@ void SignedWebBundleReader::DidReconnect(absl::optional<std::string> error) {
 
   if (error) {
     for (auto& [response_location, response_callback] : read_tasks) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               std::move(response_callback),

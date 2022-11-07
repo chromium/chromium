@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -39,8 +39,8 @@ void NssService::UnsafelyGetNSSCertDatabaseForTesting(
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&GetCertDBOnIOThread,
-                     CreateNSSCertDatabaseGetterForIOThread(),
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(callback))));
+      base::BindOnce(
+          &GetCertDBOnIOThread, CreateNSSCertDatabaseGetterForIOThread(),
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                             std::move(callback))));
 }

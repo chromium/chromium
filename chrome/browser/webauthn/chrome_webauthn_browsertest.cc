@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -560,7 +561,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
             // Simiulate the first tunnel failing with a Gone status. This
             // should trigger a fallback to the second-priority phone with the
             // same name.
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([this, n]() {
                   invalid_pairing_callback_.Run(n);
                 }));
@@ -569,7 +570,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
           case 1:
             // Simulate the user clicking back and trying the phone again. This
             // should fallback to the lower-priority phone with the same name.
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([this]() {
                   parent_->model()->ContactPhoneForTesting("name2");
                 }));
@@ -577,7 +578,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
           case 2:
             // Try some other phones.
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([this]() {
                   parent_->model()->ContactPhoneForTesting("zzz");
                 }));
@@ -585,7 +586,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
           case 3:
             // Try some other phones.
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([this]() {
                   parent_->model()->ContactPhoneForTesting("aaa");
                 }));
@@ -621,7 +622,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
      protected:
       void StartInternal() override {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&PendingDiscovery::NotifyDiscoveryStarted,
                                       AsWeakPtr(), /*success=*/true));
       }

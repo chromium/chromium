@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -207,7 +207,7 @@ class BaseLogFileWriter : public LogFileWriter {
 
 BaseLogFileWriter::BaseLogFileWriter(const base::FilePath& path,
                                      absl::optional<size_t> max_file_size_bytes)
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       path_(path),
       state_(State::PRE_INIT),
       budget_(max_file_size_bytes) {}
@@ -217,7 +217,7 @@ BaseLogFileWriter::~BaseLogFileWriter() {
     // Chrome shut-down. The original task_runner_ is no longer running, so
     // no risk of concurrent access or races.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    task_runner_ = base::SequencedTaskRunnerHandle::Get();
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   }
 
   if (state() != State::CLOSED && state() != State::DELETED) {

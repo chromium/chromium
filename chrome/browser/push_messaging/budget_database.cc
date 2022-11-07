@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -247,7 +248,7 @@ void BudgetDatabase::SpendBudgetAfterWrite(SpendBudgetCallback callback,
 void BudgetDatabase::WriteCachedValuesToDatabase(const url::Origin& origin,
                                                  StoreBudgetCallback callback) {
   if (!db_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
@@ -289,7 +290,7 @@ void BudgetDatabase::SyncCache(const url::Origin& origin,
   // If the origin isn't already cached, add it to the cache.
   if (!IsCached(origin)) {
     if (!db_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), false));
       return;
     }

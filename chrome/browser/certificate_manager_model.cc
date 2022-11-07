@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service.h"
@@ -235,7 +236,7 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
                           base::OnceCallback<void(bool)> callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto callback_and_runner = base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
 
     // Passing Unretained(cert_db_) is safe because the corresponding profile
     // should be alive during this call and therefore the deletion task for the
@@ -369,7 +370,7 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
                           base::OnceCallback<void(bool)> callback) override {
     // Policy-provided certificates can not be deleted.
     LOG(WARNING) << kOperationNotPermitted << "Policy";
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 
@@ -437,7 +438,7 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
                           base::OnceCallback<void(bool)> callback) override {
     // Extension-provided certificates can not be deleted.
     LOG(WARNING) << kOperationNotPermitted << "Extension";
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 
@@ -690,7 +691,7 @@ void CertificateManagerModel::RemoveFromDatabase(
     base::OnceCallback<void(bool)> callback) {
   CertsSource* certs_source = FindCertsSourceForCert(cert.get());
   if (!certs_source) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }

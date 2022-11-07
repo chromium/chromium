@@ -9,10 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_key_rotation_launcher.h"
@@ -913,7 +913,8 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
         captured_result = result;
       });
   base::RepeatingClosure start_rotate = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), base::BindLambdaForTesting([&]() {
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindLambdaForTesting([&]() {
         key_manager()->RotateKey(kFakeNonce, std::move(completion_callback));
       }));
 
@@ -970,7 +971,8 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
         captured_result = result;
       });
   base::RepeatingClosure start_rotate = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), base::BindLambdaForTesting([&]() {
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindLambdaForTesting([&]() {
         key_manager()->RotateKey(kFakeNonce, std::move(completion_callback));
       }));
 

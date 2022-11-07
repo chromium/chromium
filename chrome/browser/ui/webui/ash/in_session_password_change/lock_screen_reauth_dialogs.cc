@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
@@ -421,7 +422,7 @@ void LockScreenStartReauthDialog::Observe(
                          weak_factory_.GetWeakPtr()),
           kProxyAuthTimeout);
 
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&LockScreenStartReauthDialog::TransferHttpAuthCaches,
                          weak_factory_.GetWeakPtr()),

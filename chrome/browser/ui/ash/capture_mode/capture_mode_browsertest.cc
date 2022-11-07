@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -194,8 +195,9 @@ class CaptureModeBrowserTest : public InProcessBrowserTest {
   void SetupDlpReporting() {
     SetupDlpRulesManager();
     // Set up mock report queue.
-    SetReportQueueForReportingManager(helper_->GetReportingManager(), events_,
-                                      base::SequencedTaskRunnerHandle::Get());
+    SetReportQueueForReportingManager(
+        helper_->GetReportingManager(), events_,
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
  protected:

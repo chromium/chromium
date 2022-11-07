@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_app_launch_throttle_observer.h"
 
 #include "base/location.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace arc {
@@ -43,7 +43,7 @@ void ArcAppLaunchThrottleObserver::OnAppLaunchRequested(
     const ArcAppListPrefs::AppInfo& app_info) {
   SetActive(true);
   current_requests_.insert(app_info.package_name);
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ArcAppLaunchThrottleObserver::OnLaunchedOrRequestExpired,
                      weak_ptr_factory_.GetWeakPtr(), app_info.package_name),

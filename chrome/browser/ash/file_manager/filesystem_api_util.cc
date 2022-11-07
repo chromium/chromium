@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
@@ -259,7 +260,7 @@ void GetNonNativeLocalPathMimeType(
 
       return;
     }
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }

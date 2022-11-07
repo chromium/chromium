@@ -29,7 +29,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "base/win/atl.h"
@@ -429,7 +428,7 @@ UpdateCheckDriver::UpdateCheckDriver(
               ? g_update_driver_task_runner
               : base::ThreadPool::CreateCOMSTATaskRunner(
                     {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      result_runner_(base::SequencedTaskRunnerHandle::Get()),
+      result_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       locale_(locale),
       install_update_if_possible_(install_update_if_possible),
       elevation_window_(elevation_window),

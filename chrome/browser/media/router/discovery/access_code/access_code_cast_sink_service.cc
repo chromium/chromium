@@ -89,7 +89,7 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       media_routes_observer_(
           std::make_unique<AccessCodeMediaRoutesObserver>(media_router, this)),
       cast_media_sink_service_impl_(cast_media_sink_service_impl),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       network_monitor_(network_monitor),
       prefs_(prefs),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {

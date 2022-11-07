@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -222,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
     // little before trying again.
     LOG(INFO) << "Waiting for the extension's message listener...";
     base::RunLoop run_loop;
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), kSendMessageRetryPeriod);
     run_loop.Run();
   }

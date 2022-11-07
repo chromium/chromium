@@ -19,7 +19,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/browser/win/automation_controller.h"
@@ -107,7 +106,7 @@ UninstallAppController::UninstallAppController(
     : weak_ptr_factory_(this) {
   auto automation_controller_delegate =
       std::make_unique<AutomationControllerDelegate>(
-          base::SequencedTaskRunnerHandle::Get(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&UninstallAppController::OnUninstallFinished,
                          weak_ptr_factory_.GetWeakPtr()),
           application_name);

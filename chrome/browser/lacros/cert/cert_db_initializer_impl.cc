@@ -10,10 +10,10 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "cert_db_initializer_io_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -85,7 +85,7 @@ base::CallbackListSubscription CertDbInitializerImpl::WaitUntilReady(
     // We still want to support returning a CallbackListSubscription, so this
     // code goes through callbacks_ in that case too, which will be notified in
     // OnCertDbInitializationFinished.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&CertDbInitializerImpl::OnCertDbInitializationFinished,
                        weak_factory_.GetWeakPtr()));
@@ -98,7 +98,7 @@ void CertDbInitializerImpl::InitializeReadOnlyCertDb() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto init_database_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&CertDbInitializerImpl::OnCertDbInitializationFinished,
                      weak_factory_.GetWeakPtr()));
 
@@ -112,7 +112,7 @@ void CertDbInitializerImpl::InitializeReadOnlyCertDb() {
 
 void CertDbInitializerImpl::InitializeForMainProfile() {
   auto software_db_loaded_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&CertDbInitializerImpl::DidLoadSoftwareNssDb,
                      weak_factory_.GetWeakPtr()));
 
@@ -143,7 +143,7 @@ void CertDbInitializerImpl::OnCertDbInfoReceived(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto init_database_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&CertDbInitializerImpl::OnCertDbInitializationFinished,
                      weak_factory_.GetWeakPtr()));
 

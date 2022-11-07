@@ -17,8 +17,8 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/constants/uws_id.h"
 #include "chrome/chrome_cleaner/engines/common/engine_result_codes.h"
@@ -255,7 +255,7 @@ void TestEngineDelegate::Initialize(
   work_thread_ = std::make_unique<base::Thread>("TestEngineDelegate");
   uint32_t result = work_thread_->Start() ? EngineResultCode::kSuccess
                                           : EngineResultCode::kEngineInternal;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(done_callback), result));
 }
 

@@ -9,7 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/android/chrome_jni_headers/SmsFetcherMessageHandler_jni.h"
@@ -210,7 +210,7 @@ void SmsFetchRequestHandler::Request::OnReceive(
 
   // Postpones asking for user permission to make sure that the notification is
   // not covered by the SMS notification.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SmsFetchRequestHandler::AskUserPermission,
                      handler_->GetWeakPtr(), origin_list, one_time_code,

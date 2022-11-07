@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
@@ -184,7 +183,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
     absl::optional<api::printing::SubmitJobStatus> status;
     if (!error)
       status = api::printing::SUBMIT_JOB_STATUS_USER_REJECTED;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), status, absl::nullopt,
                                   std::move(error)));
     return;
@@ -198,7 +197,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
 
   std::string cups_id = CreateUniqueId(printer_id, *job_id);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), api::printing::SUBMIT_JOB_STATUS_OK,
                      cups_id, absl::nullopt));
@@ -262,7 +261,7 @@ void PrintingAPIHandler::GetPrinters(GetPrintersCallback callback) {
   if (!local_printer_) {
     LOG(ERROR) << "Local printer interface not available "
                   "(PrintingAPIHandler::GetPrinters()";
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<api::printing::Printer>{}));
     return;
@@ -296,7 +295,7 @@ void PrintingAPIHandler::OnPrintersRetrieved(
     printers.push_back(
         PrinterToIdl(*ptr, default_printer_rules, recently_used_ranks));
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(printers)));
 }
 
@@ -324,14 +323,14 @@ void PrintingAPIHandler::OnPrinterCapabilitiesRetrieved(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!caps) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), /*capabilities=*/absl::nullopt,
                        /*status=*/absl::nullopt, kInvalidPrinterIdError));
     return;
   }
   if (!caps->capabilities) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), /*capabilities=*/absl::nullopt,
                        /*status=*/api::printing::PRINTER_STATUS_UNREACHABLE,
@@ -353,13 +352,13 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!printer_status) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(capabilities),
                                   api::printing::PRINTER_STATUS_UNREACHABLE,
                                   /*error=*/absl::nullopt));
     return;
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           std::move(callback), std::move(capabilities),

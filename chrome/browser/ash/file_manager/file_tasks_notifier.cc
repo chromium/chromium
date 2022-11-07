@@ -10,8 +10,8 @@
 #include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
@@ -99,7 +99,7 @@ void FileTasksNotifier::QueryFileAvailability(
     tasks.push_back({url, &results[i]});
   }
   if (tasks.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
     return;
   }
@@ -181,15 +181,15 @@ void FileTasksNotifier::GetFileAvailability(PendingFileAvailabilityTask task) {
   }
   if (!GetDriveFsInterface()) {
     *task.output = FileTasksNotifier::FileAvailability::kUnknown;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(task.done));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(task.done));
     return;
   }
   base::FilePath drive_path;
   if (!GetRelativeDrivePath(task.url.path(), &drive_path)) {
     *task.output = FileTasksNotifier::FileAvailability::kGone;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(task.done));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(task.done));
     return;
   }
   GetDriveFsInterface()->GetMetadata(

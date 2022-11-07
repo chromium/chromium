@@ -14,8 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/component_updater/component_installer.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/component_unpacker.h"
@@ -115,7 +115,7 @@ class RecoveryComponentActionHandler : public update_client::ActionHandler {
 
   // Executes tasks in the context of the sequence which created this object.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_ =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
 
   // The key hash and its proof for the inner CRX to be unpacked and run.
   const std::vector<uint8_t> key_hash_;

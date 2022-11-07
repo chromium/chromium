@@ -9,9 +9,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
@@ -47,7 +47,7 @@ class FakeSignatureVerifier
       scoped_refptr<web_package::SharedFile> file,
       web_package::SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), error_));
   }
 

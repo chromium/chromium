@@ -28,6 +28,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
@@ -410,7 +411,7 @@ bool PersonalizationAppAmbientProviderImpl::MaybeScheduleNewUpdateSettings(
 
   const base::TimeDelta kDelay =
       update_settings_retry_backoff_.GetTimeUntilRelease();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PersonalizationAppAmbientProviderImpl::UpdateSettings,
                      write_weak_factory_.GetWeakPtr()),
@@ -448,7 +449,7 @@ void PersonalizationAppAmbientProviderImpl::OnSettingsAndAlbumsFetched(
 
     const base::TimeDelta kDelay =
         fetch_settings_retry_backoff_.GetTimeUntilRelease();
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &PersonalizationAppAmbientProviderImpl::FetchSettingsAndAlbums,

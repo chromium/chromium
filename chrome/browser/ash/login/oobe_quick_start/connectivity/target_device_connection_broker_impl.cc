@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -122,7 +122,7 @@ void TargetDeviceConnectionBrokerImpl::GetBluetoothAdapter() {
   // Because this will be called from the constructor, GetAdapter() may call
   // OnGetBluetoothAdapter() immediately which can cause problems during tests
   // since the class is not fully constructed yet.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &BluetoothAdapterFactoryWrapper::GetAdapter,

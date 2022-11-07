@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"
@@ -148,8 +149,8 @@ void ImageWriterUtilityClient::Cancel(CancelCallback cancel_callback) {
   DCHECK(cancel_callback);
 
   ResetRequest();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(cancel_callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(cancel_callback));
 }
 
 void ImageWriterUtilityClient::Shutdown() {

@@ -11,7 +11,7 @@
 
 #include "base/files/file.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -62,7 +62,7 @@ const std::vector<std::string> kQuipperArgs{
 class FakeDebugDaemonClient : public ash::FakeDebugDaemonClient {
  public:
   FakeDebugDaemonClient()
-      : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   FakeDebugDaemonClient(const FakeDebugDaemonClient&) = delete;
   FakeDebugDaemonClient& operator=(const FakeDebugDaemonClient&) = delete;

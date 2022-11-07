@@ -14,7 +14,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/media_authorization_wrapper_mac.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
 #include "chrome/common/chrome_features.h"
@@ -58,7 +58,7 @@ class MediaAuthorizationWrapperImpl final : public MediaAuthorizationWrapper {
     if (@available(macOS 10.14, *)) {
       __block base::OnceClosure block_callback = std::move(callback);
       __block scoped_refptr<base::SequencedTaskRunner> requesting_thread =
-          base::SequencedTaskRunnerHandle::Get();
+          base::SequencedTaskRunner::GetCurrentDefault();
       [AVCaptureDevice requestAccessForMediaType:media_type
                                completionHandler:^(BOOL granted) {
                                  requesting_thread->PostTask(
@@ -117,8 +117,8 @@ SystemPermission CheckSystemMediaCapturePermission(AVMediaType media_type) {
 void RequestSystemMediaCapturePermission(AVMediaType media_type,
                                          base::OnceClosure callback) {
   if (UsingFakeMediaDevices()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -156,7 +157,7 @@ void ProfileActivityMetricsRecorder::OnBrowserSetLastActive(Browser* browser) {
     // we have no guarantee if this happens before or after this function call.
     if (last_session_end_.is_null() ||
         (running_session_start_ - last_session_end_ > kLongTimeOfInactivity)) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&RecordProfilesState));
     }
   }

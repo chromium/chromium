@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -16,7 +17,7 @@ PasswordStoreSites::PasswordStoreSites(
     password_manager::PasswordStoreInterface* password_store)
     : password_store_(password_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PasswordStoreSites::DoDeferredInitialization,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

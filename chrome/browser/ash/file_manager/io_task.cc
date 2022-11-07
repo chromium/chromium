@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -74,7 +74,7 @@ void DummyIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_.state = State::kInProgress;
   progress_callback_.Run(progress_);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DummyIOTask::DoProgress, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -83,7 +83,7 @@ void DummyIOTask::DoProgress() {
   progress_.bytes_transferred = 1;
   progress_callback_.Run(progress_);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DummyIOTask::DoComplete, weak_ptr_factory_.GetWeakPtr()));
 }

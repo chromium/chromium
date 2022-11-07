@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -38,7 +38,7 @@ bool FakeCupsPrintJobManager::CreatePrintJob(
       printer, job_id, title, total_page_number, source, source_id, settings));
 
   // Show the waiting-for-printing notification immediately.
-  base::SequencedTaskRunnerHandle::Get()->PostNonNestableDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeCupsPrintJobManager::ChangePrintJobState,
                      weak_ptr_factory_.GetWeakPtr(), print_jobs_.back().get()),
@@ -70,7 +70,7 @@ bool FakeCupsPrintJobManager::ResumePrintJob(CupsPrintJob* job) {
   job->set_state(CupsPrintJob::State::STATE_RESUMED);
   NotifyJobResumed(job->GetWeakPtr());
 
-  base::SequencedTaskRunnerHandle::Get()->PostNonNestableDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeCupsPrintJobManager::ChangePrintJobState,
                      weak_ptr_factory_.GetWeakPtr(), job),
@@ -132,7 +132,7 @@ void FakeCupsPrintJobManager::ChangePrintJobState(CupsPrintJob* job) {
       break;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostNonNestableDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeCupsPrintJobManager::ChangePrintJobState,
                      weak_ptr_factory_.GetWeakPtr(), job),

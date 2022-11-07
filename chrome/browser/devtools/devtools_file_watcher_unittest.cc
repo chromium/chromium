@@ -8,9 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +47,7 @@ TEST_F(DevToolsFileWatcherTest, BasicUsage) {
       new DevToolsFileWatcher(
           base::BindRepeating(&DevToolsFileWatcherTest::Callback,
                               base::Unretained(this)),
-          base::SequencedTaskRunnerHandle::Get()));
+          base::SequencedTaskRunner::GetCurrentDefault()));
 
   base::FilePath changed_path = base_path_.Append(FILE_PATH_LITERAL("file1"));
   base::WriteFile(changed_path, "test");

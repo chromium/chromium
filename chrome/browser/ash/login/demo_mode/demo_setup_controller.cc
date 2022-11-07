@@ -18,8 +18,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -516,7 +516,7 @@ void DemoSetupController::LoadDemoComponents() {
     demo_components_->SetCrOSComponentLoadedForTesting(
         base::FilePath(), component_error_for_tests_);
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DemoSetupController::OnDemoComponentsLoaded,
                                   weak_ptr_factory_.GetWeakPtr()));
     return;

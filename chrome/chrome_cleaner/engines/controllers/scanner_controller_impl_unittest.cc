@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/chrome_cleaner/engines/broker/engine_client_mock.h"
 #include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/logging/mock_logging_service.h"
@@ -163,7 +162,7 @@ class ScannerControllerImplTest : public ::testing::Test {
 
  protected:
   ScannerControllerImplTest()
-      : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
         test_registry_logger_(RegistryLogger::Mode::NOOP_FOR_TESTING),
         scanner_controller_(mock_engine_client_.get(),
                             &test_registry_logger_,

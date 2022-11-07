@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -42,7 +43,7 @@ PasswordSyncControllerDelegateAndroid::
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordSyncControllerDelegateAndroid::CreateProxyModelControllerDelegate() {
   return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(
           &PasswordSyncControllerDelegateAndroid::GetWeakPtrToBaseClass,
           base::Unretained(this)));

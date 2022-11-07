@@ -11,6 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendBridgeImpl_jni.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
@@ -117,7 +118,7 @@ void PasswordStoreAndroidBackendBridgeImpl::OnError(
     error.connection_result_code = static_cast<int>(connection_result_code);
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordStoreAndroidBackendBridge::Consumer::OnError,
                      consumer_, JobId(job_id), std::move(error)));

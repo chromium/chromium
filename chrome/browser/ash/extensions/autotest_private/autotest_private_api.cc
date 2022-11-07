@@ -65,7 +65,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -1227,7 +1227,7 @@ class EventGenerator {
 
     // Post a task after scheduling the event and assumes that when the task
     // runs, it implies that the processing of the scheduled event is finished.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&EventGenerator::OnFinishedProcessingEvent,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
@@ -1238,7 +1238,7 @@ class EventGenerator {
 
     DCHECK_EQ(tasks_.front().status, Task::kScheduled);
     tasks_.pop_front();
-    const auto& runner = base::SequencedTaskRunnerHandle::Get();
+    const auto& runner = base::SequencedTaskRunner::GetCurrentDefault();
     auto closure = base::BindOnce(&EventGenerator::SendEvent,
                                   weak_ptr_factory_.GetWeakPtr());
     // Non moving tasks can be done immediately.
@@ -2757,7 +2757,7 @@ class AutotestPrivateInstallBorealisFunction::InstallationObserver
         completion_callback_(std::move(completion_callback)) {
     observation_.Observe(
         &borealis::BorealisService::GetForProfile(profile)->Installer());
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](Profile* profile) {
                          borealis::BorealisService::GetForProfile(profile)
@@ -4128,7 +4128,7 @@ void AutotestPrivateSetOverviewModeStateFunction::OnOverviewModeChanged(
   // On starting the overview animation, it needs to wait for 1 extra second
   // to trigger the occlusion tracker.
   if (for_start) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutotestPrivateSetOverviewModeStateFunction::Respond,
                        this, std::move(arg)),

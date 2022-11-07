@@ -21,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -1808,7 +1809,7 @@ void ChromeDownloadManagerDelegate::OnManagerInitialized() {
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::ScheduleCancelForEphemeralWarning(
     const std::string& guid) {
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ChromeDownloadManagerDelegate::CancelForEphemeralWarning,
                      weak_ptr_factory_.GetWeakPtr(), guid),

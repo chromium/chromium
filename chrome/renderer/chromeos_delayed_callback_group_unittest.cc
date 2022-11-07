@@ -5,19 +5,18 @@
 #include "chrome/renderer/chromeos_delayed_callback_group.h"
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 
 TEST(DelayedCallbackGroup, RunEmpty) {
   base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunnerHandle::Get());
+      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
   callback_group->RunAll();
 }
 
@@ -25,7 +24,7 @@ TEST(DelayedCallbackGroup, RunSimple) {
   const base::TimeDelta kTimeout = base::Milliseconds(500);
   base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunnerHandle::Get());
+      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
 
   base::Time time_before_add = base::Time::Now();
   base::Time callback_time;
@@ -47,7 +46,7 @@ TEST(DelayedCallbackGroup, TimeoutSimple) {
   const base::TimeDelta kTimeout = base::Milliseconds(500);
   base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunnerHandle::Get());
+      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
 
   base::Time time_before_add = base::Time::Now();
   base::Time callback_time;
@@ -76,7 +75,7 @@ TEST(DelayedCallbackGroup, MAYBE_TimeoutAndRun) {
   const base::TimeDelta kTimeout = base::Milliseconds(500);
   base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunnerHandle::Get());
+      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
 
   base::Time start_time = base::Time::Now();
   base::Time callback_time_1;
@@ -118,7 +117,7 @@ TEST(DelayedCallbackGroup, DoubleExpiration) {
   const base::TimeDelta kTimeout = base::Milliseconds(500);
   base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunnerHandle::Get());
+      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
 
   base::Time start_time = base::Time::Now();
   base::Time callback_time_1;

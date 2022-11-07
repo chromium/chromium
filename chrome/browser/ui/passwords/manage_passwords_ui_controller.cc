@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -718,7 +719,7 @@ void ManagePasswordsUIController::OnLeakDialogHidden() {
 
 bool ManagePasswordsUIController::AuthenticateUser() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &ManagePasswordsUIController::RequestAuthenticationAndReopenBubble,
@@ -900,7 +901,7 @@ void ManagePasswordsUIController::RequestAuthenticationAndReopenBubble() {
   base::WeakPtr<ManagePasswordsUIController> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();
   bool auth_is_successful = ShowAuthenticationDialog();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ManagePasswordsUIController::ReopenBubbleAfterAuth,
                      weak_ptr, auth_is_successful));

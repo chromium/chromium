@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -53,7 +54,7 @@ void BruschettaLauncher::EnsureRunning(
   if (!launch_in_progress) {
     EnsureDlcInstalled();
     // If we're not complete after 4 minutes time out the entire launch.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BruschettaLauncher::OnTimeout,
                        weak_factory_.GetWeakPtr()),

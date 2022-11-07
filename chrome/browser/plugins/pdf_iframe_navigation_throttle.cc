@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pdf_util.h"
 #include "content/public/browser/download_utils.h"
@@ -164,7 +164,7 @@ void PDFIFrameNavigationThrottle::LoadPlaceholderHTML() {
   PdfWebContentsLifetimeHelper::CreateForWebContents(web_contents);
   PdfWebContentsLifetimeHelper* helper =
       PdfWebContentsLifetimeHelper::FromWebContents(web_contents);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PdfWebContentsLifetimeHelper::NavigateIFrameToPlaceholder,
                      helper->GetWeakPtr(), std::move(params)));

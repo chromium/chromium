@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/policy/schema_registry_service.h"
@@ -258,7 +259,7 @@ class ManagedValueStoreCacheTest : public testing::Test {
         base::BindOnce(
             &ManagedValueStoreCache::RunWithValueStoreForExtension,
             base::Unretained(&cache()),
-            base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                                waiter.GetCallback()),
             extension));
 

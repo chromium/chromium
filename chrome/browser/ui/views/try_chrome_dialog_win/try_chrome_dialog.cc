@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -568,7 +569,7 @@ void TryChromeDialog::Context::Initialize(base::OnceClosure closure) {
   if (bypass_taskbar_icon_search_) {
     // When testing, skip the search for the taskbar icon and simply proceed
     // with an empty rect indicating that no taskbar icon was found.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(result_callback), gfx::Rect()));
     return;
   }

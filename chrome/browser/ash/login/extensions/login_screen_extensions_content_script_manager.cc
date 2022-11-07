@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -64,7 +64,7 @@ void LoginScreenExtensionsContentScriptManager::OnExtensionLoaded(
       LOG(WARNING) << "Disabling extension: " << extension->id() << " / "
                    << extension->name()
                    << " because it is using disallowed content scripts.";
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &LoginScreenExtensionsContentScriptManager::DisableExtension,

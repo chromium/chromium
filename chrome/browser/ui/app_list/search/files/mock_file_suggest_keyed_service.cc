@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/app_list/search/files/mock_file_suggest_keyed_service.h"
 
 #include "base/functional/callback.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
@@ -44,7 +44,7 @@ void MockFileSuggestKeyedService::GetSuggestFileData(
   }
 
   // Emulate `FileSuggestKeyedService` that returns data asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &MockFileSuggestKeyedService::RunGetSuggestFileDataCallback,

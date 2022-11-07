@@ -29,6 +29,7 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_locale.h"
@@ -107,8 +108,8 @@ std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
 // Flushes the message loop by posting a task and waiting for it to run.
 void FlushMessageLoop() {
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 

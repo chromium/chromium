@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/permission_revocation_request.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -98,7 +99,7 @@ PermissionRevocationRequest::PermissionRevocationRequest(
     const GURL& origin,
     OutcomeCallback callback)
     : profile_(profile), origin_(origin), callback_(std::move(callback)) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PermissionRevocationRequest::CheckAndRevokeIfBlocklisted,
                      weak_factory_.GetWeakPtr()));

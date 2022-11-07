@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
@@ -111,7 +112,7 @@ class BorealisInstallerImpl::Installation
       // We are in the callback of DLC completion, and the first thing startup
       // will do is try to mount the DLC, so we need to use a PostTask to avoid
       // deadlocking ourselves.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Installation::StartupBorealis,
                                     weak_factory_.GetWeakPtr()));
       return;
@@ -182,7 +183,7 @@ class BorealisInstallerImpl::Installation
       MainAppFound(true);
       return;
     }
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&Installation::MainAppFound, weak_factory_.GetWeakPtr(),
                        false),

@@ -11,6 +11,7 @@
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/storage/policy_value_store.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -228,7 +229,7 @@ ManagedValueStoreCache::ManagedValueStoreCache(
       policy_service_(profile_->GetProfilePolicyConnector()->policy_service()),
       storage_factory_(std::move(factory)),
       observer_(GetSequenceBoundSettingsChangedCallback(
-          base::SequencedTaskRunnerHandle::Get(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
           std::move(observer))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DETACH_FROM_SEQUENCE(backend_sequence_checker_);

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -141,7 +142,7 @@ WellKnownChangePasswordNavigationThrottle::WillProcessResponse() {
   // PostTask because the Throttle needs to be deferred before the status code
   // is set. After setting the status code Resume() can be called synchronous
   // and thereby before the throttle is deferred. This would result in a crash.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &WellKnownChangePasswordState::SetChangePasswordResponseCode,
@@ -202,7 +203,7 @@ void WellKnownChangePasswordNavigationThrottle::Redirect(const GURL& url) {
   if (!web_contents)
     return;
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<content::WebContents> web_contents,
                         const content::OpenURLParams& params) {

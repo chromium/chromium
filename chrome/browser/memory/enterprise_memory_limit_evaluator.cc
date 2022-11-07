@@ -5,6 +5,7 @@
 #include "chrome/browser/memory/enterprise_memory_limit_evaluator.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -27,7 +28,7 @@ void EnterpriseMemoryLimitEvaluator::Start() {
           base::BindRepeating(
               &EnterpriseMemoryLimitEvaluator::OnTotalResidentSetKbSample,
               weak_ptr_factory_.GetWeakPtr()),
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
   observer_ = observer.get();
   performance_manager::PerformanceManager::PassToGraph(FROM_HERE,
                                                        std::move(observer));
@@ -41,7 +42,7 @@ EnterpriseMemoryLimitEvaluator::StartForTesting() {
           base::BindRepeating(
               &EnterpriseMemoryLimitEvaluator::OnTotalResidentSetKbSample,
               weak_ptr_factory_.GetWeakPtr()),
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
   observer_ = observer.get();
   return observer;
 }

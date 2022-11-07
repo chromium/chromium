@@ -174,7 +174,7 @@ void ArcServiceLauncher::Initialize() {
       base::BindOnce(&ArcServiceLauncher::OnCdmFactoryDaemonAvailable,
                      weak_factory_.GetWeakPtr(), /*from_timeout=*/false));
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ArcServiceLauncher::OnCheckTpmStatus,
                      weak_factory_.GetWeakPtr()),
@@ -379,7 +379,7 @@ void ArcServiceLauncher::OnGetTpmStatus(
     // The TPM is owned, so we should invoke OnCdmFactoryDaemonAvailable() after
     // our timeout so that the property files get expanded even if the daemon
     // doesn't come online.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ArcServiceLauncher::OnCdmFactoryDaemonAvailable,
                        weak_factory_.GetWeakPtr(),
@@ -389,7 +389,7 @@ void ArcServiceLauncher::OnGetTpmStatus(
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ArcServiceLauncher::OnCheckTpmStatus,
                      weak_factory_.GetWeakPtr()),

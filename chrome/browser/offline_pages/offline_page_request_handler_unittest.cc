@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
@@ -1027,7 +1028,7 @@ void OfflinePageURLLoaderBuilder::ReadBody() {
     if (rv == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
           FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
       handle_watcher_->Watch(
           client_->response_body(),
           MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,

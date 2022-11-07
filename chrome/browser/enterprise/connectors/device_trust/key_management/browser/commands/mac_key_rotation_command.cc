@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/syslog_logging.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
@@ -116,7 +117,7 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                      weak_factory_.GetWeakPtr()));
 
   auto rotation_result_callback =
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          base::BindOnce(&MacKeyRotationCommand::OnKeyRotated,
                                         weak_factory_.GetWeakPtr()));
 

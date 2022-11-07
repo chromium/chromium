@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -71,8 +72,9 @@ void GeolocationServiceAsh::GetWifiAccessPoints(
   }
 
   // We should return the response on current thread (mojo thread).
-  auto callback_on_current_thread = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback), FROM_HERE);
+  auto callback_on_current_thread =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(callback), FROM_HERE);
 
   ash::NetworkHandler::Get()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&DoWifiScanTaskOnNetworkHandlerThread,

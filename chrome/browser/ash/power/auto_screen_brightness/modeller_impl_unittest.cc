@@ -10,12 +10,12 @@
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_brightness_monitor.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_light_provider.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_model_config_loader.h"
@@ -212,7 +212,7 @@ class ModellerImplTest : public testing::Test {
         std::make_unique<FakeTrainer>(is_trainer_configured,
                                       is_personal_curve_valid, return_new_curve,
                                       curve_error),
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         task_environment_.GetMockTickClock());
 
     test_observer_ = std::make_unique<TestObserver>();

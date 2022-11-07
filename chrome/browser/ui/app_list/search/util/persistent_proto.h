@@ -16,7 +16,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 
 namespace app_list {
@@ -179,7 +178,7 @@ class PersistentProto {
       return;
     write_is_queued_ = true;
 
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PersistentProto<T>::OnQueueWrite,
                        weak_factory_.GetWeakPtr()),

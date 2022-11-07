@@ -25,7 +25,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
@@ -267,7 +266,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
 
   auto sandbox_connection_error_callback =
       base::BindRepeating(CallTerminateOnSandboxConnectionError,
-                          base::SequencedTaskRunnerHandle::Get(),
+                          base::SequencedTaskRunner::GetCurrentDefault(),
                           registry_logger_weak_factory.GetWeakPtr());
 
   std::unique_ptr<chrome_cleaner::InterfaceLogService> interface_log_service =
@@ -305,7 +304,8 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
   std::unique_ptr<chrome_cleaner::ScannerController> scanner_controller =
       std::make_unique<chrome_cleaner::ScannerControllerImpl>(
           shutdown_sequence.engine_client.get(), &registry_logger,
-          base::SequencedTaskRunnerHandle::Get(), shortcut_parser.get());
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          shortcut_parser.get());
 
   if (command_line->HasSwitch(chrome_cleaner::kCrashSwitch)) {
     int* crash_me = nullptr;

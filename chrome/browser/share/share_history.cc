@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -124,7 +125,7 @@ void ShareHistory::GetFlatShareHistory(GetFlatHistoryCallback callback,
   }
 
   if (db_init_status_ != leveldb_proto::Enums::kOK) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::vector<Target>()));
     return;
   }
@@ -150,7 +151,7 @@ void ShareHistory::GetFlatShareHistory(GetFlatHistoryCallback callback,
   std::sort(result.begin(), result.end(),
             [](const Target& a, const Target& b) { return a.count > b.count; });
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
@@ -182,7 +183,7 @@ void ShareHistory::OnInitDone(leveldb_proto::Enums::InitStatus status) {
     // as in the happy case, but without going through LevelDB; i.e., act as
     // though the initial read failed, instead of the LevelDB initialization, so
     // that control always ends up in OnInitialReadDone.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ShareHistory::OnInitialReadDone,
                                   weak_factory_.GetWeakPtr(), false,
                                   std::make_unique<mojom::ShareHistory>()));

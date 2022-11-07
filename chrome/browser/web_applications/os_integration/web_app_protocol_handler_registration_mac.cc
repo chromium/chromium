@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_registration.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -28,7 +28,7 @@ void RegisterProtocolHandlersWithOs(
   }
   AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
       app_id, profile->GetPath(), std::move(protocols));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
@@ -37,7 +37,7 @@ void UnregisterProtocolHandlersWithOs(const AppId& app_id,
                                       ResultCallback callback) {
   AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
       app_id, profile->GetPath(), {});
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 

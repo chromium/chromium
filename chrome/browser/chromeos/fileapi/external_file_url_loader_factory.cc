@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/fileapi/external_file_resolver.h"
@@ -76,7 +77,7 @@ class FileSystemReaderDataPipeProducer {
         pipe_watcher_(std::make_unique<mojo::SimpleWatcher>(
             FROM_HERE,
             mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-            base::SequencedTaskRunnerHandle::Get())),
+            base::SequencedTaskRunner::GetCurrentDefault())),
         callback_(std::move(callback)) {
     pipe_watcher_->Watch(
         producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,

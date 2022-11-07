@@ -35,8 +35,8 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/version.h"
 #include "base/win/pe_image.h"
@@ -599,7 +599,7 @@ void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kPwaLauncherVersion) != chrome::kChromeVersion) {
     content::BrowserThread::PostBestEffortTask(
-        FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
+        FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(&UpdatePwaLaunchersForProfile, profile->GetPath()));
   }
 }

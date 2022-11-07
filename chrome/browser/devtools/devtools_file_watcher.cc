@@ -19,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -71,7 +70,7 @@ DevToolsFileWatcher::SharedFileWatcher::SharedFileWatcher()
   DevToolsFileWatcher::s_shared_watcher_ = this;
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "DevTools", base::SequencedTaskRunnerHandle::Get(),
+          this, "DevTools", base::SequencedTaskRunner::GetCurrentDefault(),
           base::trace_event::MemoryDumpProvider::Options());
 }
 
@@ -175,7 +174,7 @@ void DevToolsFileWatcher::SharedFileWatcher::DirectoryChanged(
                                     ? base::Milliseconds(kFirstThrottleTimeout)
                                     : last_dispatch_cost_ * 2;
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications, this),

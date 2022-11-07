@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 
@@ -72,7 +72,7 @@ void LightProviderMojo::SetUpChannel(
       base::BindOnce(&LightProviderMojo::OnNewDevicesObserverDisconnect,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&LightProviderMojo::OnNewDevicesTimeout,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -147,7 +147,7 @@ void LightProviderMojo::OnSensorHalClientFailure() {
   ResetSensorService();
   sensor_hal_client_.reset();
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&LightProviderMojo::RegisterSensorClient,
                      weak_ptr_factory_.GetWeakPtr()),

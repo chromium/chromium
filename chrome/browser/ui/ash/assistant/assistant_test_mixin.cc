@@ -16,6 +16,7 @@
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "base/auto_reset.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
@@ -552,7 +553,7 @@ void AssistantTestMixin::ExpectNoChange(base::TimeDelta wait_timeout) {
   base::RunLoop run_loop;
 
   // Exit the runloop after wait_timeout.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindRepeating(
           [](base::RepeatingClosure quit) { std::move(quit).Run(); },

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -89,7 +90,7 @@ PasswordManagerNavigationThrottle::WillStartRequest() {
   params.url = GURL(kChromeUIPasswordsURL);
   params.transition = ui::PAGE_TRANSITION_CLIENT_REDIRECT;
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<content::WebContents> web_contents,
                         const content::OpenURLParams& params) {

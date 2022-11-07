@@ -17,9 +17,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
@@ -139,7 +139,7 @@ class FakePpdProvider : public chromeos::PpdProvider {
 
   void ResolvePpdLicense(base::StringPiece effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(cb),
                        effective_make_and_model.empty() ? PpdProvider::NOT_FOUND

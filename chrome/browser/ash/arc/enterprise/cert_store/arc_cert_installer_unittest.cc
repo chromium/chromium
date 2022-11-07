@@ -13,7 +13,7 @@
 #include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
@@ -127,7 +127,7 @@ class ArcCertInstallerTest : public testing::Test {
                 OnCommandReceived(IsCommandPayloadForName(name), _))
         .WillOnce(WithArg<1>(Invoke(
             [status](FakePolicyInstance::OnCommandReceivedCallback callback) {
-              base::SequencedTaskRunnerHandle::Get()->PostTask(
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), status));
             })));
   }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
@@ -88,7 +89,7 @@ void RecoveryComponentActionHandler::UnpackComplete(
   }
 
   unpack_path_ = result.unpack_path;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&RecoveryComponentActionHandler::RunCommand,
                                 this, MakeCommandLine(result.unpack_path)));
 }

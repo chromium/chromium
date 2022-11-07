@@ -27,7 +27,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -531,7 +531,7 @@ void ExistingUserController::Observe(
   // has been updated before we copy it.
   // TODO(pmarko): Find a better way to do this, see https://crbug.com/796512.
   VLOG(1) << "Authentication was entered manually, possibly for proxyauth.";
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&TransferHttpAuthCaches),
       kAuthCacheTransferDelayMs);
 }

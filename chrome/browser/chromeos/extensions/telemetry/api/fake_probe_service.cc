@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,12 +36,12 @@ void FakeProbeService::ProbeTelemetryInfo(
   actual_requested_categories_.insert(actual_requested_categories_.end(),
                                       categories.begin(), categories.end());
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), telem_info_.Clone()));
 }
 
 void FakeProbeService::GetOemData(GetOemDataCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), oem_data_.Clone()));
 }
 

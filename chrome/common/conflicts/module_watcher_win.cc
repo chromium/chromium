@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_handle.h"
 
 // These structures and functions are documented in MSDN, see
@@ -170,7 +169,7 @@ void ModuleWatcher::Initialize(OnModuleEventCallback callback) {
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ModuleWatcher::EnumerateAlreadyLoadedModules,
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      base::BindRepeating(&ModuleWatcher::RunCallback,
                                          weak_ptr_factory_.GetWeakPtr())));
 }

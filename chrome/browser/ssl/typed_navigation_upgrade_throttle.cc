@@ -9,7 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -220,7 +220,7 @@ void TypedNavigationUpgradeThrottle::FallbackToHttp(bool stop_navigation) {
   // Post a task to navigate to the fallback URL. We don't navigate
   // synchronously here, as starting a navigation within a navigation is
   // an antipattern.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](base::WeakPtr<content::WebContents> web_contents,

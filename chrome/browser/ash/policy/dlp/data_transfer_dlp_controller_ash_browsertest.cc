@@ -7,7 +7,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -166,8 +166,9 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
 
     reporting_manager_ = std::make_unique<DlpReportingManager>();
-    SetReportQueueForReportingManager(reporting_manager_.get(), events,
-                                      base::SequencedTaskRunnerHandle::Get());
+    SetReportQueueForReportingManager(
+        reporting_manager_.get(), events,
+        base::SequencedTaskRunner::GetCurrentDefault());
     ON_CALL(*rules_manager_, GetReportingManager)
         .WillByDefault(::testing::Return(reporting_manager_.get()));
 

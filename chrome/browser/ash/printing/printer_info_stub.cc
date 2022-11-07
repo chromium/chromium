@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "printing/printer_status.h"
 
@@ -19,7 +19,7 @@ void QueryIppPrinter(const std::string& host,
                      PrinterInfoCallback callback) {
   DCHECK(!host.empty());
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 printing::PrinterQueryResult::kUnknownFailure,
                                 printing::PrinterStatus(), "Foo Bar",

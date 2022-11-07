@@ -53,6 +53,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -1194,7 +1195,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
           on_app_updated_app_ids_.erase(update.AppId());
       }
       if (on_app_updated_app_ids_.empty()) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(on_app_updated_callback_));
       }
     }

@@ -10,9 +10,9 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -139,7 +139,7 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandAckStartsPowerwash) {
 
   // Simulate a response from the server by posting a task and waiting for
   // StartDeviceWipe to be called.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, service_->OnCommandAckedCallback());
   run_loop2.Run();
 

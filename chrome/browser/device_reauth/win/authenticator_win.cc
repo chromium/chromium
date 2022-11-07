@@ -13,6 +13,7 @@
 
 #include <utility>
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
@@ -133,7 +134,7 @@ void AuthenticatorWin::AuthenticateUser(
     base::OnceCallback<void(bool)> result_callback) {
   Browser* browser = chrome::FindLastActive();
   if (!browser) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(result_callback), /*success=*/false));
     return;
@@ -141,7 +142,7 @@ void AuthenticatorWin::AuthenticateUser(
 
   gfx::NativeWindow window = browser->window()->GetNativeWindow();
 
-  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&password_manager_util_win::AuthenticateUser, window,
                      message),
@@ -157,5 +158,5 @@ void AuthenticatorWin::CheckIfBiometricsAvailable(
   background_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&GetBiometricAvailabilityFromWindows, std::move(callback),
-                     base::SequencedTaskRunnerHandle::Get()));
+                     base::SequencedTaskRunner::GetCurrentDefault()));
 }

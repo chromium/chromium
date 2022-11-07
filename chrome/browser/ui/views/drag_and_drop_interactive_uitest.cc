@@ -25,7 +25,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -406,7 +405,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
     }
 
     if (!callback_to_run_inside_drag_and_drop_message_loop_.is_null()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           std::move(callback_to_run_inside_drag_and_drop_message_loop_));
       callback_to_run_inside_drag_and_drop_message_loop_.Reset();

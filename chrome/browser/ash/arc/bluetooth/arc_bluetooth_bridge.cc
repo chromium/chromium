@@ -29,6 +29,7 @@
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -3282,7 +3283,7 @@ ArcBluetoothBridge::CreateBluetoothConnectSocket(
     // BluetoothSocketConnect() is a blocking mojo call on the ARC side, so the
     // callback needs to be triggered asynchronously and thus we use a PostTask
     // here.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ArcBluetoothBridge::OnBluetoothConnectingSocketReady,
                        weak_factory_.GetWeakPtr(), sock_wrapper.get()));

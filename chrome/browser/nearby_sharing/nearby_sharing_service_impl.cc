@@ -20,8 +20,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -823,7 +823,7 @@ void NearbySharingServiceImpl::Reject(
   }
   NearbyConnection* connection = info->connection();
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
                      weak_ptr_factory_.GetWeakPtr(), share_target),
@@ -913,7 +913,7 @@ void NearbySharingServiceImpl::DoCancel(
       info->connection()->SetDisconnectionListener(
           base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
                          weak_ptr_factory_.GetWeakPtr(), share_target));
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
                          weak_ptr_factory_.GetWeakPtr(), share_target),
@@ -1425,7 +1425,7 @@ void NearbySharingServiceImpl::GetBluetoothAdapter() {
   // Because this will be called from the constructor, GetAdapter() may call
   // OnGetBluetoothAdapter() immediately which can cause problems during tests
   // since the class is not fully constructed yet.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &device::BluetoothAdapterFactory::GetAdapter,
@@ -2122,7 +2122,7 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::StopScanning() {
   // Note: We don't know if we stopped scanning in preparation to send a file,
   // or we stopped because the user left the page. We'll invalidate after a
   // short delay.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NearbySharingServiceImpl::InvalidateSurfaceState,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -2367,7 +2367,7 @@ void NearbySharingServiceImpl::OnTransferComplete() {
   // Files transfer is done! Receivers can immediately cancel, but senders
   // should add a short delay to ensure the final in-flight packet(s) make
   // it to the remote device.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NearbySharingServiceImpl::InvalidateSurfaceState,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -2726,7 +2726,7 @@ void NearbySharingServiceImpl::SendIntroduction(
       &NearbySharingServiceImpl::OnOutgoingMutualAcceptanceTimeout,
       weak_ptr_factory_.GetWeakPtr(), share_target));
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(mutual_acceptance_timeout_alarm_.callback()),
       kReadResponseFrameTimeout);
 
@@ -2905,7 +2905,7 @@ void NearbySharingServiceImpl::Fail(const ShareTarget& share_target,
   }
   NearbyConnection* connection = info->connection();
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
                      weak_ptr_factory_.GetWeakPtr(), share_target),
@@ -3605,7 +3605,7 @@ void NearbySharingServiceImpl::OnStorageCheckCompleted(
       &NearbySharingServiceImpl::OnIncomingMutualAcceptanceTimeout,
       weak_ptr_factory_.GetWeakPtr(), share_target));
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(mutual_acceptance_timeout_alarm_.callback()),
       kReadResponseFrameTimeout);
 
@@ -4064,7 +4064,7 @@ void NearbySharingServiceImpl::Disconnect(const ShareTarget& share_target,
   auto timer = std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
       &NearbySharingServiceImpl::OnDisconnectingConnectionTimeout,
       weak_ptr_factory_.GetWeakPtr(), *endpoint_id));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timer->callback(), kOutgoingDisconnectionDelay);
   disconnection_timeout_alarms_[*endpoint_id] = std::move(timer);
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "components/media_router/common/media_source.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -26,7 +27,7 @@ void DialMediaSinkService::Start(
 
   OnSinksDiscoveredCallback sink_discovery_cb_impl = base::BindRepeating(
       &RunSinksDiscoveredCallbackOnSequence,
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&DialMediaSinkService::RunSinksDiscoveredCallback,
                           weak_ptr_factory_.GetWeakPtr(), sink_discovery_cb));
 

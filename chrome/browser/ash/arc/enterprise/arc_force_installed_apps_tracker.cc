@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
@@ -227,7 +227,7 @@ PolicyComplianceObserver::PolicyComplianceObserver(
   auto last_report = arc_policy_bridge->get_arc_policy_compliance_report();
   if (last_report.empty())
     return;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PolicyComplianceObserver::ProcessInitialComplianceReport,
                      weak_ptr_factory_.GetWeakPtr(), std::move(last_report)));

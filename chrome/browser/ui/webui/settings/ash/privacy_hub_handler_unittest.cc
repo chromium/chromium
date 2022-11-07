@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/privacy_hub_handler.h"
 
 #include "base/containers/adapters.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"
@@ -29,7 +30,7 @@ using cps = cros::mojom::CameraPrivacySwitchState;
 class PrivacyHubHandlerTest : public testing::Test {
   // This has to go before privacy_hub_handler_ because in the
   // CameraHalDispatcherImpl constructor a call to
-  // base::SequencedTaskRunnerHandle::Get() is made which requires a
+  // base::SequencedTaskRunner::GetCurrentDefault() is made which requires a
   // task_environment. Initialization order of the members takes care
   // of providing this before privacy_hub_handler_ is constructed.
   base::test::SingleThreadTaskEnvironment task_environment_;

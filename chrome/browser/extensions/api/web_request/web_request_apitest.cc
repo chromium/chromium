@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -332,7 +333,7 @@ void WaitForExtraHeadersListener(base::WaitableEvent* event,
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&WaitForExtraHeadersListener, event, browser_context));
 }
@@ -2885,7 +2886,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(extension);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  auto task_runner = base::SequencedTaskRunnerHandle::Get();
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {

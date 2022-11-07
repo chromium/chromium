@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -781,7 +782,7 @@ void CommerceHintAgent::MaybeExtractProducts() {
   }
   is_extraction_pending_ = true;
   DVLOG(1) << "Scheduled extraction";
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CommerceHintAgent::ExtractProducts,
                      weak_factory_.GetWeakPtr()),
@@ -792,7 +793,7 @@ void CommerceHintAgent::ExtractProducts() {
   is_extraction_pending_ = false;
   if (is_extraction_running_) {
     DVLOG(1) << "Extraction is running. Try again later.";
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CommerceHintAgent::MaybeExtractProducts,
                        weak_factory_.GetWeakPtr()),

@@ -14,9 +14,9 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -100,8 +100,8 @@ class FakeNetworkDiagnostics : public NetworkDiagnostics {
     // Block until all previously posted tasks are executed to make sure
     // `RunHttpsLatency` is called and `callback_` is set.
     base::RunLoop run_loop;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
     ASSERT_TRUE(callback_);
     std::move(callback_).Run(routine_result_.Clone());

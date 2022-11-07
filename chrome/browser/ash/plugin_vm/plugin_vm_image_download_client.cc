@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
 #include "chrome/browser/download/background_download_service_factory.h"
@@ -132,7 +132,7 @@ bool PluginVmImageDownloadClient::CanServiceRemoveDownloadedFile(
 void PluginVmImageDownloadClient::GetUploadData(
     const std::string& guid,
     download::GetUploadDataCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), nullptr));
 }
 

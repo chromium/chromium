@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
@@ -48,7 +49,7 @@ class PrintJobController;
 // Handles chrome.printing API functions calls, acts as a PrintJobObserver,
 // and generates OnJobStatusChanged() events of chrome.printing API.
 // The callback function is never run directly - it is posted to
-// base::SequencedTaskRunnerHandle::Get().
+// base::SequencedTaskRunner::GetCurrentDefault().
 class PrintingAPIHandler : public BrowserContextKeyedAPI,
                            public crosapi::mojom::PrintJobObserver {
  public:

@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
@@ -224,10 +225,11 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
   waiting_for_tpm_token_ = true;
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&crypto::IsTPMTokenEnabled,
-                     base::BindOnce(OnTPMTokenReadyOnIOThread,
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(ready_callback))));
+      base::BindOnce(
+          &crypto::IsTPMTokenEnabled,
+          base::BindOnce(OnTPMTokenReadyOnIOThread,
+                         base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(ready_callback))));
 }
 
 OwnerSettingsServiceAsh::~OwnerSettingsServiceAsh() {

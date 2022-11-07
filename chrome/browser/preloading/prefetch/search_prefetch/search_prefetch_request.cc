@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -417,7 +418,7 @@ void SearchPrefetchRequest::OnServableResponseCodeReceived() {
   if (prerender_manager_) {
     // Start prerender asynchronously, so that the request can prepare the data
     // pipe completely.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
                        prerender_manager_, prefetch_search_terms_,

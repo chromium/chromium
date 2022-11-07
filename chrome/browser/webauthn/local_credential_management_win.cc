@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -130,7 +130,7 @@ void LocalCredentialManagementWin::HasCredentials(
   }
 
   if (result.has_value()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), *result));
     return;
   }
@@ -147,7 +147,7 @@ void LocalCredentialManagementWin::Enumerate(
         absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
         callback) {
   if (!api_->IsAvailable() || !api_->SupportsSilentDiscovery()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }

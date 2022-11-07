@@ -12,8 +12,8 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/test/chromedriver/net/command_id.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "net/base/net_errors.h"
@@ -65,7 +65,7 @@ SyncWebSocketImpl::Core::Core(net::URLRequestContextGetter* context_getter)
     : context_getter_(context_getter),
       is_connected_(false),
       on_update_event_(&lock_),
-      owning_sequence_(base::SequencedTaskRunnerHandle::Get()) {}
+      owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 bool SyncWebSocketImpl::Core::IsConnected() {
   base::AutoLock lock(lock_);

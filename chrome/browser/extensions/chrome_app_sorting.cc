@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
@@ -556,7 +556,7 @@ void ChromeAppSorting::OnWebAppsWillBeUpdatedFromSync(
   // returned from GetPageOrdinal() and GetAppLaunchOrdinal() match what is in
   // the internal map representation in this class.
   if (fix_ntp) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ChromeAppSorting::FixNTPOrdinalCollisions,
                                   weak_factory_.GetWeakPtr()));
   }

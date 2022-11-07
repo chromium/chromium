@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
@@ -54,7 +54,7 @@ class FakeDefaultProtocolClientWorker
   std::u16string GetDefaultClientNameImpl() override { return u"TestApp"; }
 
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_finished_callback));
   }
 };

@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -54,7 +54,7 @@ void ProfileCustomizationSyncedThemeWaiter::Run() {
   }
 
   constexpr base::TimeDelta kSyncedThemeTimeout = base::Seconds(3);
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ProfileCustomizationSyncedThemeWaiter::OnTimeout,
                      weak_ptr_factory_.GetWeakPtr()),

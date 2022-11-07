@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace content {
 class BrowserContext;
@@ -42,7 +42,7 @@ FakeApiGuardDelegate::~FakeApiGuardDelegate() = default;
 void FakeApiGuardDelegate::CanAccessApi(content::BrowserContext* context,
                                         const extensions::Extension* extension,
                                         CanAccessApiCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), error_message_));
 }
 

@@ -28,11 +28,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -196,7 +196,7 @@ class NullWebRtcEventLogUploader : public WebRtcEventLogUploader {
     EXPECT_TRUE(cancellation_expected_);
     was_cancelled_ = true;
     if (callback_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback_), log_file_.path, false));
     }
@@ -1354,7 +1354,7 @@ class FileListExpectingWebRtcEventLogUploader : public WebRtcEventLogUploader {
                                           bool result,
                                           UploadResultCallback callback)
       : log_file_(log_file) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), log_file_.path, result));
   }
 

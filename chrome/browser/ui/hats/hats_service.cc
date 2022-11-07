@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -440,7 +441,7 @@ bool HatsService::LaunchDelayedSurvey(
     int timeout_ms,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data) {
-  return base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  return base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HatsService::LaunchSurvey, weak_ptr_factory_.GetWeakPtr(),
                      trigger, base::DoNothing(), base::DoNothing(),
@@ -463,13 +464,14 @@ bool HatsService::LaunchDelayedSurveyForWebContents(
       product_specific_string_data, require_same_origin);
   if (!result.second)
     return false;
-  auto success = base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          &HatsService::DelayedSurveyTask::Launch,
-          const_cast<HatsService::DelayedSurveyTask&>(*(result.first))
-              .GetWeakPtr()),
-      base::Milliseconds(timeout_ms));
+  auto success =
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              &HatsService::DelayedSurveyTask::Launch,
+              const_cast<HatsService::DelayedSurveyTask&>(*(result.first))
+                  .GetWeakPtr()),
+          base::Milliseconds(timeout_ms));
   if (!success) {
     pending_tasks_.erase(result.first);
   }

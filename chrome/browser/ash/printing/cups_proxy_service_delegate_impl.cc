@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
@@ -85,7 +86,7 @@ void CupsProxyServiceDelegateImpl::SetupPrinter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Grab current runner to post |cb| to.
-  auto cb_runner = base::SequencedTaskRunnerHandle::Get();
+  auto cb_runner = base::SequencedTaskRunner::GetCurrentDefault();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&CupsProxyServiceDelegateImpl::SetupPrinterOnUIThread,

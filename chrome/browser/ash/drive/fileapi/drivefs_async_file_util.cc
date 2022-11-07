@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -220,7 +221,7 @@ void DriveFsAsyncFileUtil::CopyFileLocal(
           base::Unretained(new CopyOperation(
               profile_, std::move(context), src_url, dest_url, options,
               std::move(progress_callback), std::move(callback),
-              base::SequencedTaskRunnerHandle::Get(),
+              base::SequencedTaskRunner::GetCurrentDefault(),
               weak_factory_.GetWeakPtr()))));
 }
 
@@ -229,11 +230,12 @@ void DriveFsAsyncFileUtil::DeleteRecursively(
     const storage::FileSystemURL& url,
     StatusCallback callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteOperation::Start,
-                                base::Unretained(new DeleteOperation(
-                                    profile_, url.path(), std::move(callback),
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    context->task_runner()))));
+      FROM_HERE,
+      base::BindOnce(&DeleteOperation::Start,
+                     base::Unretained(new DeleteOperation(
+                         profile_, url.path(), std::move(callback),
+                         base::SequencedTaskRunner::GetCurrentDefault(),
+                         context->task_runner()))));
 }
 
 }  // namespace internal

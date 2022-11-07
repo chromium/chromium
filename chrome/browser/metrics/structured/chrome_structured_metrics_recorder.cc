@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/structured/cros_events_processor.h"
 #include "components/metrics/structured/histogram_util.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/task/current_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/metrics/structured/lacros_structured_metrics_recorder.h"  // nogncheck
 #endif
 
@@ -89,7 +89,7 @@ void ChromeStructuredMetricsRecorder::Initialize() {
 
   // Ensure that the sequence is the ui thread.
   DCHECK(base::CurrentUIThread::IsSet());
-  lacros_recorder->SetSequence(base::SequencedTaskRunnerHandle::Get());
+  lacros_recorder->SetSequence(base::SequencedTaskRunner::GetCurrentDefault());
   LogInitializationInStructuredMetrics(
       StructuredMetricsPlatform::kLacrosChrome);
 #endif

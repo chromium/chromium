@@ -6,6 +6,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
@@ -174,7 +175,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
       // Because BuildChallengeResponse() may run the resume callback
       // synchronously, this call is deferred to ensure that this method returns
       // DEFER before `resume_navigation_callback` is invoked.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               [](base::WeakPtr<DeviceTrustNavigationThrottle> throttler,
@@ -188,7 +189,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
               weak_ptr_factory_.GetWeakPtr(), challenge,
               std::move(resume_navigation_callback)));
 
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&DeviceTrustNavigationThrottle::OnResponseTimedOut,
                          weak_ptr_factory_.GetWeakPtr(), start_time),

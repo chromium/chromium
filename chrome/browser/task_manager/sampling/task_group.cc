@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
@@ -306,7 +307,7 @@ void TaskGroup::RefreshWindowsHandles() {
 void TaskGroup::RefreshNaClDebugStubPort(int child_process_unique_id) {
   // Note this needs to be in a PostTask to avoid a use-after-free (see
   // https://crbug.com/1221406).
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TaskGroup::OnRefreshNaClDebugStubPortDone,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 GetNaClDebugStubPortOnProcessThread(

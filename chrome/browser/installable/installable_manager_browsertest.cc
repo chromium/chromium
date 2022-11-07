@@ -15,9 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -161,7 +161,8 @@ class CallbackTester {
     valid_manifest_ = data.valid_manifest;
     worker_check_passed_ = data.worker_check_passed;
     screenshots_ = data.screenshots;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, quit_closure_);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                             quit_closure_);
   }
 
   const std::vector<InstallableStatusCode>& errors() const { return errors_; }

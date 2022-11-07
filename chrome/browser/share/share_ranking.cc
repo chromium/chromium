@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -317,13 +318,13 @@ void ShareRanking::GetRanking(const std::string& type,
   }
 
   if (db_init_status_ != leveldb_proto::Enums::kOK) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
   if (ranking_.contains(type)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   absl::make_optional(ranking_[type])));
     return;

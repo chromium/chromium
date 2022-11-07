@@ -83,8 +83,8 @@ class ServerPrintersFetcher::PrivateImplementation
         task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
-    CHECK(base::SequencedTaskRunnerHandle::IsSet());
-    task_runner_for_callback_ = base::SequencedTaskRunnerHandle::Get();
+    CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+    task_runner_for_callback_ = base::SequencedTaskRunner::GetCurrentDefault();
     // Post task to execute.
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&PrivateImplementation::SendQuery,

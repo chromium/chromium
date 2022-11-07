@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -350,7 +350,7 @@ void DnsProbeServiceImpl::CallCallbackAsynchronously() {
   std::vector<ProbeCallback> callbacks;
   callbacks.swap(pending_callbacks_);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callbacks.front()), cached_result_));
 }
 

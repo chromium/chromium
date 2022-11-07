@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 
 #include "base/containers/contains.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
@@ -86,7 +86,7 @@ void FakeOsIntegrationManager::InstallOsHooks(
     ++num_register_url_handlers_calls_;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
 }
 
@@ -98,7 +98,7 @@ void FakeOsIntegrationManager::UninstallOsHooks(
     ++num_unregister_run_on_os_login_calls_;
   }
   OsHooksErrors os_hooks_errors;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
 }
 
@@ -120,7 +120,7 @@ void FakeOsIntegrationManager::UpdateOsHooks(
     ++num_update_file_handlers_calls_;
 
   OsHooksErrors os_hooks_errors;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
 }
 

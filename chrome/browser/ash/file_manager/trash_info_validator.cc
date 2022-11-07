@@ -8,9 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 class Profile;
 
@@ -105,7 +105,7 @@ void TrashInfoValidator::OnTrashedFileExists(
   }
 
   auto complete_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&TrashInfoValidator::OnTrashInfoParsed,
                      weak_ptr_factory_.GetWeakPtr(), trash_info_path,
                      mount_point_path, trashed_file_location,

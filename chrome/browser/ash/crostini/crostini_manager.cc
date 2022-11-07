@@ -22,6 +22,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -3986,7 +3987,7 @@ void CrostiniManager::MountCrostiniFilesBackground(guest_os::GuestInfo info) {
 void CrostiniManager::GetInstallLocation(
     base::OnceCallback<void(base::FilePath)> callback) {
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), base::FilePath()));
     return;
   }

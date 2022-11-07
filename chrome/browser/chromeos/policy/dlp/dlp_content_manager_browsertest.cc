@@ -13,7 +13,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -116,8 +115,9 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   void SetupReporting() {
     SetupDlpRulesManager();
     // Set up mock report queue.
-    SetReportQueueForReportingManager(helper_->GetReportingManager(), events_,
-                                      base::SequencedTaskRunnerHandle::Get());
+    SetReportQueueForReportingManager(
+        helper_->GetReportingManager(), events_,
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void CheckEvents(DlpRulesManager::Restriction restriction,

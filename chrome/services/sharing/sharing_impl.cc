@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/services/sharing/nearby/decoder/nearby_decoder.h"
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
@@ -92,7 +93,7 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
         base::BindOnce(&SharingImpl::OnDisconnect,
                        weak_ptr_factory_.GetWeakPtr(),
                        MojoDependencyName::kBluetoothAdapter),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   nearby_shared_remotes_->socket_manager.Bind(
@@ -100,7 +101,7 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
   nearby_shared_remotes_->socket_manager.set_disconnect_handler(
       base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
                      MojoDependencyName::kSocketManager),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   nearby_shared_remotes_->mdns_responder_factory.Bind(
       std::move(deps->webrtc_dependencies->mdns_responder_factory),
@@ -108,7 +109,7 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
   nearby_shared_remotes_->mdns_responder_factory.set_disconnect_handler(
       base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
                      MojoDependencyName::kMdnsResponder),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   nearby_shared_remotes_->ice_config_fetcher.Bind(
       std::move(deps->webrtc_dependencies->ice_config_fetcher),
@@ -116,14 +117,14 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
   nearby_shared_remotes_->ice_config_fetcher.set_disconnect_handler(
       base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
                      MojoDependencyName::kIceConfigFetcher),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   nearby_shared_remotes_->webrtc_signaling_messenger.Bind(
       std::move(deps->webrtc_dependencies->messenger), io_task_runner_);
   nearby_shared_remotes_->webrtc_signaling_messenger.set_disconnect_handler(
       base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
                      MojoDependencyName::kWebRtcSignalingMessenger),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   // TODO(https://crbug.com/1261238): This should always be true when the
   // WifiLan feature flag is enabled. Remove when flag is enabled by default.
@@ -135,7 +136,7 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
         base::BindOnce(&SharingImpl::OnDisconnect,
                        weak_ptr_factory_.GetWeakPtr(),
                        MojoDependencyName::kCrosNetworkConfig),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     nearby_shared_remotes_->firewall_hole_factory.Bind(
         std::move(deps->wifilan_dependencies->firewall_hole_factory),
@@ -144,7 +145,7 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
         base::BindOnce(&SharingImpl::OnDisconnect,
                        weak_ptr_factory_.GetWeakPtr(),
                        MojoDependencyName::kFirewallHoleFactory),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     nearby_shared_remotes_->tcp_socket_factory.Bind(
         std::move(deps->wifilan_dependencies->tcp_socket_factory),
@@ -153,7 +154,7 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
         base::BindOnce(&SharingImpl::OnDisconnect,
                        weak_ptr_factory_.GetWeakPtr(),
                        MojoDependencyName::kTcpSocketFactory),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 }
 

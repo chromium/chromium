@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -477,7 +478,7 @@ void Server::ReadDir2(ReadDir2RequestProto request_proto,
   read_dir_2_map_.insert({cookie, ReadDir2MapEntry(std::move(callback))});
 
   auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&Server::OnReadDirectory,
                           weak_ptr_factory_.GetWeakPtr(), common.fs_context,
                           common.read_only, cookie));
@@ -513,7 +514,7 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
       storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
 
   auto outer_callback =
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          base::BindOnce(&RunStatCallback, std::move(callback),
                                         common.fs_context, common.read_only));
 

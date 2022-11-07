@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace ash {
 namespace attestation {
@@ -28,7 +28,7 @@ void TpmChallengeKeyWithTimeout::BuildResponse(
   DCHECK(!callback_);
   callback_ = std::move(callback);
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TpmChallengeKeyWithTimeout::ResolveCallback,
                      weak_factory_.GetWeakPtr(),

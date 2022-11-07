@@ -306,8 +306,9 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
   }
 
   // We should return the response on current thread (mojo thread).
-  auto callback_on_current_thread = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback), FROM_HERE);
+  auto callback_on_current_thread =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(callback), FROM_HERE);
   file_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

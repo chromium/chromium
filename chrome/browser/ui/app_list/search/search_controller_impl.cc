@@ -16,6 +16,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,7 +89,7 @@ void SearchControllerImpl::StartZeroState(base::OnceClosure on_done,
                                           base::TimeDelta timeout) {
   // Only used for the productivity launcher.
   // TODO(crbug.com/1269115): Unimplemented.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(on_done), timeout);
 }
 

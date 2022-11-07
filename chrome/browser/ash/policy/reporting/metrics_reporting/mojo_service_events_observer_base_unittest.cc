@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
@@ -85,8 +85,8 @@ TEST_F(MojoServiceEventsObserverBaseTest, Default) {
     audio_observer.SetReportingEnabled(true);
     ::ash::cros_healthd::FakeCrosHealthd::Get()
         ->EmitAudioUnderrunEventForTesting();
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -105,8 +105,8 @@ TEST_F(MojoServiceEventsObserverBaseTest, Default) {
 
     ::ash::cros_healthd::FakeCrosHealthd::Get()
         ->EmitAudioUnderrunEventForTesting();
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -120,8 +120,8 @@ TEST_F(MojoServiceEventsObserverBaseTest, Default) {
     audio_observer.SetReportingEnabled(false);
     ::ash::cros_healthd::FakeCrosHealthd::Get()
         ->EmitAudioUnderrunEventForTesting();
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 

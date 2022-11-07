@@ -26,7 +26,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -1076,7 +1075,7 @@ void BookmarkModelStatusChangeChecker::PostCheckExitCondition() {
 
   // PostTask() instead of CheckExitCondition() directly to make sure that the
   // checker doesn't immediately kick in while bookmarks are modified.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&BookmarkModelStatusChangeChecker::CheckExitCondition,
                      weak_ptr_factory_.GetWeakPtr()));

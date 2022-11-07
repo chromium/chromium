@@ -19,8 +19,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -86,7 +86,7 @@ class OsIntegrationManager::OsHooksBarrier
 
   ~OsHooksBarrier() {
     DCHECK(callback_);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), std::move(errors_)));
   }
 
@@ -190,7 +190,7 @@ void OsIntegrationManager::InstallOsHooks(
     InstallOsHooksOptions options) {
   if (g_suppress_os_hooks_for_testing_) {
     OsHooksErrors os_hooks_errors;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
     return;
   }
@@ -224,7 +224,7 @@ void OsIntegrationManager::InstallOsHooks(
     CreateShortcuts(app_id, options.add_to_desktop, options.reason,
                     std::move(shortcuts_callback));
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(shortcuts_callback),
                                   /*shortcuts_created=*/false));
   }
@@ -243,7 +243,7 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
                                             UninstallOsHooksCallback callback) {
   if (g_suppress_os_hooks_for_testing_) {
     OsHooksErrors os_hooks_errors;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
     return;
   }
@@ -303,7 +303,7 @@ void OsIntegrationManager::UpdateOsHooks(
     UpdateOsHooksCallback callback) {
   if (g_suppress_os_hooks_for_testing_) {
     OsHooksErrors os_hooks_errors;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
     return;
   }

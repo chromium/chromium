@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_testing_record.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -26,7 +26,8 @@ TEST(UserEventReporterHelperTest, TestReportEvent) {
   auto mock_queue =
       std::unique_ptr<MockReportQueueStrict, base::OnTaskRunnerDeleter>(
           new MockReportQueueStrict(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          base::OnTaskRunnerDeleter(
+              base::SequencedTaskRunner::GetCurrentDefault()));
 
   UserEventReporterTestingRecord enqueued_record;
   ::reporting::Priority priority;
@@ -59,7 +60,8 @@ TEST(UserEventReporterHelperTest, TestReportEventWithCallback) {
   auto mock_queue =
       std::unique_ptr<MockReportQueueStrict, base::OnTaskRunnerDeleter>(
           new MockReportQueueStrict(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+          base::OnTaskRunnerDeleter(
+              base::SequencedTaskRunner::GetCurrentDefault()));
 
   UserEventReporterTestingRecord enqueued_record;
   ::reporting::Priority priority;

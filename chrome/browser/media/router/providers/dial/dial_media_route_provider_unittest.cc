@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
@@ -105,7 +105,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     provider_ = std::make_unique<DialMediaRouteProvider>(
         provider_remote_.BindNewPipeAndPassReceiver(), std::move(router_remote),
         &mock_sink_service_, "hash-token",
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     auto activity_manager = std::make_unique<TestDialActivityManager>(
         mock_sink_service_.app_discovery_service(), &loader_factory_);

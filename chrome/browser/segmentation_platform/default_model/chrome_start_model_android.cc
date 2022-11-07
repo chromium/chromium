@@ -7,7 +7,7 @@
 #include <array>
 
 #include "base/metrics/field_trial_params.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -106,7 +106,7 @@ void ChromeStartModel::InitAndFetchModel(
                         kChromeStartUMAFeatures.size());
 
   constexpr int kModelVersion = 1;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindRepeating(model_updated_callback, kChromeStartSegmentId,
                           std::move(chrome_start_metadata), kModelVersion));
@@ -117,7 +117,7 @@ void ChromeStartModel::ExecuteModelWithInput(
     ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kChromeStartUMAFeatures.size()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
@@ -134,7 +134,7 @@ void ChromeStartModel::ExecuteModelWithInput(
     result = 1;  // Enable Start
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }

@@ -16,9 +16,9 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -54,7 +54,7 @@ void BorealisTask::Complete(BorealisStartupResult status, std::string message) {
                << (base::Time::Now() - start_time_);
   // Task completion is self-mutually-exclusive, because tasks are deleted once
   // complete.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), status, std::move(message)));
 }
