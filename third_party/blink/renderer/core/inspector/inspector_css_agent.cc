@@ -2081,10 +2081,30 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   if (!rule->Name().empty())
     container_query_object->setName(rule->Name());
 
-  // TODO(https://crbug.com/1378237): We need to also pass the physical and
-  // logical axes from ContainerQuery::Selector(). Otherwise we may select the
-  // wrong container in InspectorDOMAgent::getContainerForNode().
-
+  PhysicalAxes physical = rule->Selector().GetPhysicalAxes();
+  if (physical != kPhysicalAxisNone) {
+    protocol::DOM::PhysicalAxes physical_proto =
+        protocol::DOM::PhysicalAxesEnum::Horizontal;
+    if (physical == kPhysicalAxisVertical)
+      physical_proto = protocol::DOM::PhysicalAxesEnum::Vertical;
+    else if (physical == kPhysicalAxisBoth)
+      physical_proto = protocol::DOM::PhysicalAxesEnum::Both;
+    else
+      DCHECK(physical == kPhysicalAxisHorizontal);
+    container_query_object->setPhysicalAxes(physical_proto);
+  }
+  LogicalAxes logical = rule->Selector().GetLogicalAxes();
+  if (logical != kLogicalAxisNone) {
+    protocol::DOM::LogicalAxes logical_proto =
+        protocol::DOM::LogicalAxesEnum::Inline;
+    if (logical == kLogicalAxisBlock)
+      logical_proto = protocol::DOM::LogicalAxesEnum::Block;
+    else if (logical == kLogicalAxisBoth)
+      logical_proto = protocol::DOM::LogicalAxesEnum::Both;
+    else
+      DCHECK(logical == kLogicalAxisInline);
+    container_query_object->setLogicalAxes(logical_proto);
+  }
   return container_query_object;
 }
 

@@ -1599,6 +1599,10 @@ experimental domain CSS
       optional StyleSheetId styleSheetId
       # Optional name for the container.
       optional string name
+      # Optional physical axes queried for the container.
+      optional DOM.PhysicalAxes physicalAxes
+      # Optional logical axes queried for the container.
+      optional DOM.LogicalAxes logicalAxes
 
   # CSS Supports at-rule descriptor.
   experimental type CSSSupports extends object
@@ -2253,6 +2257,20 @@ domain DOM
       LimitedQuirksMode
       NoQuirksMode
 
+  # ContainerSelector physical axes
+  type PhysicalAxes extends string
+    enum
+      Horizontal
+      Vertical
+      Both
+
+  # ContainerSelector logical axes
+  type LogicalAxes extends string
+    enum
+      Inline
+      Block
+      Both
+
   # DOM interaction is implemented in terms of mirror objects that represent the actual DOM nodes.
   # DOMNode is a base node mirror type.
   type Node extends object
@@ -2865,13 +2883,16 @@ domain DOM
       # Id of the node at given coordinates, only when enabled and requested document.
       optional NodeId nodeId
 
-  # Returns the container of the given node based on container query conditions.
-  # If containerName is given, it will find the nearest container with a matching name;
-  # otherwise it will find the nearest container regardless of its container name.
+  # Returns the query container of the given node based on container query
+  # conditions: containerName, physical, and logical axes. If no axes are
+  # provided, the style container is returned, which is the direct parent or the
+  # closest element with a matching container-name.
   experimental command getContainerForNode
     parameters
       NodeId nodeId
       optional string containerName
+      optional PhysicalAxes physicalAxes
+      optional LogicalAxes logicalAxes
     returns
       # The container node for the given node, or null if not found.
       optional NodeId nodeId

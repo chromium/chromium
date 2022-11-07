@@ -24,6 +24,42 @@ true
     }
     sessionId : <string>
 }
+Is the returned container the expected block-size (physical) container?
+true
+{
+    id : <number>
+    result : {
+        nodeId : <number>
+    }
+    sessionId : <string>
+}
+Is the returned container the expected block-size (logical) container?
+true
+{
+    id : <number>
+    result : {
+        nodeId : <number>
+    }
+    sessionId : <string>
+}
+Is the returned container the expected style container?
+true
+{
+    id : <number>
+    result : {
+        nodeId : <number>
+    }
+    sessionId : <string>
+}
 Is the returned container the expected dynamic container?
+true
+{
+    id : <number>
+    result : {
+        nodeId : <number>
+    }
+    sessionId : <string>
+}
+Is the returned container the expected orthogonal container?
 true
 

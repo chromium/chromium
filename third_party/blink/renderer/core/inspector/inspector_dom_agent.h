@@ -262,6 +262,8 @@ class CORE_EXPORT InspectorDOMAgent final
   protocol::Response getContainerForNode(
       int node_id,
       protocol::Maybe<String> container_name,
+      protocol::Maybe<protocol::DOM::PhysicalAxes> physical_axes,
+      protocol::Maybe<protocol::DOM::LogicalAxes> logical_axes,
       protocol::Maybe<int>* container_node_id) override;
   protocol::Response getQueryingDescendantsForContainer(
       int node_id,
