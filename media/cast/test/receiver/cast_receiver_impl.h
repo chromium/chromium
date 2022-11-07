@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/net/pacing/paced_sender.h"

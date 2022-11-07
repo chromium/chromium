@@ -8,7 +8,7 @@
 #include <CoreVideo/CVPixelBuffer.h>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
 
 namespace media {

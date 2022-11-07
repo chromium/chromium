@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
 

@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"

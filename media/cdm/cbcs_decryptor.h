@@ -5,7 +5,7 @@
 #ifndef MEDIA_CDM_CBCS_DECRYPTOR_H_
 #define MEDIA_CDM_CBCS_DECRYPTOR_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
 
 namespace crypto {

@@ -5,7 +5,7 @@
 #ifndef MEDIA_CAST_LOGGING_RAW_EVENT_SUBSCRIBER_BUNDLE_H_
 #define MEDIA_CAST_LOGGING_RAW_EVENT_SUBSCRIBER_BUNDLE_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/cast/logging/encoding_event_subscriber.h"
 #include "media/cast/logging/stats_event_subscriber.h"
 

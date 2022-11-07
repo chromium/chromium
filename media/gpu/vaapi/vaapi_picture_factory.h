@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/gpu/vaapi/vaapi_picture.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_implementation.h"

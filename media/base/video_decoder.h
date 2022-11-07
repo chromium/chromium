@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_VIDEO_DECODER_H_
 #define MEDIA_BASE_VIDEO_DECODER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/decoder.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_export.h"

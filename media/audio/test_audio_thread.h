@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/audio_thread.h"

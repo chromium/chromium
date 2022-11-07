@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/base/callback_registry.h"

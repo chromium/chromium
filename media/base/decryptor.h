@@ -8,7 +8,7 @@
 #include <list>
 
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/media_export.h"
 

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/video_types.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/accelerated_video_decoder.h"

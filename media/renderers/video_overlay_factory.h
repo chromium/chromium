@@ -5,7 +5,7 @@
 #ifndef MEDIA_RENDERERS_VIDEO_OVERLAY_FACTORY_H_
 #define MEDIA_RENDERERS_VIDEO_OVERLAY_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "media/base/media_export.h"
 

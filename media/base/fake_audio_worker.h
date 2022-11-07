@@ -6,7 +6,7 @@
 #define MEDIA_BASE_FAKE_AUDIO_WORKER_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/media_export.h"
 

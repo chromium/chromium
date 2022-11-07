@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/capture_export.h"

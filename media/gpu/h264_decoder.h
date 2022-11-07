@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/limits.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_types.h"

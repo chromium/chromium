@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"

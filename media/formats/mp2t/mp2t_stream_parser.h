@@ -13,7 +13,7 @@
 #include <set>
 
 #include "base/containers/span.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/byte_queue.h"
 #include "media/base/decrypt_config.h"

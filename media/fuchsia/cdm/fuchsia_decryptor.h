@@ -5,7 +5,7 @@
 #ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_DECRYPTOR_H_
 #define MEDIA_FUCHSIA_CDM_FUCHSIA_DECRYPTOR_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"

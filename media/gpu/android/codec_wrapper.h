@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/decoder_buffer.h"

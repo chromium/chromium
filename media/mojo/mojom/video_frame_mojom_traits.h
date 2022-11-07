@@ -5,7 +5,7 @@
 #ifndef MEDIA_MOJO_MOJOM_VIDEO_FRAME_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_VIDEO_FRAME_MOJOM_TRAITS_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
 #include "media/base/ipc/media_param_traits_macros.h"

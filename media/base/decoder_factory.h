@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
 #include "media/base/overlay_info.h"
 #include "media/base/supported_video_decoder_config.h"

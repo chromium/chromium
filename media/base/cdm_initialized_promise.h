@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/media_export.h"
