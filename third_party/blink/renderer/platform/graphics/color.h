@@ -140,10 +140,16 @@ class PLATFORM_EXPORT Color {
   static Color FromRGBAFloat(float r, float g, float b, float a);
 
   // Create a color using the hsl() syntax.
-  static Color FromHSLA(double h, double s, double l, double a);
+  static Color FromHSLA(absl::optional<float> h,
+                        absl::optional<float> s,
+                        absl::optional<float> l,
+                        absl::optional<float> a);
 
   // Create a color using the hwb() syntax.
-  static Color FromHWBA(double h, double w, double b, double a);
+  static Color FromHWBA(absl::optional<float> h,
+                        absl::optional<float> w,
+                        absl::optional<float> b,
+                        absl::optional<float> a);
 
   // Create a color using the color() function. This includes both predefined
   // color spaces and xyz spaces. Parameters that are none should be specified

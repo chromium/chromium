@@ -774,11 +774,11 @@ static bool FastParseColorInternal(Color& color,
       if (current != end)
         return false;
       color =
-          Color::FromHSLA(hue, saturation, lightness, alpha * (1.0 / 255.0));
+          Color::FromHSLA(hue, saturation, lightness, alpha * (1.0f / 255.0f));
     } else {
       if (current != end)
         return false;
-      color = Color::FromHSLA(hue, saturation, lightness, 1.0);
+      color = Color::FromHSLA(hue, saturation, lightness, 1.0f);
     }
     return true;
   }

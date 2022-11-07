@@ -178,31 +178,37 @@ Color::Color(int r, int g, int b, int a) {
 }
 
 // static
-Color Color::FromHSLA(double h, double s, double l, double a) {
+Color Color::FromHSLA(absl::optional<float> h,
+                      absl::optional<float> s,
+                      absl::optional<float> l,
+                      absl::optional<float> a) {
   Color result;
-  result.param0_ = h;
-  result.param1_ = s;
-  result.param2_ = l;
-  result.alpha_ = a;
-  result.param0_is_none_ = false;
-  result.param1_is_none_ = false;
-  result.param2_is_none_ = false;
-  result.alpha_is_none_ = false;
+  result.param0_is_none_ = !h;
+  result.param1_is_none_ = !s;
+  result.param2_is_none_ = !l;
+  result.alpha_is_none_ = !a;
+  result.param0_ = h.value_or(0.0f);
+  result.param1_ = s.value_or(0.0f);
+  result.param2_ = l.value_or(0.0f);
+  result.alpha_ = ClampTo(a.value_or(0.f), 0.f, 1.f);
   result.color_space_ = ColorSpace::kHSL;
   return result;
 }
 
 // static
-Color Color::FromHWBA(double h, double w, double b, double a) {
+Color Color::FromHWBA(absl::optional<float> h,
+                      absl::optional<float> w,
+                      absl::optional<float> b,
+                      absl::optional<float> a) {
   Color result;
-  result.param0_ = h;
-  result.param1_ = w;
-  result.param2_ = b;
-  result.alpha_ = a;
-  result.param0_is_none_ = false;
-  result.param1_is_none_ = false;
-  result.param2_is_none_ = false;
-  result.alpha_is_none_ = false;
+  result.param0_is_none_ = !h;
+  result.param1_is_none_ = !w;
+  result.param2_is_none_ = !b;
+  result.alpha_is_none_ = !a;
+  result.param0_ = h.value_or(0.0f);
+  result.param1_ = w.value_or(0.0f);
+  result.param2_ = b.value_or(0.0f);
+  result.alpha_ = ClampTo(a.value_or(0.f), 0.f, 1.f);
   result.color_space_ = ColorSpace::kHWB;
   return result;
 }

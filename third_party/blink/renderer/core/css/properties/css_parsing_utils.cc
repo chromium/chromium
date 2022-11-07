@@ -1450,17 +1450,16 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
   DCHECK(range.Peek().FunctionId() == CSSValueID::kHsl ||
          range.Peek().FunctionId() == CSSValueID::kHsla);
   CSSParserTokenRange args = ConsumeFunction(range);
-  double color_array[3];
+  absl::optional<float> color_array[3];
   CSSPrimitiveValue* value = ConsumeHue(args, context, absl::nullopt);
   bool has_none = false;
   if (value) {
     // HSL expects a hue in the range [0.0, 6.0]
     // https://www.w3.org/TR/css-color-4/#typedef-hue
-    color_array[0] = value->GetDoubleValue() / 60.0;
+    color_array[0] = value->GetDoubleValue() / 60.0f;
   } else {
     if (!ConsumeIdent<CSSValueID::kNone>(args))
       return false;
-    color_array[0] = 0.0;
     has_none = true;
   }
 
@@ -1476,36 +1475,39 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
     value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
     if (value) {
       double double_value = value->GetDoubleValue();
-      color_array[i] = ClampTo<double>(double_value, 0.0, 100.0) /
-                       100.0;  // Needs to be value between 0 and 1.0.
+      color_array[i] = ClampTo<float>(double_value, 0.0f, 100.0f) /
+                       100.0f;  // Needs to be value between 0 and 1.0.
     } else {
       if (!ConsumeIdent<CSSValueID::kNone>(args))
         return false;
-      color_array[i] = 0.0;
       has_none = true;
     }
   }
 
-  double alpha = 1.0;
+  absl::optional<float> alpha;
   bool comma_consumed = ConsumeCommaIncludingWhitespace(args);
   bool slash_consumed = ConsumeSlashIncludingWhitespace(args);
   if ((comma_consumed && !requires_commas) ||
       (slash_consumed && requires_commas))
     return false;
   if (comma_consumed || slash_consumed) {
-    if (!ConsumeNumberRaw(args, context, alpha)) {
+    double alpha_param = 1.0;
+    if (ConsumeNumberRaw(args, context, alpha_param)) {
+      alpha = ClampTo<float>(alpha_param, 0.0f, 1.0f);
+    } else {
       CSSPrimitiveValue* alpha_percent =
           ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
       if (alpha_percent) {
-        alpha = alpha_percent->GetDoubleValue() / 100.0;
+        alpha = alpha_percent->GetDoubleValue() / 100.0f;
       } else {
         if (!ConsumeIdent<CSSValueID::kNone>(args))
           return false;
-        alpha = 0.0;
         has_none = true;
       }
     }
-    alpha = ClampTo<double>(alpha, 0.0, 1.0);
+  } else {
+    // It was the hsl form so it should consider alpha to be 1.0f.
+    alpha = 1.0f;
   }
 
   if (requires_commas && has_none)
@@ -1549,37 +1551,37 @@ static bool ParseHWBParameters(CSSParserTokenRange& range,
   DCHECK(range.Peek().FunctionId() == CSSValueID::kHwb);
   CSSParserTokenRange args = ConsumeFunction(range);
   CSSPrimitiveValue* value;
-  double hue = 0.0;
+  absl::optional<float> hue;
   if (!ConsumeIdent<CSSValueID::kNone>(args)) {
     value = ConsumeHue(args, context, absl::nullopt);
     if (!value)
       return false;
     // HWB expects a hue in the range [0.0, 6.0]
     // https://www.w3.org/TR/css-color-4/#typedef-hue
-    hue = value->GetDoubleValue() / 60.0;
+    hue = value->GetDoubleValue() / 60.0f;
   }
 
   // Consume two percentage values.
-  double percentages[2] = {0.0, 0.0};
-  for (double& percentage : percentages) {
+  absl::optional<float> percentages[2];
+  for (auto& percentage : percentages) {
     if (ConsumeIdent<CSSValueID::kNone>(args))
       continue;
     value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
     if (!value)
       return false;
     double double_value = value->GetDoubleValue();
-    percentage = ClampTo<double>(double_value, 0.0, 100.0) /
-                 100.0;  // Needs to be a value between 0 and 1.0.
+    percentage = ClampTo<float>(double_value, 0.0f, 100.0f) /
+                 100.0f;  // Needs to be a value between 0 and 1.0.
   }
 
-  double alpha = 0.0;
+  absl::optional<float> float_alpha;
   absl::optional<double> optional_alpha =
       ConsumeAlphaWithLeadingSlash(args, context);
   // Per spec, "none" for hwb = 0.0
   if (optional_alpha.has_value())
-    alpha = optional_alpha.value();
+    float_alpha = optional_alpha.value();
 
-  result = Color::FromHWBA(hue, percentages[0], percentages[1], alpha);
+  result = Color::FromHWBA(hue, percentages[0], percentages[1], float_alpha);
   return args.AtEnd();
 }
 

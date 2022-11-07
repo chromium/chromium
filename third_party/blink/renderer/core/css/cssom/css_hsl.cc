@@ -110,7 +110,7 @@ void CSSHSL::setAlpha(
 Color CSSHSL::ToColor() const {
   // FromHSLA expects hue in the range [0, 6)
   return Color::FromHSLA(
-      h_->to(CSSPrimitiveValue::UnitType::kDegrees)->value() / 60,
+      h_->to(CSSPrimitiveValue::UnitType::kDegrees)->value() / 60.f,
       ComponentToColorInput(s_), ComponentToColorInput(l_),
       ComponentToColorInput(alpha_));
 }
