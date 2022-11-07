@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
 #include "components/reporting/metrics/multi_samplers_collector.h"

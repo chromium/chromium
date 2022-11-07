@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "components/reporting/metrics/sampler.h"
+#include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

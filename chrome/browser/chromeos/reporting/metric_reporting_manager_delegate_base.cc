@@ -8,6 +8,7 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 
 namespace reporting::metrics {

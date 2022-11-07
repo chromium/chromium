@@ -29,6 +29,7 @@
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/metric_data_collector.h"
+#include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/sampler.h"

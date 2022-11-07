@@ -13,8 +13,6 @@ namespace reporting {
 
 using OptionalMetricCallback =
     base::OnceCallback<void(absl::optional<MetricData>)>;
-using MetricCallback = base::OnceCallback<void(MetricData)>;
-using MetricRepeatingCallback = base::RepeatingCallback<void(MetricData)>;
 
 // A sampler is an object capable of collecting metrics data of a given type.
 // Metrics data can be either Information or Telemetry.
@@ -31,17 +29,6 @@ class Sampler {
  public:
   virtual ~Sampler() = default;
   virtual void MaybeCollect(OptionalMetricCallback callback) = 0;
-};
-
-// A `MetricEventObserver` object should observe events and report them using
-// the `MetricRepeatingCallback` set using `SetOnEventObservedCallback`.
-// Whether the object should observe/report events is controlled by is_enabled
-// set using `SetReportingEnabled`.
-class MetricEventObserver {
- public:
-  virtual ~MetricEventObserver() = default;
-  virtual void SetOnEventObservedCallback(MetricRepeatingCallback cb) = 0;
-  virtual void SetReportingEnabled(bool is_enabled) = 0;
 };
 
 }  // namespace reporting

@@ -9,6 +9,7 @@ static_library("metrics_data_collection") {
     "event_driven_telemetry_sampler_pool.h",
     "metric_data_collector.cc",
     "metric_data_collector.h",
+    "metric_event_observer.h",
     "metric_event_observer_manager.cc",
     "metric_event_observer_manager.h",
     "metric_rate_controller.cc",

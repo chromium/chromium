@@ -9,8 +9,7 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace reporting {
-namespace test {
+namespace reporting::test {
 
 class FakeSampler : public Sampler {
  public:
@@ -50,31 +49,6 @@ class FakeDelayedSampler : public FakeSampler {
   OptionalMetricCallback cb_;
 };
 
-class FakeMetricEventObserver : public MetricEventObserver {
- public:
-  FakeMetricEventObserver();
-
-  FakeMetricEventObserver(const FakeMetricEventObserver& other) = delete;
-  FakeMetricEventObserver& operator=(const FakeMetricEventObserver& other) =
-      delete;
-
-  ~FakeMetricEventObserver() override;
-
-  void SetOnEventObservedCallback(MetricRepeatingCallback cb) override;
-
-  void SetReportingEnabled(bool is_enabled) override;
-
-  void RunCallback(MetricData metric_data);
-
-  bool GetReportingEnabled() const;
-
- private:
-  bool is_reporting_enabled_ = false;
-
-  MetricRepeatingCallback cb_;
-};
-
-}  // namespace test
-}  // namespace reporting
+}  // namespace reporting::test
 
 #endif  // COMPONENTS_REPORTING_METRICS_FAKES_FAKE_SAMPLER_H_

@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/fakes/fake_metric_event_observer.h"
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 #include "components/reporting/metrics/fakes/fake_sampler.h"
@@ -41,30 +42,17 @@ using testing::StrEq;
 namespace reporting {
 namespace {
 
-class FakeMetricEventObserver : public MetricEventObserver {
- public:
-  FakeMetricEventObserver() = default;
-
-  FakeMetricEventObserver(const FakeMetricEventObserver& other) = delete;
-  FakeMetricEventObserver& operator=(const FakeMetricEventObserver& other) =
-      delete;
-
-  ~FakeMetricEventObserver() override = default;
-
-  void SetOnEventObservedCallback(MetricRepeatingCallback cb) override {}
-  void SetReportingEnabled(bool is_enabled) override {}
-};
-
 class FakeMetricEventObserverManager : public MetricEventObserverManager {
  public:
   FakeMetricEventObserverManager(ReportingSettings* reporting_settings,
                                  int* observer_manager_count)
-      : MetricEventObserverManager(std::make_unique<FakeMetricEventObserver>(),
-                                   /*metric_report_queue=*/nullptr,
-                                   reporting_settings,
-                                   /*enable_setting_path=*/"",
-                                   /*setting_enabled_default_value=*/false,
-                                   /*sampler_pool=*/nullptr),
+      : MetricEventObserverManager(
+            std::make_unique<test::FakeMetricEventObserver>(),
+            /*metric_report_queue=*/nullptr,
+            reporting_settings,
+            /*enable_setting_path=*/"",
+            /*setting_enabled_default_value=*/false,
+            /*sampler_pool=*/nullptr),
         observer_manager_count_(observer_manager_count) {
     ++(*observer_manager_count_);
   }

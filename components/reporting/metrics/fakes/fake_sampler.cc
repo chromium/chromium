@@ -7,13 +7,12 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/location.h"
-#include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "components/reporting/metrics/sampler.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace reporting {
-namespace test {
+namespace reporting::test {
 
 FakeSampler::FakeSampler() = default;
 
@@ -46,30 +45,4 @@ void FakeDelayedSampler::RunCallback() {
   std::move(cb_).Run(metric_data_);
 }
 
-FakeMetricEventObserver::FakeMetricEventObserver() = default;
-
-FakeMetricEventObserver::~FakeMetricEventObserver() = default;
-
-void FakeMetricEventObserver::SetOnEventObservedCallback(
-    MetricRepeatingCallback cb) {
-  EXPECT_FALSE(cb_);
-  cb_ = std::move(cb);
-}
-
-void FakeMetricEventObserver::SetReportingEnabled(bool is_enabled) {
-  is_reporting_enabled_ = is_enabled;
-}
-
-void FakeMetricEventObserver::RunCallback(MetricData metric_data) {
-  base::RunLoop run_loop;
-  cb_.Run(std::move(metric_data));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
-  run_loop.Run();
-}
-
-bool FakeMetricEventObserver::GetReportingEnabled() const {
-  return is_reporting_enabled_;
-}
-}  // namespace test
-}  // namespace reporting
+}  // namespace reporting::test
