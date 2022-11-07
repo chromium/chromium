@@ -67,13 +67,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
 
   // https://html.spec.whatwg.org/C/#the-dialog-element
   // Chooses the focused element when show() or showModal() is invoked.
-  void SetFocusForDialog();
-
-  // This is the old dialog initial focus behavior which is currently being
-  // replaced by SetFocusForDialog.
-  // TODO(http://crbug.com/383230): Remove this when DialogNewFocusBehavior gets
-  // to stable with no issues.
-  static void SetFocusForDialogLegacy(HTMLDialogElement* dialog);
+  static void SetFocusForDialog(HTMLDialogElement* dialog);
 
   bool is_modal_;
   String return_value_;

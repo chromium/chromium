@@ -2135,6 +2135,8 @@ crbug.com/1234199 [ Mac ] external/wpt/html/semantics/embedded-content/the-objec
 crbug.com/1232504 [ Mac11 ] external/wpt/html/semantics/embedded-content/media-elements/interfaces/TextTrackCue/endTime.html [ Failure Timeout ]
 crbug.com/1232504 [ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/interfaces/TextTrackCue/endTime.html [ Failure Timeout ]
 
+crbug.com/1292852 [ Mac ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-focus-shadow.html [ Failure Pass ]
+
 # XML nodes aren't match by .class selectors:
 crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
 
