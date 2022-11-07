@@ -565,6 +565,9 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
 }
 
 static bool SelectorListIsNestContaining(const CSSSelector* selector) {
+  if (selector == nullptr) {
+    return false;
+  }
   for (;;) {  // Termination condition within loop.
     if (selector->Match() == CSSSelector::kPseudoClass &&
         selector->GetPseudoType() == CSSSelector::kPseudoParent) {

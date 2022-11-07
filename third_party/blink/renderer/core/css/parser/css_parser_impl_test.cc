@@ -361,6 +361,19 @@ TEST(CSSParserImplTest, ErrorRecoveryEatsOnlyFirstDeclaration) {
   EXPECT_EQ(".element", rule->SelectorsText());
 }
 
+TEST(CSSParserImplTest, NestedEmptySelectorCrash) {
+  String sheet_text = "y{ :is() {} }";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  // We only really care that it doesn't crash.
+}
+
 TEST(CSSParserImplTest, NestedRulesInsideMediaQueries) {
   ScopedCSSNestingForTest enabled(true);
   String sheet_text = R"CSS(
