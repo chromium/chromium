@@ -205,6 +205,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"inputDescriptionUsbTouchpad", IDS_INPUT_DIAGNOSTICS_USB_TOUCHPAD},
       {"inputDescriptionUsbTouchscreen", IDS_INPUT_DIAGNOSTICS_USB_TOUCHSCREEN},
       {"inputDeviceTest", IDS_INPUT_DIAGNOSTICS_RUN_TEST},
+      {"inputDeviceUntestableNote", IDS_INPUT_DIAGNOSTICS_UNTESTABLE_NOTE},
       {"inputTesterDone", IDS_INPUT_DIAGNOSTICS_TESTER_DONE},
       {"inputText", IDS_DIAGNOSTICS_INPUT},
       {"internetConnectivityGroupLabel",

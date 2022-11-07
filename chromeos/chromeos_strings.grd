@@ -1193,6 +1193,11 @@ Try tapping the mic to ask me anything.
         Done
       </message>
 
+      <!-- TODO(zhangwenyu): Finalize string and localization -->
+      <message name="IDS_INPUT_DIAGNOSTICS_UNTESTABLE_NOTE" translateable="false" desc="Text explaining why the input device is untestable and the test button is grey out.">
+        Can't access this routine. Check that it's properly connected and try again.
+      </message>
+
       <!-- Input diagnostics: keyboard tester -->
       <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_FOCUS_LOSS_MESSAGE" desc="A message displayed in a keyboard testing UI when its window loses focus, explaining that the tester won't respond to key presses again until its window is refocused.">
         Keys aren't tested when you're using another window

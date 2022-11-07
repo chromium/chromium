@@ -5,7 +5,7 @@
     padding: 12px 20px;
   }
 
-  .device iron-icon {
+  .device #deviceIcon {
     --iron-icon-fill-color: var(--cros-color-prominent);
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
@@ -13,6 +13,14 @@
     border-radius: 50%;
     margin-inline-end: 28px;
     padding: 8px;
+  }
+
+  .device #infoIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    align-self: center;
+    margin-inline-end: 15px;
   }
 
   .device-body {
@@ -35,11 +43,19 @@
     <dom-repeat items="[[devices]]" as="device">
       <template>
         <div class="device" data-evdev-id$="[[device.id]]">
-          <iron-icon icon="[[deviceIcon_]]"></iron-icon>
+          <iron-icon icon="[[deviceIcon_]]" id="deviceIcon"></iron-icon>
           <div class="device-body">
             <div class="device-name" id="deviceName">[[device.name]]</div>
             <div class="device-description">[[getDeviceDescription_(device)]]</div>
           </div>
+          <iron-icon slot="icon" icon="diagnostics:info" id="infoIcon"
+              hidden$="[[getDeviceTestability(device)]]">
+          </iron-icon>
+          <paper-tooltip for="infoIcon" aria-hidden="true">
+            <span id="tooltipText">
+              [[i18n('inputDeviceUntestableNote')]]
+            </span>
+          </paper-tooltip>
           <cr-button id="inputDeviceTestButton"
               on-click="handleTestButtonClick_"
               aria-labelledby="inputDeviceTestButton deviceName"

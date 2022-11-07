@@ -629,4 +629,11 @@ export const fakeTouchDevices: TouchDeviceInfo[] = [
     name: 'Sample touchscreen',
     testable: true,
   },
+  {
+    id: 8,
+    connectionType: ConnectionType.kInternal,
+    type: TouchDeviceType.kDirect,
+    name: 'Sample untestable touchscreen',
+    testable: false,
+  },
 ];

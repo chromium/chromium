@@ -5,6 +5,7 @@
 import 'chrome://diagnostics/strings.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
 import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -107,5 +108,27 @@ suite('inputCardTestSuite', function() {
         .click();
     await flushTasks();
     assertTrue(listenerCalled);
+  });
+
+  test('TouchscreenTestability', async () => {
+    await initializeInputCard(InputCardType.TOUCHSCREEN, fakeTouchDevices);
+    assertEquals(
+        3,
+        inputCardElement.shadowRoot.querySelector('dom-repeat').items.length);
+    const elements = inputCardElement.root.querySelectorAll('.device');
+
+    // Check a testable touchscreen.
+    assertEquals(
+        fakeTouchDevices[1].name,
+        elements[1].querySelector('.device-name').innerText);
+    assertFalse(elements[1].querySelector('cr-button').disabled);
+    assertTrue(elements[1].querySelector('#infoIcon').hidden);
+
+    // Check an untestable touchscreen.
+    assertEquals(
+        fakeTouchDevices[2].name,
+        elements[2].querySelector('.device-name').innerText);
+    assertTrue(elements[2].querySelector('cr-button').disabled);
+    assertFalse(elements[2].querySelector('#infoIcon').hidden);
   });
 });

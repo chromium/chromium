@@ -172,13 +172,13 @@ suite('inputListTestSuite', function() {
 
     provider.addFakeConnectedTouchDevice(fakeTouchscreen);
     await flushTasks();
-    assertEquals(2, touchscreenCard.devices.length);
+    assertEquals(3, touchscreenCard.devices.length);
     assertEquals(fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
-    assertEquals(fakeTouchscreen.name, touchscreenCard.devices[1].name);
+    assertEquals(fakeTouchscreen.name, touchscreenCard.devices[2].name);
 
     provider.removeFakeConnectedTouchDeviceById(fakeTouchscreen.id);
     await flushTasks();
-    assertEquals(1, touchscreenCard.devices.length);
+    assertEquals(2, touchscreenCard.devices.length);
     assertEquals(fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
   });
 
