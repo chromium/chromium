@@ -25,7 +25,6 @@ class SyncService;
 }
 
 class AuthenticationServiceDelegate;
-class AuthenticationServiceFake;
 class AuthenticationServiceObserver;
 class FakeAuthenticationService;
 class PrefService;
@@ -164,7 +163,6 @@ class AuthenticationService : public KeyedService,
 
  private:
   friend class FakeAuthenticationService;
-  friend class AuthenticationServiceFake;
   friend class AuthenticationServiceTest;
 
   // Clears local data for users under parental controls and runs `completion`.

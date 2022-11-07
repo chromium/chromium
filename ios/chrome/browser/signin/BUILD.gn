@@ -218,8 +218,6 @@ source_set("test_support") {
   sources = [
     "authentication_service_delegate_fake.h",
     "authentication_service_delegate_fake.mm",
-    "authentication_service_fake.h",
-    "authentication_service_fake.mm",
   ]
   deps = [
     ":signin",
