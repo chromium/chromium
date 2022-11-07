@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webauth;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -40,8 +41,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
@@ -51,6 +52,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
+import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -728,6 +730,103 @@ public class Fido2CredentialRequestTest {
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
         Assert.assertNull(mCallback.getMakeCredentialResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testInternalAuthenticatorMakeCredential_attestationIncluded() {
+        // This test can't work on Android N because it lacks the java.nio.file
+        // APIs used to load the test data.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulMakeCredentialIntentWithAttestation());
+
+        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        MakeCredentialAuthenticatorResponse response = mCallback.getMakeCredentialResponse();
+        // Since the CBOR must be in canonical form, the "fmt" key comes first
+        // and we can match against "fmt=android-safetynet".
+        final byte[] expectedPrefix =
+                new byte[] {0xa3 - 256, 0x63, 0x66, 0x6d, 0x74, 0x71, 0x61, 0x6e, 0x64, 0x72, 0x6f,
+                        0x69, 0x64, 0x2d, 0x73, 0x61, 0x66, 0x65, 0x74, 0x79, 0x6e, 0x65, 0x74};
+        byte[] actualPrefix =
+                Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
+        Assert.assertArrayEquals(expectedPrefix, actualPrefix);
+    }
+
+    @Test
+    @SmallTest
+    public void testInternalAuthenticatorMakeCredential_rkRequired_attestationRemoved()
+            throws Exception {
+        // This test can't work on Android N because it lacks the java.nio.file
+        // APIs used to load the test data.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulMakeCredentialIntentWithAttestation());
+
+        // Set the residentKey option to trigger attestation removal.
+        PublicKeyCredentialCreationOptions creationOptions =
+                Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
+        creationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.REQUIRED;
+
+        mRequest.handleMakeCredentialRequest(creationOptions, mFrameHost, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        MakeCredentialAuthenticatorResponse response = mCallback.getMakeCredentialResponse();
+        // Since the CBOR must be in canonical form, the "fmt" key comes first
+        // and we can match against "fmt=none".
+        final byte[] expectedPrefix =
+                new byte[] {0xa3 - 256, 0x63, 0x66, 0x6d, 0x74, 0x64, 0x6e, 0x6f, 0x6e, 0x65};
+        byte[] actualPrefix =
+                Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
+        Assert.assertArrayEquals(expectedPrefix, actualPrefix);
+    }
+
+    @Test
+    @SmallTest
+    public void testInternalAuthenticatorMakeCredential_rkPreferred_attestationRemoved()
+            throws Exception {
+        // This test can't work on Android N because it lacks the java.nio.file
+        // APIs used to load the test data.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulMakeCredentialIntentWithAttestation());
+
+        // Set the residentKey option to trigger attestation removal.
+        PublicKeyCredentialCreationOptions creationOptions =
+                Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
+        creationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.PREFERRED;
+
+        mRequest.handleMakeCredentialRequest(creationOptions, mFrameHost, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        MakeCredentialAuthenticatorResponse response = mCallback.getMakeCredentialResponse();
+        // Since the CBOR must be in canonical form, the "fmt" key comes first
+        // and we can match against "fmt=none".
+        final byte[] expectedPrefix =
+                new byte[] {0xa3 - 256, 0x63, 0x66, 0x6d, 0x74, 0x64, 0x6e, 0x6f, 0x6e, 0x65};
+        byte[] actualPrefix =
+                Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
+        Assert.assertArrayEquals(expectedPrefix, actualPrefix);
     }
 
     @Test

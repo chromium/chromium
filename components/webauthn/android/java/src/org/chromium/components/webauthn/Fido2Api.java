@@ -687,10 +687,12 @@ public final class Fido2Api {
      * Read a FIDO API response from a {@link PendingIntent} result.
      *
      * @param data the Intent, as passed to {@link Activity.onActivityResult}.
+     * @param attestationAcceptable if expecting a makeCredential response, this controls whether
+     *         attestation of the primary credential will be included.
      * @return see {@link parseResponse}.
      * @throws IllegalArgumentException if there was a parse error.
      */
-    public static @Nullable Object parseIntentResponse(Intent data)
+    public static @Nullable Object parseIntentResponse(Intent data, boolean attestationAcceptable)
             throws IllegalArgumentException {
         byte[] responseBytes = data.getByteArrayExtra(CREDENTIAL_EXTRA);
         if (responseBytes == null) {
@@ -698,7 +700,7 @@ public final class Fido2Api {
             throw new IllegalArgumentException();
         }
 
-        final Object response = parseResponse(responseBytes);
+        final Object response = parseResponse(responseBytes, attestationAcceptable);
         if (response == null) {
             Log.e(TAG, "Failed to parse FIDO2 API response");
             throw new IllegalArgumentException();
@@ -711,12 +713,15 @@ public final class Fido2Api {
      * Read a FIDO API response from a bytestring.
      *
      * @param responseBytes an encoded PublicKeyCredential object.
+     * @param attestationAcceptable if expecting a makeCredential response, this controls whether
+     *         attestation of the primary credential will be included.
      * @return One of the following: 1) a Pair&lt;Integer, String&gt;, if the response is an error.
      *         (The first value is the error code, the second is an optional error message.) 2) a
      *         MakeCredentialAuthenticatorResponse. 3) a GetAssertionAuthenticatorResponse.
      * @throws IllegalArgumentException if there was a parse error.
      */
-    public static Object parseResponse(byte[] responseBytes) throws IllegalArgumentException {
+    public static Object parseResponse(byte[] responseBytes, boolean attestationAcceptable)
+            throws IllegalArgumentException {
         Parcel parcel = Parcel.obtain();
         parcel.unmarshall(responseBytes, 0, responseBytes.length);
         parcel.setDataPosition(0);
@@ -737,7 +742,7 @@ public final class Fido2Api {
             switch (header.first) {
                 case 4:
                     // Attestation response
-                    creationResponse = parseAttestationResponse(parcel);
+                    creationResponse = parseAttestationResponse(parcel, attestationAcceptable);
                     if (creationResponse == null) {
                         throw new IllegalArgumentException();
                     }
@@ -814,8 +819,8 @@ public final class Fido2Api {
         throw new IllegalArgumentException();
     }
 
-    private static MakeCredentialAuthenticatorResponse parseAttestationResponse(Parcel parcel)
-            throws IllegalArgumentException {
+    private static MakeCredentialAuthenticatorResponse parseAttestationResponse(
+            Parcel parcel, boolean attestationAcceptable) throws IllegalArgumentException {
         Pair<Integer, Integer> header = readHeader(parcel);
         if (header.first != OBJECT_MAGIC) {
             throw new IllegalArgumentException();
@@ -859,9 +864,9 @@ public final class Fido2Api {
         MakeCredentialAuthenticatorResponse ret = new MakeCredentialAuthenticatorResponse();
         CommonCredentialInfo info = new CommonCredentialInfo();
 
-        ret.attestationObject = attestationObject;
         AttestationObjectParts parts = new AttestationObjectParts();
-        if (!Fido2ApiJni.get().parseAttestationObject(attestationObject, parts)) {
+        if (!Fido2ApiJni.get().parseAttestationObject(
+                    attestationObject, attestationAcceptable, parts)) {
             // A failure to parse the attestation object is fatal to the request
             // on desktop and so the same behavior is used here.
             throw new IllegalArgumentException();
@@ -869,6 +874,7 @@ public final class Fido2Api {
         ret.publicKeyAlgo = parts.coseAlgorithm;
         info.authenticatorData = parts.authenticatorData;
         ret.publicKeyDer = parts.spki;
+        ret.attestationObject = parts.attestationObject;
         ret.transports = transports;
 
         info.id = encodeId(keyHandle);
@@ -1181,19 +1187,21 @@ public final class Fido2Api {
                         TimeUnit.MICROSECONDS.toSeconds(timeout.microseconds)));
     }
 
-    // AttestationObjectParts is used to group together the return values of
-    // |parseAttestationObject|, below.
+    /** AttestationObjectParts groups together the return values of |parseAttestationObject|. */
     public static final class AttestationObjectParts {
         @CalledByNative("AttestationObjectParts")
-        void setAll(byte[] authenticatorData, byte[] spki, int coseAlgorithm) {
+        void setAll(byte[] authenticatorData, byte[] spki, int coseAlgorithm,
+                byte[] attestationObject) {
             this.authenticatorData = authenticatorData;
             this.spki = spki;
             this.coseAlgorithm = coseAlgorithm;
+            this.attestationObject = attestationObject;
         }
 
         public byte[] authenticatorData;
         public byte[] spki;
         public int coseAlgorithm;
+        public byte[] attestationObject;
     }
 
     /**
@@ -1274,11 +1282,14 @@ public final class Fido2Api {
     @NativeMethods
     interface Natives {
         // parseAttestationObject parses a CTAP2 attestation[1] and extracts the
-        // parts that the browser provides via Javascript API [2].
+        // parts that the browser provides via Javascript API [2]. If
+        // `attestationAcceptable` is false then the returned attestation
+        // object will have attestation stripped.
         //
         // [1] https://www.w3.org/TR/webauthn/#attestation-object
         // [2] https://w3c.github.io/webauthn/#sctn-public-key-easy
-        boolean parseAttestationObject(byte[] attestationObject, AttestationObjectParts result);
+        boolean parseAttestationObject(byte[] attestationObject, boolean attestationAcceptable,
+                AttestationObjectParts result);
 
         // getDevicePublicKeyFromAuthenticatorData extracts the DPK
         // authenticator output because this is returned in the client's DPK

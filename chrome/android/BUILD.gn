@@ -1870,6 +1870,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/data/portal/",
       "//chrome/test/data/push_messaging/",
       "//chrome/test/data/translate/",
+      "//chrome/test/data/webauthn/",
       "//chrome/test/media_router/resources/",
       "//components/test/data/autofill/",
       "//components/test/data/payments/",

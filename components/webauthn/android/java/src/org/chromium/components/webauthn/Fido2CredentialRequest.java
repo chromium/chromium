@@ -27,6 +27,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
+import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.payments.PaymentFeatureList;
@@ -70,6 +71,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private boolean mAppIdExtensionUsed;
     private long mStartTimeMs;
     private WebAuthnBrowserBridge mBrowserBridge;
+    private boolean mAttestationAcceptable;
 
     private enum ConditionalUiState {
         NONE,
@@ -131,6 +133,13 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
+        // Attestation is only for non-discoverable credentials in the Android
+        // platform authenticator and discoverable credentials aren't supported
+        // on security keys. There was a bug where discoverable credentials
+        // accidentally included attestation, which was confusing, so that's
+        // filtered here.
+        mAttestationAcceptable =
+                options.authenticatorSelection.residentKey == ResidentKeyRequirement.DISCOURAGED;
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), mSupportLevel);
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
@@ -434,7 +443,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     errorCode = AuthenticatorStatus.NOT_ALLOWED_ERROR;
                 } else {
                     try {
-                        response = Fido2Api.parseIntentResponse(data);
+                        response = Fido2Api.parseIntentResponse(data, mAttestationAcceptable);
                     } catch (IllegalArgumentException e) {
                         response = null;
                     }
