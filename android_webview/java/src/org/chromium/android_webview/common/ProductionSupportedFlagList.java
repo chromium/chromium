@@ -180,6 +180,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSE_MERCHANT_PROMO_CODE_FIELDS,
                     "When enabled, Autofill will attempt to find merchant promo/coupon/gift code "
                             + "fields when parsing forms."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_RATIONALIZE_STREET_ADDRESS_AND_HOUSE_NUMBER,
+                    "Rationalizes (street address, house number) field sequences to "
+                            + "(street name, house number)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_CONSIDER_PLACEHOLDER_FOR_PARSING,
                     "When enabled, Autofill local heuristics consider the placeholder attribute "
                             + "for determining field types."),

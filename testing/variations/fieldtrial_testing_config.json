@@ -1412,6 +1412,29 @@
             ]
         }
     ],
+    "AutofillRationalizeStreetAddressAndHouseNumber": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillRationalizeStreetAddressAndHouseNumber"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRefinedPhoneNumberTypes": [
         {
             "platforms": [

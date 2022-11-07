@@ -294,6 +294,46 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
   }
 }
 
+void FormStructureRationalizer::RationalizeStreetAddressAndHouseNumber(
+    LogManager* log_manager) {
+  if (fields_.size() < 2)
+    return;
+  for (auto field = fields_.begin() + 1; field != fields_.end(); ++field) {
+    if ((*field)->ComputedType().GetStorableType() != ADDRESS_HOME_HOUSE_NUMBER)
+      continue;
+    // Rationalize a preceding street address belonging to the same section
+    // unless it's a server override.
+    AutofillField& previous_field = **(field - 1);
+
+    ServerFieldType previous_type =
+        previous_field.ComputedType().GetStorableType();
+    // We intentionally consider a street address and address-line1, but not
+    // address-line2. There are cases where an address-line2 has a separate
+    // meaning (overflow field) and the logic implicitly assumes an order of
+    // street name -> house number. It does not support house number ->
+    // street name.
+    bool is_street_address_type =
+        previous_type == ADDRESS_HOME_STREET_ADDRESS ||
+        previous_type == ADDRESS_HOME_LINE1;
+    if (!is_street_address_type ||
+        previous_field.section != (*field)->section ||
+        previous_field.server_type_prediction_is_override()) {
+      continue;
+    }
+    // TODO(crbug.com/1326425): Remove once feature is lanuched.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillRationalizeStreetAddressAndHouseNumber)) {
+      continue;
+    }
+    LOG_AF(log_manager)
+        << LoggingScope::kRationalization << LogMessage::kRationalization
+        << "Street Address Rationalization: Converting sequence of (street "
+           "address/address-line1, house number) to (street name, house "
+           "number)";
+    previous_field.SetTypeTo(AutofillType(ADDRESS_HOME_STREET_NAME));
+  }
+}
+
 void FormStructureRationalizer::RationalizePhoneNumbersInSection(
     const Section& section) {
   std::vector<AutofillField*> fields;
@@ -608,6 +648,7 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
     LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
+  RationalizeStreetAddressAndHouseNumber(log_manager);
   for (const auto& field : fields_)
     field->SetTypeTo(field->Type());
   RationalizeTypeRelationships(log_manager);

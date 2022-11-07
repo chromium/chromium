@@ -117,8 +117,18 @@ FormStructureTestApi test_api(FormStructure* form_structure) {
 }
 
 class FormStructureRationalizerTest : public testing::Test {
+ public:
+  FormStructureRationalizerTest();
+
+ protected:
+  base::test::ScopedFeatureList scoped_features_;
   test::AutofillEnvironment autofill_environment_;
 };
+
+FormStructureRationalizerTest::FormStructureRationalizerTest() {
+  scoped_features_.InitAndEnableFeature(
+      features::kAutofillRationalizeStreetAddressAndHouseNumber);
+}
 
 TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeLoneField) {
   auto [form, response_string] = CreateFormAndServerClassification(
@@ -244,6 +254,50 @@ TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
 
   EXPECT_THAT(GetTypes(form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2));
+}
+
+// Ensure that a tuple of (street-address, house number) is rewritten to (street
+// name, house number). We have seen several cases where the field preceding the
+// house number was not classified as a street name.
+TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndHouseNumber) {
+  auto [form, response_string] = CreateFormAndServerClassification({
+      {"Full Name", "fullName", NAME_FULL},
+      {"Address1", "address1", ADDRESS_HOME_STREET_ADDRESS},
+      {"Address2", "address2", ADDRESS_HOME_HOUSE_NUMBER},
+  });
+
+  FormStructure form_structure(form);
+  std::vector<FormStructure*> forms = {&form_structure};
+  // Will call RationalizeFieldTypePredictions
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
+
+  EXPECT_THAT(GetTypes(form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_NAME,
+                          ADDRESS_HOME_HOUSE_NUMBER));
+}
+
+// Ensure that a tuple of (address-line1, house number) is rewritten to (street
+// name, house number). We have seen several cases where the field preceding the
+// house number was not classified as a street name.
+TEST_F(FormStructureRationalizerTest, RationalizeAddressLine1AndHouseNumber) {
+  auto [form, response_string] = CreateFormAndServerClassification({
+      {"Full Name", "fullName", NAME_FULL},
+      {"Address1", "address1", ADDRESS_HOME_LINE1},
+      {"Address2", "address2", ADDRESS_HOME_HOUSE_NUMBER},
+  });
+
+  FormStructure form_structure(form);
+  std::vector<FormStructure*> forms = {&form_structure};
+  // Will call RationalizeFieldTypePredictions
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
+
+  EXPECT_THAT(GetTypes(form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_NAME,
+                          ADDRESS_HOME_HOUSE_NUMBER));
 }
 
 // Tests that a form that has only one address predicted as

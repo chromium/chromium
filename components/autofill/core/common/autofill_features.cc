@@ -461,6 +461,13 @@ BASE_FEATURE(kAutofillProbableFormSubmissionInBrowser,
              "AutofillProbableFormSubmissionInBrowser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If we observe a sequence of fields of (street address, house number), these
+// get rationalized to (street name, house number).
+// TODO(crbug.com/1326425): Remove once feature is lanuched.
+BASE_FEATURE(kAutofillRationalizeStreetAddressAndHouseNumber,
+             "AutofillRationalizeStreetAddressAndHouseNumber",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Removes setting-inaccessible field types from existing profiles on startup.
 // TODO(crbug.com/1300548): Cleanup when launched.
 BASE_FEATURE(kAutofillRemoveInaccessibleProfileValuesOnStartup,
