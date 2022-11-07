@@ -5421,6 +5421,11 @@ const char kExperimentalAccessibilityDictationMoreCommandsName[] =
 const char kExperimentalAccessibilityDictationMoreCommandsDescription[] =
     "Enables experimental dictation commands.";
 
+const char kExperimentalAccessibilityDictationContextCheckingName[] =
+    "Experimental accessibility dictation using context checking.";
+const char kExperimentalAccessibilityDictationContextCheckingDescription[] =
+    "Enables experimental dictation context checking.";
+
 const char kExperimentalAccessibilitySelectToSpeakVoiceSwitchingName[] =
     "Experimental accessibility Select-to-Speak voice switching.";
 const char kExperimentalAccessibilitySelectToSpeakVoiceSwitchingDescription[] =

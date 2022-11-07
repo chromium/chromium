@@ -60453,6 +60453,8 @@ from previous Chrome versions.
   <int value="-353182790" label="ConsistentOmniboxGeolocation:disabled"/>
   <int value="-353180213" label="DevicePosture:disabled"/>
   <int value="-351830087" label="AssistantConsentSimplifiedText:enabled"/>
+  <int value="-351744276"
+      label="ExperimentalAccessibilityDictationContextChecking:enabled"/>
   <int value="-351552989" label="disable-hosted-apps-in-windows"/>
   <int value="-351127770" label="enable-offline-pages-as-bookmarks"/>
   <int value="-350336634"
@@ -63796,6 +63798,8 @@ from previous Chrome versions.
   <int value="1665430464" label="force-control-face-ae"/>
   <int value="1667584730" label="WebXR:disabled"/>
   <int value="1668611601" label="enable-encrypted-media"/>
+  <int value="1669522336"
+      label="ExperimentalAccessibilityDictationContextChecking:disabled"/>
   <int value="1669767166" label="NewTabPageBackgrounds:disabled"/>
   <int value="1670161209" label="ClickToOpenPDFPlaceholder:enabled"/>
   <int value="1670799163" label="ChromeHomeShowGoogleGWhenUrlCleared:enabled"/>

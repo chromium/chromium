@@ -147,6 +147,15 @@ bool IsExperimentalAccessibilityDictationMoreCommandsEnabled() {
       ::features::kExperimentalAccessibilityDictationMoreCommands);
 }
 
+BASE_FEATURE(kExperimentalAccessibilityDictationContextChecking,
+             "ExperimentalAccessibilityDictationContextChecking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsExperimentalAccessibilityDictationContextCheckingEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilityDictationContextChecking);
+}
+
 BASE_FEATURE(kExperimentalAccessibilityGoogleTtsLanguagePacks,
              "ExperimentalAccessibilityGoogleTtsLanguagePacks",
              base::FEATURE_DISABLED_BY_DEFAULT);

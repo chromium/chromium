@@ -3105,6 +3105,9 @@ extern const char kExperimentalAccessibilityDictationWithPumpkinDescription[];
 extern const char kExperimentalAccessibilityDictationMoreCommandsName[];
 extern const char kExperimentalAccessibilityDictationMoreCommandsDescription[];
 
+extern const char kExperimentalAccessibilityDictationContextCheckingName[];
+extern const char kExperimentalAccessibilityDictationContextCheckingDescription[];
+
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[];
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
 

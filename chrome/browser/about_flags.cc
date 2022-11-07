@@ -5215,7 +5215,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityDictationWithPumpkin)},
-
     {"enable-experimental-accessibility-dictation-more-commands",
      flag_descriptions::kExperimentalAccessibilityDictationMoreCommandsName,
      flag_descriptions::
@@ -5223,7 +5222,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityDictationMoreCommands)},
-
+    {"enable-experimental-accessibility-dictation-context-checking",
+     flag_descriptions::kExperimentalAccessibilityDictationContextCheckingName,
+     flag_descriptions::
+         kExperimentalAccessibilityDictationContextCheckingDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         features::kExperimentalAccessibilityDictationContextChecking)},
     {"enable-experimental-accessibility-google-tts-language-packs",
      flag_descriptions::kExperimentalAccessibilityGoogleTtsLanguagePacksName,
      flag_descriptions::

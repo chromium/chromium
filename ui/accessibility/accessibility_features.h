@@ -98,6 +98,13 @@ AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kExperimentalAccessibilityDictationWithPumpkin);
 
+// Returns true if Dictation with context checking is enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationContextCheckingEnabled();
+
+// Enables Context Checking with the accessibility Dictation feature.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kExperimentalAccessibilityDictationContextChecking);
+
 // Returns true if dictation with pumpkin is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationWithPumpkinEnabled();
 
