@@ -47,17 +47,17 @@ class PendingWriteStoreTest : public testing::Test {
   std::unique_ptr<PendingWriteStore> pending_write_store_;
 };
 
-TEST_F(PendingWriteStoreTest, AddDevice) {
-  ASSERT_TRUE(pending_write_store_->GetPendingAdds().empty());
-  pending_write_store_->AddPairedDevice(kSavedMacAddress1, kHexModelId);
+TEST_F(PendingWriteStoreTest, WriteDevice) {
+  ASSERT_TRUE(pending_write_store_->GetPendingWrites().empty());
+  pending_write_store_->WritePairedDevice(kSavedMacAddress1, kHexModelId);
 
-  auto pending_adds = pending_write_store_->GetPendingAdds();
-  ASSERT_EQ(1u, pending_adds.size());
-  ASSERT_EQ(kSavedMacAddress1, pending_adds[0].mac_address);
-  ASSERT_EQ(kHexModelId, pending_adds[0].hex_model_id);
+  auto pending_writes = pending_write_store_->GetPendingWrites();
+  ASSERT_EQ(1u, pending_writes.size());
+  ASSERT_EQ(kSavedMacAddress1, pending_writes[0].mac_address);
+  ASSERT_EQ(kHexModelId, pending_writes[0].hex_model_id);
 
   pending_write_store_->OnPairedDeviceSaved(kSavedMacAddress1);
-  ASSERT_TRUE(pending_write_store_->GetPendingAdds().empty());
+  ASSERT_TRUE(pending_write_store_->GetPendingWrites().empty());
 }
 
 TEST_F(PendingWriteStoreTest, DeleteDevice) {

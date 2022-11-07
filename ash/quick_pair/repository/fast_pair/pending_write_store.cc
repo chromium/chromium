@@ -43,7 +43,7 @@ PendingWriteStore::PendingDelete::PendingDelete(
 
 PendingWriteStore::PendingDelete::~PendingDelete() = default;
 
-void PendingWriteStore::AddPairedDevice(const std::string& mac_address,
+void PendingWriteStore::WritePairedDevice(const std::string& mac_address,
                                         const std::string& hex_model_id) {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
@@ -56,7 +56,7 @@ void PendingWriteStore::AddPairedDevice(const std::string& mac_address,
 }
 
 std::vector<PendingWriteStore::PendingWrite>
-PendingWriteStore::GetPendingAdds() {
+PendingWriteStore::GetPendingWrites() {
   std::vector<PendingWriteStore::PendingWrite> list;
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();

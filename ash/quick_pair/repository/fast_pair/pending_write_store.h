@@ -49,12 +49,12 @@ class PendingWriteStore {
 
   // Saves details about a pending request to add a new paired device to
   // Footprints.
-  void AddPairedDevice(const std::string& mac_address,
+  void WritePairedDevice(const std::string& mac_address,
                        const std::string& hex_model_id);
 
   // Gets a list of all devices which have been paired but not yet written to
   // the server.
-  std::vector<PendingWrite> GetPendingAdds();
+  std::vector<PendingWrite> GetPendingWrites();
 
   // To be called after a paired device is saved to Footprints, this removes
   // pending device from storage.
