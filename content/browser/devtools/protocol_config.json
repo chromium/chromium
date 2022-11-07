@@ -91,7 +91,7 @@
             },
             {
                 "domain": "Storage",
-              "async": ["getUsageAndQuota", "clearDataForOrigin", "clearDataForStorageKey", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens", "getInterestGroupDetails", "getSharedStorageMetadata", "getSharedStorageEntries", "deleteSharedStorageEntry", "clearSharedStorageEntries"]
+              "async": ["getUsageAndQuota", "clearDataForOrigin", "clearDataForStorageKey", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens", "getInterestGroupDetails", "getSharedStorageMetadata", "getSharedStorageEntries", "setSharedStorageEntry", "deleteSharedStorageEntry", "clearSharedStorageEntries"]
             },
             {
                 "domain": "SystemInfo",

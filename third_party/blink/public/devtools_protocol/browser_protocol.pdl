@@ -9321,6 +9321,16 @@ experimental domain Storage
     returns
       array of SharedStorageEntry entries
 
+  # Sets entry with `key` and `value` for a given origin's shared storage.
+  experimental command setSharedStorageEntry
+    parameters
+      string ownerOrigin
+      string key
+      string value
+      # If `ignoreIfPresent` is included and true, then only sets the entry if
+      # `key` doesn't already exist.
+      optional boolean ignoreIfPresent
+
   # Deletes entry for `key` (if it exists) for a given origin's shared storage.
   experimental command deleteSharedStorageEntry
     parameters

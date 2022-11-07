@@ -1074,6 +1074,57 @@ void StorageHandler::GetSharedStorageEntries(
 
 namespace {
 
+void DispatchSharedStorageSetCallback(
+    std::unique_ptr<Storage::Backend::SetSharedStorageEntryCallback> callback,
+    storage::SharedStorageManager::OperationResult result) {
+  if (result != storage::SharedStorageManager::OperationResult::kSet &&
+      result != storage::SharedStorageManager::OperationResult::kIgnored) {
+    callback->sendFailure(Response::ServerError("Database error"));
+    return;
+  }
+
+  callback->sendSuccess();
+}
+
+}  // namespace
+
+void StorageHandler::SetSharedStorageEntry(
+    const std::string& owner_origin_string,
+    const std::string& key,
+    const std::string& value,
+    Maybe<bool> ignore_if_present,
+    std::unique_ptr<SetSharedStorageEntryCallback> callback) {
+  auto manager_or_response = GetSharedStorageManager();
+  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+    return;
+  }
+
+  storage::SharedStorageManager* manager =
+      absl::get<storage::SharedStorageManager*>(manager_or_response);
+  DCHECK(manager);
+
+  GURL owner_origin_url(owner_origin_string);
+  if (!owner_origin_url.is_valid()) {
+    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
+    return;
+  }
+  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
+  DCHECK(!owner_origin.opaque());
+
+  auto set_behavior =
+      ignore_if_present.fromMaybe(false)
+          ? storage::SharedStorageManager::SetBehavior::kIgnoreIfPresent
+          : storage::SharedStorageManager::SetBehavior::kDefault;
+
+  manager->Set(
+      owner_origin, base::UTF8ToUTF16(key), base::UTF8ToUTF16(value),
+      base::BindOnce(&DispatchSharedStorageSetCallback, std::move(callback)),
+      set_behavior);
+}
+
+namespace {
+
 template <typename CallbackType>
 void DispatchSharedStorageCallback(
     std::unique_ptr<CallbackType> callback,

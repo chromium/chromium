@@ -1,0 +1,37 @@
+Tests shared storage item setting via devtools.
+undefined
+Entries:[
+]
+Set entries via devtools
+Metadata: {
+    creationTime : <number>
+    length : 6
+    remainingBudget : 12
+}
+Entries:[
+    [0] : {
+        key : key0-set-from-devtools
+        value : value0
+    }
+    [1] : {
+        key : key1-set-from-devtools
+        value : value1
+    }
+    [2] : {
+        key : key2-set-from-devtools
+        value : value2
+    }
+    [3] : {
+        key : key3-set-from-devtools
+        value : value3
+    }
+    [4] : {
+        key : key4-set-from-devtools
+        value : overridden
+    }
+    [5] : {
+        key : key5-set-from-devtools
+        value : overridden
+    }
+]
+

@@ -107,6 +107,12 @@ class StorageHandler : public DevToolsDomainHandler,
   void GetSharedStorageEntries(
       const std::string& owner_origin_string,
       std::unique_ptr<GetSharedStorageEntriesCallback> callback) override;
+  void SetSharedStorageEntry(
+      const std::string& owner_origin_string,
+      const std::string& key,
+      const std::string& value,
+      Maybe<bool> ignore_if_present,
+      std::unique_ptr<SetSharedStorageEntryCallback> callback) override;
   void DeleteSharedStorageEntry(
       const std::string& owner_origin_string,
       const std::string& key,
