@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
@@ -175,28 +174,21 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
     StringPiece token_value = access_token.value().token;
     net::NetworkTrafficAnnotationTag traffic_annotation =
         GetDefaultNetworkTrafficAnnotationTag<Request>();
-    std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-        InitializeSimpleUrlLoader(request.SerializeAsString(), token_value,
-                                  endpoint.Resolve(GetPathForRequest(request)),
-                                  traffic_annotation);
+    simple_url_loader_ = InitializeSimpleUrlLoader(
+        request.SerializeAsString(), token_value,
+        endpoint.Resolve(GetPathForRequest(request)), traffic_annotation);
 
-    auto* simple_url_loader_ptr = simple_url_loader.get();
-    simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+    simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
-        BindOnce(
-            &FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
-            std::move(callback),
-            std::move(
-                simple_url_loader)));  // Unretained(.) is safe because `this`
-                                       // owns `access_token_fetcher_`.
+        BindOnce(&FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
+                 std::move(callback)));  // Unretained(.) is safe because `this`
+                                         // owns `simple_url_loader_`.
   }
 
-  void OnSimpleUrlLoaderComplete(
-      Callback callback,
-      std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-      std::unique_ptr<std::string> response_body) {
-    if (!IsLoadingSuccessful(*simple_url_loader) ||
-        !HasHttpOkResponse(*simple_url_loader)) {
+  void OnSimpleUrlLoaderComplete(Callback callback,
+                                 std::unique_ptr<std::string> response_body) {
+    if (!IsLoadingSuccessful(*simple_url_loader_) ||
+        !HasHttpOkResponse(*simple_url_loader_)) {
       std::move(callback).Run(KidsExternalFetcherStatus::HttpError(),
                               std::make_unique<Response>());
       return;
@@ -214,6 +206,7 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
   }
 
   std::unique_ptr<KidsAccessTokenFetcher> access_token_fetcher_;
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 };
 
 template class FetcherImpl<ListFamilyMembersRequest, ListFamilyMembersResponse>;
