@@ -8,7 +8,10 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_native_library.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -127,6 +130,16 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
+  // Wrapper functions for task scheduler.
+  void LoadLibraryInternal(base::File model_config,
+                           base::File model_tflite,
+                           const base::FilePath& library_path);
+  void AnnotateInternal(const SkBitmap& image,
+                        const ui::AXTreeID& parent_tree_id,
+                        ui::AXTreeUpdate* annotation);
+  void ExtractMainContentInternal(const ui::AXTreeUpdate& snapshot,
+                                  std::vector<int32_t>* content_node_ids);
+
   // Library function calls are isloated to have specific compiler directives.
   bool CallInitVisualAnnotationsFunction(const base::FilePath& models_folder);
   bool CallInitMainContentExtractionFunction(base::File& model_config_file,
@@ -141,6 +154,9 @@ class ScreenAIService : public mojom::ScreenAIService,
       int32_t*& node_ids,
       uint32_t& nodes_count);
 
+  // Internal task scheduler that starts after library load is completed.
+  scoped_refptr<base::DeferredSequencedTaskRunner> task_runner_;
+
   mojo::Receiver<mojom::ScreenAIService> receiver_;
 
   // The set of receivers used to receive messages from annotators.
@@ -153,6 +169,8 @@ class ScreenAIService : public mojom::ScreenAIService,
   // extractors.
   mojo::ReceiverSet<mojom::Screen2xMainContentExtractor>
       screen_2x_main_content_extractors_;
+
+  base::WeakPtrFactory<ScreenAIService> weak_ptr_factory_{this};
 };
 
 }  // namespace screen_ai

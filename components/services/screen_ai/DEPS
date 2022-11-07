@@ -1,5 +1,6 @@
 include_rules = [
   "+google/protobuf",
+  "+content/public/browser",
   "+ui/accessibility/accessibility_features.h",
   "+ui/accessibility/ax_enum_util.h",
   "+ui/accessibility/ax_enums.mojom.h",

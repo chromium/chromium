@@ -11,7 +11,6 @@ source_set("screen_ai_install_state") {
   deps = [
     ":utilities",
     "//base/",
-    "//content/public/browser",
   ]
 }
 

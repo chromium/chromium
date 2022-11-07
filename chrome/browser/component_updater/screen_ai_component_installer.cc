@@ -70,7 +70,7 @@ void ScreenAIComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value manifest) {
-  screen_ai::ScreenAIInstallState::GetInstance()->ComponentFolderVerified(
+  screen_ai::ScreenAIInstallState::GetInstance()->SetComponentReady(
       install_dir);
   VLOG(1) << "Screen AI Component ready, version " << version.GetString()
           << " in " << install_dir.value();
