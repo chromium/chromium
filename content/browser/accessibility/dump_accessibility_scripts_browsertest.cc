@@ -17,10 +17,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace content {
 
 using ui::AXPropertyFilter;
@@ -31,7 +27,6 @@ using ui::AXTreeFormatter;
 
 constexpr const char kMacAction[]{"mac/action"};
 constexpr const char kMacAttributes[]{"mac/attributes"};
-constexpr const char kMacDescription[]{"mac/description"};
 constexpr const char kMacSelection[]{"mac/selection"};
 constexpr const char kMacTextMarker[]{"mac/textmarker"};
 constexpr const char kMacMethods[]{"mac/methods"};
@@ -423,15 +418,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXVisited) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, ChromeAXNodeId) {
   RunTypedTest<kMacAttributes>("chrome-ax-node-id.html");
-}
-
-// Before OSX 11 aria-description must be exposed in AXHelp, and after OSX11,
-// it should only be exposed in AXCustomContent.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AriaDescriptionInAXHelp) {
-  if (base::mac::IsAtLeastOS11())
-    RunTypedTest<kMacDescription>("aria-description-in-axcustomcontent.html");
-  else
-    RunTypedTest<kMacDescription>("aria-description-in-axhelp.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {

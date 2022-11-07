@@ -1,12 +1,12 @@
 AXWebArea
-++AXGroup AXCustomContent='comment' AXDetailsElements=[:10]
-++AXGroup AXCustomContent='comment-group' AXDetailsElements=[:12]
-++AXGroup AXCustomContent='comment-region' AXDetailsElements=[:18]
-++AXGroup AXCustomContent='comment-section' AXDetailsElements=[:21]
-++AXGroup AXCustomContent='definition' AXDetailsElements=[:24]
-++AXGroup AXCustomContent='doc-endnote' AXDetailsElements=[:26]
-++AXGroup AXCustomContent='doc-footnote' AXDetailsElements=[:28]
-++AXGroup AXCustomContent='many' AXDetailsElements=[:12, :10, :24, :28]
+++AXGroup AXDetailsElements=[:10] AXHelp='comment'
+++AXGroup AXDetailsElements=[:12] AXHelp='comment-group'
+++AXGroup AXDetailsElements=[:18] AXHelp='comment-region'
+++AXGroup AXDetailsElements=[:21] AXHelp='comment-section'
+++AXGroup AXDetailsElements=[:24] AXHelp='definition'
+++AXGroup AXDetailsElements=[:26] AXHelp='doc-endnote'
+++AXGroup AXDetailsElements=[:28] AXHelp='doc-footnote'
+++AXGroup AXDetailsElements=[:12, :10, :24, :28] AXHelp='many'
 ++AXGroup
 ++++AXStaticText AXValue='x'
 ++AXGroup AXSubrole=AXApplicationGroup
