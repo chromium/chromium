@@ -53,8 +53,8 @@ class SigninUtilInternalTest : public PlatformTest {
           [[NSFileManager defaultManager] fileExistsAtPath:[url path]];
       return sentinel_exist;
     };
-    bool wait_success =
-        base::test::ios::WaitUntilConditionOrTimeout(5, condition);
+    bool wait_success = base::test::ios::WaitUntilConditionOrTimeout(
+        base::Seconds(5), condition);
     EXPECT_TRUE(wait_success);
     NSError* error = nil;
     id resource_value;
@@ -74,8 +74,8 @@ class SigninUtilInternalTest : public PlatformTest {
           [[NSFileManager defaultManager] fileExistsAtPath:[url path]];
       return sentinel_exist;
     };
-    bool wait_success =
-        base::test::ios::WaitUntilConditionOrTimeout(5, condition);
+    bool wait_success = base::test::ios::WaitUntilConditionOrTimeout(
+        base::Seconds(5), condition);
     EXPECT_TRUE(wait_success);
     __block id resource_value = nil;
     __block NSError* error = nil;
@@ -85,7 +85,8 @@ class SigninUtilInternalTest : public PlatformTest {
                       error:&error];
       return resource_value != nil && [resource_value boolValue];
     };
-    wait_success = base::test::ios::WaitUntilConditionOrTimeout(5, condition);
+    wait_success = base::test::ios::WaitUntilConditionOrTimeout(
+        base::Seconds(5), condition);
     ASSERT_EQ(nil, error);
     EXPECT_TRUE(wait_success);
   }
