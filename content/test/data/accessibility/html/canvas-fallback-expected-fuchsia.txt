@@ -15,8 +15,8 @@ UNKNOWN focusable has_input_focus
 ++++++++++STATIC_TEXT hidden label='Aria hidden paragraph in fallback content'
 ++++++++STATIC_TEXT label='<newline>    '
 ++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT label='Display none text in fallback content '
+++++++++++STATIC_TEXT hidden label='Display none text in fallback content '
 ++++++++STATIC_TEXT label='<newline>    '
 ++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT label='Visibility hidden paragraph in fallback content'
+++++++++++STATIC_TEXT hidden label='Visibility hidden paragraph in fallback content'
 ++++++++STATIC_TEXT label='<newline>  '
