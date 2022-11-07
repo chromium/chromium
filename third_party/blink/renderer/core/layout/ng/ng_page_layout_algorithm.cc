@@ -20,16 +20,18 @@ NGPageLayoutAlgorithm::NGPageLayoutAlgorithm(
     : NGLayoutAlgorithm(params) {}
 
 const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
+  DCHECK(!BreakToken());
   LogicalSize page_size = ChildAvailableSize();
+  DCHECK(page_size.inline_size != kIndefiniteSize);
+  DCHECK(page_size.block_size != kIndefiniteSize);
 
   NGConstraintSpace child_space = CreateConstraintSpaceForPages(page_size);
 
   WritingDirectionMode writing_direction =
       ConstraintSpace().GetWritingDirection();
-  const NGBlockBreakToken* break_token = BreakToken();
+  const NGBlockBreakToken* break_token = nullptr;
   LayoutUnit intrinsic_block_size;
-  LogicalOffset page_offset = BorderScrollbarPadding().StartOffset();
-  // TODO(mstensho): Handle auto block size.
+  LogicalOffset page_offset;
   LogicalOffset page_progression(LayoutUnit(), page_size.block_size);
 
   container_builder_.SetIsBlockFragmentationContextRoot();
@@ -58,25 +60,19 @@ const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
 
   // Compute the block-axis size now that we know our content size.
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
-      container_builder_.InitialBorderBoxSize().inline_size);
+      ConstraintSpace(), Style(), /* border_padding */ NGBoxStrut(),
+      intrinsic_block_size, absl::nullopt);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
-
-  // TODO(mstensho): Propagate baselines.
 
   return container_builder_.ToBoxFragment();
 }
 
 MinMaxSizesResult NGPageLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
-  NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
-      ConstraintSpace(), Node(), /* break_token */ nullptr,
-      /* is_intrinsic */ true);
-  NGBlockLayoutAlgorithm algorithm(
-      {Node(), fragment_geometry, ConstraintSpace()});
-  return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput());
+  NOTREACHED();
+  return MinMaxSizesResult();
 }
 
 NGConstraintSpace NGPageLayoutAlgorithm::CreateConstraintSpaceForPages(
@@ -87,7 +83,6 @@ NGConstraintSpace NGPageLayoutAlgorithm::CreateConstraintSpaceForPages(
   space_builder.SetPercentageResolutionSize(page_size);
   space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
 
-  // TODO(mstensho): Handle auto block size.
   space_builder.SetFragmentationType(kFragmentPage);
   space_builder.SetShouldPropagateChildBreakValues();
   space_builder.SetFragmentainerBlockSize(page_size.block_size);
