@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">مسدود کردہ کوکیز</translation>
 <translation id="165877110639533037">کوئی کھلے ٹیبز نہیں ہیں</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> سے <ph name="TARGET_LANGUAGE" /> میں</translation>
+<translation id="1683483432843341018">موبائل سائٹ کی درخواست کریں</translation>
 <translation id="168715261339224929">اپنے تمام آلات پر اپنے بُک مارکس حاصل کرنے کیلئے، مطابقت پذیری آن کریں۔</translation>
 <translation id="1687475363370981210">سبھی کو پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="1689333818294560261">عرفی نام</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">ٹیب بند کریں</translation>
 <translation id="2890171748217283516">‏آپ جن سائٹس کی پیروی کرتے ہیں انہیں آپ کے Google اکاؤنٹ میں محفوظ کیا جاتا ہے۔ آپ Discover کی ترتیبات میں ان کا نظم کر سکتے ہیں۔</translation>
 <translation id="2898963176829412617">نیا فولڈر…</translation>
+<translation id="2902684821701498619">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="2916171785467530738">‏تلاشوں اور URLs کی خودکار تکمیل کریں</translation>
 <translation id="291754862089661335">‏QR کوڈ کو اس فریم میں رکھیں</translation>
 <translation id="2920866371965792875">اس سائٹ سے اپ ڈیٹس دیکھنے کے لیے، یہاں اس کی پیروی کریں۔</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">میعاد کے اختتام کا مہینہ</translation>
 <translation id="3482959374254649722">آپ کے ٹیبز کی مطابقت پذیری ہو رہی ہے…</translation>
 <translation id="3484946776651937681">ڈاؤن لوڈز میں کھولیں</translation>
+<translation id="3485558910355485767">نئی پوشیدگی ونڈو</translation>
 <translation id="3493531032208478708">تجویز کردہ مواد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">براؤزنگ ڈیٹا صاف کرنے کی توثیق کریں</translation>
 <translation id="35083190962747987">‏{url}$ کھولیں</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861486700625780712">پیروی ختم کریں</translation>
+<translation id="3863769054730344136">اپنے آلات پر بھیجیں</translation>
 <translation id="387280738075653372">‏یہاں Chrome ڈاؤن لوڈ کریں۔</translation>
 <translation id="3892144330757387737">آپ کو اپنی سرگزشت یہاں ملے گی</translation>
 <translation id="3897092660631435901">مینو</translation>
@@ -589,6 +593,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5659593005791499971">ای میل</translation>
 <translation id="5669335982068190158">‏آپ اپنے iPhone ری سیٹ کے حصے کے طور پر سائن آؤٹ ہو گئے تھے۔ سائن ان کرنے کے لیے نیچے جاری رکھیں پر تھپتھپائیں۔</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">‏QR کوڈ تخلیق کریں</translation>
 <translation id="567881659373499783">ورژن <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{‏ابھی 1 Chrome ونڈو نظر آ رہا ہے}other{‏ابھی {count} Chrome ونڈوز نظر آ رہے ہیں}}</translation>
 <translation id="5701270923492462699">کیمرے تک رسائی کی اجازت ہے</translation>
@@ -673,6 +678,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6219550825416862075">واپسی پر خوش آمدید</translation>
 <translation id="6219688215832490856">کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="6223816392543092032">اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کریں۔</translation>
+<translation id="6229318421047648685">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="6231782223312638214">تجویز کردہ</translation>
 <translation id="6232329973559504466">پوشیدگی تلاش</translation>
 <translation id="6232736989810857397">‏Google لینز کا استعمال کر کے یہ آسانی سے آپ کو کیلنڈر ایونٹس تخلیق کرنے دیتا ہے۔</translation>

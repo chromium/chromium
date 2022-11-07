@@ -483,6 +483,7 @@
 <translation id="3633097874324966332">برای مرتبط کردن دستگاهتان، تنظیمات «بلوتوث» را باز کنید</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم خصوصی. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">به‌روزرسانی عقب‌افتاده</translation>
+<translation id="3659444876902283058">(روز <ph name="CURRENT_DAY" /> از <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">حدود <ph name="TIME_LEFT" /> باقی مانده است (<ph name="PERCENTAGE" />٪).
 دستگاهتان را به برق وصل کنید.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
@@ -1267,9 +1268,11 @@
 <translation id="8052898407431791827">در بریده‌دان کپی شد</translation>
 <translation id="8054466585765276473">درحال محاسبه زمان شارژ باتری.</translation>
 <translation id="8083540854303889870">برای بعد ذخیره شده است</translation>
+<translation id="8091153018031979607">در <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> شروع می‌شود</translation>
 <translation id="8091387634532529612">به‌روزرسانی‌های خودکار</translation>
 <translation id="8098591350844501178">توقف ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">روشن، همه برنامه‌ها</translation>
+<translation id="8113515504791187892">دکمه «انتخاب برای شنیدن»</translation>
 <translation id="8120151603115102514">‏تلفنتان صفحه قفل ندارد. برای باز کردن قفل Chromebook، گذرواژه را وارد کنید.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8131740175452115882">تأیید</translation>
@@ -1379,6 +1382,7 @@
 <translation id="8703634754197148428">شروع ضبط. هروقت ضبط شروع شد، بااستفاده از کلیدهای «دگرساز + تبدیل + م» به قفسه پیمایش کنید و دکمه متوقف کردن ضبط را پیدا کنید</translation>
 <translation id="8721053961083920564">تغییر وضعیت میزان صدا. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ضبط تمام صفحه‌نمایش</translation>
+<translation id="8731487213223706745">در <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> به‌پایان می‌رسد</translation>
 <translation id="8734991477317290293">ممکن است تلاش کند ضربه‌کلیدهای شما را به سرقت ببرد</translation>
 <translation id="8735678380411481005">رنگ نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />، <ph name="SCREEN_SHARE_STATUS" /></translation>

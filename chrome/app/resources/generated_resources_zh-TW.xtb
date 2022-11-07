@@ -537,6 +537,7 @@
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1500297251995790841">不明裝置 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">進一步瞭解不支援的 Chrome 應用程式</translation>
+<translation id="1503392482221435031">自動將使用統計資料傳送給 Google。你可以在裝置的設定中開啟或關閉建立當機報告的功能。</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504551620756424144">在 Windows 中，你可以前往 <ph name="BASE_DIR" /> 存取共用資料夾。</translation>
 <translation id="1505494256539862015">匯出密碼</translation>
@@ -1384,6 +1385,7 @@
 <translation id="2256115617011615191">立即重新啟動</translation>
 <translation id="2257053455312861282">新增學校帳戶可讓你以學生的身分輕鬆登入網站、擴充功能及應用程式，同時繼續遵守家長監護功能的操作規範。</translation>
 <translation id="2261323523305321874">你的管理員變更了系統設定，部分舊的設定檔因此遭到停用。</translation>
+<translation id="22614517036276112">這份文件或你的裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。</translation>
 <translation id="2262477216570151239">重複前延遲時間</translation>
 <translation id="2263189956353037928">登出再重新登入</translation>
 <translation id="2263371730707937087">畫面重新整理頻率</translation>
@@ -2687,6 +2689,7 @@
 <translation id="3461766685318630278">建立及刪除其他容器。</translation>
 <translation id="3462311546193741693">大多數網站都會將你登出，但你仍會維持登入 Google 帳戶的狀態，讓系統可以清除同步資料。</translation>
 <translation id="3462413494201477527">取消設定帳戶？</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{這部裝置儲存了 {COUNT} 個密碼}other{這部裝置儲存了 {COUNT} 個密碼}}</translation>
 <translation id="346298925039590474">這部裝置的使用者都將可以存取這個行動網路</translation>
 <translation id="3464145797867108663">新增工作資料夾</translation>
 <translation id="346431825526753">這是由 <ph name="CUSTODIAN_EMAIL" /> 所管理的兒童專用帳戶。</translation>
@@ -2983,6 +2986,7 @@
 <translation id="3743842571276656710">輸入 PIN 碼即可與「<ph name="DEVICE_NAME" />」配對</translation>
 <translation id="3747077776423672805">如要移除應用程式，請依序前往 [設定] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [應用程式] 或 [應用程式管理員]，然後輕觸你要解除安裝的應用程式 (你可能需要向左或向右滑動才能找出所需應用程式)。接著，輕觸 [解除安裝] 或 [停用]。</translation>
 <translation id="3747603683749989726">要開啟安全瀏覽強化防護功能嗎？</translation>
+<translation id="3748424433435232460">這個帳戶的密碼已儲存在這部裝置上</translation>
 <translation id="3748706263662799310">回報錯誤</translation>
 <translation id="3750562496035670393">Chrome 已將你的密碼儲存至這個裝置，但你可以改為儲存至 Google 帳戶。如此一來，當你登入帳戶時，也可以使用 Google 帳戶中的密碼。</translation>
 <translation id="3752253558646317685">讓孩子不斷抬起再放下手指，藉此儲存指紋</translation>
@@ -3163,6 +3167,7 @@
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> 是專為遊戲量身打造。「探索」應用程式會隨即開啟，方便你存取數百款最新遊戲、查看遊戲優惠，並探索裝置內建的遊戲功能。</translation>
 <translation id="3898233949376129212">裝置語言</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> 要求<ph name="FIRST_PERMISSION" />以及<ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">你的「<ph name="WEBSITE" />」密碼分別儲存在這部裝置和 Google 帳戶中，請問要刪除哪裡的密碼？</translation>
 <translation id="389901847090970821">選取鍵盤</translation>
 <translation id="3900966090527141178">匯出密碼</translation>
 <translation id="3902789559055749153">選擇為「<ph name="APP_NAME" />」建立密碼金鑰的方式</translation>
@@ -5070,6 +5075,7 @@
 <translation id="5733866499231170760">無效的 ID。輸入的格式不正確。請查看已收到的操作說明，以確保輸入的是正確格式的 ID。如果無法解決這個問題，請將此欄位留空並繼續進行安裝作業。</translation>
 <translation id="5734362860645681824">通訊</translation>
 <translation id="5734697361979786483">新增檔案共用區</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{這項資料或裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}=1{這個檔案或裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}other{這些檔案不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}}</translation>
 <translation id="5736796278325406685">請輸入有效的使用者名稱</translation>
 <translation id="5738093759615225354">你必須有這個密碼金鑰，才能登入 Windows 電腦</translation>
 <translation id="5738329404678738022">透過同步處理功能儲存書籤和其他資訊</translation>
@@ -5888,6 +5894,7 @@
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒體授權</translation>
 <translation id="6511827214781912955">建議你刪除「<ph name="FILENAME" />」，讓這部裝置的其他使用者無法查看你的密碼</translation>
+<translation id="6512808201725371249">這個帳戶的密碼已儲存到 Google 密碼管理工具 (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">如果你沒有連線至其他網路，Google Chrome 將使用行動數據網路連線。</translation>
 <translation id="6514010653036109809">可用的裝置：</translation>
 <translation id="6514565641373682518">這個網頁已停用滑鼠游標。</translation>
@@ -6306,6 +6313,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6897363604023044284">選擇要清除資料的網站</translation>
 <translation id="6897688156970667447">適合在低光源環境中使用，且可以省電</translation>
+<translation id="6897972855231767338">進一步瞭解如何以訪客模式瀏覽</translation>
 <translation id="6898440773573063262">Kiosk 應用程式現可設為自動在這個裝置上啟動。</translation>
 <translation id="6900284862687837908">背景應用程式：<ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">強化防護</translation>
@@ -6560,6 +6568,7 @@
 <translation id="7123030151043029868">可以自動下載多個檔案</translation>
 <translation id="7123302939607518173">如果你認為與該項目相關的廣告很實用，可以新增感興趣的主題或網站。</translation>
 <translation id="7124013154139278147">指派代表「上一個」的外接切換裝置</translation>
+<translation id="7124712201233930202">不符合貴機構的政策規定</translation>
 <translation id="7125029162161377569">在 Privacy Sandbox 試用期間，網站可以減少使用訪客的個人資訊，同時又能維持相同的瀏覽體驗。這代表你的資料隱私性更高，跨網站追蹤情況則會減少。我們會在新的試用功能準備就緒時開放測試。</translation>
 <translation id="7125148293026877011">刪除 Crostini</translation>
 <translation id="7127980134843952133">下載記錄</translation>
@@ -8523,6 +8532,7 @@
 <translation id="897939795688207351">在 <ph name="ORIGIN" /> 上</translation>
 <translation id="8980345560318123814">使用狀況報告</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 已當機</translation>
+<translation id="8981038076986775523">進一步瞭解如何使用麥克風</translation>
 <translation id="8981825781894055334">紙張即將用盡</translation>
 <translation id="8983018820925880511">這個新的設定檔將由 <ph name="DOMAIN" /> 負責管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> 可以編輯「<ph name="FILENAME" />」</translation>
@@ -8609,6 +8619,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />想存取下列內容：</translation>
 <translation id="9057354806206861646">更新時間表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天約傳送 1 則通知}other{每天約傳送 {NUM_NOTIFICATION} 則通知}}</translation>
+<translation id="9061383912634843744">使用儲存的憑證自動登入網站和應用程式。如果關閉這項功能，系統會在你每次登入網站或應用程式前詢問是否要登入。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 至第 <ph name="ERROR_LINE_END" /> 行有錯誤</translation>
 <translation id="9064275926664971810">啟用自動填入功能，輕鬆一按即可填妥表單</translation>

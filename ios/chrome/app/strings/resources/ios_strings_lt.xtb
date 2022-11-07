@@ -102,6 +102,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="1657641691196698092">Užblokuoti slapukai</translation>
 <translation id="165877110639533037">Nėra atidarytų skirtukų</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> į <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Pateikti užklausą dėl svetainės mobiliesiems</translation>
 <translation id="168715261339224929">Jei norite gauti žymes visuose įrenginiuose, įjunkite sinchronizavimą.</translation>
 <translation id="1687475363370981210">Pažymėti visus kaip skaitytus</translation>
 <translation id="1689333818294560261">Slapyvardis</translation>
@@ -243,6 +244,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="288655811176831528">Uždaryti skirtuką</translation>
 <translation id="2890171748217283516">Svetainės, kurias stebite, saugomos jūsų „Google“ paskyroje. Jas galite tvarkyti „Discover“ nustatymuose.</translation>
 <translation id="2898963176829412617">Naujas aplankas...</translation>
+<translation id="2902684821701498619">Pridėti prie skaitymo sąrašo</translation>
 <translation id="2916171785467530738">Automatiškai užbaigti paieškas ir URL</translation>
 <translation id="291754862089661335">QR arba brūkšninis kodas turėtų būti rodomas šiame rėmelyje</translation>
 <translation id="2920866371965792875">Jei norite matyti naujienas iš šios svetainės, čia galite pasirinkti ją stebėti.</translation>
@@ -320,6 +322,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3478058380795961209">Gal. pab. mėnuo</translation>
 <translation id="3482959374254649722">Sinchronizuojami skirtukai...</translation>
 <translation id="3484946776651937681">Atidaryti „Atsisiuntimų“ aplanke</translation>
+<translation id="3485558910355485767">Naujas inkognito langas</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie siūlomą turinį</translation>
 <translation id="3494788280727468875">Patvirtinti naršymo duomenų išvalymą</translation>
 <translation id="35083190962747987">Atidaryti ${url}</translation>
@@ -366,6 +369,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3861486700625780712">Nebestebėti</translation>
+<translation id="3863769054730344136">Išsiųsti į jūsų įrenginius</translation>
 <translation id="387280738075653372">Čia atsisiųskite „Chrome“.</translation>
 <translation id="3892144330757387737">Čia rasite istoriją</translation>
 <translation id="3897092660631435901">Meniu</translation>
@@ -589,6 +593,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5659593005791499971">El. paštas</translation>
 <translation id="5669335982068190158">Buvote atjungti nustatant „iPhone“ iš naujo. Toliau palieskite „Tęsti“, kad prisijungtumėte.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Kurti QR kodą</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" /> versija</translation>
 <translation id="5690398455483874150">{count,plural, =1{Dabar rodomas vienas „Chrome“ langas}one{Dabar rodomas {count} „Chrome“ langas}few{Dabar rodomi {count} „Chrome“ langai}many{Dabar rodoma {count} „Chrome“ lango}other{Dabar rodoma {count} „Chrome“ langų}}</translation>
 <translation id="5701270923492462699">Leidžiama pasiekti vaizdo kamerą</translation>
@@ -673,6 +678,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6219550825416862075">Sveiki sugrįžę</translation>
 <translation id="6219688215832490856">Niekada neversti</translation>
 <translation id="6223816392543092032">Gaukite žymes, istoriją, slaptažodžius ir kitus nustatymus visuose įrenginiuose.</translation>
+<translation id="6229318421047648685">Pateikti užklausą dėl svetainės kompiuteriams</translation>
 <translation id="6231782223312638214">Siūloma</translation>
 <translation id="6232329973559504466">Paieška inkognito režimu</translation>
 <translation id="6232736989810857397">Taip paprasta kurti kalendorių įvykius, naudojant „Google Lens“.</translation>

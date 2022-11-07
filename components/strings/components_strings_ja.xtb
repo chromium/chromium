@@ -265,6 +265,7 @@
 <translation id="1567040042588613346">このポリシーは想定どおり動作していますが、同じ値が設定されている別のポリシーが優先されています。</translation>
 <translation id="1569487616857761740">有効期限の入力</translation>
 <translation id="1569694109004336106">Google Chrome がパスワード入力で Windows Hello を有効にしようとしています。</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> インチ</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
 <translation id="1586541204584340881">インストールした拡張機能</translation>
@@ -1105,6 +1106,7 @@
 <translation id="3787705759683870569">有効期限: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">サイズ 16</translation>
 <translation id="3789841737615482174">インストール</translation>
+<translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" />x<ph name="HEIGHT" /> インチ）</translation>
 <translation id="3793574014653384240">最近発生した問題の件数と原因</translation>
 <translation id="3795344968043407227">インディーズ音楽、オルタナティブ ミュージック</translation>
 <translation id="3799805948399000906">リクエストされたフォント</translation>
@@ -2507,6 +2509,7 @@
 <translation id="7441627299479586546">ポリシーの対象が間違っています</translation>
 <translation id="7442725080345379071">ライトオレンジ</translation>
 <translation id="7445762425076701745">接続してるサーバーの身元について、十分な検証ができません。接続しているサーバーは、そのネットワーク内でのみ有効な名前を使用しており、外部認証局がその所有権を検証する方法はありません。こうした名前で証明書を発行する認証局もあるので、接続先が意図したウェブサイトか、悪意のあるユーザーのサイトかは確認できません。</translation>
+<translation id="7447625772313191651"><ph name="NAME" />（<ph name="WIDTH" />x<ph name="HEIGHT" /> mm）</translation>
 <translation id="7451311239929941790">この問題について<ph name="BEGIN_LINK" />詳細を確認<ph name="END_LINK" />する</translation>
 <translation id="7455133967321480974">グローバルのデフォルト値（[ブロック]）を使用</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2812,6 +2815,7 @@
 <translation id="8218327578424803826">割り当てられた場所:</translation>
 <translation id="8225771182978767009">このサイトは、このパソコンを設定したユーザーによってブロックされています。</translation>
 <translation id="8228419419708659934">2 ページ表示</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">スポーツゲーム</translation>
 <translation id="8232343881378637145">プラットフォームの温度</translation>

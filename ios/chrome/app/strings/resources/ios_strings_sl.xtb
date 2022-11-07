@@ -102,6 +102,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1657641691196698092">Blokirani piškotki</translation>
 <translation id="165877110639533037">No Open Tabs</translation>
 <translation id="1674504678466460478">Iz jezika <ph name="SOURCE_LANGUAGE" /> v jezik <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Zahtevaj spletno mesto za mobilno napravo</translation>
 <translation id="168715261339224929">Če želite dostopati do zaznamkov v vseh napravah, vklopite sinhronizacijo.</translation>
 <translation id="1687475363370981210">Označi vse kot prebrano</translation>
 <translation id="1689333818294560261">Vzdevek</translation>
@@ -243,6 +244,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="288655811176831528">Zapri zavihek</translation>
 <translation id="2890171748217283516">Spletna mesta, ki jih spremljate, se shranijo v računu Google. Upravljate jih lahko v nastavitvah Odkrivanja.</translation>
 <translation id="2898963176829412617">Nova mapa …</translation>
+<translation id="2902684821701498619">Dodajanje na bralni seznam</translation>
 <translation id="2916171785467530738">Samodejno dokončanje iskanj in URL-jev</translation>
 <translation id="291754862089661335">Kodo QR ali črtno kodo postavite v ta okvir</translation>
 <translation id="2920866371965792875">Če želite, da se vam prikazujejo obvestila s tega spletnega mesta, ga spremljajte tukaj.</translation>
@@ -320,6 +322,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3478058380795961209">Expiration Month</translation>
 <translation id="3482959374254649722">Syncing your tabs...</translation>
 <translation id="3484946776651937681">Odpri v mapi »Prenosi«</translation>
+<translation id="3485558910355485767">Novo anonimno &amp;okno</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> o predlagani vsebini</translation>
 <translation id="3494788280727468875">Potrditev izbrisa podatkov brskanja</translation>
 <translation id="35083190962747987">Open ${url}</translation>
@@ -366,6 +369,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3858860766373142691">Ime</translation>
 <translation id="3861486700625780712">Ne spremljaj več</translation>
+<translation id="3863769054730344136">Pošiljanje v naprave</translation>
 <translation id="387280738075653372">Tukaj prenesite Chrome.</translation>
 <translation id="3892144330757387737">Tukaj bo prikazana zgodovina</translation>
 <translation id="3897092660631435901">Meni</translation>
@@ -589,6 +593,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5659593005791499971">E-pošta</translation>
 <translation id="5669335982068190158">Bili ste odjavljeni zaradi ponastavitve iPhona. Spodaj se dotaknite gumba za nadaljevanje, če se želite prijaviti.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Ustvari kodo QR</translation>
 <translation id="567881659373499783">Različica <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Prikaz 1 Chromovega okna}one{Prikaz {count} Chromovega okna}two{Prikaz {count} Chromovih oken}few{Prikaz {count} Chromovih oken}other{Prikaz {count} Chromovih oken}}</translation>
 <translation id="5701270923492462699">Dostop do kamere je odobren</translation>
@@ -673,6 +678,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6219550825416862075">Dobrodošli nazaj</translation>
 <translation id="6219688215832490856">Nikoli ne prevedi</translation>
 <translation id="6223816392543092032">Dostopajte do zaznamkov, zgodovine, gesel in drugih nastavitev v vseh napravah.</translation>
+<translation id="6229318421047648685">Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="6231782223312638214">Predlagano</translation>
 <translation id="6232329973559504466">Anonimno iskanje</translation>
 <translation id="6232736989810857397">To omogoča preprosto ustvarjanje dogodkov na koledarju s storitvijo Google Lens.</translation>

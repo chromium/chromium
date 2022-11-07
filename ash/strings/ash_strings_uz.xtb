@@ -484,6 +484,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3633097874324966332">Qurilmangizni ulash uchun Bluetooth sozlamalarini oching</translation>
 <translation id="3638400994746983214">Maxfiylik ekraniga kirish/chiqish. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Qayta ishga tushirish zarur</translation>
+<translation id="3659444876902283058">(<ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" /> kun)</translation>
 <translation id="3659814201068740063">Taxminan <ph name="TIME_LEFT" /> qoldi (<ph name="PERCENTAGE" />%).
 Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> boshqariladigan hisob</translation>
@@ -1268,6 +1269,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="8054466585765276473">Batareyadan ishlash mumkin bo‘lgan vaqt hisoblanmoqda.</translation>
 <translation id="8083540854303889870">Keyinroqqa saqlangan</translation>
+<translation id="8091153018031979607">Boshlanishi: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Avtomatik yangilashlar</translation>
 <translation id="8098591350844501178">Ekranni “<ph name="RECEIVER_NAME" />” qurilmasiga translatsiya qilishni to‘xtatish</translation>
 <translation id="8113423164597455979">Yoniq, hammasi</translation>
@@ -1381,6 +1383,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8703634754197148428">Yozib olish. Yozib olish jarayoni boshlansa, javonga oʻtish va yozib olishni toʻxtatish tugmasini topish uchun Alt + Shift + L tugmalaridan foydalaning</translation>
 <translation id="8721053961083920564">Tovushlar: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Butun ekranni tasvirga olish</translation>
+<translation id="8731487213223706745">Tugash vaqti: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bu bosilayotgan tugmalarni kuzatish urinishi bo‘lishi mumkin.</translation>
 <translation id="8735678380411481005">Klaviatura orqa chirogʻi rangi</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

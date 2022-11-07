@@ -1396,6 +1396,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2256115617011615191">Starta om nu</translation>
 <translation id="2257053455312861282">Om du lägger till ett skolkonto är det enkelt att logga in på webbplatser, i tillägg och i appar som elev medan föräldrakontroller fortfarande används.</translation>
 <translation id="2261323523305321874">Vissa äldre profiler har inaktiverats på grund av en ändring i systemet som administratören gjort.</translation>
+<translation id="22614517036276112">Dokumentet eller enheten efterlever inte vissa av organisationens säkerhetspolicyer. Kontakta administratören om vad som behöver åtgärdas.</translation>
 <translation id="2262477216570151239">Fördröjning före upprepning</translation>
 <translation id="2263189956353037928">Logga ut och logga in igen</translation>
 <translation id="2263371730707937087">Skärmens uppdateringsfrekvens</translation>
@@ -5089,6 +5090,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5733866499231170760">Ogiltigt id. Det angivna formatet är felaktigt. Läs de tillhandahållna anvisningarna för att se till att det angivna id:t har rätt format. Om du inte kan lösa problemet lämnar du fältet tomt och fortsätter med installationen.</translation>
 <translation id="5734362860645681824">Kommunikation</translation>
 <translation id="5734697361979786483">Lägg till filresurs</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Datan eller enheten efterlever inte vissa av organisationens säkerhetspolicyer. Kontakta administratören om vad som behöver åtgärdas.}=1{Filen eller enheten efterlever inte vissa av organisationens säkerhetspolicyer. Kontakta administratören om vad som behöver åtgärdas.}other{Filerna efterlever inte vissa av organisationens säkerhetspolicyer. Kontakta administratören om vad som behöver åtgärdas.}}</translation>
 <translation id="5736796278325406685">Ange ett giltigt användarnamn</translation>
 <translation id="5738093759615225354">Du behöver den här nyckeln för att logga in på datorn</translation>
 <translation id="5738329404678738022">Lagra dina bokmärken och annat med synkronisering</translation>
@@ -6580,6 +6582,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7123030151043029868">Får ladda ned flera filer automatiskt</translation>
 <translation id="7123302939607518173">Lägg till ett intresse eller en webbplats om du tror att du skulle ha nytta av annonser som är relaterade till det ämnet.</translation>
 <translation id="7124013154139278147">Tilldela brytare för Föregående</translation>
+<translation id="7124712201233930202">Organisationens policyer efterlevdes inte</translation>
 <translation id="7125029162161377569">Med provversionerna av Privacy Sandbox kan webbplatser ge samma surfupplevelse med mindre information om dig. Det ger ett bättre integritetsskydd och mindre spårning från webbplats till webbplats. Vi lägger till nya provversioner allt eftersom de blir klara att testa.</translation>
 <translation id="7125148293026877011">Radera Crostini</translation>
 <translation id="7127980134843952133">Nedladdningshistorik</translation>
@@ -8543,6 +8546,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="897939795688207351">På <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Feedbackrapporter</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – kraschat</translation>
+<translation id="8981038076986775523">Läs mer om att använda mikrofonen</translation>
 <translation id="8981825781894055334">Papperet börjar ta slut</translation>
 <translation id="8983018820925880511">Den nya profilen hanteras av <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> har redigeringsbehörighet till <ph name="FILENAME" /></translation>

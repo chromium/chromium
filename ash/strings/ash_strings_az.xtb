@@ -484,6 +484,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3633097874324966332">Cihazı birləşdirmək üçün Bluetooth ayarlarını açın</translation>
 <translation id="3638400994746983214">Məxfilik ekranını dəyişdirin. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Güncəlləmə vaxtı keçib</translation>
+<translation id="3659444876902283058">(Gün <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Təqribən <ph name="TIME_LEFT" /> qalıb (<ph name="PERCENTAGE" />%).
 Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> İdarə edilən istifadəçi</translation>
@@ -1268,9 +1269,11 @@ Yeni quraşdırma</translation>
 <translation id="8052898407431791827">Mübadilə buferinə kopyalandı</translation>
 <translation id="8054466585765276473">Enerji vaxtı hesablanır.</translation>
 <translation id="8083540854303889870">Sonra üçün yadda saxlanıldı</translation>
+<translation id="8091153018031979607">Başlama vaxtı: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Avtomatik güncəlləmələr</translation>
 <translation id="8098591350844501178">Ekranın <ph name="RECEIVER_NAME" /> üzrə yayımlanmasını dayandırın</translation>
 <translation id="8113423164597455979">Bütün tətbiqlərdə aktivdir</translation>
+<translation id="8113515504791187892">Seçib Danışın düyməsi</translation>
 <translation id="8120151603115102514">Telefonunuzun kilid ekranı yoxdur. Chromebook'u kiliddən çıxarmaq üçün parolu daxil edin.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
@@ -1380,6 +1383,7 @@ Yeni quraşdırma</translation>
 <translation id="8703634754197148428">Yazmanı başladın. Yazma başladıqda Alt + Shift + L düymələri ilə rəfə keçin və yazmanın dayandırılması düyməsini tapın</translation>
 <translation id="8721053961083920564">Səsi aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tam ekran çəkimi</translation>
+<translation id="8731487213223706745">Bitmə vaxtı: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bu düymələrininızı oğurlamağa cəhd edə bilər</translation>
 <translation id="8735678380411481005">Klaviatura arxa işığı rəngi</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

@@ -484,6 +484,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3633097874324966332">Atidarykite „Bluetooth“ nustatymus ir susiekite įrenginį</translation>
 <translation id="3638400994746983214">Perjunkite privatumo ekraną. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Vėluojama atnaujinti</translation>
+<translation id="3659444876902283058">(<ph name="CURRENT_DAY" /> d. iš <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Liko apie <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> proc.).
 Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> tvarkomas naudotojas</translation>
@@ -1268,9 +1269,11 @@ Naujas įdiegimas</translation>
 <translation id="8052898407431791827">Nukopijuota į iškarpinę</translation>
 <translation id="8054466585765276473">Apskaičiuojamas laikas, likęs iki akumuliatoriaus išsikrovimo.</translation>
 <translation id="8083540854303889870">Išsaugota vėlesniam laikui</translation>
+<translation id="8091153018031979607">Prasideda <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatiniai naujiniai</translation>
 <translation id="8098591350844501178">Sustabdyti ekrano perdavimą į: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Visų programų pranešimai įjungti</translation>
+<translation id="8113515504791187892">Funkcijos „Teksto ištarimas“ mygtukas</translation>
 <translation id="8120151603115102514">Jūsų telefone nėra užrakinimo ekrano. Jei norite atrakinti „Chromebook“, įveskite slaptažodį.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
@@ -1380,6 +1383,7 @@ Naujas įdiegimas</translation>
 <translation id="8703634754197148428">Pradėkite įrašyti. Pradėjus įrašyti, naudodami „Alt“ + „Shift“ + L eikite į juostą ir raskite įrašymo sustabdymo mygtuką</translation>
 <translation id="8721053961083920564">Perjungti garsumą. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Viso ekrano užfiksavimas</translation>
+<translation id="8731487213223706745">Baigiasi <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Gali būti bandoma pavogti jūsų klavišų paspaudimus</translation>
 <translation id="8735678380411481005">Klaviatūros apšvietimo spalva</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

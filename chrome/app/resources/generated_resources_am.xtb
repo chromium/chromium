@@ -538,6 +538,7 @@
 <translation id="1495677929897281669">ወደ ትር ተመለስ</translation>
 <translation id="1500297251995790841">የማይታወቅ መሣሪያ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ስለማይደገፉ የChrome መተግበሪያዎች የበለጠ ይወቁ</translation>
+<translation id="1503392482221435031">የአጠቃቀም ስታትስቲክስን ወደ Google በራስ-ሰር ይልካል። በእርስዎ መሣሪያ ቅንብሮች ውስጥ የብልሽት ሪፖርትን ማብራት ወይም ማጥፋት ይችላሉ።</translation>
 <translation id="150411034776756821"><ph name="SITE" />ን አስወግድ</translation>
 <translation id="1504551620756424144">የተጋሩ አቃፊዎች <ph name="BASE_DIR" /> ላይ በWindows ላይ ይገኛሉ።</translation>
 <translation id="1505494256539862015">የይለፍ ቃላትን ወደ ውጭ ላክ</translation>
@@ -1392,6 +1393,7 @@
 <translation id="2256115617011615191">አሁን ዳግም አስጀምር</translation>
 <translation id="2257053455312861282">የትምህርት ቤት መለያን ማከል በወላጅ ቁጥጥሮች ሥር ሆኖ እየሰሩ እንደ ተማሪ ሆኖ በቀላሉ በመለያ ወደ ድር ጣቢያዎች፣ ቅጥያዎች እና መተግበሪያዎች መግባትን ያስችላል።</translation>
 <translation id="2261323523305321874">የእርስዎ አስተዳዳሪ አንዳንድ የቆዩ መገለጫዎችን የሚያሰናክል ሙሉ ስርዓት ለውጦችን አድርገዋል።</translation>
+<translation id="22614517036276112">ይህ ሰነድ ወይም የእርስዎ መሣሪያ አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟላም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="2262477216570151239">ከመድገም በፊት አዘግይ</translation>
 <translation id="2263189956353037928">ዘግተው ይውጡ እና ተመልሰው ይግቡ</translation>
 <translation id="2263371730707937087">የማያ ገጽ ዕድሳት ፍጥነት</translation>
@@ -2696,6 +2698,7 @@
 <translation id="3461766685318630278">ተጨማሪ መያዣዎችን ይፍጠሩ እና ይሰርዙ።</translation>
 <translation id="3462311546193741693">ከአብዛኛዎቹ ጣቢያዎች ዘግተው ያስወጣዎታል። በእርስዎ የGoogle መለያ ውስጥ በመለያ እንደገቡ ስለሚቆዩ የእርስዎ የሰመረ ውሂብ ሊጸዳ ይችላል።</translation>
 <translation id="3462413494201477527">የመለያ ቅንብር ይተው?</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} የይለፍ ቃል በዚህ መሣሪያ ላይ ተቀምጧል}one{{COUNT} የይለፍ ቃል በዚህ መሣሪያ ላይ ተቀምጧል}other{{COUNT} የይለፍ ቃላት በዚህ መሣሪያ ላይ ተቀምጠዋል}}</translation>
 <translation id="346298925039590474">ይህ የሞባይል አውታረ ወረብ በዚህ መሣሪያ ላይ ላሉት ሁሉም ተጠቃሚዎች ይገኛል</translation>
 <translation id="3464145797867108663">የስራ መገለጫን አክል</translation>
 <translation id="346431825526753">ይሄ በ<ph name="CUSTODIAN_EMAIL" /> የሚቀናበር የህጻናት መለያ ነው።</translation>
@@ -2992,6 +2995,7 @@
 <translation id="3743842571276656710">ከ<ph name="DEVICE_NAME" /> ጋር ለመጣመር ፒን ያስገቡ</translation>
 <translation id="3747077776423672805">መተግበሪያዎችን ለማስወገድ ወደ ቅንብሮች &gt; &gt; Google Play መደብር &gt; የAndroid ምርጫዎችን ያስተዳድሩ &gt;መተግበሪያዎች ወይም የመተግበሪያ አስተዳዳሪ ይሂዱ። ከዚያ ለማራገፍ የሚፈልጉትን መተግበሪያ መታ ያድርጉ (መተግበሪያውን ለማግኘት ወደ ቀኝ ወይም ወደ ግራ ማንሸራተት ሊኖርብዎት ይችላል)። ከዚያ አራግፍ ወይም አሰናክል የሚለውን መታ ያድርጉ።</translation>
 <translation id="3747603683749989726">የተሻሻለ ደህንነት ይብራ?</translation>
+<translation id="3748424433435232460">ለዚህ መለያ አንድ የይለፍ ቃል በዚህ መሣሪያ ላይ አስቀድሞ ተቀምጧል</translation>
 <translation id="3748706263662799310">ስህተት ሪፖርት አድርግ</translation>
 <translation id="3750562496035670393">Chrome የይለፍ ቃልዎን በዚህ መሣሪያ ላይ አስቀምጦታል፣ ነገር ግን በምትኩ Google መለያዎ ላይ ማስቀመጥ ይችላሉ። ከዚያ በመለያ ገብተው ሳለ በGoogle መለያዎ ውስጥ ያሉት ሁሉም የይለፍ ቃላት ይገኛሉ።</translation>
 <translation id="3752253558646317685">ልጅዎ የጣት አሻራውን ለማስቀመት ጣታቸውን ማንሳት እንዲቀጥሉ ያድርጉ</translation>
@@ -3172,6 +3176,7 @@
 <translation id="3897746662269329507">የእርስዎ <ph name="DEVICE_TYPE" /> ለጨዋታ የተገነባ ነው። በመቶዎች የሚቆጠሩ አዳዲስ ጨዋታዎች ላይ የሚደርሱበት፣ የጨዋታ ቅናሾችን የሚመለከቱበት እና የጨዋታ ባህሪያትን የሚያገኙበት የያስሱ መተግበሪያ በቀጣይነት ይከፈታል።</translation>
 <translation id="3898233949376129212">የመሣሪያ ቋንቋ</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> የሚከተሉትን ማድረግ ይፈልጋል፦ <ph name="FIRST_PERMISSION" /> እና <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">የእርስዎ የይለፍ ቃል ለ<ph name="WEBSITE" /> በዚህ መሣሪያ ላይ እና ወደ እርስዎ Google መለያ ተቀምጧል። የትኛውን መሰረዝ ይፈልጋሉ?</translation>
 <translation id="389901847090970821">የቁልፍ ሰሌዳን ይምረጡ</translation>
 <translation id="3900966090527141178">የይለፍ ቃላትን ወደ ውጭ ይላኩ</translation>
 <translation id="3902789559055749153">ለ<ph name="APP_NAME" /> አንድ የይለፍ ቁልፍ እንዴት መፍጠር እንደሚፈልጉ ይምረጡ።</translation>
@@ -5080,6 +5085,7 @@
 <translation id="5733866499231170760">ልክ ያልኾነ መታወቂያ። እርስዎ ያስገቡት ቅርጸት ትክክል አይደለም። መታወቂያውን በትክክለኛው ቅርጸት እያስገቡ እንደሆነ ለማረጋገጥ እባክዎ የተቀበሏቸውን መመሪያዎች ይመልከቱ። ይህን ችግር መፍታት ካልቻሉ እባክዎ መስኩን ባዶ ይተዉት እና መጫኑን ይቀጥሉ።</translation>
 <translation id="5734362860645681824">ተግባቦት</translation>
 <translation id="5734697361979786483">ፋይል አጋራን ያክሉ</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{ይህ ውሂብ ወይም የእርስዎ መሣሪያ አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟላም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።}=1{ይህ ፋይል ወይም የእርስዎ መሣሪያ አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟላም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።}one{ይህ ፋይል አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟላም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።}other{እነዚህ ፋይሎች አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟሉም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።}}</translation>
 <translation id="5736796278325406685">እባክዎ የሚሠራ የተጠቃሚ ስም ያስገቡ</translation>
 <translation id="5738093759615225354">ወደ የእርስዎ ኮምፒውተር ለመግባት ይህ የይለፍ ቁልፍ ያስፈልገዎታል</translation>
 <translation id="5738329404678738022">በስምረት እልባትዎችዎን እና ሌሎችንም ያከማቹ</translation>
@@ -5899,6 +5905,7 @@
 <translation id="6508261954199872201">መተግበሪያ፦ <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">የማህደረ መረጃ ፈቃድ</translation>
 <translation id="6511827214781912955">ይህን መሣሪያ የሚጠቀሙ ሌሎች የእርስዎን የይለፍ ቃላት ማየት እንዳይችሉ <ph name="FILENAME" />ን መሰረዝን ያስቡበት</translation>
+<translation id="6512808201725371249">ለዚህ መለያ አንድ የይለፍ ቃል አስቀድሞ ወደ Google የይለፍ ቃል አስተዳዳሪዎ (<ph name="USER_EMAIL" />) ላይ ተቀምጧል</translation>
 <translation id="6513247462497316522">ከሌላ አውታረ መረብ ጋር ካልተገናኙ Google Chrome የተንቀሳቃሽ ውሂብን ይጠቀማል።</translation>
 <translation id="6514010653036109809">የሚገኝ መሣሪያ፦</translation>
 <translation id="6514565641373682518">ይህ ገጽ የመዳፊት ጠቋሚዎን አሰናክሏል።</translation>
@@ -6319,6 +6326,7 @@
 <translation id="6896758677409633944">ቅዳ</translation>
 <translation id="6897363604023044284">የሚጸዱ ጣቢያዎችን ምረጥ</translation>
 <translation id="6897688156970667447">ብርሃን ሲያንስ ይረዳል እና ባትሪ ይቆጥባል</translation>
+<translation id="6897972855231767338">እንደ እንግዳ ስለማሰስ የበለጠ ይወቁ</translation>
 <translation id="6898440773573063262">አሁን የኪዮስክ መተግበሪያዎች በዚህ መሣሪያ ላይ ወደ ራስ-ጀምር መዋቀር ይችላሉ።</translation>
 <translation id="6900284862687837908">የጀርባ መተግበሪያ፦ <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">የላቀ ጥበቃ</translation>
@@ -6573,6 +6581,7 @@
 <translation id="7123030151043029868">ብዙ ፋይሎችን በራስ-ሰር ለማውረድ ተፈቅዷል</translation>
 <translation id="7123302939607518173">ከንጥሉ ጋር የተያያዙ ማስታወቂያዎች ለእርስዎ ጠቃሚ ናቸው ብለው ካሰቡ ዝንባሌን ወይም ጣቢያን ያክሉ</translation>
 <translation id="7124013154139278147">ለ«ቀዳሚው» መቀየሪያ ይመድቡ</translation>
+<translation id="7124712201233930202">የድርጅትዎ መመሪያዎች አልተሟሉም</translation>
 <translation id="7125029162161377569">በግላዊነት Sandbox ሙከራዎች ጣቢያዎች ያነሰ መረጃዎን በመጠቀም ተመሳሳይ የአሰሳ ተሞክሮን ማድረስ ይችላሉ። ይህ ማለት ለእርስዎ የበለጠ ግላዊነት እና ያነሰ የጣቢያ ተሻጋሪ ክትትል ማለት ነው። ልክ ለመሞከር ዝግጁ ሲሆኑ አዲስ ሙከራዎችን እናክላለን።</translation>
 <translation id="7125148293026877011">Crostiniን ይሰርዙ</translation>
 <translation id="7127980134843952133">የአውርድ ታሪክ</translation>
@@ -8542,6 +8551,7 @@ nil</translation>
 <translation id="897939795688207351">በ<ph name="ORIGIN" /> ላይ</translation>
 <translation id="8980345560318123814">የግብረመልስ ሪፖርቶች</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - ተበላሽቷል</translation>
+<translation id="8981038076986775523">ማይክሮፎን ስለመጠቀም የበለጠ ይወቁ</translation>
 <translation id="8981825781894055334">ወረቀት እያለቀ ነው</translation>
 <translation id="8983018820925880511">ይህ አዲስ መገለጫ በ<ph name="DOMAIN" /> የሚተዳደር ይሆናል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" />ን ማርትዕ ይችላል</translation>
@@ -8628,6 +8638,7 @@ nil</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> የሚከተለውን ይዘት መድረስ ይፈልጋል፡-</translation>
 <translation id="9057354806206861646">መርሐግብርን አዘምን</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{በቀን 1 ያህል ማሳወቂያ}one{በቀን {NUM_NOTIFICATION} ያህል ማሳወቂያ}other{በቀን {NUM_NOTIFICATION} ያህል ማሳወቂያዎች}}</translation>
+<translation id="9061383912634843744">የተቀመጡ የመግቢያ ማስረጃዎችን በመጠቀም ወደ ጣቢያዎች እና መተግበሪያዎች በራስ-ሰር ይግቡ። ከጠፋ ወደ አንድ ጣቢያ ወይም መተግበሪያ በመለያ ከመግባትዎ በፊት ማረጋገጫ እንዲሰጡ ይጠየቃሉ።</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">ከመስመር <ph name="ERROR_LINE_START" /> እስከ <ph name="ERROR_LINE_END" /> ስህተት</translation>
 <translation id="9064275926664971810">በአንዲት ጠቅታ ራስ-ሙላ ቅጾችን እንዲሞላ ራስ-ሙላን ያንቁ</translation>

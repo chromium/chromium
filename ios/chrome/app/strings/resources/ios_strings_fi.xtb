@@ -102,6 +102,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1657641691196698092">Estetyt evästeet</translation>
 <translation id="165877110639533037">Ei avoimia välilehtiä</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Mobiiliversion pyytäminen</translation>
 <translation id="168715261339224929">Ota synkronointi käyttöön, niin voit käyttää kirjanmerkkejä kaikilla laitteillasi.</translation>
 <translation id="1687475363370981210">Merkitse kaikki luetuiksi</translation>
 <translation id="1689333818294560261">Lempinimi</translation>
@@ -243,6 +244,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="288655811176831528">Sulje välilehti</translation>
 <translation id="2890171748217283516">Seuraamasi sivustot tallennetaan Google-tilillesi. Voit ylläpitää niitä Discoverin asetuksissa.</translation>
 <translation id="2898963176829412617">Uusi kansio…</translation>
+<translation id="2902684821701498619">Lukulistalle lisääminen</translation>
 <translation id="2916171785467530738">Hakujen ja URL-osoitteiden automaattinen täydennys</translation>
 <translation id="291754862089661335">Aseta QR- tai viivakoodi tämän kehyksen sisälle.</translation>
 <translation id="2920866371965792875">Jos haluat päivityksiä tältä sivustolta, seuraa sitä täältä.</translation>
@@ -320,6 +322,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3478058380795961209">Voimassa (kk)</translation>
 <translation id="3482959374254649722">Synkronoidaan välilehtiä…</translation>
 <translation id="3484946776651937681">Avaa Lataukset-kansiossa</translation>
+<translation id="3485558910355485767">Uusi incognito-ikkuna</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lue lisätietoja<ph name="END_LINK" /> suositellusta sisällöstä.</translation>
 <translation id="3494788280727468875">Vahvista selaustietojen poistaminen</translation>
 <translation id="35083190962747987">Avaa ${url}</translation>
@@ -366,6 +369,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861486700625780712">Lopeta seuraaminen</translation>
+<translation id="3863769054730344136">Laitteille lähettäminen</translation>
 <translation id="387280738075653372">Lataa Chrome täältä.</translation>
 <translation id="3892144330757387737">Näet historiasi täällä</translation>
 <translation id="3897092660631435901">Valikko</translation>
@@ -589,6 +593,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5659593005791499971">Sähköposti</translation>
 <translation id="5669335982068190158">Sinut kirjattiin ulos, kun iPhone nollattiin. Kirjaudu sisään valitsemalla alta "Jatka".</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR-koodin luominen</translation>
 <translation id="567881659373499783">Versio <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Nyt näytetään 1 Chrome-ikkuna}other{Nyt näytetään {count} Chrome-ikkunaa}}</translation>
 <translation id="5701270923492462699">Pääsy kameraan myönnetty</translation>
@@ -673,6 +678,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6219550825416862075">Tervetuloa takaisin</translation>
 <translation id="6219688215832490856">Älä käännä koskaan</translation>
 <translation id="6223816392543092032">Käytä kirjanmerkkejäsi, historiaasi, salasanojasi ja muita asetuksiasi kaikilla laitteillasi</translation>
+<translation id="6229318421047648685">Tietokoneversion pyytäminen</translation>
 <translation id="6231782223312638214">Ehdotukset</translation>
 <translation id="6232329973559504466">Incognito-haku</translation>
 <translation id="6232736989810857397">Tämän avulla voit luoda kalenteritapahtumia helposti Google Lensilla.</translation>

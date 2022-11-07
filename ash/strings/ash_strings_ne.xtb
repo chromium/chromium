@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">आफ्नो डिभाइस कनेक्ट गर्न ब्लुटुथका सेटिङ खोल्नुहोस्</translation>
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649505501900178324">अद्यावधिक हुन बाँकी</translation>
+<translation id="3659444876902283058">(<ph name="TOTAL_DAYS" /> मध्ये <ph name="CURRENT_DAY" /> औँ दिन)</translation>
 <translation id="3659814201068740063">लगभग <ph name="TIME_LEFT" /> बाँकी (<ph name="PERCENTAGE" />%)।
 आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापन गरिएका प्रयोगकर्ता</translation>
@@ -1268,9 +1269,11 @@
 <translation id="8052898407431791827">कपी गरेर क्लिपबोर्डमा पेस्ट गरियो</translation>
 <translation id="8054466585765276473">ब्याटरि समय हिसाब गर्दै।</translation>
 <translation id="8083540854303889870">पछि खरिद गर्नका लागि सेभ गरिएका वस्तु</translation>
+<translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> मा सुरु हुन्छ</translation>
 <translation id="8091387634532529612">स्वतः अपडेट गर्ने सुविधा</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> मा स्क्रिन casting गर्ने काम रोक्नुहोस्</translation>
 <translation id="8113423164597455979">सबै डिभाइसमा अन</translation>
+<translation id="8113515504791187892">सेलेक्ट टु स्पिक नामक बटन</translation>
 <translation id="8120151603115102514">तपाईंको फोनमा लक स्क्रिन छैन। Chromebook अनलक गर्न पासवर्ड हाल्नुहोस्।</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8131740175452115882">निश्चित</translation>
@@ -1380,6 +1383,7 @@
 <translation id="8703634754197148428">रेकर्ड गर्न थाल्नुहोस्। रेकर्ड हुन थालेपछि सेल्फमा जान Alt + Shift + L थिच्नुहोस् र रेकर्ड गर्न बन्द गर्ने बटन भेट्टाउनुहोस्</translation>
 <translation id="8721053961083920564">भोल्युम टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्क्रिन क्याप्चर</translation>
+<translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> मा समाप्त हुन्छ</translation>
 <translation id="8734991477317290293">यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ</translation>
 <translation id="8735678380411481005">किबोर्डको ब्याकलाइटको रङ</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

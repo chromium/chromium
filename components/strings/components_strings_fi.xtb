@@ -1414,6 +1414,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4606870351894164739">Vaikuttava</translation>
 <translation id="4607603470419975064">Katso Chromen vinkkejä ‑painike, katso lisätietoja Chromen ominaisuuksista painamalla Enter</translation>
 <translation id="4607608436550361748">Katso Chromen vinkkejä</translation>
+<translation id="4610279718074907952">Tämä sivusto kuuluu ryhmään, jonka <ph name="SET_OWNER" /> on määritellyt ja joka voi nähdä toimintasi</translation>
 <translation id="4617273035598175554">Grafiikka- ja animaatio-ohjelmistot</translation>
 <translation id="4622292761762557753">Siirrä silti</translation>
 <translation id="4627675673814409125">Käytäntöä ei voi määrittää Chrome-profiilin tasolta, ja määritys ohitetaan.</translation>
@@ -2389,6 +2390,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7130775116821607281">Estetty lataus</translation>
 <translation id="7132939140423847331">Järjestelmänvalvojasi on kieltänyt tämän datan kopioimisen.</translation>
 <translation id="7135130955892390533">Näytä tila</translation>
+<translation id="7136009930065337683">Lue lisää incognitosta</translation>
 <translation id="7138472120740807366">Toimitustapa</translation>
 <translation id="7139892792842608322">Ensisijainen lokero</translation>
 <translation id="714064300541049402">2. puolen kuvan X vaihto</translation>

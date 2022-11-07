@@ -484,6 +484,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3633097874324966332">Avaa Bluetooth-asetukset ja muodosta laitepari</translation>
 <translation id="3638400994746983214">Näytönsuoja päälle/pois. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Päivitys myöhässä</translation>
+<translation id="3659444876902283058">(päivä <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Noin <ph name="TIME_LEFT" /> jäljellä (<ph name="PERCENTAGE" /> %).
 Yhdistä laite virtalähteeseen.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ylläpidetty käyttäjä</translation>
@@ -1268,9 +1269,11 @@ Uusi asennus</translation>
 <translation id="8052898407431791827">Kopioitu leikepöydälle</translation>
 <translation id="8054466585765276473">Lasketaan akun kesto.</translation>
 <translation id="8083540854303889870">Tallennettu myöhempää käyttöä varten</translation>
+<translation id="8091153018031979607">Alkaa klo <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automaattiset päivitykset</translation>
 <translation id="8098591350844501178">Lopeta suoratoisto: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Päällä, kaikki</translation>
+<translation id="8113515504791187892">Teksti puhuttuna ‑painike</translation>
 <translation id="8120151603115102514">Puhelimessasi ei ole lukitusnäyttöä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Vahvista</translation>
@@ -1380,6 +1383,7 @@ Uusi asennus</translation>
 <translation id="8703634754197148428">Aloita tallentaminen. Kun tallentaminen on alkanut, avaa hylly painamalla Alt + Vaihto + L ja etsi tallennuksen lopetuspainike</translation>
 <translation id="8721053961083920564">Muuta äänenvoimakkuutta. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Koko näytön kuvakaappaus</translation>
+<translation id="8731487213223706745">Päättyy klo <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Sillä voidaan yrittää kaapata näppäinpainalluksesi</translation>
 <translation id="8735678380411481005">Näppäimistön taustavalon väri</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>

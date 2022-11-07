@@ -102,6 +102,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1657641691196698092">Blokované súbory cookie</translation>
 <translation id="165877110639533037">Žiadne otvorené karty</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Vyžiadať mobilný web</translation>
 <translation id="168715261339224929">Ak chcete získať záložky vo všetkých zariadeniach, zapnite synchronizáciu.</translation>
 <translation id="1687475363370981210">Označiť všetko ako prečítané</translation>
 <translation id="1689333818294560261">Prezývka</translation>
@@ -243,6 +244,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="288655811176831528">Zavrieť kartu</translation>
 <translation id="2890171748217283516">Weby, ktoré sledujete, sa ukladajú do vášho účtu Google. Môžete ich spravovať v nastaveniach kanála Objaviť.</translation>
 <translation id="2898963176829412617">Nový priečinok…</translation>
+<translation id="2902684821701498619">Pridať do čitateľského zoznamu</translation>
 <translation id="2916171785467530738">Automatické dopĺňanie vyhľadávaní a webových adries</translation>
 <translation id="291754862089661335">Umiestnite QR kód alebo čiarový kód do tohto rámčeka</translation>
 <translation id="2920866371965792875">Ak si chcete pozrieť aktuality z tohto webu, prejdite tu.</translation>
@@ -320,6 +322,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3478058380795961209">Mesiac vypršania platnosti</translation>
 <translation id="3482959374254649722">Synchronizujú sa záložky...</translation>
 <translation id="3484946776651937681">Otvoriť v priečinku Stiahnuté</translation>
+<translation id="3485558910355485767">Nové okno inkognito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /> o návrhoch obsahu</translation>
 <translation id="3494788280727468875">Potvrdiť vymazanie dát prehliadania</translation>
 <translation id="35083190962747987">Otvoriť ${url}</translation>
@@ -366,6 +369,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="385051799172605136">Späť</translation>
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3861486700625780712">Prestať sledovať</translation>
+<translation id="3863769054730344136">Odoslať do zariadení</translation>
 <translation id="387280738075653372">Tu si stiahnite Chrome.</translation>
 <translation id="3892144330757387737">Tu nájdete svoju históriu</translation>
 <translation id="3897092660631435901">Ponuka</translation>
@@ -589,6 +593,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5669335982068190158">V rámci resetovania iPhonu vás systém odhlásil. Ak sa chcete prihlásiť, klepnite na Pokračovať nižšie.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Vytvoriť QR kód</translation>
 <translation id="567881659373499783">Verzia <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Práve sa zobrazuje 1 okno Chromu}few{Práve sa zobrazujú {count} okná Chromu}many{Now showing {count} Chrome windows}other{Práve sa zobrazuje {count} okien Chromu}}</translation>
 <translation id="5701270923492462699">Prístup ku kamere je povolený</translation>
@@ -673,6 +678,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6219550825416862075">Vitajte späť</translation>
 <translation id="6219688215832490856">Nikdy neprekladať</translation>
 <translation id="6223816392543092032">Používajte svoje záložky, históriu, heslá a ďalšie nastavenia vo všetkých svojich zariadeniach.</translation>
+<translation id="6229318421047648685">Vyžiadať web pre počítače</translation>
 <translation id="6231782223312638214">Navrhované</translation>
 <translation id="6232329973559504466">Vyhľadávanie v režime inkognito</translation>
 <translation id="6232736989810857397">Budete tak môcť jednoducho vytvárať udalosti v kalendári pomocou funkcie Google Lens.</translation>

@@ -1413,6 +1413,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4606870351894164739">Virkningsfuld</translation>
 <translation id="4607603470419975064">Knappen Se tips til Chrome, tryk på Enter for at få flere oplysninger om Chrome-funktioner</translation>
 <translation id="4607608436550361748">Se tips til Chrome</translation>
+<translation id="4610279718074907952">Dette website er i en gruppe, der er defineret af <ph name="SET_OWNER" />, og som kan se din aktivitet</translation>
 <translation id="4617273035598175554">Grafik og animationssoftware</translation>
 <translation id="4622292761762557753">Overfør alligevel</translation>
 <translation id="4627675673814409125">Denne politik kan ikke angives på Chrome-profilniveauet og ignoreres.</translation>
@@ -2388,6 +2389,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7130775116821607281">Blokeret upload</translation>
 <translation id="7132939140423847331">Din administrator tillader ikke kopiering af disse data.</translation>
 <translation id="7135130955892390533">Vis status</translation>
+<translation id="7136009930065337683">Få flere oplysninger om inkognitotilstand</translation>
 <translation id="7138472120740807366">Leveringsmetode</translation>
 <translation id="7139892792842608322">Primær bakke</translation>
 <translation id="714064300541049402">Billedskift X på side 2</translation>

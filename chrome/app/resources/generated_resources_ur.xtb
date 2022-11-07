@@ -537,6 +537,7 @@
 <translation id="1495677929897281669">ٹیب پر واپس جائیں</translation>
 <translation id="1500297251995790841">نامعلوم آلہ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">‏غیر تعاون یافتہ Chrome ایپس کے بارے میں مزید جانیں</translation>
+<translation id="1503392482221435031">‏استعمال کے اعدادوشمار خودکار طور پر Google کو بھیجتا ہے۔ آپ اپنے آلے کی ترتیبات میں کریش رپورٹس کو آن یا آف کر سکتے ہیں۔</translation>
 <translation id="150411034776756821"><ph name="SITE" /> کو ہٹائیں</translation>
 <translation id="1504551620756424144">ونڈوز میں اشتراک کردہ فولڈرز <ph name="BASE_DIR" /> میں دستیاب ہیں۔</translation>
 <translation id="1505494256539862015">پاس ورڈز برآمد کریں</translation>
@@ -2690,6 +2691,7 @@
 <translation id="3461766685318630278">اضافی کنٹینرز تخلیق کریں اور انہیں حذف کریں۔</translation>
 <translation id="3462311546193741693">‏ایسا کرنے پر آپ اکثر سائٹس سے سائن آؤٹ ہو جاتے ہیں۔ آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے تاکہ آپ کے مطابقت پذیر ڈیٹا کو صاف کیا جا سکے۔</translation>
 <translation id="3462413494201477527">اکاؤنٹ سیٹ اپ منسوخ کریں؟</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{اس آلہ پر {COUNT} پاس ورڈ محفوظ ہے}other{اس آلہ پر {COUNT} پاس ورڈز محفوظ ہیں}}</translation>
 <translation id="346298925039590474">یہ موبائل نیٹ ورک اس آلہ پر سبھی صارفین کیلئے دستیاب ہوگا</translation>
 <translation id="3464145797867108663">دفتری پروفائل شامل کریں</translation>
 <translation id="346431825526753">یہ <ph name="CUSTODIAN_EMAIL" /> کے زیر انتظام بچوں کیلئے ایک اکاؤنٹ ہے۔</translation>
@@ -2986,6 +2988,7 @@
 <translation id="3743842571276656710">‏<ph name="DEVICE_NAME" /> کے ساتھ جوڑا بنانے کے لیے PIN درج کریں</translation>
 <translation id="3747077776423672805">‏ایپس ہٹانے کے لیے، ترتیبات &gt; Google Play اسٹور &gt; Android کی ترجیحات کا نظم کریں &gt; ایپس یا ایپلیکیشن مینیجر پر جائیں۔ پھر اس ایپ پر تھپتھپائیں جسے آپ اَن انسٹال کرنا چاہتے ہیں (ممکن ہے کہ ایپ تلاش کرنے کے لیے آپ کو دائیں یا بائیں سوائپ کرنا پڑے)۔ پھر 'اَن انسٹال کریں' یا 'غیر فعال کریں' پر تھپتھپائیں۔</translation>
 <translation id="3747603683749989726">بہتر کردہ سیکیورٹی کو آن کریں؟</translation>
+<translation id="3748424433435232460">اس اکاؤنٹ کا پاس ورڈ پہلے ہی اس آلے پر محفوظ ہے</translation>
 <translation id="3748706263662799310">بگ کی اطلاع دیں</translation>
 <translation id="3750562496035670393">‏Chrome نے آپ کا پاس ورڈ اس آلہ میں محفوظ کر لیا ہے، لیکن آپ اس کے بجائے اسے اپنے Google اکاؤنٹ میں محفوظ کر سکتے ہیں۔ پھر، آپ کے سائن ان ہونے پر آپ کے Google اکاؤنٹ کے تمام پاس ورڈز بھی دستیاب ہوں گے۔</translation>
 <translation id="3752253558646317685">فنگر پرنٹ کو بچانے کے لیے اپنے بچے سے کہیں کہ انگلی اٹھاتا رہے</translation>
@@ -3166,6 +3169,7 @@
 <translation id="3897746662269329507">‏آپ کا <ph name="DEVICE_TYPE" /> گیمنگ کے لیے بنایا گیا ہے۔ Explore ایپ اس کے بعد کھلے گی جہاں آپ سینکڑوں تازہ ترین گیمز تک رسائی حاصل کر سکتے ہیں، گیمنگ کی پیشکشیں دیکھ سکتے ہیں اور آپ کے آلے کے ساتھ آنے والی گیمنگ کی خصوصیات کو دریافت کر سکتے ہیں۔</translation>
 <translation id="3898233949376129212">آلے کی زبان</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> کو درکار ہے: <ph name="FIRST_PERMISSION" /> اور <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">‏<ph name="WEBSITE" /> کیلئے آپ کا پاس ورڈ اس آلے پر اور آپ کے Google اکاؤنٹ میں محفوظ ہے۔ آپ کسے حذف کرنا چاہتے ہیں؟</translation>
 <translation id="389901847090970821">کی بورڈ منتخب کریں</translation>
 <translation id="3900966090527141178">پاس ورڈز برآمد کریں</translation>
 <translation id="3902789559055749153">منتخب کریں کہ آپ <ph name="APP_NAME" /> کے لئے کس طرح پاس کی تخلیق کرنا چاہتے ہیں</translation>
@@ -5895,6 +5899,7 @@
 <translation id="6508261954199872201">ایپ: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">میڈیا لائسنس</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> کو حذف کرنے پر غور کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
+<translation id="6512808201725371249">‏اس اکاؤنٹ کا پاس ورڈ پہلے سے ہی آپ کے Google پاس ورڈ مینیجر میں محفوظ ہے (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">‏اگر آپ کسی دوسرے نیٹ ورک سے منسلک نہیں ہیں تو Google Chrome موبائل ڈیٹا کا استعمال کرے گا۔</translation>
 <translation id="6514010653036109809">دستیاب آلہ:</translation>
 <translation id="6514565641373682518">اس صفحہ نے آپ کے ماؤس کرسر کو غیر فعال کر دیا ہے۔</translation>
@@ -6313,6 +6318,7 @@
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6897363604023044284">صاف کرنے کے لیے سائٹس کا انتخاب کریں</translation>
 <translation id="6897688156970667447">کم روشنی میں مددگار اور بیٹری بچاتا ہے</translation>
+<translation id="6897972855231767338">بطور مہمان براؤزنگ کے بارے میں مزید جانیں</translation>
 <translation id="6898440773573063262">کیوسک ایپلیکیشنز کو اس آلہ پر خودبخود شروع کرنے کیلئے اب کنفیگر کیا جا سکتا ہے۔</translation>
 <translation id="6900284862687837908">پس منظر ایپ: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">بہتر کردہ حفاظت</translation>
@@ -8617,6 +8623,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> درج ذیل مواد تک رسائی حاصل کرنا چاہتا ہے:</translation>
 <translation id="9057354806206861646">شیڈول اپ ڈیٹ کریں</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{تقریباً 1 اطلاع ایک دن میں}other{تقریباً {NUM_NOTIFICATION} اطلاعات ایک دن میں}}</translation>
+<translation id="9061383912634843744">اسٹور کردہ اسناد کا استعمال کر کے سائٹس اور ایپس میں خود کار طور پر سائن ان کریں۔ اگر آف ہے تو کسی سائٹ یا ایپ میں سائن ان کرنے سے پہلے ہر بار آپ سے توثیق کرنے کے لیے کہا جائے گا۔</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">لائن <ph name="ERROR_LINE_START" /> سے <ph name="ERROR_LINE_END" /> تک خرابی</translation>
 <translation id="9064275926664971810">ایک کلک میں فارمز پُر کرنے کیلئے آٹو فل کو فعال کریں</translation>

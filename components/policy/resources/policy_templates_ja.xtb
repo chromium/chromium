@@ -1422,6 +1422,7 @@
 
        このポリシーを未設定のままにすると、統計情報と診断データの送信は管理対象外のデバイスではオフになり、管理対象のデバイスではオンになります。</translation>
 <translation id="244950822854046436"><ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> に適用する設定のリストです。これはファイルがダウンロードされるときに呼び出されます。<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、ウェブページからダウンロードされるファイルをコネクタがサービス プロバイダに送信すべきかどうかを判別する際に使用されます。ウェブページの URL は、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。ファイルの MIME タイプも、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> フィールドは、サービス プロバイダでお客様のアカウントを識別するパートナー サービス プロバイダの一意の ID です。<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> の設定の一部としてログインが必要な場合、このお客様のサービス プロバイダ アカウントと関連付けられたユーザー アカウントのみが許可されます。このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
+<translation id="2452225615952836461">リクエスト メソッドを常に大文字にする</translation>
 <translation id="2454228136871844693">安定性を重視します。</translation>
 <translation id="2455033019778127130">デフォルトのブラウザ処理を行い、利用規約を表示してユーザーの同意を待ちます。</translation>
 <translation id="2460127623195247744">このポリシーはサポートが終了しています。代わりに <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> ポリシーを使用してください。
@@ -2050,6 +2051,17 @@
 <translation id="3101035417394748390">クリップボードの同期によってクライアントとホストとの間で転送可能な上限サイズ（バイト）を設定します</translation>
 <translation id="3101501961102569744">プロキシ サーバー設定の指定方法を選択する</translation>
 <translation id="3101709781009526431">日時</translation>
+<translation id="3105764289283669411">このポリシーでは、<ph name="CORS" /> プリフライトで <ph name="ACAM_HEADER_NAME" /> レスポンス ヘッダーと照合する際に、リクエスト メソッドを大文字にするかどうかを制御します。
+
+このポリシーを無効に設定した場合、リクエスト メソッドは大文字になります。
+これは <ph name="PRODUCT_NAME" /> 108 より前の動作です。
+
+このポリシーを有効に設定した場合、または設定しない場合、リクエスト メソッドは大文字になりません。ただし、大文字と小文字を区別せずに <ph name="DELETE_METHOD_NAME" />、<ph name="GET_METHOD_NAME" />、<ph name="HEAD_METHOD_NAME" />、<ph name="OPTIONS_METHOD_NAME" />、<ph name="POST_METHOD_NAME" />、<ph name="PUT_METHOD_NAME" /> と照合する場合は除きます。
+これにより、<ph name="REJECTED_CASE" /> レスポンス ヘッダーは拒否され、<ph name="ACCEPTED_CASE" /> レスポンス ヘッダーは許可されます。
+
+注: <ph name="POST_LOWERCASE_METHOD_NAME" /> と <ph name="PUT_LOWERCASE_METHOD_NAME" /> のリクエスト メソッドは影響を受けませんが、<ph name="PATCH_LOWERCASE_METHOD_NAME" /> は影響を受けます。
+
+このポリシーは一時的なもので、将来的には削除されます。</translation>
 <translation id="3110248563985502478">このポリシーは M88 でサポートが終了しています。Flash は Chrome でご利用いただけなくなりました。このポリシーを有効に設定した場合、古いプラグインが通常のプラグインとして使用されます。このポリシーを無効に設定した場合、古いプラグインは使用されません。
 
       このポリシーを未設定のままにした場合、古いプラグインの実行の許可を確認するメッセージがユーザーに表示されます。</translation>
@@ -3538,6 +3550,13 @@
 
       ポリシーがリストになく、ソース、スコープ、レベル間で矛盾がある場合は、優先度の最も高いポリシーが適用されます。</translation>
 <translation id="4646739075621507361">印刷ジョブを報告する</translation>
+<translation id="4647870063570047503">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。その際、Chrome Root Store がパブリック トラストのソースとして使用されます。
+
+このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> はシステムの証明書確認機能とシステムのルート証明書を使用します。
+
+このポリシーを未設定のままにした場合、Chrome Root Store またはシステムの提供するルートが使用される可能性があります。
+
+このポリシーは <ph name="MS_WIN_NAME" /> および <ph name="MAC_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 113 で削除される予定です（プラットフォームから提供される証明書確認機能とルートのサポートが終了するため）。</translation>
 <translation id="4649395978608361979">ローカル プリンタの送信先</translation>
 <translation id="4650044303940238102">ローカル フォントの設定</translation>
 <translation id="4650759511838826572">URL プロトコル スキームを無効にする</translation>
@@ -6343,6 +6362,7 @@
 <translation id="7724161903134898864">このポリシーを 1 に設定した場合、ウェブサイトによるポップアップの表示が許可されます。このポリシーを 2 に設定した場合、ポップアップは拒否されます。
 
       このポリシーを未設定のままにした場合、<ph name="BLOCK_POPUPS_POLICY_NAME" /> は適用されますが、ユーザーはこの設定を変更できます。</translation>
+<translation id="7728486978686128364">DELETE、GET、HEAD、OPTIONS、POST、PUT 以外のリクエスト メソッドを大文字にしない</translation>
 <translation id="7731026922044991970">すべてのサイトの Cookie を以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作に戻す</translation>
 <translation id="7732907212083471072">削除済みのポリシー</translation>
 <translation id="7734212505800048991">
@@ -7572,6 +7592,7 @@
 
       ポリシーの値は秒単位で指定します。</translation>
 <translation id="9015578113567730893">オーディオ テレメトリーの収集の間隔（ミリ秒単位）</translation>
+<translation id="9015952763003753868"><ph name="CORS" /> プリフライトで<ph name="ACAM_HEADER_NAME" /> の照合を仕様に沿って行う</translation>
 <translation id="9031831501689819108">従来のブラウザのサポートを有効にする</translation>
 <translation id="9035086760683255833">「キーボード フォーカスによるハイライト表示」のユーザー補助機能を有効にします。
 

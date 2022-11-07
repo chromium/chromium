@@ -484,6 +484,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3633097874324966332">Vula amasethingi we-Bluetooth ukuze ubhanqe idivayisi yakho</translation>
 <translation id="3638400994746983214">Guqula isikrini sobumfihlo. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Isibuyekezo sesidlulelwe isikhathi</translation>
+<translation id="3659444876902283058">(Usuku <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Cishe sekusele <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Xhuma idivayisi yakho emandleni.</translation>
 <translation id="366222428570480733">U-<ph name="USER_EMAIL_ADDRESS" /> Yomsebenzisi ophethwe</translation>
@@ -1268,9 +1269,11 @@ Ukufaka okusha</translation>
 <translation id="8052898407431791827">Kukopishelwe kuklibhodi</translation>
 <translation id="8054466585765276473">Ibala isikhathi sebhethri</translation>
 <translation id="8083540854303889870">Kulondolozelwe kamuva</translation>
+<translation id="8091153018031979607">Iqala ngo-<ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Ukubuyekezwa okuzenzekelayo</translation>
 <translation id="8098591350844501178">Misa ukusakaza isikrini ku-<ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Uvule ama-app</translation>
+<translation id="8113515504791187892">Inkinobho yokukhekha ukuze ukhulume</translation>
 <translation id="8120151603115102514">Ifoni yakho ayinaso isikrini sokukhiya. Ukuze uvule i-Chromebook yakho, faka iphasiwedi.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Qinisekisa</translation>
@@ -1380,6 +1383,7 @@ Ukufaka okusha</translation>
 <translation id="8703634754197148428">Qala ukurekhoda. Lapho ukurekhoda sekuqalile sebenzisa u-Alt + Shift + L ukuzulazula kushalofu bese uthola inkinobo yokumisa ukurekhoda</translation>
 <translation id="8721053961083920564">Guqula ivolumu. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Ukuthatha isikrini esigcwele</translation>
+<translation id="8731487213223706745">Iphela ngo-<ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ingazama ukutshontsha okhiye bakho</translation>
 <translation id="8735678380411481005">Ukukhanya kombala wangemuva kwekhibhodi</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

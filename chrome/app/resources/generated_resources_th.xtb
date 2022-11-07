@@ -4657,6 +4657,7 @@
 <translation id="5331568967879689647">แอประบบ Chrome OS</translation>
 <translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="5333896723098573627">หากต้องการนำแอปออก ให้ไปที่การตั้งค่า &gt; แอป &gt; Google Play Store &gt; จัดการค่ากำหนด Android &gt; ตัวจัดการแอปหรือแอปพลิเคชัน แล้วแตะแอปที่คุณต้องการถอนการติดตั้ง (อาจต้องปัดไปทางขวาหรือทางซ้ายเพื่อค้นหาแอป) จากนั้นแตะถอนการติดตั้งหรือปิดใช้</translation>
+<translation id="5334113802138581043">สิทธิ์เข้าถึงไมโครโฟน</translation>
 <translation id="5334142896108694079">แคชของสคริปต์</translation>
 <translation id="5336688142483283574">ระบบจะนำหน้านี้ออกจากประวัติการเข้าชมและกิจกรรมใน <ph name="SEARCH_ENGINE" /> ด้วย</translation>
 <translation id="5336689872433667741">เคอร์เซอร์และทัชแพด</translation>
@@ -8651,6 +8652,7 @@
 <translation id="9081543426177426948">ระบบจะไม่บันทึกเว็บไซต์ที่คุณเข้าชมในโหมดไม่ระบุตัวตน</translation>
 <translation id="9084064520949870008">เปิดเป็นหน้าต่าง</translation>
 <translation id="9085256200913095638">ทำซ้ำแท็บที่เลือก</translation>
+<translation id="9085446486797400519">สิทธิ์เข้าถึงกล้อง</translation>
 <translation id="9085776959277692427">ไม่ได้เลือกภาษา<ph name="LANGUAGE" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อเลือก</translation>
 <translation id="9087949559523851360">เพิ่มผู้ใช้ที่ถูกจำกัด</translation>
 <translation id="9088234649737575428">นโยบายองค์กรบล็อก <ph name="PLUGIN_NAME" /> ไว้</translation>

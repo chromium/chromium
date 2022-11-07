@@ -1414,6 +1414,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4606870351894164739">Impactful</translation>
 <translation id="4607603470419975064">Botón para ver sugerencias de Chrome, presiona Intro para conocer las funciones de Chrome</translation>
 <translation id="4607608436550361748">Ver sugerencias para Chrome</translation>
+<translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="4617273035598175554">Software de gráficos y animación</translation>
 <translation id="4622292761762557753">Transferir de todos modos</translation>
 <translation id="4627675673814409125">Se ignorará esta política porque no se puede establecer en el perfil de Chrome.</translation>
@@ -2389,6 +2390,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7130775116821607281">Carga bloqueada</translation>
 <translation id="7132939140423847331">Tu administrador prohíbe que se copien estos datos.</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
+<translation id="7136009930065337683">Más información sobre el modo Incógnito</translation>
 <translation id="7138472120740807366">Método de entrega</translation>
 <translation id="7139892792842608322">Bandeja principal</translation>
 <translation id="714064300541049402">Cambio en el eje X del lado 2 de la imagen</translation>

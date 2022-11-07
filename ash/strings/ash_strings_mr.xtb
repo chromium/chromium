@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">तुमचे डिव्हाइस पेअर करण्यासाठी ब्लूटूथ सेटिंग्ज उघडा</translation>
 <translation id="3638400994746983214">गोपनीयता स्क्रीन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">अपडेटची मुदत संपली आहे</translation>
+<translation id="3659444876902283058">(<ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" /> दिवस)</translation>
 <translation id="3659814201068740063">सुमारे <ph name="TIME_LEFT" /> शिल्लक (<ph name="PERCENTAGE" />%).
 तुमचे डिव्हाइस पॉवरशी कनेक्ट करा.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापित वापरकर्ता</translation>
@@ -1268,9 +1269,11 @@
 <translation id="8052898407431791827">क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="8054466585765276473">बॅटरी वेळ गणना करत आहे.</translation>
 <translation id="8083540854303889870">नंतरसाठी सेव्ह केले</translation>
+<translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> वाजता सुरू होईल</translation>
 <translation id="8091387634532529612">ऑटोमॅटिक अपडेट</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> वर स्क्रीन कास्ट करणे थांबवा</translation>
 <translation id="8113423164597455979">सुरू, सर्व ॲप</translation>
+<translation id="8113515504791187892">बोलण्यासाठी निवडा बटण</translation>
 <translation id="8120151603115102514">तुमच्या फोनला लॉक स्क्रीन नाही. तुमचे Chromebook अनलॉक करण्यासाठी, पासवर्ड एंटर करा.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
@@ -1380,6 +1383,7 @@
 <translation id="8703634754197148428">रेकॉर्डिंग सुरू करा. रेकॉर्डिंग सुरू झाल्यानंतर शेल्फवर नेव्हिगेट करण्यासाठी Alt + Shift + L वापरा आणि रेकॉर्डिंग थांबवा बटण शोधा</translation>
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्‍क्रीन कॅप्‍चर</translation>
+<translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> वाजता संपेल</translation>
 <translation id="8734991477317290293">तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
 <translation id="8735678380411481005">कीबोर्ड बॅकलाइटचा रंग</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

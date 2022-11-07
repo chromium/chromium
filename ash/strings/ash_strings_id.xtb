@@ -484,6 +484,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3633097874324966332">Buka setelan Bluetooth untuk menyambungkan perangkat Anda</translation>
 <translation id="3638400994746983214">Alihkan ke layar privasi. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Update melewati batas waktu</translation>
+<translation id="3659444876902283058">(Hari <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Sekitar <ph name="TIME_LEFT" /> lagi (<ph name="PERCENTAGE" />%).
 Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="366222428570480733">Pengguna yang Dikelola <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1268,9 +1269,11 @@ Baru diinstal</translation>
 <translation id="8052898407431791827">Disalin ke papan klip</translation>
 <translation id="8054466585765276473">Menghitung masa pakai baterai.</translation>
 <translation id="8083540854303889870">Disimpan untuk nanti</translation>
+<translation id="8091153018031979607">Dimulai pukul <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Update otomatis</translation>
 <translation id="8098591350844501178">Hentikan casting layar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Aktif, semua</translation>
+<translation id="8113515504791187892">Tombol Klik untuk Diucapkan</translation>
 <translation id="8120151603115102514">Ponsel Anda tidak memiliki layar kunci. Untuk membuka kunci Chromebook, masukkan sandi.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
@@ -1380,6 +1383,7 @@ Baru diinstal</translation>
 <translation id="8703634754197148428">Mulai merekam. Setelah perekaman dimulai, gunakan Alt + Shift + L untuk menuju rak dan temukan tombol hentikan perekaman</translation>
 <translation id="8721053961083920564">Ubah Volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tangkapan layar penuh</translation>
+<translation id="8731487213223706745">Berakhir pukul <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Keyboard mungkin mencoba mencuri ketukan tombol Anda</translation>
 <translation id="8735678380411481005">Warna lampu latar keyboard</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

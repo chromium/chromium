@@ -3756,6 +3756,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ກວດພົບ TPM ທີ່ເຮັດວຽກຢູ່ເຊິ່ງສາມາດຈັດເກັບຂໍ້ມູນຂອງທ່ານໄດ້ປອດໄພກວ່າ.</translation>
 <translation id="4451479197788154834">ລະຫັດຜ່ານຂອງທ່ານຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ ແລະ ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4451757071857432900">ບລັອກໃນເວັບໄຊທີ່ສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ຫຼອກລວງ (ແນະນຳ)</translation>
+<translation id="4452898361839215358">ຫຼື ເລືອກ PPD. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">ຊອກຫາ <ph name="SEARCH_ENGINE_NAME" /> ຫຼື ພິມ URL</translation>
 <translation id="4458535500699390320">ໃນຂະນະທີ່ແຖບນີ້ບໍ່ເຮັດວຽກ, ຕົວປະຢັດໜ່ວຍຄວາມຈຳຈະສ້າງພື້ນທີ່ຫວ່າງໃນໜ່ວຍຄວາມຈຳເພື່ອໃຫ້ໜ້າວຽກອື່ນໃຊ້ໄດ້. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="4459169140545916303">ເຂົ້າໃຊ້ເມື່ອ <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ມື້ກ່ອນ</translation>
@@ -8381,6 +8382,7 @@
 <translation id="8823514049557262177">ອັດ​ສຳ​ເນົາ​ຂໍ້​ຄວາມ​ລິ້ງ</translation>
 <translation id="8823559166155093873">ບລັອກຄຸກກີ້</translation>
 <translation id="8823704566850948458">ແນະນຳລະຫັດຜ່ານ...</translation>
+<translation id="8823963789776061136">ຫຼື ຈະເລືອກ PPD ຂອງເຄື່ອງພິມ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">ເພີ່ມໜ້າ...</translation>
 <translation id="8827125715368568315">ບລັອກ <ph name="PERMISSION" /> ແລະ ອີກ <ph name="COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="8827289157496676362">ປັກໝຸດສ່ວນຂະຫຍາຍ</translation>
@@ -8635,6 +8637,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ຕ້ອງການເຂົ້າເຖິງເນື້ອຫາຕໍ່ໄປນີ້:</translation>
 <translation id="9057354806206861646">ອັບເດດກຳນົດເວລາ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ປະມານການແຈ້ງເຕືອນ 1 ລາຍການຕໍ່ມື້}other{ປະມານການແຈ້ງເຕືອນ {NUM_NOTIFICATION} ລາຍການຕໍ່ມື້}}</translation>
+<translation id="9058760336383947367">ເບິ່ງ PPD ຂອງເຄື່ອງພິມ</translation>
 <translation id="9061383912634843744">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ແລະ ແອັບອັດຕະໂນມັດໂດຍໃຊ້ຂໍ້ມູນການເຂົ້າສູ່ລະບົບທີ່ບັນທຶກໄວ້. ຫາກປິດໄວ້ແລ້ວ, ທ່ານຈະຖືກຖາມຫາການຢືນຢັນທຸກເທື່ອກ່ອນການເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ຫຼື ແອັບໃດໜຶ່ງ.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">ຜິດພາດຈາກແຖວ <ph name="ERROR_LINE_START" /> ຫາ <ph name="ERROR_LINE_END" /></translation>

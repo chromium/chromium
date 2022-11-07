@@ -6289,6 +6289,11 @@
 <translation id="7274077256421167535">啟用 USB 電力共享功能</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
 <translation id="7275689301063927473">預設拒絕對所有網站授予本機字型權限</translation>
+<translation id="7275878175078795558">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 一律會針對本機安裝 CA 憑證簽署的成功驗證伺服器憑證執行撤銷檢查。如果 <ph name="PRODUCT_NAME" /> 無法取得撤銷狀態資訊，<ph name="PRODUCT_NAME" /> 會將這些憑證視為已撤銷 (即無效)。
+
+      如果將這項政策設為 False 或不設定，<ph name="PRODUCT_NAME" /> 會使用現有的線上撤銷檢查設定。
+
+      在 <ph name="MAC_OS_NAME" /> 上，如果 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 政策設為 False，這項政策就不會有任何作用。</translation>
 <translation id="7278854311116092134">要從封鎖清單中排除的內建訊息傳遞主機名稱</translation>
 <translation id="7291084543582732020">如果啟用這項設定，只要滿足 Smart Lock 的使用條件，使用者即可使用這項功能。
 

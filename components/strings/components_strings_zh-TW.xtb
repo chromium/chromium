@@ -1412,6 +1412,7 @@
 <translation id="4606870351894164739">深具影響力</translation>
 <translation id="4607603470419975064">查看 Chrome 提示的按鈕；按下 Enter 鍵即可瞭解 Chrome 功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
+<translation id="4610279718074907952">這個網站屬於由 <ph name="SET_OWNER" /> 定義的群組，因此可以查看你的活動</translation>
 <translation id="4617273035598175554">繪圖與動畫軟體</translation>
 <translation id="4622292761762557753">仍要轉移</translation>
 <translation id="4627675673814409125">這項政策無法在 Chrome 設定檔層級設定，因此將遭到忽略。</translation>
@@ -2387,6 +2388,7 @@
 <translation id="7130775116821607281">禁止上傳</translation>
 <translation id="7132939140423847331">管理員已禁止複製這個資料。</translation>
 <translation id="7135130955892390533">顯示狀態</translation>
+<translation id="7136009930065337683">進一步瞭解無痕模式</translation>
 <translation id="7138472120740807366">快遞方式</translation>
 <translation id="7139892792842608322">主要紙匣</translation>
 <translation id="714064300541049402">側邊 2 圖片 X 批次</translation>

@@ -6439,6 +6439,11 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7274077256421167535">Habilitar el uso compartido de energía por USB</translation>
 <translation id="7275334191706090484">Favoritos administrados</translation>
 <translation id="7275689301063927473">Rechazar el permiso de fuentes locales para todos los sitios de forma predeterminada</translation>
+<translation id="7275878175078795558">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> siempre comprobará la revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados de manera local. Si <ph name="PRODUCT_NAME" /> no puede obtener información del estado de revocación, <ph name="PRODUCT_NAME" /> considerará estos certificados como revocados (rechazados).
+
+      Si estableces la política como falsa o no la estableces, <ph name="PRODUCT_NAME" /> utilizará la configuración para comprobar la actual revocación en línea.
+
+      En <ph name="MAC_OS_NAME" />, esta política no tendrá efecto si la política <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> se estableció como falsa.</translation>
 <translation id="7278854311116092134">Nombres de hosts de mensajería nativa que deben excluirse de la lista de elementos bloqueados</translation>
 <translation id="7291084543582732020">Cuando se habilita esta configuración, los usuarios pueden usar Smart Lock si se satisfacen los requisitos de la función.
 

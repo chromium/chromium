@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">기기를 페어링하려면 블루투스 설정을 여세요.</translation>
 <translation id="3638400994746983214">개인정보 보호 화면을 켜거나 끕니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">업데이트 지연됨</translation>
+<translation id="3659444876902283058">(<ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />일)</translation>
 <translation id="3659814201068740063">약 <ph name="TIME_LEFT" /> 남았습니다(<ph name="PERCENTAGE" />%).
 기기를 전원에 연결하세요.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
@@ -1268,6 +1269,7 @@
 <translation id="8052898407431791827">클립보드에 복사됨</translation>
 <translation id="8054466585765276473">배터리 시간 계산 중</translation>
 <translation id="8083540854303889870">저장된 항목</translation>
+<translation id="8091153018031979607"><ph name="START_TIME" /><ph name="DAYS_ELAPSED" />에 시작</translation>
 <translation id="8091387634532529612">자동 업데이트</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />에 화면 전송 중지</translation>
 <translation id="8113423164597455979">모든 앱에서 사용 중</translation>
@@ -1380,6 +1382,7 @@
 <translation id="8703634754197148428">녹화 시작 녹화가 시작된 후에는 Alt + Shift + L을 눌러 실행기로 이동하여 녹화 중지 버튼을 찾으세요.</translation>
 <translation id="8721053961083920564">볼륨 변경. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">전체 화면 캡처</translation>
+<translation id="8731487213223706745"><ph name="END_TIME" /><ph name="DAYS_ELAPSED" />에 종료</translation>
 <translation id="8734991477317290293">키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="8735678380411481005">키보드 백라이트 색상</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

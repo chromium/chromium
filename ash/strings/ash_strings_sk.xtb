@@ -484,6 +484,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3633097874324966332">Ak chcete zariadenie spárovať, otvorte nastavenia rozhrania Bluetooth</translation>
 <translation id="3638400994746983214">Prepnúť obrazovku ochrany súkromia. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Termín aktualizácie ubehol</translation>
+<translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. deň z <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Približný zostávajúci čas: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="366222428570480733">Spravovaný používateľ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1268,9 +1269,11 @@ Nová inštalácia</translation>
 <translation id="8052898407431791827">Skopírované do schránky</translation>
 <translation id="8054466585765276473">Výpočet času výdrže batérie.</translation>
 <translation id="8083540854303889870">Uložené na neskôr</translation>
+<translation id="8091153018031979607">Začína sa o <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatické aktualizácie</translation>
 <translation id="8098591350844501178">Zastaviť prenos obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Zap., vš. apl.</translation>
+<translation id="8113515504791187892">Tlačidlo počúvania vybraného textu</translation>
 <translation id="8120151603115102514">Telefón nemá zámku obrazovky. Ak chcete Chromebook odomknúť, zadajte heslo.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
@@ -1380,6 +1383,7 @@ Nová inštalácia</translation>
 <translation id="8703634754197148428">Spustiť nahrávanie. Po spustení nahrávania nájdete tlačidlo na jeho zastavenie v poličke, kam prejdete pomocou skratky Alt + Shift + L.</translation>
 <translation id="8721053961083920564">Prepínač zvuku. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Záznam celej obrazovky</translation>
+<translation id="8731487213223706745">Skončí sa o <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Je možné, že sa pokúša ukradnúť vaše stlačenia klávesov</translation>
 <translation id="8735678380411481005">Farba podsvietenia klávesnice</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>

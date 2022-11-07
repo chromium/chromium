@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">ပိတ်ထားသော ကွတ်ကီးများ</translation>
 <translation id="165877110639533037">ပွင့်နေသည့် တဲဘ်များ မရှိ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> မှ <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">‘မိုဘိုင်းဝဘ်ဆိုက်’ တောင်းဆိုရန်</translation>
 <translation id="168715261339224929">သင်၏ဝဘ်လိပ်စာများကို သင့်စက်များအားလုံးတွင် ရယူနိုင်ရန် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ။</translation>
 <translation id="1687475363370981210">အားလုံးကို ဖတ်ပြီးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
 <translation id="1689333818294560261">နာမည်ပြောင်</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">တဘ် ပိတ်ရန်</translation>
 <translation id="2890171748217283516">သင်လိုက်ကြည့်ထားသည့် ဝဘ်ဆိုက်များကို Google Account ထဲတွင် သိမ်းထားသည်။ ၎င်းတို့ကို ‘ကြည့်ရှုစရာဆက်တင်များ’ ထဲတွင် စီမံနိုင်သည်။</translation>
 <translation id="2898963176829412617">ဖိုင်တွဲ အသစ်...</translation>
+<translation id="2902684821701498619">‘ဖတ်ရန်စာရင်း’ တွင် ထည့်ရန်</translation>
 <translation id="2916171785467530738">ရှာဖွေမှုများနှင့် URL များကို အလိုအလျောက်ဖြည့်ခြင်း</translation>
 <translation id="291754862089661335">QR ကုဒ် သိုမဟုတ် ဘားကုဒ်ကို ဤဘောင်အတွင်းဝင်အောင် ထားပါ</translation>
 <translation id="2920866371965792875">ဤဝဘ်ဆိုက်မှ အပ်ဒိတ်များကြည့်ရန် ဤနေရာမှ လိုက်ကြည့်ပါ။</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">သက်တမ်း ကုန်ဆုံးသည့် လ</translation>
 <translation id="3482959374254649722">သင်၏ တဲဘ်များကို စင့်က်လုပ်နေ...</translation>
 <translation id="3484946776651937681">'ဒေါင်းလုဒ်များ' တွင် ဖွင့်ရန်</translation>
+<translation id="3485558910355485767">ရုပ်ဖျက်ဝင်ဒိုးသစ်</translation>
 <translation id="3493531032208478708">အကြံပြုထားသည့် အကြောင်းအရာအကြောင်း <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာများကို ရှင်းလင်းလိုကြောင်း အတည်ပြုရန်</translation>
 <translation id="35083190962747987">${url} ကို ဖွင့်ရန်</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3858860766373142691">အမည်</translation>
 <translation id="3861486700625780712">လိုက်မကြည့်တော့ရန်</translation>
+<translation id="3863769054730344136">‘သင့်စက်များ’ သို့ ပို့ရန်</translation>
 <translation id="387280738075653372">ဤနေရာတွင် Chrome ဒေါင်းလုဒ်လုပ်နိုင်သည်။</translation>
 <translation id="3892144330757387737">သင့်မှတ်တမ်းကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="3897092660631435901">မီနျူး</translation>
@@ -588,6 +592,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5659593005791499971">အီးမေးလ်</translation>
 <translation id="5669335982068190158">သင့် iPhone ပြင်ဆင်သတ်မှတ်မှု၏ လုပ်ဆောင်ချက်တစ်ခုအနေဖြင့် သင်ထွက်သွားသည်။ လက်မှတ်ထိုးဝင်ရန် အောက်ရှိရှေ့ဆက်ရန်ကို တို့ပါ။</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">‘QR ကုဒ်’ ပြုလုပ်ရန်</translation>
 <translation id="567881659373499783">ဗားရှင်း <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{ယခု Chrome ဝင်းဒိုး 1 ခုကို ပြထားသည်}other{ယခု Chrome ဝင်းဒိုး {count} ခုကို ပြထားသည်}}</translation>
 <translation id="5701270923492462699">ကင်မရာ သုံးခွင့်ပြုထားသည်</translation>
@@ -672,6 +677,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6219550825416862075">ပြန်လည်ကြိုဆိုပါသည်</translation>
 <translation id="6219688215832490856">ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="6223816392543092032">သင်၏စက်အားလုံးတွင် လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များ ရယူပါ။</translation>
+<translation id="6229318421047648685">‘ဒက်စ်တော့ဝဘ်ဆိုက်’ တောင်းဆိုရန်</translation>
 <translation id="6231782223312638214">အကြံပေးထား</translation>
 <translation id="6232329973559504466">ရုပ်ဖျက်မုဒ်ဖြင့် ရှာရန်</translation>
 <translation id="6232736989810857397">ဤနည်းအားဖြင့် Google Lens သုံး၍ ပြက္ခဒိန်အစီအစဉ်များကို အလွယ်တကူပြုလုပ်နိုင်မည်။</translation>

@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">کوکی‌های مسدودشده</translation>
 <translation id="165877110639533037">برگه‌ای باز نیست</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">درخواست سایت ویژه تلفن همراه</translation>
 <translation id="168715261339224929">برای دریافت نشانک‌ها در همه دستگاه‌هایتان، همگام‌سازی را روشن کنید.</translation>
 <translation id="1687475363370981210">علامت‌گذاری همه به‌‌عنوان خوانده‌شده</translation>
 <translation id="1689333818294560261">نام مستعار</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">بستن برگه</translation>
 <translation id="2890171748217283516">‏سایت‌هایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شود. می‌توانید آن‌ها را در تنظیمات «یافته‌ها» مدیریت کنید.</translation>
 <translation id="2898963176829412617">پوشه جدید…</translation>
+<translation id="2902684821701498619">افزودن به «فهرست خواندن»</translation>
 <translation id="2916171785467530738">تکمیل خودکار جستجوها و نشانی‌های وب</translation>
 <translation id="291754862089661335">رمزینه پاسخ‌سریع یا بارکد را در این قاب قرار دهید</translation>
 <translation id="2920866371965792875">برای دیدن به‌روزرسانی‌های این سایت، آن را در اینجا دنبال کنید.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">ماه انقضا</translation>
 <translation id="3482959374254649722">درحال همگام‌سازی برگه‌های شما...</translation>
 <translation id="3484946776651937681">باز کردن در بارگیری‌ها</translation>
+<translation id="3485558910355485767">پنجره جدید ناشناس</translation>
 <translation id="3493531032208478708">درباره محتوای پیشنهادی <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">تأیید پاک کردن داده‌های مرور</translation>
 <translation id="35083190962747987">‏باز کردن {url}$</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861486700625780712">لغو دنبال کردن</translation>
+<translation id="3863769054730344136">ارسال به «دستگاه‌های شما»</translation>
 <translation id="387280738075653372">‏در اینجا Chrome را بارگیری کنید.</translation>
 <translation id="3892144330757387737">سابقه را اینجا خواهید دید</translation>
 <translation id="3897092660631435901">منو</translation>
@@ -589,6 +593,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5659593005791499971">ایمیل</translation>
 <translation id="5669335982068190158">‏به‌عنوان بخشی از بازنشانی iPhone، از سیستم خارج شده‌اید. برای ورود به سیستم، روی Continue (ادامه) در زیر ضربه بزنید.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">ایجاد رمزینه پاسخ‌سریع</translation>
 <translation id="567881659373499783">نسخه <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{‏درحال نمایش ۱ پنجره Chrome}one{‏درحال نمایش {count} پنجره Chrome}other{‏درحال نمایش {count} پنجره Chrome}}</translation>
 <translation id="5701270923492462699">دسترسی به دوربین مجاز است</translation>
@@ -673,6 +678,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6219550825416862075">مجدداً خوش آمدید</translation>
 <translation id="6219688215832490856">هرگز ترجمه نشود</translation>
 <translation id="6223816392543092032">نشانک‌ها، سابقه، گذرواژه‌ها، و دیگر تنظیماتتان را در همه دستگاه‌هایتان دریافت کنید.</translation>
+<translation id="6229318421047648685">درخواست سایت ویژه رایانه</translation>
 <translation id="6231782223312638214">پیشنهادی</translation>
 <translation id="6232329973559504466">جستجوی ناشناس</translation>
 <translation id="6232736989810857397">‏با این کار می‌توانید به‌راحتی رویدادهای تقویم را بااستفاده از «لنز Google» ایجاد کنید.</translation>

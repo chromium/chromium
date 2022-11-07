@@ -102,6 +102,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1657641691196698092">Blokkerte informasjonskapsler</translation>
 <translation id="165877110639533037">Ingen åpne faner</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Be om mobilversjonen av nettstedet</translation>
 <translation id="168715261339224929">For å få bokmerkene dine på alle enhetene dine, slå på synkronisering.</translation>
 <translation id="1687475363370981210">Merk alle som lest</translation>
 <translation id="1689333818294560261">Kallenavn</translation>
@@ -243,6 +244,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="288655811176831528">Lukk fane</translation>
 <translation id="2890171748217283516">Nettstedene du følger, lagres i Google-kontoen din. Du kan administrere dem i innstillingene for Discover.</translation>
 <translation id="2898963176829412617">Ny mappe</translation>
+<translation id="2902684821701498619">Legg til på leselisten</translation>
 <translation id="2916171785467530738">Autofullfør søk og nettadresser</translation>
 <translation id="291754862089661335">Plassér QR-/strekkoden i denne rammen.</translation>
 <translation id="2920866371965792875">For å se oppdateringer fra dette nettstedet, følg det her.</translation>
@@ -320,6 +322,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3478058380795961209">Utløpsmåned</translation>
 <translation id="3482959374254649722">Fanene dine synkroniseres …</translation>
 <translation id="3484946776651937681">Åpne i Nedlastinger</translation>
+<translation id="3485558910355485767">Nytt inkognitovindu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om foreslått innhold</translation>
 <translation id="3494788280727468875">Bekreft at du vil slette nettleserdataene</translation>
 <translation id="35083190962747987">Åpne ${url}</translation>
@@ -366,6 +369,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861486700625780712">Slutt å følge</translation>
+<translation id="3863769054730344136">Send til enhetene dine</translation>
 <translation id="387280738075653372">Last ned Chrome her.</translation>
 <translation id="3892144330757387737">Her finner du loggen din</translation>
 <translation id="3897092660631435901">Meny</translation>
@@ -589,6 +593,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5669335982068190158">Du ble logget av som en del av tilbakestillingen av iPhone. Trykk på Fortsett under for å logge på.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Lag en QR-kode</translation>
 <translation id="567881659373499783">Versjon <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Viser nå 1 Chrome-vindu}other{Viser nå {count} Chrome-vinduer}}</translation>
 <translation id="5701270923492462699">Kameratilgang er tillatt</translation>
@@ -673,6 +678,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6219550825416862075">Velkommen tilbake</translation>
 <translation id="6219688215832490856">Oversett aldri</translation>
 <translation id="6223816392543092032">Få bokmerkene, loggen, passordene og de andre innstillingene dine på alle enhetene du bruker.</translation>
+<translation id="6229318421047648685">Be om datamaskinversjonen av nettstedet</translation>
 <translation id="6231782223312638214">Foreslått</translation>
 <translation id="6232329973559504466">Inkognitosøk</translation>
 <translation id="6232736989810857397">Dette gjør det mulig å opprette kalenderaktiviteter på en enkel måte med Google Lens.</translation>

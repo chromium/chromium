@@ -1385,6 +1385,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2256115617011615191">Reinicia ara</translation>
 <translation id="2257053455312861282">Afegir un compte de centre educatiu permet iniciar fàcilment la sessió en llocs web, extensions i aplicacions com a alumne alhora que els controls parentals es continuen aplicant.</translation>
 <translation id="2261323523305321874">L'administrador ha fet un canvi que desactiva alguns perfils antics en tot el sistema.</translation>
+<translation id="22614517036276112">Aquest document o el dispositiu no compleixen algunes de les polítiques de seguretat de la teva organització. Consulta al teu administrador què cal corregir.</translation>
 <translation id="2262477216570151239">Retard abans de la repetició</translation>
 <translation id="2263189956353037928">Tanca la sessió i torna a iniciar-la</translation>
 <translation id="2263371730707937087">Freqüència d'actualització de la pantalla</translation>
@@ -5076,6 +5077,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5733866499231170760">L'identificador no és vàlid. El format que has introduït no és correcte. Comprova les instruccions que has rebut per assegurar-te que el format de l'identificador és correcte. Si no pots resoldre aquest problema, deixa el camp en blanc i continua amb la instal·lació.</translation>
 <translation id="5734362860645681824">Comunicacions</translation>
 <translation id="5734697361979786483">Afegeix compartició de fitxers</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Aquestes dades o el dispositiu no compleixen algunes de les polítiques de seguretat de la teva organització. Consulta al teu administrador què cal corregir.}=1{Aquest fitxer o el dispositiu no compleixen algunes de les polítiques de seguretat de la teva organització. Consulta al teu administrador què cal corregir.}other{Aquests fitxers no compleixen algunes de les polítiques de seguretat de la teva organització. Consulta al teu administrador què cal corregir.}}</translation>
 <translation id="5736796278325406685">Introdueix un nom d'usuari vàlid</translation>
 <translation id="5738093759615225354">Necessites aquesta clau d'accés per iniciar la sessió a l'ordinador</translation>
 <translation id="5738329404678738022">Emmagatzema les adreces d'interès i més coses amb la sincronització</translation>
@@ -6568,6 +6570,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7123030151043029868">Amb permís per baixar automàticament diversos fitxers</translation>
 <translation id="7123302939607518173">Afegeix un interès o un lloc web si creus que els anuncis relacionats amb l'element et serien útils.</translation>
 <translation id="7124013154139278147">Assigna l'interruptor a Anterior</translation>
+<translation id="7124712201233930202">No es compleixen les polítiques de la teva organització</translation>
 <translation id="7125029162161377569">Amb les proves de Privacy Sandbox, els llocs web poden oferir la mateixa experiència de navegació utilitzant menys informació teva. Això significa que tindràs més privadesa i que hi haurà menys seguiment entre llocs web. Afegirem noves proves a mesura que estiguin preparades per aplicar-les.</translation>
 <translation id="7125148293026877011">Suprimeix Crostini</translation>
 <translation id="7127980134843952133">Historial de baixades</translation>
@@ -8532,6 +8535,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="897939795688207351">A <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Informes de suggeriments</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: ha fallat</translation>
+<translation id="8981038076986775523">Més informació sobre com pots utilitzar un micròfon</translation>
 <translation id="8981825781894055334">S'està quedant sense paper</translation>
 <translation id="8983018820925880511"><ph name="DOMAIN" /> gestionarà aquest perfil nou. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> pot editar <ph name="FILENAME" /></translation>

@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">დაბლოკილი ქუქი-ჩანაწერები</translation>
 <translation id="165877110639533037">გახსნილი ჩანართები არ არის</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> — <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">მობილური საიტის მოთხოვნა</translation>
 <translation id="168715261339224929">ჩართეთ სინქრონიზაცია სანიშნეებზე თქვენი ყველა მოწყობილობიდან წვდომისთვის.</translation>
 <translation id="1687475363370981210">ყველას წაკითხულად მონიშვნა</translation>
 <translation id="1689333818294560261">მეტსახელი</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">ჩანართის დახურვა</translation>
 <translation id="2890171748217283516">თქვენ მიერ თვალმიდევნებული საიტები შეინახება თქვენს Google ანგარიშში. მათი მართვა Discover-ის პარამეტრებიდან შეგიძლიათ.</translation>
 <translation id="2898963176829412617">ახალი საქაღალდე…</translation>
+<translation id="2902684821701498619">საკითხავ სიაში დამატება</translation>
 <translation id="2916171785467530738">ძიებებისა და URL-ების ავტომატური დასრულება</translation>
 <translation id="291754862089661335">მოათავსეთ QR-კოდი ან შტრიხკოდი ამ ჩარჩოში</translation>
 <translation id="2920866371965792875">ამ საიტიდან სიახლეების გასაცნობად მიადევნეთ მას თვალი აქ.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">ვადის გასვლის თვე</translation>
 <translation id="3482959374254649722">თქვენი ჩანართების სინქრონიზაცია…</translation>
 <translation id="3484946776651937681">ჩამოტვირთვებში გახსნა</translation>
+<translation id="3485558910355485767">ახალი ინკოგნიტო ფანჯარა</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /> შემოთავაზებული კონტენტის შესახებ</translation>
 <translation id="3494788280727468875">დათვალიერების მონაცემების გასუფთავების დადასტურება</translation>
 <translation id="35083190962747987">${url}-ის გახსნა</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">უკან</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3861486700625780712">თვალის დევნების გაუქმება</translation>
+<translation id="3863769054730344136">თქვენს მოწყობილობებზე გაგზავნა</translation>
 <translation id="387280738075653372">ჩამოტვირთეთ Chrome აქედან.</translation>
 <translation id="3892144330757387737">აქ იპოვით თქვენს ისტორიას</translation>
 <translation id="3897092660631435901">მენიუ</translation>
@@ -568,6 +572,7 @@
 <translation id="5489208564673669003">ყველა საიტისთვის ქუქი-ჩანაწერების სამართავად გადადით <ph name="BEGIN_LINK" />ქუქი-ჩანაწერების პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">ყველა ქუქი-ჩანაწერის დაბლოკვა (არარეკომენდებული)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> საათის წინ</translation>
+<translation id="5520466080178053306">შეხებით აირჩიეთ „პაროლების მმართველი“, შემდეგ კი — „დამატება“</translation>
 <translation id="5525095647255982834">ეს ჩანართი სხვა მოწყობილობაზე რომ გაგზავნოთ, შედით იქიდან Chrome-ში.</translation>
 <translation id="5525269841082836315">საიდუმლო ფრაზის შექმნა</translation>
 <translation id="5542540507657872337">მოიძებნა <ph name="COUNT" /></translation>
@@ -589,6 +594,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5659593005791499971">ელფოსტა</translation>
 <translation id="5669335982068190158">თქვენი iPhone-ის გადაყენების გამო, სისტემიდან გამოგიყვანეთ. სისტემაში შესასვლელად შეეხეთ „გაგრძელებას“ ქვემოთ.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR კოდის შექმნა</translation>
 <translation id="567881659373499783">ვერსია <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{ახლა ნაჩვენებია Chrome-ის 1 ფანჯარა}other{ახლა ნაჩვენებია Chrome-ის {count} ფანჯარა}}</translation>
 <translation id="5701270923492462699">კამერაზე წვდომა დაშვებულია</translation>
@@ -673,6 +679,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6219550825416862075">კლავ მოგესალმებით</translation>
 <translation id="6219688215832490856">არასოდეს ითარგმნოს</translation>
 <translation id="6223816392543092032">იქონიეთ წვდომა თქვენს სანიშნეებზე, ისტორიაზე, პაროლებსა და სხვა პარამეტრებზე თქვენი ყველა მოწყობილობიდან.</translation>
+<translation id="6229318421047648685">დესკტოპის საიტის მოთხოვნა</translation>
 <translation id="6231782223312638214">შემოთავაზებული</translation>
 <translation id="6232329973559504466">ინკოგნიტო ძიება</translation>
 <translation id="6232736989810857397">ეს საშუალებას გაძლევთ, მარტივად შექმნათ კალენდრის მოვლენები Google Lens-ის მეშვეობით.</translation>
@@ -877,6 +884,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7726702057919861819">მენიუ → ისტორია → დათვალიერების მონაცემების გასუფთავება</translation>
 <translation id="7738120385185846461">პრობლემის შესახებ მოხსენება…</translation>
 <translation id="7741325291586284254">ახალი ინკოგნიტო ჩანართის გვერდი</translation>
+<translation id="7744394900930577716">პაროლები სხვა აპებში</translation>
 <translation id="7756478488453921771">მენიუ → პარამეტრები → გადახდის მეთოდები</translation>
 <translation id="7765158879357617694">გადატანა</translation>
 <translation id="7772032839648071052">დაადასტურეთ პაროლი</translation>
@@ -1054,6 +1062,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="9081058212938299310">გსურთ <ph name="USERNAME" />-ის პაროლის განახლება?</translation>
 <translation id="9083838294503912307">თქვენი ყველა მოწყობილობის სინქრონიზაციისთვისა და პერსონალიზებისთვის ჩართეთ სინქრონიზაცია.</translation>
 <translation id="9087108903408689779">Chrome-ის შემოთავაზებული პაროლი:</translation>
+<translation id="9093271241977565440">ეკრანის ზედა ნაწილში შეეხეთ ძიების ხატულას</translation>
 <translation id="9094033019050270033">პაროლის განახლება</translation>
 <translation id="9097506547406246598">თვალის მიდევნების გაუქმება ვერ მოხერხდა. რაღაც შეცდომა მოხდა.</translation>
 <translation id="9100610230175265781">აუცილებელია კოდური ფრაზის მითითება</translation>

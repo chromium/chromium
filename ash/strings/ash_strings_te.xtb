@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">మీ పరికరాన్ని పెయిర్ చేయడానికి బ్లూటూత్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="3638400994746983214">గోప్యతా స్క్రీన్‌ను టోగుల్ చేస్తుంది. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">అప్‌డేట్ పెండింగ్‌లో ఉంది</translation>
+<translation id="3659444876902283058">(రోజు <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">సుమారు <ph name="TIME_LEFT" /> మిగిలింది (<ph name="PERCENTAGE" />%).
 మీ పరికరాన్ని పవర్‌కి కనెక్ట్ చేయండి.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> మేనేజ్ చేయబడిన యూజర్</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8052898407431791827">క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="8054466585765276473">బ్యాటరీ సమయాన్ని లెక్కిస్తోంది.</translation>
 <translation id="8083540854303889870">తర్వాత ఉపయోగించడానికి సేవ్ చేయబడింది</translation>
+<translation id="8091153018031979607"><ph name="DAYS_ELAPSED" /><ph name="START_TIME" />‌కు ప్రారంభమవుతుంది</translation>
 <translation id="8091387634532529612">ఆటోమేటిక్ అప్‌డేట్‌లు</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />కి స్క్రీన్‌ను ప్రసారం చేయడాన్ని ఆపివేయి</translation>
 <translation id="8113423164597455979">యాప్‌లన్నీ ఆన్</translation>
@@ -1381,6 +1383,7 @@
 <translation id="8703634754197148428">రికార్డింగ్‌ను ప్రారంభించండి. ఒకసారి రికార్డింగ్ ప్రారంభమయిన తర్వాత, Alt + Shift + Lను ఉపయోగించి, షెల్ఫ్‌కు నావిగేట్ అయి, రికార్డింగ్‌ను ఆపివేసే బటన్‌ను కనుగొనండి</translation>
 <translation id="8721053961083920564">వాల్యూమ్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ఫుల్ స్క్రీన్ క్యాప్చర్</translation>
+<translation id="8731487213223706745"><ph name="DAYS_ELAPSED" /><ph name="END_TIME" />‌కు ముగుస్తుంది</translation>
 <translation id="8734991477317290293">మీ కీస్ట్రోక్‌లను దొంగిలించడానికి ఇది ప్రయత్నిస్తుండవచ్చు</translation>
 <translation id="8735678380411481005">కీబోర్డ్ బ్యాక్‌లైట్ రంగు</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

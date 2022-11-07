@@ -1392,6 +1392,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2256115617011615191">Zima na uwashe sasa</translation>
 <translation id="2257053455312861282">Hatua ya kuweka akaunti ya shule hurahisisha shughuli za kuingia katika akaunti za tovuti, viendelezi na programu ukiwa mwanafunzi huku ukiendelea kutumia akaunti chini ya vidhibiti vya wazazi.</translation>
 <translation id="2261323523305321874">Msimamizi wako amefanya mabadiliko kwenye mfumo wote. Mabadiliko hayo yanazima baadhi ya wasifu wa awali.</translation>
+<translation id="22614517036276112">Hati hii au kifaa chako hakitimizi baadhi ya sera za usalama za shirika lako. Wasiliana na msimamizi wako ili ufahamu unachotakiwa kurekebisha.</translation>
 <translation id="2262477216570151239">Chelewesha kabla ya kurudia</translation>
 <translation id="2263189956353037928">Ondoka na uingie tena kwenye akaunti</translation>
 <translation id="2263371730707937087">Kiwango cha kuonyesha skrini upya</translation>
@@ -5084,6 +5085,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5733866499231170760">Kitambulisho si sahihi. Muundo ulioweka si sahihi. Tafadhali angalia maagizo uliyopokea na uhakikishe unaweka kitambulisho katika muundo sahihi. Iwapo hutaweza kutatua hililafu hii, tafadhali usijaze sehemu hii na uendelee na usakinishaji.</translation>
 <translation id="5734362860645681824">Mawasiliano</translation>
 <translation id="5734697361979786483">Ongeza faili ya kushiriki</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Data hii au kifaa chako hakitimizi baadhi ya sera za usalama. Wasiliana na msimamizi wako ili ufahamu unachotakiwa kurekebisha.}=1{Faili hii au kifaa chako hakitimizi baadhi ya sera za usalama za shirika lako. Wasiliana na msimamizi wako ili ufahamu unachotakiwa kurekebisha.}other{Faili hizi hazitimizi baadhi ya sera za usalama za shirika lako. Wasiliana na msimamizi wako ili ufahamu unachotakiwa kurekebisha.}}</translation>
 <translation id="5736796278325406685">Tafadhali andika jina sahihi la mtumiaji</translation>
 <translation id="5738093759615225354">Unahitaji nenosiri hili ili uingie katika akaunti kwenye kompyuta yako</translation>
 <translation id="5738329404678738022">Hifadhi alamisho zako na zaidi ukitumia usawazishaji</translation>
@@ -6575,6 +6577,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7123030151043029868">Zinazoruhusiwa kupakua faili nyingi kiotomatiki</translation>
 <translation id="7123302939607518173">Ongeza mambo unayoyapenda au tovuti iwapo unafikiri matangazo yanayohusiana na kipengee hicho yatakuwa na umuhimu kwako.</translation>
 <translation id="7124013154139278147">Kabidhi swichi ya kitendo cha “Iliyotangulia”</translation>
+<translation id="7124712201233930202">Hujatimiza sera za shirika lako</translation>
 <translation id="7125029162161377569">Kwa kutumia vipindi vya kujaribu vya Mazingira ya Faragha, tovuti zinaweza kutoa hali ileile ya kuvinjari zikitumia taarifa zako chache. Hii inaamaanisha utakuwa na faragha zaidi na ufuatiliaji wa kati ya tovuti utapungua. Tutaongeza vipindi vipya vya kujaribu kadiri vinavyokuwa tayari kujaribiwa.</translation>
 <translation id="7125148293026877011">Futa Crostini</translation>
 <translation id="7127980134843952133">Historia ya upakuaji</translation>
@@ -8539,6 +8542,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="897939795688207351">Kwenye <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Ripoti za maoni</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Imeacha kufanya kazi</translation>
+<translation id="8981038076986775523">Pata maelezo zaidi kuhusu kutumia maikrofoni</translation>
 <translation id="8981825781894055334">Karatasi zinakaribia kuisha</translation>
 <translation id="8983018820925880511">Wasifu huu mpya unasimamiwa na <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> inaweza kubadilisha <ph name="FILENAME" /></translation>

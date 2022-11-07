@@ -1396,7 +1396,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2256115617011615191">Ponovo pokreni sada</translation>
 <translation id="2257053455312861282">Dodavanje školskog računa omogućava učenicima jednostavnu prijavu na web lokacije, ekstenzije i u aplikacije dok i dalje rade pod roditeljskim nadzorom.</translation>
 <translation id="2261323523305321874">Vaš administrator je izvršio promjenu na sistemu kojom se onemogućavaju neki stari profili.</translation>
-<translation id="22614517036276112">Ovaj dokument ili vaš uređaj ne zadovoljavaju neka sigurnosna pravila vaše organizacije. Provjerite s administratorom što se treba ispraviti.</translation>
+<translation id="22614517036276112">Ovaj dokument ili vaš uređaj nije u skladu s nekim sigurnosnim pravilima vaše organizacije. Provjerite s administratorom šta treba ispraviti.</translation>
 <translation id="2262477216570151239">Odgoda prije ponavljanja</translation>
 <translation id="2263189956353037928">Odjava i ponovna prijava</translation>
 <translation id="2263371730707937087">Brzina osvježavanja ekrana</translation>
@@ -4672,6 +4672,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5331568967879689647">Sistemska aplikacija ChromeOS-a</translation>
 <translation id="5331975486040154427">USB-C uređaj (lijevi priključak na zadnjem dijelu)</translation>
 <translation id="5333896723098573627">Da uklonite aplikacije, idite u Postavke &gt; Aplikacije &gt; Google Play trgovina &gt; Upravljajte postavkama Androida &gt; Aplikacije ili Upravitelj aplikacija. Zatim dodirnite aplikaciju koju želite deinstalirati (možda ćete morati prevući udesno ili ulijevo da pronađete aplikaciju). Onda dodirnite Deinstaliraj ili Onemogući.</translation>
+<translation id="5334113802138581043">Pristup mikrofonu</translation>
 <translation id="5334142896108694079">Keš memorija skripte</translation>
 <translation id="5336688142483283574">Ova stranica će se ukloniti iz vaše historije i aktivnosti na pretraživaču <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Kursor i dodirna podloga</translation>
@@ -5093,7 +5094,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5733866499231170760">Nevažeći ID. Format koji ste unijeli je netačan. Provjerite uputstva koja ste primili kako biste bili sigurni da unosite ID u ispravnom format. Ako ne uspijete riješiti ovaj problem, ostavite polje prazno i nastavite s instalacijom.</translation>
 <translation id="5734362860645681824">Komunikacije</translation>
 <translation id="5734697361979786483">Dodajte dijeljenje fajlova</translation>
-<translation id="5736092224453113618">{NUM_FILES,plural, =0{Ovi podaci ili vaš uređaj ne zadovoljavaju neka sigurnosna pravila vaše organizacije. Provjerite s administratorom što se treba ispraviti.}=1{Ova datoteka ili vaš uređaj ne zadovoljavaju neka sigurnosna pravila vaše organizacije. Provjerite s administratorom što se treba ispraviti.}one{Ove datoteke ne zadovoljavaju neka sigurnosna pravila vaše organizacije. Provjerite s administratorom što se treba ispraviti.}few{Ove datoteke ne zadovoljavaju neka sigurnosna pravila vaše organizacije. Provjerite s administratorom što se treba ispraviti.}other{Ove datoteke ne zadovoljavaju neka sigurnosna pravila vaše organizacije. Provjerite s administratorom što se treba ispraviti.}}</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Ovaj podatak ili vaš uređaj nije u skladu s nekim sigurnosnim pravilima vaše organizacije. Provjerite s administratorom šta treba ispraviti.}=1{Ovaj fajl ili vaš uređaj nije u skladu s nekim sigurnosnim pravilima vaše organizacije. Provjerite s administratorom šta treba ispraviti.}one{Ovi fajlovi nisu u skladu s nekim sigurnosnim pravilima vaše organizacije. Provjerite s administratorom šta treba ispraviti.}few{Ovi fajlovi nisu u skladu s nekim sigurnosnim pravilima vaše organizacije. Provjerite s administratorom šta treba ispraviti.}other{Ovi fajlovi nisu u skladu s nekim sigurnosnim pravilima vaše organizacije. Provjerite s administratorom šta treba ispraviti.}}</translation>
 <translation id="5736796278325406685">Unesite važeće korisničko ime</translation>
 <translation id="5738093759615225354">Ovaj pristupni ključ je potreban za prijavu na računar</translation>
 <translation id="5738329404678738022">Pohranite oznake i još mnogo toga uz sinhronizaciju</translation>
@@ -6591,7 +6592,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7123030151043029868">Dozvoljeno je automatsko preuzimanje više fajlova</translation>
 <translation id="7123302939607518173">Dodajte interesovanje ili web lokaciju ako smatrate da će vam oglasi koji se odnose na tu stavku biti korisni.</translation>
 <translation id="7124013154139278147">Dodijelite prekidač za "Nazad"</translation>
-<translation id="7124712201233930202">Pravila vaše organizacije nisu zadovoljena</translation>
+<translation id="7124712201233930202">Pravila vaše organizacije nisu ispoštovana</translation>
 <translation id="7125029162161377569">Koristeći probne verzije Okruženja zaštićene privatnosti, web lokacije mogu pružiti isti doživljaj pregledanja koristeći manje vaših informacija. To znači više privatnosti za vas i manje unakrsnog praćenja web lokacija. Nove probne verzije ćemo dodavati kada budu spremne za testiranje.</translation>
 <translation id="7125148293026877011">Izbrišite Crostini</translation>
 <translation id="7127980134843952133">Historija preuzimanja</translation>
@@ -7633,7 +7634,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8100972288595615768">Obrisati podatke web lokacije i odobrenja za <ph name="SITE_NAME" />?</translation>
 <translation id="8101409298456377967">Kreirajte i sačuvajte lozinke te upravljajte njima da se možete jednostavno prijaviti na web lokacije i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Prilagođena boja</translation>
-<translation id="8101987792947961127">Powerwash je obavezan prilikom sljedećeg pokretanja</translation>
+<translation id="8101987792947961127">Powerwash je obavezan prilikom sljedećeg ponovnog pokretanja</translation>
 <translation id="81020759409809034">Lokalna lokacija</translation>
 <translation id="8102139037507939978">Uklonite informacije koje mogu poslužiti za ličnu identifikaciju iz fajla system_logs.txt.</translation>
 <translation id="810362914482827094">Pretražite pristupne ključeve</translation>
@@ -8557,7 +8558,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="897939795688207351">Na programu <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Izvještaji o povratnim informacijama</translation>
 <translation id="8980951173413349704">Došlo je do pada kartice <ph name="WINDOW_TITLE" /></translation>
-<translation id="8981038076986775523">Saznajte više o upotrebi mikrofona</translation>
+<translation id="8981038076986775523">Saznajte više o korištenju mikrofona</translation>
 <translation id="8981825781894055334">Ima malo papira</translation>
 <translation id="8983018820925880511">Ovim novim profilom će upravljati <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> može uređivati fajl <ph name="FILENAME" /></translation>
@@ -8675,6 +8676,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9081543426177426948">Web lokacije koje posjećujete se ne pohranjuju u anonimnom načinu rada</translation>
 <translation id="9084064520949870008">Otvori u prozoru</translation>
 <translation id="9085256200913095638">Duplicirajte odabrane kartice</translation>
+<translation id="9085446486797400519">Pristup fotoaparatu</translation>
 <translation id="9085776959277692427">Jezik <ph name="LANGUAGE" /> nije odabran. Da odaberete, pritisnite tipku za pretraživanje i razmak.</translation>
 <translation id="9087949559523851360">Dodaj korisnika s ograničenjem</translation>
 <translation id="9088234649737575428">Pravilo preduzeća je blokiralo dodatak <ph name="PLUGIN_NAME" /></translation>

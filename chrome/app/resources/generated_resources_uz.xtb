@@ -1384,6 +1384,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2256115617011615191">Qayta ishga tushirish</translation>
 <translation id="2257053455312861282">Maktab hisobi kiritilsa, ota-ona nazorati ostida sayt, ilova va kengaytmalarga oʻquvchi sifatida oson kirish mumkin.</translation>
 <translation id="2261323523305321874">Administrator ba’zi eski profillarni faolsizlantirdi.</translation>
+<translation id="22614517036276112">Bu hujjat yoki qurilmangiz tashkilotingizning ayrim xavfsizlik siyosatlariga mos kelmaydi. Nimani tuzatish kerakligini administratoringiz bilan tekshiring.</translation>
 <translation id="2262477216570151239">Qaytarishdan avvalgi kechiktirish vaqti</translation>
 <translation id="2263189956353037928">Hisobingizdan chiqing va qaytadan kiring</translation>
 <translation id="2263371730707937087">Ekran kadrlar chastotasi</translation>
@@ -4660,6 +4661,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5331568967879689647">ChromeOS tizim ilovasi</translation>
 <translation id="5331975486040154427">USB-C qurilma (chap tomondagi orqa port)</translation>
 <translation id="5333896723098573627">Ilovalarni olib tashlash uchun Sozlamalar &gt; Ilovalar &gt; Google Play Market &gt; Android sozlamalari boshqaruvi &gt; Ilovalar yoki Ilovalar menejeri menyusiga kiring. Kerakli ilovani tanlab (ilovani topish uchun ekranni oʻng yoki chapga suring), “Olib tashlash” yoki “Faolsizlantirish” parametrini bosing.</translation>
+<translation id="5334113802138581043">Mikrofonga ruxsat</translation>
 <translation id="5334142896108694079">Skript keshi</translation>
 <translation id="5336688142483283574">Bu sahifa ham hisobingizdagi qidiruv va <ph name="SEARCH_ENGINE" /> tarixidan olib tashlanadi.</translation>
 <translation id="5336689872433667741">Kursor va sensorli panel</translation>
@@ -5081,6 +5083,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5733866499231170760">ID yaroqsiz. Yaroqsiz formatda kiritdingiz. Yoʻqnomani tekshiring va ID kodini namunada berilgan formatda kiriting. Muammoni hal qila olmasangiz, qatorni boʻsh tashlab keting va oʻrnatishni davom ettiring.</translation>
 <translation id="5734362860645681824">Uskunalar</translation>
 <translation id="5734697361979786483">Fayllarni ulashish sozlamasini kiritish</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Bu maʼlumotlar yoki qurilmangiz tashkilotingizning ayrim xavfsizlik siyosatlariga mos kelmaydi. Nimani tuzatish kerakligini administratoringiz bilan tekshiring.}=1{Bu fayl yoki qurilmangiz tashkilotingizning ayrim xavfsizlik siyosatlariga mos kelmaydi. Nimani tuzatish kerakligini administratoringiz bilan tekshiring.}other{Bu fayllar tashkilotingizning ayrim xavfsizlik siyosatlariga mos kelmaydi. Nimani tuzatish kerakligini administratoringiz bilan tekshiring.}}</translation>
 <translation id="5736796278325406685">Yaroqli foydalanuvchi nomini kiriting.</translation>
 <translation id="5738093759615225354">Bu kod kompyuterga kirish uchun kerak</translation>
 <translation id="5738329404678738022">Sinxronizatsiya orqali bukmarklaringizni saqlang</translation>
@@ -6574,6 +6577,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7123030151043029868">Bir nechta faylni avtomatik yuklashga ruxsat berilgan</translation>
 <translation id="7123302939607518173">Bu narsaga aloqador reklamasi foydali deb hisoblagan qiziqish yoki saytni kiriting.</translation>
 <translation id="7124013154139278147">“Avvalgi” uchun kalitni tayinlash</translation>
+<translation id="7124712201233930202">Tashkilotingiz siyosatlariga mos kelmaydi</translation>
 <translation id="7125029162161377569">Privacy Sandbox sinovlari bilan saytlar kamroq maʼlumotlaringizdan foydalangan holda bir xil xizmat koʻrsatishi mumkin. Bunda maʼlumotlaringiz maxfiyligi oshadi va kuzatuv mexanizmlari kamayadi. Tayyor boʻlishi bilan biz yangi sinovlarni kiritib turamiz.</translation>
 <translation id="7125148293026877011">Crostini tizimini oʻchirish</translation>
 <translation id="7127980134843952133">Yuklanishlar tarixi</translation>
@@ -8536,6 +8540,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="897939795688207351"><ph name="ORIGIN" /> saytida</translation>
 <translation id="8980345560318123814">Fikr va mulohaza hisobotlari</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – ishdan chiqdi</translation>
+<translation id="8981038076986775523">Mikrofondan foydalanish haqida batafsil</translation>
 <translation id="8981825781894055334">Qogʻoz kam qolgan</translation>
 <translation id="8983018820925880511">Bu yangi profil <ph name="DOMAIN" /> domenida boshqariladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> sayti <ph name="FILENAME" /> faylini tahrirlay oladi</translation>
@@ -8654,6 +8659,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9081543426177426948">Siz Inkognito rejimida ochgans saytlar saqlanmaydi</translation>
 <translation id="9084064520949870008">Alohida oynada ochish</translation>
 <translation id="9085256200913095638">Tanlangan varaqni nusxalash</translation>
+<translation id="9085446486797400519">Kameraga ruxsat</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> tanlanmagan. Tanlash uchun Qidiruv va Boʻshliq tugmalarini bosing.</translation>
 <translation id="9087949559523851360">Cheklangan foydalanuvchi kiritish</translation>
 <translation id="9088234649737575428">“<ph name="PLUGIN_NAME" />” plagini bloklandi (korporativ siyosatga ko‘ra)</translation>

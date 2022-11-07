@@ -6453,6 +6453,11 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7274077256421167535">Mengaktifkan berbagi daya USB</translation>
 <translation id="7275334191706090484">Bookmark Terkelola</translation>
 <translation id="7275689301063927473">Tolak izin Font Lokal di semua situs secara default</translation>
+<translation id="7275878175078795558">Jika kebijakan disetel ke Benar (True), <ph name="PRODUCT_NAME" /> akan selalu melakukan pemeriksaan pencabutan sertifikat server yang berhasil divalidasi yang ditandatangani oleh sertifikat CA yang diinstal secara lokal. Jika <ph name="PRODUCT_NAME" /> tidak mendapat informasi status pencabutan, <ph name="PRODUCT_NAME" /> akan memperlakukan sertifikat ini sebagai dicabut (kegagalan fatal).
+
+      Jika kebijakan disetel ke Salah (False) atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan setelan pemeriksaan pencabutan online yang ada.
+
+      Di <ph name="MAC_OS_NAME" />, kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> disetel ke Salah (False).</translation>
 <translation id="7278854311116092134">Nama hosting pesan native untuk dikeluarkan dari daftar yang tidak diizinkan</translation>
 <translation id="7291084543582732020">Jika setelan ini diaktifkan, pengguna akan diizinkan menggunakan Smart Lock jika persyaratan untuk fitur ini terpenuhi.
 

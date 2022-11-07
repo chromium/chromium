@@ -541,6 +541,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1495677929897281669">Tilbage til fanen</translation>
 <translation id="1500297251995790841">Ukendt enhed [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Få flere oplysninger om ikke-understøttede Chrome-apps</translation>
+<translation id="1503392482221435031">Sender automatisk brugsstatistik til Google. Du kan aktivere eller deaktivere nedbrudsrapporter i indstillingerne på din enhed.</translation>
 <translation id="150411034776756821">Fjern <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Delte mapper er tilgængelige i Windows via <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">eksportere adgangskoder</translation>
@@ -1397,6 +1398,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2256115617011615191">Genstart nu</translation>
 <translation id="2257053455312861282">Hvis du tilføjer en skolekonto, kan du nemt logge ind på websites, i udvidelser og i apps som elev, mens du stadig er underlagt forældreindstillinger.</translation>
 <translation id="2261323523305321874">Din administrator har foretaget en systemændring, der deaktiverer nogle gamle profiler.</translation>
+<translation id="22614517036276112">Dette dokument eller din enhed overholder ikke alle din organisationens sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.</translation>
 <translation id="2262477216570151239">Forsinkelse før gentagelse</translation>
 <translation id="2263189956353037928">Log ud, og log ind igen</translation>
 <translation id="2263371730707937087">Skærmens opdateringshastighed</translation>
@@ -2703,6 +2705,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3461766685318630278">Opret og slet ekstra containere.</translation>
 <translation id="3462311546193741693">Logger dig ud af de fleste websites. Du forbliver logget ind på din Google-konto, så dine synkroniserede data kan ryddes.</translation>
 <translation id="3462413494201477527">Vil du annullere konfigurationen af kontoen?</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} adgangskode er gemt på denne enhed}one{{COUNT} adgangskode er gemt på denne enhed}other{{COUNT} adgangskoder er gemt på denne enhed}}</translation>
 <translation id="346298925039590474">Dette mobilnetværk vil være tilgængeligt for alle brugere på denne enhed</translation>
 <translation id="3464145797867108663">Tilføj arbejdsprofil</translation>
 <translation id="346431825526753">Dette er en børnekonto, som administreres af <ph name="CUSTODIAN_EMAIL" />.</translation>
@@ -2999,6 +3002,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3743842571276656710">Angiv pinkoden for at parre med <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Hvis du vil fjerne apps, skal du gå til Indstillinger &gt; Google Play Butik &gt; Administrer dine Android-præferencer &gt; Apps eller Administration af apps. Tryk derefter på den app, du vil afinstallere (du skal muligvis stryge til højre eller venstre for at finde appen). Tryk derefter på Afinstaller eller Deaktiver.</translation>
 <translation id="3747603683749989726">Vil du aktivere Udvidet beskyttet browsing?</translation>
+<translation id="3748424433435232460">Der er allerede gemt en adgangskode for denne konto på denne enhed</translation>
 <translation id="3748706263662799310">Rapporter en fejl</translation>
 <translation id="3750562496035670393">Chrome har gemt din adgangskode på denne enhed, men du kan gemme den på din Google-konto i stedet. Dermed kan alle adgangskoderne på din Google-konto også bruges, når du er logget ind.</translation>
 <translation id="3752253558646317685">Sørg for, at dit barn bliver ved med at løfte sin finger, så fingeraftrykket kan gemmes</translation>
@@ -3179,6 +3183,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3897746662269329507">Din <ph name="DEVICE_TYPE" /> er udviklet til gaming. Appen Udforsk åbnes som det næste, og deri har du adgang til hundredvis af de nyeste spil, du kan se spiltilbud, og du kan benytte gamingrelaterede funktioner, som følger med din enhed.</translation>
 <translation id="3898233949376129212">Enhedens sprog</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> vil gerne have tilladelse til at: <ph name="FIRST_PERMISSION" /> og <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">Din adgangskode til <ph name="WEBSITE" /> er gemt på denne enhed og på din Google-konto. Hvilken en skal slettes?</translation>
 <translation id="389901847090970821">Vælg tastatur</translation>
 <translation id="3900966090527141178">Eksportér adgangskoder</translation>
 <translation id="3902789559055749153">Vælg, hvordan du vil oprette en adgangsnøgle til <ph name="APP_NAME" /></translation>
@@ -5090,6 +5095,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5733866499231170760">Ugyldigt id. Det indtastede format er ikke korrekt. Tjek den vejledning, du har fået, for at sikre, at du angiver id'et i det korrekte format. Hvis du ikke kan løse problemet, skal du lade feltet stå tomt og fortsætte installationen.</translation>
 <translation id="5734362860645681824">Kommunikation</translation>
 <translation id="5734697361979786483">Tilføj fildeling</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Disse data eller din enhed overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}=1{Denne fil eller din enhed overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}one{Denne fil overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}other{Disse filer overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}}</translation>
 <translation id="5736796278325406685">Angiv et gyldigt brugernavn</translation>
 <translation id="5738093759615225354">Du skal bruge denne adgangsnøgle for at logge ind på din computer</translation>
 <translation id="5738329404678738022">Gem dine bogmærker og meget mere ved hjælp af synkronisering</translation>
@@ -5909,6 +5915,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielicens</translation>
 <translation id="6511827214781912955">Du bør overveje at slette <ph name="FILENAME" />, så andre, der bruger denne enhed, ikke kan se dine adgangskoder</translation>
+<translation id="6512808201725371249">Der er allerede gemt en adgangskode for denne konto i Google Adgangskodeadministrator (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome anvender mobildata, hvis du ikke har forbindelse til et andet netværk.</translation>
 <translation id="6514010653036109809">Tilgængelig enhed:</translation>
 <translation id="6514565641373682518">Denne side har deaktiveret din musemarkør.</translation>
@@ -6329,6 +6336,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6897363604023044284">Vælg de websites, der skal ryddes</translation>
 <translation id="6897688156970667447">Nyttigt i svag belysning og sparer batteri</translation>
+<translation id="6897972855231767338">Få flere oplysninger om, hvordan du browser som gæst</translation>
 <translation id="6898440773573063262">Terminalapplikationer kan nu konfigureres til at starte automatisk på enheden.</translation>
 <translation id="6900284862687837908">Baggrundsapp: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Forbedret beskyttelse</translation>
@@ -6583,6 +6591,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7123030151043029868">Har tilladelse til at downloade flere filer automatisk</translation>
 <translation id="7123302939607518173">Tilføj en interesse eller et website, hvis du mener, at annoncer, der er relateret til interessen, ville være nyttige for dig</translation>
 <translation id="7124013154139278147">Tildel kontakt for handlingen "Forrige"</translation>
+<translation id="7124712201233930202">Din organisations politikker overholdes ikke</translation>
 <translation id="7125029162161377569">Takket være Privacy Sandbox-prøver kan websites levere den samme browseroplevelse uden at bruge så mange af dine oplysninger. Det vil sige, at dine personlige oplysninger beskyttes bedre, og at du spores mindre på tværs af websites. Vi tilføjer nye prøver, når de er klar til at blive testet.</translation>
 <translation id="7125148293026877011">Slet Crostini</translation>
 <translation id="7127980134843952133">Downloadhistorik</translation>
@@ -8547,6 +8556,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="897939795688207351">På <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Feedbackrapporter</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – gået ned</translation>
+<translation id="8981038076986775523">Få flere oplysninger om, hvordan du bruger en mikrofon</translation>
 <translation id="8981825781894055334">Lavt papirniveau</translation>
 <translation id="8983018820925880511">Denne nye profil administreres af <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> kan redigere <ph name="FILENAME" /></translation>
@@ -8633,6 +8643,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> anmoder om adgang til følgende indhold:</translation>
 <translation id="9057354806206861646">Tidsplan for opdateringer</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Ca. 1 notifikation om dagen}one{Ca. {NUM_NOTIFICATION} notifikation om dagen}other{Ca. {NUM_NOTIFICATION} notifikationer om dagen}}</translation>
+<translation id="9061383912634843744">Log automatisk ind på websites og i apps ved hjælp af gemte loginoplysninger. Hvis indstillingen er deaktiveret, bliver du bedt om en bekræftelse, hver gang du logger ind på et website eller i en app.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Der er fejl på linje <ph name="ERROR_LINE_START" /> til <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Aktivér AutoFyld for at udfylde formularer med et enkelt klik</translation>

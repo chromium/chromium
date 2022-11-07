@@ -483,6 +483,7 @@
 <translation id="3633097874324966332">請開啟藍牙設定以配對裝置</translation>
 <translation id="3638400994746983214">切換隱私保護畫面。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新已逾期</translation>
+<translation id="3659444876902283058">(第 <ph name="CURRENT_DAY" /> 天，共 <ph name="TOTAL_DAYS" /> 天)</translation>
 <translation id="3659814201068740063">大約還可使用 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 請將裝置接上電源。</translation>
 <translation id="366222428570480733">受管理的使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1266,9 +1267,11 @@
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
 <translation id="8083540854303889870">已儲存待稍後使用</translation>
+<translation id="8091153018031979607">開始時間：<ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自動更新</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="8113423164597455979">開啟，所有應用程式</translation>
+<translation id="8113515504791187892">隨選朗讀按鈕</translation>
 <translation id="8120151603115102514">你的手機未設定螢幕鎖定。如要解鎖 Chromebook，請輸入密碼。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">確認</translation>
@@ -1378,6 +1381,7 @@
 <translation id="8703634754197148428">開始錄製。如要停止已經開始的錄製作業，請按下 Alt + Shift + L 鍵前往檔案櫃，並從中找出停止錄影的按鈕</translation>
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全螢幕畫面擷取</translation>
+<translation id="8731487213223706745">結束時間：<ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">你的按鍵行為可能會遭到側錄</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，<ph name="SCREEN_SHARE_STATUS" /></translation>

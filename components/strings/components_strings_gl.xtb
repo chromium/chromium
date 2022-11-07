@@ -1384,6 +1384,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para traducir esta páxina co Tradutor de Google</translation>
 <translation id="4514308731478712184">Desactivar Percorridos</translation>
 <translation id="4515275063822566619">As tarxetas e enderezos proceden de Chrome e da túa conta de Google (<ph name="ACCOUNT_EMAIL" />). Podes xestionalos en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">A política do administrador bloqueou a descarga deste ficheiro</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Sobre Monarch</translation>
 <translation id="4521916730539354575">Bandexa esquerda</translation>
@@ -2384,6 +2385,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Non se pode realizar o envío a este enderezo. Selecciona un diferente.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Bloqueouse a carga</translation>
 <translation id="7132939140423847331">O teu administrador prohibiu que copiases estes datos.</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
 <translation id="7138472120740807366">Método de entrega</translation>
@@ -2617,6 +2619,7 @@ Detalles adicionais:
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Sobre Kaku-8</translation>
 <translation id="7659878911471462949">Bágoas de ledicia</translation>
+<translation id="766014026101194726">{0,plural, =1{A política do administrador bloqueou a carga deste ficheiro}other{A política do administrador bloqueou a carga de # ficheiros}}</translation>
 <translation id="7662298039739062396">Opción de configuración controlada por unha extensión</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Non se permite no modo de incógnito</translation>
@@ -2711,6 +2714,7 @@ Detalles adicionais:
 <translation id="7939744324936979484">Música folclórica e tradicional</translation>
 <translation id="7941628148012649605">Sobre Chou 4</translation>
 <translation id="7942349550061667556">Vermello</translation>
+<translation id="7943397946612013052">Bloqueouse a descarga</translation>
 <translation id="7943893128817522649">Pode pedirche permiso para descargar automaticamente varios ficheiros</translation>
 <translation id="7947285636476623132">Comproba o ano de caducidade e téntao de novo</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para obter máis información sobre as funcións de Chrome</translation>

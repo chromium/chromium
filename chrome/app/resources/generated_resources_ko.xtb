@@ -1396,6 +1396,7 @@
 <translation id="2256115617011615191">지금 다시 시작</translation>
 <translation id="2257053455312861282">학교 계정을 추가하면 학생이 계속 자녀 보호 기능으로 감독받으면서 웹사이트, 확장 프로그램, 앱에 간편하게 로그인할 수 있습니다.</translation>
 <translation id="2261323523305321874">관리자가 시스템 전체에 변경사항을 적용하여 기존의 일부 프로필이 비활성화되었습니다.</translation>
+<translation id="22614517036276112">문서 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.</translation>
 <translation id="2262477216570151239">반복 전 지연</translation>
 <translation id="2263189956353037928">로그아웃하고 다시 로그인</translation>
 <translation id="2263371730707937087">화면 새로고침 빈도</translation>
@@ -5088,6 +5089,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5733866499231170760">잘못된 ID입니다. 입력한 형식이 잘못되었습니다. 제공된 안내를 확인하여 올바른 형식으로 ID를 입력하세요. 문제를 해결할 수 없으면 입력란을 비워 두고 설치를 계속하세요.</translation>
 <translation id="5734362860645681824">커뮤니케이션</translation>
 <translation id="5734697361979786483">파일 공유 추가</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{데이터 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}=1{파일 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}other{파일이 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}}</translation>
 <translation id="5736796278325406685">올바른 사용자 이름을 입력하세요.</translation>
 <translation id="5738093759615225354">컴퓨터에 로그인하려면 이 패스키가 필요합니다.</translation>
 <translation id="5738329404678738022">동기화를 통해 북마크 등 저장하기</translation>
@@ -6579,6 +6581,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7123030151043029868">여러 파일 자동 다운로드가 허용됨</translation>
 <translation id="7123302939607518173">특정 항목과 관련된 광고가 유용하다고 생각한다면 관심분야나 사이트를 추가하세요.</translation>
 <translation id="7124013154139278147">'이전'에 스위치 할당</translation>
+<translation id="7124712201233930202">조직의 정책을 준수하지 않습니다.</translation>
 <translation id="7125029162161377569">개인 정보 보호 샌드박스 무료 체험 기간에는 사이트에서 내 정보를 더 적게 사용하면서도 동일한 인터넷 사용 환경을 제공할 수 있습니다. 즉, 개인 정보 보호는 강화되고 크로스 사이트 추적은 줄어듭니다. 테스트 준비가 완료되는 대로 새로운 무료 체험 프로그램이 추가될 예정입니다.</translation>
 <translation id="7125148293026877011">Crostini 삭제</translation>
 <translation id="7127980134843952133">다운로드 기록</translation>
@@ -8543,6 +8546,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" />에서</translation>
 <translation id="8980345560318123814">의견 보고서</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 비정상 종료됨</translation>
+<translation id="8981038076986775523">마이크 사용 방법 자세히 알아보기</translation>
 <translation id="8981825781894055334">용지 부족</translation>
 <translation id="8983018820925880511">이 새 프로필은 <ph name="DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />에서 <ph name="FILENAME" />을(를) 수정할 수 있습니다.</translation>

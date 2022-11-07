@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">መሣሪያዎን ለማጣመር የብሉቱዝ ቅንብሮችን ይክፈቱ</translation>
 <translation id="3638400994746983214">የግላዊነት ማያ ገጽን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="3649505501900178324">ዝማኔ ጊዜው ደርሶ አልፏል</translation>
+<translation id="3659444876902283058">(ቀን <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> ገደማ ቀርቷል (<ph name="PERCENTAGE" />%)።
 መሣሪያዎን ኃይል ላይ ይሰኩት።</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> የሚተዳደር ተጠቃሚ</translation>
@@ -1268,9 +1269,11 @@
 <translation id="8052898407431791827">ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
 <translation id="8054466585765276473">የባትሪ ጊዜን በማስላት ላይ።</translation>
 <translation id="8083540854303889870">ለበኋላ የተቀመጠ</translation>
+<translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> ላይ ይጀመራል</translation>
 <translation id="8091387634532529612">ራስ-ሰር ዝማኔዎች</translation>
 <translation id="8098591350844501178">ማያ ገጹን ወደ <ph name="RECEIVER_NAME" /> Cast ማድረግ አስቁም</translation>
 <translation id="8113423164597455979">በርቷል፣ ሁሉም መተግበሪያዎች</translation>
+<translation id="8113515504791187892">ለመናገር-ይምረጡ አዝራር</translation>
 <translation id="8120151603115102514">የእርስዎ ስልክ የማያ ገጽ መቆለፊያ የለውም። የእርስዎን Chromebook ለመክፈት የይለፍ ቃል ያስገቡ።</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° ሴ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
@@ -1380,6 +1383,7 @@
 <translation id="8703634754197148428">መቅዳት ጀምር። አንዴ ቀረጻው ከጀመረ በኋላ ወደ መደርደሪያው ለመሄድ እና ቀረፃውን አዝራር አቁምን ለማግኘት Alt + Shift + Lን ይጠቀሙ</translation>
 <translation id="8721053961083920564">ድምፅን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ሙሉ የማያ ገጽ ቀረጻ</translation>
+<translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> ላይ ያበቃል</translation>
 <translation id="8734991477317290293">የእርስዎን የቁልፍ ጭረቶች ለመስረቅ እየሞከረ ሊሆን ይችላል</translation>
 <translation id="8735678380411481005">የቁልፍ ሰሌዳ የጀርባ ብርሃን ቀለም</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />፣

@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">Блокирани „бисквитки“</translation>
 <translation id="165877110639533037">Няма отворени раздели</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Заявка за мобилния сайт</translation>
 <translation id="168715261339224929">Включете синхронизирането, за да получите отметките си на всичките си устройства.</translation>
 <translation id="1687475363370981210">Означаване на всичко като прочетено</translation>
 <translation id="1689333818294560261">Псевдоним</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">Затваряне на раздела</translation>
 <translation id="2890171748217283516">Сайтовете, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките за Discover.</translation>
 <translation id="2898963176829412617">Нова папка…</translation>
+<translation id="2902684821701498619">Добавяне в списъка за четене</translation>
 <translation id="2916171785467530738">Автоматично довършване на заявки за търсене и URL адреси</translation>
 <translation id="291754862089661335">Поставете кода за бърза реакция или баркода в тази рамка</translation>
 <translation id="2920866371965792875">За да виждате актуална информация от този сайт, последвайте го тук.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">Месец на валидност</translation>
 <translation id="3482959374254649722">Разделите ви се синхронизират...</translation>
 <translation id="3484946776651937681">Отваряне в „Изтегляния“</translation>
+<translation id="3485558910355485767">Нов прозорец в режим „инкогнито“</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за предложеното съдържание</translation>
 <translation id="3494788280727468875">Потвърждаване на изчистването на данните за сърфирането</translation>
 <translation id="35083190962747987">Отваряне на ${url}</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3861486700625780712">Прекратяване на следенето</translation>
+<translation id="3863769054730344136">Изпращане до устройствата ви</translation>
 <translation id="387280738075653372">Изтеглете Chrome оттук.</translation>
 <translation id="3892144330757387737">Тук ще се показва историята ви</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5669335982068190158">Излязохте от профила си при нулирането на своя iPhone. Докоснете бутона за продължаване по-долу, за да влезете отново.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Създаване на QR код</translation>
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Показва се 1 прозорец на Chrome}other{Показват се {count} прозореца на Chrome}}</translation>
 <translation id="5701270923492462699">Достъпът до камерата е разрешен</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">Добре дошли отново</translation>
 <translation id="6219688215832490856">Никога да не се превежда</translation>
 <translation id="6223816392543092032">Получете отметките, историята, паролите и другите си настройки на всичките си устройства.</translation>
+<translation id="6229318421047648685">Заявка за настолния сайт</translation>
 <translation id="6231782223312638214">Предложени</translation>
 <translation id="6232329973559504466">Търсене в режим „инкогнито“</translation>
 <translation id="6232736989810857397">Това ви дава възможност лесно да създавате събития в календара посредством Google Обектив.</translation>

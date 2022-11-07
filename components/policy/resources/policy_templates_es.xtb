@@ -6429,6 +6429,11 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7274077256421167535">Habilita la potencia compartida por USB</translation>
 <translation id="7275334191706090484">Marcadores administrados</translation>
 <translation id="7275689301063927473">Negar el permiso de fuentes locales en todos los sitios de forma predeterminada</translation>
+<translation id="7275878175078795558">Si se asigna el valor True a esta política, <ph name="PRODUCT_NAME" /> siempre comprobará la revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados de forma local. Si <ph name="PRODUCT_NAME" /> no puede obtener información sobre el estado de la revocación, <ph name="PRODUCT_NAME" /> considerará que estos certificados están revocados (modo estricto).
+
+      Si se asigna el valor False a esta política o no se define, <ph name="PRODUCT_NAME" /> usará la configuración que se esté aplicando en ese momento para comprobar la revocación online.
+
+      En <ph name="MAC_OS_NAME" />, esta política no tendrá efecto si se asigna el valor False a la política <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.</translation>
 <translation id="7278854311116092134">Nombres de hosts de mensajes nativos que se deben excluir de la lista de bloqueados</translation>
 <translation id="7291084543582732020">Si habilitas esta opción, los usuarios podrán utilizar Smart Lock siempre que se cumplan los requisitos establecidos para la función.
 

@@ -1413,6 +1413,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4606870351894164739">Izstopajoče</translation>
 <translation id="4607603470419975064">Gumb za ogled nasvetov za Chrome, pritisnite Enter, če želite izvedeti več o funkcijah Chroma</translation>
 <translation id="4607608436550361748">Ogled nasvetov za Chrome</translation>
+<translation id="4610279718074907952">To spletno mesto je v skupini, ki jo definiral(-a) <ph name="SET_OWNER" />, ki si lahko ogleda vašo dejavnost.</translation>
 <translation id="4617273035598175554">Programska oprema za grafiko in animacije</translation>
 <translation id="4622292761762557753">Vseeno prenesi</translation>
 <translation id="4627675673814409125">Tega pravilnika ni mogoče nastaviti na ravni profila v Chromu in bo prezrt.</translation>
@@ -2388,6 +2389,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7130775116821607281">Blokirano nalaganje</translation>
 <translation id="7132939140423847331">Skrbnik je prepovedal kopiranje teh podatkov.</translation>
 <translation id="7135130955892390533">Prikaz stanja</translation>
+<translation id="7136009930065337683">Preberite več o anonimnem načinu</translation>
 <translation id="7138472120740807366">Način dostave</translation>
 <translation id="7139892792842608322">Glavni pladenj</translation>
 <translation id="714064300541049402">Pomik slike na 2. strani v X</translation>

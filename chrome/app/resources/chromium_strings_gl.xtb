@@ -341,6 +341,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8330519371938183845">Inicia sesión para sincronizar e personalizar Chromium nos teus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estaba utilizando Chromium previamente</translation>
 <translation id="8357820681460164151">Se queres acceder ás túas cousas do navegador Chromium desde calquera dos teus dispositivos, inicia sesión e activa a sincronización</translation>
+<translation id="8360718212975266891">Se queres recibir actualizacións de Chromium no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 día}other{Reinicia Chromium en # días}}</translation>
 <translation id="8453117565092476964">O arquivo do instalador está danado ou non é válido. Volve descargar Chromium.</translation>
 <translation id="8463672209299734063">Opcional: Axuda a mellorar as funcións e o rendemento de Chromium OS enviando automaticamente datos de uso e diagnóstico a Google.</translation>

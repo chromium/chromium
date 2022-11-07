@@ -226,6 +226,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Non se puido crear a ligazón</translation>
 <translation id="2786701870377699570">Busca pestanas entre dispositivos sincronizados</translation>
+<translation id="2797029671965852011">Mostrar historial</translation>
 <translation id="2800683595868705743">Saír do selector de pestanas</translation>
 <translation id="2815198996063984598">2. Toca Aplicación de navegador predeterminada</translation>
 <translation id="2820289420301699633">O teu administrador controla Chrome e pode acceder aos datos asociados</translation>
@@ -328,7 +329,9 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3530206579861815432">Atopa con rapidez pestanas abertas e pechadas recentemente nos teus dispositivos sincronizados.</translation>
 <translation id="3533202363250687977">Pechar todas as pestanas do modo de incógnito</translation>
 <translation id="3533436815740441613">Nova pestana</translation>
+<translation id="3540141921715814660">Engadir aos marcadores</translation>
 <translation id="3551320343578183772">Pechar pestana</translation>
+<translation id="3565207542107370586">Borrar datos de navegación…</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3581564640715911333">Ofrece a tradución de páxinas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imaxe nunha pestana nova</translation>
@@ -347,6 +350,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="37207012422556617">Buscas populares</translation>
 <translation id="3740397331642243698">Abre os URL escritos en Google Chrome no modo de incógnito.</translation>
 <translation id="3762232513783804601">Deseñado para iPad</translation>
+<translation id="3768725474733206671">Reabrir última pestana pechada</translation>
 <translation id="3771033907050503522">Pestanas de incógnito</translation>
 <translation id="3775743491439407556">A sincronización non funciona</translation>
 <translation id="3779810277399252432">Non hai conexión a Internet.</translation>
@@ -358,9 +362,11 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3810973564298564668">Xestionar</translation>
 <translation id="3818293389945649617">Buscar seguinte</translation>
 <translation id="3819183753496523827">Estás sen conexión. Comproba a conexión a Internet e téntao de novo.</translation>
+<translation id="3835964409414434850">Ir á pestana seguinte</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861486700625780712">Deixar de seguir</translation>
+<translation id="387280738075653372">Descarga Chrome aquí.</translation>
 <translation id="3892144330757387737">Aquí atoparás o teu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3904829425754749514">A túa organización desactivou a sincronización. Podes seguir vendo os marcadores, o historial, os contrasinais e o resto das opcións de configuración que teñas neste dispositivo. Se fas cambios, non se sincronizarán coa túa conta.</translation>
@@ -546,6 +552,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
+<translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Os sitios que sigas mostraranse aquí</translation>
 <translation id="5388358297987318779">Abrir imaxe</translation>
@@ -578,6 +585,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5631164295104953411">Engadir método de pago</translation>
 <translation id="5636282538000367086">Descubre as novidades de Chrome</translation>
 <translation id="5652623411397330904">Os produtos dos que fagas seguimento aparecerán aquí.</translation>
+<translation id="5657859710142657190">Ir á grade de pestanas</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5669335982068190158">Pechouse sesión como parte do restablecemento do iPhone. Para iniciar sesión, toca debaixo a opción de continuar.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -594,6 +602,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5737974891429562743">Os detalles de inicio de sesión da conta están caducados. Actualízaos para iniciar a sincronización.</translation>
 <translation id="5738385766833540397">Xestiona como recibes as alertas de baixada de prezos para os produtos dos que fas un seguimento</translation>
 <translation id="5738887413654608789">Así poderás descubrir páxinas web relevantes en función do que te rodea.</translation>
+<translation id="5745916533876677730">Ir á pestana anterior</translation>
 <translation id="5758631781033351321">Aquí atoparás a túa lista de lecturas</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="5782227691023083829">Traducindo…</translation>
@@ -610,6 +619,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5857090052475505287">Novo cartafol</translation>
 <translation id="5857675236236529683">Aquí te agarda a túa lista de lectura, para cando teñas un oco</translation>
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>
+<translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5869029295770560994">De acordo</translation>
 <translation id="5871497086027727873">Moveuse un elemento</translation>
@@ -653,6 +663,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6149061208933997199">Usar contrasinal</translation>
 <translation id="6152406514676263192">Activa a sincronización para gozar do contido máis relevante baseado nos teus intereses.</translation>
 <translation id="6159839020698489198">opcional</translation>
+<translation id="6170450281939467187">Produciuse un erro ao realizar a tradución</translation>
 <translation id="6177442314419606057">Busca en Chrome</translation>
 <translation id="6184086493125982861">Amosar pestanas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -688,6 +699,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6374469231428023295">Tentar de novo</translation>
 <translation id="6377118281273296434">Seguranza do sitio</translation>
 <translation id="6380866119319257197">Se esqueciches o contrasinal ou queres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece a sincronización<ph name="END_LINK" /></translation>
+<translation id="6383719166112032471">Abrir localización…</translation>
 <translation id="6387994324662817823">Os contrasinais gárdanse no xestor de contrasinais de Google só neste dispositivo.</translation>
 <translation id="6389470377220713856">Nome na tarxeta</translation>
 <translation id="6403371459378431832">Sincroniza os teus datos en todos os dispositivos</translation>
@@ -699,6 +711,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 Os teus datos encriptáronse co teu contrasinal de sincronización o <ph name="TIME" />. Introdúceo para comezar a sincronización.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
 <translation id="6434591244308415567">Produciuse un erro. Téntao de novo máis tarde.</translation>
+<translation id="6435236283694032571">Engadir á lista de lectura</translation>
 <translation id="6439338047467462846">Permitir todas</translation>
 <translation id="6445051938772793705">País</translation>
 <translation id="6445981559479772097">Mensaxe enviada.</translation>
@@ -862,6 +875,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7720410380936703141">TENTAR DE NOVO</translation>
 <translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
+<translation id="7738120385185846461">Informar dun problema…</translation>
 <translation id="7741325291586284254">Páxina de nova pestana do modo de incógnito</translation>
 <translation id="7756478488453921771">Menú → Configuración → Métodos de pago</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -959,6 +973,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8459333855531264009">Non seguro</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
+<translation id="8488923644885757471">Abrir nova ventá</translation>
 <translation id="8490978609246021741">Gardar cambios</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="850600235656508448">Abrir marcador no modo de incógnito</translation>
@@ -1011,6 +1026,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8881801611828450202">Buscar esta imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8891935667620843985">Se configuras Chrome como aplicación de navegador predeterminada, poderás abrir ligazóns nel automaticamente.</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
+<translation id="890565330728586731">Atrás</translation>
 <translation id="8909135823018751308">Compartir...</translation>
 <translation id="8911759861431145525">Toca Add (Engadir) e indica a túa información</translation>
 <translation id="891658175948553296">Destaca texto nun sitio</translation>

@@ -102,6 +102,7 @@ Injini yakho yokusesha iyi-<ph name="DSE_NAME" />. Bona imiyalelo yabo yokusula 
 <translation id="1657641691196698092">Amakhukhi Avinjiwe</translation>
 <translation id="165877110639533037">Awekho Amathebhu Avuliwe</translation>
 <translation id="1674504678466460478">Isi-<ph name="SOURCE_LANGUAGE" /> ukuya kusi-<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Cela isayithi leselula</translation>
 <translation id="168715261339224929">Ukuze uthole amabhukhimakhi akho kuwo onke amadivayisi akho, vula ukuvumelanisa.</translation>
 <translation id="1687475363370981210">Maka konke njengokufundiwe</translation>
 <translation id="1689333818294560261">Isiteketiso</translation>
@@ -243,6 +244,7 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="288655811176831528">Vala ithebhu</translation>
 <translation id="2890171748217283516">Amasayithi owalandelayo alondolozwe ku-akhawunti yakho ye-Google. Ungawaphatha kumasethingi we-Discover.</translation>
 <translation id="2898963176829412617">Ifolda entsha…</translation>
+<translation id="2902684821701498619">Engeza ohlwini lokufunda</translation>
 <translation id="2916171785467530738">Qedela ngokuzenzakalela usesho nama-URL</translation>
 <translation id="291754862089661335">Misa ikhodi ye-QR noma amabhakhodi kulo zimele</translation>
 <translation id="2920866371965792875">Ukuze ubone izibuyekezo ezivela kuleli sayithi, lilandele lapha.</translation>
@@ -320,6 +322,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3478058380795961209">Inyanga yokuphelelwa yisikhathi</translation>
 <translation id="3482959374254649722">Ivumelanisa amathebhu akho...</translation>
 <translation id="3484946776651937681">Vula ekulandeni</translation>
+<translation id="3485558910355485767">Iwindi elisha le-Incognito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /> mayelana nokuqukethwe okuphakamisiwe</translation>
 <translation id="3494788280727468875">Qinisekisa ukusula idatha yokuphequlula</translation>
 <translation id="35083190962747987">Vula ${url}</translation>
@@ -366,6 +369,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="385051799172605136">Emuva</translation>
 <translation id="3858860766373142691">Igama</translation>
 <translation id="3861486700625780712">Yekela ukulandela</translation>
+<translation id="3863769054730344136">Thumela kumadivayisi akho</translation>
 <translation id="387280738075653372">Dawuniloda i-Chrome lapha.</translation>
 <translation id="3892144330757387737">Uzothola umlando wakho lapha</translation>
 <translation id="3897092660631435901">Imenyu</translation>
@@ -589,6 +593,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5659593005791499971">I-imeyili</translation>
 <translation id="5669335982068190158">Uphume ngemvume njengengxenye yokusetha kabusha i-iPhone yakho. Thepha okuthi qhubeka ngezansi ukuze ungene ngemvume.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Dala Ikhodi ye-QR</translation>
 <translation id="567881659373499783">Inguqulo engu-<ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Manje ibonisa iwindi eli-1 le-Chrome}one{Manje ibonisa amawindi angu-{count} we-Chrome}other{Manje ibonisa amawindi angu-{count} we-Chrome}}</translation>
 <translation id="5701270923492462699">Ukufinyelela Kwekhamera Kuvunyelwe</translation>
@@ -673,6 +678,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6219550825416862075">Siyakwamukela Futhi</translation>
 <translation id="6219688215832490856">Ungalokothi uhumushe</translation>
 <translation id="6223816392543092032">Thola amabhukhimakhi wakho, umlando, amaphasiwedi, nezinye izilungiselelo kuwo onke amadivayisi akho.</translation>
+<translation id="6229318421047648685">Cela isayithi ledeskithophu</translation>
 <translation id="6231782223312638214">Okuphakanyisiwe</translation>
 <translation id="6232329973559504466">Usesho i-Incognito</translation>
 <translation id="6232736989810857397">Lokhu kukuvumela ukuthi uyenze kalula imicimbi yekhalenda usebenzisa i-Google Lens.</translation>

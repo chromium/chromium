@@ -540,6 +540,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1500297251995790841">Perangkat tidak dikenal [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Pelajari lebih lanjut aplikasi Chrome yang tidak didukung</translation>
+<translation id="1503392482221435031">Otomatis mengirimkan statistik penggunaan ke Google. Anda dapat mengaktifkan atau menonaktifkan laporan kerusakan di setelan perangkat.</translation>
 <translation id="150411034776756821">Hapus <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Folder bersama tersedia di Windows di <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">mengekspor sandi</translation>
@@ -1396,6 +1397,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2256115617011615191">Mulai ulang sekarang</translation>
 <translation id="2257053455312861282">Jika akun sekolah ditambahkan, pengguna dapat login dengan mudah ke situs, ekstensi, dan aplikasi sebagai siswa, dan tetap dalam kontrol orang tua.</translation>
 <translation id="2261323523305321874">Administrator Anda telah melakukan perubahan di seluruh sistem yang menonaktifkan sebagian profil lama.</translation>
+<translation id="22614517036276112">Dokumen ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.</translation>
 <translation id="2262477216570151239">Tunda sebelum mengulangi</translation>
 <translation id="2263189956353037928">Logout &amp; login kembali</translation>
 <translation id="2263371730707937087">Rasio refresh layar</translation>
@@ -2702,6 +2704,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3461766685318630278">Buat dan hapus penampung ekstra.</translation>
 <translation id="3462311546193741693">Membuat Anda logout dari sebagian besar situs. Anda akan tetap login di Akun Google sehingga data yang disinkronkan dapat dihapus.</translation>
 <translation id="3462413494201477527">Batalkan penyiapan akun?</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} sandi disimpan di perangkat ini}other{{COUNT} sandi disimpan di perangkat ini}}</translation>
 <translation id="346298925039590474">Jaringan seluler ini akan tersedia untuk semua pengguna di perangkat ini</translation>
 <translation id="3464145797867108663">Tambahkan profil kerja</translation>
 <translation id="346431825526753">Ini adalah akun untuk anak yang dikelola oleh <ph name="CUSTODIAN_EMAIL" />.</translation>
@@ -2998,6 +3001,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3743842571276656710">Masukkan PIN untuk penyambungan dengan <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Untuk menghapus aplikasi, buka Setelan &gt; Google Play Store &gt; Kelola preferensi Android &gt; Aplikasi atau Pengelola aplikasi. Kemudian, ketuk aplikasi yang ingin di-uninstal (Anda mungkin perlu menggeser ke kanan atau ke kiri untuk menemukan aplikasi). Setelah itu, ketuk Uninstal atau Nonaktifkan.</translation>
 <translation id="3747603683749989726">Aktifkan keamanan yang ditingkatkan?</translation>
+<translation id="3748424433435232460">Sandi untuk akun ini sudah disimpan di perangkat ini</translation>
 <translation id="3748706263662799310">Laporkan bug</translation>
 <translation id="3750562496035670393">Chrome menyimpan sandi Anda ke perangkat ini, tetapi Anda dapat menyimpannya ke Akun Google Anda. Dengan begitu, semua sandi dari Akun Google Anda juga akan tersedia saat Anda login.</translation>
 <translation id="3752253558646317685">Minta anak Anda mengangkat dan menyentuhkan jari secara berulang untuk menyimpan sidik jari</translation>
@@ -3178,6 +3182,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> Anda dibuat untuk bermain game. Aplikasi Jelajahi akan terbuka pada halaman berikutnya. Di sana Anda bisa mengakses ratusan game terbaru, melihat penawaran game, dan menemukan fitur game yang disertakan dengan perangkat.</translation>
 <translation id="3898233949376129212">Bahasa perangkat</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ingin: <ph name="FIRST_PERMISSION" /> dan <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">Sandi Anda untuk <ph name="WEBSITE" /> disimpan di perangkat ini dan ke Akun Google Anda. Mana yang ingin Anda hapus?</translation>
 <translation id="389901847090970821">Pilih keyboard</translation>
 <translation id="3900966090527141178">Ekspor sandi</translation>
 <translation id="3902789559055749153">Pilih cara Anda ingin membuat kunci sandi untuk <ph name="APP_NAME" /></translation>
@@ -5089,6 +5094,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5733866499231170760">ID tidak valid. Format yang Anda masukkan salah. Periksa instruksi yang Anda terima untuk memastikan Anda memasukkan ID dengan format yang benar. Jika Anda tidak dapat mengatasi masalah ini, kosongi kolom dan lanjutkan penginstalan.</translation>
 <translation id="5734362860645681824">Komunikasi</translation>
 <translation id="5734697361979786483">Tambahkan berbagi file</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Data ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}=1{File ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}other{File ini tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}}</translation>
 <translation id="5736796278325406685">Masukkan nama pengguna yang valid</translation>
 <translation id="5738093759615225354">Anda memerlukan kunci sandi ini untuk login ke komputer Anda</translation>
 <translation id="5738329404678738022">Simpan bookmark Anda dan yang lainnya dengan sinkronisasi</translation>
@@ -5908,6 +5914,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6508261954199872201">Aplikasi: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Lisensi Media</translation>
 <translation id="6511827214781912955">Sebaiknya hapus <ph name="FILENAME" />, agar orang lain yang menggunakan perangkat ini tidak dapat melihat sandi Anda</translation>
+<translation id="6512808201725371249">Sandi untuk akun ini sudah disimpan ke Pengelola Sandi Google Anda (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome akan menggunakan data seluler jika Anda tidak terhubung ke jaringan lain.</translation>
 <translation id="6514010653036109809">Perangkat yang tersedia:</translation>
 <translation id="6514565641373682518">Halaman ini telah menonaktifkan kursor mouse Anda.</translation>
@@ -6326,6 +6333,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6897363604023044284">Pilih situs yang akan dihapus datanya</translation>
 <translation id="6897688156970667447">Berguna saat cahaya redup dan menghemat baterai</translation>
+<translation id="6897972855231767338">Pelajari lebih lanjut cara menjelajah sebagai tamu</translation>
 <translation id="6898440773573063262">Aplikasi Kiosk sekarang dapat dikonfigurasi untuk peluncuran otomatis di perangkat ini.</translation>
 <translation id="6900284862687837908">Aplikasi Latar Belakang: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Perlindungan yang ditingkatkan</translation>
@@ -6580,6 +6588,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7123030151043029868">Diizinkan mendownload otomatis beberapa file</translation>
 <translation id="7123302939607518173">Tambahkan minat atau situs jika menurut Anda iklan yang berkaitan dengan item mungkin berguna untuk Anda.</translation>
 <translation id="7124013154139278147">Tetapkan tombol akses untuk “Sebelumnya”</translation>
+<translation id="7124712201233930202">Kebijakan organisasi Anda tidak terpenuhi</translation>
 <translation id="7125029162161377569">Dengan uji coba Privacy Sandbox, situs dapat memberikan pengalaman penjelajahan yang sama tetapi menggunakan lebih sedikit info pribadi Anda. Artinya, lebih banyak privasi untuk Anda dan lebih sedikit pelacakan lintas situs. Kami akan menambahkan uji coba baru saat uji coba siap untuk diuji.</translation>
 <translation id="7125148293026877011">Hapus Crostini</translation>
 <translation id="7127980134843952133">Histori download</translation>
@@ -8543,6 +8552,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="897939795688207351">Di <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Laporan masukan</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Mogok</translation>
+<translation id="8981038076986775523">Pelajari lebih lanjut cara menggunakan mikrofon</translation>
 <translation id="8981825781894055334">Kertas hampir habis</translation>
 <translation id="8983018820925880511">Profil baru ini akan dikelola oleh <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> dapat mengedit <ph name="FILENAME" /></translation>
@@ -8629,6 +8639,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ingin mengakses konten berikut:</translation>
 <translation id="9057354806206861646">Update jadwal</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Sekitar 1 notifikasi sehari}other{Sekitar {NUM_NOTIFICATION} notifikasi sehari}}</translation>
+<translation id="9061383912634843744">Otomatis login ke situs dan aplikasi menggunakan kredensial yang disimpan. Jika dinonaktifkan, Anda akan selalu dimintai konfirmasi sebelum login ke situs atau aplikasi.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error dari baris <ph name="ERROR_LINE_START" /> ke <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Aktifkan IsiOtomatis untuk mengisi formulir dengan sekali klik</translation>

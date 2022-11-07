@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">रोक लगाइएका कुकीहरू</translation>
 <translation id="165877110639533037">खुल्ला ट्याबहरू छैनन्</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> बाट <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">मोबाइल साइट देखाउन अनुरोध गर्नुहोस्</translation>
 <translation id="168715261339224929">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा अन गर्नुहोस्।</translation>
 <translation id="1687475363370981210">सबै पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="1689333818294560261">उपनाम</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="2890171748217283516">तपाईंले फलो गर्ने साइटहरू तपाईंको Google खातामा सेभ गरिन्छन्। तपाईं Discover सम्बन्धी सेटिङमा गई ती साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="2898963176829412617">नयाँ फोल्डर…</translation>
+<translation id="2902684821701498619">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस्</translation>
 <translation id="2916171785467530738">खोज तथा URL हरू स्वतः पूर्ण गर्नुहोस्</translation>
 <translation id="291754862089661335">QR कोड वा बारकोडलाई यस फ्रेमभित्र पार्नुहोस्</translation>
 <translation id="2920866371965792875">तपाईं यो साइटबाट अद्यावधिक जानकारी प्राप्त गर्न चाहनुहुन्छ भने यहाँ क्लिक गरी उक्त साइट फलो गर्नुहोस्।</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">म्याद समाप्ति महिना</translation>
 <translation id="3482959374254649722">तपाईँका ट्याबहरू सिंक गर्दै ...</translation>
 <translation id="3484946776651937681">डाउनलोडहरू नामक फोल्डरमा खोल्नुहोस्</translation>
+<translation id="3485558910355485767">नयाँ इन्कोग्निटो विन्डो</translation>
 <translation id="3493531032208478708">सुझाव दिइएको सामग्रीको बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">ब्राउजिङको डेटा खाली गर्ने प्रक्रियाको पुष्टि गर्नुहोस्</translation>
 <translation id="35083190962747987">${url} खोल्नुहोस्</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3861486700625780712">अनफलो गर्नुहोस्</translation>
+<translation id="3863769054730344136">आफ्ना डिभाइसहरूमा पठाउनुहोस्</translation>
 <translation id="387280738075653372">यहाँ गई Chrome डाउनलोड गर्नुहोस्।</translation>
 <translation id="3892144330757387737">तपाईंले गर्नुभएका क्रियाकलापको इतिहास यहाँ देखिने छ</translation>
 <translation id="3897092660631435901">मेनु</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">इमेल</translation>
 <translation id="5669335982068190158">तपाईंको iPhone रिसेट गरिएका कारण तपाईंलाई साइन आउट गरिएको थियो। साइन इन गर्न तल दिइएको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR कोड बनाउनुहोस्</translation>
 <translation id="567881659373499783">संस्करण <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{अहिले Chrome को एउटा विन्डो देखाइँदै छ}other{अहिले Chrome का {count} वटा विन्डो देखाइँदै छन्}}</translation>
 <translation id="5701270923492462699">क्यामेरा प्रयोग गर्ने अनुमति दिइएको छ</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">फेरि स्वागत छ</translation>
 <translation id="6219688215832490856">कहिल्यै पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="6223816392543092032">आफ्ना बुकमार्क, इतिहास, पासवर्ड र अन्य सेटिङ आफ्ना सबै डिभाइसहरूमा उपलब्ध गराउनुहोस्।</translation>
+<translation id="6229318421047648685">डेस्कटप साइट देखाउन अनुरोध गर्नुहोस्</translation>
 <translation id="6231782223312638214">सुझाव गरिएको</translation>
 <translation id="6232329973559504466">इन्कोग्निटो खोज</translation>
 <translation id="6232736989810857397">तपाईं यसका सहायताले Google लेन्स प्रयोग गरी सजिलैसँग पात्रोमा कार्यक्रमहरू सेट गर्न सक्नुहुन्छ।</translation>

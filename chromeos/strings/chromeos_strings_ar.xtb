@@ -220,6 +220,7 @@
 <translation id="315116470104423982">بيانات الجوال</translation>
 <translation id="3156846309055100599">جارٍ مسح الصفحة <ph name="PAGE_NUMBER" /> ضوئيًا...</translation>
 <translation id="315738237743207937">تم رصد مدخل مشروط الوصول إليه.</translation>
+<translation id="3160172848211257835">إرسال <ph name="BEGIN_LINK1" />معلومات النظام والتطبيق<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />المقاييس<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">يُرجى وضع المستند على الماسح الضوئي.</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
 <translation id="319101249942218879">تم تغيير الصورة الرمزية.</translation>
@@ -582,6 +583,7 @@
 <translation id="6575134580692778371">غير مهيأ</translation>
 <translation id="6579509898032828423">استخدام هذه الصورة</translation>
 <translation id="6596816719288285829">‏عنوان IP</translation>
+<translation id="6599673642868607614">‏شكرًا على ملاحظاتك. تساعدنا ملاحظاتك في تحسين تجربة استخدام أجهزة Chromebook وسيراجعها فريقنا. وبسبب التقارير التي تصلنا بأعداد هائلة، لن نتمكّن من إرسال ردّ إليك.</translation>
 <translation id="6618744767048954150">قيد التشغيل</translation>
 <translation id="6620487321149975369">ستظهر طلبات الطباعة في السجلّ إلّا إذا تمت إزالتها يدويًا.</translation>
 <translation id="6624819909909965616">لا يمكن تحميل ملف أكبر من 10 ميغابايت.</translation>
@@ -626,6 +628,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">تعذَّر التفويض: تعذَّر إتمام عملية التفويض.</translation>
 <translation id="7103252855940681301">الجهاز <ph name="INDEX" /> من إجمالي <ph name="COUNT" /> اسمه <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">‏اسم نقطة الوصول (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
@@ -689,6 +692,7 @@
 <translation id="7762130827864645708">تم تغيير كلمة المرور بنجاح. يُرجى استخدام كلمة المرور الجديدة من الآن فصاعدًا.</translation>
 <translation id="7763470514545477072">مطابقة لاحقة النطاق</translation>
 <translation id="7769672763586021400">رقم تعريف النموذج</translation>
+<translation id="7778717409420828014">‏تساعدنا ملاحظاتك في تحسين تجربة استخدام أجهزة Chromebook وسيراجعها فريقنا. وبسبب التقارير التي تصلنا بأعداد هائلة، لن نتمكّن من إرسال ردّ إليك.</translation>
 <translation id="7784116172884276937">لم يتم ضبط أي خوادم لنظام أسماء النطاقات.</translation>
 <translation id="779591286616261875">إرسال تقرير جديد</translation>
 <translation id="7799817062559422778">الوضع الفاتح</translation>

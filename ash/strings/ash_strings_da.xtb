@@ -484,6 +484,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3633097874324966332">Åbn Bluetooth-indstillingerne for at parre din enhed</translation>
 <translation id="3638400994746983214">Slå privatlivsskærmen til eller fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">En opdatering mangler at blive udført</translation>
+<translation id="3659444876902283058">(Dag <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Cirka <ph name="TIME_LEFT" /> tilbage (<ph name="PERCENTAGE" /> %).
 Slut din enhed til en strømkilde.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Administreret bruger</translation>
@@ -1268,9 +1269,11 @@ Installeret for nylig</translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
 <translation id="8083540854303889870">Gemt til senere</translation>
+<translation id="8091153018031979607">Starter <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatiske opdateringer</translation>
 <translation id="8098591350844501178">Stop skærmcast til <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Til, alle apps</translation>
+<translation id="8113515504791187892">Tekstoplæsningsknap</translation>
 <translation id="8120151603115102514">Du har ikke aktiveret en låseskærm på din telefon. Angiv din adgangskode for at låse din Chromebook op.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekræft</translation>
@@ -1380,6 +1383,7 @@ Installeret for nylig</translation>
 <translation id="8703634754197148428">Start optagelse. Når optagelsen er startet, kan du bruge Alt+Shift+L til at gå til hylden, hvor du finder den knap, der stopper optagelsen</translation>
 <translation id="8721053961083920564">Slå lyden til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Screenshot af hel skærm</translation>
+<translation id="8731487213223706745">Slutter <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Det forsøger muligvis at stjæle dine indtastninger</translation>
 <translation id="8735678380411481005">Farve på tastaturets baggrundslys</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

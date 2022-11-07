@@ -1413,6 +1413,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4606870351894164739">Virkningsfull</translation>
 <translation id="4607603470419975064">Knappen «Se Chrome-tips» – trykk på Enter for å lære om Chrome-funksjoner</translation>
 <translation id="4607608436550361748">Se Chrome-tips</translation>
+<translation id="4610279718074907952">Dette nettstedet er med i en gruppe som er definert av <ph name="SET_OWNER" /> og kan se aktiviteten din</translation>
 <translation id="4617273035598175554">Programvare for tegning og animasjon</translation>
 <translation id="4622292761762557753">Overfør likevel</translation>
 <translation id="4627675673814409125">Denne regelen kan ikke konfigureres på Chrome-profilnivå og blir derfor ignorert.</translation>
@@ -2388,6 +2389,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7130775116821607281">Blokkert opplasting</translation>
 <translation id="7132939140423847331">Administratoren din har forbudt kopiering av disse dataene.</translation>
 <translation id="7135130955892390533">Vis statusen</translation>
+<translation id="7136009930065337683">Finn ut mer om Inkognito</translation>
 <translation id="7138472120740807366">Leveringsmetode</translation>
 <translation id="7139892792842608322">Hovedskuff</translation>
 <translation id="714064300541049402">X-forskyvning av bilde på side 2</translation>

@@ -102,6 +102,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1657641691196698092">Kuki yang Disekat</translation>
 <translation id="165877110639533037">Tiada Tab Terbuka</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kepada <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Minta Laman Mudah Alih</translation>
 <translation id="168715261339224929">Hidupkan penyegerakan untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
 <translation id="1687475363370981210">Tandakan Semua Sebagai Dibaca</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
@@ -243,6 +244,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="288655811176831528">Tutup Tab</translation>
 <translation id="2890171748217283516">Laman yang anda ikuti disimpan pada Google Account anda. Anda boleh Urus laman tersebut dalam Tetapan Discover.</translation>
 <translation id="2898963176829412617">Folder Baharu…</translation>
+<translation id="2902684821701498619">Tambahkan pada Senarai Bacaan</translation>
 <translation id="2916171785467530738">Autolengkap Carian dan URL</translation>
 <translation id="291754862089661335">Letakkan kod QR atau kod bar dalam bingkai ini</translation>
 <translation id="2920866371965792875">Untuk melihat kemaskinian daripada laman ini, ikuti laman di dini.</translation>
@@ -320,6 +322,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3478058380795961209">Bulan Tamat Tempoh</translation>
 <translation id="3482959374254649722">Menyegerakkan tab anda...</translation>
 <translation id="3484946776651937681">Buka dalam Downloads</translation>
+<translation id="3485558910355485767">Tetingkap Inkognito Baharu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> tentang kandungan yang disyorkan</translation>
 <translation id="3494788280727468875">Sahkan Kosongkan Data Semakan Imbas.</translation>
 <translation id="35083190962747987">Buka ${url}</translation>
@@ -366,6 +369,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3861486700625780712">Nyahikut</translation>
+<translation id="3863769054730344136">Hantar kepada Peranti Anda</translation>
 <translation id="387280738075653372">Muat turun Chrome di sini.</translation>
 <translation id="3892144330757387737">Anda dapat menemukan sejarah anda di sini</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -589,6 +593,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5659593005791499971">E-mel</translation>
 <translation id="5669335982068190158">Anda telah dilog keluar sebagai sebahagian daripada tetapan semula iPhone anda. Ketik teruskan di bawah untuk log masuk.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Buat Kod QR</translation>
 <translation id="567881659373499783">Versi <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Kini memaparkan 1 tetingkap Chrome}other{Kini memaparkan {count} tetingkap Chrome}}</translation>
 <translation id="5701270923492462699">Akses Kamera Dibenarkan</translation>
@@ -673,6 +678,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6219550825416862075">Selamat Kembali</translation>
 <translation id="6219688215832490856">Jangan Sekali-kali Terjemah</translation>
 <translation id="6223816392543092032">Dapatkan penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada semua peranti anda.</translation>
+<translation id="6229318421047648685">Minta Laman Desktop</translation>
 <translation id="6231782223312638214">Dicadangkan</translation>
 <translation id="6232329973559504466">Carian Inkognito</translation>
 <translation id="6232736989810857397">Kebenaran ini membolehkan anda membuat acara kalendar dengan mudah menggunakan Google Lens.</translation>

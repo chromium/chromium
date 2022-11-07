@@ -568,6 +568,7 @@
 <translation id="5489208564673669003">За да управувате со колачињата за сите сајтови, погледнете ги <ph name="BEGIN_LINK" />Поставките за колачиња<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="5513681519188741830">пред <ph name="TIME" /> ч.</translation>
+<translation id="5520466080178053306">Допрете „Password Manager“, а потоа допрете „Додај“</translation>
 <translation id="5525095647255982834">За да ја испратите картичкава на друг уред, најавете се на Chrome таму.</translation>
 <translation id="5525269841082836315">Создај пристапна фраза</translation>
 <translation id="5542540507657872337">Најдено: <ph name="COUNT" /></translation>
@@ -877,6 +878,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7726702057919861819">Мени → Историја → Избришете ги податоците од прелистување</translation>
 <translation id="7738120385185846461">Пријавете проблем…</translation>
 <translation id="7741325291586284254">Нова страница во картичка „Инкогнито“</translation>
+<translation id="7744394900930577716">Лозинки во други апликации</translation>
 <translation id="7756478488453921771">Мени → Поставки → Начини на плаќање</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7772032839648071052">Потврди лозинка</translation>
@@ -1054,6 +1056,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9081058212938299310">Да се ажурира лозинката за <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">За да ги синхронизирате и персонализирате уредите, вклучете синхронизација.</translation>
 <translation id="9087108903408689779">Предложена лозинка од Chrome:</translation>
+<translation id="9093271241977565440">Најгоре на екранот, допрете ја иконата „Пребарување“</translation>
 <translation id="9094033019050270033">Ажурирај ја лозинката</translation>
 <translation id="9097506547406246598">Не може да се отследи. Нешто тргна наопаку.</translation>
 <translation id="9100610230175265781">Потребна е лозинка-фраза</translation>

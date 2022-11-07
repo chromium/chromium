@@ -220,6 +220,7 @@
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
 <translation id="3156846309055100599">Skenuje sa <ph name="PAGE_NUMBER" />. strana…</translation>
 <translation id="315738237743207937">Bol rozpoznaný prihlasovací portál</translation>
+<translation id="3160172848211257835">Odoslať <ph name="BEGIN_LINK1" />informácie o systéme a aplikáciách<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Položte dokument na skener</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
 <translation id="319101249942218879">Obrázok avatara bol zmenený</translation>
@@ -582,6 +583,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6575134580692778371">Nenakonfigurované</translation>
 <translation id="6579509898032828423">Použiť túto fotku</translation>
 <translation id="6596816719288285829">Adresa IP</translation>
+<translation id="6599673642868607614">Ďakujeme vám za spätnú väzbu. Vaša spätná väzba nám pomáha zlepšiť prostredie Chromebooku a skontroluje ju náš tím. Vzhľadom na veľký počet hlásení vám nebudeme môcť odpovedať.</translation>
 <translation id="6618744767048954150">Beží</translation>
 <translation id="6620487321149975369">Tlačové úlohy sa budú zobrazovať v histórii, dokým ich neodstránite ručne</translation>
 <translation id="6624819909909965616">Súbor väčší než 10 MB sa nedá nahrať</translation>
@@ -690,6 +692,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7762130827864645708">Zmena hesla bola úspešná. Odteraz používajte nové heslo.</translation>
 <translation id="7763470514545477072">Zhoda prípony domény</translation>
 <translation id="7769672763586021400">ID modelu</translation>
+<translation id="7778717409420828014">Vaša spätná väzba nám pomáha zlepšiť prostredie Chromebooku a skontroluje ju náš tím. Vzhľadom na veľký počet hlásení vám nebudeme môcť odpovedať.</translation>
 <translation id="7784116172884276937">Nie sú nastavené žiadne servery DNS</translation>
 <translation id="779591286616261875">Odoslať nové hlásenie</translation>
 <translation id="7799817062559422778">Svetlý režim</translation>

@@ -102,6 +102,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1657641691196698092">Cookies bloqueadas</translation>
 <translation id="165877110639533037">No hay pestañas abiertas</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Solicitar sitio web móvil</translation>
 <translation id="168715261339224929">Activa la sincronización para ver tus marcadores en todos tus dispositivos.</translation>
 <translation id="1687475363370981210">Marcar todo como leído</translation>
 <translation id="1689333818294560261">Apodo</translation>
@@ -243,6 +244,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="288655811176831528">Cerrar pestaña</translation>
 <translation id="2890171748217283516">Los sitios que sigues se guardan en tu cuenta de Google. Puedes gestionarlos en los ajustes de Discover.</translation>
 <translation id="2898963176829412617">Nueva carpeta…</translation>
+<translation id="2902684821701498619">Añadir a lista de lectura</translation>
 <translation id="2916171785467530738">Autocompletar búsquedas y URLs</translation>
 <translation id="291754862089661335">Coloca el código QR o de barras en este marco</translation>
 <translation id="2920866371965792875">Para ver las novedades de este sitio, síguelo aquí.</translation>
@@ -320,6 +322,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3478058380795961209">Mes de caducidad</translation>
 <translation id="3482959374254649722">Sincronizando tus pestañas...</translation>
 <translation id="3484946776651937681">Abrir en la carpeta de descargas</translation>
+<translation id="3485558910355485767">Nueva ventana de Incógnito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
 <translation id="3494788280727468875">Confirma que quieres borrar los datos de navegación</translation>
 <translation id="35083190962747987">Abrir ${url}</translation>
@@ -366,6 +369,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="385051799172605136">Volver</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3861486700625780712">Dejar de seguir</translation>
+<translation id="3863769054730344136">Enviar a tus dispositivos</translation>
 <translation id="387280738075653372">Descarga Chrome aquí.</translation>
 <translation id="3892144330757387737">Aquí verás tu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
@@ -589,6 +593,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5659593005791499971">Correo</translation>
 <translation id="5669335982068190158">Se ha cerrado tu sesión al restablecer tu iPhone. Toca Continuar abajo para iniciar sesión.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Crear un código QR</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Mostrando 1 ventana de Chrome}other{Mostrando {count} ventanas de Chrome}}</translation>
 <translation id="5701270923492462699">Acceso a cámara permitido</translation>
@@ -673,6 +678,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6219550825416862075">Hola de nuevo</translation>
 <translation id="6219688215832490856">No traducir nunca</translation>
 <translation id="6223816392543092032">Accede a tus marcadores, a tu historial, a tus contraseñas y a otros ajustes desde todos tus dispositivos.</translation>
+<translation id="6229318421047648685">Solicitar sitio para ordenadores</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6232329973559504466">Búsqueda en incógnito</translation>
 <translation id="6232736989810857397">Así podrás crear fácilmente eventos del calendario con Google Lens.</translation>

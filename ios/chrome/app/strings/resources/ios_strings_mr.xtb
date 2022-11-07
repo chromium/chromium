@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">ब्लॉक केलेल्या कुकी</translation>
 <translation id="165877110639533037">कोणतेही टॅब उघडे नाहीत</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ते <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">मोबाइल साइट ची विनंती करा</translation>
 <translation id="168715261339224929">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, सिंक सुरू करा.</translation>
 <translation id="1687475363370981210">सर्व वाचले चिन्हांकित करा</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">टॅब बंद करा</translation>
 <translation id="2890171748217283516">तुम्ही फॉलो करता त्या साइट तुमच्या Google खात्यामध्ये सेव्ह केल्या जातात. तुम्ही त्या Discover सेटिंग्जमध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="2898963176829412617">नवीन फोल्डर...</translation>
+<translation id="2902684821701498619">वाचन सूची वर जोडा</translation>
 <translation id="2916171785467530738">ऑटोकंप्लीट शोध आणि URL</translation>
 <translation id="291754862089661335">QR कोड किंवा बारकोडची या फ्रेममध्‍ये स्थिती निर्धारित करा</translation>
 <translation id="2920866371965792875">या साइटवरील अपडेट मिळवण्यासाठी, येथे फॉलो करा.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">कालबाह्यता महिना:</translation>
 <translation id="3482959374254649722">तुमचे टॅब संकालित करीत आहे...</translation>
 <translation id="3484946776651937681">डाउनलोड मध्ये उघडा</translation>
+<translation id="3485558910355485767">नवीन गुप्त विंडो</translation>
 <translation id="3493531032208478708">सूचित केलेल्या आशयविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">ब्राउझिंग डेटा साफ करता याची पुष्टी करा</translation>
 <translation id="35083190962747987">${url} उघडा</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">मागील</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3861486700625780712">अनफॉलो करा</translation>
+<translation id="3863769054730344136">तुमच्या डिव्हाइस वर पाठवा</translation>
 <translation id="387280738075653372">Chrome येथे डाउनलोड करा.</translation>
 <translation id="3892144330757387737">तुमचा इतिहास तुम्हाला येथे सापडेल</translation>
 <translation id="3897092660631435901">मेनू</translation>
@@ -590,6 +594,7 @@
 <translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5669335982068190158">तुमच्या iPhone रीसेटचा भाग म्हणून तुम्हाला साइन आउट केले गेले होते. साइन इन करण्यासाठी, सुरू ठेवा वर खाली टॅप करा.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR कोड तयार करा</translation>
 <translation id="567881659373499783">आवृत्ती <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{आता एक Chrome विंडो दाखवत आहे}other{आता {count} Chrome विंडो दाखवत आहे}}</translation>
 <translation id="5701270923492462699">कॅमेरा अ‍ॅक्सेस करण्याची अनुमती दिली आहे</translation>
@@ -674,6 +679,7 @@
 <translation id="6219550825416862075">पुन्हा स्वागत आहे</translation>
 <translation id="6219688215832490856">कधीही भाषांतर करू नका</translation>
 <translation id="6223816392543092032">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज मिळवा.</translation>
+<translation id="6229318421047648685">डेस्कटॉप साइट ची विनंती करा</translation>
 <translation id="6231782223312638214">सूचित</translation>
 <translation id="6232329973559504466">गुप्त शोध</translation>
 <translation id="6232736989810857397">हे तुम्हाला Google Lens वापरून कॅलेंडर इव्‍हेंट सहज तयार करण्याची अनुमती देते.</translation>

@@ -484,6 +484,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3633097874324966332">Buka tetapan Bluetooth untuk menggandingkan peranti anda</translation>
 <translation id="3638400994746983214">Togol skrin privasi. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Kemas kini terlewat</translation>
+<translation id="3659444876902283058">(Hari <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Kira-kira <ph name="TIME_LEFT" /> lagi (<ph name="PERCENTAGE" />%).
 Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Pengguna terurus</translation>
@@ -1269,9 +1270,11 @@ Pemasangan baharu</translation>
 <translation id="8052898407431791827">Disalin ke papan keratan</translation>
 <translation id="8054466585765276473">Mengira tempoh bateri.</translation>
 <translation id="8083540854303889870">Disimpan untuk kemudian</translation>
+<translation id="8091153018031979607">Bermula jam <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Kemaskinian automatik</translation>
 <translation id="8098591350844501178">Berhenti menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Hidup, semua</translation>
+<translation id="8113515504791187892">Butang Pilih untuk Bercakap</translation>
 <translation id="8120151603115102514">Telefon anda tiada skrin kunci. Untuk membuka kunci Chromebook anda, masukkan kata laluan.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Sahkan</translation>
@@ -1381,6 +1384,7 @@ Pemasangan baharu</translation>
 <translation id="8703634754197148428">Mulakan rakaman. Sebaik sahaja rakaman dimulakan, gunakan Alt + Shift + L untuk menavigasi ke rak dan cari butang hentikan rakaman</translation>
 <translation id="8721053961083920564">Togol Kelantangan. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tangkapan skrin penuh</translation>
+<translation id="8731487213223706745">Tamat jam <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Papan kekunci mungkin sedang cuba mencuri ketukan kekunci anda</translation>
 <translation id="8735678380411481005">Warna cahaya belakang papan kekunci</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

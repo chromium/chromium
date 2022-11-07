@@ -540,6 +540,7 @@
 <translation id="1495677929897281669">Назад към раздела</translation>
 <translation id="1500297251995790841">Неизвестно устройство [<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Научете повече за неподдържаните приложения за Chrome</translation>
+<translation id="1503392482221435031">Автоматично изпраща до Google статистически данни за употребата. Можете да включите или изключите сигналите за сривове от настройките на устройството си.</translation>
 <translation id="150411034776756821">Премахване на <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Споделените папки са налични в Windows в <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">експортиране на паролите</translation>
@@ -2698,6 +2699,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3461766685318630278">Създаване и изтриване на допълнителни контейнери.</translation>
 <translation id="3462311546193741693">Ще излезете от повечето сайтове, но не и от профила си в Google, за да могат да бъдат изчистени синхронизираните ви данни.</translation>
 <translation id="3462413494201477527">Да се анулира ли настройването на профила?</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} парола е запазена на това устройство}other{{COUNT} пароли са запазени на това устройство}}</translation>
 <translation id="346298925039590474">Тази мобилна мрежа ще бъде налице за всички потребители на устройството</translation>
 <translation id="3464145797867108663">Добавяне на служебен потребителски профил</translation>
 <translation id="346431825526753">Това е профил за деца, управляван от <ph name="CUSTODIAN_EMAIL" />.</translation>
@@ -2994,6 +2996,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3743842571276656710">Въведете ПИН код за сдвояване с(ъс) „<ph name="DEVICE_NAME" />“</translation>
 <translation id="3747077776423672805">За да премахнете приложения, отворете „Настройки“ &gt; „Google Play Магазин“ &gt; „Управление на предпочитанията за Android“ &gt; „Приложения“ или мениджъра на приложенията. Докоснете това, което искате да деинсталирате (може да се наложи да прекарате пръст надясно или наляво, за да го намерите). Докоснете „Деинсталиране“ или „Деактивиране“.</translation>
 <translation id="3747603683749989726">Искате ли да включите подобрената защита?</translation>
+<translation id="3748424433435232460">На това устройство вече е запазена парола за този профил</translation>
 <translation id="3748706263662799310">Подаване на сигнал за програмна грешка</translation>
 <translation id="3750562496035670393">Chrome запази паролата ви на това устройство, но имате възможност да я запазите и в профила си в Google. Така всички пароли в профила ви ще бъдат достъпни и когато сте влезли в него.</translation>
 <translation id="3752253558646317685">Помолете детето си да продължи да вдига пръста си, така че отпечатъкът да се запази</translation>
@@ -3175,6 +3178,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3897746662269329507">Устройството ви <ph name="DEVICE_TYPE" /> е създадено за игри. Сега ще се отвори приложението Explore. То ви дава възможност да осъществявате достъп до стотици от най-новите игри, да преглеждате оферти за тях и да откривате функции за игри, които се предлагат с устройството ви.</translation>
 <translation id="3898233949376129212">Език на устройството</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> иска да <ph name="FIRST_PERMISSION" /> и <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">Паролата ви за <ph name="WEBSITE" /> е запазена на това устройство и в профила ви в Google. Откъде искате да бъде изтрита?</translation>
 <translation id="389901847090970821">Изберете клавиатура</translation>
 <translation id="3900966090527141178">Експортиране на паролите</translation>
 <translation id="3902789559055749153">Изберете как да създадете код за достъп за <ph name="APP_NAME" /></translation>
@@ -5906,6 +5910,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6508261954199872201">Приложение: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Лиценз за мултимедия</translation>
 <translation id="6511827214781912955">Добре е да изтриете „<ph name="FILENAME" />“, така че другите хора, които използват това устройство, да не могат да видят паролите ви</translation>
+<translation id="6512808201725371249">В Google Мениджър на пароли (<ph name="USER_EMAIL" />) вече е запазена парола за този профил</translation>
 <translation id="6513247462497316522">Google Chrome ще използва мобилни данни, ако не сте свързани с друга мрежа.</translation>
 <translation id="6514010653036109809">Налично устройство:</translation>
 <translation id="6514565641373682518">Тази страница е деактивирала курсора на мишката ви.</translation>
@@ -6324,6 +6329,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6897363604023044284">Изберете сайтовете, които да бъдат изчистени</translation>
 <translation id="6897688156970667447">Полезно при слаба светлина и пести батерията</translation>
+<translation id="6897972855231767338">Научете повече за сърфирането като гост</translation>
 <translation id="6898440773573063262">Сега приложенията в павилионен режим могат да се конфигурират да стартират автоматично на това устройство.</translation>
 <translation id="6900284862687837908">Приложение на заден план: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Подобрена защита</translation>
@@ -8627,6 +8633,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> иска достъп до следното съдържание:</translation>
 <translation id="9057354806206861646">График на актуализациите</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Около 1 известие на ден}other{Около {NUM_NOTIFICATION} известия на ден}}</translation>
+<translation id="9061383912634843744">Автоматично влизане в профила ви в сайтове и приложения, като се ползват запазени идентификационни данни. Ако е изключено, ще се иска потвърждение от вас преди всяко влизане в профил в сайт или приложение.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка от ред <ph name="ERROR_LINE_START" /> до ред <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Активиране на автоматичното попълване на формуляри с едно кликване</translation>

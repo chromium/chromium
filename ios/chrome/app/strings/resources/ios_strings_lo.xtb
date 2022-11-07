@@ -572,6 +572,7 @@
 <translation id="5489208564673669003">ເພື່ອຈັດການຄຸກກີ້ສຳລັບເວັບໄຊທັງໝົດ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າຄຸກກີ້<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">ບລັອກຄຸກກີ້ທັງໝົດ (ບໍ່ແນະນຳ)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ຊມ ກ່ອນ</translation>
+<translation id="5520466080178053306">ແຕະ ຕົວຈັດການລະຫັດຜ່ານ ຈາກນັ້ນແຕະ ເພີ່ມ</translation>
 <translation id="5525095647255982834">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ບ່ອນນັ້ນ.</translation>
 <translation id="5525269841082836315">ສ້າງວະ​ລີ​ຜ່ານ</translation>
 <translation id="5542540507657872337">ພົບ <ph name="COUNT" /> ແຖບ</translation>
@@ -883,6 +884,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7726702057919861819">ເມນູ → ປະຫວັດ → ລຶບລ້າງຂໍ້ມູນການນຳໃຊ້</translation>
 <translation id="7738120385185846461">ລາຍງານບັນຫາ...</translation>
 <translation id="7741325291586284254">ໜ້າແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
+<translation id="7744394900930577716">ລະຫັດຜ່ານໃນແອັບອື່ນໆ</translation>
 <translation id="7756478488453921771">ເມນູ → ການຕັ້ງຄ່າ → ວິທີການຈ່າຍເງິນ</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
@@ -1060,6 +1062,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9081058212938299310">ອັບເດດລະຫັດຜ່ານສຳລັບ <ph name="USERNAME" /> ບໍ?</translation>
 <translation id="9083838294503912307">ເພື່ອຊິ້ງຂໍ້ມູນ ແລະ ປັບແຕ່ງເປັນແບບສ່ວນຕົວໃນທົ່ວອຸປະກອນ, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນກ່ອນ.</translation>
 <translation id="9087108903408689779">ລະຫັດຜ່ານທີ່ແນະນຳຂອງ Chrome:</translation>
+<translation id="9093271241977565440">ຢູ່ເທິງສຸດຂອງໜ້າຈໍ, ໃຫ້ແຕະ ໄອຄອນຊອກຫາ</translation>
 <translation id="9094033019050270033">ອັບ​ເດດ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="9097506547406246598">ບໍ່ສາມາດເຊົາຕິດຕາມໄດ້. ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ.</translation>
 <translation id="9100610230175265781">ຕ້ອງມີລະຫັດຜ່ານ</translation>

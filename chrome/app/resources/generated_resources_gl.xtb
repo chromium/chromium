@@ -407,6 +407,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1388253969141979417">Sitios que poden usar o micrófono</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> reiniciarase cando se completen as actualizacións.</translation>
 <translation id="1389601498324964367">Almacenamento xestionado por cotas</translation>
+<translation id="1390113502208199250">Terás que restablecer a configuración de fábrica deste dispositivo para usar as funcións de Chrome Education Upgrade.</translation>
 <translation id="139013308650923562">Sitios que teñen permiso para utilizar os tipos de letra instalados no dispositivo</translation>
 <translation id="1390548061267426325">Abrir como pestana normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> non ten a autorización necesaria para enviar documentos á impresora <ph name="PRINTER_NAME" />. Ponte en contacto co teu administrador.</translation>
@@ -477,6 +478,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1436784010935106834">Eliminados</translation>
 <translation id="1437986450143295708">Describe detalladamente o problema</translation>
 <translation id="1439671507542716852">asistencia a longo prazo</translation>
+<translation id="1440090277117135316">Completouse a inscrición do centro educativo</translation>
 <translation id="144283815522798837">Elementos seleccionados: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Definir como activo un tícket de Kerberos</translation>
 <translation id="1444628761356461360">Esta configuración está xestionada polo propietario do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
@@ -2394,6 +2396,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3170072451822350649">Tamén podes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sen iniciar sesión.</translation>
 <translation id="31774765611822736">Pestana nova á esquerda</translation>
 <translation id="3177909033752230686">Idioma da páxina:</translation>
+<translation id="3177914167275935955">O teu dispositivo inclúe unha licenza Chrome Education Upgrade, pero o teu nome de usuario non está asociado a unha conta de Google for Education. Crea unha conta de Google for Education visitando g.co/workspace/edusignup desde un dispositivo secundario.</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3182749001423093222">Corrector ortográfico</translation>
@@ -4060,6 +4063,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4762489666082647806">Cor do punteiro</translation>
 <translation id="4762718786438001384">O dispositivo ten pouquísimo espazo restante en disco</translation>
 <translation id="4763408175235639573">Establecéronse as seguintes cookies cando visualizaches esta páxina</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> non é unha conta de Google for Education válida. Ponte en contacto co teu administrador. Se es administrador, podes configurar a túa organización en g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Este dispositivo gardarase durante 1 mes e poderás conectarte sen código a próxima vez. Esta preferencia definiuna o teu administrador.}other{Este dispositivo gardarase durante {MONTHS} meses e poderás conectarte sen código a próxima vez. Esta preferencia definiuna o teu administrador.}}</translation>
 <translation id="4765582662863429759">Permite que a aplicación Mensaxes Android transmita as mensaxes do teu teléfono ao Chromebook</translation>
 <translation id="4766598565665644999">Todas as extensións poden ler e cambiar <ph name="HOST" /></translation>
@@ -4720,6 +4724,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5407167491482639988">Inintelixible</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Da túa Conta de Google</translation>
+<translation id="5411022484772257615">Non se puido completar a inscrición do centro educativo</translation>
 <translation id="5413640305322530561">Máis información sobre os datos de uso e diagnóstico</translation>
 <translation id="5414198321558177633">Actualizando lista de perfís. Esta acción pode tardar uns minutos.</translation>
 <translation id="5414566801737831689">Ler as iconas dos sitios web que visitas</translation>
@@ -5502,6 +5507,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6129953537138746214">Espazo</translation>
 <translation id="6130692320435119637">Engadir wifi</translation>
 <translation id="6130887916931372608">Tecla do teclado</translation>
+<translation id="6132714462430777655">Queres omitir a inscrición do centro educativo?</translation>
 <translation id="6135823405800500595">Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados</translation>
 <translation id="6135826623269483856">Sitios aos que non se lles permite xestionar ventás en todas as pantallas</translation>
 <translation id="6136114942382973861">Pechar barra de descargas</translation>
@@ -6721,6 +6727,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7310598146671372464">Non se puido iniciar sesión. O servidor non admite os tipos especificados de encriptación Kerberos. Ponte en contacto co teu administrador.</translation>
 <translation id="7311089766378749632">Solicitando ler e modificar <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">O teu administrador está restablecendo a eSIM. Esta acción pode tardar uns minutos.</translation>
+<translation id="7317831949569936035">Inscrición do centro educativo</translation>
 <translation id="7320213904474460808">Establecer rede como predeterminada</translation>
 <translation id="7321545336522791733">Non se pode acceder ao servidor</translation>
 <translation id="7323315405936922211">Tamaño da área do cursor</translation>

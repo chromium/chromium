@@ -4656,6 +4656,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5331568967879689647">Chrome OS sistemska aplikacija</translation>
 <translation id="5331975486040154427">Uređaj sa USB priključkom tipa C (levi zadnji port)</translation>
 <translation id="5333896723098573627">Da biste uklonili aplikacije, idite u odeljak Podešavanja &gt; Aplikacije &gt; Google Play prodavnica &gt; Upravljajte Android podešavanjima &gt; Aplikacije ili Menadžer aplikacija. Zatim dodirnite aplikaciju koju želite da deinstalirate (možda ćete morati da prevučete nadesno ili nalevo da biste pronašli aplikaciju). Onda dodirnite Deinstaliraj ili Onemogući.</translation>
+<translation id="5334113802138581043">Pristup mikrofonu</translation>
 <translation id="5334142896108694079">Keš skripte</translation>
 <translation id="5336688142483283574">Ova stranica će takođe biti uklonjena iz istorije i iz <ph name="SEARCH_ENGINE" /> aktivnosti.</translation>
 <translation id="5336689872433667741">Kursor i tačped</translation>
@@ -8659,6 +8660,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9081543426177426948">Sajtovi koje posećujete se ne čuvaju u režimu bez arhiviranja</translation>
 <translation id="9084064520949870008">Otvori kao prozor</translation>
 <translation id="9085256200913095638">Napravi duplikat izabrane kartice</translation>
+<translation id="9085446486797400519">Pristup kameri</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nije izabran. Da biste izabrali, pritisnite taster za pretragu i razmak.</translation>
 <translation id="9087949559523851360">Dodajte korisnika sa ograničenim pristupom</translation>
 <translation id="9088234649737575428">Dodatnu komponentu <ph name="PLUGIN_NAME" /> blokiraju smernice preduzeća</translation>

@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">已封鎖的 Cookie</translation>
 <translation id="165877110639533037">沒有開啟的分頁</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯成<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">切換為行動版網站</translation>
 <translation id="168715261339224929">如要將書籤同步到所有裝置，請開啟同步處理功能。</translation>
 <translation id="1687475363370981210">全部標示為已閱讀</translation>
 <translation id="1689333818294560261">暱稱</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">關閉分頁</translation>
 <translation id="2890171748217283516">您追蹤的網站會儲存在 Google 帳戶中。您可在「探索」設定中管理已儲存的網站。</translation>
 <translation id="2898963176829412617">新資料夾…</translation>
+<translation id="2902684821701498619">加入閱讀清單</translation>
 <translation id="2916171785467530738">自動完成搜尋和網址</translation>
 <translation id="291754862089661335">將二維條碼或條碼放置此頁框中</translation>
 <translation id="2920866371965792875">如要查看此網站的最新資訊，請按這裡追蹤網站。</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">到期月份</translation>
 <translation id="3482959374254649722">正在同步處理您的分頁...</translation>
 <translation id="3484946776651937681">在「下載檔案」中開啟</translation>
+<translation id="3485558910355485767">新增無痕式視窗</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="3494788280727468875">確認清除瀏覽資料</translation>
 <translation id="35083190962747987">開啟 ${url}</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3861486700625780712">取消追蹤</translation>
+<translation id="3863769054730344136">傳送到你的裝置</translation>
 <translation id="387280738075653372">在此下載 Chrome。</translation>
 <translation id="3892144330757387737">您可在此查看記錄</translation>
 <translation id="3897092660631435901">選單</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">電郵</translation>
 <translation id="5669335982068190158">您已在重設 iPhone 時登出，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">建立 QR code</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{宜家顯示緊 1 個 Chrome 視窗}other{宜家顯示緊 {count} 個 Chrome 視窗}}</translation>
 <translation id="5701270923492462699">已允許存取攝錄機</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">歡迎回來</translation>
 <translation id="6219688215832490856">永不翻譯</translation>
 <translation id="6223816392543092032">您可從任何裝置取得自己的書籤、記錄、密碼和其他設定。</translation>
+<translation id="6229318421047648685">切換為電腦版網站</translation>
 <translation id="6231782223312638214">建議</translation>
 <translation id="6232329973559504466">無痕搜尋</translation>
 <translation id="6232736989810857397">此操作讓您可透過「Google 智能鏡頭」輕鬆建立日曆活動。</translation>

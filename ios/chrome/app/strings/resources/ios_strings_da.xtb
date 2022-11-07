@@ -102,6 +102,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1657641691196698092">Blokerede cookies</translation>
 <translation id="165877110639533037">Ingen åbne faner</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Request Mobile Site [Anmod om mobilversion]</translation>
 <translation id="168715261339224929">Aktivér synkronisering for at se dine bogmærker på alle dine enheder.</translation>
 <translation id="1687475363370981210">Markér alle som læste</translation>
 <translation id="1689333818294560261">Kaldenavn</translation>
@@ -243,6 +244,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="288655811176831528">Luk fane</translation>
 <translation id="2890171748217283516">De websites, du følger, gemmes på din Google-konto. Du kan administrere dem i indstillingerne for Discover.</translation>
 <translation id="2898963176829412617">Ny mappe...</translation>
+<translation id="2902684821701498619">Add to Reading List [Føj til læselisten]</translation>
 <translation id="2916171785467530738">Autofuldfør søgninger og webadresser</translation>
 <translation id="291754862089661335">Placer QR-kode eller stregkode i denne ramme</translation>
 <translation id="2920866371965792875">Hvis du vil se opdateringer fra dette website, kan du følge det her.</translation>
@@ -320,6 +322,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3478058380795961209">Udløbsmåned:</translation>
 <translation id="3482959374254649722">Synkroniserer dine faner...</translation>
 <translation id="3484946776651937681">Åbn i Downloads</translation>
+<translation id="3485558910355485767">Nyt inkognitovindue</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om anbefalet indhold</translation>
 <translation id="3494788280727468875">Bekræft rydning af browserdata</translation>
 <translation id="35083190962747987">Åbn ${url}</translation>
@@ -366,6 +369,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861486700625780712">Følg ikke</translation>
+<translation id="3863769054730344136">Send to Your Devices [Send til dine enheder]</translation>
 <translation id="387280738075653372">Download Chrome her.</translation>
 <translation id="3892144330757387737">Her kan du se din historik</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -589,6 +593,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5659593005791499971">Mail</translation>
 <translation id="5669335982068190158">Du er blevet logget ud som en del af nulstillingen af din iPhone. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Create a QR Code [Opret en QR-kode]</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Viser nu 1 Chrome-vindue}one{Viser nu {count} Chrome-vindue}other{Viser nu {count} Chrome-vinduer}}</translation>
 <translation id="5701270923492462699">Der er givet adgang til kameraet</translation>
@@ -673,6 +678,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6219550825416862075">Velkommen tilbage</translation>
 <translation id="6219688215832490856">Oversæt aldrig</translation>
 <translation id="6223816392543092032">Få dine bogmærker, din historik, dine adgangskoder og andre indstillinger på alle dine enheder.</translation>
+<translation id="6229318421047648685">Request Desktop Site [Vis computerversion]</translation>
 <translation id="6231782223312638214">Foreslået</translation>
 <translation id="6232329973559504466">Søgning i inkognitotilstand</translation>
 <translation id="6232736989810857397">Dette giver dig mulighed for nemt at oprette kalenderbegivenheder ved hjælp af Google Lens.</translation>

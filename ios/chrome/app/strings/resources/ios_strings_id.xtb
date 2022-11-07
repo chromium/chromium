@@ -102,6 +102,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1657641691196698092">Cookie yang Diblokir</translation>
 <translation id="165877110639533037">Tidak Ada Tab yang Terbuka</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ke <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Minta Situs Seluler</translation>
 <translation id="168715261339224929">Agar bookmark tersedia di semua perangkat Anda, aktifkan sinkronisasi.</translation>
 <translation id="1687475363370981210">Tandai Semua Sudah Dibaca</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
@@ -243,6 +244,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="288655811176831528">Tutup Tab</translation>
 <translation id="2890171748217283516">Situs yang Anda ikuti akan disimpan di Akun Google Anda. Anda dapat Mengelolanya di Setelan Discover.</translation>
 <translation id="2898963176829412617">Folder Baru…</translation>
+<translation id="2902684821701498619">Tambahkan ke Daftar Bacaan</translation>
 <translation id="2916171785467530738">Lengkapi Otomatis Penelusuran dan URL</translation>
 <translation id="291754862089661335">Letakkan kode QR atau kode batang dalam bingkai ini</translation>
 <translation id="2920866371965792875">Untuk melihat info terbaru dari situs ini, klik di sini untuk mengikutinya.</translation>
@@ -320,6 +322,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3478058380795961209">Bulan Masa Berlaku Habis</translation>
 <translation id="3482959374254649722">Menyinkronkan tab Anda...</translation>
 <translation id="3484946776651937681">Buka di Download</translation>
+<translation id="3485558910355485767">Jendela Samaran Baru</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> konten yang disarankan</translation>
 <translation id="3494788280727468875">Konfirmasi Hapus Data Penjelajahan</translation>
 <translation id="35083190962747987">Buka ${url}</translation>
@@ -366,6 +369,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3861486700625780712">Berhenti mengikuti</translation>
+<translation id="3863769054730344136">Kirim ke Perangkat Anda</translation>
 <translation id="387280738075653372">Download Chrome di sini.</translation>
 <translation id="3892144330757387737">Histori Anda akan ditampilkan di sini</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -589,6 +593,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5659593005791499971">Email</translation>
 <translation id="5669335982068190158">Anda telah logout sebagai bagian dari proses reset iPhone. Ketuk lanjutkan di bawah untuk login.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Buat Kode QR</translation>
 <translation id="567881659373499783">Versi <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Saat ini menampilkan 1 jendela Chrome}other{Saat ini menampilkan {count} jendela Chrome}}</translation>
 <translation id="5701270923492462699">Akses Kamera Diizinkan</translation>
@@ -673,6 +678,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6219550825416862075">Selamat Datang Kembali</translation>
 <translation id="6219688215832490856">Jangan Pernah Terjemahkan</translation>
 <translation id="6223816392543092032">Dapatkan bookmark, histori, sandi, dan setelan lainnya di semua perangkat Anda.</translation>
+<translation id="6229318421047648685">Minta Situs Desktop</translation>
 <translation id="6231782223312638214">Disarankan</translation>
 <translation id="6232329973559504466">Penelusuran Samaran</translation>
 <translation id="6232736989810857397">Hal ini memungkinkan Anda membuat acara kalender dengan mudah menggunakan Google Lens.</translation>

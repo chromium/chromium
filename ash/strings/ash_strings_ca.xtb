@@ -484,6 +484,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3633097874324966332">Obre la configuració del Bluetooth per vincular el dispositiu</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualització pendent</translation>
+<translation id="3659444876902283058">(Dia <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Queden <ph name="TIME_LEFT" /> (un <ph name="PERCENTAGE" />%) aproximadament.
 Connecta el dispositiu a l'alimentació.</translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
@@ -1265,6 +1266,7 @@ Instal·lació nova</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
 <translation id="8083540854303889870">Desat per a més tard</translation>
+<translation id="8091153018031979607">Inici: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualitzacions automàtiques</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sí, en totes</translation>
@@ -1378,6 +1380,7 @@ Instal·lació nova</translation>
 <translation id="8703634754197148428">Inicia la gravació. Quan la gravació hagi començat, prem Alt+Maj+L per navegar fins al prestatge i trobar el botó per aturar-la.</translation>
 <translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>
+<translation id="8731487213223706745">Finalització: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
 <translation id="8735678380411481005">Color de la retroil·luminació del teclat</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

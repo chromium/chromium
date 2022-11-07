@@ -102,6 +102,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1657641691196698092">Bloklanmış Kukilər</translation>
 <translation id="165877110639533037">Açıq Panel Yoxdur</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilindən <ph name="TARGET_LANGUAGE" /> dilinə</translation>
+<translation id="1683483432843341018">Mobil Sayt formatına keçid</translation>
 <translation id="168715261339224929">Bütün cihazlarınızda əlfəcinləri əldə etmək üçün sinxronizasiyanı aktiv edin.</translation>
 <translation id="1687475363370981210">Hamısını Oxunmuş Kimi Qeyd Edin</translation>
 <translation id="1689333818294560261">Ləqəb</translation>
@@ -243,6 +244,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="288655811176831528">Tabı bağlayın</translation>
 <translation id="2890171748217283516">İzlədiyiniz saytlar Google hesabınızda saxlanılır. Onları Təkliflər Ayarlarında idarə edə bilərsiniz.</translation>
 <translation id="2898963176829412617">Yeni Qovluq...</translation>
+<translation id="2902684821701498619">Oxu Siyahısına əlavə edin</translation>
 <translation id="2916171785467530738">Axtarış və Linkləri avtomatik tamamlayın</translation>
 <translation id="291754862089661335">QR kodu və ya barkodu bu çərçivəyə yerləşdirin</translation>
 <translation id="2920866371965792875">Bu saytdan güncəlləmələri görmək üçün onu burada izləyin.</translation>
@@ -320,6 +322,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3478058380795961209">Bitmə Ayı</translation>
 <translation id="3482959374254649722">Panelləriniz sinxronizasiya olunur...</translation>
 <translation id="3484946776651937681">Endirmələrdə açın</translation>
+<translation id="3485558910355485767">Yeni Anonim Pəncərə</translation>
 <translation id="3493531032208478708">Təklif məzmunu haqqında <ph name="BEGIN_LINK" />daha ətraflı<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">Brauzer Data Silinməsini Təsdiq Edin</translation>
 <translation id="35083190962747987">${url} keçidini açın</translation>
@@ -366,6 +369,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="385051799172605136">Geri</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3861486700625780712">İzləməyin</translation>
+<translation id="3863769054730344136">Cihazlara göndərin</translation>
 <translation id="387280738075653372">Chrome'u buradan endirin.</translation>
 <translation id="3892144330757387737">Tarixçəni burada tapa bilərsiniz</translation>
 <translation id="3897092660631435901">Menyu</translation>
@@ -589,6 +593,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5659593005791499971">E-poçt</translation>
 <translation id="5669335982068190158">iPhone sıfırlamasının bir hissəsi olaraq hesabınızdan çıxmısınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR kodu yaradın</translation>
 <translation id="567881659373499783">Versiya <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{İndi 1 Chrome pəncərəsi göstərilir}other{İndi {count} Chrome pəncərəsi göstərilir}}</translation>
 <translation id="5701270923492462699">Kameraya giriş icazəsi verilib</translation>
@@ -673,6 +678,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6219550825416862075">Təkrar xoş gəldiniz</translation>
 <translation id="6219688215832490856">Heç Vaxt Tərcümə Etməyin</translation>
 <translation id="6223816392543092032">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə edin.</translation>
+<translation id="6229318421047648685">Masaüstü Saytı tələb edin</translation>
 <translation id="6231782223312638214">Təklif edilən</translation>
 <translation id="6232329973559504466">Anonim Axtarış</translation>
 <translation id="6232736989810857397">Bu, Google Linza istifadə edərək asanlıqla təqvim hadisələri yaratmağa imkan verir.</translation>

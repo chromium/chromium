@@ -484,6 +484,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3633097874324966332">Odprite nastavitve Bluetootha, če želite seznaniti napravo.</translation>
 <translation id="3638400994746983214">Preklop zaslona za zasebnost. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Posodobitev bi že morali izvesti</translation>
+<translation id="3659444876902283058">(Dan <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Še približno <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Priklopite napravo v vir napajanja.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Upravljani uporabnik</translation>
@@ -1268,9 +1269,11 @@ Nova namestitev</translation>
 <translation id="8052898407431791827">Kopirano v odložišče</translation>
 <translation id="8054466585765276473">Izračunavanje časa trajanja akumulatorja.</translation>
 <translation id="8083540854303889870">Shranjeno za pozneje</translation>
+<translation id="8091153018031979607">Začne se ob <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Samodejne posodobitve</translation>
 <translation id="8098591350844501178">Ustavi predvajanje zaslona v napravi <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Vklop. za vse</translation>
+<translation id="8113515504791187892">Gumb za »Izberite in poslušajte«</translation>
 <translation id="8120151603115102514">Telefon nima zaklepanja zaslona. Če želite odkleniti Chromebook, vnesite geslo.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potrdi</translation>
@@ -1380,6 +1383,7 @@ Nova namestitev</translation>
 <translation id="8703634754197148428">Začetek snemanja. Ko se snemanje začne, pritisnite Alt + Shift + L, da se pomaknete na polico, in poiščite gumb za ustavitev snemanja.</translation>
 <translation id="8721053961083920564">Preklop glasnosti. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Celozaslonski zajem</translation>
+<translation id="8731487213223706745">Konča se ob <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Morda poskuša beležiti vse, kar natipkate</translation>
 <translation id="8735678380411481005">Barva osvetlitve tipkovnice</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

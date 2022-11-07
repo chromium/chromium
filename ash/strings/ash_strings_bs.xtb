@@ -1383,7 +1383,7 @@ Nova instalacija</translation>
 <translation id="8703634754197148428">Započni snimanje. Nakon početka snimanja, koristite Alt + Shift + L da se krećete do police i pronađete dugme za zaustavljanje snimanja</translation>
 <translation id="8721053961083920564">Uključivanje/isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Snimanje cijelog ekrana</translation>
-<translation id="8731487213223706745">Završava u <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
+<translation id="8731487213223706745">Završava se u <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Možda neko pokušava ukrasti vaše otkucaje na tastaturi</translation>
 <translation id="8735678380411481005">Boja pozadinskog svjetla tastature</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

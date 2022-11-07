@@ -484,6 +484,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3633097874324966332">Öppna Bluetooth-inställningarna om du vill parkoppla enheten</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera integritetsskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Uppdatering försenad</translation>
+<translation id="3659444876902283058">(Dag <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Ungefär <ph name="TIME_LEFT" /> kvar (<ph name="PERCENTAGE" /> %).
 Anslut enheten till en strömkälla.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
@@ -1268,6 +1269,7 @@ Nyligen installerad</translation>
 <translation id="8052898407431791827">Kopierat till urklipp</translation>
 <translation id="8054466585765276473">Batteritiden beräknas.</translation>
 <translation id="8083540854303889870">Har sparats till senare</translation>
+<translation id="8091153018031979607">Börjar kl. <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatiska uppdateringar</translation>
 <translation id="8098591350844501178">Sluta casta skärmen till <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Alla appar på</translation>
@@ -1380,6 +1382,7 @@ Nyligen installerad</translation>
 <translation id="8703634754197148428">Starta inspelning. När inspelningen har startats trycker du på Alt + Skift + L för att navigera till hyllan där du hittar knappen för att stoppa inspelningen</translation>
 <translation id="8721053961083920564">Ljud på/av. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Skärmbild/skärminspelning av hela skärmen</translation>
+<translation id="8731487213223706745">Slutar kl. <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Det kan försöka stjäla dina tangenttryckningar</translation>
 <translation id="8735678380411481005">Färg på bakgrundsbelysning för tangentbord</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

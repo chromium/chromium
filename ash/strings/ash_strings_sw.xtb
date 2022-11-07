@@ -484,6 +484,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3633097874324966332">Fungua mipangilio ya Bluetooth ili uoanishe kifaa chako</translation>
 <translation id="3638400994746983214">Weka skrini ya faragha. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Muda wa sasisho umepita</translation>
+<translation id="3659444876902283058">(Siku ya <ph name="CURRENT_DAY" /> kati ya <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Zimesalia takribani dakika <ph name="TIME_LEFT" /> asilimia(<ph name="PERCENTAGE" />%).
 Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Mtumiaji anayesimamiwa</translation>
@@ -1269,6 +1270,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8052898407431791827">Imewekwa kwenye ubao wa kunakili</translation>
 <translation id="8054466585765276473">Inakokotoa muda wa betri.</translation>
 <translation id="8083540854303889870">Imehifadhiwa kwa ajili ya baadaye</translation>
+<translation id="8091153018031979607">Itaanza saa <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Masasisho ya kiotomatiki</translation>
 <translation id="8098591350844501178">Acha kutuma skrini kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Imewashwa: zote</translation>
@@ -1381,6 +1383,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8703634754197148428">Anza kurekodi. Ukishaanza kurekodi, tumia vitufe vya Alt + Shift + L kwenda kwenye rafu ili upate kitufe cha kuacha kurekodi</translation>
 <translation id="8721053961083920564">Swichi ya Sauti. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Kupiga picha ya skrini nzima</translation>
+<translation id="8731487213223706745">Itaisha saa <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Huenda inajaribu kuiba mibofyo yako</translation>
 <translation id="8735678380411481005">Rangi ya mwangaza wa kibodi</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

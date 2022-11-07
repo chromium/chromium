@@ -4660,6 +4660,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5331568967879689647">Aplikacija sustava Chrome OS</translation>
 <translation id="5331975486040154427">USB-C uređaj (stražnji lijevi priključak)</translation>
 <translation id="5333896723098573627">Za uklanjanje aplikacija otvorite Postavke &gt; Aplikacije &gt; Trgovina Google Play &gt; Upravljanje postavkama Androida &gt; Aplikacije ili Upravitelj aplikacija. Zatim dodirnite aplikaciju koju želite deinstalirati (možda ćete morati prijeći prstom udesno ili ulijevo kako biste pronašli aplikaciju). Zatim dodirnite Deinstaliraj ili Onemogući.</translation>
+<translation id="5334113802138581043">Pristup mikrofonu</translation>
 <translation id="5334142896108694079">Predmemorija skripte</translation>
 <translation id="5336688142483283574">Ta stranica uklonit će se i iz vaše povijesti i aktivnosti na tražilici <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Pokazivač i dodirna podloga</translation>
@@ -8660,6 +8661,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9081543426177426948">Web-lokacije koje posjećujete ne spremaju se u anonimnom načinu</translation>
 <translation id="9084064520949870008">Otvori kao prozor</translation>
 <translation id="9085256200913095638">Dupliciraj odabranu karticu</translation>
+<translation id="9085446486797400519">Pristup fotoaparatu</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nije odabran. Za odabir pritisnite Pretraži i razmaknicu.</translation>
 <translation id="9087949559523851360">Dodavanje ograničenog korisnika</translation>
 <translation id="9088234649737575428">Dodatak <ph name="PLUGIN_NAME" /> blokiran je prema pravilima organizacije</translation>
