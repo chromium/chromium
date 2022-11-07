@@ -26,7 +26,6 @@ import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -48,7 +47,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -90,6 +88,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private final @NonNull Callback<Tab> mBringTabToFrontCallback;
     private final @NonNull Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final @NonNull JankTracker mJankTracker;
+    private final @NonNull Runnable mClearFocusCallback;
 
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     private @Nullable Runnable mCurrentAutocompleteRequest;
@@ -181,6 +180,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager =
                 new DropdownItemViewInfoListManager(mSuggestionModels, context);
+        mClearFocusCallback = () -> mDelegate.clearOmniboxFocus();
     }
 
     /**
@@ -204,6 +204,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             stopAutocomplete(false);
             mAutocomplete.removeOnSuggestionsReceivedListener(this);
         }
+        mHandler.removeCallbacks(mClearFocusCallback);
         mDropdownViewInfoListBuilder.destroy();
     }
 
@@ -884,8 +885,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             }
 
             if (mClearFocusAfterNavigationAsynchronously) {
-                PostTask.postTask(
-                        UiThreadTaskTraits.USER_VISIBLE, () -> mDelegate.clearOmniboxFocus());
+                mHandler.post(mClearFocusCallback);
             } else if (mClearFocusAfterNavigation) {
                 mDelegate.clearOmniboxFocus();
             }
