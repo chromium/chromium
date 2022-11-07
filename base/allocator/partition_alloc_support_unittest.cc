@@ -174,21 +174,6 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-TEST(PartitionAllocSupportTest,
-     ProposeSyntheticFinchTrials_DanglingPointerDetector) {
-  auto dpd_group = [] {
-    return ProposeSyntheticFinchTrials()["DanglingPointerDetector"];
-  };
-
-#if BUILDFLAG(IS_IOS)
-  EXPECT_EQ(dpd_group(), "");
-#elif BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  EXPECT_EQ(dpd_group(), "Enabled");
-#else
-  EXPECT_EQ(dpd_group(), "Disabled");
-#endif
-}
-
 // - Death tests misbehave on Android, http://crbug.com/643760.
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && !BUILDFLAG(IS_ANDROID) && \
     defined(GTEST_HAS_DEATH_TEST)
