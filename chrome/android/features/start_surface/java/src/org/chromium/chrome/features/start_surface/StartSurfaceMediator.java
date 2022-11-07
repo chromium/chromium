@@ -1125,19 +1125,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // shouldn't show the tab switcher layout on Start.
         boolean shouldShowTabCarousel =
                 isVisible && !(isSingleTabSwitcher() && isCurrentSelectedTabNTP());
-        // If improving Start surface when Feed is disabled is needed, mvt grid layout is shown. We
-        // need to update the body top margin according to the visibility of carousel tab.
-        // TODO(crbug.com/1360486): After Feed divider is removed, remove this setting top margin
-        // since the body top margin should always be R.dimen.tasks_surface_body_top_margin then.
-        // Also, update |tile_grid_layout_bottom_margin| in NTPLayout to be equal to
-        // |tasks_surface_body_top_margin| too.
-        if (mIsFeedGoneImprovementEnabled) {
-            Resources resources = mContext.getResources();
-            mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
-                    resources.getDimensionPixelSize(shouldShowTabCarousel
-                                    ? R.dimen.tasks_surface_body_top_margin
-                                    : R.dimen.tile_grid_layout_bottom_margin));
-        }
 
         if (shouldShowTabCarousel == mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) return;
 

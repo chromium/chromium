@@ -167,7 +167,7 @@ found in the LICENSE file.
     <dimen name="tile_grid_layout_vertical_spacing_push_down_small">24dp</dimen>
     <dimen name="tile_grid_layout_vertical_spacing_push_down_large">36dp</dimen>
     <dimen name="tile_grid_layout_min_horizontal_spacing">4dp</dimen>
-    <dimen name="tile_grid_layout_bottom_margin">16dp</dimen>
+    <dimen name="tile_grid_layout_bottom_margin">24dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin_push_down_small">48dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin_push_down_large">64dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
@@ -179,7 +179,7 @@ found in the LICENSE file.
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
-    <dimen name="snippets_article_header_menu_size">56dp</dimen>
+    <dimen name="snippets_article_header_menu_size">48dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
