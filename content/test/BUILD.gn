@@ -2369,6 +2369,7 @@ test("content_unittests") {
     "../browser/renderer_host/overscroll_controller_unittest.cc",
     "../browser/renderer_host/pending_beacon_host_unittest.cc",
     "../browser/renderer_host/policy_container_host_unittest.cc",
+    "../browser/renderer_host/private_network_access_util_unittest.cc",
     "../browser/renderer_host/recently_destroyed_hosts_unittest.cc",
     "../browser/renderer_host/render_frame_host_csp_context_unittest.cc",
     "../browser/renderer_host/render_frame_host_impl_unittest.cc",

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
 
+#include "content/common/content_export.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -21,13 +22,14 @@ struct PolicyContainerPolicies;
 // `ip_address_space` identifies the IP address space of the request client.
 // `is_web_secure_context` specifies whether the request client is a secure
 // context or not.
-network::mojom::PrivateNetworkRequestPolicy DerivePrivateNetworkRequestPolicy(
+network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
+DerivePrivateNetworkRequestPolicy(
     network::mojom::IPAddressSpace ip_address_space,
     bool is_web_secure_context);
 
 // Convenience overload to directly compute this from the client's `policies`.
-network::mojom::PrivateNetworkRequestPolicy DerivePrivateNetworkRequestPolicy(
-    const PolicyContainerPolicies& policies);
+network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
+DerivePrivateNetworkRequestPolicy(const PolicyContainerPolicies& policies);
 
 // Determines the IP address space that should be associated to execution
 // contexts instantiated from a resource loaded from this `url` and the given
