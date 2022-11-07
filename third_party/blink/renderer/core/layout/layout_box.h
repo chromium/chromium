@@ -2262,6 +2262,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Returns the CSS 'direction' property value when it is not atomic inline.
   TextDirection ResolvedDirection() const;
 
+  // RecalcLayoutOverflow implementations for LayoutNG.
+  RecalcLayoutOverflowResult RecalcLayoutOverflowNG();
+  RecalcLayoutOverflowResult RecalcChildLayoutOverflowNG();
+
  private:
   inline bool LayoutOverflowIsSet() const {
     NOT_DESTROYED();

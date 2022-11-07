@@ -107,6 +107,8 @@ class LayoutMedia : public LayoutImage {
     return false;
   }
 
+  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
+
   LayoutObjectChildList children_;
 };
 

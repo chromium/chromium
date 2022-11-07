@@ -240,4 +240,10 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
   return LayoutUnit((edge_intersection_point - bottom_left_point).Length());
 }
 
+RecalcLayoutOverflowResult LayoutMedia::RecalcLayoutOverflow() {
+  if (RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled())
+    return RecalcLayoutOverflowNG();
+  return LayoutImage::RecalcLayoutOverflow();
+}
+
 }  // namespace blink
