@@ -494,52 +494,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Capture.Win.VolumeRangeAvailable"
-    enum="BooleanAvailable" expires_after="2021-09-30">
-  <owner>alessiob@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Availability of volume range information on the audio capture stream on
-    Windows. Logged every time that an audio capture stream is stopped only when
-    analog AGC is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.Win.VolumeRangeMax2" units="dB"
-    expires_after="2021-09-30">
-  <owner>alessiob@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Volume range maximum for the audio capture stream on Windows. Logged every
-    time that an audio capture stream is stopped only when analog AGC is enabled
-    and if the volume range information is available. The values in UMA have an
-    offset equal to 60 since a volume range may include negative values.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.Win.VolumeRangeMin2" units="dB"
-    expires_after="2021-09-30">
-  <owner>alessiob@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Volume range minimum for the audio capture stream on Windows. Logged every
-    time that an audio capture stream is stopped only when analog AGC is enabled
-    and if the volume range information is available. The values in UMA have an
-    offset equal to 60 since a volume range may include negative values.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.Win.VolumeRangeNumSteps" units="units"
-    expires_after="2021-09-30">
-  <owner>alessiob@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Number of volume range steps for the audio capture stream on Windows. Logged
-    every time that an audio capture stream is stopped only when analog AGC is
-    enabled and if the volume range information is available.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.CoreAudioDispatchOverrideInitResult"
     enum="CoreAudioDispatchOverrideInitResult" expires_after="2022-10-01">
   <owner>guidou@chromium.org</owner>

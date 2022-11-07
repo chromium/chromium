@@ -204,8 +204,6 @@ source_set("audio") {
       "win/core_audio_util_win.h",
       "win/device_enumeration_win.cc",
       "win/device_enumeration_win.h",
-      "win/volume_range_util.cc",
-      "win/volume_range_util.h",
       "win/waveout_output_win.cc",
       "win/waveout_output_win.h",
     ]
@@ -486,7 +484,6 @@ source_set("unit_tests") {
       "win/audio_session_event_listener_win_unittest.cc",
       "win/core_audio_util_win_unittest.cc",
       "win/device_enumeration_win_unittest.cc",
-      "win/volume_range_util_unittest.cc",
     ]
 
     deps += [ "//media/gpu:gpu" ]
