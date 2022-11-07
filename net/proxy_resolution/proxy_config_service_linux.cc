@@ -42,6 +42,8 @@
 
 namespace net {
 
+class ScopedAllowBlockingForSettingGetter : public base::ScopedAllowBlocking {};
+
 namespace {
 
 // This turns all rules with a hostname into wildcard matches, which will
@@ -520,7 +522,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       : debounce_timer_(std::make_unique<base::OneShotTimer>()),
         env_var_getter_(env_var_getter) {
     // This has to be called on the UI thread (http://crbug.com/69057).
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    ScopedAllowBlockingForSettingGetter allow_blocking;
 
     // Derive the location(s) of the kde config dir from the environment.
     std::string home;
@@ -611,7 +613,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   bool Init(const scoped_refptr<base::SingleThreadTaskRunner>& glib_task_runner)
       override {
     // This has to be called on the UI thread (http://crbug.com/69057).
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    ScopedAllowBlockingForSettingGetter allow_blocking;
     DCHECK_LT(inotify_fd_, 0);
     inotify_fd_ = inotify_init();
     if (inotify_fd_ < 0) {

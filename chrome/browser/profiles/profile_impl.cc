@@ -262,6 +262,8 @@ using bookmarks::BookmarkModel;
 using content::BrowserThread;
 using content::DownloadManagerDelegate;
 
+class ScopedAllowBlockingForProfile : public base::ScopedAllowBlocking {};
+
 namespace {
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -291,7 +293,7 @@ base::Time CreateProfileDirectory(base::SequencedTaskRunner* io_task_runner,
   // base::CreateDirectory() should be lightweight I/O operations and avoiding
   // the headache of sequencing all otherwise unrelated I/O after these
   // justifies running them on the main thread.
-  base::ThreadRestrictions::ScopedAllowIO allow_io_to_create_directory;
+  ScopedAllowBlockingForProfile allow_io_to_create_directory;
 
   // If the readme exists, the profile directory must also already exist.
   if (base::PathExists(path.Append(chrome::kReadmeFilename)))

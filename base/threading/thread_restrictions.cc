@@ -337,24 +337,4 @@ ScopedAllowBaseSyncPrimitivesOutsideBlockingScope::
 #endif
 }
 
-ThreadRestrictions::ScopedAllowIO::ScopedAllowIO(const Location& from_here)
-#if DCHECK_IS_ON()
-    : was_disallowed_(GetBlockingDisallowedTls().Set(
-          std::make_unique<BooleanWithStack>(false)))
-#endif
-{
-  TRACE_EVENT_BEGIN("base", "ScopedAllowIO", [&](perfetto::EventContext ctx) {
-    ctx.event()->set_source_location_iid(
-        base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
-  });
-}
-
-ThreadRestrictions::ScopedAllowIO::~ScopedAllowIO() {
-  TRACE_EVENT_END0("base", "ScopedAllowIO");
-
-#if DCHECK_IS_ON()
-  GetBlockingDisallowedTls().Set(std::move(was_disallowed_));
-#endif
-}
-
 }  // namespace base

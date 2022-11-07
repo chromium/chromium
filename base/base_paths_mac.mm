@@ -24,6 +24,23 @@
 
 namespace {
 
+// Returns true if the module for |address| is found. |path| will contain
+// the path to the module. Note that |path| may not be absolute.
+[[nodiscard]] bool GetModulePathForAddress(base::FilePath* path,
+                                           const void* address);
+
+bool GetModulePathForAddress(base::FilePath* path, const void* address) {
+  Dl_info info;
+  if (dladdr(address, &info) == 0)
+    return false;
+  *path = base::FilePath(info.dli_fname);
+  return true;
+}
+
+}  // namespace
+
+namespace base {
+
 void GetNSExecutablePath(base::FilePath* path) {
   DCHECK(path);
   // Executable path can have relative references ("..") depending on
@@ -42,26 +59,9 @@ void GetNSExecutablePath(base::FilePath* path) {
   // paths such as DIR_SRC_TEST_DATA_ROOT can work, since we expect absolute
   // paths to be returned here.
   // TODO(bauerb): http://crbug.com/259796, http://crbug.com/373477
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking allow_blocking;
   *path = base::MakeAbsoluteFilePath(base::FilePath(executable_path));
 }
-
-// Returns true if the module for |address| is found. |path| will contain
-// the path to the module. Note that |path| may not be absolute.
-[[nodiscard]] bool GetModulePathForAddress(base::FilePath* path,
-                                           const void* address);
-
-bool GetModulePathForAddress(base::FilePath* path, const void* address) {
-  Dl_info info;
-  if (dladdr(address, &info) == 0)
-    return false;
-  *path = base::FilePath(info.dli_fname);
-  return true;
-}
-
-}  // namespace
-
-namespace base {
 
 bool PathProviderMac(int key, base::FilePath* result) {
   switch (key) {

@@ -20,7 +20,7 @@ MappedFontFile::MappedFontFile(uint32_t font_id)
     : font_id_(font_id), observer_(nullptr) {}
 
 bool MappedFontFile::Initialize(base::File file) {
-  base::ThreadRestrictions::ScopedAllowIO allow_mmap;
+  base::ScopedAllowBlocking allow_mmap;
   return mapped_font_file_.Initialize(std::move(file));
 }
 
@@ -42,7 +42,7 @@ MappedFontFile::~MappedFontFile() {
 
 // static
 void MappedFontFile::ReleaseProc(const void* ptr, void* context) {
-  base::ThreadRestrictions::ScopedAllowIO allow_munmap;
+  base::ScopedAllowBlocking allow_munmap;
   static_cast<MappedFontFile*>(context)->Release();
 }
 

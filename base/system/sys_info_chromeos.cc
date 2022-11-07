@@ -45,6 +45,8 @@ const char kLsbReleaseSourceKey[] = "lsb-release";
 const char kLsbReleaseSourceEnv[] = "env";
 const char kLsbReleaseSourceFile[] = "file";
 
+}  // namespace
+
 class ChromeOSVersionInfo {
  public:
   ChromeOSVersionInfo() {
@@ -61,7 +63,7 @@ class ChromeOSVersionInfo {
       // If the LSB_RELEASE and LSB_RELEASE_TIME environment variables are not
       // set, fall back to a blocking read of the lsb_release file. This should
       // only happen in non Chrome OS environments.
-      ThreadRestrictions::ScopedAllowIO allow_io;
+      ScopedAllowBlocking allow_blocking;
       FilePath path(kLinuxStandardBaseReleaseFile);
       ReadFileToString(path, &lsb_release);
       File::Info fileinfo;
@@ -166,8 +168,6 @@ ChromeOSVersionInfo& GetChromeOSVersionInfo() {
   static base::NoDestructor<ChromeOSVersionInfo> version_info;
   return *version_info;
 }
-
-}  // namespace
 
 // static
 std::string SysInfo::HardwareModelName() {

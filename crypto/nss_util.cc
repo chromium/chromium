@@ -200,7 +200,7 @@ class NSSInitSingleton {
     // Initializing NSS causes us to do blocking IO.
     // Temporarily allow it until we fix
     //   http://code.google.com/p/chromium/issues/detail?id=59847
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    ScopedAllowBlockingForNSS allow_blocking;
 
     EnsureNSPRInit();
 

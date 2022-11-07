@@ -62,6 +62,8 @@ typedef VkResult(VKAPI_PTR* PFN_vkCreateDmaBufImageINTEL)(
 
 namespace ui {
 
+class ScopedAllowBlockingForGbmSurface : public base::ScopedAllowBlocking {};
+
 namespace {
 
 EGLDeviceEXT GetPreferredEGLDevice() {
@@ -203,7 +205,7 @@ std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {
     base::FilePath dev_path(FILE_PATH_LITERAL(
         base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
 
-    base::ThreadRestrictions::ScopedAllowIO scoped_allow_io;
+    ScopedAllowBlockingForGbmSurface scoped_allow_blocking;
     base::File dev_path_file(dev_path,
                              base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!dev_path_file.IsValid())

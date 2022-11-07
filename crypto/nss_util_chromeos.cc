@@ -157,7 +157,7 @@ class ChromeOSTokenManager {
     // NSS is allowed to do IO on the current thread since dispatching
     // to a dedicated thread would still have the affect of blocking
     // the current thread, due to NSS's internal locking requirements
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    ScopedAllowBlockingForNSS allow_blocking;
 
     base::FilePath nssdb_path = GetSoftwareNSSDBPath(path);
     if (!base::CreateDirectory(nssdb_path)) {

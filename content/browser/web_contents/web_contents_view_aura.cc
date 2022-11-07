@@ -104,6 +104,8 @@ std::unique_ptr<WebContentsView> CreateWebContentsView(
   return rv;
 }
 
+class ScopedAllowBlockingForViewAura : public base::ScopedAllowBlocking {};
+
 namespace {
 
 using ::ui::mojom::DragOperation;
@@ -214,7 +216,7 @@ void PrepareDragForDownload(const DropData& drop_data,
                             base::UTF16ToUTF8(mime_type), default_name);
 
   // http://crbug.com/332579
-  base::ThreadRestrictions::ScopedAllowIO allow_file_operations;
+  ScopedAllowBlockingForViewAura allow_file_operations;
 
   base::FilePath temp_dir_path;
   if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL("chrome_drag"),

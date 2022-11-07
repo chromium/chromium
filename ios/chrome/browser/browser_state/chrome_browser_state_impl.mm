@@ -45,8 +45,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
 // Returns a bool indicating whether the necessary directories were able to be
 // created (or already existed).
 bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
@@ -58,7 +56,7 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
   // lightweight I/O operation and avoiding the headache of sequencing all
   // otherwise unrelated I/O after this one justifies running it on the main
   // thread.
-  base::ThreadRestrictions::ScopedAllowIO allow_io_to_create_directory;
+  base::ScopedAllowBlocking allow_blocking_to_create_directory;
 
   if (!base::PathExists(path) && !base::CreateDirectory(path))
     return false;
@@ -73,6 +71,8 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
     return false;
   return true;
 }
+
+namespace {
 
 base::FilePath GetCachePath(const base::FilePath& base) {
   return base.Append(kIOSChromeCacheDirname);

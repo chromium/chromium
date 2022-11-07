@@ -38,6 +38,8 @@
 
 namespace base {
 
+class ScopedAllowBlockingForProcessMetrics : public ScopedAllowBlocking {};
+
 namespace {
 
 void TrimKeyValuePairs(StringPairs* pairs) {
@@ -581,7 +583,7 @@ Value VmStatInfo::ToValue() const {
 
 bool GetVmStatInfo(VmStatInfo* vmstat) {
   // Synchronously reading files in /proc is safe.
-  ThreadRestrictions::ScopedAllowIO allow_io;
+  ScopedAllowBlockingForProcessMetrics allow_blocking;
 
   FilePath vmstat_file("/proc/vmstat");
   std::string vmstat_data;
@@ -662,7 +664,7 @@ bool IsValidDiskName(StringPiece candidate) {
 
 bool GetSystemDiskInfo(SystemDiskInfo* diskinfo) {
   // Synchronously reading files in /proc does not hit the disk.
-  ThreadRestrictions::ScopedAllowIO allow_io;
+  ScopedAllowBlockingForProcessMetrics allow_blocking;
 
   FilePath diskinfo_file("/proc/diskstats");
   std::string diskinfo_data;
@@ -858,7 +860,7 @@ void ParseZramPath(SwapInfo* swap_info) {
 
 bool GetSwapInfoImpl(SwapInfo* swap_info) {
   // Synchronously reading files in /sys/block/zram0 does not hit the disk.
-  ThreadRestrictions::ScopedAllowIO allow_io;
+  ScopedAllowBlockingForProcessMetrics allow_blocking;
 
   // Since ZRAM update, it shows the usage data in different places.
   // If file "/sys/block/zram0/mm_stat" exists, use the new way, otherwise,

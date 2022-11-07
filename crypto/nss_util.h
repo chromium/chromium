@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "crypto/crypto_export.h"
@@ -22,6 +23,8 @@ class Time;
 // is included by various (non-crypto) parts of chrome to call the
 // initialization functions.
 namespace crypto {
+
+class ScopedAllowBlockingForNSS : public base::ScopedAllowBlocking {};
 
 // Initialize NRPR if it isn't already initialized.  This function is
 // thread-safe, and NSPR will only ever be initialized once.
