@@ -20,12 +20,14 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_textfield.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
@@ -56,8 +58,10 @@ gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
 bool ContainsAppWindows(Desk* desk) {
   if (!desk)
     return false;
-
-  return desk->ContainsAppWindows() ||
+  bool has_floated_window =
+      chromeos::wm::features::IsFloatWindowEnabled() &&
+      Shell::Get()->float_controller()->FindFloatedWindowOfDesk(desk);
+  return desk->ContainsAppWindows() || has_floated_window ||
          !DesksController::Get()->visible_on_all_desks_windows().empty();
 }
 
