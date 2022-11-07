@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -248,10 +249,25 @@ public class ShareServiceImpl implements ShareService {
                         throw new IOException("Failed to create directory for shared file.");
                     }
 
-                    for (int index = 0; index < files.length; ++index) {
-                        File tempFile = File.createTempFile("share",
-                                "." + FileUtils.getExtension(files[index].name.path.path),
-                                sharePath);
+                    // As multiple files may have the same name, we create a distinct
+                    // subdirectory for each file.
+                    // Oreo (API level 26) has Files.createTempDirectory(). We emulate it here by
+                    // generating temp directories with random names.
+                    Random rand = new Random();
+                    for (SharedFile file : files) {
+                        File tempDir;
+                        File tempFile;
+                        int attempts = 0;
+                        do {
+                            if (++attempts > 10) {
+                                throw new IOException("Failed to create shared file.");
+                            }
+                            tempDir = new File(sharePath,
+                                    "share" + Integer.toHexString(rand.nextInt(1 << 30)));
+                            tempDir.mkdir();
+                            tempFile = new File(tempDir, file.name.path.path);
+                        } while (!tempFile.createNewFile());
+
                         fileUris.add(ContentUriUtils.getContentUriFromFile(tempFile));
                         blobReceivers.add(new BlobReceiver(
                                 new FileOutputStream(tempFile), MAX_SHARED_FILE_BYTES));
