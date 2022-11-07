@@ -3,19 +3,15 @@
 // found in the LICENSE file.
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+
+import {MockTimer} from './mock_timer.js';
 
 suite('EventTargetModuleTest', () => {
-  let mockTimer;
+  let mockTimer: MockTimer;
 
   class ClickCounter {
-    constructor() {
-      /**
-       * Number of times the callback was triggered.
-       * @private {number}
-       */
-      this.clickCount_ = 0;
-    }
+    /** Number of times the callback was triggered */
+    private clickCount_: number = 0;
 
     /** Increments click count */
     tick() {
@@ -24,9 +20,8 @@ suite('EventTargetModuleTest', () => {
 
     /**
      * Creates a callback function that tracks the number of calls.
-     * @return {!Function}
      */
-    createCallback() {
+    createCallback(): Function {
       const self = this;
       return function() {
         self.tick();
@@ -35,9 +30,8 @@ suite('EventTargetModuleTest', () => {
 
     /**
      * Number of times the callback was triggered.
-     * @type {number}
      */
-    get value() {
+    get value(): number {
       return this.clickCount_;
     }
   }
@@ -99,7 +93,7 @@ suite('EventTargetModuleTest', () => {
 
   test('InterleavedTimers', function() {
     let results = '';
-    const createCallback = function(response) {
+    const createCallback = function(response: string) {
       const label = response;
       return function() {
         results = results + label;
