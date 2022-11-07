@@ -27,6 +27,10 @@
     (const scoped_refptr<base::SequencedTaskRunner>&)taskRunner
     NS_DESIGNATED_INITIALIZER;
 
+// Block until task runner is complete. Should only be used by fast terminate
+// experiment.
+- (void)shutdown;
+
 // Saves the session (list of tabs) returned by `factory`. The save location
 // is derived from the scene identifier `sessionID` and the ChromeBrowserState
 // `directory`. If `immediately` is NO, the save is done after a fixed delay,

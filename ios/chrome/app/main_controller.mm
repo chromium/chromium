@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/scene_util.h"
+#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/share_extension/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/share_extension_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
@@ -816,6 +817,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
   // this shutdown call. See: crbug.com/1328891
   if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate)) {
+    [[SessionServiceIOS sharedService] shutdown];
     metrics::MetricsService* metrics =
         GetApplicationContext()->GetMetricsService();
     if (metrics) {
