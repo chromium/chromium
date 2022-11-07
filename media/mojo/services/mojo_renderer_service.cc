@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_url_demuxer.h"
 #include "media/base/renderer.h"
@@ -20,7 +21,7 @@
 namespace media {
 
 // Time interval to update media time.
-const int kTimeUpdateIntervalMs = 50;
+constexpr auto kTimeUpdateInterval = base::Milliseconds(50);
 
 // static
 mojo::SelfOwnedReceiverRef<mojom::Renderer> MojoRendererService::Create(
@@ -245,7 +246,7 @@ void MojoRendererService::UpdateMediaTime(bool force) {
   base::TimeDelta max_time = media_time;
   // Allow some slop to account for delays in scheduling time update tasks.
   if (time_update_timer_.IsRunning() && (playback_rate_ > 0))
-    max_time += base::Milliseconds(2 * kTimeUpdateIntervalMs);
+    max_time += 2 * kTimeUpdateInterval;
 
   client_->OnTimeUpdate(media_time, max_time, base::TimeTicks::Now());
   last_media_time_ = media_time;
@@ -263,7 +264,7 @@ void MojoRendererService::SchedulePeriodicMediaTimeUpdates() {
 
   UpdateMediaTime(true);
   time_update_timer_.Start(
-      FROM_HERE, base::Milliseconds(kTimeUpdateIntervalMs),
+      FROM_HERE, kTimeUpdateInterval,
       base::BindRepeating(&MojoRendererService::UpdateMediaTime, weak_this_,
                           false));
 }
