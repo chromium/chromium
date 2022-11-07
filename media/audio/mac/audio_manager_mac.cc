@@ -329,7 +329,7 @@ static bool GetDeviceChannels(AudioDeviceID device,
       return false;
     }
 
-    DVLOG(1) << __FUNCTION__ << " Input channels: " << *channels;
+    DVLOG(2) << __FUNCTION__ << " Input channels: " << *channels;
     return true;
   }
 
@@ -437,7 +437,7 @@ static bool GetDeviceChannels(AudioUnit audio_unit,
     }
   }
 
-  DVLOG(1) << __FUNCTION__ << " Output channels: " << *channels;
+  DVLOG(2) << __FUNCTION__ << " Output channels: " << *channels;
   return true;
 }
 

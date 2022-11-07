@@ -380,7 +380,7 @@ OSStatus AUHALStream::Render(AudioUnitRenderActionFlags* flags,
       // Report it only once the first time the change happens.
       ReportFramesRequestedUma(number_of_frames);
     } else if (last_number_of_frames_ != number_of_frames) {
-      DVLOG(1) << __FUNCTION__ << " this " << this
+      DVLOG(3) << __FUNCTION__ << " this " << this
                << "Audio frame size changed from " << last_number_of_frames_
                << " to " << number_of_frames << " FIFO already exists.";
     }
