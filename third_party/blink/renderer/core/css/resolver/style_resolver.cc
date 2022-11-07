@@ -2681,17 +2681,18 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
   StyleResolverState state(GetDocument(), element);
   state.SetStyle(ComputedStyle::Clone(base_style));
   const CSSPropertyValueSet& properties = try_rule->Properties();
-  for (unsigned i = 0; i < properties.PropertyCount(); ++i) {
-    CSSPropertyValueSet::PropertyReference property_ref =
-        properties.PropertyAt(i);
-    if (property_ref.Value().IsVariableReferenceValue()) {
-      // TODO(crbug.com/1309178): Resolve var() references.
-      continue;
-    }
-    StyleBuilder::ApplyProperty(
-        property_ref.Name(), state,
-        ScopedCSSValue(property_ref.Value(), &GetDocument()));
-  }
+
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+  cascade.MutableMatchResult().FinishAddingUARules();
+  cascade.MutableMatchResult().FinishAddingUserRules();
+  cascade.MutableMatchResult().FinishAddingPresentationalHints();
+  cascade.MutableMatchResult().AddMatchedProperties(&properties);
+  // TODO(crbug.com/1381623): Pass proper TreeScope here once @position-fallback
+  // is supported in ShadowDOM.
+  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
+      GetDocument());
+  cascade.Apply();
+
   return state.TakeStyle();
 }
 
