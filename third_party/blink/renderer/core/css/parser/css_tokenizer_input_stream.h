@@ -14,7 +14,9 @@ class CSSTokenizerInputStream {
   USING_FAST_MALLOC(CSSTokenizerInputStream);
 
  public:
-  explicit CSSTokenizerInputStream(const String& input);
+  explicit CSSTokenizerInputStream(const String& input)
+      : string_length_(input.length()), string_(input.Impl()) {}
+
   CSSTokenizerInputStream(const CSSTokenizerInputStream&) = delete;
   CSSTokenizerInputStream& operator=(const CSSTokenizerInputStream&) = delete;
 
@@ -73,7 +75,7 @@ class CSSTokenizerInputStream {
   }
 
  private:
-  wtf_size_t offset_;
+  wtf_size_t offset_ = 0;
   const wtf_size_t string_length_;
   const scoped_refptr<StringImpl> string_;
 };

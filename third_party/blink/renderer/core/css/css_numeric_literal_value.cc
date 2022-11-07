@@ -31,14 +31,14 @@ CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType type)
 // static
 CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
                                                        UnitType type) {
-  if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue)
+  // NOTE: This will also deal with NaN and infinities.
+  // Writing value < 0 || value > ... is not equivalent.
+  if (!(value >= 0 && value <= CSSValuePool::kMaximumCacheableIntegerValue))
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
-  // Value can be NaN.
-  if (std::isnan(value))
-    return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
-
-  int int_value = ClampTo<int>(value);
+  // At this point, we know that value is in a small range,
+  // so we can use a simple cast instead of ClampTo<int>.
+  int int_value = static_cast<int>(value);
   if (value != int_value)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 

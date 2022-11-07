@@ -287,8 +287,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   ClassType GetClassType() const { return static_cast<ClassType>(class_type_); }
 
   explicit CSSValue(ClassType class_type)
-      : numeric_literal_unit_type_(0),
-        value_list_separator_(kSpaceSeparator),
+      : value_list_separator_(kSpaceSeparator),
         allows_negative_percentage_reference_(false),
         class_type_(class_type) {}
 
@@ -304,15 +303,12 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // size of CSSValue from 4 bytes to 3 bytes.
 
   // CSSNumericLiteralValue bits:
-  // This field hold CSSPrimitiveValue::UnitType.
-  uint8_t numeric_literal_unit_type_ : 7;  // NOLINT
-
-  // Force a new memory location. This will make TSAN treat the 2 fields above
-  // this line as a separate memory location than the 2 fields below it.
-  char : 0;
+  // This field hold CSSPrimitiveValue::UnitType. (We only need 7 of these
+  // bits.)
+  uint8_t numeric_literal_unit_type_ = 0;
 
   // CSSNumericLiteralValue bits:
-  uint8_t value_list_separator_ : kValueListSeparatorBits;  // NOLINT
+  uint8_t value_list_separator_ : 7;  // NOLINT
 
   // CSSMathFunctionValue:
   uint8_t allows_negative_percentage_reference_ : 1;  // NOLINT

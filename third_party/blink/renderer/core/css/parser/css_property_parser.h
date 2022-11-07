@@ -57,7 +57,7 @@ class CORE_EXPORT CSSPropertyParser {
 
   // Parses a non-shorthand CSS property
   static const CSSValue* ParseSingleValue(CSSPropertyID,
-                                          const CSSParserTokenRange&,
+                                          CSSParserTokenRange,
                                           const CSSParserContext*);
 
  private:

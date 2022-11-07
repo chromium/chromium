@@ -9,9 +9,6 @@
 
 namespace blink {
 
-CSSTokenizerInputStream::CSSTokenizerInputStream(const String& input)
-    : offset_(0), string_length_(input.length()), string_(input.Impl()) {}
-
 void CSSTokenizerInputStream::AdvanceUntilNonWhitespace() {
   // Using HTML space here rather than CSS space since we don't do preprocessing
   if (string_->Is8Bit()) {

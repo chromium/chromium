@@ -212,9 +212,6 @@ bool CSSPrimitiveValue::HasContainerRelativeUnits() const {
   return (units & container_units).any();
 }
 
-CSSPrimitiveValue::CSSPrimitiveValue(ClassType class_type)
-    : CSSValue(class_type) {}
-
 // static
 CSSPrimitiveValue* CSSPrimitiveValue::CreateFromLength(const Length& length,
                                                        float zoom) {

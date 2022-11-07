@@ -100,17 +100,17 @@ bool CSSPropertyParser::ParseValue(
 
 const CSSValue* CSSPropertyParser::ParseSingleValue(
     CSSPropertyID property,
-    const CSSParserTokenRange& range,
+    CSSParserTokenRange range,
     const CSSParserContext* context) {
   DCHECK(context);
-  CSSPropertyParser parser(range, context, nullptr);
+  range.ConsumeWhitespace();
 
-  if (const CSSValue* value = MaybeConsumeCSSWideKeyword(parser.range_))
+  if (const CSSValue* value = MaybeConsumeCSSWideKeyword(range))
     return value;
 
-  const CSSValue* value = ParseLonghand(property, CSSPropertyID::kInvalid,
-                                        *parser.context_, parser.range_);
-  if (!value || !parser.range_.AtEnd())
+  const CSSValue* value =
+      ParseLonghand(property, CSSPropertyID::kInvalid, *context, range);
+  if (!value || !range.AtEnd())
     return nullptr;
   return value;
 }
