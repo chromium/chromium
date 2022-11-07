@@ -163,7 +163,7 @@ public class SafeModeController {
             return overallStatus;
         } catch (Throwable t) {
             logSafeModeExecutionResult(SafeModeController.SafeModeExecutionResult.UNKNOWN_ERROR);
-            throw new Throwable(t);
+            throw t;
         }
     }
 
