@@ -4715,6 +4715,7 @@
     {
       name: "text-underline-offset",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      interpolable: true,
       inherited: true,
       field_group: "*",
       field_template: "<length>",

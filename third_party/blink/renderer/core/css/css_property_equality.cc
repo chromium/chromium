@@ -280,6 +280,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return base::ValuesEquivalent(a.TextShadow(), b.TextShadow());
     case CSSPropertyID::kTextSizeAdjust:
       return a.GetTextSizeAdjust() == b.GetTextSizeAdjust();
+    case CSSPropertyID::kTextUnderlineOffset:
+      return a.TextUnderlineOffset() == b.TextUnderlineOffset();
     case CSSPropertyID::kTop:
       return a.Top() == b.Top();
     case CSSPropertyID::kVerticalAlign:

@@ -207,6 +207,9 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
     case CSSPropertyID::kTextIndent:
       result = style.TextIndent();
       return true;
+    case CSSPropertyID::kTextUnderlineOffset:
+      result = style.TextUnderlineOffset();
+      return true;
     case CSSPropertyID::kTop:
       result = style.Top();
       return true;
