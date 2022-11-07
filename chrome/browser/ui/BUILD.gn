@@ -2839,6 +2839,7 @@ static_library("ui") {
       "webui/ash/login/quick_start_screen_handler.h",
       "webui/ash/login/recommend_apps_screen_handler.cc",
       "webui/ash/login/recommend_apps_screen_handler.h",
+      "webui/ash/login/recovery_eligibility_screen_handler.h",
       "webui/ash/login/reset_screen_handler.cc",
       "webui/ash/login/reset_screen_handler.h",
       "webui/ash/login/saml_challenge_key_handler.cc",

@@ -1671,6 +1671,8 @@ source_set("ash") {
     "login/screens/recommend_apps/recommend_apps_fetcher_impl.h",
     "login/screens/recommend_apps_screen.cc",
     "login/screens/recommend_apps_screen.h",
+    "login/screens/recovery_eligibility_screen.cc",
+    "login/screens/recovery_eligibility_screen.h",
     "login/screens/reset_screen.cc",
     "login/screens/reset_screen.h",
     "login/screens/saml_confirm_password_screen.cc",

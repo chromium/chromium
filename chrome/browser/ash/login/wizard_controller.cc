@@ -89,6 +89,7 @@
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
+#include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
@@ -169,6 +170,7 @@
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -633,6 +635,9 @@ WizardController::CreateScreens() {
   append(std::make_unique<LocaleSwitchScreen>(
       oobe_ui->GetView<LocaleSwitchScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnLocaleSwitchScreenExit,
+                          weak_factory_.GetWeakPtr())));
+  append(std::make_unique<RecoveryEligibilityScreen>(
+      base::BindRepeating(&WizardController::OnRecoveryEligibilityScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<TermsOfServiceScreen>(
       oobe_ui->GetView<TermsOfServiceScreenHandler>()->AsWeakPtr(),
@@ -1733,6 +1738,13 @@ void WizardController::OnLocaleSwitchScreenExit(
     LocaleSwitchScreen::Result result) {
   OnScreenExit(LocaleSwitchView::kScreenId,
                LocaleSwitchScreen::GetResultString(result));
+  AdvanceToScreen(RecoveryEligibilityView::kScreenId);
+}
+
+void WizardController::OnRecoveryEligibilityScreenExit(
+    RecoveryEligibilityScreen::Result result) {
+  OnScreenExit(RecoveryEligibilityView::kScreenId,
+               RecoveryEligibilityScreen::GetResultString(result));
   AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
 }
 
@@ -2290,6 +2302,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == ActiveDirectoryLoginView::kScreenId ||
              screen_id == SignInFatalErrorView::kScreenId ||
              screen_id == LocaleSwitchView::kScreenId ||
+             screen_id == RecoveryEligibilityView::kScreenId ||
              screen_id == OfflineLoginView::kScreenId ||
              screen_id == OsInstallScreenView::kScreenId ||
              screen_id == OsTrialScreenView::kScreenId ||
