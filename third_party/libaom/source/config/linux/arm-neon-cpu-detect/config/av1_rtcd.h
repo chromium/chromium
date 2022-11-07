@@ -1894,39 +1894,39 @@ void cdef_copy_rect8_16bit_to_16bit_c(uint16_t* dst,
                                       int dstride,
                                       const uint16_t* src,
                                       int sstride,
-                                      int v,
-                                      int h);
+                                      int width,
+                                      int height);
 void cdef_copy_rect8_16bit_to_16bit_neon(uint16_t* dst,
                                          int dstride,
                                          const uint16_t* src,
                                          int sstride,
-                                         int v,
-                                         int h);
+                                         int width,
+                                         int height);
 RTCD_EXTERN void (*cdef_copy_rect8_16bit_to_16bit)(uint16_t* dst,
                                                    int dstride,
                                                    const uint16_t* src,
                                                    int sstride,
-                                                   int v,
-                                                   int h);
+                                                   int width,
+                                                   int height);
 
 void cdef_copy_rect8_8bit_to_16bit_c(uint16_t* dst,
                                      int dstride,
                                      const uint8_t* src,
                                      int sstride,
-                                     int v,
-                                     int h);
+                                     int width,
+                                     int height);
 void cdef_copy_rect8_8bit_to_16bit_neon(uint16_t* dst,
                                         int dstride,
                                         const uint8_t* src,
                                         int sstride,
-                                        int v,
-                                        int h);
+                                        int width,
+                                        int height);
 RTCD_EXTERN void (*cdef_copy_rect8_8bit_to_16bit)(uint16_t* dst,
                                                   int dstride,
                                                   const uint8_t* src,
                                                   int sstride,
-                                                  int v,
-                                                  int h);
+                                                  int width,
+                                                  int height);
 
 void cdef_filter_16_0_c(void* dst16,
                         int dstride,
