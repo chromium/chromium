@@ -441,7 +441,7 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
     // PaintCanvasVideoRenderer requires these settings to work.
     Platform::ContextAttributes attributes;
     attributes.enable_raster_interface = true;
-    attributes.support_grcontext = true;
+    attributes.prefer_low_power_gpu = true;
 
     Platform::GraphicsInfo info;
     encoder_thread_context_ = CreateOffscreenGraphicsContext3DProvider(
