@@ -165,6 +165,21 @@ group("api_implementations") {
   }
 }
 
+source_set("api_keyed_service_factories") {
+  sources = [
+    "api_browser_context_keyed_service_factories.cc",
+    "api_browser_context_keyed_service_factories.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//build:chromeos_buildflags",
+    "//extensions/browser/api",
+    "//extensions/browser/api:api_implementations",
+  ]
+}
+
 function_registration("api_registration") {
   sources = extensions_api_schema_files + extensions_api_uncompiled_sources
   impl_dir = "//extensions/browser/api"

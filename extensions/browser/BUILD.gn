@@ -9,6 +9,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(enable_extensions)
 
+# TODO(devlin): Document these build targets and the scope each.
+
 group("browser") {
   public_deps = [
     "//extensions/browser:browser_context_keyed_service_factories",
@@ -34,13 +36,24 @@ source_set("browser_context_keyed_service_factories") {
     "browser_context_keyed_service_factories.h",
   ]
 
+  deps = [
+    "//extensions/browser:core_keyed_service_factories",
+    "//extensions/browser/api:api_keyed_service_factories",
+  ]
+}
+
+source_set("core_keyed_service_factories") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "core_browser_context_keyed_service_factories.cc",
+    "core_browser_context_keyed_service_factories.h",
+  ]
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//extensions/browser:browser_sources",
-    "//extensions/browser/api",
-    "//extensions/browser/api:api_implementations",
     "//extensions/browser/updater",
   ]
 }

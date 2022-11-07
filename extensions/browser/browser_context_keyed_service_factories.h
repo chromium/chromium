@@ -8,7 +8,7 @@
 namespace extensions {
 
 // Ensures the existence of any BrowserContextKeyedServiceFactory provided by
-// the core extensions code.
+// the core extensions code or //extensions layer APIs.
 void EnsureBrowserContextKeyedServiceFactoriesBuilt();
 
 }  // namespace extensions
