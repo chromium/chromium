@@ -48,7 +48,8 @@
 
 namespace {
 
-constexpr int kWaitOnScheduledUserPolicyFetchInterval = 10;
+constexpr base::TimeDelta kWaitOnScheduledUserPolicyFetchInterval =
+    base::Seconds(10);
 
 std::string GetTestEmail() {
   return base::StrCat({"enterprise@", policy::SignatureProvider::kTestDomain1});
@@ -126,7 +127,7 @@ void ClearUserPolicyPrefs() {
   [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
 }
 
-void WaitOnUserPolicy(NSTimeInterval timeout) {
+void WaitOnUserPolicy(base::TimeDelta timeout) {
   // Wait for user policy fetch.
   ConditionBlock condition = ^{
     return [PolicyAppInterface hasUserPolicyDataInCurrentBrowserState];
@@ -265,7 +266,7 @@ void VerifyTheNotificationUI() {
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(5)];
 
   // Wait until the user policies are loaded from disk.
-  WaitOnUserPolicy(NSTimeInterval(kWaitOnScheduledUserPolicyFetchInterval));
+  WaitOnUserPolicy(kWaitOnScheduledUserPolicyFetchInterval);
 
   // Verifiy that the policies that were fetched in the previous session are
   // loaded from the cache at startup.
@@ -320,7 +321,7 @@ void VerifyTheNotificationUI() {
   // Wait for user policy fetch. This will take at least 5 seconds which
   // corresponds to the minimal user policy fetch delay when triggering the
   // fetch at startup.
-  WaitOnUserPolicy(NSTimeInterval(kWaitOnScheduledUserPolicyFetchInterval));
+  WaitOnUserPolicy(kWaitOnScheduledUserPolicyFetchInterval);
 
   // Verifiy that the policies were fetched and loaded.
   VerifyThatPoliciesAreSet();
@@ -373,7 +374,7 @@ void VerifyTheNotificationUI() {
   // Wait enough time to verifiy that the fetch wasn't unexpectedly triggered
   // after dismissing the notification.
   base::test::ios::SpinRunLoopWithMinDelay(
-      base::Seconds(kWaitOnScheduledUserPolicyFetchInterval));
+      kWaitOnScheduledUserPolicyFetchInterval);
 
   // Verify that the fetch wasn't done.
   VerifyThatPoliciesAreNotSet();
