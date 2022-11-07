@@ -242,8 +242,11 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   if (step_ == LayoutUnit())
     return;
 
+  // Check parents just in case. See crbug.com/1377527.
+  if (!cue_box.Parent() || !cue_box.Parent()->Parent())
+    return;
   // Step 4-9
-  const gfx::Rect controls_rect = ComputeControlsRect(container);
+  const gfx::Rect controls_rect = ComputeControlsRect(*cue_box.Parent());
   LayoutUnit position =
       ComputeInitialPositionAdjustment(max_dimension, controls_rect);
 
