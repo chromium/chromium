@@ -684,35 +684,6 @@ export class Output {
   }
 
   /** @override */
-  formatName_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const prevNode = data.opt_prevNode;
-    const formatLog = data.outputFormatLogger;
-
-    options.annotation.push(token);
-    const earcon = node ? this.findEarcon_(node, prevNode) : null;
-    if (earcon) {
-      options.annotation.push(earcon);
-    }
-
-    // Place the selection on the first character of the name if the
-    // node is the active descendant. This ensures the braille window is
-    // panned appropriately.
-    if (node.activeDescendantFor && node.activeDescendantFor.length > 0) {
-      options.annotation.push(new outputTypes.OutputSelectionSpan(0, 0));
-    }
-
-    if (localStorage['languageSwitching'] === 'true') {
-      this.assignLocaleAndAppend_(node.name || '', node, buff, options);
-    } else {
-      this.append_(buff, node.name || '', options);
-    }
-
-    formatLog.writeTokenWithValue(token, node.name);
-  }
-
-  /** @override */
   formatDescription_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
@@ -2245,12 +2216,7 @@ export class Output {
     }, new Spannable());
   }
 
-  /**
-   * Find the earcon for a given node (including ancestry).
-   * @param {!AutomationNode} node
-   * @param {!AutomationNode=} opt_prevNode
-   * @return {outputTypes.OutputAction}
-   */
+  /** @override */
   findEarcon_(node, opt_prevNode) {
     if (node === opt_prevNode) {
       return null;
@@ -2307,13 +2273,7 @@ export class Output {
     }, null);
   }
 
-  /**
-   * @param {string} text
-   * @param {!AutomationNode} contextNode
-   * @param {!Array<Spannable>} buff
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
+  /** @override */
   assignLocaleAndAppend_(text, contextNode, buff, options) {
     const data =
         LocaleOutputHelper.instance.computeTextAndLocale(text, contextNode);

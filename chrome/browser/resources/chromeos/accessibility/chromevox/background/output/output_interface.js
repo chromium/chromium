@@ -8,7 +8,9 @@
 import {Spannable} from '../../common/spannable.js';
 
 import {OutputFormatTree} from './output_format_tree.js';
-import {OutputFormattingData} from './output_types.js';
+import {OutputAction, OutputFormattingData} from './output_types.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
 
 /** @interface */
 export class OutputInterface {
@@ -19,6 +21,22 @@ export class OutputInterface {
    * @param {{annotation: Array<*>, isUnique: (boolean|undefined)}=} opt_options
    */
   append_(buff, value, opt_options) {}
+
+  /**
+   * @param {string} text
+   * @param {!AutomationNode} contextNode
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   */
+  assignLocaleAndAppend_(text, contextNode, buff, options) {}
+
+  /**
+   * Find the earcon for a given node (including ancestry).
+   * @param {!AutomationNode} node
+   * @param {!AutomationNode=} opt_prevNode
+   * @return {OutputAction}
+   */
+  findEarcon_(node, opt_prevNode) {}
 
   /**
    * @param {!OutputFormattingData} data
@@ -109,13 +127,6 @@ export class OutputInterface {
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatMessage_(data, token, tree, options) {}
-
-  /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatName_(data, token, options) {}
 
   /**
    * @param {!OutputFormattingData} data

@@ -41,7 +41,7 @@ export class OutputFormatter {
     if (token === 'value') {
       this.formatValue_(this.params_, token, options);
     } else if (token === 'name') {
-      this.output_.formatName_(this.params_, token, options);
+      this.formatName_(this.params_, token, options);
     } else if (token === 'description') {
       this.output_.formatDescription_(this.params_, token, options);
     } else if (token === 'urlFilename') {
@@ -154,6 +154,40 @@ export class OutputFormatter {
         this.speechProps_ = null;
       }
     }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatName_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const prevNode = data.opt_prevNode;
+    const formatLog = data.outputFormatLogger;
+
+    options.annotation.push(token);
+    const earcon = node ? this.output_.findEarcon_(node, prevNode) : null;
+    if (earcon) {
+      options.annotation.push(earcon);
+    }
+
+    // Place the selection on the first character of the name if the
+    // node is the active descendant. This ensures the braille window is
+    // panned appropriately.
+    if (node.activeDescendantFor && node.activeDescendantFor.length > 0) {
+      options.annotation.push(new outputTypes.OutputSelectionSpan(0, 0));
+    }
+
+    if (localStorage['languageSwitching'] === 'true') {
+      this.output_.assignLocaleAndAppend_(node.name || '', node, buff, options);
+    } else {
+      this.output_.append_(buff, node.name || '', options);
+    }
+
+    formatLog.writeTokenWithValue(token, node.name);
   }
 
   /**
