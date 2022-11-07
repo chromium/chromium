@@ -9,6 +9,8 @@
 #endif
 
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -33,6 +35,35 @@ class TabGridViewControllerTest : public PlatformTest {
   base::UserActionTester user_action_tester_;
   TabGridViewController* view_controller_;
 };
+
+// Checks that TabGridViewController returns key commands when the Keyboard
+// Shortcuts Menu feature is enabled.
+TEST_F(TabGridViewControllerTest, ReturnsKeyCommands_MenuEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kKeyboardShortcutsMenu},
+      /*disabled_features=*/{});
+
+  EXPECT_GT(view_controller_.keyCommands.count, 0u);
+}
+
+// Checks that TabGridViewController returns key commands when the Keyboard
+// Shortcuts Menu feature is disabled.
+TEST_F(TabGridViewControllerTest, ReturnsKeyCommands_MenuDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kKeyboardShortcutsMenu});
+
+  EXPECT_GT(view_controller_.keyCommands.count, 0u);
+}
+
+// Checks that TabGridViewController implements the following actions.
+TEST_F(TabGridViewControllerTest, ImplementsActions) {
+  [view_controller_ keyCommand_openNewTab];
+  [view_controller_ keyCommand_openNewRegularTab];
+  [view_controller_ keyCommand_openNewIncognitoTab];
+}
 
 // Checks that metrics are correctly reported.
 TEST_F(TabGridViewControllerTest, Metrics) {

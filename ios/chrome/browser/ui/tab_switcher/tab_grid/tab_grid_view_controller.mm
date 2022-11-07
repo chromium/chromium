@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
-#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
@@ -126,7 +125,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 @interface TabGridViewController () <DisabledTabViewControllerDelegate,
                                      GridViewControllerDelegate,
-                                     KeyCommandActions,
                                      LayoutSwitcher,
                                      SuggestedActionsDelegate,
                                      UIGestureRecognizerDelegate,
@@ -2517,8 +2515,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
   if (IsKeyboardShortcutsMenuEnabled()) {
-    // Key commands are already declared in the menu.
-    return nil;
+    // Other key commands are already declared in the menu.
+    return @[
+      UIKeyCommand.cr_openNewRegularTab,
+    ];
   } else {
     return @[
       UIKeyCommand.cr_openNewTab,
