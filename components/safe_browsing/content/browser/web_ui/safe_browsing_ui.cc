@@ -455,7 +455,7 @@ namespace {
 std::string UserReadableTimeFromMillisSinceEpoch(int64_t time_in_milliseconds) {
   base::Time time =
       base::Time::UnixEpoch() + base::Milliseconds(time_in_milliseconds);
-  return base::UTF16ToASCII(base::TimeFormatShortDateAndTime(time));
+  return base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(time));
 }
 
 void AddStoreInfo(const DatabaseManagerInfo::DatabaseInfo::StoreInfo store_info,
