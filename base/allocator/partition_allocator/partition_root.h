@@ -204,14 +204,25 @@ struct PartitionOptions {
                              Cookie cookie,
                              BackupRefPtr backup_ref_ptr,
                              BackupRefPtrZapping backup_ref_ptr_zapping,
-                             UseConfigurablePool use_configurable_pool)
+                             UseConfigurablePool use_configurable_pool
+#if BUILDFLAG(ENABLE_PKEYS)
+                             ,
+                             int pkey = internal::kDefaultPkey
+#endif
+                             )
       : aligned_alloc(aligned_alloc),
         thread_cache(thread_cache),
         quarantine(quarantine),
         cookie(cookie),
         backup_ref_ptr(backup_ref_ptr),
         backup_ref_ptr_zapping(backup_ref_ptr_zapping),
-        use_configurable_pool(use_configurable_pool) {}
+        use_configurable_pool(use_configurable_pool)
+#if BUILDFLAG(ENABLE_PKEYS)
+        ,
+        pkey(pkey)
+#endif
+  {
+  }
 
   AlignedAlloc aligned_alloc;
   ThreadCache thread_cache;
@@ -220,6 +231,9 @@ struct PartitionOptions {
   BackupRefPtr backup_ref_ptr;
   BackupRefPtrZapping backup_ref_ptr_zapping;
   UseConfigurablePool use_configurable_pool;
+#if BUILDFLAG(ENABLE_PKEYS)
+  int pkey;
+#endif
 };
 
 // Never instantiate a PartitionRoot directly, instead use

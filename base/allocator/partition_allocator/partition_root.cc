@@ -24,6 +24,7 @@
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
@@ -635,6 +636,16 @@ void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address) {
 }
 #endif
 
+#if BUILDFLAG(ENABLE_PKEYS)
+void PartitionAllocPkeyInit(int pkey) {
+  PkeySettings::settings.enabled = true;
+  PartitionAddressSpace::InitPkeyPool(pkey);
+  // Call TagGlobalsWithPkey last since we might not have write permissions to
+  // to memory tagged with `pkey` at this point.
+  TagGlobalsWithPkey(pkey);
+}
+#endif  // BUILDFLAG(ENABLE_PKEYS)
+
 }  // namespace internal
 
 template <bool thread_safe>
@@ -826,6 +837,14 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     // BRP requires objects to be in a different Pool.
     PA_CHECK(!(flags.use_configurable_pool && brp_enabled()));
 
+#if BUILDFLAG(ENABLE_PKEYS)
+    // BRP and pkey mode use different pools, so they can't be enabled at the
+    // same time.
+    PA_CHECK(opts.pkey == internal::kDefaultPkey ||
+             opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
+    flags.pkey = opts.pkey;
+#endif
+
     // Ref-count messes up alignment needed for AlignedAlloc, making this
     // option incompatible. However, except in the
     // PUT_REF_COUNT_IN_PREVIOUS_SLOT case.
@@ -920,6 +939,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // Called without the lock, might allocate.
 #if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
   PartitionAllocMallocInitOnce();
+#endif
+
+#if BUILDFLAG(ENABLE_PKEYS)
+  if (flags.pkey != internal::kDefaultPkey) {
+    internal::PartitionAllocPkeyInit(flags.pkey);
+  }
 #endif
 }
 

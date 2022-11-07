@@ -101,6 +101,8 @@ Buckets consist of slot spans, organized as linked lists (see below).
     primary user (the [V8 Sandbox][v8-sandbox]) can configure it at runtime,
     providing a pre-existing mapping. Its allocations aren't protected by
     BackupRefPtr.
+  * [64-bit only] The pkey pool is returning memory tagged with a memory
+    protection key on supported platforms. It's primary user is [V8 CFI][v8-cfi].
 
 *** promo
 Pools are downgraded into a logical concept in 32-bit environments,
@@ -173,3 +175,4 @@ As of 2022, PartitionAlloc-Everywhere is supported on
 [max-bucket-comment]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_alloc_constants.h;l=345;drc=667e6b001f438521e1c1a1bc3eabeead7aaa1f37
 [pa-thread-cache]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/thread_cache.h
 [v8-sandbox]: https://docs.google.com/document/d/1FM4fQmIhEqPG8uGp5o9A-mnPB5BOeScZYpkHjo0KKA8/preview#
+[v8-cfi]: https://docs.google.com/document/d/1O2jwK4dxI3nRcOJuPYkonhTkNQfbmwdvxQMyXgeaRHo/preview#
