@@ -6,6 +6,7 @@
 #define UI_WM_CORE_SHADOW_CONTROLLER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
