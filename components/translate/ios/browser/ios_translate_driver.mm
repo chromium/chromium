@@ -116,6 +116,16 @@ void IOSTranslateDriver::IOSLanguageDetectionTabHelperWasDestroyed(
 
 // web::WebStateObserver methods
 
+void IOSTranslateDriver::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  DCHECK_EQ(web_state_, web_state);
+  if (!navigation_context->IsSameDocument()) {
+    pending_page_seq_no_ = -1;
+    timeout_timer_.Stop();
+  }
+}
+
 void IOSTranslateDriver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -127,8 +137,6 @@ void IOSTranslateDriver::DidFinishNavigation(
   if (!navigation_context->IsSameDocument()) {
     ++page_seq_no_;
     translate_manager_->set_current_seq_no(page_seq_no_);
-    pending_page_seq_no_ = -1;
-    timeout_timer_.Stop();
   }
 
   // TODO(crbug.com/925320): support navigation types, like content/ does.

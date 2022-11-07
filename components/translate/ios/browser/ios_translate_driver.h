@@ -57,6 +57,8 @@ class IOSTranslateDriver
   void OnLanguageModelFileAvailabilityChanged(bool available);
 
   // web::WebStateObserver methods.
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
