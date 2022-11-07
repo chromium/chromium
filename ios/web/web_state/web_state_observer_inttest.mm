@@ -847,8 +847,14 @@ class WebStateObserverTest
 class WebStateObserverWithTitleTest
     : public WebStateObserverTestBase<WebStateObserverWithTitleMock> {};
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_NewPageNavigation DISABLED_NewPageNavigation
+#else
+#define MAYBE_NewPageNavigation NewPageNavigation
+#endif
 // Tests successful navigation to a new page.
-TEST_F(WebStateObserverWithTitleTest, NewPageNavigation) {
+TEST_F(WebStateObserverWithTitleTest, MAYBE_NewPageNavigation) {
   const GURL url = test_server_->GetURL("/echoall");
 
   // The call to update the final page title is asynchronous with respect to the
@@ -911,8 +917,14 @@ TEST_F(WebStateObserverWithTitleTest, NewPageNavigation) {
   }));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_NewPageNavigation DISABLED_NewPageNavigation
+#else
+#define MAYBE_NewPageNavigation NewPageNavigation
+#endif
 // Tests successful navigation to a new page.
-TEST_F(WebStateObserverTest, NewPageNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_NewPageNavigation) {
   const GURL url = test_server_->GetURL("/echoall");
 
   // Perform new page navigation.
@@ -947,9 +959,15 @@ TEST_F(WebStateObserverTest, NewPageNavigation) {
   ASSERT_TRUE(LoadUrl(url));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_AboutNewTabNavigation DISABLED_AboutNewTabNavigation
+#else
+#define MAYBE_AboutNewTabNavigation AboutNewTabNavigation
+#endif
 // Tests loading about://newtab and immediately loading another web page without
 // waiting until about://newtab navigation finishes.
-TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_AboutNewTabNavigation) {
   GURL first_url("about://newtab/");
   const GURL second_url = test_server_->GetURL("/echoall");
 
@@ -1028,10 +1046,16 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
   }));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_EnableWebUsageTwice DISABLED_EnableWebUsageTwice
+#else
+#define MAYBE_EnableWebUsageTwice EnableWebUsageTwice
+#endif
 // Tests that if web usage is already enabled, enabling it again would not cause
 // any page loads (related to restoring cached session). This is a regression
 // test for crbug.com/781916.
-TEST_F(WebStateObserverTest, EnableWebUsageTwice) {
+TEST_F(WebStateObserverTest, MAYBE_EnableWebUsageTwice) {
   const GURL url = test_server_->GetURL("/echo");
 
   // Only expect one set of load events from the first LoadUrl(), not subsequent
@@ -1071,8 +1095,14 @@ TEST_F(WebStateObserverTest, EnableWebUsageTwice) {
   web_state()->SetWebUsageEnabled(true);
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_FailedNavigation DISABLED_FailedNavigation
+#else
+#define MAYBE_FailedNavigation FailedNavigation
+#endif
 // Tests failed navigation to a new page.
-TEST_F(WebStateObserverTest, FailedNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_FailedNavigation) {
   const GURL url = test_server_->GetURL("/close-socket");
 
   // Perform a navigation to url with unsupported scheme, which will fail.
@@ -1119,8 +1149,14 @@ TEST_F(WebStateObserverTest, FailedNavigation) {
   EXPECT_EQ(item->GetTitle(), kFailedTitle);
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_InvalidURL DISABLED_InvalidURL
+#else
+#define MAYBE_InvalidURL InvalidURL
+#endif
 // Tests that navigation to an invalid URL is disallowed.
-TEST_F(WebStateObserverTest, InvalidURL) {
+TEST_F(WebStateObserverTest, MAYBE_InvalidURL) {
   const GURL url = test_server_->GetURL("/echoall");
 
   // Perform new page navigation.
@@ -1163,10 +1199,17 @@ TEST_F(WebStateObserverTest, InvalidURL) {
       base::SysNSStringToUTF8(@"window.location.pathname = '/%00%50'"));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_UrlWithSpecialSuffixNavigation \
+  DISABLED_UrlWithSpecialSuffixNavigation
+#else
+#define MAYBE_UrlWithSpecialSuffixNavigation UrlWithSpecialSuffixNavigation
+#endif
 // Tests navigation to a URL with /..; suffix. On iOS 12 and earlier this
 // navigation fails becasue WebKit rewrites valid URL to invalid during the
 // navigation. On iOS 13+ this navigation sucessfully completes.
-TEST_F(WebStateObserverTest, UrlWithSpecialSuffixNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_UrlWithSpecialSuffixNavigation) {
   const std::string kBadSuffix = "/..;";
   GURL url = test_server_->GetURL(kBadSuffix);
 
@@ -1249,9 +1292,16 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedSchemeNavigation) {
                                          /*cert_status=*/0)));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_WebViewUnsupportedUrlNavigation \
+  DISABLED_WebViewUnsupportedUrlNavigation
+#else
+#define MAYBE_WebViewUnsupportedUrlNavigation WebViewUnsupportedUrlNavigation
+#endif
 // Tests failed navigation because URL with a space is not supported by
 // WKWebView (crbug.com/934379).
-TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_WebViewUnsupportedUrlNavigation) {
   GURL url("http:// .test");
 
   // Perform a navigation to url with unsupported url, which will fail.
@@ -1293,8 +1343,16 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
                                          /*cert_status=*/0)));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_WebStateUnsupportedSchemeNavigation \
+  DISABLED_WebStateUnsupportedSchemeNavigation
+#else
+#define MAYBE_WebStateUnsupportedSchemeNavigation \
+  WebStateUnsupportedSchemeNavigation
+#endif
 // Tests failed navigation because URL scheme is not supported by WebState.
-TEST_F(WebStateObserverTest, WebStateUnsupportedSchemeNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_WebStateUnsupportedSchemeNavigation) {
   GURL url("ftp://foo.test/");
 
   // Perform a navigation to url with unsupported scheme.
@@ -1318,8 +1376,14 @@ TEST_F(WebStateObserverTest, WebStateUnsupportedSchemeNavigation) {
   EXPECT_FALSE(web_state()->GetNavigationManager()->GetVisibleItem());
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_WebPageReloadNavigation DISABLED_WebPageReloadNavigation
+#else
+#define MAYBE_WebPageReloadNavigation WebPageReloadNavigation
+#endif
 // Tests web page reload navigation.
-TEST_F(WebStateObserverTest, WebPageReloadNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_WebPageReloadNavigation) {
   const GURL url = test_server_->GetURL("/echoall");
 
   // Perform new page navigation.
@@ -1437,8 +1501,16 @@ TEST_F(WebStateObserverTest, DISABLED_ReloadWithUserAgentType) {
   }));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_UserInitiatedHashChangeNavigation \
+  DISABLED_UserInitiatedHashChangeNavigation
+#else
+#define MAYBE_UserInitiatedHashChangeNavigation \
+  UserInitiatedHashChangeNavigation
+#endif
 // Tests user-initiated hash change.
-TEST_F(WebStateObserverTest, UserInitiatedHashChangeNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_UserInitiatedHashChangeNavigation) {
   const GURL url = test_server_->GetURL("/echoall");
 
   // Perform new page navigation.
@@ -1535,8 +1607,16 @@ TEST_F(WebStateObserverTest, UserInitiatedHashChangeNavigation) {
   }));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_RendererInitiatedHashChangeNavigation \
+  DISABLED_RendererInitiatedHashChangeNavigation
+#else
+#define MAYBE_RendererInitiatedHashChangeNavigation \
+  RendererInitiatedHashChangeNavigation
+#endif
 // Tests renderer-initiated hash change.
-TEST_F(WebStateObserverTest, RendererInitiatedHashChangeNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_RendererInitiatedHashChangeNavigation) {
   const GURL url = test_server_->GetURL("/echoall");
 
   // Perform new page navigation.
@@ -1600,8 +1680,14 @@ TEST_F(WebStateObserverTest, RendererInitiatedHashChangeNavigation) {
   web::test::ExecuteJavaScript(web_state(), "window.location.hash = '#1'");
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_StateNavigation DISABLED_StateNavigation
+#else
+#define MAYBE_StateNavigation StateNavigation
+#endif
 // Tests state change.
-TEST_F(WebStateObserverTest, StateNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_StateNavigation) {
   const GURL url = test_server_->GetURL("/echoall");
 
   // Perform new page navigation.
@@ -1671,8 +1757,14 @@ TEST_F(WebStateObserverTest, StateNavigation) {
       web_state(), "window.history.replaceState('', 'Test', '1.html')");
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_UserInitiatedPostNavigation DISABLED_UserInitiatedPostNavigation
+#else
+#define MAYBE_UserInitiatedPostNavigation UserInitiatedPostNavigation
+#endif
 // Tests successful navigation to a new page with post HTTP method.
-TEST_F(WebStateObserverTest, UserInitiatedPostNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_UserInitiatedPostNavigation) {
   const GURL url = test_server_->GetURL("/echo");
 
   // Perform new page navigation.
@@ -1714,8 +1806,15 @@ TEST_F(WebStateObserverTest, UserInitiatedPostNavigation) {
   ASSERT_TRUE(WaitForWebViewContainingText(web_state(), "foo"));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_RendererInitiatedPostNavigation \
+  DISABLED_RendererInitiatedPostNavigation
+#else
+#define MAYBE_RendererInitiatedPostNavigation RendererInitiatedPostNavigation
+#endif
 // Tests successful navigation to a new page with post HTTP method.
-TEST_F(WebStateObserverTest, RendererInitiatedPostNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_RendererInitiatedPostNavigation) {
   const GURL url = test_server_->GetURL("/form?echoall");
   const GURL action = test_server_->GetURL("/echoall");
 
@@ -1778,8 +1877,14 @@ TEST_F(WebStateObserverTest, RendererInitiatedPostNavigation) {
                                            ::testing::kTestFormFieldValue));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ReloadPostNavigation DISABLED_ReloadPostNavigation
+#else
+#define MAYBE_ReloadPostNavigation ReloadPostNavigation
+#endif
 // Tests successful reload of a page returned for post request.
-TEST_F(WebStateObserverTest, ReloadPostNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_ReloadPostNavigation) {
   const GURL url = test_server_->GetURL("/form?echoall");
   const GURL action = test_server_->GetURL("/echoall");
 
@@ -1873,8 +1978,14 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
   }));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ForwardPostNavigation DISABLED_ForwardPostNavigation
+#else
+#define MAYBE_ForwardPostNavigation ForwardPostNavigation
+#endif
 // Tests going forward to a page rendered from post response.
-TEST_F(WebStateObserverTest, ForwardPostNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_ForwardPostNavigation) {
   const GURL url = test_server_->GetURL("/form?echo");
   const GURL action = test_server_->GetURL("/echo");
 
@@ -1991,8 +2102,14 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
   }));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_RedirectNavigation DISABLED_RedirectNavigation
+#else
+#define MAYBE_RedirectNavigation RedirectNavigation
+#endif
 // Tests server redirect navigation.
-TEST_F(WebStateObserverTest, RedirectNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_RedirectNavigation) {
   const GURL url = test_server_->GetURL("/server-redirect-301?"
                                         "server-redirect-302?"
                                         "server-redirect-303?"
@@ -2070,8 +2187,14 @@ TEST_F(WebStateObserverTest, RedirectNavigation) {
   ASSERT_TRUE(LoadUrl(url));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_DownloadNavigation DISABLED_DownloadNavigation
+#else
+#define MAYBE_DownloadNavigation DownloadNavigation
+#endif
 // Tests download navigation.
-TEST_F(WebStateObserverTest, DownloadNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_DownloadNavigation) {
   GURL url = test_server_->GetURL("/download");
 
   // Perform download navigation.
@@ -2150,8 +2273,14 @@ TEST_F(WebStateObserverTest, DISABLED_FailedLoad) {
   ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_FailedSslConnection DISABLED_FailedSslConnection
+#else
+#define MAYBE_FailedSslConnection FailedSslConnection
+#endif
 // Tests navigation to a page with self signed SSL cert.
-TEST_F(WebStateObserverTest, FailedSslConnection) {
+TEST_F(WebStateObserverTest, MAYBE_FailedSslConnection) {
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
   ASSERT_TRUE(https_server.Start());
 
@@ -2186,9 +2315,15 @@ TEST_F(WebStateObserverTest, FailedSslConnection) {
   }));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_DisallowRequest DISABLED_DisallowRequest
+#else
+#define MAYBE_DisallowRequest DisallowRequest
+#endif
 // Tests cancelling the navigation from ShouldAllowRequest. The load should
 // stop, but no other callbacks are called.
-TEST_F(WebStateObserverTest, DisallowRequest) {
+TEST_F(WebStateObserverTest, MAYBE_DisallowRequest) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   const WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
@@ -2206,9 +2341,15 @@ TEST_F(WebStateObserverTest, DisallowRequest) {
   EXPECT_FALSE(web_state()->GetNavigationManager()->GetVisibleItem());
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_DisallowRequestAndShowError DISABLED_DisallowRequestAndShowError
+#else
+#define MAYBE_DisallowRequestAndShowError DisallowRequestAndShowError
+#endif
 // Tests rejecting the navigation from ShouldAllowRequest with an error. The
 // load should stop, and an error page should be loaded.
-TEST_F(WebStateObserverTest, DisallowRequestAndShowError) {
+TEST_F(WebStateObserverTest, MAYBE_DisallowRequestAndShowError) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
   const WebStatePolicyDecider::RequestInfo expected_request_info(
@@ -2325,9 +2466,15 @@ TEST_F(WebStateObserverTest, DisallowResponse) {
   EXPECT_EQ("", web_state()->GetVisibleURL());
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_AsyncDisallowResponse DISABLED_AsyncDisallowResponse
+#else
+#define MAYBE_AsyncDisallowResponse AsyncDisallowResponse
+#endif
 // Tests rejecting the navigation from ShouldAllowResponse using an async
 // decider.
-TEST_F(WebStateObserverTest, AsyncDisallowResponse) {
+TEST_F(WebStateObserverTest, MAYBE_AsyncDisallowResponse) {
   const GURL url = test_server_->GetURL("/echo");
   AsyncWebStatePolicyDecider async_decider(web_state());
 
@@ -2389,8 +2536,14 @@ TEST_F(WebStateObserverTest, ImmediatelyStopNavigation) {
   EXPECT_EQ("", web_state()->GetVisibleURL());
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_StopFinishedNavigation DISABLED_StopFinishedNavigation
+#else
+#define MAYBE_StopFinishedNavigation StopFinishedNavigation
+#endif
 // Tests stopping a finished navigation. PageLoaded is never called.
-TEST_F(WebStateObserverTest, StopFinishedNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_StopFinishedNavigation) {
   GURL url = test_server_->GetURL("/exabyte_response");
 
   NavigationContext* context = nullptr;
@@ -2445,8 +2598,14 @@ TEST_F(WebStateObserverTest, StopFinishedNavigation) {
 #pragma clang diagnostic pop
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_IframeNavigation DISABLED_IframeNavigation
+#else
+#define MAYBE_IframeNavigation IframeNavigation
+#endif
 // Tests that iframe navigation triggers DidChangeBackForwardState.
-TEST_F(WebStateObserverTest, IframeNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_IframeNavigation) {
   GURL url = test_server_->GetURL("/iframe_host.html");
 
   // Callbacks due to loading of the main frame.
@@ -2561,9 +2720,15 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
   EXPECT_FALSE(web_state()->GetNavigationManager()->CanGoForward());
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_CrossOriginIframeNavigation DISABLED_CrossOriginIframeNavigation
+#else
+#define MAYBE_CrossOriginIframeNavigation CrossOriginIframeNavigation
+#endif
 // Tests that cross-origin iframe navigation is correctly identified in
 // WebStatePolicyDecider::RequestInfo.
-TEST_F(WebStateObserverTest, CrossOriginIframeNavigation) {
+TEST_F(WebStateObserverTest, MAYBE_CrossOriginIframeNavigation) {
   EmbeddedTestServer cross_origin_server;
   RegisterDefaultHandlers(&cross_origin_server);
   ASSERT_TRUE(cross_origin_server.Start());
@@ -2658,9 +2823,16 @@ TEST_F(WebStateObserverTest, CrossOriginIframeNavigation) {
   ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_NewPageLoadDestroysForwardItems \
+  DISABLED_NewPageLoadDestroysForwardItems
+#else
+#define MAYBE_NewPageLoadDestroysForwardItems NewPageLoadDestroysForwardItems
+#endif
 // Tests that new page load calls NavigationItemsPruned callback if there were
 // forward navigation items.
-TEST_F(WebStateObserverTest, NewPageLoadDestroysForwardItems) {
+TEST_F(WebStateObserverTest, MAYBE_NewPageLoadDestroysForwardItems) {
   const WebStatePolicyDecider::ResponseInfo expected_response_info(
       /*for_main_frame=*/true);
 
@@ -2872,9 +3044,15 @@ TEST_F(WebStateObserverTest, RestoreSessionOnline) {
   ASSERT_FALSE(navigation_manager()->CanGoBack());
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_RestoredFromHistory DISABLED_RestoredFromHistory
+#else
+#define MAYBE_RestoredFromHistory RestoredFromHistory
+#endif
 // Tests that if a saved session is provided when creating a new WebState, it is
 // restored after the first NavigationManager::LoadIfNecessary() call.
-TEST_F(WebStateObserverTest, RestoredFromHistory) {
+TEST_F(WebStateObserverTest, MAYBE_RestoredFromHistory) {
   auto web_state = WebState::CreateWithStorageSession(
       WebState::CreateParams(GetBrowserState()),
       GetTestSessionStorage(test_server_->GetURL(kTestPageURL)));
@@ -2886,9 +3064,15 @@ TEST_F(WebStateObserverTest, RestoredFromHistory) {
                                                  kTestSessionStoragePageText));
 }
 
+// TODO(crbug.com/1382024): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_DisableAndReenableWebUsage DISABLED_DisableAndReenableWebUsage
+#else
+#define MAYBE_DisableAndReenableWebUsage DisableAndReenableWebUsage
+#endif
 // Tests that NavigationManager::LoadIfNecessary() restores the page after
 // disabling and re-enabling web usage.
-TEST_F(WebStateObserverTest, DisableAndReenableWebUsage) {
+TEST_F(WebStateObserverTest, MAYBE_DisableAndReenableWebUsage) {
   auto web_state = WebState::CreateWithStorageSession(
       WebState::CreateParams(GetBrowserState()),
       GetTestSessionStorage(test_server_->GetURL(kTestPageURL)));
