@@ -1701,6 +1701,12 @@ bool RenderWidgetHostViewAura::ClearGrammarFragments(const gfx::Range& range) {
 
 bool RenderWidgetHostViewAura::AddGrammarFragments(
     const std::vector<ui::GrammarFragment>& fragments) {
+  if (!fragments.empty()) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.Grammar.Count",
+        TextInputClient::SubClass::kRenderWidgetHostViewAura);
+  }
+
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler || fragments.empty())
     return false;

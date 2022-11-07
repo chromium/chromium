@@ -367,6 +367,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.Grammar.Count" enum="IMETextInputClient"
+    expires_after="2023-04-16">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Tracks when assistive grammar is performed by a text input client. Recorded
+    when grammar is triggered by users with the feature enabled using a text
+    input client that's being tracked.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.InsufficientData"
     enum="IMEAssistiveAction" expires_after="2022-09-30">
   <owner>jiwan@google.com</owner>

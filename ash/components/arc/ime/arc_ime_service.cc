@@ -657,6 +657,10 @@ bool ArcImeService::ClearGrammarFragments(const gfx::Range& range) {
 
 bool ArcImeService::AddGrammarFragments(
     const std::vector<ui::GrammarFragment>& fragments) {
+  if (!fragments.empty()) {
+    base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Count",
+                                  TextInputClient::SubClass::kArcImeService);
+  }
   // TODO(https://crbug.com/1201454): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;

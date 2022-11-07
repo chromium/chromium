@@ -1775,6 +1775,18 @@ bool Textfield::SetAutocorrectRange(const gfx::Range& range) {
   }
   return model_->SetAutocorrectRange(range);
 }
+
+bool Textfield::AddGrammarFragments(
+    const std::vector<ui::GrammarFragment>& fragments) {
+  if (!fragments.empty()) {
+    base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Count",
+                                  TextInputClient::SubClass::kTextField);
+  }
+  // TODO(crbug/1201454): Implement this method for CrOS Grammar.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
