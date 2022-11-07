@@ -65,7 +65,7 @@
 #endif
 
 const char deflate_copyright[] =
-   " deflate 1.2.12.1 Copyright 1995-2022 Jean-loup Gailly and Mark Adler ";
+   " deflate 1.2.13 Copyright 1995-2022 Jean-loup Gailly and Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -100,13 +100,7 @@ local void lm_init        OF((deflate_state *s));
 local void putShortMSB    OF((deflate_state *s, uInt b));
 local void flush_pending  OF((z_streamp strm));
 local unsigned read_buf   OF((z_streamp strm, Bytef *buf, unsigned size));
-#ifdef ASMV
-#  pragma message("Assembler code may have bugs -- use at your own risk")
-      void match_init OF((void)); /* asm code initialization */
-      uInt longest_match  OF((deflate_state *s, IPos cur_match));
-#else
 local uInt longest_match  OF((deflate_state *s, IPos cur_match));
-#endif
 
 #ifdef ZLIB_DEBUG
 local  void check_match OF((deflate_state *s, IPos start, IPos match,
@@ -288,6 +282,8 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
 
     if (windowBits < 0) { /* suppress zlib wrapper */
         wrap = 0;
+        if (windowBits < -15)
+            return Z_STREAM_ERROR;
         windowBits = -windowBits;
     }
 #ifdef GZIP
@@ -1291,11 +1287,6 @@ local void lm_init(s)
     s->match_length = s->prev_length = MIN_MATCH-1;
     s->match_available = 0;
     s->ins_h = 0;
-#ifndef FASTEST
-#ifdef ASMV
-    match_init(); /* initialize the asm code */
-#endif
-#endif
 }
 
 #ifndef FASTEST
@@ -1307,10 +1298,6 @@ local void lm_init(s)
  * IN assertions: cur_match is the head of the hash chain for the current
  *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
  * OUT assertion: the match length is not greater than s->lookahead.
- */
-#ifndef ASMV
-/* For 80x86 and 680x0, an optimized version will be provided in match.asm or
- * match.S. The code will be functionally equivalent.
  */
 local uInt longest_match(s, cur_match)
     deflate_state *s;
@@ -1475,7 +1462,6 @@ local uInt longest_match(s, cur_match)
     if ((uInt)best_len <= s->lookahead) return (uInt)best_len;
     return s->lookahead;
 }
-#endif /* ASMV */
 
 #else /* FASTEST */
 
