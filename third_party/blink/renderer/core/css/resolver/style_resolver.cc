@@ -1583,9 +1583,9 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
   builder.SetTapHighlightColor(
       ComputedStyleInitialValues::InitialTapHighlightColor());
 
-  initial_style->SetUsedColorScheme(engine.GetPageColorSchemes(),
-                                    engine.GetPreferredColorScheme(),
-                                    engine.GetForceDarkModeEnabled());
+  builder.SetUsedColorScheme(engine.GetPageColorSchemes(),
+                             engine.GetPreferredColorScheme(),
+                             engine.GetForceDarkModeEnabled());
 
   FontDescription document_font_description =
       initial_style->GetFontDescription();

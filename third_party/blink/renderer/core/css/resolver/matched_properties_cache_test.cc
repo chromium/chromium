@@ -255,12 +255,16 @@ TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
 TEST_F(MatchedPropertiesCacheTest, ColorSchemeDependency) {
   TestCache cache(GetDocument());
 
-  auto parent_a = CreateStyle();
-  auto parent_b = CreateStyle();
+  auto builder = CreateStyleBuilder();
+  builder.SetDarkColorScheme(false);
+  auto parent_a = builder.TakeStyle();
+
+  builder = CreateStyleBuilder();
+  builder.SetDarkColorScheme(true);
+  auto parent_b = builder.TakeStyle();
+
   auto style_a = CreateStyle();
   auto style_b = CreateStyle();
-  parent_a->SetDarkColorScheme(false);
-  parent_b->SetDarkColorScheme(true);
 
   TestKey key("display:block", 1, GetDocument());
 

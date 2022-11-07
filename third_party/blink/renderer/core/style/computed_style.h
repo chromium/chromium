@@ -2288,15 +2288,6 @@ class ComputedStyle : public ComputedStyleBase,
                              : mojom::blink::ColorScheme::kLight;
   }
 
-  // Helper method to adjust used values for color-scheme on the current
-  // computed color-scheme passed in as flags. The computed value should already
-  // have been set by the Apply* methods on the ColorScheme class, or as the
-  // initial value.
-  void SetUsedColorScheme(
-      ColorSchemeFlags flags,
-      mojom::blink::PreferredColorScheme preferred_color_scheme,
-      bool force_dark);
-
   bool GeneratesMarkerImage() const {
     return Display() == EDisplay::kListItem && ListStyleImage() &&
            !ListStyleImage()->ErrorOccurred();
@@ -3084,6 +3075,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     MutablePaintImagesInternal()->push_back(image);
   }
 
+  // ColorScheme and ForcedColors
   bool ShouldPreserveParentColor() const {
     return InForcedColorsMode() &&
            ForcedColorAdjust() == EForcedColorAdjust::kPreserveParentColor;
@@ -3096,6 +3088,15 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     // by default_value:"canvastext" in css_properties.json5.
     return StyleColor(DarkColorScheme() ? Color::kWhite : Color::kBlack);
   }
+
+  // Helper method to adjust used values for color-scheme on the current
+  // computed color-scheme passed in as flags. The computed value should
+  // already have been set by the Apply* methods on the ColorScheme class, or
+  // as the initial value.
+  void SetUsedColorScheme(
+      ColorSchemeFlags flags,
+      mojom::blink::PreferredColorScheme preferred_color_scheme,
+      bool force_dark);
 
  private:
   friend class ColorPropertyFunctions;

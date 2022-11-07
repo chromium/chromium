@@ -1757,8 +1757,7 @@ void ApplyColorSchemeValue(StyleResolverState& state,
   }
 
   state.StyleBuilder().SetColorScheme(std::move(color_schemes));
-
-  state.StyleRef().SetUsedColorScheme(
+  state.StyleBuilder().SetUsedColorScheme(
       flags, document.GetStyleEngine().GetPreferredColorScheme(),
       document.GetStyleEngine().GetForceDarkModeEnabled());
 

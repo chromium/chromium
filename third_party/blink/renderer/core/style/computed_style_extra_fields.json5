@@ -958,7 +958,6 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
-      writable: true,
     },
     {
       name: "ColorSchemeForced",
@@ -967,7 +966,6 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
-      writable: true,
     },
     {
       name: "IsInBlockifyingDisplay",
