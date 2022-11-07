@@ -39,6 +39,7 @@ class DeviceInfoTracker {
     // GUID or this is the first browser startup), it will be updated later
     // during the initial merge.
     virtual void OnDeviceInfoChange() = 0;
+    virtual ~Observer() = default;
   };
 
   // Returns true when DeviceInfo datatype is enabled and syncing.

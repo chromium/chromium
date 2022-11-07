@@ -101,6 +101,15 @@ void FakeDeviceInfoTracker::Add(const DeviceInfo* device) {
   }
 }
 
+void FakeDeviceInfoTracker::Add(const std::vector<const DeviceInfo*>& devices) {
+  for (auto* device : devices) {
+    devices_.push_back(device);
+  }
+  for (auto& observer : observers_) {
+    observer.OnDeviceInfoChange();
+  }
+}
+
 void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
                                     const DeviceInfo* new_device) {
   std::vector<const DeviceInfo*>::iterator it =

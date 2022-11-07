@@ -27,6 +27,7 @@ source_set("segmentation_platform") {
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public/proto",
+    "//components/sync_device_info",
     "//components/variations",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
@@ -35,6 +36,7 @@ source_set("segmentation_platform") {
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/web_state_list",
   ]
   if (build_with_tflite_lib) {

@@ -140,6 +140,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SegmentationPlatform.DeviceCountByOsType.{OsType}"
+    units="devices" expires_after="2023-10-20">
+  <owner>junzou@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-segmentation-team@google.com</owner>
+  <summary>
+    The number of active syncing devices of type {OsType} known to any profile.
+    Each device is identified by one unique guid. No deduping is applied. May be
+    0 when there are no signed in/syncing profiles open. Recorded once on
+    browser startup iff DeviceInfo sync is enabled. Note that the threshold on
+    the number of days for determining active statuses may change based on the
+    config of the kSegmentationDeviceCountByOsType feature.
+  </summary>
+  <token key="OsType">
+    <variant name="Android"/>
+    <variant name="ChromeOsAsh"/>
+    <variant name="ChromeOsLacros"/>
+    <variant name="Fuchsia"/>
+    <variant name="iOS"/>
+    <variant name="Linux"/>
+    <variant name="Mac"/>
+    <variant name="Unknown"/>
+    <variant name="Windows"/>
+  </token>
+</histogram>
+
 <histogram
     name="SegmentationPlatform.FeatureProcessing.Error.{SegmentationModel}"
     enum="SegmentationPlatformFeatureProcessingError"

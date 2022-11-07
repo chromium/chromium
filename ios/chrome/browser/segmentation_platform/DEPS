@@ -2,5 +2,7 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/segmentation_platform",
+  "+components/sync_device_info",
   "+ios/web/public",
+  "+ios/chrome/browser/sync",
 ]

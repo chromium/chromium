@@ -11,6 +11,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/segmentation_platform/public/service_proxy.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -84,7 +85,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment web_task_env_;
 
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };

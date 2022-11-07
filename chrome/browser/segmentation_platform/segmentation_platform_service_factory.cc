@@ -17,6 +17,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
@@ -26,6 +27,7 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/sync_device_info/device_info_sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -68,6 +70,7 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
     : ProfileKeyedServiceFactory("SegmentationPlatformService") {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
@@ -102,6 +105,11 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->field_trial_register = std::make_unique<FieldTrialRegisterImpl>();
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
       optimization_guide, params->configs, params->task_runner);
+  // Guaranteed to outlive the SegmentationPlatformService, which depends on the
+  // DeviceInfoSynceService.
+  params->device_info_tracker =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile)
+          ->GetDeviceInfoTracker();
   auto* service = new SegmentationPlatformServiceImpl(std::move(params));
 
   // Profile manager can be null in unit tests.
