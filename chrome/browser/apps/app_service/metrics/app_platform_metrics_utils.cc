@@ -401,12 +401,17 @@ int GetUserTypeByDeviceTypeMetrics() {
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   DCHECK(primary_user);
-  DCHECK(primary_user->is_profile_created());
-  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  DCHECK(profile);
-
   UserTypeByDeviceTypeMetricsProvider::UserSegment user_segment =
-      UserTypeByDeviceTypeMetricsProvider::GetUserSegment(profile);
+      UserTypeByDeviceTypeMetricsProvider::UserSegment::kUnmanaged;
+  // In some tast tests, primary_user->is_profile_created() might return false
+  // for some unknown reasons.
+  if (primary_user->is_profile_created()) {
+    Profile* profile =
+        ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+    DCHECK(profile);
+
+    user_segment = UserTypeByDeviceTypeMetricsProvider::GetUserSegment(profile);
+  }
 
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
