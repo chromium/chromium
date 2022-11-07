@@ -130,13 +130,6 @@ const FeatureEntry::Choice kAutofillIOSDelayBetweenFieldsChoices[] = {
     {"1000", autofill::switches::kAutofillIOSDelayBetweenFields, "1000"},
 };
 
-const FeatureEntry::Choice kDelayThresholdMinutesToUpdateGaiaCookieChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"0", signin::kDelayThresholdMinutesToUpdateGaiaCookie, "0"},
-    {"10", signin::kDelayThresholdMinutesToUpdateGaiaCookie, "10"},
-    {"60", signin::kDelayThresholdMinutesToUpdateGaiaCookie, "60"},
-};
-
 const FeatureEntry::Choice
     kWaitThresholdMillisecondsForCapabilitiesApiChoices[] = {
         {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -761,11 +754,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"modern-tab-strip", flag_descriptions::kModernTabStripName,
      flag_descriptions::kModernTabStripDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kModernTabStrip)},
-    {"minutes-delay-to-restore-gaia-cookies-if-deleted",
-     flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieName,
-     flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieDescription,
-     flags_ui::kOsIos,
-     MULTI_VALUE_TYPE(kDelayThresholdMinutesToUpdateGaiaCookieChoices)},
     {"record-snapshot-size", flag_descriptions::kRecordSnapshotSizeName,
      flag_descriptions::kRecordSnapshotSizeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kRecordSnapshotSize)},
