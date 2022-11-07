@@ -826,9 +826,9 @@ bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
 }
 
 bool SequenceManagerImpl::OnSystemIdle() {
-  auto wakeup = main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
   bool have_work_to_do = false;
   if (main_thread_only().time_domain) {
+    auto wakeup = main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
     have_work_to_do = main_thread_only().time_domain->MaybeFastForwardToWakeUp(
         wakeup, controller_->ShouldQuitRunLoopWhenIdle());
   }
