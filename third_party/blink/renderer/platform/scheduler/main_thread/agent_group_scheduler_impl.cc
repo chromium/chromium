@@ -58,10 +58,11 @@ void AgentGroupSchedulerImpl::Dispose() {
   compositor_task_queue_->DetachFromMainThreadScheduler();
 }
 
-std::unique_ptr<PageScheduler> AgentGroupSchedulerImpl::CreatePageScheduler(
+PageScheduler* AgentGroupSchedulerImpl::CreatePageScheduler(
     PageScheduler::Delegate* delegate) {
-  auto page_scheduler = std::make_unique<PageSchedulerImpl>(delegate, *this);
-  main_thread_scheduler_.AddPageScheduler(page_scheduler.get());
+  auto* page_scheduler =
+      MakeGarbageCollected<PageSchedulerImpl>(delegate, *this);
+  main_thread_scheduler_.AddPageScheduler(page_scheduler);
   return page_scheduler;
 }
 

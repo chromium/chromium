@@ -178,26 +178,28 @@ PageSchedulerImpl::PageSchedulerImpl(
       (kDefaultPageVisibility == PageVisibilityState::kVisible
            ? PageLifecycleState::kActive
            : PageLifecycleState::kHiddenBackgrounded);
-  do_throttle_cpu_time_callback_.Reset(base::BindRepeating(
-      &PageSchedulerImpl::DoThrottleCPUTime, base::Unretained(this)));
-  do_intensively_throttle_wake_ups_callback_.Reset(
-      base::BindRepeating(&PageSchedulerImpl::DoIntensivelyThrottleWakeUps,
-                          base::Unretained(this)));
-  reset_had_recent_title_or_favicon_update_.Reset(base::BindRepeating(
-      &PageSchedulerImpl::ResetHadRecentTitleOrFaviconUpdate,
-      base::Unretained(this)));
-  on_audio_silent_closure_.Reset(base::BindRepeating(
-      &PageSchedulerImpl::OnAudioSilent, base::Unretained(this)));
-  do_freeze_page_callback_.Reset(base::BindRepeating(
-      &PageSchedulerImpl::DoFreezePage, base::Unretained(this)));
+  do_throttle_cpu_time_callback_.Reset(
+      WTF::BindRepeating(&PageSchedulerImpl::DoThrottleCPUTime, GetWeakPtr()));
+  do_intensively_throttle_wake_ups_callback_.Reset(WTF::BindRepeating(
+      &PageSchedulerImpl::DoIntensivelyThrottleWakeUps, GetWeakPtr()));
+  reset_had_recent_title_or_favicon_update_.Reset(WTF::BindRepeating(
+      &PageSchedulerImpl::ResetHadRecentTitleOrFaviconUpdate, GetWeakPtr()));
+  on_audio_silent_closure_.Reset(
+      WTF::BindRepeating(&PageSchedulerImpl::OnAudioSilent, GetWeakPtr()));
+  do_freeze_page_callback_.Reset(
+      WTF::BindRepeating(&PageSchedulerImpl::DoFreezePage, GetWeakPtr()));
 }
 
-PageSchedulerImpl::~PageSchedulerImpl() {
+PageSchedulerImpl::~PageSchedulerImpl() = default;
+
+void PageSchedulerImpl::Shutdown() {
+  weak_factory_.InvalidateWeakPtrs();
   // TODO(alexclarke): Find out why we can't rely on the web view outliving the
   // frame.
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
     frame_scheduler->DetachFromPageScheduler();
   }
+  frame_schedulers_.clear();
   main_thread_scheduler_->RemovePageScheduler(this);
 }
 
@@ -319,8 +321,8 @@ void PageSchedulerImpl::SetPageBackForwardCached(
     // complete before tasks are logged.
     set_ipc_posted_handler_task_ = PostDelayedCancellableTask(
         *main_thread_scheduler_->ControlTaskRunner(), FROM_HERE,
-        base::BindRepeating(&PageSchedulerImpl::SetUpIPCTaskDetection,
-                            GetWeakPtr()),
+        WTF::BindRepeating(&PageSchedulerImpl::SetUpIPCTaskDetection,
+                           GetWeakPtr()),
         GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache());
   }
 }
@@ -351,6 +353,11 @@ bool PageSchedulerImpl::IsOrdinary() const {
 
 void PageSchedulerImpl::SetIsMainFrameLocal(bool is_local) {
   is_main_frame_local_ = is_local;
+}
+
+void PageSchedulerImpl::Trace(Visitor* visitor) const {
+  PageScheduler::Trace(visitor);
+  visitor->Trace(agent_group_scheduler_);
 }
 
 void PageSchedulerImpl::RegisterFrameSchedulerImpl(

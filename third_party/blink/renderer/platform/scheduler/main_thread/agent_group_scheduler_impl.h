@@ -41,8 +41,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   AgentGroupSchedulerImpl& operator=(const AgentGroupSchedulerImpl&) = delete;
   ~AgentGroupSchedulerImpl() override = default;
 
-  std::unique_ptr<PageScheduler> CreatePageScheduler(
-      PageScheduler::Delegate*) override;
+  PageScheduler* CreatePageScheduler(PageScheduler::Delegate*) override;
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();

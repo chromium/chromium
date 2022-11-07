@@ -816,7 +816,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     TraceableState<bool, TracingCategory::kDebug> has_navigated;
     TraceableState<bool, TracingCategory::kDebug> pause_timers_for_webview;
     base::TimeTicks background_status_changed_at;
-    HashSet<PageSchedulerImpl*> page_schedulers;  // Not owned.
+    Persistent<HeapHashSet<WeakMember<PageSchedulerImpl>>> page_schedulers;
     base::ObserverList<RAILModeObserver>::Unchecked
         rail_mode_observers;  // Not owned.
     MainThreadMetricsHelper metrics_helper;

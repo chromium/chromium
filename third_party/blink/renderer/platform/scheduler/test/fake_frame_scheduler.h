@@ -125,7 +125,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
     }
 
    private:
-    PageScheduler* page_scheduler_ = nullptr;
+    Persistent<PageScheduler> page_scheduler_;
     bool is_page_visible_ = false;
     bool is_frame_visible_ = false;
     FrameScheduler::FrameType frame_type_ =
@@ -190,7 +190,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   }
 
  private:
-  PageScheduler* page_scheduler_;  // NOT OWNED
+  Persistent<PageScheduler> page_scheduler_;
 
   bool is_page_visible_;
   bool is_frame_visible_;
