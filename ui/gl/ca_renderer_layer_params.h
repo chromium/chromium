@@ -41,7 +41,7 @@ struct GL_EXPORT CARendererLayerParams {
                         const gfx::ColorSpace& io_surface_color_space,
                         const gfx::RectF& contents_rect,
                         const gfx::Rect& rect,
-                        unsigned background_color,
+                        SkColor4f background_color,
                         unsigned edge_aa_mask,
                         float opacity,
                         unsigned filter,
@@ -60,7 +60,7 @@ struct GL_EXPORT CARendererLayerParams {
   gfx::ColorSpace io_surface_color_space;
   const gfx::RectF contents_rect;
   const gfx::Rect rect;
-  unsigned background_color;
+  SkColor4f background_color;
   unsigned edge_aa_mask;
   float opacity;
   unsigned filter;
@@ -87,7 +87,7 @@ struct GL_EXPORT CARendererLayerParams {
     // For every filter other than DROP_SHADOW, only |amount| is populated.
     float amount = 0;
     gfx::Point drop_shadow_offset;
-    SkColor drop_shadow_color = 0;
+    SkColor4f drop_shadow_color = SkColors::kTransparent;
   };
   using FilterEffects = std::vector<FilterEffect>;
 

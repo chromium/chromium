@@ -313,10 +313,10 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
       gfx::Transform(), image, overlay_plane_data.color_space,
       overlay_plane_data.crop_rect,                           // contents_rect
       gfx::ToNearestRect(overlay_plane_data.display_bounds),  // rect
-      SK_ColorTRANSPARENT,  // background_color
-      0,                    // edge_aa_mask
-      1.f,                  // opacity
-      GL_LINEAR,            // filter
+      SkColors::kTransparent,  // background_color
+      0,                       // edge_aa_mask
+      1.f,                     // opacity
+      GL_LINEAR,               // filter
       gfx::HDRMode::kDefault,
       absl::nullopt,                     // hdr_metadata
       gfx::ProtectedVideoType::kClear);  // protected_video_type

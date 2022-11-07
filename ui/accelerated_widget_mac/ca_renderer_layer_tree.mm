@@ -223,7 +223,7 @@ CATransform3D ToCATransform3D(const gfx::Transform& t) {
 class CARendererLayerTree::SolidColorContents
     : public base::RefCounted<CARendererLayerTree::SolidColorContents> {
  public:
-  static scoped_refptr<SolidColorContents> Get(SkColor color);
+  static scoped_refptr<SolidColorContents> Get(SkColor4f color);
   id GetContents() const;
   IOSurfaceRef GetIOSurfaceRef() const;
 
@@ -241,7 +241,9 @@ class CARendererLayerTree::SolidColorContents
 
 // static
 scoped_refptr<CARendererLayerTree::SolidColorContents>
-CARendererLayerTree::SolidColorContents::Get(SkColor color) {
+CARendererLayerTree::SolidColorContents::Get(SkColor4f color4f) {
+  // TODO(https://crbug.com/1376717): Support non-sRGB colors.
+  const SkColor color = color4f.toSkColor();
   const int kSolidColorContentsSize = 16;
 
   auto* map = GetMap();
@@ -635,8 +637,8 @@ bool CARendererLayerTree::RootLayer::WantsFullscreenLowPowerBackdrop() const {
         // solid black or transparent
         if (content_layer.io_surface_)
           return false;
-        if (content_layer.background_color_ != SK_ColorBLACK &&
-            content_layer.background_color_ != SK_ColorTRANSPARENT) {
+        if (content_layer.background_color_ != SkColors::kBlack &&
+            content_layer.background_color_ != SkColors::kTransparent) {
           return false;
         }
       }
@@ -658,7 +660,7 @@ void CARendererLayerTree::RootLayer::DowngradeAVLayersToCALayers() {
   }
 }
 
-id CARendererLayerTree::ContentsForSolidColorForTesting(SkColor color) {
+id CARendererLayerTree::ContentsForSolidColorForTesting(SkColor4f color) {
   return SolidColorContents::Get(color)->GetContents();
 }
 
@@ -731,7 +733,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
     const gfx::RectF& contents_rect,
     const gfx::Rect& rect,
-    unsigned background_color,
+    SkColor4f background_color,
     const gfx::ColorSpace& io_surface_color_space,
     unsigned edge_aa_mask,
     float opacity,
@@ -763,8 +765,8 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   // detachment in fullscreen.
   // https://crbug.com/633805
   if (!io_surface && !tree()->allow_solid_color_layers_ &&
-      background_color_ != SK_ColorBLACK &&
-      background_color_ != SK_ColorTRANSPARENT) {
+      background_color_ != SkColors::kBlack &&
+      background_color_ != SkColors::kTransparent) {
     solid_color_contents_ = SolidColorContents::Get(background_color);
     contents_rect_ = gfx::RectF(0, 0, 1, 1);
   }
@@ -1274,13 +1276,14 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   }
   if (update_background_color) {
     CGFloat rgba_color_components[4] = {
-        SkColorGetR(background_color_) / 255.,
-        SkColorGetG(background_color_) / 255.,
-        SkColorGetB(background_color_) / 255.,
-        SkColorGetA(background_color_) / 255.,
+        background_color_.fR,
+        background_color_.fG,
+        background_color_.fB,
+        background_color_.fA,
     };
-    base::ScopedCFTypeRef<CGColorRef> srgb_background_color(CGColorCreate(
-        CGColorSpaceCreateWithName(kCGColorSpaceSRGB), rgba_color_components));
+    base::ScopedCFTypeRef<CGColorRef> srgb_background_color(
+        CGColorCreate(CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB),
+                      rgba_color_components));
     [ca_layer_ setBackgroundColor:srgb_background_color];
   }
   if (update_ca_edge_aa_mask)

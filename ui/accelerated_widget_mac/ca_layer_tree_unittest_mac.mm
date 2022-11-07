@@ -36,7 +36,7 @@ struct CALayerProperties {
   gfx::Transform transform;
   gfx::RectF contents_rect = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
   gfx::Rect rect = gfx::Rect(0, 0, 256, 256);
-  unsigned background_color = SkColorSetARGB(0xFF, 0xFF, 0xFF, 0xFF);
+  SkColor4f background_color = SkColors::kWhite;
   unsigned edge_aa_mask = 0;
   float opacity = 1.0f;
   float scale_factor = 1.0f;
@@ -133,7 +133,7 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
     properties.transform.Translate(10, 20);
     properties.contents_rect = gfx::RectF(0.0f, 0.25f, 0.5f, 0.75f);
     properties.rect = gfx::Rect(16, 32, 64, 128);
-    properties.background_color = SkColorSetARGB(0xFF, 0xFF, 0, 0);
+    properties.background_color = SkColors::kRed;
     properties.edge_aa_mask = ui::CALayerEdge::kLayerEdgeLeft;
     properties.opacity = 0.5f;
     properties.gl_image =
@@ -938,10 +938,10 @@ TEST_F(CALayerTreeTest, FullscreenLowPower) {
 
   CALayerProperties properties_black;
   properties_black.is_clipped = false;
-  properties_black.background_color = SK_ColorBLACK;
+  properties_black.background_color = SkColors::kBlack;
   CALayerProperties properties_white;
   properties_white.is_clipped = false;
-  properties_white.background_color = SK_ColorWHITE;
+  properties_white.background_color = SkColors::kWhite;
 
   std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
 

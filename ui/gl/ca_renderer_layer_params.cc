@@ -16,7 +16,7 @@ CARendererLayerParams::CARendererLayerParams(
     const gfx::ColorSpace& io_surface_color_space,
     const gfx::RectF& contents_rect,
     const gfx::Rect& rect,
-    unsigned background_color,
+    SkColor4f background_color,
     unsigned edge_aa_mask,
     float opacity,
     unsigned filter,
