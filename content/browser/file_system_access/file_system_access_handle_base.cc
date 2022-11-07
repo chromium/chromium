@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +29,12 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
+
+namespace features {
+BASE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove,
+             "FileSystemAccessDoNotOverwriteOnMove",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 namespace content {
 
@@ -339,6 +346,12 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     }
   }
 
+  if (dest_url == url()) {
+    // Nothing to do here.
+    std::move(callback).Run(file_system_access_error::Ok());
+    return;
+  }
+
   // The file can only be moved if we can acquire exclusive write locks to both
   // the source and destination URLs.
   std::vector<scoped_refptr<WriteLock>> locks;
@@ -354,26 +367,57 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
   }
   locks.emplace_back(std::move(source_write_lock));
 
-  // Since we're using exclusive locks, we should only acquire the
-  // lock of the destination URL if it is different from the source URL.
-  if (url() != dest_url) {
-    auto dest_write_lock =
-        manager()->TakeWriteLock(dest_url, WriteLockType::kExclusive);
-    if (!dest_write_lock) {
-      std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
-          base::StrCat({"Failed to move ", GetURLDisplayName(url()), " to ",
-                        GetURLDisplayName(dest_url),
-                        ". A FileSystemHandle cannot be moved to a destination "
-                        "which is locked."})));
-      return;
-    }
-    locks.emplace_back(std::move(dest_write_lock));
+  // Acquire an exclusive lock to the destination URL.
+  DCHECK(dest_url != url());
+  auto dest_write_lock =
+      manager()->TakeWriteLock(dest_url, WriteLockType::kExclusive);
+  if (!dest_write_lock) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
+        base::StrCat({"Failed to move ", GetURLDisplayName(url()), " to ",
+                      GetURLDisplayName(dest_url),
+                      ". A FileSystemHandle cannot be moved to a destination "
+                      "which is locked."})));
+    return;
+  }
+  locks.emplace_back(std::move(dest_write_lock));
+
+  manager()->DoFileSystemOperation(
+      FROM_HERE, &storage::FileSystemOperationRunner::FileExists,
+      base::BindOnce(
+          &FileSystemAccessHandleBase::DidConfirmDestinationDoesNotExist,
+          AsWeakPtr(), dest_url, std::move(locks),
+          has_transient_user_activation, std::move(callback)),
+      dest_url);
+}
+
+void FileSystemAccessHandleBase::DidConfirmDestinationDoesNotExist(
+    const storage::FileSystemURL& destination_url,
+    std::vector<scoped_refptr<WriteLock>> locks,
+    bool has_transient_user_activation,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+    base::File::Error result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDoNotOverwriteOnMove) &&
+      (result == base::File::FILE_OK ||
+       result == base::File::FILE_ERROR_EXISTS ||
+       result == base::File::FILE_ERROR_NOT_EMPTY ||
+       result == base::File::FILE_ERROR_NOT_A_FILE ||
+       result == base::File::FILE_ERROR_INVALID_OPERATION)) {
+    // TODO(https://crbug.com/1366652): Change this to
+    // FILE_ERROR_INVALID_OPERATION (which maps to the InvalidModificationError
+    // DOMException). Currently, this incorrectly reports an error as if the
+    // handle was locked.
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
+    return;
   }
 
   auto file_system_access_safe_move_helper =
       std::make_unique<FileSystemAccessSafeMoveHelper>(
-          manager()->AsWeakPtr(), context(), url(), dest_url,
+          manager()->AsWeakPtr(), context(), url(), destination_url,
           storage::FileSystemOperation::CopyOrMoveOptionSet(),
           GetContentClient()->browser()->GetQuarantineConnectionCallback(),
           has_transient_user_activation);
@@ -399,7 +443,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
         write_locks.clear();
         std::move(callback).Run(std::move(result));
       },
-      AsWeakPtr(), dest_url, std::move(locks),
+      AsWeakPtr(), destination_url, std::move(locks),
       std::move(file_system_access_safe_move_helper), std::move(callback)));
 }
 

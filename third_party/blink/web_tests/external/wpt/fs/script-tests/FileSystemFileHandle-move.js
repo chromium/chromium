@@ -94,11 +94,12 @@ directory_test(async (t, root) => {
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', handle.move('file-after'));
 
-  // Can't move handle once the writable is closed.
+  // Can't move handle to overwrite an existing file.
   await stream.close();
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', handle.move('file-after'));
-  assert_array_equals(await getSortedDirectoryEntries(root), ['file-before']);
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['file-after', 'file-before']);
 }, 'move(name) while the destination file has an open writable fails');
 
 

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -16,6 +17,13 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+
+namespace features {
+// TODO(crbug.com/1366652): Remove this flag eventually.
+// When enabled, move() will result in a promise rejection when the specified
+// destination to move to exists.
+BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
+}  // namespace features
 
 namespace storage {
 class FileSystemContext;
@@ -132,6 +140,13 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           callback);
+  void DidConfirmDestinationDoesNotExist(
+      const storage::FileSystemURL& destination_url,
+      std::vector<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
+          locks,
+      bool has_transient_user_activation,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+      base::File::Error result);
 
   bool ShouldTrackUsage() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
