@@ -434,9 +434,8 @@ void PhotosService::OnJsonParsed(
   std::vector<photos::mojom::MemoryPtr> memory_list;
 
   base::UmaHistogramCustomCounts("NewTabPage.Photos.DataResponseCount",
-                                 memories->GetListDeprecated().size(), 0, 10,
-                                 11);
-  for (const auto& memory : memories->GetListDeprecated()) {
+                                 memories->GetList().size(), 0, 10, 11);
+  for (const auto& memory : memories->GetList()) {
     auto* title = memory.FindStringPath("title.header");
     auto* memory_id = memory.FindStringPath("memoryMediaKey");
     auto* cover_id = memory.FindStringPath("coverMediaKey");
