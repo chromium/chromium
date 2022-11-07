@@ -116,9 +116,7 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_changed_shortly_after_mouseover_(false),
       has_sizes_attribute_in_img_or_sibling_(false),
       is_lazy_loaded_(false),
-      referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {
-  SetHasCustomStyleCallbacks();
-}
+      referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {}
 
 HTMLImageElement::~HTMLImageElement() = default;
 
@@ -906,6 +904,11 @@ void HTMLImageElement::SetLayoutDisposition(
   DCHECK(!GetDocument().InStyleRecalc());
 
   layout_disposition_ = layout_disposition;
+  if (layout_disposition == LayoutDisposition::kFallbackContent) {
+    SetHasCustomStyleCallbacks();
+  } else {
+    UnsetHasCustomStyleCallbacks();
+  }
 
   if (layout_disposition_ == LayoutDisposition::kFallbackContent) {
     EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
@@ -922,20 +925,11 @@ void HTMLImageElement::SetLayoutDisposition(
 
 scoped_refptr<ComputedStyle> HTMLImageElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  switch (layout_disposition_) {
-    case LayoutDisposition::kPrimaryContent:  // Fall through.
-    case LayoutDisposition::kCollapsed:
-      return OriginalStyleForLayoutObject(style_recalc_context);
-    case LayoutDisposition::kFallbackContent: {
-      ComputedStyleBuilder builder(
-          *OriginalStyleForLayoutObject(style_recalc_context));
-      HTMLImageFallbackHelper::CustomStyleForAltText(*this, builder);
-      return builder.TakeStyle();
-    }
-    default:
-      NOTREACHED();
-      return nullptr;
-  }
+  DCHECK_EQ(layout_disposition_, LayoutDisposition::kFallbackContent);
+  ComputedStyleBuilder builder(
+      *OriginalStyleForLayoutObject(style_recalc_context));
+  HTMLImageFallbackHelper::CustomStyleForAltText(*this, builder);
+  return builder.TakeStyle();
 }
 
 void HTMLImageElement::AssociateWith(HTMLFormElement* form) {

@@ -1141,6 +1141,9 @@ class CORE_EXPORT Node : public EventTarget {
   void SetHasCustomStyleCallbacks() {
     SetFlag(true, kHasCustomStyleCallbacksFlag);
   }
+  void UnsetHasCustomStyleCallbacks() {
+    SetFlag(false, kHasCustomStyleCallbacksFlag);
+  }
 
   void SetTreeScope(TreeScope* scope) { tree_scope_ = scope; }
   void SetIsFinishedParsingChildren(bool value) {
