@@ -3,8 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/modules/ml/webnn/features.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -35,5 +38,23 @@ blink_modules_sources("webnn") {
     ]
 
     deps += [ "//third_party/xnnpack" ]
+  }
+}
+
+if (use_libfuzzer) {
+  fuzzable_proto_library("webnn_proto") {
+    generate_python = true
+    sources = [ "webnn.proto" ]
+  }
+
+  fuzzer_test("webnn_fuzzer") {
+    sources = [ "webnn_fuzzer.cc" ]
+    deps = [
+      ":webnn_proto",
+      "//third_party/blink/renderer/core:testing",
+      "//third_party/blink/renderer/modules:modules",
+      "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+      "//third_party/libprotobuf-mutator",
+    ]
   }
 }
