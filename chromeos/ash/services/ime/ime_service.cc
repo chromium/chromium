@@ -182,18 +182,22 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
     return base::FeatureList::IsEnabled(
         chromeos::features::kAutocorrectParamsTuning);
   }
-  if (strcmp(feature_name, "LacrosSupport") == 0) {
+  if (strcmp(feature_name, chromeos::features::kLacrosSupport.name) == 0) {
     return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
   }
-  if (strcmp(feature_name, "SystemChinesePhysicalTyping") == 0) {
+  if (strcmp(feature_name,
+             chromeos::features::kSystemChinesePhysicalTyping.name) == 0) {
     return base::FeatureList::IsEnabled(
         chromeos::features::kSystemChinesePhysicalTyping);
   }
-  if (strcmp(feature_name, "SystemJapanesePhysicalTyping") == 0) {
+  if (strcmp(feature_name,
+             chromeos::features::kSystemJapanesePhysicalTyping.name) == 0) {
     return base::FeatureList::IsEnabled(
         chromeos::features::kSystemJapanesePhysicalTyping);
   }
-  if (strcmp(feature_name, "SystemTransliterationPhysicalTyping") == 0) {
+  if (strcmp(feature_name,
+             chromeos::features::kSystemTransliterationPhysicalTyping.name) ==
+      0) {
     return base::FeatureList::IsEnabled(
         chromeos::features::kSystemTransliterationPhysicalTyping);
   }
