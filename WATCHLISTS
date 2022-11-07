@@ -1072,7 +1072,8 @@
     },
     'face_ml': {
       'filepath': 'ash/webui/face_ml_app_ui/|' \
-                  'chrome/browser/ash/web_applications/face_ml_system_web_app_info.*',
+                  'chrome/browser/ash/web_applications/face_ml_system_web_app_info.*|' \
+                  'chrome/browser/ash/web_applications/face_ml/'
     },
     'feature_policy': {
       'filepath': 'third_party/blink/renderer/platform/feature_policy/|' \
