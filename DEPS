@@ -666,7 +666,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal',
-          'version': 'DjcTxojySQ7w_zlrBpZ9BHkfP4xOCdyWb-kzaWHXML0C',
+          'version': 'Tq8hROm9IzgBhhsDQWSUldygcSqjDL6WtdDdH9GR1iEC',
         },
       ],
   }
@@ -677,7 +677,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal_prod',
-          'version': 'YcZ3-47b4GNMEOwBtxg_cBjMezRgA5INOkkWkLmhf6oC',
+          'version': 'owuQ3SVzmABohvT4jYdn9RVH3gKn107su-8SrUO5Xc0C',
         },
       ],
   },
@@ -688,7 +688,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86',
-          'version': 'WKRsObwNiMN79FNam9_gcd1sYVx-MAlaI1Aj4VzFQnsC',
+          'version': '6VUdLZPVaa6OooJAO-6YWG2e7xR413E2OYukrtvM59sC',
         },
       ],
   },
@@ -699,7 +699,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86_64',
-          'version': 'WVnILyW4Rdr2vYFeuZ0b6UPP5FIAPyNtH-5VqfkTVRcC',
+          'version': 'SGIHWG5UocK__HcIUQA3wN_Web_G8Vad6N7Qv_G-E7UC',
         },
       ],
   },
@@ -711,7 +711,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_amd64',
-          'version': '1oPxMl5VBN_cZ67L3gCFhPWOvmLDDmxTi5lh1ruo1bsC',
+          'version': 'K1bKNzAlTMt_EyMNYVUvaED4IX5DnVlVWtgHRoglNOAC',
         },
       ],
   },
@@ -723,7 +723,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_arm64',
-          'version': 'IyydhYafVHnGOTHMbiRk1ySJngifDdBDWvReqMYmo8sC',
+          'version': 'lRa4lm3yGtDVOKin75GKxFu1BZFF3aNadGkm8gow4iYC',
         },
       ],
   },
@@ -734,7 +734,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86',
-          'version': 'V3dFG1gwlfKlnCE88Ir-h6dmcjgHGjcdrLJrS6-5qTAC',
+          'version': 'EYKR6SE965eKhz9JBv_pfJol97nN5UdqymhpRRU2w2YC',
         },
       ],
   },
@@ -745,7 +745,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86_64',
-          'version': 'IBenCvq9xWNcOEWG-ivXhhd-FLTmpbG-oKUaxDkQkAsC',
+          'version': 'MkKzihmknEOqtwuFmCdXA-TsgU0FBh7jWl3LHGLptYcC',
         },
       ],
   },
