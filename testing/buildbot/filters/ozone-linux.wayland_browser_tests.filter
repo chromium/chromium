@@ -17,8 +17,10 @@
 -ProfileHelperTest.OpenNewWindowForProfile
 
 # Screen capture on Wayland is tricky.
--All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/0
--All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/0
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/5
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/5
 -WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
 
 # Fail on the bot, pass locally.

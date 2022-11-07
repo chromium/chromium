@@ -10,7 +10,7 @@
 
       function captureOtherTab() {
         navigator.mediaDevices
-          .getDisplayMedia({ video: true })
+          .getDisplayMedia({ video: true, selfBrowserSurface: "include" })
           .then(handleCaptureSuccess)
           .catch(handleCaptureError);
       }

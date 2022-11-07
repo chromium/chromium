@@ -864,6 +864,18 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
 // If enabled, will cache for each node's EventPath::NodePath in document.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDocumentEventNodePathCaching);
 
+// When an application calls getDisplayMedia(), a media-picker is displayed
+// to the user, allowing them to share a tab, a window or a screen.
+// * If this flag is enabled, the order is - tabs, windows, screens.
+// * If this flag is disabled, the order is - screens, windows, tabs.
+//
+// If {preferCurrentTab: true} is specified, the order is unaffected.
+//
+// When the new order is used, the default value of selfBrowserSurface
+// is "exclude", unless {preferCurrentTab: true} is specified, in which
+// case the default value is "include".
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNewGetDisplayMediaPickerOrder);
+
 // Parameter for tuning max entries allowed in EventNodePathCache, which will be
 // used to do LRU eviction in document.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>

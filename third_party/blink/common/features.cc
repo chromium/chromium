@@ -1632,6 +1632,10 @@ BASE_FEATURE(kDocumentEventNodePathCaching,
              "DocumentEventNodePathCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNewGetDisplayMediaPickerOrder,
+             "NewGetDisplayMediaPickerOrder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
     &kDocumentEventNodePathCaching, "max-cache-entries", 10};
 
