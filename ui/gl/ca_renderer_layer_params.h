@@ -5,8 +5,6 @@
 #ifndef UI_GL_CA_RENDERER_LAYER_PARAMS_H_
 #define UI_GL_CA_RENDERER_LAYER_PARAMS_H_
 
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -67,31 +65,6 @@ struct GL_EXPORT CARendererLayerParams {
   const gfx::HDRMode hdr_mode;
   absl::optional<gfx::HDRMetadata> hdr_metadata;
   gfx::ProtectedVideoType protected_video_type;
-
-  // This is a subset of cc::FilterOperation::FilterType.
-  enum class FilterEffectType : uint32_t {
-    GRAYSCALE,
-    SEPIA,
-    SATURATE,
-    HUE_ROTATE,
-    INVERT,
-    BRIGHTNESS,
-    CONTRAST,
-    OPACITY,
-    BLUR,
-    DROP_SHADOW,
-  };
-  struct GL_EXPORT FilterEffect {
-    FilterEffectType type = FilterEffectType::GRAYSCALE;
-
-    // For every filter other than DROP_SHADOW, only |amount| is populated.
-    float amount = 0;
-    gfx::Point drop_shadow_offset;
-    SkColor4f drop_shadow_color = SkColors::kTransparent;
-  };
-  using FilterEffects = std::vector<FilterEffect>;
-
-  FilterEffects filter_effects;
 };
 
 }  // namespace ui
