@@ -240,6 +240,14 @@ void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
       FROM_HERE, BindOnce(RunMemoryReclaimer, task_runner), delay);
 }
 
+std::string DanglingPointerDetectorSyntheticFieldTrial() {
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  return "Enabled";
+#else
+  return "Disabled";
+#endif
+}
+
 std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   std::map<std::string, std::string> trials;
 
@@ -339,6 +347,9 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   trials.emplace("BackupRefPtr_Effective", brp_group_name);
+
+  trials.emplace("DanglingPointerDetector",
+                 DanglingPointerDetectorSyntheticFieldTrial());
 
   // On 32-bit architectures, PCScan is not supported and permanently disabled.
   // Don't lump it into "Disabled", so that belonging to "Enabled"/"Disabled" is
