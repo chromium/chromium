@@ -380,3 +380,21 @@ TEST(KeyConverter, ReleaseModifiers) {
 
   CheckEvents(keys, key_events, true /* release_modifiers */, 0);
 }
+
+TEST(KeyConverter, CommandA) {
+  // This is a regression test for chromedriver:4263
+  ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
+  std::vector<KeyEvent> key_events;
+  KeyEventBuilder meta_builder;
+  key_events.push_back(meta_builder.SetType(kRawKeyDownEventType)
+                           ->SetKeyCode(ui::VKEY_COMMAND)
+                           ->SetModifiers(kMetaKeyModifierMask)
+                           ->Build());
+  KeyEventBuilder builder;
+  builder.SetModifiers(kMetaKeyModifierMask);
+  builder.SetKeyCode(ui::VKEY_A)->SetText("a", "a")->Generate(&key_events);
+  key_events.push_back(
+      meta_builder.SetType(kKeyUpEventType)->SetModifiers(0)->Build());
+  std::u16string keys = u"\uE03Da";
+  CheckEventsReleaseModifiers(keys, key_events);
+}

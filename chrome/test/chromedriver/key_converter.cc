@@ -555,15 +555,18 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
     } else {
       int necessary_modifiers = 0;
       ConvertCharToKeyCode(key, &key_code, &necessary_modifiers, &error_msg);
-      if (!error_msg.empty())
+      if (!error_msg.empty()) {
         return Status(kUnknownError, error_msg);
+      }
       all_modifiers |= necessary_modifiers;
       if (key_code != ui::VKEY_UNKNOWN) {
-        if (!ConvertKeyCodeToText(key_code, 0, &unmodified_text, &error_msg))
+        if (!ConvertKeyCodeToText(key_code, 0, &unmodified_text, &error_msg)) {
           return Status(kUnknownError, error_msg);
-        if (!ConvertKeyCodeToText(
-            key_code, all_modifiers, &modified_text, &error_msg))
+        }
+        if (!ConvertKeyCodeToText(key_code, all_modifiers, &modified_text,
+                                  &error_msg)) {
           return Status(kUnknownError, error_msg);
+        }
         if (unmodified_text.empty() || modified_text.empty()) {
           // To prevent char event for special cases like CTRL + x (cut).
           unmodified_text.clear();
