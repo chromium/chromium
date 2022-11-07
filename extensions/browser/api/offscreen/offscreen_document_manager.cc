@@ -10,6 +10,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/api/offscreen/lifetime_enforcer_factories.h"
+#include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/offscreen_document_host.h"
@@ -107,13 +109,15 @@ BrowserContextKeyedServiceFactory* OffscreenDocumentManager::GetFactory() {
 
 OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
     const Extension& extension,
-    const GURL& url) {
+    const GURL& url,
+    api::offscreen::Reason reason) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsOffscreenDocuments));
   DCHECK_EQ(url::Origin::Create(url), extension.origin());
   // Currently only a single offscreen document is supported per extension.
   DCHECK_EQ(nullptr, GetOffscreenDocumentForExtension(extension));
   DCHECK(!base::Contains(offscreen_documents_, extension.id()));
+  DCHECK_NE(api::offscreen::REASON_NONE, reason);
 #if DCHECK_IS_ON()
   // This should only be for an off-the-record context if the extension is both
   // enabled in incognito *and* runs in split mode. For spanning mode
@@ -133,9 +137,19 @@ OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
                                                       site_instance.get(), url);
   OffscreenDocumentHost* host = data.host.get();
 
-  // The following Unretained() is safe because this class owns the offscreen
-  // document host, so it can't possibly be called after the manager's
-  // destruction.
+  // The following Unretained()s are safe because this class owns the offscreen
+  // document host and lifetime enforcer, so these callbacks can't possibly be
+  // called after the manager's destruction.
+  auto termination_callback = base::BindOnce(
+      &OffscreenDocumentManager::CloseOffscreenDocumentForExtensionId,
+      base::Unretained(this), extension.id());
+  auto notify_inactive_callback = base::BindRepeating(
+      &OffscreenDocumentManager::OnOffscreenDocumentActivityChanged,
+      base::Unretained(this), extension.id());
+  data.enforcers.push_back(LifetimeEnforcerFactories::GetLifetimeEnforcer(
+      reason, host, std::move(termination_callback),
+      std::move(notify_inactive_callback)));
+
   host->SetCloseHandler(
       base::BindOnce(&OffscreenDocumentManager::CloseOffscreenDocument,
                      base::Unretained(this)));
@@ -155,8 +169,31 @@ OffscreenDocumentManager::GetOffscreenDocumentForExtension(
 
 void OffscreenDocumentManager::CloseOffscreenDocumentForExtension(
     const Extension& extension) {
-  DCHECK_NE(nullptr, GetOffscreenDocumentForExtension(extension));
-  offscreen_documents_.erase(extension.id());
+  CloseOffscreenDocumentForExtensionId(extension.id());
+}
+
+void OffscreenDocumentManager::CloseOffscreenDocumentForExtensionId(
+    const ExtensionId& extension_id) {
+  DCHECK(base::Contains(offscreen_documents_, extension_id));
+  offscreen_documents_.erase(extension_id);
+}
+
+void OffscreenDocumentManager::OnOffscreenDocumentActivityChanged(
+    const ExtensionId& extension_id) {
+  DCHECK(base::Contains(offscreen_documents_, extension_id));
+  OffscreenDocumentData& data = offscreen_documents_[extension_id];
+  DCHECK(data.host);
+
+  bool any_active = false;
+  for (auto& enforcer : data.enforcers) {
+    if (enforcer->IsActive()) {
+      any_active = true;
+      break;
+    }
+  }
+
+  if (!any_active)
+    CloseOffscreenDocumentForExtensionId(extension_id);
 }
 
 void OffscreenDocumentManager::OnExtensionUnloaded(

@@ -9,8 +9,12 @@ assert(enable_extensions,
 
 source_set("offscreen") {
   sources = [
+    "lifetime_enforcer_factories.cc",
+    "lifetime_enforcer_factories.h",
     "offscreen_api.cc",
     "offscreen_api.h",
+    "offscreen_document_lifetime_enforcer.cc",
+    "offscreen_document_lifetime_enforcer.h",
     "offscreen_document_manager.cc",
     "offscreen_document_manager.h",
   ]

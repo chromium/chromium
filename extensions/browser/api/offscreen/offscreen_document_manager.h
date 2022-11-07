@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/api/offscreen.h"
 #include "extensions/common/extension_id.h"
 
 class BrowserContextKeyedServiceFactory;
@@ -23,6 +24,7 @@ class Extension;
 class ExtensionHost;
 class ProcessManager;
 class OffscreenDocumentHost;
+class OffscreenDocumentLifetimeEnforcer;
 
 // The OffscreenDocumentManager is responsible for managing offscreen documents
 // created by extensions through the `offscreen` API.
@@ -45,9 +47,10 @@ class OffscreenDocumentManager : public KeyedService,
   static BrowserContextKeyedServiceFactory* GetFactory();
 
   // Creates and returns an offscreen document for the given `extension` and
-  // `url`.
+  // `url`, created for the given `reason`.
   OffscreenDocumentHost* CreateOffscreenDocument(const Extension& extension,
-                                                 const GURL& url);
+                                                 const GURL& url,
+                                                 api::offscreen::Reason reason);
 
   // Returns the current offscreen document for the given `extension`, if one
   // exists.
@@ -67,10 +70,23 @@ class OffscreenDocumentManager : public KeyedService,
 
     std::unique_ptr<OffscreenDocumentHost> host;
 
+    // The lifetime enforcers for the offscreen document. Note that currently
+    // this will always only have a single entry, but will have more when we
+    // support creating a document with multiple reasons.
+    std::vector<std::unique_ptr<OffscreenDocumentLifetimeEnforcer>> enforcers;
+
     // TODO(https://crbug.com/1339382): This will need more fields to include
     // attributes like the associated reason and justification for the
     // document.
   };
+
+  // Closes the offscreen document for the extension with the given
+  // `extension_id`.
+  void CloseOffscreenDocumentForExtensionId(const ExtensionId& extension_id);
+
+  // Called when the active state changes for the offscreen document associated
+  // with the extension with the given `extension_id`.
+  void OnOffscreenDocumentActivityChanged(const ExtensionId& extension_id);
 
   // ExtensionRegistry:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

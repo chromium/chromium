@@ -4,22 +4,71 @@
 
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api/offscreen/lifetime_enforcer_factories.h"
+#include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/api/offscreen.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
+
+namespace {
+
+// A programmable lifetime enforcer.
+class TestLifetimeEnforcer : public OffscreenDocumentLifetimeEnforcer {
+ public:
+  TestLifetimeEnforcer(OffscreenDocumentHost* offscreen_document,
+                       TerminationCallback termination_callback,
+                       NotifyInactiveCallback notify_inactive_callback)
+      : OffscreenDocumentLifetimeEnforcer(offscreen_document,
+                                          std::move(termination_callback),
+                                          std::move(notify_inactive_callback)) {
+  }
+  ~TestLifetimeEnforcer() override = default;
+
+  void CallTerminate() { TerminateDocument(); }
+  void CallNotifyInactive() {
+    DCHECK(!is_active_);
+    NotifyInactive();
+  }
+
+  void SetActive(bool is_active) { is_active_ = is_active; }
+
+ private:
+  bool IsActive() override { return is_active_; }
+
+  bool is_active_ = true;
+};
+
+// A test-only factory method to create and populate a test-only lifetime
+// enforcer.
+std::unique_ptr<OffscreenDocumentLifetimeEnforcer> CreateTestLifetimeEnforcer(
+    TestLifetimeEnforcer** lifetime_enforcer_out,
+    OffscreenDocumentHost* offscreen_document,
+    OffscreenDocumentLifetimeEnforcer::TerminationCallback termination_callback,
+    OffscreenDocumentLifetimeEnforcer::NotifyInactiveCallback
+        notify_inactive_callback) {
+  auto enforcer = std::make_unique<TestLifetimeEnforcer>(
+      offscreen_document, std::move(termination_callback),
+      std::move(notify_inactive_callback));
+  *lifetime_enforcer_out = enforcer.get();
+  return enforcer;
+}
+
+}  // namespace
 
 class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
  public:
@@ -39,7 +88,7 @@ class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
     host_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
     OffscreenDocumentHost* offscreen_document =
         OffscreenDocumentManager::Get(&profile)->CreateOffscreenDocument(
-            extension, url);
+            extension, url, api::offscreen::REASON_TESTING);
     host_waiter.WaitForHostCompletedFirstLoad();
 
     return offscreen_document;
@@ -99,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     ExtensionHostTestHelper host_waiter(profile());
     host_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
     offscreen_document = offscreen_document_manager()->CreateOffscreenDocument(
-        *extension, extension->GetResourceURL("offscreen.html"));
+        *extension, extension->GetResourceURL("offscreen.html"),
+        api::offscreen::REASON_TESTING);
     ASSERT_TRUE(offscreen_document);
     host_waiter.WaitForHostCompletedFirstLoad();
   }
@@ -306,6 +356,102 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
                                        "window.close();"));
     host_waiter.WaitForHostDestroyed();
   }
+
+  EXPECT_EQ(nullptr,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+}
+
+// Tests that lifetime enforcers can terminate an offscreen document (such as if
+// a hard limit is reached).
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
+                       LifetimeEnforcement_Terminate) {
+  // Override the factory method for the testing reason to use our own
+  // TestLifetimeEnforcer.
+  TestLifetimeEnforcer* lifetime_enforcer = nullptr;
+  LifetimeEnforcerFactories::TestingOverride factory_override;
+  factory_override.map().emplace(
+      api::offscreen::REASON_TESTING,
+      base::BindRepeating(&CreateTestLifetimeEnforcer, &lifetime_enforcer));
+
+  // Load an extension and create an offscreen document.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  OffscreenDocumentHost* offscreen_document = CreateDocumentAndWaitForLoad(
+      *extension, extension->GetResourceURL("offscreen.html"));
+  ASSERT_TRUE(offscreen_document);
+  EXPECT_EQ(offscreen_document,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+
+  // The lifetime enforcer should have been created. Call the termination
+  // callback; the offscreen document should be closed.
+  ASSERT_TRUE(lifetime_enforcer);
+  lifetime_enforcer->CallTerminate();
+
+  // Note: `offscreen_document` is now unsafe to use.
+
+  EXPECT_EQ(nullptr,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+}
+
+// Tests that the offscreen document is terminated when all the lifetime
+// enforcers (currently only ever one) notify that the document is inactive.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
+                       LifetimeEnforcement_NotifyInactive) {
+  // Override the factory method for the testing reason to use our own
+  // TestLifetimeEnforcer.
+  TestLifetimeEnforcer* lifetime_enforcer = nullptr;
+  LifetimeEnforcerFactories::TestingOverride factory_override;
+  factory_override.map().emplace(
+      api::offscreen::REASON_TESTING,
+      base::BindRepeating(&CreateTestLifetimeEnforcer, &lifetime_enforcer));
+
+  // Load an extension an create an offscreen document.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  OffscreenDocumentHost* offscreen_document = CreateDocumentAndWaitForLoad(
+      *extension, extension->GetResourceURL("offscreen.html"));
+  ASSERT_TRUE(offscreen_document);
+  EXPECT_EQ(offscreen_document,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+
+  // The lifetime enforcer should have been created.
+  ASSERT_TRUE(lifetime_enforcer);
+
+  // Set the document to be inactive and notify. The document should be closed.
+  lifetime_enforcer->SetActive(false);
+  lifetime_enforcer->CallNotifyInactive();
+
+  // Note: `offscreen_document` and `lifetime_enforcer` are now unsafe to use.
 
   EXPECT_EQ(nullptr,
             offscreen_document_manager()->GetOffscreenDocumentForExtension(
