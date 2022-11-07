@@ -687,7 +687,8 @@ bool WebAppRegistrar::IsActivelyInstalled(const AppId& app_id) const {
 
 bool WebAppRegistrar::IsIsolated(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->IsStorageIsolated() : false;
+  return web_app && (web_app->IsStorageIsolated() ||
+                     web_app->isolation_data().has_value());
 }
 
 bool WebAppRegistrar::IsInstalledByDefaultManagement(

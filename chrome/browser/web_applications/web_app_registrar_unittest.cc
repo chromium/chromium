@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -978,6 +979,8 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
   web_app->SetIsLocallyInstalled(true);
   web_app->SetStorageIsolated(true);
+  web_app->SetIsolationData(IsolationData(IsolationData::DevModeProxy{
+      .proxy_url = url::Origin::Create(GURL("http://127.0.0.1:8080"))}));
 
   RegisterApp(std::move(web_app));
 
