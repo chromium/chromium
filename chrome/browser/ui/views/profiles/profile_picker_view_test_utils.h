@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view_observer.h"
 
 class Profile;
@@ -73,7 +74,7 @@ class ProfileManagementStepTestView : public ProfilePickerView {
       StepControllerFactory step_controller_factory);
 
   // Returns when the content of the step reached the first non-empty paint.
-  void ShowAndWait();
+  void ShowAndWait(absl::optional<gfx::Size> view_size = absl::nullopt);
 
  protected:
   explicit ProfileManagementStepTestView(

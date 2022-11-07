@@ -160,7 +160,8 @@ ProfileManagementStepTestView::ProfileManagementStepTestView(
 
 ProfileManagementStepTestView::~ProfileManagementStepTestView() = default;
 
-void ProfileManagementStepTestView::ShowAndWait() {
+void ProfileManagementStepTestView::ShowAndWait(
+    absl::optional<gfx::Size> view_size) {
   LOG(WARNING) << "crbug.com/1380808 - Timing reference: before Display()";
   Display();
 
@@ -170,6 +171,9 @@ void ProfileManagementStepTestView::ShowAndWait() {
   LOG(WARNING) << "crbug.com/1380808 - Timing reference: before waiting for "
                   "the view to be shown";
   run_loop_.Run();
+
+  if (view_size.has_value())
+    GetWidget()->SetSize(view_size.value());
 
   LOG(WARNING) << "crbug.com/1380808 - Timing reference: finished waiting for "
                   "the view to be shown";
