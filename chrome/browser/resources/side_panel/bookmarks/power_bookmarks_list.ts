@@ -350,7 +350,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private onAddTabClicked_() {
-    // TODO: Implement this
+    this.bookmarksApi_.bookmarkCurrentTab();
   }
 
   /**

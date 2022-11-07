@@ -11,6 +11,7 @@ let instance: BookmarksApiProxy|null = null;
 
 export interface BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
+  bookmarkCurrentTab(): void;
   cutBookmark(id: string): void;
   copyBookmark(id: string): Promise<void>;
   getTopLevelBookmarks(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
@@ -41,6 +42,10 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     const factory = BookmarksPageHandlerFactory.getRemote();
     factory.createBookmarksPageHandler(
         this.handler.$.bindNewPipeAndPassReceiver());
+  }
+
+  bookmarkCurrentTab() {
+    this.handler.bookmarkCurrentTab();
   }
 
   cutBookmark(id: string) {

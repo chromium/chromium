@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -145,6 +146,14 @@ BookmarksPageHandler::BookmarksPageHandler(
     : receiver_(this, std::move(receiver)), reading_list_ui_(reading_list_ui) {}
 
 BookmarksPageHandler::~BookmarksPageHandler() = default;
+
+void BookmarksPageHandler::BookmarkCurrentTab() {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser)
+    return;
+
+  chrome::BookmarkCurrentTab(browser);
+}
 
 void BookmarksPageHandler::OpenBookmark(
     int64_t node_id,
