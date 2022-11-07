@@ -31,4 +31,6 @@ interface IRemoteFragment {
                                                in IObjectWrapper /* Bundle */ savedInstanceState) = 14;
   void handleSetSurfaceControlViewHost(in IObjectWrapper /* SurfaceControlViewHost */ host) = 15;
   IObjectWrapper /* View */ handleGetContentViewRenderView() = 16;
+
+  void handleSetMinimumSurfaceSize(in int width, in int height) = 17;
 }

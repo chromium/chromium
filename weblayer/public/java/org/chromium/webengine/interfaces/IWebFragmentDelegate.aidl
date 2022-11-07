@@ -10,7 +10,7 @@ import org.chromium.webengine.interfaces.ITabListObserverDelegate;
 
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
-// Next value: 20
+// Next value: 21
 oneway interface IWebFragmentDelegate {
     void setClient(in IWebFragmentDelegateClient client) = 1;
 
@@ -22,6 +22,7 @@ oneway interface IWebFragmentDelegate {
     void onAttach() = 5;
     // This is used only for the in-process service.
     void onAttachWithContext(IObjectWrapper context) = 19;
+    void setMinimumSurfaceSize(int width, int height) = 20;
 
     void onDestroy() = 6;
     void onDetach() = 7;

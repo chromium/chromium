@@ -99,9 +99,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     private FullPersistenceInfo mFullPersistenceInfo;
     private MinimalPersistenceInfo mMinimalPersistenceInfo;
 
-    private int mMinimumSurfaceWidth;
-    private int mMinimumSurfaceHeight;
-
     // This persistence state is saved to disk, and loaded async.
     private static final class FullPersistenceInfo {
         String mPersistenceId;
@@ -182,7 +179,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         mEmbedderActivityContext = embedderAppContext;
         mViewController = new BrowserViewController(
                 windowAndroid, this, mViewControllerState, mInConfigurationChangeAndWasAttached);
-        mViewController.setMinimumSurfaceSize(mMinimumSurfaceWidth, mMinimumSurfaceHeight);
         mLocaleReceiver = new LocaleChangedBroadcastReceiver(windowAndroid.getContext().get());
         mPasswordEchoEnabled = null;
     }
@@ -275,16 +271,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         if (isViewAttachedToWindow()) {
             mForcedVisible = !changeVisibility;
         }
-    }
-
-    @Override
-    public void setMinimumSurfaceSize(int width, int height) {
-        StrictModeWorkaround.apply();
-        mMinimumSurfaceWidth = width;
-        mMinimumSurfaceHeight = height;
-        BrowserViewController viewController = getPossiblyNullViewController();
-        if (viewController == null) return;
-        viewController.setMinimumSurfaceSize(width, height);
     }
 
     // Only call this if it's guaranteed that Browser is attached to an activity.

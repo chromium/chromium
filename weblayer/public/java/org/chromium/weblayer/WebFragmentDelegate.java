@@ -186,4 +186,22 @@ class WebFragmentDelegate extends IWebFragmentDelegate.Stub {
     public void setTabListObserverDelegate(ITabListObserverDelegate browserObserverDelegate) {
         mTabListDelegate.setObserver(browserObserverDelegate);
     }
+
+    /**
+     * Set the minimum surface size of this BrowserFragment instance.
+     * Setting this avoids expensive surface resize for a fragment view resize that is within the
+     * minimum size. The trade off is the additional memory and power needed for the larger
+     * surface. For example, for a browser use case, it's likely worthwhile to set the minimum
+     * surface size to the screen size to avoid surface resize when entering and exiting fullscreen.
+     * It is safe to call this before Views are initialized.
+     * Note Android does have a max size limit on Surfaces which applies here as well; this
+     * generally should not be larger than the device screen size.
+     * Note the surface size is increased to the layout size only if both the width and height are
+     * no larger than the minimum surface size. No adjustment is made if the surface size is larger
+     * than the minimum size in one dimension and smaller in the other dimension.
+     */
+    @Override
+    public void setMinimumSurfaceSize(int width, int height) {
+        mHandler.post(() -> mEventHandler.setMinimumSurfaceSize(width, height));
+    }
 }

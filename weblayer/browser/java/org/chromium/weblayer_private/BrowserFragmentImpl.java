@@ -36,6 +36,9 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     private final ProfileImpl mProfile;
     private final String mPersistenceId;
 
+    private int mMinimumSurfaceWidth;
+    private int mMinimumSurfaceHeight;
+
     private BrowserImpl mBrowser;
 
     // The embedder's original context object. Only use this to resolve resource IDs provided by the
@@ -64,6 +67,8 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
         if (mBrowser != null) { // On first creation, onAttach is called before onCreate
             mBrowser.onFragmentAttached(mEmbedderActivityContext,
                     new FragmentWindowAndroid(getWebLayerContext(), this));
+            mBrowser.getViewController().setMinimumSurfaceSize(
+                    mMinimumSurfaceWidth, mMinimumSurfaceHeight);
         }
     }
 
@@ -167,6 +172,16 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     @Override
     protected View getContentViewRenderView() {
         return mBrowser.getViewController().getView();
+    }
+
+    @Override
+    protected void setMinimumSurfaceSize(int width, int height) {
+        StrictModeWorkaround.apply();
+        mMinimumSurfaceWidth = width;
+        mMinimumSurfaceHeight = height;
+        BrowserViewController viewController = mBrowser.getPossiblyNullViewController();
+        if (viewController == null) return;
+        viewController.setMinimumSurfaceSize(width, height);
     }
 
     @Nullable

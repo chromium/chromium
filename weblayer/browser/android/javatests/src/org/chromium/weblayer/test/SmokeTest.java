@@ -71,16 +71,6 @@ public class SmokeTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(89)
-    public void testSetMinimumSurfaceSize() {
-        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { activity.getBrowser().setMinimumSurfaceSize(100, 200); });
-        // Nothing to check here.
-    }
-
-    @Test
-    @SmallTest
     public void testActivityShouldNotLeak() {
         ReferenceQueue<InstrumentationActivity> referenceQueue = new ReferenceQueue<>();
         PhantomReference<InstrumentationActivity> reference;

@@ -82,6 +82,8 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
         return null;
     }
 
+    protected void setMinimumSurfaceSize(int width, int height) {}
+
     // TODO(crbug/1378606): Either remove below methods together with callers or provide a client
     // implementation on weblayer side.
     protected boolean startActivityForResult(Intent intent, int requestCode, Bundle options) {
@@ -199,5 +201,11 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     public final IObjectWrapper handleGetContentViewRenderView() {
         StrictModeWorkaround.apply();
         return ObjectWrapper.wrap(getContentViewRenderView());
+    }
+
+    @Override
+    public final void handleSetMinimumSurfaceSize(int width, int height) {
+        StrictModeWorkaround.apply();
+        setMinimumSurfaceSize(width, height);
     }
 }

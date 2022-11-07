@@ -161,6 +161,16 @@ abstract class RemoteFragmentEventHandler {
         }
     }
 
+    @CallSuper
+    protected void setMinimumSurfaceSize(int width, int height) {
+        ThreadCheck.ensureOnUiThread();
+        try {
+            mRemoteFragment.handleSetMinimumSurfaceSize(width, height);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     protected IRemoteFragment getRemoteFragment() {
         return mRemoteFragment;
     }
