@@ -1306,10 +1306,6 @@ if (!is_ios) {
     "--no-show-results",
     "--zero-tests-executed-ok",
     "--clobber-old-results",
-    "--exit-after-n-failures",
-    "5000",
-    "--exit-after-n-crashes-or-timeouts",
-    "100",
   ]
 
   # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md

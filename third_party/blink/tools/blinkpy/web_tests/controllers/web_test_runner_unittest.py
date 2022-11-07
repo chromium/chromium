@@ -125,8 +125,8 @@ class WebTestRunnerTests(unittest.TestCase):
 
     def test_interrupt_if_at_failure_limits(self):
         runner = self._runner()
-        runner._options.exit_after_n_failures = None
-        runner._options.exit_after_n_crashes_or_times = None
+        runner._exit_after_n_failures = 0
+        runner._exit_after_n_crashes_or_times = 0
         test_names = ['passes/text.html', 'passes/image.html']
         runner._test_inputs = [
             TestInput(test_name, timeout_ms=6000) for test_name in test_names
@@ -137,16 +137,16 @@ class WebTestRunnerTests(unittest.TestCase):
         run_results.unexpected_failures = 100
         run_results.unexpected_crashes = 50
         run_results.unexpected_timeouts = 50
-        # No exception when the exit_after* options are None.
+        # No exception when the exit_after* parameters are 0.
         runner._interrupt_if_at_failure_limits(run_results)
 
         # No exception when we haven't hit the limit yet.
-        runner._options.exit_after_n_failures = 101
-        runner._options.exit_after_n_crashes_or_timeouts = 101
+        runner._exit_after_n_failures = 101
+        runner._exit_after_n_crashes_or_timeouts = 101
         runner._interrupt_if_at_failure_limits(run_results)
 
         # Interrupt if we've exceeded either limit:
-        runner._options.exit_after_n_crashes_or_timeouts = 10
+        runner._exit_after_n_crashes_or_timeouts = 10
         with self.assertRaises(TestRunInterruptedException):
             runner._interrupt_if_at_failure_limits(run_results)
         self.assertEqual(run_results.results_by_name['passes/text.html'].type,
@@ -154,8 +154,8 @@ class WebTestRunnerTests(unittest.TestCase):
         self.assertEqual(run_results.results_by_name['passes/image.html'].type,
                          'SKIP')
 
-        runner._options.exit_after_n_crashes_or_timeouts = None
-        runner._options.exit_after_n_failures = 10
+        runner._exit_after_n_crashes_or_timeouts = 0
+        runner._exit_after_n_failures = 10
         with self.assertRaises(TestRunInterruptedException):
             runner._interrupt_if_at_failure_limits(run_results)
 
