@@ -113,6 +113,7 @@ class RootFrameViewport;
 class ScrollableArea;
 class Scrollbar;
 class ScrollingCoordinator;
+class TapFriendlinessChecker;
 class TransformState;
 class LocalFrameUkmAggregator;
 class WebPluginContainerImpl;
@@ -707,6 +708,7 @@ class CORE_EXPORT LocalFrameView final
     return mobile_friendliness_checker_;
   }
   void DidChangeMobileFriendliness(const MobileFriendliness& mf);
+  void RegisterTapEvent(Element* target);
 
   // Returns the UKM aggregator for this frame's local root, creating it if
   // necessary.
@@ -1155,6 +1157,8 @@ class CORE_EXPORT LocalFrameView final
 
   // Non-null in the outermost main frame of an ordinary page only.
   Member<MobileFriendlinessChecker> mobile_friendliness_checker_;
+
+  Member<TapFriendlinessChecker> tap_friendliness_checker_;
 
   HeapHashSet<WeakMember<LifecycleNotificationObserver>> lifecycle_observers_;
 

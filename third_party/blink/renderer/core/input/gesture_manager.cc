@@ -336,6 +336,10 @@ WebInputEventResult GestureManager::HandleGestureTap(
       click_event_result =
           mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
               click_target_element, event_type_names::kClick, fake_mouse_up);
+
+      // Dispatching a JS event could have detached the frame.
+      if (frame_->View())
+        frame_->View()->RegisterTapEvent(tapped_element);
     }
     mouse_event_manager_->SetClickElement(nullptr);
   }

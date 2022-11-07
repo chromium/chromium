@@ -13089,6 +13089,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="MobileFriendliness.TappedBadTargets">
+  <owner>kumagi@google.com</owner>
+  <owner>gaul@google.com</owner>
+  <metric name="CloseDisplayEdge" enum="Boolean">
+    <summary>
+      The distance from the center position of tapped target to display's edge
+      is less than 5mm.
+    </summary>
+  </metric>
+  <metric name="HighlyZoomed" enum="Boolean">
+    <summary>
+      Whether the page is manually 100%+ zoomed when tapped.
+    </summary>
+  </metric>
+  <metric name="TooClose" enum="Boolean">
+    <summary>
+      Whether the center of the tapped tap target is close less than 5mm to
+      other tap target's edge.
+    </summary>
+  </metric>
+  <metric name="TooSmall" enum="Boolean">
+    <summary>
+      Whether the tapped tap target is small as both width and height is less
+      than 7mm.
+    </summary>
+  </metric>
+  <metric name="Zoomed" enum="Boolean">
+    <summary>
+      Whether the page is manually 20%+ zoomed when tapped.
+    </summary>
+  </metric>
+</event>
+
 <event name="MobileMenu.DirectShare">
   <owner>sayman@chromium.org</owner>
   <summary>

@@ -162,7 +162,6 @@
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
 #include "third_party/blink/renderer/core/loader/prerender_handle.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
-#include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_controller.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"

@@ -1005,6 +1005,8 @@ TEST_F(DocumentTest, PrefersColorSchemeChanged) {
 }
 
 TEST_F(DocumentTest, FindInPageUkm) {
+  // TODO(https://crbug.com/1380257): Find a better way than swapping the UKM
+  // recorder.
   GetDocument().ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
   auto* recorder =
       static_cast<ukm::TestUkmRecorder*>(GetDocument().UkmRecorder());
