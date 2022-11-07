@@ -41,9 +41,6 @@ defaults.properties.set({
     "perf_dashboard_machine_group": "ChromiumWebRTC",
 })
 
-# TODO(crbug.com/1362440): remove this.
-defaults.omit_python2.set(False)
-
 # Builders are defined in lexicographic order by name
 
 builder(
