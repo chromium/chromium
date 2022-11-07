@@ -908,7 +908,8 @@ id<GREYMatcher> AddBookmarkButton() {
                     error:&error];
     return error == nil;
   };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(10, condition),
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10),
+                                                          condition),
              @"Waiting for bookmark to go away");
 
   // Press undo

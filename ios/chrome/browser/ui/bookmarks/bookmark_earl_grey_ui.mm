@@ -198,7 +198,8 @@ id<GREYMatcher> SearchIconButton() {
                     error:&error];
     return error == nil;
   };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(10, condition),
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10),
+                                                          condition),
              @"Waiting for bookmark to go away");
 }
 
@@ -211,9 +212,9 @@ id<GREYMatcher> SearchIconButton() {
                     error:&error];
     return error == nil;
   };
-  EG_TEST_HELPER_ASSERT_TRUE(
-      base::test::ios::WaitUntilConditionOrTimeout(10, condition),
-      @"Waiting for undo toast to go away");
+  EG_TEST_HELPER_ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+                                 base::Seconds(10), condition),
+                             @"Waiting for undo toast to go away");
 }
 
 - (void)renameBookmarkFolderWithFolderTitle:(NSString*)folderTitle {
@@ -673,7 +674,8 @@ id<GREYMatcher> SearchIconButton() {
                       error:&error];
       return error == nil;
     };
-    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(10, condition),
+    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10),
+                                                            condition),
                @"Waiting for textfield to go away");
   }
 }
