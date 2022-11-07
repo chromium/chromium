@@ -170,6 +170,7 @@ export enum I18nString {
   RECORD_VIDEO_STOP_BUTTON = 'record_video_stop_button',
   ROTATE_CLOCKWISE_BUTTON = 'rotate_clockwise_button',
   ROTATE_COUNTERCLOCKWISE_BUTTON = 'rotate_counterclockwise_button',
+  SCAN_BUTTON = 'scan_button',
   SCAN_DOCUMENT_OPTION = 'scan_document_option',
   SCAN_QRCODE_OPTION = 'scan_qrcode_option',
   SELECT_PAGE_BUTTON = 'select_page_button',

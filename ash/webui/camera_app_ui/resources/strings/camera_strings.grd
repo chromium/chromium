@@ -305,6 +305,9 @@
       <message desc="Label for the shutter button to take photo." name="IDS_TAKE_PHOTO_BUTTON">
         Take photo
       </message>
+      <message desc="Label for the shutter button to scan." name="IDS_SCAN_BUTTON">
+        Scan
+      </message>
       <message desc="Error message shown when it was impossible to connect to the camera due to unavailability." name="IDS_ERROR_MSG_NO_CAMERA">
         Your camera is currently unavailable.
         Please check if the camera is properly connected.

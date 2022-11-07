@@ -213,6 +213,7 @@ export class Camera extends View implements CameraViewUI {
     this.cameraManager.registerCameraUI({
       onTryingNewConfig: (config: CameraConfig) => {
         this.updateModeUI(config.mode);
+        this.updateShutterLabel(config.mode);
       },
       onUpdateConfig: async (config: CameraConfig) => {
         nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
@@ -260,6 +261,7 @@ export class Camera extends View implements CameraViewUI {
         if (el.checked) {
           const mode = util.assertEnumVariant(Mode, el.dataset['mode']);
           this.updateModeUI(mode);
+          this.updateShutterLabel(mode);
           state.set(state.State.MODE_SWITCHING, true);
           const isSuccess = await this.cameraManager.switchMode(mode);
           state.set(state.State.MODE_SWITCHING, false, {hasError: !isSuccess});
@@ -315,6 +317,14 @@ export class Camera extends View implements CameraViewUI {
       top: 0,
       behavior: 'smooth',
     });
+  }
+
+  private updateShutterLabel(mode: Mode) {
+    const element = dom.get('#start-takephoto', HTMLButtonElement);
+    const label =
+        mode === 'scan' ? I18nString.SCAN_BUTTON : I18nString.TAKE_PHOTO_BUTTON;
+    element.setAttribute('i18n-label', label);
+    element.setAttribute('aria-label', getI18nMessage(label));
   }
 
   private initVideoEncoderOptions() {
