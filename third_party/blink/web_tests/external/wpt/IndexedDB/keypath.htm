@@ -135,6 +135,10 @@
         [ { name: "orange", type: { name: "fruit" }}, { name: "orange", type: { name: "telecom" }} ],
         [ ["orange", "fruit"], ["orange", "telecom" ] ]);
 
+    keypath(['type'],
+        [ { name: "orange", type: "fruit" }, { name: "cucumber", type: "vegetable" } ],
+        [ ["fruit"], ["vegetable"] ], "list with 1 field");
+
     loop_array = [];
     loop_array.push(loop_array);
     keypath(loop_array,

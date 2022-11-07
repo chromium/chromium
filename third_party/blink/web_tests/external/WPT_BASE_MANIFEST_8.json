@@ -365803,7 +365803,7 @@
      []
     ],
     "helpers.js": [
-     "b8e653d3d48d4418add4dd2c8d11062ff566745f",
+     "6076f7ae1482cee814e3e90ee8f9baf791361263",
      []
     ],
     "requestStorageAccess.sub.window.js.ini": [
@@ -373722,10 +373722,6 @@
      "19c90910bd6bfa03d8263cb00360ab444c399fbe",
      []
     ],
-    "hardware-capability-stats.https-expected.txt": [
-     "c9b3b159f1231f72569f3decad1138cac09174e7",
-     []
-    ],
     "hardware-capability-stats.https.html.ini": [
      "6246f956fc955bbf7b01676f11de5996ececf238",
      []
@@ -373738,12 +373734,12 @@
      "90f1d62ee4fa69c67fc483e06641c5371128a036",
      []
     ],
-    "supported-stats-expected.txt": [
-     "fa2ca102cc6e78578627aa8c32a678505fec6e6e",
-     []
-    ],
     "supported-stats.html.ini": [
      "34866ef8f673fe44df5656aa9ba7bcae6596c134",
+     []
+    ],
+    "supported-stats.https-expected.txt": [
+     "97e519b873bdfcd5391436b703aaec1902580699",
      []
     ]
    },
@@ -383431,14 +383427,14 @@
      ]
     ],
     "idbindex_keyPath.any.js": [
-     "628ffabcb4511038bf006abd799c032e21b77aac",
+     "40721462a35803ffe44ace342102e1bf7541c298",
      [
       "IndexedDB/idbindex_keyPath.any.html",
       {
        "script_metadata": [
         [
          "title",
-         "IndexedDB: IDBIndex keyPath attribute - same object"
+         "IndexedDB: IDBIndex keyPath attribute"
         ],
         [
          "script",
@@ -383453,7 +383449,7 @@
        "script_metadata": [
         [
          "title",
-         "IndexedDB: IDBIndex keyPath attribute - same object"
+         "IndexedDB: IDBIndex keyPath attribute"
         ],
         [
          "script",
@@ -384901,7 +384897,7 @@
      ]
     ],
     "keypath.htm": [
-     "be896b5d233fbe765b6fe64bab276f28ce193b44",
+     "06f5947d35c8d92dcf235e3b21c72ee0dd2eb0dc",
      [
       null,
       {}
@@ -549558,8 +549554,34 @@
       }
      ]
     ],
+    "pending_beacon-sendondiscard.tentative.https.window.js": [
+     "55704388b7c6fe070bb9de3e7c44e165f2b434ea",
+     [
+      "pending-beacon/pending_beacon-sendondiscard.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "pending_beacon-sendonhidden.tentative.https.window.js": [
-     "5fca0a6e63a97cb2c0892d51f35bf61fc801964b",
+     "8d7ff24e3f87d150cd7bdd5e5d2139aaa1128680",
      [
       "pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html",
       {
@@ -578765,7 +578787,7 @@
      ]
     ],
     "requestStorageAccess.sub.window.js": [
-     "bc2e9ab914ad60fc5bc2bab6a2c8393f7db27493",
+     "ba3c30faa98688b5f8280fdbd79c80240ae39fd3",
      [
       "storage-access-api/requestStorageAccess.sub.window.html",
       {
@@ -605398,8 +605420,8 @@
       {}
      ]
     ],
-    "supported-stats.html": [
-     "02c24ba5d2c9043c6dd8393465a2b9a510636b33",
+    "supported-stats.https.html": [
+     "2fdd3ad9094cc6436232d4d8ea78b379d4bfb480",
      [
       null,
       {
@@ -617965,7 +617987,7 @@
      ]
     ],
     "datagrams.https.any.js": [
-     "32da926db50652baababb76f01948bb07996bbbe",
+     "b96b36fc369f1dbb929ce0f44dcf7ae18ffc8e22",
      [
       "webtransport/datagrams.https.any.html",
       {
@@ -618225,7 +618247,7 @@
      ]
     ],
     "streams-echo.https.any.js": [
-     "8ec698e7a49537e91f8a7ff439e85d97c8d6ee0d",
+     "32781419ebf7bd83d376419ca07e2829196ed4db",
      [
       "webtransport/streams-echo.https.any.html",
       {
