@@ -371,7 +371,7 @@ void AutocompleteResult::SortAndCull(
 
   // Limit URL matches per OmniboxMaxURLMatches.
   size_t max_url_count = 0;
-  bool is_zero_suggest =
+  const bool is_zero_suggest =
       input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   if (OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() &&
       (max_url_count = OmniboxFieldTrial::GetMaxURLMatches()) != 0)
@@ -571,10 +571,9 @@ void AutocompleteResult::AttachPedalsToMatches(
   for (size_t i = 0; i < max_index && pedals_found.size() < kMaxPedalCount;
        i++) {
     AutocompleteMatch& match = matches_[i];
-    // Skip matches that have already detected their Pedal, and avoid attaching
-    // to matches with types that don't mix well with Pedals (e.g. entities).
-    if (match.action ||
-        !AutocompleteMatch::IsActionCompatibleType(match.type)) {
+    // Skip matches that already have an `action` or are not suitable
+    // for actions.
+    if (match.action || !match.IsActionCompatible()) {
       continue;
     }
 

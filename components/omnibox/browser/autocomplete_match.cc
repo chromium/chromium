@@ -790,20 +790,6 @@ bool AutocompleteMatch::IsSearchHistoryType(Type type) {
          type == AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED;
 }
 
-// static
-bool AutocompleteMatch::IsActionCompatibleType(Type type) {
-  // Note: There is a PEDAL type, but it is deprecated because Pedals always
-  // attach to matches of other types instead of creating dedicated matches.
-  return type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
-         // Attaching to Tail Suggest types looks weird, and is actually
-         // technically wrong because the Pedals annotator (and history clusters
-         // annotator) both use match.contents. If we do want to turn on Actions
-         // for tail suggest in the future, we should switch to using
-         // match.fill_into_edit or maybe page title for URL matches, and come
-         // up with a UI design for the button in the tail suggest layout.
-         type != AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
-}
-
 bool AutocompleteMatch::IsStarterPackType(Type type) {
   return type == AutocompleteMatchType::STARTER_PACK;
 }
@@ -1110,6 +1096,17 @@ bool AutocompleteMatch::IsDocumentSuggestion() {
   if (docs_url.is_valid())
     stripped_destination_url = docs_url;
   return docs_url.is_valid();
+}
+
+bool AutocompleteMatch::IsActionCompatible() const {
+  return type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
+         // Attaching to Tail Suggest types looks weird, and is actually
+         // technically wrong because the Pedals annotator (and history clusters
+         // annotator) both use match.contents. If we do want to turn on Actions
+         // for tail suggest in the future, we should switch to using
+         // match.fill_into_edit or maybe page title for URL matches, and come
+         // up with a UI design for the button in the tail suggest layout.
+         type != AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
 }
 
 void AutocompleteMatch::GetKeywordUIState(
@@ -1429,9 +1426,8 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 
   from_previous = from_previous && duplicate_match.from_previous;
 
-  // Take the |action|, if any, so that it will be presented instead of buried.
-  if (!action && duplicate_match.action &&
-      AutocompleteMatch::IsActionCompatibleType(type)) {
+  // Take the `action`, if any, so that it will be presented instead of buried.
+  if (!action && duplicate_match.action && IsActionCompatible()) {
     action = duplicate_match.action;
     duplicate_match.action = nullptr;
   }

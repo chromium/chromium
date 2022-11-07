@@ -386,9 +386,6 @@ struct AutocompleteMatch {
   // usually this surfaces a clock icon to the user.
   static bool IsSearchHistoryType(Type type);
 
-  // Returns true if matches with given `type` may be attach an `action`.
-  static bool IsActionCompatibleType(Type type);
-
   // Returns whether this match is a starter pack suggestion provided by the
   // built-in provider. This is the suggestion that the starter pack keyword
   // mode chips attach to.
@@ -483,6 +480,11 @@ struct AutocompleteMatch {
   // Returns whether `destination_url` looks like a doc URL. If so, will also
   // set `stripped_destination_url` to avoid repeating the computation later.
   bool IsDocumentSuggestion();
+
+  // Returns true if this match may attach an `action`.
+  // This method is used to keep actions off of matches with types that don't
+  // mix well with Pedals or other actions (e.g. entities).
+  bool IsActionCompatible() const;
 
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match.  If this match represents a selected keyword, i.e.
