@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_LACROS_STANDALONE_BROWSER_TEST_CONTROLLER_H_
 #define CHROME_BROWSER_LACROS_STANDALONE_BROWSER_TEST_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "chromeos/crosapi/mojom/tts.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -37,7 +39,14 @@ class StandaloneBrowserTestController
 
   void GetExtensionKeeplist(GetExtensionKeeplistCallback callback) override;
 
+  void TtsSpeak(crosapi::mojom::TtsUtterancePtr mojo_utterance,
+                mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
+                    utterance_client) override;
+
  private:
+  class LacrosUtteranceEventDelegate;
+
+  void OnUtteranceFinished(int utterance_id);
   void WebAppInstallationDone(InstallWebAppCallback callback,
                               const web_app::AppId& installed_app_id,
                               webapps::InstallResultCode code);
@@ -47,6 +56,10 @@ class StandaloneBrowserTestController
 
   mojo::Receiver<crosapi::mojom::StandaloneBrowserTestController>
       controller_receiver_{this};
+
+  // Lacros utterance event delegates by utterance id.
+  std::map<int, std::unique_ptr<LacrosUtteranceEventDelegate>>
+      lacros_utterance_event_delegates_;
 
   base::WeakPtrFactory<StandaloneBrowserTestController> weak_ptr_factory_{this};
 };

@@ -55,6 +55,11 @@ interface StandaloneBrowserTestController {
   // Returns Ash extension keeplist data from Lacros.
   [MinVersion=3]
   GetExtensionKeeplist@3() => (ExtensionKeepList keep_list);
+
+  // Requests Tts(text to speech) to speak an utterance from Lacros browser.
+  [MinVersion=4]
+  TtsSpeak@4(TtsUtterance utterance,
+             pending_remote<TtsUtteranceClient> utterance_client);
 };
 
 // Allows callers running in lacros to trigger test events that are passed to

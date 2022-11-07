@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "content/public/browser/tts_controller.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -186,6 +187,10 @@ void GetAllVoicesForTesting(content::BrowserContext* browser_context,
                             std::vector<content::VoiceData>* out_voices) {
   content::TtsController::GetInstance()->GetVoices(
       ProfileManager::GetActiveUserProfile(), GURL(), out_voices);
+}
+
+void SpeakForTesting(std::unique_ptr<content::TtsUtterance> utterance) {
+  content::TtsController::GetInstance()->SpeakOrEnqueue(std::move(utterance));
 }
 
 }  // namespace tts_crosapi_util
