@@ -6,6 +6,7 @@
 #include "media/base/vector_math_testing.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "base/check_op.h"
 #include "base/cpu.h"
