@@ -202,8 +202,9 @@ bool TrySetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
 #if BUILDFLAG(ENABLE_PKEYS)
-  return 0 == PkeyMprotect(reinterpret_cast<void*>(address), length,
-                           GetAccessFlags(accessibility), accessibility.pkey);
+  return 0 == PkeyMprotectIfEnabled(reinterpret_cast<void*>(address), length,
+                                    GetAccessFlags(accessibility),
+                                    accessibility.pkey);
 #else
   return 0 == PA_HANDLE_EINTR(mprotect(reinterpret_cast<void*>(address), length,
                                        GetAccessFlags(accessibility)));
@@ -216,8 +217,9 @@ void SetSystemPagesAccessInternal(
     PageAccessibilityConfiguration accessibility) {
   int access_flags = GetAccessFlags(accessibility);
 #if BUILDFLAG(ENABLE_PKEYS)
-  int ret = PkeyMprotect(reinterpret_cast<void*>(address), length,
-                         GetAccessFlags(accessibility), accessibility.pkey);
+  int ret =
+      PkeyMprotectIfEnabled(reinterpret_cast<void*>(address), length,
+                            GetAccessFlags(accessibility), accessibility.pkey);
 #else
   int ret = PA_HANDLE_EINTR(mprotect(reinterpret_cast<void*>(address), length,
                                      GetAccessFlags(accessibility)));

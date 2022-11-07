@@ -27,21 +27,17 @@ bool CPUHasPkeySupport() {
   return base::CPU::GetInstanceNoAllocation().has_pku();
 }
 
+PkeySettings PkeySettings::settings PA_PKEY_ALIGN;
+
 int PkeyMprotect(void* addr, size_t len, int prot, int pkey) {
-  if (PA_UNLIKELY(CPUHasPkeySupport())) {
-    // The pkey_mprotect syscall is supported from Linux 4.9. If the CPU is
-    // recent enough to have PKU support, then it's likely that we also run on a
-    // more recent kernel. But fall back to mprotect if the syscall is not
-    // available and pkey is 0.
-    // Note that we can't use mprotect as the default for the pkey == 0 case,
-    // since we can temporarily change the pkey back to 0 on some globals.
-    int ret = syscall(SYS_pkey_mprotect, addr, len, prot, pkey);
-    if (PA_LIKELY(ret == 0))
-      return ret;
-    if (errno != ENOSYS)
-      return ret;
-    // fall through if syscall doesn't exist
+  return syscall(SYS_pkey_mprotect, addr, len, prot, pkey);
+}
+
+int PkeyMprotectIfEnabled(void* addr, size_t len, int prot, int pkey) {
+  if (PA_UNLIKELY(PkeySettings::settings.enabled)) {
+    return PkeyMprotect(addr, len, prot, pkey);
   }
+
   PA_CHECK(pkey == 0);
 
   return mprotect(addr, len, prot);
@@ -72,7 +68,41 @@ void TagGlobalsWithPkey(int pkey) {
       GetReservationOffsetTable(kPkeyPoolHandle);
   TagMemoryWithPkey(pkey, pkey_reservation_offset_table,
                     ReservationOffsetTable::kReservationOffsetTableLength);
+
+  TagVariableWithPkey(pkey, PkeySettings::settings);
 }
+
+uint32_t Rdpkru() {
+  uint32_t pkru;
+  asm volatile(".byte 0x0f,0x01,0xee\n" : "=a"(pkru) : "c"(0), "d"(0));
+  return pkru;
+}
+
+void Wrpkru(uint32_t pkru) {
+  asm volatile(".byte 0x0f,0x01,0xef\n" : : "a"(pkru), "c"(0), "d"(0));
+}
+
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+
+LiftPkeyRestrictionsScope::LiftPkeyRestrictionsScope()
+    : saved_pkey_value_(kDefaultPkeyValue) {
+  if (!PkeySettings::settings.enabled)
+    return;
+  saved_pkey_value_ = Rdpkru();
+  if (saved_pkey_value_ != kDefaultPkeyValue) {
+    Wrpkru(kAllowAllPkeyValue);
+  }
+}
+
+LiftPkeyRestrictionsScope::~LiftPkeyRestrictionsScope() {
+  if (!PkeySettings::settings.enabled)
+    return;
+  if (Rdpkru() != saved_pkey_value_) {
+    Wrpkru(saved_pkey_value_);
+  }
+}
+
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 }  // namespace partition_alloc::internal
 

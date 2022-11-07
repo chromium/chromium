@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/spinning_mutex.h"
 #include "build/build_config.h"
 
@@ -24,6 +25,10 @@ class PA_LOCKABLE Lock {
   inline constexpr Lock();
   void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION() {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_PKEYS)
+    LiftPkeyRestrictionsScope lift_pkey_restrictions;
+#endif
+
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
     // instance, a DCHECK() triggers in external code (such as
     // base::Lock). DCHECK() error message formatting allocates, which triggers
@@ -69,6 +74,9 @@ class PA_LOCKABLE Lock {
   void AssertAcquired() const PA_ASSERT_EXCLUSIVE_LOCK() {
     lock_.AssertAcquired();
 #if BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_PKEYS)
+    LiftPkeyRestrictionsScope lift_pkey_restrictions;
+#endif
     PA_DCHECK(owning_thread_ref_.load(std ::memory_order_acquire) ==
               base::PlatformThread::CurrentRef());
 #endif

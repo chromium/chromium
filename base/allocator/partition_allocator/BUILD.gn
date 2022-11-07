@@ -40,6 +40,12 @@ if (is_fuchsia) {
   }
 }
 
+if (enable_pkeys && is_debug) {
+  config("no_stack_protector") {
+    cflags = [ "-fno-stack-protector" ]
+  }
+}
+
 component("partition_alloc") {
   sources = [
     "address_pool_manager.cc",
@@ -350,6 +356,12 @@ component("partition_alloc") {
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_speed" ]
+  }
+
+  # We want to be able to test pkey mode without access to the default pkey.
+  # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
+  if (enable_pkeys && is_debug) {
+    configs += [ ":no_stack_protector" ]
   }
 }
 
