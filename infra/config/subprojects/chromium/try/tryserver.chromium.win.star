@@ -191,6 +191,9 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
@@ -214,9 +217,6 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
     experiments = {
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
