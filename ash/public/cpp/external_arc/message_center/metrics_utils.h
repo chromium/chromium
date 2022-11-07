@@ -34,6 +34,9 @@ void LogArcNotificationInlineReplyEnabled(bool inline_reply_enabled);
 // Logs the style of Arc rich notification.
 void LogArcNotificationStyle(arc::mojom::ArcNotificationStyle style);
 
+// Logs if the notification is custom notification.
+void LogArcNotificationIsCustomNotification(bool is_custom_notification);
+
 }  // namespace ash::metrics_utils
 
 #endif  // ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_METRICS_UTILS_H_

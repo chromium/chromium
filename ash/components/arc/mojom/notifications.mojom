@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 28
+// Next MinVersion: 29
 
 module arc.mojom;
 
@@ -188,6 +188,8 @@ struct ArcNotificationData {
   // available for the user to trigger remote input.
   [MinVersion=27]
   bool is_inline_reply_enabled;
+  [MinVersion=28]
+  bool is_custom_notification;
 };
 
 struct ArcDoNotDisturbStatus {

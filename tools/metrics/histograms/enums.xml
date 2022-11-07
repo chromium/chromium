@@ -12720,6 +12720,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Is Add-to-cart"/>
 </enum>
 
+<enum name="BooleanIsCustomNotification">
+  <int value="0" label="Not Custom Notification"/>
+  <int value="1" label="Is Custom Notification"/>
+</enum>
+
 <enum name="BooleanIsDarkColorScheme">
   <summary>
     A boolean for whether the web content is dark or light color scheme

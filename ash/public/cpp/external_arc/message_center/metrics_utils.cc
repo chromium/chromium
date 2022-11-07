@@ -25,4 +25,9 @@ void LogArcNotificationStyle(arc::mojom::ArcNotificationStyle style) {
   base::UmaHistogramEnumeration("Arc.Notifications.Style", style);
 }
 
+void LogArcNotificationIsCustomNotification(bool is_custom_notification) {
+  base::UmaHistogramBoolean("Arc.Notifications.IsCustomNotification",
+                            is_custom_notification);
+}
+
 }  // namespace ash::metrics_utils

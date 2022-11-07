@@ -1543,6 +1543,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Notifications.IsCustomNotification"
+    enum="BooleanIsCustomNotification" expires_after="2023-04-16">
+  <owner>shuminghao@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records whether an Arc notification is custom notification or not.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Notifications.Style" enum="ArcNotificationStyle"
     expires_after="2023-04-16">
   <owner>yaoqq@google.com</owner>

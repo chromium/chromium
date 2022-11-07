@@ -34,6 +34,8 @@ constexpr char kHistogramNameExpandState[] = "Arc.Notifications.ExpandState";
 constexpr char kHistogramNameStyle[] = "Arc.Notifications.Style";
 constexpr char kHistogramNameInlineReplyEnabled[] =
     "Arc.Notifications.InlineReplyEnabled";
+constexpr char kHistogramNameIsCustomNotification[] =
+    "Arc.Notifications.IsCustomNotification";
 
 class TestArcAppIdProvider : public ArcAppIdProvider {
  public:
@@ -338,6 +340,7 @@ TEST_F(ArcNotificationManagerTest,
   histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 0);
   histogram_tester.ExpectTotalCount(kHistogramNameStyle, 0);
   histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 0);
+  histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 0);
 
   // Create notification
   std::string key = CreateNotification();
@@ -345,6 +348,7 @@ TEST_F(ArcNotificationManagerTest,
   histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameStyle, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 1);
+  histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 1);
 
   // Update notification
   CreateNotificationWithKey(key);
@@ -352,6 +356,7 @@ TEST_F(ArcNotificationManagerTest,
   histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameStyle, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 1);
+  histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 1);
 }
 
 }  // namespace ash
