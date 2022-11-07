@@ -1550,7 +1550,12 @@ void FrameLoader::DispatchDidClearDocumentOfWindowObject() {
 
   Settings* settings = frame_->GetSettings();
   LocalDOMWindow* window = frame_->DomWindow();
-  if (settings && settings->GetForceMainWorldInitialization()) {
+  if ((settings && settings->GetForceMainWorldInitialization()) ||
+      // When replaying the ForceMainWorldInitialization may be set even
+      // if it wasn't when recording, as additional CDP inspector features
+      // are enabled when replaying. Do the initialization when recording
+      // as well for consistency.
+      recordreplay::IsRecordingOrReplaying("initialize-window-proxy")) {
     // Forcibly instantiate WindowProxy, even if script is disabled.
     window->GetScriptController().WindowProxy(DOMWrapperWorld::MainWorld());
   }
