@@ -433,20 +433,28 @@ NotificationListView::NotificationListView(
 }
 
 NotificationListView::~NotificationListView() {
-  DCHECK(model_);
-  model_->ClearNotificationChanges();
-  for (auto* view : children())
-    AsMVC(view)->StoreExpandedState(model_.get());
+  if (!features::IsQsRevampEnabled()) {
+    model_->ClearNotificationChanges();
+    for (auto* view : children())
+      AsMVC(view)->StoreExpandedState(model_.get());
+  }
 }
 
 void NotificationListView::Init() {
-  DCHECK(model_);
   bool is_latest = true;
   for (auto* notification :
        message_center_utils::GetSortedNotificationsWithOwnView()) {
     auto* view =
         new MessageViewContainer(CreateMessageView(*notification), this);
-    view->LoadExpandedState(model_.get(), is_latest);
+
+    // TODO(b/252876795): We cannot use the `UnifiedSystemTrayModel` to store
+    // the expanded state for notifications with QsRevamp since it is owned by
+    // `UnifiedSystemTray` and  notifications are being completely separated
+    // from it. Implement a way to remember collase/expand state for
+    // notifications across popups and notification center.
+    if (!features::IsQsRevampEnabled())
+      view->LoadExpandedState(model_.get(), is_latest);
+
     // The insertion order for notifications will be reversed when
     // is_notifications_refresh_enabled_.
     AddChildViewAt(view,
@@ -1031,7 +1039,9 @@ void NotificationListView::InterruptClearAll() {
 }
 
 void NotificationListView::DeleteRemovedNotifications() {
-  DCHECK(model_);
+  if (!features::IsQsRevampEnabled())
+    DCHECK(model_);
+
   views::View::Views removed_views;
   base::ranges::copy_if(children(), std::back_inserter(removed_views),
                         [](const auto* v) { return AsMVC(v)->is_removed(); });
@@ -1039,7 +1049,8 @@ void NotificationListView::DeleteRemovedNotifications() {
   {
     base::AutoReset<bool> auto_reset(&is_deleting_removed_notifications_, true);
     for (auto* view : removed_views) {
-      model_->RemoveNotificationExpanded(AsMVC(view)->GetNotificationId());
+      if (!features::IsQsRevampEnabled())
+        model_->RemoveNotificationExpanded(AsMVC(view)->GetNotificationId());
       message_view_multi_source_observation_.RemoveObservation(
           AsMVC(view)->message_view());
       delete view;

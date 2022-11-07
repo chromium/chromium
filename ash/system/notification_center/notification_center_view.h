@@ -66,9 +66,10 @@ class ASH_EXPORT NotificationCenterView
  public:
   METADATA_HEADER(NotificationCenterView);
 
-  NotificationCenterView(UnifiedSystemTrayView* parent,
-                         scoped_refptr<UnifiedSystemTrayModel> model,
-                         UnifiedMessageCenterBubble* bubble);
+  explicit NotificationCenterView(
+      UnifiedSystemTrayView* parent = nullptr,
+      scoped_refptr<UnifiedSystemTrayModel> model = nullptr,
+      UnifiedMessageCenterBubble* bubble = nullptr);
 
   NotificationCenterView(const NotificationCenterView&) = delete;
   NotificationCenterView& operator=(const NotificationCenterView&) = delete;
@@ -166,6 +167,7 @@ class ASH_EXPORT NotificationCenterView
   bool collapsed() { return collapsed_; }
 
  private:
+  friend class NotificationCenterTrayTest;
   friend class NotificationCenterViewTest;
   friend class UnifiedMessageCenterBubbleTest;
 

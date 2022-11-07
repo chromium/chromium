@@ -1492,6 +1492,8 @@ component("ash") {
     "system/night_light/night_light_controller_impl.h",
     "system/night_light/night_light_feature_pod_controller.cc",
     "system/night_light/night_light_feature_pod_controller.h",
+    "system/notification_center/notification_center_bubble.cc",
+    "system/notification_center/notification_center_bubble.h",
     "system/notification_center/notification_center_tray.cc",
     "system/notification_center/notification_center_tray.h",
     "system/notification_center/notification_center_view.cc",

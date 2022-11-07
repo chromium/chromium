@@ -63,6 +63,7 @@ class StackedNotificationBar : public views::View,
  private:
   class StackedNotificationBarIcon;
   friend class NotificationCenterViewTest;
+  friend class NotificationCenterTrayTest;
 
   // Clean up icon view after it's removal animation is complete, adds an icon
   // for `notification` if needed. Called from a callback registered in

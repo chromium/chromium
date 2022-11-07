@@ -5,15 +5,18 @@
 #ifndef ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_CENTER_TRAY_H_
 #define ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_CENTER_TRAY_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/notification_icons_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class Widget;
@@ -29,7 +32,8 @@ class TrayBubbleView;
 // opens a bubble with a scrollable list of all current notifications.
 class ASH_EXPORT NotificationCenterTray
     : public TrayBackgroundView,
-      public message_center::MessageCenterObserver {
+      public message_center::MessageCenterObserver,
+      public views::WidgetObserver {
  public:
   METADATA_HEADER(NotificationCenterTray);
 
@@ -55,6 +59,7 @@ class ASH_EXPORT NotificationCenterTray
  private:
   friend class NotificationCounterViewTest;
   friend class NotificationIconsControllerTest;
+  friend class NotificationCenterTrayTest;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
@@ -65,6 +70,9 @@ class ASH_EXPORT NotificationCenterTray
                              bool by_user) override;
   void OnNotificationUpdated(const std::string& notification_id) override;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   // Update the visibility of the tray button based on available notifications.
   // If there are no notifications the tray button should be hidden and shown
   // otherwise.
@@ -74,7 +82,7 @@ class ASH_EXPORT NotificationCenterTray
   const std::unique_ptr<NotificationIconsController>
       notification_icons_controller_;
 
-  // TODO(1311738): Add NotificationCenterBubble.
+  std::unique_ptr<NotificationCenterBubble> bubble_;
 
   // The notification center tray can only be shown along side the system and
   // date tray. This flag keeps track of the system tray's visibility being set

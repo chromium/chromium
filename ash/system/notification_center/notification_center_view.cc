@@ -100,11 +100,14 @@ NotificationCenterView::NotificationCenterView(
 }
 
 NotificationCenterView::~NotificationCenterView() {
-  DCHECK(model_);
-  model_->set_notification_target_mode(
-      UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION);
+  if (!features::IsQsRevampEnabled()) {
+    // `NotificationCenterView` should always open with the newest notification
+    // on top with QsRevamp enabled so we do not need to store the scroll state.
+    model_->set_notification_target_mode(
+        UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION);
 
-  RemovedFromWidget();
+    RemovedFromWidget();
+  }
 }
 
 void NotificationCenterView::Init() {
@@ -192,6 +195,10 @@ void NotificationCenterView::ClearAllNotifications() {
 }
 
 void NotificationCenterView::ExpandMessageCenter() {
+  // With QsRevamp enabled the `NotificationCenterView` only has a single fully
+  // expanded state so we do not need this toggle.
+  DCHECK(!features::IsQsRevampEnabled());
+
   base::RecordAction(
       base::UserMetricsAction("StatusArea_Notifications_SeeAllNotifications"));
   message_center_bubble_->ExpandMessageCenter();
@@ -218,6 +225,14 @@ void NotificationCenterView::OnNotificationSlidOut() {
 }
 
 void NotificationCenterView::ListPreferredSizeChanged() {
+  // TODO(b/252888173): With QsRevamp enabled size changes for the notification
+  // center should be handled by an AnimationBuilder. The previous
+  // implementation uses a layout based animation whenever
+  // `PreferredSizeChanged()` is called which results in choppy performance and
+  // jank.
+  if (features::IsQsRevampEnabled())
+    return;
+
   UpdateVisibility();
   PreferredSizeChanged();
   SetMaxHeight(available_height_);
@@ -232,12 +247,20 @@ void NotificationCenterView::ConfigureMessageView(
 }
 
 void NotificationCenterView::AddedToWidget() {
+  // No custom focus behavior needed with QsRevamp enabled so we do not need to
+  // add a focus change listener.
+  if (features::IsQsRevampEnabled())
+    return views::View::AddedToWidget();
+
   focus_manager_ = GetFocusManager();
   if (focus_manager_)
     focus_manager_->AddFocusChangeListener(this);
 }
 
 void NotificationCenterView::RemovedFromWidget() {
+  if (features::IsQsRevampEnabled())
+    return views::View::RemovedFromWidget();
+
   if (!focus_manager_)
     return;
   focus_manager_->RemoveFocusChangeListener(this);
@@ -305,6 +328,9 @@ gfx::Size NotificationCenterView::CalculatePreferredSize() const {
 }
 
 void NotificationCenterView::OnMessageCenterScrolled() {
+  if (features::IsQsRevampEnabled())
+    return;
+
   last_scroll_position_from_bottom_ =
       scroll_bar_->GetMaxPosition() - scroller_->GetVisibleRect().y();
 
@@ -328,6 +354,11 @@ void NotificationCenterView::OnWillChangeFocus(views::View* before,
 
 void NotificationCenterView::OnDidChangeFocus(views::View* before,
                                               views::View* now) {
+  // There should be no special case behavior for focus changes once the
+  // QsRevamp feature is enabled.
+  if (features::IsQsRevampEnabled())
+    return;
+
   if (notification_list_view_->is_deleting_removed_notifications())
     return;
 
@@ -407,6 +438,11 @@ double NotificationCenterView::GetAnimationValue() const {
 }
 
 void NotificationCenterView::UpdateVisibility() {
+  // With QsRevamp enabled the visibility of the bubble will be tied to the
+  // `NotificationCenterTray` so we do not need to make any visibility changes
+  // here.
+  DCHECK(!features::IsQsRevampEnabled());
+
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
 
@@ -434,6 +470,10 @@ void NotificationCenterView::UpdateVisibility() {
 }
 
 void NotificationCenterView::ScrollToTarget() {
+  // With QsRevamp enabled we do not need to store the scroll position so this
+  // entire function should become redundant.
+  DCHECK(!features::IsQsRevampEnabled());
+
   // Following logic doesn't work when the view is invisible, because it uses
   // the height of |scroller_|.
   if (!GetVisible())
@@ -539,6 +579,9 @@ NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
 }
 
 void NotificationCenterView::FocusOut(bool reverse) {
+  // No customized focus behavior with QsRevamp.
+  DCHECK(!features::IsQsRevampEnabled());
+
   if (message_center_bubble_ && message_center_bubble_->FocusOut(reverse)) {
     GetFocusManager()->ClearFocus();
     GetFocusManager()->SetStoredFocusView(nullptr);
@@ -546,6 +589,9 @@ void NotificationCenterView::FocusOut(bool reverse) {
 }
 
 void NotificationCenterView::FocusEntered(bool reverse) {
+  // No customized focus behavior with QsRevamp.
+  DCHECK(!features::IsQsRevampEnabled());
+
   views::View* focus_view =
       reverse ? GetLastFocusableChild() : GetFirstFocusableChild();
   GetFocusManager()->ClearFocus();
