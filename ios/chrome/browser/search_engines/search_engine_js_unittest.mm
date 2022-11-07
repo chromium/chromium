@@ -4,6 +4,7 @@
 
 #import "base/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/search_engines/search_engine_java_script_feature.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
@@ -28,7 +29,7 @@ using web::test::SelectWebViewElementWithId;
 
 namespace {
 // This is for cases where no message should be sent back from Js.
-const NSTimeInterval kWaitForJsNotReturnTimeout = 0.5;
+constexpr base::TimeDelta kWaitForJsNotReturnTimeout = base::Milliseconds(500);
 
 NSString* kSearchableForm =
     @"<html>"
