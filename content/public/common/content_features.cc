@@ -533,7 +533,7 @@ const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 // Enables the TC39 Array grouping proposal.
 BASE_FEATURE(kJavaScriptArrayGrouping,
              "JavaScriptArrayGrouping",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables experimental JavaScript shared memory features.
 BASE_FEATURE(kJavaScriptExperimentalSharedMemory,
