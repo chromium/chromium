@@ -217,6 +217,11 @@ void IOSChromeMainParts::PreCreateThreads() {
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  // Convert freeform experimental settings into switches before initializing
+  // local state, in case any of the settings affect policy.
+  AppendSwitchesFromExperimentalSettings(command_line);
+
   // Get the variation IDs passed through the command line. This is done early
   // on because ConvertFlagsToSwitches() will append to the command line
   // the variation IDs from flags (so that they are visible in about://version).
@@ -229,10 +234,6 @@ void IOSChromeMainParts::PreCreateThreads() {
   const std::string command_line_variation_ids =
       command_line->GetSwitchValueASCII(
           variations::switches::kForceVariationIds);
-
-  // Convert freeform experimental settings into switches before initializing
-  // local state, in case any of the settings affect policy.
-  AppendSwitchesFromExperimentalSettings(command_line);
 
   // Initialize local state.
   local_state_ = application_context_->GetLocalState();
