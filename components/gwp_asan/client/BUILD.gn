@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//base/allocator/allocator.gni")
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 
 component("client") {
   output_name = "gwp_asan_client"

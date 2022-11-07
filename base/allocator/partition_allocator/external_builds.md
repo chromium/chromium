@@ -25,6 +25,15 @@ PartitionAlloc's build will expect them at
 In addition, something must provide `build_with_chromium = false` to
 the PA build system.
 
+## `use_partition_alloc`
+
+The `use_partition_alloc` GN arg, described in
+[`build_config.md`](./build_config.md), provides a GN-level seam that
+embedders should observe to conditionally pull in PartitionAlloc.
+I.E. please gate PartitionAlloc compilation on the truth of
+`use_partition_alloc` and avoid pulling in PartitionAlloc headers when
+the corresponding buildflag is false.
+
 ## Periodic Memory Reduction Routines
 
 PartitionAlloc provides APIs to

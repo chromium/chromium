@@ -15,27 +15,9 @@ declare_args() {
   # Causes all the allocations to be routed via allocator_shim.cc.
   use_allocator_shim = use_allocator_shim_default
 
-  # Whether PartitionAlloc should be available for use or not.
-  # true makes PartitionAlloc linked to the executable or shared library and
-  # makes it available for use. It doesn't mean that the default allocator
-  # is PartitionAlloc, which is governed by |use_partition_alloc_as_malloc|.
-  #
-  # This flag is currently set to false only on Cronet bots, because Cronet
-  # doesn't use PartitionAlloc at all, and doesn't wish to incur the library
-  # size increase (crbug.com/674570).
-  use_partition_alloc = true
-
   # RAW_PTR_EXCLUSION macro is disabled on official builds because it increased
   # binary size. This flag can be used to enable it for official builds too.
   force_enable_raw_ptr_exclusion = false
-}
-
-if (!use_partition_alloc && use_partition_alloc_as_malloc) {
-  # If there is a conflict, prioritize |use_partition_alloc| over
-  # |use_partition_alloc_as_malloc|.
-  # TODO(bartekn): Move |use_partition_alloc| to PA lib, since we'd need to
-  # override |use_partition_alloc_as_malloc| there.
-  use_partition_alloc_as_malloc = false
 }
 
 assert(
