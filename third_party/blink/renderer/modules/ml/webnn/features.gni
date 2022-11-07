@@ -4,9 +4,8 @@
 
 import("//build/config/chrome_build.gni")
 declare_args() {
-  # This enables building WebNN with XNNPACK. It is currently only available on
-  # x64 CPU because XNNPACK is only built for that.
-  # See //third_party/xnnpack/BUILD.gn
-  build_webnn_with_xnnpack =
-      (is_win || is_linux || is_chromeos || is_android) && current_cpu == "x64"
+  # This enables building WebNN with XNNPACK. Currently only available for
+  # Linux or Windows on x64 that aligns with build_tflite_with_xnnpack.
+  # See third_party/tflite/features.gni
+  build_webnn_with_xnnpack = (is_win || is_linux) && current_cpu == "x64"
 }
