@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_main_parts.h"
