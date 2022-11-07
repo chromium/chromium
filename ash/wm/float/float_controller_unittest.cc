@@ -1055,7 +1055,7 @@ TEST_F(TabletWindowFloatTest, UntuckWindowOnActivation) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
   ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
 
-  // Tests that after we activate the window, ihe window is untucked and fully
+  // Tests that after we activate the window, the window is untucked and fully
   // visible, but is still floated.
   wm::ActivateWindow(window.get());
   EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
@@ -1092,12 +1092,30 @@ TEST_F(TabletWindowFloatTest, WindowActivationAfterTuckingUntucking) {
       float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
   ASSERT_EQ(float_window.get(), window_util::GetActiveWindow());
 
-  // Tests that if tuck the floated window, the window underneath gets
-  // activation.
+  // Tests that tucking the floated window activates the window underneath.
   FlingWindow(float_window.get(), /*left=*/false, /*up=*/false);
   ASSERT_TRUE(
       float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
   EXPECT_EQ(window2.get(), window_util::GetActiveWindow());
+
+  // Untuck the floated window and minimize the other window.
+  tuck_handle_widget =
+      float_controller->GetTuckHandleWidget(float_window.get());
+  ASSERT_TRUE(tuck_handle_widget);
+  GetEventGenerator()->GestureTapAt(
+      tuck_handle_widget->GetWindowBoundsInScreen().CenterPoint());
+  ASSERT_FALSE(
+      float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
+  WindowState::Get(window2.get())->Minimize();
+  ASSERT_EQ(float_window.get(), window_util::GetActiveWindow());
+
+  // Tests that tucking the floated window activates the app list instead of
+  // activating and unminimizing the minimized window.
+  FlingWindow(float_window.get(), /*left=*/false, /*up=*/false);
+  ASSERT_TRUE(
+      float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
+  EXPECT_EQ(Shell::Get()->app_list_controller()->GetWindow(),
+            window_util::GetActiveWindow());
 }
 
 // Tests the functionality of tucking a window in tablet mode.
