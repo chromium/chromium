@@ -91,32 +91,32 @@ if (topLevelDocument) {
 
   promise_test(
       async t => {
-        const {clickPromise} = await ClickButtonWithGesture(
+        const {promise} = await RunCallbackWithGesture(
           'b1',
           () => document.requestStorageAccessForOrigin(document.location.origin));
-        return clickPromise;
+        return promise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be resolved when called properly with a user gesture and the same site');
 
   promise_test(
       async t => {
-        const {clickPromise} = await ClickButtonWithGesture(
+        const {promise} = await RunCallbackWithGesture(
           'b2',
           () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin('bogus-url'),
             'document.requestStorageAccessForOrigin() call with bogus URL'));
-        return clickPromise;
+        return promise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called with an invalid site');
 
   promise_test(
       async t => {
-        const {clickPromise} = await ClickButtonWithGesture(
+        const {promise} = await RunCallbackWithGesture(
           'b3',
           () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin('data:,Hello%2C%20World%21'),
             'document.requestStorageAccessForOrigin() call with data URL'));
-        return clickPromise;
+        return promise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called with an opaque origin');
@@ -124,12 +124,11 @@ if (topLevelDocument) {
 } else {
   promise_test(
       async t => {
-        const {clickPromise} = await ClickButtonWithGesture(
+        const {promise} = await RunCallbackWithGesture(
           'b4',
           () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin(document.location.origin),
             'document.requestStorageAccessForOrigin() call in a non-top-level context'));
-        // TODO(https://crbug.com/1379595): guarantee that `testMethod`
-        // executes, and then await `clickPromise`.
+        return promise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called in an iframe');
