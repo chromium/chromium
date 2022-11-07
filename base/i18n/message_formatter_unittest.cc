@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/unicodestring.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,10 +40,10 @@ namespace {
 
 void AppendFormattedDateTime(const std::unique_ptr<icu::DateFormat>& df,
                              const Time& now,
-                             std::string* result) {
+                             std::u16string* result) {
   icu::UnicodeString formatted;
-  df->format(static_cast<UDate>(now.ToJsTime()), formatted).
-      toUTF8String(*result);
+  result->append(UnicodeStringToString16(
+      df->format(static_cast<UDate>(now.ToJsTime()), formatted)));
 }
 
 }  // namespace
@@ -54,15 +55,15 @@ TEST_F(MessageFormatterTest, PluralNamedArgs) {
       u"=1 {I met a person in {place}.}"
       u"other {I met # people in {place}.}}";
 
-  std::string result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 0, "place", "Paris"));
-  EXPECT_EQ("I met nobody in Paris.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 1, "place", "Paris"));
-  EXPECT_EQ("I met a person in Paris.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 5, "place", "Paris"));
-  EXPECT_EQ("I met 5 people in Paris.", result);
+  std::u16string result = MessageFormatter::FormatWithNamedArgs(
+      pattern, "num_people", 0, "place", "Paris");
+  EXPECT_EQ(u"I met nobody in Paris.", result);
+  result = MessageFormatter::FormatWithNamedArgs(pattern, "num_people", 1,
+                                                 "place", "Paris");
+  EXPECT_EQ(u"I met a person in Paris.", result);
+  result = MessageFormatter::FormatWithNamedArgs(pattern, "num_people", 5,
+                                                 "place", "Paris");
+  EXPECT_EQ(u"I met 5 people in Paris.", result);
 }
 
 TEST_F(MessageFormatterTest, PluralNamedArgsWithOffset) {
@@ -74,25 +75,25 @@ TEST_F(MessageFormatterTest, PluralNamedArgsWithOffset) {
       u"=13 {I met {person} and a dozen other people in {place}.}"
       u"other {I met {person} and # other people in {place}.}}";
 
-  std::string result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 0, "place", "Paris"));
-  EXPECT_EQ("I met nobody in Paris.", result);
+  std::u16string result = MessageFormatter::FormatWithNamedArgs(
+      pattern, "num_people", 0, "place", "Paris");
+  EXPECT_EQ(u"I met nobody in Paris.", result);
   // {person} is ignored if {num_people} is 0.
-  result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 0, "place", "Paris", "person", "Peter"));
-  EXPECT_EQ("I met nobody in Paris.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 1, "place", "Paris", "person", "Peter"));
-  EXPECT_EQ("I met Peter in Paris.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 2, "place", "Paris", "person", "Peter"));
-  EXPECT_EQ("I met Peter and one other person in Paris.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 13, "place", "Paris", "person", "Peter"));
-  EXPECT_EQ("I met Peter and a dozen other people in Paris.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
-      pattern, "num_people", 50, "place", "Paris", "person", "Peter"));
-  EXPECT_EQ("I met Peter and 49 other people in Paris.", result);
+  result = MessageFormatter::FormatWithNamedArgs(
+      pattern, "num_people", 0, "place", "Paris", "person", "Peter");
+  EXPECT_EQ(u"I met nobody in Paris.", result);
+  result = MessageFormatter::FormatWithNamedArgs(
+      pattern, "num_people", 1, "place", "Paris", "person", "Peter");
+  EXPECT_EQ(u"I met Peter in Paris.", result);
+  result = MessageFormatter::FormatWithNamedArgs(
+      pattern, "num_people", 2, "place", "Paris", "person", "Peter");
+  EXPECT_EQ(u"I met Peter and one other person in Paris.", result);
+  result = MessageFormatter::FormatWithNamedArgs(
+      pattern, "num_people", 13, "place", "Paris", "person", "Peter");
+  EXPECT_EQ(u"I met Peter and a dozen other people in Paris.", result);
+  result = MessageFormatter::FormatWithNamedArgs(
+      pattern, "num_people", 50, "place", "Paris", "person", "Peter");
+  EXPECT_EQ(u"I met Peter and 49 other people in Paris.", result);
 }
 
 TEST_F(MessageFormatterTest, PluralNumberedArgs) {
@@ -102,15 +103,13 @@ TEST_F(MessageFormatterTest, PluralNumberedArgs) {
       u"=7 {The cert for {0} expired a week ago.}"
       u"other {The cert for {0} expired # days ago.}}";
 
-  std::string result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, "example.com", 1));
-  EXPECT_EQ("The cert for example.com expired yesterday.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, "example.com", 7));
-  EXPECT_EQ("The cert for example.com expired a week ago.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, "example.com", 15));
-  EXPECT_EQ("The cert for example.com expired 15 days ago.", result);
+  std::u16string result =
+      MessageFormatter::FormatWithNumberedArgs(pattern, "example.com", 1);
+  EXPECT_EQ(u"The cert for example.com expired yesterday.", result);
+  result = MessageFormatter::FormatWithNumberedArgs(pattern, "example.com", 7);
+  EXPECT_EQ(u"The cert for example.com expired a week ago.", result);
+  result = MessageFormatter::FormatWithNumberedArgs(pattern, "example.com", 15);
+  EXPECT_EQ(u"The cert for example.com expired 15 days ago.", result);
 }
 
 TEST_F(MessageFormatterTest, PluralNumberedArgsWithDate) {
@@ -123,16 +122,16 @@ TEST_F(MessageFormatterTest, PluralNumberedArgsWithDate) {
   using icu::DateFormat;
   std::unique_ptr<DateFormat> df(
       DateFormat::createDateInstance(DateFormat::FULL));
-  std::string second_sentence = " Today is ";
+  std::u16string second_sentence = u" Today is ";
   AppendFormattedDateTime(df, now, &second_sentence);
 
-  std::string result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, "example.com", 1, now));
-  EXPECT_EQ("The cert for example.com expired yesterday." + second_sentence,
+  std::u16string result =
+      MessageFormatter::FormatWithNumberedArgs(pattern, "example.com", 1, now);
+  EXPECT_EQ(u"The cert for example.com expired yesterday." + second_sentence,
             result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, "example.com", 15, now));
-  EXPECT_EQ("The cert for example.com expired 15 days ago." + second_sentence,
+  result =
+      MessageFormatter::FormatWithNumberedArgs(pattern, "example.com", 15, now);
+  EXPECT_EQ(u"The cert for example.com expired 15 days ago." + second_sentence,
             result);
 }
 
@@ -150,15 +149,16 @@ TEST_F(MessageFormatterTest, DateTimeAndNumber) {
       DateFormat::createDateInstance(DateFormat::MEDIUM));
 
   base::Time now = base::Time::Now();
-  std::string expected = "At ";
+  std::u16string expected = u"At ";
   AppendFormattedDateTime(tf, now, &expected);
-  expected.append(" on ");
+  expected.append(u" on ");
   AppendFormattedDateTime(df, now, &expected);
-  expected.append(", there was an explosion at building 3. "
-                  "The speed of the wind was 37.4 mph.");
+  expected.append(
+      u", there was an explosion at building 3. "
+      "The speed of the wind was 37.4 mph.");
 
-  EXPECT_EQ(expected, UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, now, "an explosion", 3, 37.413)));
+  EXPECT_EQ(expected, MessageFormatter::FormatWithNumberedArgs(
+                          pattern, now, "an explosion", 3, 37.413));
 }
 
 TEST_F(MessageFormatterTest, SelectorSingleOrMultiple) {
@@ -168,17 +168,15 @@ TEST_F(MessageFormatterTest, SelectorSingleOrMultiple) {
       u"multiple {Select files to upload.}"
       u"other {UNUSED}}";
 
-  std::string result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, "single"));
-  EXPECT_EQ("Select a file to upload.", result);
-  result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, "multiple"));
-  EXPECT_EQ("Select files to upload.", result);
+  std::u16string result =
+      MessageFormatter::FormatWithNumberedArgs(pattern, "single");
+  EXPECT_EQ(u"Select a file to upload.", result);
+  result = MessageFormatter::FormatWithNumberedArgs(pattern, "multiple");
+  EXPECT_EQ(u"Select files to upload.", result);
 
   // fallback if a parameter is not selectors specified in the message pattern.
-  result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
-      pattern, "foobar"));
-  EXPECT_EQ("UNUSED", result);
+  result = MessageFormatter::FormatWithNumberedArgs(pattern, "foobar");
+  EXPECT_EQ(u"UNUSED", result);
 }
 
 }  // namespace i18n
