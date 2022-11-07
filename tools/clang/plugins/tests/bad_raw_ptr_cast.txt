@@ -1,0 +1,19 @@
+bad_raw_ptr_cast.cpp:11:44: error: [chromium-raw-ptr-cast] Casting raw_ptr<T>* to another type is not allowed as it may cause BRP ref count mismatch and bypass security checks.
+  void* bar = reinterpret_cast<void*>(&foo_);
+                                           ^
+bad_raw_ptr_cast.cpp:12:29: error: [chromium-raw-ptr-cast] Casting raw_ptr<T>* to another type is not allowed as it may cause BRP ref count mismatch and bypass security checks.
+  bar = static_cast<void*>(&foo_);
+                            ^
+bad_raw_ptr_cast.cpp:13:17: error: [chromium-raw-ptr-cast] Casting raw_ptr<T>* to another type is not allowed as it may cause BRP ref count mismatch and bypass security checks.
+  bar = (void*)&foo_;
+                ^
+bad_raw_ptr_cast.cpp:15:10: error: [chromium-raw-ptr-cast] Casting raw_ptr<T>* to another type is not allowed as it may cause BRP ref count mismatch and bypass security checks.
+  bar = &foo_;
+         ^
+bad_raw_ptr_cast.cpp:16:14: error: [chromium-raw-ptr-cast] Casting raw_ptr<T>* to another type is not allowed as it may cause BRP ref count mismatch and bypass security checks.
+  my_memcpy(&foo_, &foo_);
+             ^
+bad_raw_ptr_cast.cpp:16:21: error: [chromium-raw-ptr-cast] Casting raw_ptr<T>* to another type is not allowed as it may cause BRP ref count mismatch and bypass security checks.
+  my_memcpy(&foo_, &foo_);
+                    ^
+6 errors generated.
