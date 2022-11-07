@@ -11,6 +11,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -231,7 +232,7 @@ TEST_F(AnimationWorkletProxyClientTest,
   EXPECT_TRUE(proxy_client->mutator_items_.empty());
 
   scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      scheduler::GetSingleThreadTaskRunnerForTesting();
   auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
       mutator_task_runner);
 

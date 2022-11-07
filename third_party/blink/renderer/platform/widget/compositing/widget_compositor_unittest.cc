@@ -10,6 +10,7 @@
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 
@@ -83,7 +84,8 @@ class WidgetCompositorTest : public cc::LayerTreeTest {
 
     widget_base_ = std::make_unique<WidgetBase>(
         /*widget_base_client=*/&client_, widget_host_remote.Unbind(),
-        std::move(widget_receiver), base::ThreadTaskRunnerHandle::Get(),
+        std::move(widget_receiver),
+        scheduler::GetSingleThreadTaskRunnerForTesting(),
         /*is_hidden=*/false,
         /*never_composited=*/false,
         /*is_for_child_local_root=*/false,

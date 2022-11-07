@@ -8,6 +8,7 @@
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
@@ -40,7 +41,7 @@ void WebGPURecyclableResourceCacheTest::SetUp() {
 
   recyclable_resource_cache_ = std::make_unique<WebGPURecyclableResourceCache>(
       SharedGpuContext::ContextProviderWrapper(),
-      base::ThreadTaskRunnerHandle::Get());
+      scheduler::GetSingleThreadTaskRunnerForTesting());
 }
 
 void WebGPURecyclableResourceCacheTest::TearDown() {

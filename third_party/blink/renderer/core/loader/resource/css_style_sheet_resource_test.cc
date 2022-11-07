@@ -68,7 +68,8 @@ ResourceFetcher* CreateFetcher() {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
       properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
-      base::ThreadTaskRunnerHandle::Get(), base::ThreadTaskRunnerHandle::Get(),
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
       MakeGarbageCollected<NoopLoaderFactory>(),
       MakeGarbageCollected<MockContextLifecycleNotifier>(),
       nullptr /* back_forward_cache_loader_helper */));

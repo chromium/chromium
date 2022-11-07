@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 
@@ -152,7 +153,7 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
     sii_ = provider->SharedImageInterface();
 
     dawn_control_client_ = base::MakeRefCounted<DawnControlClientHolder>(
-        std::move(provider), base::ThreadTaskRunnerHandle::Get());
+        std::move(provider), scheduler::GetSingleThreadTaskRunnerForTesting());
 
     provider_ = base::MakeRefCounted<WebGPUSwapBufferProviderForTests>(
         &provider_alive_, &client_, fake_device_, dawn_control_client_, kUsage,

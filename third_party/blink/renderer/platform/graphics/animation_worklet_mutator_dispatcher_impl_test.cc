@@ -10,6 +10,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -99,7 +100,7 @@ class AnimationWorkletMutatorDispatcherImplTest : public ::testing::Test {
  public:
   void SetUp() override {
     auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
-        base::ThreadTaskRunnerHandle::Get());
+        scheduler::GetSingleThreadTaskRunnerForTesting());
     mutator_ = mutator.get();
     client_ =
         std::make_unique<::testing::StrictMock<MockCompositorMutatorClient>>(

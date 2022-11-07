@@ -6,8 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_TESTS_BLINK_TEST_SUITE_H_
 
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/test/blink_test_environment.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "v8/include/v8.h"
@@ -29,7 +30,8 @@ class BlinkUnitTestSuite : public Parent {
   void Shutdown() override {
     // Tickle EndOfTaskRunner which among other things will flush the queue
     // of error messages via V8Initializer::reportRejectedPromisesOnMainThread.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, base::DoNothing());
+    blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
+        FROM_HERE, base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
     // Collect garbage (including threadspecific persistent handles) in order

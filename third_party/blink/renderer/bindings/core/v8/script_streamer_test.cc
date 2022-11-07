@@ -143,7 +143,7 @@ class ScriptStreamingTest : public testing::Test {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        base::ThreadTaskRunnerHandle::Get();
+        scheduler::GetSingleThreadTaskRunnerForTesting();
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context, task_runner, task_runner,
         MakeGarbageCollected<NoopLoaderFactory>(),

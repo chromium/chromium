@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -657,7 +658,8 @@ TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
       run_loop_.QuitClosure());
   classic_script->CacheConsumer()->NotifyClientWaiting(
-      consumer_client, classic_script, base::ThreadTaskRunnerHandle::Get());
+      consumer_client, classic_script,
+      scheduler::GetSingleThreadTaskRunnerForTesting());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
   // post a task for the client to signal that it has completed, which will
@@ -701,7 +703,8 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
       run_loop_.QuitClosure());
   classic_script->CacheConsumer()->NotifyClientWaiting(
-      consumer_client, classic_script, base::ThreadTaskRunnerHandle::Get());
+      consumer_client, classic_script,
+      scheduler::GetSingleThreadTaskRunnerForTesting());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
   // post a task for the client to signal that it has completed, which will
@@ -751,7 +754,8 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
       run_loop_.QuitClosure());
   classic_script->CacheConsumer()->NotifyClientWaiting(
-      consumer_client, classic_script, base::ThreadTaskRunnerHandle::Get());
+      consumer_client, classic_script,
+      scheduler::GetSingleThreadTaskRunnerForTesting());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
   // post a task for the client to signal that it has completed, which will

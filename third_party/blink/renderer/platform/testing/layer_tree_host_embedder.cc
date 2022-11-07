@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 
 namespace blink {
 
@@ -22,7 +22,7 @@ LayerTreeHostEmbedder::LayerTreeHostEmbedder(
   cc::LayerTreeHost::InitParams params;
   params.client = client ? client : &layer_tree_host_client_;
   params.settings = &settings;
-  params.main_task_runner = base::ThreadTaskRunnerHandle::Get();
+  params.main_task_runner = scheduler::GetSingleThreadTaskRunnerForTesting();
   params.task_graph_runner = &task_graph_runner_;
   params.mutator_host = animation_host_.get();
 

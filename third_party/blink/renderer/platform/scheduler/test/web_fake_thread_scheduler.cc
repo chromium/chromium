@@ -5,9 +5,9 @@
 #include "third_party/blink/public/platform/scheduler/test/web_fake_thread_scheduler.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_agent_group_scheduler_scheduler.h"
@@ -25,7 +25,7 @@ std::unique_ptr<MainThread> WebFakeThreadScheduler::CreateMainThread() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 WebFakeThreadScheduler::CompositorTaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
+  return GetSingleThreadTaskRunnerForTesting();
 }
 
 std::unique_ptr<WebAgentGroupScheduler>
