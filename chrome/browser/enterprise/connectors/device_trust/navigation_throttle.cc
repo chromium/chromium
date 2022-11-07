@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
@@ -35,8 +36,6 @@ namespace {
 
 constexpr char kErrorPropertyName[] = "error";
 constexpr char kSpecificErrorCodePropertyName[] = "code";
-
-constexpr base::TimeDelta kDeviceTrustTimeout = base::Minutes(1);
 
 const std::string CreateErrorJsonString(
     const DeviceTrustResponse& dt_response) {
@@ -193,7 +192,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
           FROM_HERE,
           base::BindOnce(&DeviceTrustNavigationThrottle::OnResponseTimedOut,
                          weak_ptr_factory_.GetWeakPtr(), start_time),
-          kDeviceTrustTimeout);
+          timeouts::kHandshakeTimeout);
 
       is_resumed_ = false;
       return DEFER;

@@ -15,6 +15,7 @@ source_set("commands") {
   public_deps = [ "//base" ]
 
   deps = [
+    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//components/prefs",
     "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
@@ -90,6 +91,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//testing/gtest",
   ]
 

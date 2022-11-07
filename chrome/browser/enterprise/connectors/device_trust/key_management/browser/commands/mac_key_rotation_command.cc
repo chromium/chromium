@@ -15,6 +15,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
@@ -88,6 +89,9 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
   // Used to ensure that this function is being called on the main thread.
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // Parallel usage of command objects is not supported.
+  DCHECK(!pending_callback_);
+
   if (!client_->VerifySecureEnclaveSupported()) {
     SYSLOG(ERROR) << "Device trust key rotation failed. The secure enclave is "
                      "not supported.";
@@ -104,10 +108,17 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
     return;
   }
 
-  auto rotation_result_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&MacKeyRotationCommand::OnKeyRotated,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  pending_callback_ = std::move(callback);
+
+  timeout_timer_.Start(
+      FROM_HERE, timeouts::kProcessWaitTimeout,
+      base::BindOnce(&MacKeyRotationCommand::OnKeyRotationTimeout,
+                     weak_factory_.GetWeakPtr()));
+
+  auto rotation_result_callback =
+      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                         base::BindOnce(&MacKeyRotationCommand::OnKeyRotated,
+                                        weak_factory_.GetWeakPtr()));
 
   // Kicks off the key rotation process in a worker thread.
   background_task_runner_->PostTask(
@@ -116,14 +127,20 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                                 std::move(rotation_result_callback)));
 }
 
-void MacKeyRotationCommand::OnKeyRotated(KeyRotationCommand::Callback callback,
-                                         KeyRotationManager::Result result) {
+void MacKeyRotationCommand::OnKeyRotated(KeyRotationManager::Result result) {
   // Used to ensure that this function is being called on the main thread.
   SEQUENCE_CHECKER(sequence_checker_);
 
+  if (!pending_callback_) {
+    // The callback may have already run in timeout cases.
+    return;
+  }
+
+  timeout_timer_.Stop();
+
   if (result == KeyRotationManager::Result::FAILED) {
     SYSLOG(ERROR) << "Device trust key rotation failed.";
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    std::move(pending_callback_).Run(KeyRotationCommand::Status::FAILED);
     return;
   }
 
@@ -131,11 +148,23 @@ void MacKeyRotationCommand::OnKeyRotated(KeyRotationCommand::Callback callback,
     SYSLOG(ERROR) << "Device trust key rotation failed. Conflict "
                      "with the key that exists on the server.";
     local_prefs_->SetBoolean(kDeviceTrustDisableKeyCreationPref, true);
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED_KEY_CONFLICT);
+    std::move(pending_callback_)
+        .Run(KeyRotationCommand::Status::FAILED_KEY_CONFLICT);
     return;
   }
 
-  std::move(callback).Run(KeyRotationCommand::Status::SUCCEEDED);
+  std::move(pending_callback_).Run(KeyRotationCommand::Status::SUCCEEDED);
+}
+
+void MacKeyRotationCommand::OnKeyRotationTimeout() {
+  // Used to ensure that this function is being called on the main thread.
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // A callback should still be available to be run.
+  DCHECK(pending_callback_);
+
+  SYSLOG(ERROR) << "Device trust key rotation timed out.";
+  std::move(pending_callback_).Run(KeyRotationCommand::Status::TIMED_OUT);
 }
 
 }  // namespace enterprise_connectors

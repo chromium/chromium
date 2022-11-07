@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -21,7 +23,7 @@
 namespace enterprise_connectors {
 namespace {
 
-constexpr int kMaxRetryCount = 10;
+constexpr int kMaxRetryCount = 7;
 
 }  // namespace
 
@@ -85,6 +87,7 @@ void MojoKeyNetworkDelegate::SendPublicKeyToDmServer(
   url_loader_->AttachStringForUpload(body, "application/octet-stream");
   url_loader_->SetRetryOptions(
       kMaxRetryCount, network::SimpleURLLoader::RetryMode::RETRY_ON_5XX);
+  url_loader_->SetTimeoutDuration(timeouts::kKeyUploadTimeout);
   url_loader_->DownloadHeadersOnly(
       shared_url_loader_factory_.get(),
       base::BindOnce(&MojoKeyNetworkDelegate::OnURLLoaderComplete,

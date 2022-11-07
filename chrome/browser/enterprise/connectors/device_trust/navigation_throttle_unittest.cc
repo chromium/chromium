@@ -9,10 +9,12 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
@@ -38,9 +40,13 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
+namespace enterprise_connectors {
+
 namespace {
 
-constexpr base::TimeDelta kTimeoutTime = base::Minutes(2);
+// Add a couple of seconds to the exact timeout time.
+const base::TimeDelta kTimeoutTime =
+    timeouts::kHandshakeTimeout + base::Seconds(2);
 
 base::Value::List GetTrustedUrls() {
   base::Value::List trusted_urls;
@@ -70,8 +76,6 @@ scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
 }
 
 }  // namespace
-
-namespace enterprise_connectors {
 
 class DeviceTrustNavigationThrottleTest : public testing::Test {
  public:

@@ -12,7 +12,8 @@
 namespace enterprise_connectors {
 
 // Interface for classes that handle kicking-off device trust key rotation
-// commands. There is an implementation for each platform.
+// commands. There is an implementation for each platform. Command instances are
+// not meant for parallel usages.
 class KeyRotationCommand {
  public:
   // Completion status of the rotate command, passed as an argument to the

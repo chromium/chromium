@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/windows_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "google_update/google_update_idl.h"
@@ -118,7 +119,7 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
   // If the call requires the return code of the elevated command, poll until
   // we get it.  Waiting for 10 seconds with a polling frenquency of 1 second
   // are pretty arbitrary choices.
-  base::Time wait_until = base::Time::Now() + base::Seconds(10);
+  base::Time wait_until = base::Time::Now() + timeouts::kProcessWaitTimeout;
   UINT status = COMMAND_STATUS_INIT;
   while (base::Time::Now() < wait_until) {
     hr = app_command->get_status(&status);

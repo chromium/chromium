@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/win_network_fetcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/win_network_fetcher_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/util.h"
@@ -22,16 +23,25 @@ namespace enterprise_connectors {
 
 namespace {
 
+// The retry values set here account for 7 retried requests over a period of
+// approximately 25.5 seconds. Requests are sent at:
+// - 0s
+// - 0.5s
+// - 1s
+// - 2s
+// - 4s
+// - 8s
+// - 10s
+constexpr int kMaxRetryCount = 7;
+
 constexpr net::BackoffEntry::Policy kBackoffPolicy{
     .num_errors_to_ignore = 0,
-    .initial_delay_ms = 1000,
+    .initial_delay_ms = 500,
     .multiply_factor = 2.0,
     .jitter_factor = 0.1,
-    .maximum_backoff_ms = 5 * 60 * 1000,  // 5 min.
+    .maximum_backoff_ms = 10 * 1000,  // 10 seconds.
     .entry_lifetime_ms = -1,
     .always_use_initial_delay = false};
-
-constexpr int kMaxRetryCount = 10;
 
 }  // namespace
 
@@ -56,7 +66,8 @@ void WinKeyNetworkDelegate::SendPublicKeyToDmServer(
     const std::string& body,
     UploadKeyCompletedCallback upload_key_completed_callback) {
   // Parallel requests are not supported.
-  DCHECK_EQ(backoff_entry_.failure_count(), 0);
+  DCHECK(!win_network_fetcher_);
+
   base::flat_map<std::string, std::string> headers;
   headers.emplace("Authorization", "GoogleDMToken token=" + dm_token);
   win_network_fetcher_ =
@@ -91,7 +102,10 @@ void WinKeyNetworkDelegate::FetchCompleted(
   base::UmaHistogramCustomCounts(
       "Enterprise.DeviceTrust.RotateSigningKey.Tries",
       backoff_entry_.failure_count(), 1, kMaxRetryCount, kMaxRetryCount + 1);
-  backoff_entry_.InformOfRequest(/*succeeded=*/true);
+
+  backoff_entry_.Reset();
+  win_network_fetcher_.reset();
+
   std::move(upload_key_completed_callback).Run(response_code);
 }
 

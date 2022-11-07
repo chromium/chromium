@@ -48,12 +48,13 @@ constexpr char kFakeDMServerUrl2[] =
 constexpr char kFakeDMToken1[] = "fake-browser-dm-token-1";
 constexpr char kFakeDMToken2[] = "fake-browser-dm-token-2";
 
-constexpr char kUmaHistogramName[] =
+constexpr char kUploadTriesHistogramName[] =
     "Enterprise.DeviceTrust.RotateSigningKey.Tries";
 
 constexpr HttpResponseCode kSuccessCode = 200;
 constexpr HttpResponseCode kHardFailureCode = 400;
 constexpr HttpResponseCode kTransientFailureCode = 500;
+constexpr int kMaxRetryCount = 7;
 
 }  // namespace
 
@@ -127,7 +128,7 @@ TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_Success) {
   base::HistogramTester histogram_tester;
   TestRequest(kSuccessCode, 3, kFakeBody1, kFakeDMToken1,
               GURL(kFakeDMServerUrl1));
-  histogram_tester.ExpectUniqueSample(kUmaHistogramName, 3, 1);
+  histogram_tester.ExpectUniqueSample(kUploadTriesHistogramName, 3, 1);
 }
 
 // Test the key upload request by transiently failing 3 times before
@@ -137,16 +138,17 @@ TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_PermanentFailure) {
   base::HistogramTester histogram_tester;
   TestRequest(kHardFailureCode, 3, kFakeBody1, kFakeDMToken1,
               GURL(kFakeDMServerUrl1));
-  histogram_tester.ExpectUniqueSample(kUmaHistogramName, 3, 1);
+  histogram_tester.ExpectUniqueSample(kUploadTriesHistogramName, 3, 1);
 }
 
 // Test the exponential backoff by transiently failing max times.
 // 500 error codes are treated as transient failures.
 TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_TransientFailure) {
   base::HistogramTester histogram_tester;
-  TestRequest(kTransientFailureCode, 10, kFakeBody1, kFakeDMToken1,
+  TestRequest(kTransientFailureCode, kMaxRetryCount, kFakeBody1, kFakeDMToken1,
               GURL(kFakeDMServerUrl1));
-  histogram_tester.ExpectUniqueSample(kUmaHistogramName, 10, 1);
+  histogram_tester.ExpectUniqueSample(kUploadTriesHistogramName, kMaxRetryCount,
+                                      1);
 }
 
 // Tests multiple send public key requests. The mocked network fetcher
@@ -155,11 +157,11 @@ TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_MulitpleRequests) {
   base::HistogramTester histogram_tester;
   TestRequest(kSuccessCode, 1, kFakeBody1, kFakeDMToken1,
               GURL(kFakeDMServerUrl1));
-  histogram_tester.ExpectUniqueSample(kUmaHistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(kUploadTriesHistogramName, 1, 1);
 
   TestRequest(kHardFailureCode, 1, kFakeBody2, kFakeDMToken2,
               GURL(kFakeDMServerUrl2));
-  histogram_tester.ExpectUniqueSample(kUmaHistogramName, 1, 2);
+  histogram_tester.ExpectUniqueSample(kUploadTriesHistogramName, 1, 2);
 }
 
 }  // namespace enterprise_connectors

@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_DEVICE_TRUST_CONSTANTS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_DEVICE_TRUST_CONSTANTS_H_
 
-namespace enterprise_connectors::errors {
+#include "base/time/time.h"
+
+namespace enterprise_connectors {
+
+namespace errors {
 
 extern const char kMissingCoreSignals[];
 extern const char kMissingSigningKey[];
@@ -23,6 +27,16 @@ extern const char kTimeout[];
 extern const char kFailedToParseChallenge[];
 extern const char kFailedToCreateResponse[];
 
-}  // namespace enterprise_connectors::errors
+}  // namespace errors
+
+namespace timeouts {
+
+extern const base::TimeDelta kHandshakeTimeout;
+extern const base::TimeDelta kProcessWaitTimeout;
+extern const base::TimeDelta kKeyUploadTimeout;
+
+}  // namespace timeouts
+
+}  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_DEVICE_TRUST_CONSTANTS_H_

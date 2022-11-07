@@ -32,6 +32,7 @@ source_set("network") {
     sources += [ "mojo_key_network_delegate.cc" ]
 
     deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/common",
       "//mojo/public/cpp/bindings",
       "//mojo/public/cpp/platform",
       "//services/network/public/cpp",
