@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/main/test",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/safe_mode",
+    "//ios/chrome/browser/variations:fetcher",
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser:browser",
@@ -234,6 +235,7 @@ source_set("safe_mode_app_state_agent") {
 source_set("variations_app_state_agent") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "variations_app_state_agent+testing.h",
     "variations_app_state_agent.h",
     "variations_app_state_agent.mm",
   ]
@@ -245,6 +247,8 @@ source_set("variations_app_state_agent") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/variations:fetcher",
   ]
 }
 

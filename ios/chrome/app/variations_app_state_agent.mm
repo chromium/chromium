@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/app/variations_app_state_agent.h"
+#import "ios/chrome/app/variations_app_state_agent+testing.h"
 
 #import "base/mac/foundation_util.h"
 #import "base/time/time.h"
@@ -12,7 +13,9 @@
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,15 +61,20 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 
 }  // namespace
 
-// TODO(crbug.com/1372180): Implement
-// IOSChromeVariationsSeedFetcherDelegate.
-@interface VariationsAppStateAgent () {
+@interface VariationsAppStateAgent () <IOSChromeVariationsSeedFetcherDelegate> {
+  // Whether the app is running the first time after launch.
+  BOOL _firstRun;
   // Caches the previous activation level.
   SceneActivationLevel _previousActivationLevel;
-  // Whether the variations seed has been fetched.
-  BOOL _seedFetched;
+  // Whether the variations seed fetch has completed.
+  BOOL _seedFetchCompleted;
   // Whether the extended launch screen is shown.
   BOOL _extendedLaunchScreenShown;
+  // The fetcher object used to fetch the seed.
+  IOSChromeVariationsSeedFetcher* _fetcher;
+  // Whether finch seed should be fetched on first run.
+  // TODO(crbug.com/1380164): rewrite with field trial group assignment.
+  BOOL _featureEnabled;
 }
 
 @end
@@ -74,14 +82,27 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 @implementation VariationsAppStateAgent
 
 - (instancetype)init {
+  return [self initWithFirstRunStatus:ShouldPresentFirstRunExperience()
+                              fetcher:nil
+                       featureEnabled:NO];
+}
+
+- (instancetype)initWithFirstRunStatus:(BOOL)firstRun
+                               fetcher:(IOSChromeVariationsSeedFetcher*)fetcher
+                        featureEnabled:(BOOL)enabled {
   self = [super init];
   if (self) {
+    _firstRun = firstRun;
+    _featureEnabled = enabled;
     _previousActivationLevel = SceneActivationLevelUnattached;
-    _seedFetched = NO;
+    _seedFetchCompleted = NO;
     _extendedLaunchScreenShown = NO;
     RecordSeedFreshness();
     if ([self shouldFetchVariationsSeed]) {
-      // TODO(crbug.com/1372180): start seed fetch and a timeout timer.
+      _fetcher =
+          fetcher ? fetcher : [[IOSChromeVariationsSeedFetcher alloc] init];
+      _fetcher.delegate = self;
+      [_fetcher startSeedFetch];
     }
   }
   return self;
@@ -94,7 +115,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
   if (self.appState.initStage == InitStageVariationsSeed) {
     // Keep waiting for the seed if the app should have variations seed fetched
     // but hasn't.
-    if (![self shouldFetchVariationsSeed] || _seedFetched) {
+    if (![self shouldFetchVariationsSeed] || _seedFetchCompleted) {
       [self.appState queueTransitionToNextInitStage];
     }
   }
@@ -125,8 +146,10 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 #pragma mark - IOSChromeVariationsSeedFetcherDelegate
 
 - (void)didFetchSeedSuccess:(BOOL)succeeded {
+  DCHECK([self shouldFetchVariationsSeed]);
   DCHECK_LE(self.appState.initStage, InitStageVariationsSeed);
-  _seedFetched = YES;
+  _seedFetchCompleted = YES;
+  _fetcher.delegate = nil;
   if (self.appState.initStage == InitStageVariationsSeed) {
     [self.appState queueTransitionToNextInitStage];
   }
@@ -136,8 +159,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 
 // Returns whether the variations seed should be fetched.
 - (BOOL)shouldFetchVariationsSeed {
-  return self.appState.startupInformation.isFirstRun &&
-         [self shouldTurnOnFeature];
+  return _firstRun && _featureEnabled;
 }
 
 // TODO(crbug.com/1372180): Replace this method by actual method that sets up a
@@ -147,7 +169,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 }
 
 // Show a view that mocks the launch screen. This should only be called when the
-// scene is active on the foreground but the seed has not been fetched to
+// scene will be active on the foreground but the seed has not been fetched to
 // initialize Chrome.
 - (void)showExtendedLaunchScreen:(SceneState*)sceneState {
   DCHECK(sceneState.window);
