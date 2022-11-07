@@ -151,8 +151,8 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.CookieControlsSetting" enum="CookieControlsMode"
-    expires_after="never">
+<histogram name="Privacy.CookieControlsSetting{RegularProfileFiltered}"
+    enum="CookieControlsMode" expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->
 
   <owner>dullweber@chromium.org</owner>
@@ -161,7 +161,22 @@ reviewer.
     Whether third-party cookies are blocked in incognito mode or completely.
     Recorded at the Profile startup. In case that &quot;Block all cookies&quot;
     is selected in settings, this metric records BlockThirdParty.
+
+    This histogram is only recorded {RegularProfileFiltered}.
   </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-109. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M109. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name=".RegularProfile"
+        summary="from version M-109. It is recorded only for regular profiles"/>
+  </token>
 </histogram>
 
 <histogram name="Privacy.CookiesInUseDialog.Action"
@@ -269,8 +284,9 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.ThirdPartyCookieBlockingSetting" enum="BooleanEnabled"
-    expires_after="never">
+<histogram
+    name="Privacy.ThirdPartyCookieBlockingSetting{RegularProfileFiltered}"
+    enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->
 
   <owner>mkwst@chromium.org</owner>
@@ -282,7 +298,22 @@ reviewer.
 
     Previously recorded as the &quot;ThirdPartyCookieBlockingEnabled&quot; and
     &quot;ThirdPartyCookieBlockingDisabled&quot; actions.
+
+    This histogram is only recorded {RegularProfileFiltered}.
   </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-109. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M109. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name=".RegularProfile"
+        summary="from version M-109. It is recorded only for regular profiles"/>
+  </token>
 </histogram>
 
 <histogram

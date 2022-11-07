@@ -19,6 +19,10 @@
 #include "extensions/common/constants.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
+
 using content_settings::CookieControlsMode;
 
 // static
@@ -56,14 +60,25 @@ CookieSettingsFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
 
-  // Record cookie setting histograms.
-  auto cookie_controls_mode = static_cast<CookieControlsMode>(
-      prefs->GetInteger(prefs::kCookieControlsMode));
-  base::UmaHistogramBoolean(
-      "Privacy.ThirdPartyCookieBlockingSetting",
-      cookie_controls_mode == CookieControlsMode::kBlockThirdParty);
-  base::UmaHistogramEnumeration("Privacy.CookieControlsSetting",
-                                cookie_controls_mode);
+  bool should_record_metrics = profile->IsRegularProfile();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various irregular profiles (login, lock screen...); they
+  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
+  // used to browse the web and users can't configure. Don't collect metrics
+  // about them.
+  should_record_metrics =
+      should_record_metrics && ash::ProfileHelper::IsUserProfile(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  if (should_record_metrics) {
+    // Record cookie setting histograms.
+    auto cookie_controls_mode = static_cast<CookieControlsMode>(
+        prefs->GetInteger(prefs::kCookieControlsMode));
+    base::UmaHistogramBoolean(
+        "Privacy.ThirdPartyCookieBlockingSetting.RegularProfile",
+        cookie_controls_mode == CookieControlsMode::kBlockThirdParty);
+    base::UmaHistogramEnumeration(
+        "Privacy.CookieControlsSetting.RegularProfile", cookie_controls_mode);
+  }
 
   const char* extension_scheme =
 #if BUILDFLAG(ENABLE_EXTENSIONS)
