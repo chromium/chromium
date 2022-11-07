@@ -1557,6 +1557,27 @@ TEST_F(BackupRefPtrTest, Advance) {
   RunBackupRefPtrImplAdvanceTest(allocator_, requested_size);
 }
 
+TEST_F(BackupRefPtrTest, AdvanceAcrossPools) {
+  char array1[1000];
+  char array2[1000];
+
+  char* in_pool_ptr = static_cast<char*>(allocator_.root()->Alloc(123, ""));
+
+  raw_ptr<char> protected_ptr = array1;
+  // Nothing bad happens. Both pointers are outside of the BRP pool, so no
+  // checks are triggered.
+  protected_ptr += (array2 - array1);
+  // A pointer is shifted from outside of the BRP pool into the BRP pool. This
+  // should trigger death to avoid
+  EXPECT_CHECK_DEATH(protected_ptr += (in_pool_ptr - array2));
+
+  protected_ptr = in_pool_ptr;
+  // Same when a pointer is shifted from inside the BRP pool out of it.
+  EXPECT_CHECK_DEATH(protected_ptr += (array1 - in_pool_ptr));
+
+  allocator_.root()->Free(in_pool_ptr);
+}
+
 TEST_F(BackupRefPtrTest, GetDeltaElems) {
   size_t requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(512);
   char* ptr1 = static_cast<char*>(allocator_.root()->Alloc(requested_size, ""));

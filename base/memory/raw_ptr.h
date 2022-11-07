@@ -556,22 +556,39 @@ struct BackupRefPtrImpl {
             typename = std::enable_if_t<offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    // First check if the new address lands within the same allocation
-    // (end-of-allocation address is ok too). It has a non-trivial cost, but
-    // it's cheaper and more secure than the previous implementation that
-    // rewrapped the pointer (wrapped the new pointer and unwrapped the old
-    // one).
+    T* new_ptr = wrapped_ptr + delta_elems;
+    // First check if the new address didn't migrate in/out the BRP pool, and
+    // that it lands within the same allocation (end-of-allocation address is ok
+    // too). This adds a non-trivial cost, but it's cheaper and more secure than
+    // the previous implementation that rewrapped the pointer (wrapped the new
+    // pointer and unwrapped the old one).
+    //
+    // Note, the value of these checks goes beyond OOB protection. They're
+    // important for integrity of the BRP algorithm. Without these, an attacker
+    // could make the pointer point to another allocation, and cause its
+    // ref-count to go to 0 upon this pointer's destruction, even though there
+    // may be another pointer still pointint to it, thus making it lose the BRP
+    // protection prematurely.
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
-    // TODO(bartekn): Consider adding support for non-BRP pool too.
-    if (IsSupportedAndNotNull(address))
+    // TODO(bartekn): Consider adding support for non-BRP pools too (without
+    // removing the cross-pool migration check).
+    if (IsSupportedAndNotNull(address)) {
       PA_BASE_CHECK(
           IsValidDelta(address, delta_elems * static_cast<Z>(sizeof(T))));
-    return wrapped_ptr + delta_elems;
+      // No need to check that |new_ptr| is in the same pool, as IsValidDeta()
+      // checks that it's within the same allocation, so must be the same pool.
+    } else {
+      // Check that the new address didn't migrate into the BRP pool, as it
+      // would result in more pointers pointing to an allocation than its
+      // ref-count reflects.
+      PA_BASE_CHECK(!IsSupportedAndNotNull(partition_alloc::UntagPtr(new_ptr)));
+    }
+    return new_ptr;
 #else
     // In the "before allocation" mode, on 32-bit, we can run into a problem
     // that the end-of-allocation address could fall outside of
     // PartitionAlloc's pools, if this is the last slot of the super page,
-    // thus pointing to the guard page. This mean the ref-count won't be
+    // thus pointing to the guard page. This means the ref-count won't be
     // decreased when the pointer is released (leak).
     //
     // We could possibly solve it in a few different ways:
@@ -582,8 +599,8 @@ struct BackupRefPtrImpl {
     //   mention adding an extra instruction to an inlined hot path.
     // - Let the leak happen, since it should a very rare condition.
     // - Go back to the previous solution of rewrapping the pointer, but that
-    //   had an issue of losing protection in case the pointer ever gets shifter
-    //   before the end of allocation.
+    //   had an issue of losing BRP protection in case the pointer ever gets
+    //   shifted back before the end of allocation.
     //
     // We decided to cross that bridge once we get there... if we ever get
     // there. Currently there are no plans to switch back to the "before
