@@ -12,6 +12,7 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "mojo/core/ipcz_driver/object.h"
+#include "mojo/core/system_impl_export.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace mojo::core::ipcz_driver {
@@ -19,7 +20,8 @@ namespace mojo::core::ipcz_driver {
 // An active memory mapping of a driver-controlled shared buffer. Note that this
 // is only used to manage read/writable mappings of unsafe regions by ipcz
 // internals.
-class SharedBufferMapping : public Object<SharedBufferMapping> {
+class MOJO_SYSTEM_IMPL_EXPORT SharedBufferMapping
+    : public Object<SharedBufferMapping> {
  public:
   SharedBufferMapping(std::unique_ptr<base::SharedMemoryMapping> mapping,
                       void* memory);
@@ -27,6 +29,11 @@ class SharedBufferMapping : public Object<SharedBufferMapping> {
   static constexpr Type object_type() { return kSharedBufferMapping; }
 
   void* memory() const { return memory_; }
+  size_t size() const { return mapping_->size(); }
+
+  base::span<uint8_t> bytes() const {
+    return base::make_span(static_cast<uint8_t*>(memory()), size());
+  }
 
   static scoped_refptr<SharedBufferMapping> Create(
       base::subtle::PlatformSharedMemoryRegion& region,
