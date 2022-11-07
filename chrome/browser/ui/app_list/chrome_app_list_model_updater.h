@@ -106,7 +106,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
       app_list::AppListSyncableService::SyncItem* sync_item,
       bool update_name,
       bool update_folder) override;
-  void NotifyProcessSyncChangesFinished() override;
 
   void OnAppListHidden() override;
   void CommitTemporarySortOrder() override;

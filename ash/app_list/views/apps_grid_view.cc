@@ -725,9 +725,6 @@ void AppsGridView::EndDrag(bool cancel) {
   else
     AnimateToIdealBounds();
 
-  if (!cancel)
-    view_structure_.SaveToMetadata();
-
   if (!cancel) {
     // Select the page where dragged item is dropped. Avoid doing so when the
     // dragged item ends up in a folder.
@@ -1965,9 +1962,6 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   else
     AnimateToIdealBounds();
 
-  if (!cancel_reparent)
-    view_structure_.SaveToMetadata();
-
   // Hide the |current_ghost_view_| after completed drag from within
   // folder to |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
@@ -2000,8 +1994,6 @@ void AppsGridView::HandleKeyboardReparent(
       GetIndexOfView(original_parent_item_view), key_code);
   ReparentItemForReorder(reparented_view->item(), target_index);
 
-  view_structure_.SaveToMetadata();
-
   // Update paging because the move could have resulted in a
   // page getting created.
   UpdatePaging();
@@ -2012,10 +2004,6 @@ void AppsGridView::HandleKeyboardReparent(
   AnnounceReorder(target_index);
 
   RecordAppMovingTypeMetrics(kMoveByKeyboardOutOfFolder);
-}
-
-void AppsGridView::UpdatePagedViewStructure() {
-  view_structure_.SaveToMetadata();
 }
 
 bool AppsGridView::IsTabletMode() const {
@@ -2888,8 +2876,6 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
       MoveItemInModel(target_view->item(), original_selected_view_index);
     }
   }
-
-  view_structure_.SaveToMetadata();
 
   int target_page = target_index.page;
   if (!folder_delegate_) {

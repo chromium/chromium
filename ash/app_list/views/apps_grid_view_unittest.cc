@@ -2464,7 +2464,6 @@ TEST_P(AppsGridViewClamshellAndTabletTest, ControlArrowDownToGapOnSamePage) {
 TEST_P(AppsGridViewTabletTest, ControlArrowSwapsBetweenFullPages) {
   const int kPages = 3;
   model_->PopulateApps(GetTilesPerPage(0) + (kPages - 1) * GetTilesPerPage(1));
-  apps_grid_view_->UpdatePagedViewStructure();
 
   // For every item in the first row, ensure an upward move results in the item
   // swapping places with the item directly above it.
@@ -2822,7 +2821,6 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   const AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(3);
   const std::string folder_id = folder_item->id();
-  apps_grid_view_->UpdatePagedViewStructure();
   UpdateLayout();
 
   AppListItemView* folder_view = apps_grid_view_->view_model()->view_at(
@@ -2890,7 +2888,6 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   const AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(3);
   const std::string folder_id = folder_item->id();
-  apps_grid_view_->UpdatePagedViewStructure();
   UpdateLayout();
 
   AppListItemView* folder_view = apps_grid_view_->view_model()->view_at(
@@ -2952,7 +2949,6 @@ TEST_P(AppsGridViewTabletTest,
       model_->CreateAndPopulateFolderWithApps(3);
   model_->PopulateApps(GetTilesPerPage(1));
   const std::string folder_id = folder_item->id();
-  apps_grid_view_->UpdatePagedViewStructure();
   UpdateLayout();
 
   AppListItemView* folder_view =
@@ -3093,7 +3089,6 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
 
   // Create a full page and a partially full second page.
   model_->PopulateApps(GetTilesPerPage(0) + 3);
-  apps_grid_view_->UpdatePagedViewStructure();
   UpdateLayout();
 
   // Drag an item from the first page to the last existing slot on the next
@@ -3197,7 +3192,6 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToSecondToLastSlot) {
 
   // Create a full page and a partially full second page.
   model_->PopulateApps(GetTilesPerPage(0) + 3);
-  apps_grid_view_->UpdatePagedViewStructure();
   UpdateLayout();
 
   const views::ViewModelT<AppListItemView>* view_model =

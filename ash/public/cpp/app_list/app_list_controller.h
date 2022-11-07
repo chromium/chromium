@@ -56,9 +56,6 @@ class ASH_PUBLIC_EXPORT AppListController {
   // Clears any previously set app list or search model.
   virtual void ClearActiveModel() = 0;
 
-  // Notifies sync service has finished processing sync changes.
-  virtual void NotifyProcessSyncChangesFinished() = 0;
-
   // Dismisses the app list.
   virtual void DismissAppList() = 0;
 

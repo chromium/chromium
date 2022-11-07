@@ -658,11 +658,6 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
   EndTemporarySortAndTakeAction(EndAction::kRevert);
 }
 
-void ChromeAppListModelUpdater::NotifyProcessSyncChangesFinished() {
-  if (is_active_)
-    ash::AppListController::Get()->NotifyProcessSyncChangesFinished();
-}
-
 void ChromeAppListModelUpdater::AddObserver(
     AppListModelUpdaterObserver* observer) {
   observers_.AddObserver(observer);

@@ -345,27 +345,6 @@ void AppListControllerImpl::ClearActiveModel() {
   UpdateAssistantVisibility();
 }
 
-void AppListControllerImpl::NotifyProcessSyncChangesFinished() {
-  // When there are incompatible apps on different devices under the same
-  // user account, it is possible that moving or adding an app on an empty
-  // spot on a page of a different type of device (e.g. Device 1) may cause app
-  // overflow on another device (e.g. Device 2) since it may have more apps on
-  // the same page. See details in http://crbug.com/1098174.
-  // When the change is synced to the Device 2, paged view structure may load
-  // meta data and detect a full page of apps without a page break item
-  // at the end of the overflowed page. Therefore, after the sync service has
-  // finished processing sync change, SaveToMetaData should be called to insert
-  // page break items if there are any missing at the end of full pages.
-  AppListView* const app_list_view = fullscreen_presenter_->GetView();
-  if (app_list_view) {
-    app_list_view->app_list_main_view()
-        ->contents_view()
-        ->apps_container_view()
-        ->apps_grid_view()
-        ->UpdatePagedViewStructure();
-  }
-}
-
 void AppListControllerImpl::DismissAppList() {
   if (tracked_app_window_) {
     tracked_app_window_->RemoveObserver(this);

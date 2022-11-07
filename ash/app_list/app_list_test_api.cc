@@ -525,10 +525,6 @@ PaginationModel* AppListTestApi::GetPaginationModel() {
   return GetPagedAppsGridView()->pagination_model();
 }
 
-void AppListTestApi::UpdatePagedViewStructure() {
-  GetPagedAppsGridView()->UpdatePagedViewStructure();
-}
-
 AppsGridView* AppListTestApi::GetTopLevelAppsGridView() {
   if (ShouldUseBubbleAppList()) {
     return GetAppListBubbleView()

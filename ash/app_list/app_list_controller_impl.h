@@ -102,7 +102,6 @@ class ASH_EXPORT AppListControllerImpl
                       AppListModel* model,
                       SearchModel* search_model) override;
   void ClearActiveModel() override;
-  void NotifyProcessSyncChangesFinished() override;
   void DismissAppList() override;
   void GetAppInfoDialogBounds(GetAppInfoDialogBoundsCallback callback) override;
   void ShowAppList() override;

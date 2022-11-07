@@ -35,7 +35,6 @@ class TestAppListController : public ash::AppListController {
                       ash::AppListModel* model,
                       ash::SearchModel* search_model) override {}
   void ClearActiveModel() override {}
-  void NotifyProcessSyncChangesFinished() override {}
   void ShowAppList() override;
   void DismissAppList() override;
   void GetAppInfoDialogBounds(

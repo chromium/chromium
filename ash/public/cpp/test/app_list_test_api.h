@@ -100,9 +100,6 @@ class ASH_EXPORT AppListTestApi {
   // Returns the pagination model.
   PaginationModel* GetPaginationModel();
 
-  // Updates the paged view structure.
-  void UpdatePagedViewStructure();
-
   // Returns the top level apps grid view. Could be ScrollableAppsGridView if
   // bubble launcher is enabled or PagedAppsGridView otherwise.
   AppsGridView* GetTopLevelAppsGridView();

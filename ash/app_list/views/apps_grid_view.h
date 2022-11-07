@@ -241,9 +241,6 @@ class ASH_EXPORT AppsGridView : public views::View,
                               AppListItemView* original_parent_item_view,
                               ui::KeyboardCode key_code);
 
-  // Updates paged view structure and save it to meta data.
-  void UpdatePagedViewStructure();
-
   // Returns true if tablet mode is active. This class does not use
   // Shell::IsInTabletMode() because it has tests that are not derived from
   // AshTestBase.

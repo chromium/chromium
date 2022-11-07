@@ -66,10 +66,6 @@ class ASH_EXPORT PagedViewStructure {
   // metadata of item views in the view model.
   void LoadFromMetadata();
 
-  // Saves page position change of each item view to metadata of item views
-  // in the view model.
-  void SaveToMetadata();
-
   // Operations allowed to modify the view structure.
   void Move(AppListItemView* view, const GridIndex& target_index);
   void Remove(AppListItemView* view);
@@ -122,10 +118,6 @@ class ASH_EXPORT PagedViewStructure {
   const Pages& pages() const { return pages_; }
 
  private:
-  // Skips the item view being dragged if it exists in the specified
-  // |page|.
-  int CalculateTargetSlot(const Page& page) const;
-
   // Sanitizes the paged view structure - it clears page overflow and
   // removes empty pages. A sanitization step is skipped if any sanitization
   // disablers for that step are active.
