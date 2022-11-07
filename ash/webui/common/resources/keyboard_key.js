@@ -11,6 +11,8 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getTemplate} from './keyboard_key.html.js';
 
+// TODO(michaelcheco): Add unit test coverage for keyboard-key.
+
 /**
  * @fileoverview
  * 'keyboard-key' provides a visual representation of a single key for the
@@ -151,6 +153,7 @@ export class KeyboardKeyElement extends KeyboardKeyElementBase {
         type: String,
         value: KeyboardKeyState.NOT_PRESSED,
         reflectToAttribute: true,
+        observer: KeyboardKeyElement.prototype.keyboardKeyStateChanged,
       },
 
       /**
@@ -203,6 +206,21 @@ export class KeyboardKeyElement extends KeyboardKeyElementBase {
    */
   computeShowSecondColumn_(topRightGlyph, bottomRightGlyph) {
     return !!(topRightGlyph || bottomRightGlyph);
+  }
+
+  /**
+   * Triggers 'announce-text' event to be used in pair with cr-a11y-announcer.
+   * Event provides A11Y "live" update to screen readers when a key is pressed.
+   * @protected
+   */
+  keyboardKeyStateChanged() {
+    if (this.state === KeyboardKeyState.PRESSED) {
+      this.dispatchEvent(new CustomEvent('announce-text', {
+        bubbles: true,
+        composed: true,
+        detail: {text: this.ariaLabel_},
+      }));
+    }
   }
 }
 

@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {KeyboardDiagramElement, MechanicalLayout as DiagramMechanicalLayout, PhysicalLayout as DiagramPhysicalLayout, TopRightKey as DiagramTopRightKey, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
+import {getInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -23,6 +24,14 @@ export interface KeyboardTesterElement {
     dialog: CrDialogElement,
     lostFocusToast: CrToastElement,
   };
+}
+
+export type AnnounceTextEvent = CustomEvent<{text: string}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'announce-text': AnnounceTextEvent;
+  }
 }
 
 /**
@@ -179,7 +188,20 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     super();
     document.addEventListener('keydown', (e) => this.onKeyPress(e));
     document.addEventListener('keyup', (e) => this.onKeyPress(e));
+    document.addEventListener(
+        'announce-text',
+        (e) => this.announceTextHandler((e as AnnounceTextEvent)));
   }
+
+  /**
+   * Event callback for 'announce-text' which is triggered from keyboard-key.
+   * Event will contain text to announce to screen readers.
+   */
+  private announceTextHandler = (e: AnnounceTextEvent) => {
+    assert(e.detail.text);
+    e.stopPropagation();
+    getInstance(this.$.dialog.getNative()).announce(e.detail.text);
+  };
 
   private computeLayoutIsKnown_(keyboard?: KeyboardInfo): boolean {
     if (!keyboard) {
