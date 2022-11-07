@@ -95,11 +95,13 @@ export class PeerConnectionUpdateTable {
     }
 
     if (update.type === 'icecandidate' || update.type === 'addIceCandidate') {
-      // extract ICE candidate type from the field following typ.
-      const candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
-      if (candidateType) {
-        type += ' (' + candidateType[1] + ')';
+      const parts = update.value.split(', ');
+      type += '(' + parts[0] + ', ' + parts[1]; // show sdpMid/sdpMLineIndex.
+      const candidateParts = parts[2].substr(11).split(' ');
+      if (candidateParts && candidateParts[7]) { // show candidate type.
+        type += ', type: ' + candidateParts[7];
       }
+      type += ')';
     } else if (
         update.type === 'createOfferOnSuccess' ||
         update.type === 'createAnswerOnSuccess') {
