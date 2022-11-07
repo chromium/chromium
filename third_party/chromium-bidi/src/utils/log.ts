@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-export function log(type: string): (...message: any[]) => void {
-  return (...messages: any[]) => {
-    // If run in browser, add debug message to the page.
-    if (globalThis.document?.documentElement) {
-      console.log(type, ...messages);
+import { MapperTabPage } from '../bidiMapper/utils/mapperTabPage';
 
-      const typeLogContainer = findOrCreateTypeLogContainer(type);
-
-      const pre = document.createElement('pre');
-      pre.textContent = messages.join(', ');
-      typeLogContainer.appendChild(pre);
-    }
-  };
+export enum LogType {
+  system = 'System',
+  bidi = 'BiDi Messages',
+  browsingContexts = 'Browsing Contexts',
+  cdp = 'CDP',
+  commandParser = 'Command parser',
 }
 
-function findOrCreateTypeLogContainer(type: string) {
-  const elementId = type + '_log';
-
-  const existingContainer = document.getElementById(elementId);
-  if (existingContainer) return existingContainer;
-
-  const newContainer = document.createElement('div');
-  newContainer.id = elementId;
-  newContainer.innerHTML = `<h3>${type}:</h3>`;
-  document.body.appendChild(newContainer);
-  return newContainer;
+export function log(logType: LogType): (...message: unknown[]) => void {
+  return (...messages: any[]) => {
+    console.log(logType, ...messages);
+    // Add messages to the Mapper Tab Page, if exists.
+    MapperTabPage.log(logType, ...messages);
+  };
 }

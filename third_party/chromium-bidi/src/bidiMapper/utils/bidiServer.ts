@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { log } from '../../utils/log';
+import { log, LogType } from '../../utils/log';
 import { EventEmitter } from 'events';
 
 import { ITransport } from '../../utils/transport';
 import { Message } from '../domains/protocol/bidiProtocolTypes';
 
-const logBidi = log('bidi');
+const logBidi = log(LogType.bidi);
 
 export interface IBidiServer {
   on(

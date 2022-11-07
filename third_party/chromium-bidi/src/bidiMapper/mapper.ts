@@ -23,11 +23,12 @@ import { CdpClient, CdpConnection } from '../cdp';
 import { BidiServer } from './utils/bidiServer';
 import { ITransport } from '../utils/transport';
 
-import { log } from '../utils/log';
+import { log, LogType } from '../utils/log';
 import { EventManager } from './domains/events/EventManager';
 import { BrowsingContextStorage } from './domains/context/browsingContextStorage';
+import { MapperTabPage } from './utils/mapperTabPage';
 
-const logSystem = log('system');
+const logSystem = log(LogType.system);
 
 declare global {
   interface Window {
@@ -53,8 +54,7 @@ declare global {
 const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
 (async () => {
-  window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
-  window.document.title = 'BiDi Mapper';
+  MapperTabPage.generatePage();
 
   const cdpConnection = _createCdpConnection();
   const cdpClient = cdpConnection.browserClient();

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { log } from '../../../utils/log';
+import { log, LogType } from '../../../utils/log';
 import { CdpClient, CdpConnection } from '../../../cdp';
 import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
@@ -26,7 +26,7 @@ import { BrowsingContextImpl } from './browsingContextImpl';
 import { Realm } from '../script/realm';
 import { BrowsingContextStorage } from './browsingContextStorage';
 
-const logContext = log('context');
+const logContext = log(LogType.browsingContexts);
 
 export class BrowsingContextProcessor {
   readonly sessions: Set<string> = new Set();
@@ -105,8 +105,6 @@ export class BrowsingContextProcessor {
     params: Protocol.Target.AttachedToTargetEvent,
     parentSessionCdpClient: CdpClient
   ) {
-    logContext('AttachedToTarget event received: ' + JSON.stringify(params));
-
     const { sessionId, targetInfo } = params;
 
     let targetSessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
@@ -117,6 +115,8 @@ export class BrowsingContextProcessor {
       await parentSessionCdpClient.Target.detachFromTarget(params);
       return;
     }
+
+    logContext('AttachedToTarget event received: ' + JSON.stringify(params));
 
     this.#setSessionEventListeners(sessionId);
 

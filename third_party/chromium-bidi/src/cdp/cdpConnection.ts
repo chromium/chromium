@@ -19,8 +19,9 @@ import { ITransport } from '../utils/transport';
 import { CdpMessage } from './cdpMessage';
 import { CdpClient, createClient } from './cdpClient';
 
-import { log } from '../utils/log';
-const logCdp = log('cdp');
+import { log, LogType } from '../utils/log';
+
+const logCdp = log(LogType.cdp);
 
 interface CdpCallbacks {
   resolve: (messageObj: object) => void;
