@@ -84,6 +84,7 @@
 #define QUICHE_CHECK_LT_IMPL(val1, val2) CHECK_LT(val1, val2)
 #define QUICHE_CHECK_GE_IMPL(val1, val2) CHECK_GE(val1, val2)
 #define QUICHE_CHECK_GT_IMPL(val1, val2) CHECK_GT(val1, val2)
+#define QUICHE_CHECK_OK_IMPL(value) CHECK((value).ok())
 
 #define QUICHE_DCHECK_IMPL(condition) DCHECK(condition)
 #define QUICHE_DCHECK_EQ_IMPL(val1, val2) DCHECK_EQ(val1, val2)

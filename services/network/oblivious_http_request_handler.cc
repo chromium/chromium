@@ -11,6 +11,9 @@
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "net/third_party/quiche/src/quiche/binary_http/binary_http_message.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom.h"
@@ -27,6 +30,62 @@ constexpr char kObliviousHttpRequestMimeType[] = "message/ohttp-req";
 constexpr size_t kMaxMethodSize = 16;
 constexpr size_t kMaxRequestBodySize = 10 * 1024;  // Request size limit is 10kB
 constexpr size_t kMaxContentTypeSize = 256;        // Per RFC6838
+
+// Class wrapping quiche::ObliviousHttpClient. Should be created once for each
+// request/response pair.
+class StatefulObliviousHttpClient {
+ public:
+  static absl::optional<StatefulObliviousHttpClient> CreateFromKeyConfig(
+      std::string key_config_str) {
+    auto key_configs =
+        quiche::ObliviousHttpKeyConfigs::ParseConcatenatedKeys(key_config_str);
+    if (!key_configs.ok()) {
+      return absl::nullopt;
+    }
+    quiche::ObliviousHttpHeaderKeyConfig key_config =
+        key_configs->PreferredConfig();
+    auto ohttp_client = quiche::ObliviousHttpClient::Create(
+        key_configs->GetPublicKeyForId(key_config.GetKeyId()).value(),
+        key_config);
+    if (!ohttp_client.ok()) {
+      return absl::nullopt;
+    }
+    return StatefulObliviousHttpClient(std::move(*ohttp_client));
+  }
+
+  // Movable
+  StatefulObliviousHttpClient(StatefulObliviousHttpClient&& other) = default;
+  StatefulObliviousHttpClient& operator=(StatefulObliviousHttpClient&& other) =
+      default;
+
+  absl::optional<std::string> EncryptRequest(std::string plain_text) {
+    auto maybe_request = quiche_client_.CreateObliviousHttpRequest(plain_text);
+    if (!maybe_request.ok()) {
+      return absl::nullopt;
+    }
+    std::string cipher_text = maybe_request->EncapsulateAndSerialize();
+    context_ = std::move(*maybe_request).ReleaseContext();
+    return cipher_text;
+  }
+
+  absl::optional<std::string> DecryptResponse(std::string cipher_text) {
+    DCHECK(context_) << "Decrypt called before Encrypt";
+    auto maybe_response = quiche_client_.DecryptObliviousHttpResponse(
+        cipher_text, context_.value());
+    if (!maybe_response.ok()) {
+      return absl::nullopt;
+    }
+    return std::string(maybe_response->GetPlaintextData());
+  }
+
+ private:
+  explicit StatefulObliviousHttpClient(
+      quiche::ObliviousHttpClient quiche_client)
+      : quiche_client_(std::move(quiche_client)) {}
+
+  quiche::ObliviousHttpClient quiche_client_;
+  absl::optional<quiche::ObliviousHttpRequest::Context> context_;
+};
 
 std::string CreateAndSerializeBhttpMessage(
     const GURL& request_url,
@@ -62,9 +121,9 @@ std::string CreateAndSerializeBhttpMessage(
 class ObliviousHttpRequestHandler::RequestState {
  public:
   std::unique_ptr<SimpleURLLoader> loader;
-  // Crypto stuff that needs to last from request to response.
   // TrustToken handler
   net::NetLogWithSource net_log;
+  absl::optional<StatefulObliviousHttpClient> ohttp_client;
 };
 
 ObliviousHttpRequestHandler::ObliviousHttpRequestHandler(
@@ -138,8 +197,20 @@ void ObliviousHttpRequestHandler::StartRequest(
         return base::Value(std::move(dict));
       });
 
-  // TODO(behamilton): handle encryption, padding.
-  std::string unencrypted_blob = bhttp_payload;
+  // Encrypt
+  auto maybe_client = StatefulObliviousHttpClient::CreateFromKeyConfig(
+      std::move(ohttp_request->key_config));
+  if (!maybe_client) {
+    RespondWithError(id, net::ERR_INVALID_ARGUMENT);
+    return;
+  }
+  state->ohttp_client = std::move(maybe_client);
+  auto maybe_encrypted_blob =
+      state->ohttp_client->EncryptRequest(std::move(bhttp_payload));
+  if (!maybe_encrypted_blob) {
+    RespondWithError(id, net::ERR_FAILED);
+    return;
+  }
 
   std::unique_ptr<ResourceRequest> resource_request =
       std::make_unique<ResourceRequest>();
@@ -155,7 +226,7 @@ void ObliviousHttpRequestHandler::StartRequest(
       std::move(resource_request),
       net::NetworkTrafficAnnotationTag(ohttp_request->traffic_annotation));
 
-  state->loader->AttachStringForUpload(unencrypted_blob,
+  state->loader->AttachStringForUpload(*maybe_encrypted_blob,
                                        kObliviousHttpRequestMimeType);
   state->loader->SetTimeoutDuration(kRequestTimeout);
   state->loader->DownloadToString(
@@ -194,22 +265,27 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
     RespondWithError(id, state->loader->NetError());
     return;
   }
-  // TODO(behamilton): decrypt payload.
-  std::string payload = std::move(*response);
+
+  auto maybe_payload =
+      state->ohttp_client->DecryptResponse(std::move(*response));
+  if (!maybe_payload) {
+    RespondWithError(id, net::ERR_FAILED);
+    return;
+  }
 
   state->net_log.AddEvent(
       net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_DATA,
       [&](net::NetLogCaptureMode capture_mode) {
         base::Value::Dict dict;
-        dict.Set("byte_count", static_cast<int>(payload.size()));
+        dict.Set("byte_count", static_cast<int>(maybe_payload->size()));
         if (net::NetLogCaptureIncludesSocketBytes(capture_mode)) {
-          dict.Set("bytes",
-                   net::NetLogBinaryValue(payload.data(), payload.size()));
+          dict.Set("bytes", net::NetLogBinaryValue(maybe_payload->data(),
+                                                   maybe_payload->size()));
         }
         return base::Value(std::move(dict));
       });
 
-  auto bhttp_response = quiche::BinaryHttpResponse::Create(payload);
+  auto bhttp_response = quiche::BinaryHttpResponse::Create(*maybe_payload);
   if (!bhttp_response.ok()) {
     RespondWithError(id, net::ERR_FAILED);
     return;

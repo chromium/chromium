@@ -11,6 +11,7 @@
 #include "net/http/http_status_code.h"
 #include "net/third_party/quiche/src/quiche/binary_http/binary_http_message.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_data_writer.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/oblivious_http_request_handler.h"
@@ -28,6 +29,23 @@ namespace {
 
 const char kRelayURL[] = "https://relay.test:13/";
 const char kResourceURL[] = "https://resource.test:37/path";
+
+// These keys were randomly generated as follows:
+// EVP_HPKE_KEY keys;
+// EVP_HPKE_KEY_generate(&keys, EVP_hpke_x25519_hkdf_sha256());
+// and then EVP_HPKE_KEY_public_key and EVP_HPKE_KEY_private_key were used to
+// extract the keys.
+const uint8_t kTestPrivateKey[] = {
+    0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
+    0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
+    0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
+};
+
+const uint8_t kTestPublicKey[] = {
+    0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
+    0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
+    0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+};
 
 testing::Matcher<net::HttpRequestHeaders::HeaderVector> UnorderedHeadersAre(
     const net::HttpRequestHeaders::HeaderVector& expected) {
@@ -99,27 +117,88 @@ class TestOhttpClient : public network::mojom::ObliviousHttpClient {
 class TestObliviousHttpRequestHandler : public testing::Test {
  public:
   TestObliviousHttpRequestHandler()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    auto key_configs = quiche::ObliviousHttpKeyConfigs::ParseConcatenatedKeys(
+        CreateTestKeyConfig());
+    CHECK(key_configs.ok()) << key_configs.status();
+    quiche::ObliviousHttpHeaderKeyConfig key_config =
+        key_configs->PreferredConfig();
+    auto ohttp_gateway = quiche::ObliviousHttpGateway::Create(
+        std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                    sizeof(kTestPrivateKey)),
+        key_config);
+    CHECK(ohttp_gateway.ok()) << ohttp_gateway.status();
+    ohttp_gateway_ = std::move(ohttp_gateway).value();
+  }
 
   TestOhttpNetworkContext* network_context() { return &network_context_; }
   network::TestURLLoaderFactory* loader_factory() {
     return network_context()->loader_factory();
   }
 
-  void AddResponse(std::string body, GURL relay_url = GURL(kRelayURL)) {
-    quiche::BinaryHttpResponse response(net::HTTP_OK);
-    response.set_body(std::move(body));
+  std::string DecryptRequest(std::string cipher_text) {
+    auto request = ohttp_gateway_->DecryptObliviousHttpRequest(cipher_text);
+    EXPECT_TRUE(request.ok()) << request.status();
+    return std::string(request->GetPlaintextData());
+  }
+
+  void RespondToPendingRequest(std::string body,
+                               GURL relay_url = GURL(kRelayURL),
+                               net::HttpStatusCode status = net::HTTP_OK) {
+    const network::ResourceRequest* pending_request;
+    ASSERT_TRUE(
+        loader_factory()->IsPending(relay_url.spec(), &pending_request));
+
+    ASSERT_TRUE(pending_request->request_body);
+    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
+
+    std::string request_body =
+        std::string(pending_request->request_body->elements()
+                        ->at(0)
+                        .As<network::DataElementBytes>()
+                        .AsStringPiece());
+
+    auto request = ohttp_gateway_->DecryptObliviousHttpRequest(request_body);
+    ASSERT_TRUE(request.ok()) << request.status();
+    auto ohttp_context = std::move(*request).ReleaseContext();
+
+    quiche::BinaryHttpResponse bhttp_response(status);
+    bhttp_response.set_body(std::move(body));
+    auto payload = bhttp_response.Serialize();
+    ASSERT_TRUE(payload.ok()) << payload.status();
+
+    auto response =
+        ohttp_gateway_->CreateObliviousHttpResponse(*payload, ohttp_context);
+    ASSERT_TRUE(response.ok()) << response.status();
+
     loader_factory()->AddResponse(
         /*url=*/relay_url,
         /*head=*/network::CreateURLResponseHead(net::HTTP_OK),
-        /*content=*/response.Serialize().value(),
+        /*content=*/response->EncapsulateAndSerialize(),
         /*status=*/network::URLLoaderCompletionStatus());
+  }
+
+  std::string CreateTestKeyConfig() {
+    const size_t kOHTTPKeySizeBytes =
+        1 + 2 + sizeof(kTestPublicKey) + 2 + 2 + 2;
+    std::string ohttp_key_config(kOHTTPKeySizeBytes, '\0');
+    quiche::QuicheDataWriter writer(ohttp_key_config.size(),
+                                    ohttp_key_config.data());
+    EXPECT_TRUE(writer.WriteUInt8('K'));  // Key ID can be arbitrary.
+    EXPECT_TRUE(writer.WriteUInt16(EVP_HPKE_DHKEM_X25519_HKDF_SHA256));
+    EXPECT_TRUE(writer.WriteBytes(&kTestPublicKey[0], sizeof(kTestPublicKey)));
+    EXPECT_TRUE(writer.WriteUInt16(4u));
+    EXPECT_TRUE(writer.WriteUInt16(EVP_HPKE_HKDF_SHA256));
+    EXPECT_TRUE(writer.WriteUInt16(EVP_HPKE_AES_256_GCM));
+    EXPECT_EQ(ohttp_key_config.length(), writer.length());
+    return ohttp_key_config;
   }
 
   network::mojom::ObliviousHttpRequestPtr CreateRequest() {
     network::mojom::ObliviousHttpRequestPtr request =
         network::mojom::ObliviousHttpRequest::New();
     request->relay_url = GURL(kRelayURL);
+    request->key_config = CreateTestKeyConfig();
     request->resource_url = GURL(kResourceURL);
     request->method = net::HttpRequestHeaders::kGetMethod;
     request->traffic_annotation =
@@ -130,13 +209,13 @@ class TestObliviousHttpRequestHandler : public testing::Test {
   }
 
  private:
+  absl::optional<quiche::ObliviousHttpGateway> ohttp_gateway_;
   base::test::TaskEnvironment task_environment_;
   TestOhttpNetworkContext network_context_;
 };
 
 TEST_F(TestObliviousHttpRequestHandler, TestDisconnect) {
   network::ObliviousHttpRequestHandler handler(network_context());
-  AddResponse("");
   {
     TestOhttpClient client("", net::OK);
     handler.StartRequest(CreateRequest(), client.CreatePendingRemote());
@@ -145,6 +224,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestDisconnect) {
   {
     TestOhttpClient client("", net::OK);
     handler.StartRequest(CreateRequest(), client.CreatePendingRemote());
+    RespondToPendingRequest("");
     client.WaitForCall();
   }
 }
@@ -240,9 +320,9 @@ TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
                                        ->at(0)
                                        .As<network::DataElementBytes>()
                                        .AsStringPiece());
-    // TODO(behamilton): decryption
-    std::string plain_text_body = body;
-    auto maybe_request = quiche::BinaryHttpRequest::Create(body);
+    std::string plain_text_body = DecryptRequest(body);
+
+    auto maybe_request = quiche::BinaryHttpRequest::Create(plain_text_body);
     ASSERT_TRUE(maybe_request.ok()) << maybe_request.status();
     quiche::BinaryHttpRequest request = std::move(maybe_request).value();
     EXPECT_EQ(request.control_data().method, "GET");
@@ -256,7 +336,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
                     {"content-type", "application/testdata"},
                 }));
     EXPECT_EQ(request.body(), "test data");
-    AddResponse("response body");
+    RespondToPendingRequest("response body");
     client.WaitForCall();
   }
 }
@@ -275,12 +355,10 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesOuterHttpError) {
 TEST_F(TestObliviousHttpRequestHandler, HandlesInnerHttpError) {
   network::ObliviousHttpRequestHandler handler(network_context());
   {
-    quiche::BinaryHttpResponse response(net::HTTP_NOT_FOUND);
-    loader_factory()->AddResponse(kRelayURL, response.Serialize().value(),
-                                  net::HTTP_OK);
     TestOhttpClient client(absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE);
 
     handler.StartRequest(CreateRequest(), client.CreatePendingRemote());
+    RespondToPendingRequest("", GURL(kRelayURL), net::HTTP_NOT_FOUND);
     client.WaitForCall();
   }
 }
@@ -288,19 +366,19 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesInnerHttpError) {
 TEST_F(TestObliviousHttpRequestHandler, HandlesMultipleRequests) {
   network::ObliviousHttpRequestHandler handler(network_context());
   {
-    TestOhttpClient client_a("", net::OK);
+    TestOhttpClient client_a("Response a", net::OK);
     network::mojom::ObliviousHttpRequestPtr request_a = CreateRequest();
-    TestOhttpClient client_b("", net::OK);
+    TestOhttpClient client_b("Response b", net::OK);
     network::mojom::ObliviousHttpRequestPtr request_b = CreateRequest();
     request_b->relay_url = GURL("https://another.relay.test");
 
     handler.StartRequest(std::move(request_a), client_a.CreatePendingRemote());
     handler.StartRequest(std::move(request_b), client_b.CreatePendingRemote());
 
-    AddResponse("", GURL("https://another.relay.test"));
+    RespondToPendingRequest("Response b", GURL("https://another.relay.test"));
     client_b.WaitForCall();
 
-    AddResponse("");
+    RespondToPendingRequest("Response a");
     client_a.WaitForCall();
   }
 }
