@@ -599,7 +599,6 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
   // Using `switch` to ensure new enum values are handled.
   switch (track_impl_subtype) {
     case SerializedTrackImplSubtype::kTrackImplSubtypeBase:
-    case SerializedTrackImplSubtype::kTrackImplSubtypeFocusable:
       // No additional data to be deserialized.
       break;
     case SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture:

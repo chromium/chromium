@@ -6,7 +6,6 @@
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_track_generator.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
-#include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
 
 namespace blink {
 
@@ -57,8 +56,6 @@ SerializedTrackImplSubtype SerializeTrackImplSubtype(
     return SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture;
   } else if (dispatcher.ToMostDerived<MediaStreamTrackGenerator>()) {
     return SerializedTrackImplSubtype::kTrackImplSubtypeGenerator;
-  } else if (dispatcher.ToMostDerived<FocusableMediaStreamTrack>()) {
-    return SerializedTrackImplSubtype::kTrackImplSubtypeFocusable;
   } else if (dispatcher.ToMostDerived<BrowserCaptureMediaStreamTrack>()) {
     return SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture;
   }
@@ -108,8 +105,6 @@ const WrapperTypeInfo* DeserializeTrackImplSubtype(
       return CanvasCaptureMediaStreamTrack::GetStaticWrapperTypeInfo();
     case SerializedTrackImplSubtype::kTrackImplSubtypeGenerator:
       return MediaStreamTrackGenerator::GetStaticWrapperTypeInfo();
-    case SerializedTrackImplSubtype::kTrackImplSubtypeFocusable:
-      return FocusableMediaStreamTrack::GetStaticWrapperTypeInfo();
     case SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture:
       return BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo();
   }

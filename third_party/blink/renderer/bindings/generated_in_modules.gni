@@ -1775,8 +1775,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_writer.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_writer_sync.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_writer_sync.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_focusable_media_stream_track.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_focusable_media_stream_track.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_font_data.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_font_data.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_formatted_text.cc",

@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_focusable_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
@@ -40,7 +39,6 @@
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
-#include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
@@ -1324,7 +1322,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
       MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
           scope.GetExecutionContext(), component,
           MediaStreamSource::ReadyState::kReadyStateMuted,
-          /*callback=*/base::DoNothing(), "descriptor");
+          /*callback=*/base::DoNothing());
   blink_track->setEnabled(false);
 
   ScopedMockMediaStreamTrackFromTransferredState mock_impl;
@@ -1392,41 +1390,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
   const auto& data = mock_impl.last_argument;
   EXPECT_EQ(data.track_impl_subtype,
             MediaStreamTrack::GetStaticWrapperTypeInfo());
-  EXPECT_FALSE(data.crop_version.has_value());
-}
-
-TEST(V8ScriptValueSerializerForModulesTest, TransferFocusableMediaStreamTrack) {
-  ScopedConditionalFocusForTest conditional_focus(true);
-  // RegionCapture overrides ConditionalFocus, so we turn it off here to test
-  // FocusableMediaStreamTrack.
-  ScopedRegionCaptureForTest region_capture(false);
-  V8TestingScope scope;
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
-  const auto session_id = base::UnguessableToken::Create();
-  MediaStreamComponent* component =
-      MakeTabCaptureVideoComponentForTest(&scope.GetFrame(), session_id);
-  MediaStreamTrack* blink_track =
-      MakeGarbageCollected<FocusableMediaStreamTrack>(
-          scope.GetExecutionContext(), component,
-          MediaStreamSource::ReadyState::kReadyStateLive,
-          /*callback=*/base::DoNothing(), "descriptor");
-
-  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
-
-  Transferables transferables;
-  transferables.media_stream_tracks.push_back(blink_track);
-  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
-  v8::Local<v8::Value> result =
-      RoundTripForModules(wrapper, scope, &transferables);
-
-  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
-  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
-            mock_impl.return_value.Get());
-
-  const auto& data = mock_impl.last_argument;
-  EXPECT_EQ(data.track_impl_subtype,
-            FocusableMediaStreamTrack::GetStaticWrapperTypeInfo());
   EXPECT_FALSE(data.crop_version.has_value());
 }
 

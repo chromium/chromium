@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
@@ -62,8 +61,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   // surface type.
   static MediaStreamTrack* Create(ExecutionContext* context,
                                   MediaStreamComponent* component,
-                                  base::OnceClosure callback,
-                                  const String& descriptor_id);
+                                  base::OnceClosure callback);
 
   MediaStreamTrackImpl(ExecutionContext*, MediaStreamComponent*);
   MediaStreamTrackImpl(ExecutionContext*,
@@ -133,15 +131,6 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   absl::optional<const MediaStreamDevice> device() const override;
 
   void BeingTransferred(const base::UnguessableToken& transfer_id) override;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Only relevant for focusable streams (FocusableMediaStreamTrack).
-  // When called on one of these, it signals that Conditional Focus
-  // no longer applies - the browser will now decide whether
-  // the captured display surface should be captured. Later calls to
-  // FocusableMediaStreamTrack.focus() will now raise an exception.
-  void CloseFocusWindowOfOpportunity() override;
-#endif
 
   void AddObserver(MediaStreamTrack::Observer*) override;
 

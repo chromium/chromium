@@ -33,8 +33,7 @@ enum class SerializedTrackImplSubtype : uint32_t {
   kTrackImplSubtypeBase = 0,            // MediaStreamTrack
   kTrackImplSubtypeCanvasCapture = 1,   // CanvasCaptureMediaStreamTrack
   kTrackImplSubtypeGenerator = 2,       // MediaStreamTrackGenerator
-  kTrackImplSubtypeFocusable = 3,       // FocusableMediaStreamTrack
-  kTrackImplSubtypeBrowserCapture = 4,  // BrowserCaptureMediaStreamTrack
+  kTrackImplSubtypeBrowserCapture = 3,  // BrowserCaptureMediaStreamTrack
   kLast = kTrackImplSubtypeBrowserCapture
 };
 

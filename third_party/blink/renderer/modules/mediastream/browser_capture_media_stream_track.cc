@@ -131,34 +131,26 @@ void ResolveCropPromiseHelper(ScriptPromiseResolver* resolver,
 BrowserCaptureMediaStreamTrack::BrowserCaptureMediaStreamTrack(
     ExecutionContext* execution_context,
     MediaStreamComponent* component,
-    base::OnceClosure callback,
-    const String& descriptor_id,
-    bool is_clone)
+    base::OnceClosure callback)
     : BrowserCaptureMediaStreamTrack(execution_context,
                                      component,
                                      component->GetReadyState(),
-                                     std::move(callback),
-                                     descriptor_id,
-                                     is_clone) {}
+                                     std::move(callback)) {}
 
 BrowserCaptureMediaStreamTrack::BrowserCaptureMediaStreamTrack(
     ExecutionContext* execution_context,
     MediaStreamComponent* component,
     MediaStreamSource::ReadyState ready_state,
-    base::OnceClosure callback,
-    const String& descriptor_id,
-    bool is_clone)
-    : FocusableMediaStreamTrack(execution_context,
-                                component,
-                                ready_state,
-                                std::move(callback),
-                                descriptor_id,
-                                is_clone) {}
+    base::OnceClosure callback)
+    : MediaStreamTrackImpl(execution_context,
+                           component,
+                           ready_state,
+                           std::move(callback)) {}
 
 #if !BUILDFLAG(IS_ANDROID)
 void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(pending_promises_);
-  FocusableMediaStreamTrack::Trace(visitor);
+  MediaStreamTrackImpl::Trace(visitor);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -248,11 +240,10 @@ BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
   BrowserCaptureMediaStreamTrack* cloned_track =
       MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
           execution_context, Component()->Clone(ClonePlatformTrack()),
-          GetReadyState(), base::DoNothing(), descriptor_id(),
-          /*is_clone=*/true);
+          GetReadyState(), base::DoNothing());
 
-  // Copy state. (Note: Invokes FocusableMediaStreamTrack::CloneInternal().)
-  CloneInternal(cloned_track);
+  // Copy state.
+  MediaStreamTrackImpl::CloneInternal(cloned_track);
 
   return cloned_track;
 }

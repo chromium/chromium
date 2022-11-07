@@ -54,8 +54,8 @@ BrowserCaptureMediaStreamTrack* MakeTrack(
           "component_id", source, std::move(media_stream_video_track));
 
   return MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
-      v8_scope.GetExecutionContext(), component, /*callback=*/base::DoNothing(),
-      "descriptor");
+      v8_scope.GetExecutionContext(), component,
+      /*callback=*/base::DoNothing());
 }
 
 }  // namespace

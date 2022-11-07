@@ -140,15 +140,6 @@ class MODULES_EXPORT MediaStreamTrack
   // is called, the track will be in an ended state and no longer usable.
   virtual void BeingTransferred(const base::UnguessableToken& transfer_id) = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Only relevant for focusable streams (FocusableMediaStreamTrack).
-  // When called on one of these, it signals that Conditional Focus
-  // no longer applies - the browser will now decide whether
-  // the captured display surface should be captured. Later calls to
-  // FocusableMediaStreamTrack.focus() will now raise an exception.
-  virtual void CloseFocusWindowOfOpportunity() = 0;
-#endif
-
   virtual void AddObserver(Observer*) = 0;
 
   void Trace(Visitor* visitor) const override {

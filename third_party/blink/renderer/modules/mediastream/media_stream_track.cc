@@ -103,8 +103,8 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   }
 
   // TODO(1288839): Create a TransferredMediaStreamTrack implementing interfaces
-  // supporting BrowserCaptureMediaStreamTrack or FocusableMediaStreamTrack
-  // operations when needed (or support these behaviors in some other way).
+  // supporting BrowserCaptureMediaStreamTrack operations when needed (or
+  // support these behaviors in some other way).
   TransferredMediaStreamTrack* transferred_media_stream_track =
       MakeGarbageCollected<TransferredMediaStreamTrack>(
           ExecutionContext::From(script_state), data);

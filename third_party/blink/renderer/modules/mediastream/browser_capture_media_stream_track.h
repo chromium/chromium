@@ -8,29 +8,25 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
-#include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 
-class MODULES_EXPORT BrowserCaptureMediaStreamTrack final
-    : public FocusableMediaStreamTrack {
+class MODULES_EXPORT BrowserCaptureMediaStreamTrack
+    : public MediaStreamTrackImpl {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   BrowserCaptureMediaStreamTrack(ExecutionContext* execution_context,
                                  MediaStreamComponent* component,
-                                 base::OnceClosure callback,
-                                 const String& descriptor_id,
-                                 bool is_clone = false);
+                                 base::OnceClosure callback);
 
   BrowserCaptureMediaStreamTrack(ExecutionContext* execution_context,
                                  MediaStreamComponent* component,
                                  MediaStreamSource::ReadyState ready_state,
-                                 base::OnceClosure callback,
-                                 const String& descriptor_id,
-                                 bool is_clone = false);
+                                 base::OnceClosure callback);
 
   ~BrowserCaptureMediaStreamTrack() override = default;
 

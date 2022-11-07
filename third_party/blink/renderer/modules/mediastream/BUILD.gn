@@ -17,8 +17,6 @@ blink_modules_sources("mediastream") {
     "crop_target.cc",
     "crop_target.h",
     "dom_window_media_stream.h",
-    "focusable_media_stream_track.cc",
-    "focusable_media_stream_track.h",
     "identifiability_metrics.cc",
     "identifiability_metrics.h",
     "input_device_info.cc",

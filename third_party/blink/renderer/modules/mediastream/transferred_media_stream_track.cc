@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -360,16 +359,6 @@ void TransferredMediaStreamTrack::BeingTransferred(
   // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
   // initialized.
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void TransferredMediaStreamTrack::CloseFocusWindowOfOpportunity() {
-  if (track_) {
-    track_->CloseFocusWindowOfOpportunity();
-  }
-  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
-  // initialized.
-}
-#endif
 
 void TransferredMediaStreamTrack::AddObserver(Observer* observer) {
   if (track_) {

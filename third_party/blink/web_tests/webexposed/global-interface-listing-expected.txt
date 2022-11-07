@@ -629,7 +629,6 @@ interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
     attribute @@toStringTag
     method constructor
     method cropTo
-    method focus
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -2752,10 +2751,6 @@ interface FocusEvent : UIEvent
     attribute @@toStringTag
     getter relatedTarget
     method constructor
-interface FocusableMediaStreamTrack : MediaStreamTrack
-    attribute @@toStringTag
-    method constructor
-    method focus
 interface FontData
     attribute @@toStringTag
     getter family

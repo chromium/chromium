@@ -111,9 +111,6 @@ void CaptureController::FinalizeFocusDecision() {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Prevent focus() to be called after setFocusBehavior().
-  video_track_->CloseFocusWindowOfOpportunity();
-
   const bool focus = focus_behavior_->AsEnum() ==
                      V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface;
   client->FocusCapturedSurface(String(descriptor_id_), focus);

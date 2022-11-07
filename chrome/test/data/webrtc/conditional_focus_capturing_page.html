@@ -9,25 +9,17 @@
 
       // Calls getDisplayMedia().
       // Calling with |busyWaitMs| set to a positive value leads to hogging
-      // the CPU for that long *before* calling focus() or setFocusBehavior().
+      // the CPU for that long *before* calling setFocusBehavior().
       // Then:
-      // * If |useCaptureController| is true, pass new CaptureController to
-      //   getDisplayMedia options.
-      // * If (focusCallValue == ''), don't call focus() and setFocusBehavior().
-      // * If (focusCallValue != ''), call setFocusBehavior(focusCallValue) if
-      //   |useCaptureController| is true, otherwise call focus(focusCallValue).
-      // * If |onCorrectMicrotask|, focus() or setFocusBehavior() is called
-      //   on the microtask on which getDisplayMedia's Promise was resolved.
+      // * If (focusCallValue == ''), don't call setFocusBehavior().
+      // * If (focusCallValue != ''), call setFocusBehavior(focusCallValue).
+      // * If |onCorrectMicrotask|, setFocusBehavior() is called on the
+      //   microtask on which getDisplayMedia's Promise was resolved.
       //   Otherwise, it is scheduled to be called in a later task.
-      async function captureOtherTab(busyWaitMs, focusCallValue, useCaptureController, onCorrectMicrotask) {
+      async function captureOtherTab(busyWaitMs, focusCallValue, onCorrectMicrotask) {
         try {
-          const options = {};
-          let controller;
-          if (useCaptureController) {
-            controller = new CaptureController();
-            options.controller = controller;
-          }
-          const mediaStream = await navigator.mediaDevices.getDisplayMedia(options);
+          const controller = new CaptureController();
+          const mediaStream = await navigator.mediaDevices.getDisplayMedia({ controller });
           if (onCorrectMicrotask) {
             handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue, controller);
           } else {
@@ -53,13 +45,8 @@
         }
 
         if (focusCallValue) {
-          const [track] = mediaStream.getVideoTracks();
           try {
-            if (controller) {
-              controller.setFocusBehavior(focusCallValue);
-            } else {
-              track.focus(focusCallValue);
-            }
+            controller.setFocusBehavior(focusCallValue);
           } catch (error) {
             window.domAutomationController.send(`${error}`);
           }
@@ -71,34 +58,8 @@
         });
       }
 
-      function callFocusAndExpectError() {
-        const [track] = mediaStreamKeepAlive.getVideoTracks();
-        try {
-          track.focus("focus-captured-surface");
-          window.domAutomationController.send("no-error");
-        } catch (error) {
-          window.domAutomationController.send(`${error}`);
-        }
-      }
-
-      async function captureCloneAndFocusClone() {
-        try {
-          mediaStreamKeepAlive = await navigator.mediaDevices.getDisplayMedia();
-          const [track] = mediaStreamKeepAlive.getVideoTracks();
-          const clone = track.clone();
-          try {
-            clone.focus("focus-captured-surface");
-            window.domAutomationController.send("no-error");
-          } catch (error) {
-            window.domAutomationController.send(`${error}`);
-          }
-        } catch (error) {
-          window.domAutomationController.send("capture-failure");
-        }
-      }
-
       // Calls setFocusBehavior(focusCallValueBeforeCapture) before
-      // getDisplayMedia({ controller} ). Then
+      // getDisplayMedia({ controller }). Then
       // if (focusCallValueAfterCapture != '') call
       // setFocusBehavior(focusCallValueAfterCapture) on the microtask on which
       // getDisplayMedia's Promise was resolved.

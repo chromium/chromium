@@ -774,13 +774,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
 
 class GetDisplayMediaVideoTrackBrowserTest
     : public WebRtcTestBase,
-      public testing::WithParamInterface<
-          std::tuple<bool, bool, DisplaySurfaceType>> {
+      public testing::WithParamInterface<std::tuple<bool, DisplaySurfaceType>> {
  public:
   GetDisplayMediaVideoTrackBrowserTest()
-      : conditional_focus_enabled_(std::get<0>(GetParam())),
-        region_capture_enabled_(std::get<1>(GetParam())),
-        display_surface_type_(std::get<2>(GetParam())) {}
+      : region_capture_enabled_(std::get<0>(GetParam())),
+        display_surface_type_(std::get<1>(GetParam())) {}
 
   ~GetDisplayMediaVideoTrackBrowserTest() override = default;
 
@@ -815,10 +813,6 @@ class GetDisplayMediaVideoTrackBrowserTest
 
     std::vector<std::string> enabled_blink_features;
     std::vector<std::string> disabled_blink_features;
-
-    if (conditional_focus_enabled_) {
-      enabled_blink_features.push_back("ConditionalFocus");
-    }
 
     if (region_capture_enabled_) {
       enabled_blink_features.push_back("RegionCapture");
@@ -877,13 +871,9 @@ class GetDisplayMediaVideoTrackBrowserTest
   std::string ExpectedVideoTrackType() const {
     switch (display_surface_type_) {
       case DisplaySurfaceType::kTab:
-        return region_capture_enabled_
-                   ? "BrowserCaptureMediaStreamTrack"
-                   : conditional_focus_enabled_ ? "FocusableMediaStreamTrack"
-                                                : "MediaStreamTrack";
+        return region_capture_enabled_ ? "BrowserCaptureMediaStreamTrack"
+                                       : "MediaStreamTrack";
       case DisplaySurfaceType::kWindow:
-        return conditional_focus_enabled_ ? "FocusableMediaStreamTrack"
-                                          : "MediaStreamTrack";
       case DisplaySurfaceType::kScreen:
         return "MediaStreamTrack";
     }
@@ -892,7 +882,6 @@ class GetDisplayMediaVideoTrackBrowserTest
   }
 
  protected:
-  const bool conditional_focus_enabled_;
   const bool region_capture_enabled_;
   const DisplaySurfaceType display_surface_type_;
 
@@ -903,8 +892,7 @@ class GetDisplayMediaVideoTrackBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     _,
     GetDisplayMediaVideoTrackBrowserTest,
-    testing::Combine(/*conditional_focus_enabled=*/testing::Bool(),
-                     /*region_capture_enabled=*/testing::Bool(),
+    testing::Combine(/*region_capture_enabled=*/testing::Bool(),
                      /*display_surface_type=*/
                      testing::Values(DisplaySurfaceType::kTab,
                                      DisplaySurfaceType::kWindow,
@@ -912,13 +900,11 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<
         GetDisplayMediaVideoTrackBrowserTest::ParamType>& info) {
       return base::StrCat(
-          {std::get<0>(info.param) ? "ConditionalFocus" : "",
-           std::get<1>(info.param) ? "RegionCapture" : "",
-           std::get<2>(info.param) == DisplaySurfaceType::kTab
-               ? "Tab"
-               : std::get<2>(info.param) == DisplaySurfaceType::kWindow
-                     ? "Window"
-                     : "Screen"});
+          {std::get<0>(info.param) ? "RegionCapture" : "",
+           std::get<1>(info.param) == DisplaySurfaceType::kTab ? "Tab"
+           : std::get<1>(info.param) == DisplaySurfaceType::kWindow
+               ? "Window"
+               : "Screen"});
     });
 
 // Normally, each of these these would have its own test, but the number of

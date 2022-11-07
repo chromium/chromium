@@ -18,17 +18,4 @@ interface BrowserCaptureMediaStreamTrack : MediaStreamTrack {
   //    propagated and subsequent frames are guaranteed to be uncropped.
   [CallWith = ScriptState, RaisesException, MeasureAs = RegionCapture]
   Promise<void> cropTo(CropTarget? crop_id);
-
-  // See FocusableMediaStreamTrack.focus() for more details of what this method
-  // does and how it behaves. It is here because:
-  // * BrowserCaptureMediaStreamTrack is for tab-capture, and is shipped.
-  // * FocusableMediaStreamTrack is for window-capture, and is in Origin Trial.
-  // Both tabs and windows are focusable, so both expose focus() if the
-  // ConditionalFocus OT is active.
-  [
-    CallWith = ExecutionContext,
-    RaisesException,
-    MeasureAs = ConditionalFocus,
-    RuntimeEnabled = ConditionalFocus
-  ] void focus(CaptureStartFocusBehavior focus_behavior);
 };

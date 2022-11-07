@@ -29,7 +29,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -217,8 +216,7 @@ absl::optional<media::mojom::DisplayCaptureSurfaceType> GetDisplayCaptureType(
 
 MediaStreamTrack* MediaStreamTrackImpl::Create(ExecutionContext* context,
                                                MediaStreamComponent* component,
-                                               base::OnceClosure callback,
-                                               const String& descriptor_id) {
+                                               base::OnceClosure callback) {
   DCHECK(context);
   DCHECK(component);
 
@@ -227,16 +225,10 @@ MediaStreamTrack* MediaStreamTrackImpl::Create(ExecutionContext* context,
   const bool is_tab_capture =
       (display_surface_type ==
        media::mojom::DisplayCaptureSurfaceType::BROWSER);
-  const bool is_window_capture =
-      (display_surface_type == media::mojom::DisplayCaptureSurfaceType::WINDOW);
 
   if (is_tab_capture && RuntimeEnabledFeatures::RegionCaptureEnabled(context)) {
     return MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
-        context, component, std::move(callback), descriptor_id);
-  } else if ((is_tab_capture || is_window_capture) &&
-             RuntimeEnabledFeatures::ConditionalFocusEnabled(context)) {
-    return MakeGarbageCollected<FocusableMediaStreamTrack>(
-        context, component, std::move(callback), descriptor_id);
+        context, component, std::move(callback));
   } else {
     return MakeGarbageCollected<MediaStreamTrackImpl>(context, component,
                                                       std::move(callback));
@@ -885,10 +877,6 @@ void MediaStreamTrackImpl::BeingTransferred(
   stopTrack(GetExecutionContext());
   return;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void MediaStreamTrackImpl::CloseFocusWindowOfOpportunity() {}
-#endif
 
 void MediaStreamTrackImpl::RegisterMediaStream(MediaStream* media_stream) {
   CHECK(!is_iterating_registered_media_streams_);

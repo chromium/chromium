@@ -665,7 +665,6 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   // Using `switch` to ensure new enum values are handled.
   switch (track_impl_subtype) {
     case SerializedTrackImplSubtype::kTrackImplSubtypeBase:
-    case SerializedTrackImplSubtype::kTrackImplSubtypeFocusable:
       // No additional data needs to be serialized.
       break;
     case SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture:
@@ -678,8 +677,6 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
           "MediaStreamTrack could not be serialized.");
       return false;
     case SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture:
-      // Parent class is FocusableMediaStreamTrack, which needs no additional
-      // data.
       MediaStreamSource* const source = track->Component()->Source();
       DCHECK(source);
       DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);

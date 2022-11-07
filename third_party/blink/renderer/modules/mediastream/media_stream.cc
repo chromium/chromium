@@ -28,7 +28,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
@@ -151,18 +150,12 @@ MediaStream::MediaStream(ExecutionContext* context,
     MediaStreamTrack* const new_track = MediaStreamTrackImpl::Create(
         context, descriptor_->VideoComponent(i),
         WTF::BindOnce(&MediaStream::OnMediaStreamTrackInitialized,
-                      WrapPersistent(this)),
-        descriptor_->Id());
+                      WrapPersistent(this)));
     new_track->RegisterMediaStream(this);
     video_tracks_.push_back(new_track);
     if (transferred_track) {
       DCHECK(!transferred_track->HasImplementation());
       transferred_track->SetImplementation(new_track);
-#if !BUILDFLAG(IS_ANDROID)
-      // The window of opportunity for focus is closed for all transferred
-      // tracks.
-      new_track->CloseFocusWindowOfOpportunity();
-#endif
     }
   }
 
