@@ -34,8 +34,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "url/url_constants.h"
 
-namespace content {
-namespace protocol {
+namespace content::protocol {
 
 namespace {
 
@@ -154,10 +153,6 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
 
 class BrowserToPageConnector;
 
-base::LazyInstance<base::flat_map<DevToolsAgentHost*,
-                                  std::unique_ptr<BrowserToPageConnector>>>::
-    Leaky g_browser_to_page_connectors;
-
 class BrowserToPageConnector {
  public:
   class BrowserConnectorHostClient : public DevToolsAgentHostClient {
@@ -194,43 +189,46 @@ class BrowserToPageConnector {
     page_host_client_ =
         std::make_unique<BrowserConnectorHostClient>(this, page_host_.get());
 
-    SendProtocolMessageToPage("Page.enable", std::make_unique<base::Value>());
-    SendProtocolMessageToPage("Runtime.enable",
-                              std::make_unique<base::Value>());
+    SendProtocolMessageToPage("Page.enable", base::Value());
+    SendProtocolMessageToPage("Runtime.enable", base::Value());
 
-    std::unique_ptr<base::DictionaryValue> add_binding_params =
-        std::make_unique<base::DictionaryValue>();
-    add_binding_params->SetString("name", binding_name);
+    base::Value::Dict add_binding_params;
+    add_binding_params.Set("name", binding_name);
     SendProtocolMessageToPage("Runtime.addBinding",
-                              std::move(add_binding_params));
+                              base::Value(std::move(add_binding_params)));
 
     std::string initializer_script =
         base::StringPrintf(kInitializerScript, binding_name.c_str());
 
-    std::unique_ptr<base::DictionaryValue> params =
-        std::make_unique<base::DictionaryValue>();
-    params->SetString("scriptSource", initializer_script);
+    base::Value::Dict params;
+    params.Set("scriptSource", initializer_script);
     SendProtocolMessageToPage("Page.addScriptToEvaluateOnLoad",
-                              std::move(params));
+                              base::Value(std::move(params)));
 
-    std::unique_ptr<base::DictionaryValue> evaluate_params =
-        std::make_unique<base::DictionaryValue>();
-    evaluate_params->SetString("expression", initializer_script);
-    SendProtocolMessageToPage("Runtime.evaluate", std::move(evaluate_params));
-    g_browser_to_page_connectors.Get()[page_host_.get()].reset(this);
+    base::Value::Dict evaluate_params;
+    evaluate_params.Set("expression", initializer_script);
+    SendProtocolMessageToPage("Runtime.evaluate",
+                              base::Value(std::move(evaluate_params)));
+    GetInstanceMap()[page_host_.get()].reset(this);
   }
 
   BrowserToPageConnector(const BrowserToPageConnector&) = delete;
   BrowserToPageConnector& operator=(const BrowserToPageConnector&) = delete;
 
+  using BrowserToPageConnectorMap =
+      base::flat_map<DevToolsAgentHost*,
+                     std::unique_ptr<BrowserToPageConnector>>;
+  static BrowserToPageConnectorMap& GetInstanceMap() {
+    static base::NoDestructor<BrowserToPageConnectorMap> map;
+    return *map;
+  }
+
  private:
-  void SendProtocolMessageToPage(const char* method,
-                                 std::unique_ptr<base::Value> params) {
+  void SendProtocolMessageToPage(const char* method, base::Value params) {
     base::Value::Dict message_dict;
     message_dict.Set("id", page_message_id_++);
     message_dict.Set("method", method);
-    message_dict.Set("params",
-                     base::Value::FromUniquePtrValue(std::move(params)));
+    message_dict.Set("params", std::move(params));
     base::Value message(std::move(message_dict));
     std::string json_message;
     base::JSONWriter::Write(message, &json_message);
@@ -278,9 +276,10 @@ class BrowserToPageConnector {
     eval_code.append(encoded);
     eval_code.append(eval_suffix);
 
-    auto params = std::make_unique<base::DictionaryValue>();
-    params->SetString("expression", std::move(eval_code));
-    SendProtocolMessageToPage("Runtime.evaluate", std::move(params));
+    base::Value::Dict params;
+    params.Set("expression", std::move(eval_code));
+    SendProtocolMessageToPage("Runtime.evaluate",
+                              base::Value(std::move(params)));
   }
 
   void AgentHostClosed(DevToolsAgentHost* agent_host) {
@@ -290,7 +289,7 @@ class BrowserToPageConnector {
       DCHECK(agent_host == page_host_.get());
       browser_host_->DetachClient(browser_host_client_.get());
     }
-    g_browser_to_page_connectors.Get().erase(page_host_.get());
+    GetInstanceMap().erase(page_host_.get());
   }
 
   std::string binding_name_;
@@ -1135,7 +1134,7 @@ Response TargetHandler::ExposeDevToolsProtocol(
   if (!agent_host)
     return Response::InvalidParams(kTargetNotFound);
 
-  if (g_browser_to_page_connectors.Get()[agent_host.get()]) {
+  if (BrowserToPageConnector::GetInstanceMap()[agent_host.get()]) {
     return Response::ServerError(base::StringPrintf(
         "Target with id %s is already granted remote debugging bindings.",
         target_id.c_str()));
@@ -1414,5 +1413,4 @@ void TargetHandler::AddWorkerThrottle(
   }
 }
 
-}  // namespace protocol
-}  // namespace content
+}  // namespace content::protocol
