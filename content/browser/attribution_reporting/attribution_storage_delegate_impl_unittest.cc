@@ -111,32 +111,32 @@ TEST(AttributionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
   base::Time source_time = base::Time::Now();
   const AttributionReport report =
       GetReport(source_time, /*trigger_time=*/source_time);
-  EXPECT_EQ(source_time + base::Days(2),
+  EXPECT_EQ(source_time + base::Days(2) + base::Hours(1),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),
                 report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
-     ConversionImmediatelyBeforeWindow_NextWindowUsed) {
+     ConversionImmediatelyBeforeWindow_SameWindowUsed) {
   base::Time source_time = base::Time::Now();
   base::Time trigger_time = source_time + base::Days(2) - base::Minutes(1);
   const AttributionReport report = GetReport(source_time, trigger_time);
-  EXPECT_EQ(source_time + base::Days(7),
+  EXPECT_EQ(source_time + base::Days(2) + base::Hours(1),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),
                 report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
-     ConversionBeforeWindowDelay_WindowUsed) {
+     ConversionImmediatelyAfterWindow_NextWindowUsed) {
   base::Time source_time = base::Time::Now();
 
   // The deadline for a window is 1 hour before the window. Use a time just
-  // before the deadline.
-  base::Time trigger_time = source_time + base::Days(2) - base::Minutes(61);
+  // after the deadline.
+  base::Time trigger_time = source_time + base::Days(2) + base::Minutes(1);
   const AttributionReport report = GetReport(source_time, trigger_time);
-  EXPECT_EQ(source_time + base::Days(2),
+  EXPECT_EQ(source_time + base::Days(7) + base::Hours(1),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),
                 report.attribution_info().time));
@@ -150,7 +150,7 @@ TEST(AttributionStorageDelegateImplTest,
   // Set the impression to expire before the two day window.
   const AttributionReport report = GetReport(source_time, trigger_time,
                                              /*expiry=*/base::Hours(2));
-  EXPECT_EQ(source_time + base::Days(2),
+  EXPECT_EQ(source_time + base::Days(2) + base::Hours(1),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),
                 report.attribution_info().time));
@@ -165,7 +165,6 @@ TEST(AttributionStorageDelegateImplTest,
   const AttributionReport report = GetReport(source_time, trigger_time,
                                              /*expiry=*/base::Days(4));
 
-  // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(source_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),
@@ -175,7 +174,7 @@ TEST(AttributionStorageDelegateImplTest,
 TEST(AttributionStorageDelegateImplTest,
      ImpressionExpiryAfterSevenDayWindow_ExpiryWindowUsed) {
   base::Time source_time = base::Time::Now();
-  base::Time trigger_time = source_time + base::Days(7);
+  base::Time trigger_time = source_time + base::Days(7) + base::Hours(1);
 
   // Set the impression to expire before the two day window.
   const AttributionReport report = GetReport(source_time, trigger_time,
@@ -241,8 +240,10 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
   constexpr base::Time kImpressionTime = base::Time();
   constexpr base::TimeDelta kExpiry = base::Days(9);
 
-  constexpr base::Time kEarlyReportTime1 = kImpressionTime + base::Days(2);
-  constexpr base::Time kEarlyReportTime2 = kImpressionTime + base::Days(7);
+  constexpr base::Time kEarlyReportTime1 =
+      kImpressionTime + base::Days(2) + base::Hours(1);
+  constexpr base::Time kEarlyReportTime2 =
+      kImpressionTime + base::Days(7) + base::Hours(1);
   constexpr base::Time kExpiryReportTime =
       kImpressionTime + kExpiry + base::Hours(1);
 

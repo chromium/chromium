@@ -140,6 +140,28 @@
             }
           }
         }]
+      },
+      {
+        "timestamp": "1643408374000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7",
+                    "priority": "3"
+                  }
+                ]
+              }
+            }
+          }
+        ]
       }
     ]
   },
@@ -154,18 +176,7 @@
           "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643408373000"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024,
-          "source_event_id": "123",
-          "source_type": "navigation",
-          "trigger_data": "2"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643408373000"
+        "report_time": "1643411973000"
       },
       {
         "payload": {
@@ -176,7 +187,18 @@
           "trigger_data": "5"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643408373000"
+        "report_time": "1643411973000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024,
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "6"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1643411973000"
       }
     ]
   }

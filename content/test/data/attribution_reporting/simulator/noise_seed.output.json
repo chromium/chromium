@@ -8,7 +8,7 @@
         "source_type": "navigation",
         "trigger_data": "5"
       },
-      "report_time": "1643408373000",
+      "report_time": "1643411973000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
         "randomized_trigger": true
@@ -22,7 +22,7 @@
         "source_type": "navigation",
         "trigger_data": "1"
       },
-      "report_time": "1643408373000",
+      "report_time": "1643411973000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
         "randomized_trigger": true

@@ -25,8 +25,8 @@ constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 base::span<const base::TimeDelta> EarlyDeadlines(
     AttributionSourceType source_type) {
   static constexpr base::TimeDelta kEarlyDeadlinesNavigation[] = {
-      base::Days(2) - kWindowDeadlineOffset,
-      base::Days(7) - kWindowDeadlineOffset,
+      base::Days(2),
+      base::Days(7),
   };
 
   switch (source_type) {
