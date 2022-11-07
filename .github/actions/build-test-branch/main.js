@@ -27,6 +27,10 @@ const slotInput = process.env.INPUT_SLOT;
 console.log("Slot", slotInput);
 const slot = slotInput ? +slotInput : undefined;
 
+const runTestsInput = process.env.INPUT_RUN_TESTS;
+console.log("RunTests", runTestsInput);
+const runTests = runTestsInput == "true";
+
 let requestName = `Chromium Build/Test Branch ${branchName} ${chromiumRevision}`;
 if (driverRevision) {
   requestName += ` driver ${driverRevision}`;
@@ -59,17 +63,22 @@ function platformTasks(platform) {
     platform
   );
 
-  const testStaticTask = newTask(
-    `Chromium Static Tests ${platform}`,
-    {
-      kind: "StaticLiveTests",
-      runtime: "chromium",
-      revision: chromiumRevision,
-      driverRevision,
-    },
-    platform,
-    [buildTask]
-  );
+  const tasks = [buildTask];
 
-  return [buildTask, testStaticTask];
+  if (runTests) {
+    const testStaticTask = newTask(
+      `Chromium Static Tests ${platform}`,
+      {
+        kind: "StaticLiveTests",
+        runtime: "chromium",
+        revision: chromiumRevision,
+        driverRevision,
+      },
+      platform,
+      [buildTask]
+    );
+    tasks.push(testStaticTask);
+  }
+
+  return tasks;
 }

@@ -1151,7 +1151,7 @@ void TaskQueueImpl::SetObserver(TaskQueue::Observer* observer) {
 
   main_thread_only().task_queue_observer = observer;
 
-  base::internal::CheckedAutoLock lock(any_thread_lock_);
+  recordreplay::AutoLockMaybeEventsDisallowed lock(any_thread_lock_);
   any_thread_.task_queue_observer = observer;
 }
 
@@ -1233,12 +1233,12 @@ bool TaskQueueImpl::RequiresTaskTiming() const {
 
 void TaskQueueImpl::SetOnTaskPostedHandler(OnTaskPostedHandler handler) {
   DCHECK(should_notify_observers_ || handler.is_null());
-  base::internal::CheckedAutoLock lock(any_thread_lock_);
+  recordreplay::AutoLockMaybeEventsDisallowed lock(any_thread_lock_);
   any_thread_.on_task_posted_handler = std::move(handler);
 }
 
 bool TaskQueueImpl::IsUnregistered() const {
-  base::internal::CheckedAutoLock lock(any_thread_lock_);
+  recordreplay::AutoLockMaybeEventsDisallowed lock(any_thread_lock_);
   return any_thread_.unregistered;
 }
 

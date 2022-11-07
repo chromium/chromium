@@ -403,6 +403,12 @@ void FrameFetchContext::PrepareRequest(
     base::DictionaryValue dict;
     String loader_id = IdentifiersFactory::LoaderId(document_loader_);
     uint64_t identifier = request.InspectorId();
+
+    // Inspector identifiers can vary when replaying due to differences in inspector
+    // behavior. Make sure the identifiers we report to the recorder are consistent
+    // by manually recording/replaying the identifier.
+    identifier = recordreplay::RecordReplayValue("NetworkRequestId", identifier);
+
     String request_id = IdentifiersFactory::RequestId(document_loader_, identifier);
     dict.SetString("requestUrl", url_string);
     dict.SetString("requestMethod", request.HttpMethod().Utf8());

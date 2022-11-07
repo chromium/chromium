@@ -660,6 +660,9 @@ bool WebURLLoader::Context::OnReceivedRedirect(
 
 void WebURLLoader::Context::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head) {
+  // https://linear.app/replay/issue/RUN-765
+  recordreplay::Assert("WebURLLoader::Context::OnReceivedResponse %d", !!client_);
+
   if (!client_) {
     return;
   }

@@ -18,6 +18,11 @@ on:
       slot:
         description: "Checked out repository slot to use"
         required: false
+      run_tests:
+        description: "Run tests after building"
+        type: boolean
+        required: false
+        default: "true"
 
 jobs:
   build-test:
@@ -42,3 +47,4 @@ jobs:
           INPUT_SKIA_REVISION: ${{ github.event.inputs.skia_revision }}
           INPUT_CLOBBER: ${{ github.event.inputs.clobber }}
           INPUT_SLOT: ${{ github.event.inputs.slot }}
+          INPUT_RUN_TESTS: ${{ github.event.inputs.run_tests }}

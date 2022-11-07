@@ -363,6 +363,10 @@ void FontMatchingMetrics::IdentifiabilityMetricsTimerFired(TimerBase*) {
 }
 
 void FontMatchingMetrics::PublishAllMetrics() {
+  // Avoid sending mojo messages at non-deterministic points.
+  if (recordreplay::AreEventsDisallowed())
+    return;
+
   PublishIdentifiabilityMetrics();
   PublishUkmMetrics();
   PublishEmojiGlyphMetrics();

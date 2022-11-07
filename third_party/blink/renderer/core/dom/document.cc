@@ -3013,7 +3013,10 @@ void Document::Shutdown() {
   if (num_canvases_ > 0)
     UMA_HISTOGRAM_COUNTS_100("Blink.Canvas.NumCanvasesPerPage", num_canvases_);
 
-  GetFontMatchingMetrics()->PublishAllMetrics();
+  // Font metrics are not published at non-deterministic points, and we also don't
+  // want to get the metrics themselves as that can interact with the recording.
+  if (!recordreplay::AreEventsDisallowed())
+    GetFontMatchingMetrics()->PublishAllMetrics();
 
   GetViewportData().Shutdown();
 
