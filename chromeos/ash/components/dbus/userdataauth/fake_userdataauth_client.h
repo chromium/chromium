@@ -120,6 +120,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     std::string AddSession(const cryptohome::AccountIdentifier& account_id,
                            bool authenticated);
 
+    void DestroySessions();
+
    private:
     FakeUserDataAuthClient::UserCryptohomeState& GetUserState(
         const cryptohome::AccountIdentifier& account_id);

@@ -540,6 +540,10 @@ std::string FakeUserDataAuthClient::TestApi::AddSession(
   return auth_session_id;
 }
 
+void FakeUserDataAuthClient::TestApi::DestroySessions() {
+  g_instance->auth_sessions_.clear();
+}
+
 FakeUserDataAuthClient::UserCryptohomeState&
 FakeUserDataAuthClient::TestApi::GetUserState(
     const cryptohome::AccountIdentifier& account_id) {
