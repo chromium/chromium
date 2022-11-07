@@ -922,8 +922,8 @@ const char kDesktopPWAsLaunchHandlerDescription[] =
 
 const char kDesktopPWAsTabStripName[] = "Desktop PWA tab strips";
 const char kDesktopPWAsTabStripDescription[] =
-    "Experimental UI for exploring what PWA windows would look like with a tab "
-    "strip.";
+    "Experimental UI for tabbed application mode - exploring what PWA windows "
+    "would look like with a tab strip.";
 
 const char kDesktopPWAsTabStripSettingsName[] =
     "Desktop PWA tab strips settings";
