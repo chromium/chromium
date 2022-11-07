@@ -2917,7 +2917,7 @@
     },
     {
       name: "WebAppDarkMode",
-      origin_trial_feature_name: "WebAppDarkMode",
+      origin_trial_feature_name: "WebAppDarkModeV2",
       status: "experimental",
       base_feature: "WebAppEnableDarkMode",
     },

@@ -171,22 +171,19 @@ constexpr char kTestManifestBody[] = R"({
   }],
   "theme_color": "#0000FF",
   "background_color": "#0000FF",
-  "user_preferences": {
-    "color_scheme_dark": {
-      "theme_color": "#FF0000",
-      "background_color": "#FF0000"
-    }
-  }
+  "theme_colors":
+    [{"color": "#FF0000", "media": "(prefers-color-scheme: dark) "}],
+  "background_colors":
+    [{"color": "#FF0000", "media": "(prefers-color-scheme: dark) "}]
 })";
 
 // Generated from script:
 // $ tools/origin_trials/generate_token.py http://127.0.0.1:8000
-// "WebAppDarkMode" --expire-timestamp=2000000000
+// "WebAppDarkModeV2" --expire-timestamp=2000000000
 constexpr char kOriginTrialToken[] =
-    "A5gReAn4Vcyi41JIfRKliAfE8tKDVpNCK7Xjo5S2XxgkuXNY+"
-    "gapsR9MqlZWWiBAmUsNcHSjqG+"
-    "phM2z3ZNQQAMAAABWeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1c"
-    "mUiOiAiV2ViQXBwRGFya01vZGUiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
+    "A5O53Hwkh/37AxAgFN9SgIEMr4QMDuI+vdiwHK5Y1sRbupzDwml5TUobj4smxm21Rk8RyjU/"
+    "geQ68fYc05rZ7AwAAABYeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYX"
+    "R1cmUiOiAiV2ViQXBwRGFya01vZGVWMiIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==";
 
 }  // namespace
 
