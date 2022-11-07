@@ -13,6 +13,7 @@
 #include <sys/types.h>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
@@ -20,10 +21,14 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info_internal.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 namespace {
+
+bool g_is_cpu_security_mitigation_enabled = false;
 
 // Queries sysctlbyname() for the given key and returns the value from the
 // system or the empty string on failure.
@@ -39,6 +44,31 @@ std::string GetSysctlValue(const char* key_name) {
 }
 
 }  // namespace
+
+namespace internal {
+
+absl::optional<int> NumberOfPhysicalProcessors() {
+  int value;
+  size_t length = sizeof(value);
+
+  if (sysctlbyname("hw.physicalcpu_max", &value, &length, nullptr, 0) != 0)
+    return absl::nullopt;
+  return value;
+}
+
+absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
+  if (!FeatureList::IsEnabled(kNumberOfCoresWithCpuSecurityMitigation) ||
+      !g_is_cpu_security_mitigation_enabled) {
+    return absl::nullopt;
+  }
+  return NumberOfPhysicalProcessors();
+}
+
+}  // namespace internal
+
+BASE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation,
+             "NumberOfCoresWithCpuSecurityMitigation",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 std::string SysInfo::OperatingSystemName() {
@@ -117,6 +147,11 @@ SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
   DCHECK(IsStringUTF8(info.manufacturer));
   DCHECK(IsStringUTF8(info.model));
   return info;
+}
+
+// static
+void SysInfo::SetIsCpuSecurityMitigationsEnabled(bool is_enabled) {
+  g_is_cpu_security_mitigation_enabled = is_enabled;
 }
 
 }  // namespace base

@@ -6,7 +6,11 @@
 #define BASE_SYSTEM_SYS_INFO_INTERNAL_H_
 
 #include "base/base_export.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_MAC)
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
 
 namespace base {
 
@@ -28,9 +32,19 @@ class LazySysInfoValue {
   const T value_;
 };
 
+#if BUILDFLAG(IS_MAC)
 // Exposed for testing.
 BASE_EXPORT absl::optional<int> NumberOfPhysicalProcessors();
 
+// When CPU security mitigation is enabled, return number of "physical"
+// cores and not the number of "logical" cores. CPU security mitigations
+// disables hyper-threading for the current application, which effectively
+// limits the number of concurrently executing threads to the number of
+// physical cores.
+absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled();
+#endif
+
+// Exposed for testing.
 BASE_EXPORT int NumberOfProcessors();
 
 }  // namespace internal
