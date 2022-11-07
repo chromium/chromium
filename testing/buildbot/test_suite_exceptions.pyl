@@ -917,6 +917,7 @@
       },
       'Linux Tests': {
         'swarming': {
+          'shards': 20,
           'quickrun_shards': 15,
         },
       },
@@ -926,6 +927,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
         ],
         'swarming': {
+          'shards': 20,
           'quickrun_shards': 24,
         },
       },
@@ -1075,6 +1077,7 @@
       },
       'linux-lacros-tester-rel': {
         'swarming': {
+          'shards': 20,
           'quickrun_shards': 20,
         },
       },
