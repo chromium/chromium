@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_ASYNC_API_FUNCTION_H_
 #define EXTENSIONS_BROWSER_API_ASYNC_API_FUNCTION_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

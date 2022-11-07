@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/event_router.h"

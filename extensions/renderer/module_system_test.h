@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/script_context.h"

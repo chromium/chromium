@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/extensions_test.h"
 

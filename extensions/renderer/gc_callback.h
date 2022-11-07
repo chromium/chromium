@@ -6,7 +6,7 @@
 #define EXTENSIONS_RENDERER_GC_CALLBACK_H_
 
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "v8/include/v8-forward.h"

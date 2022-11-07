@@ -10,7 +10,7 @@
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "device/bluetooth/bluetooth_advertisement.h"

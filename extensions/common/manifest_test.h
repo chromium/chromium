@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"

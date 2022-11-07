@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 

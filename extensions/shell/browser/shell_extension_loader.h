@@ -6,7 +6,7 @@
 #define EXTENSIONS_SHELL_BROWSER_SHELL_EXTENSION_LOADER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_id.h"

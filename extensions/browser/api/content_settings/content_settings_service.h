@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_CONTENT_SETTINGS_CONTENT_SETTINGS_SERVICE_H_
 #define EXTENSIONS_BROWSER_API_CONTENT_SETTINGS_CONTENT_SETTINGS_SERVICE_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/content_settings/content_settings_store.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
