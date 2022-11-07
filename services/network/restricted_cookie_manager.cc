@@ -399,28 +399,11 @@ bool RestrictedCookieManager::IsPartitionedCookiesEnabled() const {
   return cookie_partition_key_.has_value();
 }
 
-namespace {
-
-bool PartitionedCookiesAllowed(
-    bool partitioned_cookies_runtime_feature_enabled,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
-  if (base::FeatureList::IsEnabled(
-          net::features::kPartitionedCookiesBypassOriginTrial) ||
-      partitioned_cookies_runtime_feature_enabled)
-    return true;
-  // We allow partition keys which have a nonce since the Origin Trial is
-  // only meant to test cookies set with the Partitioned attribute.
-  return cookie_partition_key && cookie_partition_key->nonce();
-}
-
-}  // namespace
-
 void RestrictedCookieManager::GetAllForUrl(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     mojom::CookieManagerGetOptionsPtr options,
-    bool partitioned_cookies_runtime_feature_enabled,
     GetAllForUrlCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -439,11 +422,7 @@ void RestrictedCookieManager::GetAllForUrl(
   net_options.set_return_excluded_cookies();
 
   cookie_store_->GetCookieListWithOptionsAsync(
-      url, net_options,
-      PartitionedCookiesAllowed(partitioned_cookies_runtime_feature_enabled,
-                                cookie_partition_key_)
-          ? cookie_partition_key_collection_
-          : net::CookiePartitionKeyCollection(),
+      url, net_options, cookie_partition_key_collection_,
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
                      top_frame_origin, net_options, std::move(options),
@@ -781,7 +760,6 @@ void RestrictedCookieManager::SetCookieFromString(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     const std::string& cookie,
-    bool partitioned_cookies_runtime_feature_enabled,
     SetCookieFromStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -796,13 +774,9 @@ void RestrictedCookieManager::SetCookieFromString(
 
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
-      net::CanonicalCookie::Create(
-          url, cookie, base::Time::Now(), absl::nullopt /* server_time */,
-          PartitionedCookiesAllowed(partitioned_cookies_runtime_feature_enabled,
-                                    cookie_partition_key_)
-              ? cookie_partition_key_
-              : absl::nullopt,
-          &status);
+      net::CanonicalCookie::Create(url, cookie, base::Time::Now(),
+                                   absl::nullopt /* server_time */,
+                                   cookie_partition_key_, &status);
   if (!parsed_cookie) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
@@ -836,7 +810,6 @@ void RestrictedCookieManager::GetCookiesString(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool partitioned_cookies_runtime_feature_enabled,
     GetCookiesStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Checks done by GetAllForUrl.
@@ -847,7 +820,6 @@ void RestrictedCookieManager::GetCookiesString(
   match_options->match_type = mojom::CookieMatchType::STARTS_WITH;
   GetAllForUrl(url, site_for_cookies, top_frame_origin,
                std::move(match_options),
-               partitioned_cookies_runtime_feature_enabled,
                base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
                                      cookies) {
                  return net::CanonicalCookie::BuildCookieLine(cookies);
@@ -912,16 +884,6 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
   mojo::ReportBadMessage("Incorrect url origin");
   return false;
-}
-
-void RestrictedCookieManager::ConvertPartitionedCookiesToUnpartitioned(
-    const GURL& url) {
-  DCHECK(base::FeatureList::IsEnabled(net::features::kPartitionedCookies));
-  if (base::FeatureList::IsEnabled(
-          net::features::kPartitionedCookiesBypassOriginTrial)) {
-    return;
-  }
-  cookie_store_->ConvertPartitionedCookiesToUnpartitioned(url);
 }
 
 }  // namespace network

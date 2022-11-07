@@ -277,8 +277,6 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetWasFetchedViaCache(bool);
   void SetArrivalTimeAtRenderer(base::TimeTicks arrival);
 
-  void SetHasPartitionedCookie(bool has_partitioned_cookie);
-
 #if INSIDE_BLINK
  protected:
   // Permit subclasses to set arbitrary ResourceResponse pointer as

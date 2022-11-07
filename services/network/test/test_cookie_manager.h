@@ -65,10 +65,6 @@ class TestCookieManager : public network::mojom::CookieManager {
 
   void DispatchCookieChange(const net::CookieChangeInfo& change);
 
-  // TODO(crbug.com/1296161): Delete this when the partitioned cookies origin
-  // trial is over.
-  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override {}
-
  private:
   // List of observers receiving cookie change notifications.
   std::vector<mojo::Remote<network::mojom::CookieChangeListener>>

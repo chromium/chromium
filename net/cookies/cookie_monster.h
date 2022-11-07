@@ -235,21 +235,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // periodically.
   bool DoRecordPeriodicStatsForTesting() { return DoRecordPeriodicStats(); }
 
-  // Will convert a site's partitioned cookies into unpartitioned cookies. This
-  // may result in multiple cookies which have the same (partition_key, name,
-  // host_key, path), which violates the database's unique constraint. The
-  // algorithm we use to coalesce the cookies into a single unpartitioned cookie
-  // is the following:
-  //
-  // 1.  If one of the cookies has no partition key (i.e. it is unpartitioned)
-  //     choose this cookie.
-  //
-  // 2.  Choose the partitioned cookie with the most recent last_access_time.
-  //
-  // TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
-  // Trial ends.
-  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override;
-
  private:
   // For garbage collection constants.
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest, TestHostGarbageCollection);
@@ -717,12 +702,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const GURL& destination,
       int source_port,
       CookieSourceScheme source_scheme);
-
-  // TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
-  // Trial ends.
-  void OnConvertPartitionedCookiesToUnpartitioned(const GURL& url);
-  void ConvertPartitionedCookie(const net::CanonicalCookie& cookie,
-                                const GURL& url);
 
   // Set of keys (eTLD+1's) for which non-expired cookies have
   // been evicted for hitting the per-domain max. The size of this set is

@@ -1424,8 +1424,6 @@ class StorageAccessAPIWithCHIPSBrowserTest
         StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
     enabled.push_back({net::features::kPartitionedCookies, {}});
     enabled.push_back(
-        {net::features::kPartitionedCookiesBypassOriginTrial, {}});
-    enabled.push_back(
         {blink::features::kStorageAccessAPIForOriginExtension, {}});
     return enabled;
   }

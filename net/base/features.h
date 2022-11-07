@@ -332,11 +332,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSamePartyCookiesConsideredFirstParty);
 // be sent when the browser is on the same top-level site that it was on when
 // the cookie was set.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionedCookies);
-// Flag to bypass the origin trial opt-in to use Partitioned cookies. This
-// allows developers to test Partitioned cookies manually in development
-// environments.
-// TODO(crbug.com/1296161): Remove this feature when the CHIPS OT ends.
-NET_EXPORT BASE_DECLARE_FEATURE(kPartitionedCookiesBypassOriginTrial);
 
 // When enabled, then we allow partitioned cookies even if kPartitionedCookies
 // is disabled only if the cookie partition key contains a nonce. So far, this

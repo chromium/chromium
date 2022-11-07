@@ -8822,11 +8822,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"partitioned-cookies", flag_descriptions::kPartitionedCookiesName,
      flag_descriptions::kPartitionedCookiesDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPartitionedCookies)},
-    // TODO(crbug.com/1296161): Remove this flag when the CHIPS OT ends.
-    {"partitioned-cookies-bypass-origin-trial",
-     flag_descriptions::kPartitionedCookiesBypassOriginTrialName,
-     flag_descriptions::kPartitionedCookiesBypassOriginTrialDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kPartitionedCookiesBypassOriginTrial)},
 
     {"nonced-partitioned-cookies",
      flag_descriptions::kNoncedPartitionedCookiesName,

@@ -59859,7 +59859,6 @@ from previous Chrome versions.
   <int value="-790544721"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:disabled"/>
   <int value="-790036192" label="overscroll-start-threshold"/>
-  <int value="-788070719" label="PartitionedCookiesBypassOriginTrial:disabled"/>
   <int value="-787969387" label="HTTPSServerPreviewsUsingURLLoader:enabled"/>
   <int value="-787885873" label="BorealisForceBetaClient:disabled"/>
   <int value="-787876637" label="HomeLauncherGestures:enabled"/>
@@ -61549,7 +61548,6 @@ from previous Chrome versions.
   <int value="239330938" label="LauncherAppSort:enabled"/>
   <int value="240856309" label="MimeHandlerViewInCrossProcessFrame:enabled"/>
   <int value="241187301" label="BrowserTouchBar:disabled"/>
-  <int value="241846183" label="PartitionedCookiesBypassOriginTrial:enabled"/>
   <int value="244697230" label="enable-theme-color-in-tabbed-mode"/>
   <int value="245100553" label="PcieBillboardNotification:enabled"/>
   <int value="245896533" label="SearchSuggestionsOnLocalNtp:enabled"/>

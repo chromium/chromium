@@ -329,8 +329,6 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
   // It is essential that inspector gets resource response BEFORE console.
   frame->Console().ReportResourceResponseReceived(document_loader_, identifier,
                                                   response);
-
-  document_->CheckPartitionedCookiesOriginTrial(response);
 }
 
 void ResourceLoadObserverForFrame::DidReceiveData(

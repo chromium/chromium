@@ -112,14 +112,12 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
-#include "net/cookies/parsed_cookie.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/redirect_info.h"
@@ -153,9 +151,6 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
-#include "third_party/blink/public/common/origin_trials/trial_token.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -1022,48 +1017,6 @@ void RemoveOriginTrialHintsFromAcceptCH(
     DCHECK(frame_tree_node);
     PersistAcceptCH(url::Origin::Create(url), *frame_tree_node, delegate,
                     client_hints);
-  }
-}
-
-bool IsValidPartitionedCookiesOriginTrial(
-    const GURL& url,
-    const net::HttpResponseHeaders* response_headers) {
-  blink::TrialTokenValidator validator;
-  if (!validator.IsTrialPossibleOnOrigin(url))
-    return false;
-  // Since third-party requests can participate in the CHIPS origin trial and
-  // typically the Origin-Trial header is reserved for requests from the
-  // top-level site, we cannot use validator.RequestEnablesFeature here.
-  url::Origin origin = url::Origin::Create(url);
-  url::Origin third_party_origins[] = {url::Origin::Create(url)};
-  size_t iter = 0;
-  std::string token;
-  base::Time now(base::Time::Now());
-  while (response_headers->EnumerateHeader(&iter, "Origin-Trial", &token)) {
-    blink::TrialTokenResult result =
-        validator.ValidateToken(token, origin, third_party_origins, now);
-    if (result.Status() == blink::OriginTrialTokenStatus::kSuccess) {
-      if (result.ParsedToken()->feature_name() == "PartitionedCookies") {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-// For the partitioned cookies OT, we check if the response has a Set-Cookie
-// header with a partitioned cookie. If it does, we validate the OT token
-// otherwise we convert the URL's partitioned cookies to unpartitioned.
-void CheckPartitionedCookiesOriginTrial(
-    const network::mojom::URLResponseHead* response,
-    const GURL& url,
-    network::mojom::CookieManager* cookie_manager) {
-  if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies) ||
-      !response || !cookie_manager || !response->has_partitioned_cookie) {
-    return;
-  }
-  if (!IsValidPartitionedCookiesOriginTrial(url, response->headers.get())) {
-    cookie_manager->ConvertPartitionedCookiesToUnpartitioned(url);
   }
 }
 
@@ -5074,11 +5027,6 @@ void NavigationRequest::CommitNavigation() {
   }
 
   PersistOriginTrialsFromHeaders(origin, response(), browser_context);
-
-  CheckPartitionedCookiesOriginTrial(response(), common_params_->url,
-                                     frame_tree_node_->current_frame_host()
-                                         ->GetStoragePartition()
-                                         ->GetCookieManagerForBrowserProcess());
 
   // Generate a UKM source and track it on NavigationRequest. This will be
   // passed down to the blink::Document to be created, if any, and used for UKM

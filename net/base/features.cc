@@ -276,9 +276,6 @@ BASE_FEATURE(kSamePartyAttributeEnabled,
 BASE_FEATURE(kPartitionedCookies,
              "PartitionedCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kPartitionedCookiesBypassOriginTrial,
-             "PartitionedCookiesBypassOriginTrial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNoncedPartitionedCookies,
              "NoncedPartitionedCookies",

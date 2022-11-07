@@ -240,7 +240,6 @@ WebURLResponse WebURLResponse::Create(
                                 WebString::FromLatin1(value));
   }
 
-  response.SetHasPartitionedCookie(head.has_partitioned_cookie);
   return response;
 }
 
@@ -694,9 +693,5 @@ bool WebURLResponse::RequestIncludeCredentials() const {
 }
 
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
-
-void WebURLResponse::SetHasPartitionedCookie(bool has_partitioned_cookie) {
-  resource_response_->SetHasPartitionedCookie(has_partitioned_cookie);
-}
 
 }  // namespace blink

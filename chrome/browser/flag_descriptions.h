@@ -1436,9 +1436,6 @@ extern const char kSafetyCheckUnusedSitePermissionsDescription[];
 
 extern const char kPartitionedCookiesName[];
 extern const char kPartitionedCookiesDescription[];
-// TODO(crbug.com/1296161): Remove this when the CHIPS OT ends.
-extern const char kPartitionedCookiesBypassOriginTrialName[];
-extern const char kPartitionedCookiesBypassOriginTrialDescription[];
 
 extern const char kNoncedPartitionedCookiesName[];
 extern const char kNoncedPartitionedCookiesDescription[];

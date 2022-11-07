@@ -211,7 +211,6 @@ class Range;
 class RenderBlockingResourceManager;
 class ResizeObserver;
 class ResourceFetcher;
-class ResourceResponse;
 class RootScrollerController;
 class SVGDocumentExtensions;
 class SVGUseElement;
@@ -1924,9 +1923,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void RemovePendingLinkHeaderPreloadIfNeeded(const PendingLinkPreload&);
 
   void WriteIntoTrace(perfetto::TracedValue ctx) const;
-
-  // TODO(https://crbug.com/1296161): Delete this function.
-  void CheckPartitionedCookiesOriginTrial(const ResourceResponse& response);
 
   void IncrementIgnoreDestructiveWriteModuleScriptCount() {
     ignore_destructive_write_module_script_count_++;

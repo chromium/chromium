@@ -8393,8 +8393,7 @@
                 {
                     "name": "Test",
                     "enable_features": [
-                        "PartitionedCookies",
-                        "PartitionedCookiesBypassOriginTrial"
+                        "PartitionedCookies"
                     ]
                 }
             ]

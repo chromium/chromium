@@ -69,10 +69,7 @@ interface RestrictedCookieManager {
   GetAllForUrl(
       url.mojom.Url url, SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin,
-      CookieManagerGetOptions options,
-      // TODO(https://crbug.com/1296161): Delete this arg when partitioned cookies
-      // Origin Trial is over.
-      bool partitioned_cookies_runtime_feature_enabled) => (
+      CookieManagerGetOptions options) => (
       array<CookieWithAccessResult> cookies);
 
   // Sets a canonical cookie. |status| must be an inclusion status as defined
@@ -106,10 +103,7 @@ interface RestrictedCookieManager {
   [Sync]
   SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
                       url.mojom.Origin top_frame_origin,
-                      string cookie,
-                      // TODO(https://crbug.com/1296161): Delete this arg when
-                      // partitioned cookies Origin Trial is over.
-                      bool partitioned_cookies_runtime_feature_enabled) => (
+                      string cookie) => (
                       bool site_for_cookies_ok, bool top_frame_origin_ok);
 
   // Used to get cookies for the given URL. Cookies that are blocked by user
@@ -122,10 +116,7 @@ interface RestrictedCookieManager {
   [Sync]
   GetCookiesString(url.mojom.Url url,
                    SiteForCookies site_for_cookies,
-                   url.mojom.Origin top_frame_origin,
-                   // TODO(https://crbug.com/1296161): Delete this arg when
-                   // partitioned cookies Origin Trial is over.
-                   bool partitioned_cookies_runtime_feature_enabled) => (
+                   url.mojom.Origin top_frame_origin) => (
                    string cookies);
 
   // Used to check if cookies are enabled for the given URL in context of a
@@ -138,8 +129,4 @@ interface RestrictedCookieManager {
       url.mojom.Url url,
       SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin) => (bool cookies_enabled);
-
-  // TODO(https://crbug.com/1296161): Delete this method when the partitioned cookies
-  // Origin Trial is over.
-  ConvertPartitionedCookiesToUnpartitioned(url.mojom.Url url);
 };

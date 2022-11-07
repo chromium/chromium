@@ -157,7 +157,6 @@ void MediaResourceGetterImpl::GetCookies(
       cookie_manager.get();
   cookie_manager_ptr->GetCookiesString(
       url, site_for_cookies, top_frame_origin,
-      /*partitioned_cookies_runtime_feature_enabled=*/false,
       base::BindOnce(&ReturnResultOnUIThreadAndClosePipe,
                      std::move(cookie_manager), std::move(callback)));
 }

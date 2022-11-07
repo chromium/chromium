@@ -381,13 +381,4 @@ CookieDeletionInfo DeletionFilterToInfo(mojom::CookieDeletionFilterPtr filter) {
   return delete_info;
 }
 
-void CookieManager::ConvertPartitionedCookiesToUnpartitioned(const GURL& url) {
-  if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies) ||
-      base::FeatureList::IsEnabled(
-          net::features::kPartitionedCookiesBypassOriginTrial)) {
-    return;
-  }
-  cookie_store_->ConvertPartitionedCookiesToUnpartitioned(url);
-}
-
 }  // namespace network

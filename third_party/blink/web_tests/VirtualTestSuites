@@ -886,7 +886,7 @@
               "external/wpt/html/anonymous-iframe/",
               "http/tests/cookies/partitioned-cookies",
               "http/tests/inspector-protocol/network/"],
-    "args": ["--enable-features=PartitionedCookies,PartitionedCookiesBypassOriginTrial"]
+    "args": ["--enable-features=PartitionedCookies"]
   },
   {
     "prefix": "prerender",

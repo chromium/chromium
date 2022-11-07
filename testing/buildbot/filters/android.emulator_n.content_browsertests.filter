@@ -32,9 +32,6 @@
 # TODO(crbug.com/1368744)
 -All/DumpAccessibilityTreeTest.AccessibilityButtonNameCalc/android
 
-# TODO(crbug.com/1368694)
--SubresourcePartitionedCookiesOriginTrialBrowserTest.NoToken
-
 # TODO(crbug.com/1368929)
 -PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginDocumentHasNoSameSiteCookies/*
 

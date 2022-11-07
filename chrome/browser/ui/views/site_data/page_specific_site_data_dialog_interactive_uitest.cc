@@ -53,11 +53,10 @@ class PageSpecificSiteDataDialogInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   PageSpecificSiteDataDialogInteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        {page_info::kPageSpecificSiteDataDialog,
-         page_info::kPageInfoCookiesSubpage, net::features::kPartitionedCookies,
-         net::features::kPartitionedCookiesBypassOriginTrial},
-        {});
+    feature_list_.InitWithFeatures({page_info::kPageSpecificSiteDataDialog,
+                                    page_info::kPageInfoCookiesSubpage,
+                                    net::features::kPartitionedCookies},
+                                   {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }

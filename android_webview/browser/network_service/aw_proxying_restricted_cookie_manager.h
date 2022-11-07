@@ -46,7 +46,6 @@ class AwProxyingRestrictedCookieManager
                     const net::SiteForCookies& site_for_cookies,
                     const url::Origin& top_frame_origin,
                     network::mojom::CookieManagerGetOptionsPtr options,
-                    bool partitioned_cookies_runtime_feature_enabled,
                     GetAllForUrlCallback callback) override;
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           const GURL& url,
@@ -65,13 +64,11 @@ class AwProxyingRestrictedCookieManager
                            const net::SiteForCookies& site_for_cookies,
                            const url::Origin& top_frame_origin,
                            const std::string& cookie,
-                           bool partitioned_cookies_runtime_feature_enabled,
                            SetCookieFromStringCallback callback) override;
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
-                        bool partitioned_cookies_runtime_feature_enabled,
                         GetCookiesStringCallback callback) override;
 
   void CookiesEnabledFor(const GURL& url,
@@ -82,9 +79,6 @@ class AwProxyingRestrictedCookieManager
   // This one is internal.
   bool AllowCookies(const GURL& url,
                     const net::SiteForCookies& site_for_cookies) const;
-
-  // TODO(https://crbug.com/1296161): Delete this function.
-  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override;
 
  private:
   AwProxyingRestrictedCookieManager(

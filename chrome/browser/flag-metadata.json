@@ -5480,11 +5480,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "partitioned-cookies-bypass-origin-trial",
-    "owners": [ "dylancutler@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "password-change-account-store-users",
     "owners": [ "brunobraga@google.com", "jkeitel@google.com", "chrome-duplex@google.com" ],
     "expiry_milestone": 118

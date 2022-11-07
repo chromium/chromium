@@ -439,11 +439,6 @@ class PLATFORM_EXPORT ResourceResponse final {
     request_include_credentials_ = request_include_credentials;
   }
 
-  bool HasPartitionedCookie() const { return has_partitioned_cookie_; }
-  void SetHasPartitionedCookie(bool has_partitioned_cookie) {
-    has_partitioned_cookie_ = has_partitioned_cookie;
-  }
-
  private:
   void UpdateHeaderParsedState(const AtomicString& name);
 
@@ -643,10 +638,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
 
   bool emitted_extra_info_ = false;
-
-  // See URLResponseHead.has_partitioned_cookie.
-  // TODO(https://crbug.com/1296161): Delete this field.
-  bool has_partitioned_cookie_ = false;
 };
 
 }  // namespace blink

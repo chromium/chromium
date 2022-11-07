@@ -101,7 +101,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                     const net::SiteForCookies& site_for_cookies,
                     const url::Origin& top_frame_origin,
                     mojom::CookieManagerGetOptionsPtr options,
-                    bool partitioned_cookies_runtime_feature_enabled,
                     GetAllForUrlCallback callback) override;
 
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
@@ -122,13 +121,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                            const net::SiteForCookies& site_for_cookies,
                            const url::Origin& top_frame_origin,
                            const std::string& cookie,
-                           bool partitioned_cookies_runtime_feature_enabled,
                            SetCookieFromStringCallback callback) override;
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
-                        bool partitioned_cookies_runtime_feature_enabled,
                         GetCookiesStringCallback callback) override;
   void CookiesEnabledFor(const GURL& url,
                          const net::SiteForCookies& site_for_cookies,
@@ -144,20 +141,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CookieStore* cookie_store,
       const net::IsolationInfo& isolation_info,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
-
-  // This is a temporary method for the partitioned cookies (aka CHIPS) origin
-  // trial.
-  //
-  // This method allows RCM to convert any sites' partitioned cookies to
-  // unpartitioned. It should only exist for the duration of the CHIPS OT and
-  // should be deleted shortly after, since it gives untrusted processes the
-  // ability to convert any site's partitioned cookies to unpartitioned.
-  //
-  // Since CHIPS is still an experimental API, giving RCM this privilege should
-  // not be a major risk. However, before CHIPS goes live this method should be
-  // deleted.
-  // TODO(https://crbug.com/1296161): Delete this function.
-  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override;
 
  private:
   // The state associated with a CookieChangeListener.

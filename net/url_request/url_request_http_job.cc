@@ -725,7 +725,6 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
                                             cookie_line);
 
       size_t n_partitioned_cookies = 0;
-      size_t n_partitioned_cookies_no_nonce = 0;
 
       // TODO(crbug.com/1031664): Reduce the number of times the cookie list
       // is iterated over. Get metrics for every cookie which is included.
@@ -758,34 +757,12 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
                                   cookie_request_schemes);
         if (c.cookie.IsPartitioned()) {
           ++n_partitioned_cookies;
-          if (!c.cookie.PartitionKey()->nonce())
-            ++n_partitioned_cookies_no_nonce;
         }
       }
 
       if (IsPartitionedCookiesEnabled()) {
         base::UmaHistogramCounts100("Cookie.PartitionedCookiesInRequest",
                                     n_partitioned_cookies);
-        // TODO(crbug.com/1296161): Remove this code when the partitioned
-        // cookies Origin Trial is over.
-        if (n_partitioned_cookies_no_nonce > 0 &&
-            !request_info_.extra_headers.HasHeader(
-                "Sec-CH-Partitioned-Cookies")) {
-          // If the cookie store has partitioned cookies and there is no
-          // Sec-CH-Partitioned-Cookies header set by the process that initiated
-          // the request, then the site was in the Origin Trial at one point,
-          // but we have not yet received a valid token or Accept-CH header.
-          //
-          // In this case, we still send the partitioned cookies and set the
-          // Sec-CH-Partitioned-Cookies structured header to false.
-          //
-          // If the site does not respond with the Accept-CH header and OT token
-          // in the response, the partitioned cookies will be converted to
-          // unpartitioned cookies. This conversion is done by
-          // CookieManager::ConvertPartitionedCookiesToUnpartitioned.
-          request_info_.extra_headers.SetHeader("Sec-CH-Partitioned-Cookies",
-                                                "?0");
-        }
       }
     }
   }
@@ -913,12 +890,6 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     CookieInclusionStatus returned_status;
 
     num_cookie_lines_left_++;
-
-    // `cookie_partition_key_` is only non-null when partitioned cookie are
-    // enabled.
-    if (cookie_partition_key_ && ParsedCookie(cookie_string).IsPartitioned()) {
-      request_->SetHasPartitionedCookie();
-    }
 
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,

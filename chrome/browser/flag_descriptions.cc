@@ -2558,12 +2558,6 @@ const char kSafetyCheckUnusedSitePermissionsDescription[] =
 const char kPartitionedCookiesName[] = "Partitioned cookies";
 const char kPartitionedCookiesDescription[] =
     "Controls if the Partitioned cookie attribute is enabled.";
-const char kPartitionedCookiesBypassOriginTrialName[] =
-    "Partitioned cookies: bypass origin trial";
-const char kPartitionedCookiesBypassOriginTrialDescription[] =
-    "If this flag is enabled, Chrome will not require a site to opt into the "
-    "origin trial in order to send or receive cookies set with the Partitioned "
-    "attribute.";
 
 const char kNoncedPartitionedCookiesName[] = "Nonced partitioned cookies only";
 const char kNoncedPartitionedCookiesDescription[] =

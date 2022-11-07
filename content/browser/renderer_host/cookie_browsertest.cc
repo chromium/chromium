@@ -349,23 +349,18 @@ class RestrictedCookieManagerInterceptor
                            const net::SiteForCookies& site_for_cookies,
                            const url::Origin& top_frame_origin,
                            const std::string& cookie,
-                           bool partitioned_cookies_runtime_feature_enabled,
                            SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
         URLToUse(url), site_for_cookies, top_frame_origin, std::move(cookie),
-        /*partitioned_cookies_runtime_feature_enabled=*/false,
         std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
-                        bool partitioned_cookies_runtime_feature_enabled,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
-        URLToUse(url), site_for_cookies, top_frame_origin,
-        /*partitioned_cookies_runtime_feature_enabled=*/false,
-        std::move(callback));
+        URLToUse(url), site_for_cookies, top_frame_origin, std::move(callback));
   }
 
  private:
