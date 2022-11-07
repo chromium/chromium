@@ -210,44 +210,6 @@ TEST_F(OverlayUserPrefStoreTest, GlobalPref) {
   EXPECT_TRUE(obs.changed_keys.empty());
 }
 
-// Check that mutable values are removed correctly.
-TEST_F(OverlayUserPrefStoreTest, ClearMutableValues) {
-  // Set in overlay and underlay the same preference.
-  underlay_->SetValue(regular_key, Value(42),
-                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  overlay_->SetValue(regular_key, Value(43),
-                     WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-
-  const Value* value = nullptr;
-  // Check that an overlay preference is returned.
-  EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_EQ(base::Value(43), *value);
-  overlay_->ClearMutableValues();
-
-  // Check that an underlay preference is returned.
-  EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_EQ(base::Value(42), *value);
-}
-
-// Check that mutable values are removed correctly when using a silent set.
-TEST_F(OverlayUserPrefStoreTest, ClearMutableValues_Silently) {
-  // Set in overlay and underlay the same preference.
-  underlay_->SetValueSilently(regular_key, Value(42),
-                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  overlay_->SetValueSilently(regular_key, Value(43),
-                             WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-
-  const Value* value = nullptr;
-  // Check that an overlay preference is returned.
-  EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_EQ(base::Value(43), *value);
-  overlay_->ClearMutableValues();
-
-  // Check that an underlay preference is returned.
-  EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_EQ(base::Value(42), *value);
-}
-
 TEST_F(OverlayUserPrefStoreTest, GetValues) {
   // To check merge behavior, create underlay and overlay so each has a key the
   // other doesn't have and they have one key in common.

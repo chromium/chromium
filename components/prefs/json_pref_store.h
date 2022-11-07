@@ -120,8 +120,6 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
   void RegisterOnNextSuccessfulWriteReply(
       base::OnceClosure on_next_successful_write_reply);
 
-  void ClearMutableValues() override;
-
   void OnStoreDeletionFromDisk() override;
 
 #if defined(UNIT_TEST)

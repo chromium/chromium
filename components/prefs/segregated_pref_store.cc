@@ -204,10 +204,6 @@ void SegregatedPrefStore::SchedulePendingLossyWrites() {
   selected_pref_store_->SchedulePendingLossyWrites();
 }
 
-void SegregatedPrefStore::ClearMutableValues() {
-  NOTIMPLEMENTED();
-}
-
 void SegregatedPrefStore::OnStoreDeletionFromDisk() {
   default_pref_store_->OnStoreDeletionFromDisk();
   selected_pref_store_->OnStoreDeletionFromDisk();

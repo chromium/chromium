@@ -80,7 +80,6 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
       base::OnceClosure synchronous_done_callback =
           base::OnceClosure()) override;
   void SchedulePendingLossyWrites() override;
-  void ClearMutableValues() override;
   void OnStoreDeletionFromDisk() override;
 
  protected:

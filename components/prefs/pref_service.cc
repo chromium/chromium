@@ -402,10 +402,6 @@ void PrefService::ClearPrefsWithPrefixSilently(const std::string& prefix) {
   user_pref_store_->RemoveValuesByPrefixSilently(prefix);
 }
 
-void PrefService::ClearMutableValues() {
-  user_pref_store_->ClearMutableValues();
-}
-
 void PrefService::OnStoreDeletionFromDisk() {
   user_pref_store_->OnStoreDeletionFromDisk();
 }

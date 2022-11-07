@@ -111,7 +111,6 @@ bool OverlayUserPrefStore::GetMutableValue(const std::string& key,
   if (ShallBeStoredInPersistent(key))
     return persistent_user_pref_store_->GetMutableValue(key, result);
 
-  written_ephemeral_names_.insert(key);
   if (ephemeral_user_pref_store_->GetMutableValue(key, result))
     return true;
 
@@ -138,7 +137,6 @@ void OverlayUserPrefStore::SetValue(const std::string& key,
   // TODO(https://crbug.com/861722): If we always store in in-memory storage
   // and conditionally also stored in persistent one, we wouldn't have to do a
   // complex merge in GetValues().
-  written_ephemeral_names_.insert(key);
   ephemeral_user_pref_store_->SetValue(key, std::move(value), flags);
 }
 
@@ -150,7 +148,6 @@ void OverlayUserPrefStore::SetValueSilently(const std::string& key,
     return;
   }
 
-  written_ephemeral_names_.insert(key);
   ephemeral_user_pref_store_->SetValueSilently(key, std::move(value), flags);
 }
 
@@ -160,7 +157,6 @@ void OverlayUserPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
     return;
   }
 
-  written_ephemeral_names_.insert(key);
   ephemeral_user_pref_store_->RemoveValue(key, flags);
 }
 
@@ -213,13 +209,6 @@ void OverlayUserPrefStore::RegisterPersistentPref(const std::string& key) {
   DCHECK(persistent_names_set_.find(key) == persistent_names_set_.end())
       << "Key already registered: " << key;
   persistent_names_set_.insert(key);
-}
-
-void OverlayUserPrefStore::ClearMutableValues() {
-  for (const auto& key : written_ephemeral_names_) {
-    ephemeral_user_pref_store_->RemoveValue(
-        key, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  }
 }
 
 void OverlayUserPrefStore::OnStoreDeletionFromDisk() {

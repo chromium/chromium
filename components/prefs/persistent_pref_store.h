@@ -77,9 +77,6 @@ class COMPONENTS_PREFS_EXPORT PersistentPrefStore : public WriteablePrefStore {
   // isn't one scheduled already.
   virtual void SchedulePendingLossyWrites() = 0;
 
-  // It should be called only for Incognito pref store.
-  virtual void ClearMutableValues() = 0;
-
   // Cleans preference data that may have been saved outside of the store.
   virtual void OnStoreDeletionFromDisk() = 0;
 

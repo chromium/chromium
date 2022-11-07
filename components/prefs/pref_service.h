@@ -368,9 +368,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // implemented in chrome/browser/prefs/browser_prefs.cc.
   PrefRegistry* DeprecatedGetPrefRegistry();
 
-  // Clears mutable values.
-  void ClearMutableValues();
-
   // Invoked when the store is deleted from disk. Allows this PrefService
   // to tangentially cleanup data it may have saved outside the store.
   void OnStoreDeletionFromDisk();

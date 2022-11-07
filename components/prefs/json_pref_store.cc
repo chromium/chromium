@@ -413,10 +413,6 @@ void JsonPrefStore::RegisterOnNextWriteSynchronousCallbacks(
           base::SequencedTaskRunnerHandle::Get()));
 }
 
-void JsonPrefStore::ClearMutableValues() {
-  NOTIMPLEMENTED();
-}
-
 void JsonPrefStore::OnStoreDeletionFromDisk() {
   if (pref_filter_)
     pref_filter_->OnStoreDeletionFromDisk();

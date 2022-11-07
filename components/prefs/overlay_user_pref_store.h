@@ -72,7 +72,6 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   // (|persistent_user_pref_store_|).
   void RegisterPersistentPref(const std::string& key);
 
-  void ClearMutableValues() override;
   void OnStoreDeletionFromDisk() override;
 
  protected:
@@ -94,7 +93,6 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   scoped_refptr<PersistentPrefStore> ephemeral_user_pref_store_;
   scoped_refptr<PersistentPrefStore> persistent_user_pref_store_;
   PrefNameSet persistent_names_set_;
-  PrefNameSet written_ephemeral_names_;
 };
 
 #endif  // COMPONENTS_PREFS_OVERLAY_USER_PREF_STORE_H_
