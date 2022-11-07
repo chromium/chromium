@@ -791,7 +791,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
     // TODO(accessibility): extract into function.
     if (tryScrolling && currentRange &&
-        !AutoScrollHandler.getInstance().onCommandNavigation(
+        !AutoScrollHandler.instance.onCommandNavigation(
             currentRange, dir, pred, unit, speechProps, rootPred, () => {
               this.onCommand(command);
               this.onFinishCommand();

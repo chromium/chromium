@@ -327,7 +327,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       return;
     }
 
-    if (!AutoScrollHandler.getInstance().onFocusEventNavigation(node)) {
+    if (!AutoScrollHandler.instance.onFocusEventNavigation(node)) {
       return;
     }
 

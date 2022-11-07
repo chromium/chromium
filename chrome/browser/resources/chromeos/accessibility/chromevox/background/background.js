@@ -17,6 +17,7 @@ import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {QueueMode, TtsInterface, TtsSpeechProperties} from '../common/tts_interface.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
+import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
 import {ChromeVox} from './chromevox.js';
@@ -113,6 +114,7 @@ export class Background extends ChromeVoxState {
       this.onClipboardCopyEvent_(event);
     });
 
+    AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
     ConsoleTts.init();
     DesktopAutomationHandler.init();
