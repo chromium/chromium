@@ -20,10 +20,10 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -88,7 +88,7 @@ void PassphraseTableViewControllerTest::SetUp() {
   chrome_browser_state_ = test_cbs_builder.Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       chrome_browser_state_.get(),
-      std::make_unique<AuthenticationServiceDelegateFake>());
+      std::make_unique<FakeAuthenticationServiceDelegate>());
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
   app_state_ = [[AppState alloc] initWithBrowserLauncher:nil
                                       startupInformation:nil

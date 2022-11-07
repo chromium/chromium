@@ -25,6 +25,7 @@ class AuthenticationServiceDelegate {
  private:
   friend class AuthenticationServiceTest;
   friend class AuthenticationServiceDelegateFake;
+  friend class FakeAuthenticationServiceDelegate;
 
   int clear_browsing_data_counter_ = 0;
 };
