@@ -428,7 +428,7 @@ public class CustomTabActivityTabController implements InflationObserver {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
             mRealtimeEngagementSignalObserver = new RealtimeEngagementSignalObserver(
-                    mTabObserverRegistrar, mTabProvider, mConnection, mSession);
+                    mTabObserverRegistrar, tab, mConnection, mSession);
         }
 
         // TODO(pshmakov): invert these dependencies.
