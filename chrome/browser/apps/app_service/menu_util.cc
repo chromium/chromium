@@ -8,6 +8,8 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -22,7 +24,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/vector_icon_types.h"
 
 namespace {
 const int kInvalidRadioGroupId = -1;
@@ -94,17 +95,18 @@ void CreateOpenNewSubmenu(uint32_t string_id, MenuItems& menu_items) {
       std::make_unique<MenuItem>(MenuItemType::kSubmenu, ash::LAUNCH_NEW);
   menu_item->string_id = string_id;
 
-  menu_item->submenu.push_back(
-      CreateRadioItem(ash::USE_LAUNCH_TYPE_REGULAR,
-                      IDS_APP_LIST_CONTEXT_MENU_NEW_TAB, kGroupId));
-  menu_item->submenu.push_back(
-      CreateRadioItem(ash::USE_LAUNCH_TYPE_WINDOW,
-                      IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, kGroupId));
+  menu_item->submenu.push_back(CreateRadioItem(
+      ash::USE_LAUNCH_TYPE_REGULAR,
+      StringIdForUseLaunchTypeCommand(ash::USE_LAUNCH_TYPE_REGULAR), kGroupId));
+  menu_item->submenu.push_back(CreateRadioItem(
+      ash::USE_LAUNCH_TYPE_WINDOW,
+      StringIdForUseLaunchTypeCommand(ash::USE_LAUNCH_TYPE_WINDOW), kGroupId));
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
-    menu_item->submenu.push_back(
-        CreateRadioItem(ash::USE_LAUNCH_TYPE_TABBED_WINDOW,
-                        IDS_APP_LIST_CONTEXT_MENU_NEW_TABBED_WINDOW, kGroupId));
+    menu_item->submenu.push_back(CreateRadioItem(
+        ash::USE_LAUNCH_TYPE_TABBED_WINDOW,
+        StringIdForUseLaunchTypeCommand(ash::USE_LAUNCH_TYPE_TABBED_WINDOW),
+        kGroupId));
   }
 
   menu_item->radio_group_id = kInvalidRadioGroupId;
@@ -136,47 +138,33 @@ bool ShouldAddCloseItem(const std::string& app_id,
       .ContainsAppId(app_id);
 }
 
-bool PopulateNewItemFromMenuItems(const MenuItems& menu_items,
-                                  ui::SimpleMenuModel* model,
-                                  ui::SimpleMenuModel* submenu,
-                                  GetVectorIconCallback get_vector_icon) {
-  if (menu_items.items.empty()) {
-    return false;
-  }
+void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,
+                                       ui::SimpleMenuModel* model,
+                                       ui::SimpleMenuModel* submenu,
+                                       int* launch_new_string_id) {
+  DCHECK_EQ(menu_item->command_id, ash::LAUNCH_NEW);
 
-  const auto& item = menu_items.items[0];
-  if (item->command_id != ash::LAUNCH_NEW)
-    return false;
+  if (launch_new_string_id)
+    *launch_new_string_id = menu_item->string_id;
 
-  const ui::ColorId color_id = GetColorIdForMenuItemIcon();
-  switch (item->type) {
+  switch (menu_item->type) {
     case apps::MenuItemType::kCommand: {
-      const gfx::VectorIcon& icon =
-          std::move(get_vector_icon).Run(item->command_id, item->string_id);
-      model->AddItemWithStringIdAndIcon(
-          item->command_id, item->string_id,
-          ui::ImageModel::FromVectorIcon(icon, color_id,
-                                         ash::kAppContextMenuIconSize));
+      model->AddItemWithStringId(menu_item->command_id, menu_item->string_id);
       break;
     }
     case apps::MenuItemType::kSubmenu:
-      if (!item->submenu.empty()) {
-        PopulateRadioItemFromMenuItems(item->submenu, submenu);
-        const gfx::VectorIcon& icon =
-            std::move(get_vector_icon).Run(item->command_id, item->string_id);
-        model->AddActionableSubmenuWithStringIdAndIcon(
-            item->command_id, item->string_id, submenu,
-            ui::ImageModel::FromVectorIcon(icon, color_id,
-                                           ash::kAppContextMenuIconSize));
+      if (!menu_item->submenu.empty()) {
+        PopulateRadioItemFromMenuItems(menu_item->submenu, submenu);
+        model->AddActionableSubMenu(
+            menu_item->command_id,
+            l10n_util::GetStringUTF16(menu_item->string_id), submenu);
       }
       break;
     case apps::MenuItemType::kRadio:
     case apps::MenuItemType::kSeparator:
     case apps::MenuItemType::kPublisherCommand:
       NOTREACHED();
-      return false;
   }
-  return true;
 }
 
 void PopulateItemFromMenuItem(const apps::MenuItemPtr& item,
@@ -250,6 +238,22 @@ ui::ColorId GetColorIdForMenuItemIcon() {
 #else
   return ui::kColorMenuIcon;
 #endif
+}
+
+uint32_t StringIdForUseLaunchTypeCommand(uint32_t command_id) {
+  DCHECK(command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
+         command_id < ash::USE_LAUNCH_TYPE_COMMAND_END);
+  switch (command_id) {
+    case ash::USE_LAUNCH_TYPE_REGULAR:
+      return IDS_APP_LIST_CONTEXT_MENU_NEW_TAB;
+    case ash::USE_LAUNCH_TYPE_WINDOW:
+      return IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW;
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
+      return IDS_APP_LIST_CONTEXT_MENU_NEW_TABBED_WINDOW;
+    default:
+      NOTREACHED();
+      return 0;
+  }
 }
 
 }  // namespace apps

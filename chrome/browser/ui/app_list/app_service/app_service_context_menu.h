@@ -44,10 +44,13 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
   AppServiceContextMenu& operator=(const AppServiceContextMenu&) = delete;
 
   // AppContextMenu overrides:
+  ui::ImageModel GetIconForCommandId(int command_id) const override;
+  std::u16string GetLabelForCommandId(int command_id) const override;
   void GetMenuModel(GetMenuModelCallback callback) override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
+  bool IsItemForCommandIdDynamic(int command_id) const override;
 
  private:
   void OnGetMenuModel(GetMenuModelCallback callback,
@@ -88,6 +91,11 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
 
   // Where this item is being shown (e.g. the apps grid or recent apps).
   const ash::AppListItemContext item_context_;
+
+  // String id for the `LAUNCH_NEW` menu item tracked so the menu icon and label
+  // can be changed dynamically after the app launch type changes using the
+  // launch new item submenu.
+  int launch_new_string_id_ = 0;
 
   base::WeakPtrFactory<AppServiceContextMenu> weak_ptr_factory_{this};
 };

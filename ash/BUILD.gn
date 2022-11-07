@@ -2662,6 +2662,7 @@ test("ash_unittests") {
     "ambient/ui/media_string_view_unittest.cc",
     "ambient/ui/photo_view_unittest.cc",
     "ambient/util/ambient_util_unittest.cc",
+    "app_menu/app_menu_model_adapter_unittest.cc",
     "app_menu/notification_menu_controller_unittest.cc",
     "app_menu/notification_menu_view_unittest.cc",
     "app_menu/notification_overflow_view_unittest.cc",

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "components/services/app_service/public/cpp/menu.h"
@@ -28,9 +27,6 @@ class SimpleMenuModel;
 }  // namespace ui
 
 namespace apps {
-
-using GetVectorIconCallback =
-    base::OnceCallback<const gfx::VectorIcon&(int command_id, int string_id)>;
 
 // Adds a command menu item to |menu_items|.
 void AddCommandItem(uint32_t command_id,
@@ -69,13 +65,12 @@ bool ShouldAddCloseItem(const std::string& app_id,
                         MenuType menu_type,
                         Profile* profile);
 
-// Populates the LAUNCH_NEW menu item to a simple menu model |model| from menu
-// items |menu_items|. Returns true if the LAUNCH_NEW menu item is added to
-// |model|, otherwise returns false.
-bool PopulateNewItemFromMenuItems(const MenuItems& menu_items,
-                                  ui::SimpleMenuModel* model,
-                                  ui::SimpleMenuModel* submenu,
-                                  GetVectorIconCallback get_vector_icon);
+// Populates the LAUNCH_NEW menu item to a simple menu model |model| from
+// |menu_item|. Also sets initial string id value to |launch_new_string_id|.
+void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,
+                                       ui::SimpleMenuModel* model,
+                                       ui::SimpleMenuModel* submenu,
+                                       int* launch_new_string_id);
 
 // Populates the menu item to a simple menu model |model| from menu item
 // |menu_item|.
@@ -94,6 +89,9 @@ MenuType MenuTypeFromString(base::StringPiece menu_type);
 MenuItems CreateBrowserMenuItems(const Profile* profile);
 
 ui::ColorId GetColorIdForMenuItemIcon();
+
+// Converts `USE_LAUNCH_TYPE_*` commands to associated string ids.
+uint32_t StringIdForUseLaunchTypeCommand(uint32_t command_id);
 
 }  // namespace apps
 

@@ -8,7 +8,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
@@ -38,7 +36,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -152,6 +149,25 @@ AppServiceContextMenu::AppServiceContextMenu(
 
 AppServiceContextMenu::~AppServiceContextMenu() = default;
 
+ui::ImageModel AppServiceContextMenu::GetIconForCommandId(
+    int command_id) const {
+  if (command_id == ash::LAUNCH_NEW) {
+    const gfx::VectorIcon& icon =
+        GetMenuItemVectorIcon(command_id, launch_new_string_id_);
+    return ui::ImageModel::FromVectorIcon(
+        icon, apps::GetColorIdForMenuItemIcon(), ash::kAppContextMenuIconSize);
+  }
+  return AppContextMenu::GetIconForCommandId(command_id);
+}
+
+std::u16string AppServiceContextMenu::GetLabelForCommandId(
+    int command_id) const {
+  if (command_id == ash::LAUNCH_NEW)
+    return l10n_util::GetStringUTF16(launch_new_string_id_);
+
+  return AppContextMenu::GetLabelForCommandId(command_id);
+}
+
 void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
   if (app_type_ == apps::AppType::kUnknown) {
     std::move(callback).Run(nullptr);
@@ -264,6 +280,9 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
     default:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
+        launch_new_string_id_ =
+            apps::StringIdForUseLaunchTypeCommand(command_id);
+
         if (app_type_ == apps::AppType::kWeb &&
             command_id == ash::USE_LAUNCH_TYPE_TABBED_WINDOW) {
           if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
@@ -361,15 +380,23 @@ bool AppServiceContextMenu::IsCommandIdEnabled(int command_id) const {
   return AppContextMenu::IsCommandIdEnabled(command_id);
 }
 
+bool AppServiceContextMenu::IsItemForCommandIdDynamic(int command_id) const {
+  return command_id == ash::LAUNCH_NEW ||
+         AppContextMenu::IsItemForCommandIdDynamic(command_id);
+}
+
 void AppServiceContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
                                            apps::MenuItems menu_items) {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
   submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
   size_t index = 0;
-  if (apps::PopulateNewItemFromMenuItems(
-          menu_items, menu_model.get(), submenu_.get(),
-          base::BindOnce(&AppServiceContextMenu::GetMenuItemVectorIcon))) {
-    index = 1;
+
+  if (!menu_items.items.empty() &&
+      menu_items.items[0]->command_id == ash::LAUNCH_NEW) {
+    apps::PopulateLaunchNewItemFromMenuItem(menu_items.items[0],
+                                            menu_model.get(), submenu_.get(),
+                                            &launch_new_string_id_);
+    ++index;
   }
 
   // The special rule to ensure that FilesManager's first menu item is "New
@@ -394,7 +421,12 @@ void AppServiceContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
 
   app_shortcut_items_ = std::make_unique<apps::AppShortcutItems>();
   for (size_t i = index; i < menu_items.items.size(); i++) {
-    if (menu_items.items[i]->type == apps::MenuItemType::kCommand) {
+    if (menu_items.items[i]->command_id == ash::LAUNCH_NEW) {
+      // Crostini apps have `LAUNCH_NEW` menu item at non-0 position.
+      apps::PopulateLaunchNewItemFromMenuItem(menu_items.items[i],
+                                              menu_model.get(), submenu_.get(),
+                                              &launch_new_string_id_);
+    } else if (menu_items.items[i]->type == apps::MenuItemType::kCommand) {
       AddContextMenuOption(
           menu_model.get(),
           static_cast<ash::CommandId>(menu_items.items[i]->command_id),
