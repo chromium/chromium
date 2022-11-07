@@ -20,7 +20,11 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/feed/android:feed_java_resources",
     "//chrome/browser/feed/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/xsurface:java",
+    "//components/browser_ui/bottomsheet/android:factory_java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/feed/core/v2:feedv2_core_java",
@@ -30,6 +34,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
 
@@ -72,6 +77,8 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/feed/android:feed_java_resources",
     "//chrome/browser/feed/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/messages/android:java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",

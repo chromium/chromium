@@ -8,33 +8,45 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
+import org.chromium.chrome.browser.feed.FeedContentFirstLoadWatcher;
+import org.chromium.chrome.browser.feed.FeedStream;
 import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.NativeViewListRenderer;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
+import org.chromium.chrome.browser.feed.Stream;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Sets up the Coordinator for Cormorant Creator surface.  It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
-public class CreatorCoordinator {
+public class CreatorCoordinator
+        implements FeedAutoplaySettingsDelegate, FeedContentFirstLoadWatcher {
     private static final String NATIVE_CONTENT_ID = "0";
 
     private final ViewGroup mViewGroup;
@@ -52,16 +64,22 @@ public class CreatorCoordinator {
             mCreatorProfileModelChangeProcessor;
     private boolean mIsFollowed;
 
-    public CreatorCoordinator(Activity activity, byte[] webFeedId) {
+    private final SnackbarManager mSnackbarManager;
+    private BottomSheetController mBottomSheetController;
+    private final WindowAndroid mWindowAndroid;
+    private ScrimCoordinator mScrim;
+    private ViewGroup mBottomSheetContainer;
+    private Profile mProfile;
+    private Stream mStream;
+
+    public CreatorCoordinator(Activity activity, byte[] webFeedId, SnackbarManager snackbarManager,
+            WindowAndroid windowAndroid, Profile profile) {
         mActivity = activity;
         mWebFeedId = webFeedId;
-
+        mProfile = profile;
+        mSnackbarManager = snackbarManager;
+        mWindowAndroid = windowAndroid;
         mRecyclerView = setUpView();
-        List<NtpListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
-        // Add empty state to Content Manager
-        contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
-                getContentPreviewsPaddingPx(), NATIVE_CONTENT_ID, R.layout.no_content_v2));
-        mContentManager.addContents(0, contentPreviewsList);
 
         // Inflate the XML
         mViewGroup =
@@ -71,6 +89,7 @@ public class CreatorCoordinator {
 
         // TODO(crbug.com/1377069): Add a JNI to get the follow status from CreatorBridge instead
         getIsFollowedStatus();
+        initBottomSheet();
 
         // Generate CreatorProfileModel
         mCreatorProfileModel =
@@ -80,6 +99,10 @@ public class CreatorCoordinator {
                         (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);
 
         mMediator = new CreatorMediator(mActivity, mCreatorProfileModel);
+
+        // Create a FeedStream and bind it to the RecyclerView
+        // TODO(crbug.com/1377505): Add CreatorActionDelegate to the FeedStream and enable it.
+        mStream = createCreatorFeedStream();
     }
 
     public ViewGroup getView() {
@@ -157,4 +180,41 @@ public class CreatorCoordinator {
 
         WebFeedBridge.getWebFeedMetadata(mWebFeedId, metadata_callback);
     }
+
+    /** Set up the bottom sheet for this activity. */
+    private void initBottomSheet() {
+        mScrim = new ScrimCoordinator(mActivity, new ScrimCoordinator.SystemUiScrimDelegate() {
+            @Override
+            public void setStatusBarScrimFraction(float scrimFraction) {}
+
+            @Override
+            public void setNavigationBarScrimFraction(float scrimFraction) {}
+        }, (ViewGroup) mViewGroup, mActivity.getResources().getColor(R.color.default_scrim_color));
+
+        mBottomSheetContainer = new FrameLayout(mActivity);
+        mBottomSheetContainer.setLayoutParams(
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mViewGroup.addView(mBottomSheetContainer);
+        mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
+                () -> mScrim, (sheet) -> {}, mActivity.getWindow(),
+                KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer);
+    }
+
+    FeedStream createCreatorFeedStream() {
+        // TODO(crbug.com/1381667): Replace StreamKind.FOR_YOU with the Creator kind once ready
+        return new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
+                /* isPlaceholderShownInitially */ false, mWindowAndroid,
+                /* shareSupplier */ null, StreamKind.FOR_YOU,
+                /* FeedAutoplaySettingsDelegate */ this,
+                /* actionDelegate */ null,
+                /* helpAndFeedbackLauncher */ null,
+                /* FeedContentFirstLoadWatcher */ this,
+                /* streamsMediator */ null);
+    }
+
+    /** Launches autoplay settings activity. */
+    @Override
+    public void launchAutoplaySettings() {}
+    @Override
+    public void nonNativeContentLoaded(@StreamKind int kind) {}
 }
