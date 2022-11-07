@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.NameOrValueHtab" enum="BooleanValid"
+<histogram name="Cookie.NameOrValueHtab" enum="Boolean"
     expires_after="2023-05-01">
   <owner>bingler@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
