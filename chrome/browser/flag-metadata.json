@@ -4682,8 +4682,9 @@
   },
   {
     "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
-    "owners": ["fernandex", "chrome-signin-team"],
-    "expiry_milestone": 99
+    "owners": ["jlebel", "chrome-signin-team"],
+    // Used for automated testing of Gaia cookie restoration in iOS.
+    "expiry_milestone": -1
   },
   {
     "name": "modern-tab-strip",
@@ -6989,8 +6990,9 @@
   },
   {
     "name": "wait-threshold-seconds-for-capabilities-api",
-    "owners": [ "fernandex", "chrome-signin-team" ],
-    "expiry_milestone": 99
+    "owners": [ "jlebel", "chrome-signin-team" ],
+    // Used for manual testing to extend the wait time for capabilities fetching on iOS devices.
+    "expiry_milestone": -1
   },
   {
     "name": "wake-on-wifi-allowed",
