@@ -16,24 +16,29 @@ namespace permissions {
 
 PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     optimization_guide::OptimizationGuideModelProvider* optimization_guide) {
-  notification_prediction_model_handler_ = new PredictionModelHandler(
-      optimization_guide,
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS);
+  notification_prediction_model_handler_ =
+      std::make_unique<PredictionModelHandler>(
+          optimization_guide,
+          optimization_guide::proto::OptimizationTarget::
+              OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS);
 
-  geolocation_prediction_model_handler_ = new PredictionModelHandler(
-      optimization_guide,
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
+  geolocation_prediction_model_handler_ =
+      std::make_unique<PredictionModelHandler>(
+          optimization_guide,
+          optimization_guide::proto::OptimizationTarget::
+              OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
 }
+
+PredictionModelHandlerProvider::~PredictionModelHandlerProvider() = default;
+
 PredictionModelHandler*
 PredictionModelHandlerProvider::GetPredictionModelHandler(
     RequestType request_type) {
   switch (request_type) {
     case RequestType::kNotifications:
-      return notification_prediction_model_handler_;
+      return notification_prediction_model_handler_.get();
     case RequestType::kGeolocation:
-      return geolocation_prediction_model_handler_;
+      return geolocation_prediction_model_handler_.get();
     default:
       NOTREACHED();
       return nullptr;

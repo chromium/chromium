@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_MODEL_HANDLER_PROVIDER_H_
 #define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_MODEL_HANDLER_PROVIDER_H_
 
+#include <memory>
+
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
@@ -15,7 +17,7 @@ class PredictionModelHandlerProvider : public KeyedService {
  public:
   explicit PredictionModelHandlerProvider(
       optimization_guide::OptimizationGuideModelProvider* optimization_guide);
-  ~PredictionModelHandlerProvider() override = default;
+  ~PredictionModelHandlerProvider() override;
   PredictionModelHandlerProvider(const PredictionModelHandlerProvider&) =
       delete;
   PredictionModelHandlerProvider& operator=(
@@ -24,8 +26,9 @@ class PredictionModelHandlerProvider : public KeyedService {
   PredictionModelHandler* GetPredictionModelHandler(RequestType request_type);
 
  private:
-  PredictionModelHandler* notification_prediction_model_handler_;
-  PredictionModelHandler* geolocation_prediction_model_handler_;
+  std::unique_ptr<PredictionModelHandler>
+      notification_prediction_model_handler_;
+  std::unique_ptr<PredictionModelHandler> geolocation_prediction_model_handler_;
 };
 }  // namespace permissions
 #endif  // COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_MODEL_HANDLER_PROVIDER_H_
