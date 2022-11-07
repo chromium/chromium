@@ -113,6 +113,7 @@ preprocess_if_expr("preprocess_generated") {
     ":html_wrapper_files",
     "//ui/file_manager/base/gn:file_types_data_gen_js",
     "//ui/file_manager/file_manager/foreground/elements:elements",
+    "//ui/file_manager/file_manager/foreground/elements:polymer_elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js/ui/banners:web_components",
   ]
@@ -150,7 +151,7 @@ ts_library("build_ts") {
             target_gen_dir),
   ]
 
-  in_files = static_js_files + generated_js_files + ts_files +
+  in_files = static_js_files + generated_js_files + ts_files + ts_polymer +
              ts_generated_templates + image_loader_static_js_files
 
   definitions = [
@@ -226,7 +227,7 @@ copy("copy_definitions_to_proprocess") {
 }
 
 copy("copy_ts") {
-  sources = ts_files + ts_test_files
+  sources = ts_files + ts_test_files + ts_polymer
   outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
 }
 

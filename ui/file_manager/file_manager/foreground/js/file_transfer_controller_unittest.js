@@ -16,7 +16,6 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {FilesToast} from '../elements/files_toast.js';
 
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
 import {FileListModel} from './file_list_model.js';

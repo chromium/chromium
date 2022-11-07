@@ -8,7 +8,6 @@ import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {str, strf} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
-import {FilesToast} from '../elements/files_toast.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';

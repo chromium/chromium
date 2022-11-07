@@ -397,7 +397,6 @@ js_library("file_manager_ui") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:banner_controller",
     "//ui/file_manager/file_manager/foreground/js:launch_param",
@@ -407,6 +406,7 @@ js_library("file_manager_ui") {
 
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_toast.js",
   ]
 
   visibility +=

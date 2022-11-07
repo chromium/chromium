@@ -276,6 +276,11 @@ ts_files = [
   "file_manager/foreground/js/task_controller.ts",
 ]
 
+# Isolate Polymer TS to avoid sending them to Closure via the rule `js_from_ts`.
+# Closure is failing to recognize the generated JS from the TS.
+# JS targets should rely on externs to type check the Polymer elements from TS.
+ts_polymer = [ "file_manager/foreground/elements/files_toast.ts" ]
+
 # HTML template files that are used to generate the ".html.ts"
 ts_templates = [
   "file_manager/widgets/xf_conflict_dialog.html",
@@ -313,6 +318,10 @@ foreach(_t, ts_templates) {
   ts_generated_templates += [ _t + ".ts" ]
 }
 
+# Generated in foregorund/elements folder.
+ts_generated_templates +=
+    [ "file_manager/foreground/elements/files_toast.html.ts" ]
+
 # d.ts. files that are automatically generated from the JS file.
 generate_definitions_js_files = [
   "file_manager/common/js/volume_manager_types.js",
@@ -343,7 +352,6 @@ generated_js_files = [
   "file_manager/foreground/elements/files_quick_view.js",
   "file_manager/foreground/elements/files_safe_media.js",
   "file_manager/foreground/elements/files_spinner.js",
-  "file_manager/foreground/elements/files_toast.js",
   "file_manager/foreground/elements/files_toggle_ripple.js",
   "file_manager/foreground/elements/files_tooltip.js",
   "file_manager/foreground/elements/icons.js",

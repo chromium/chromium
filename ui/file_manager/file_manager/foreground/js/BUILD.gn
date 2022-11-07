@@ -363,8 +363,10 @@ js_library("crostini_controller") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs/background:crostini",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/webui/resources/js:assert",
+  ]
+  externs_list = [
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_toast.js",
   ]
 }
 
@@ -529,7 +531,6 @@ js_library("deferred_elements") {
     "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_spinner",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/elements:xf_button",
@@ -737,8 +738,10 @@ js_library("file_transfer_controller") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/webui/resources/js:assert",
+  ]
+  externs_list = [
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_toast.js",
   ]
 }
 
@@ -769,7 +772,6 @@ js_unittest("file_transfer_controller_unittest") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
