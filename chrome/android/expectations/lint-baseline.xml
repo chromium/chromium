@@ -106,9 +106,9 @@
         errorLine1="                mActivity.getResources().getIdentifier(&quot;status_bar_height&quot;, &quot;dimen&quot;, &quot;android&quot;);"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabHeightStrategy.java"
-            line="868"
-            column="17"/>
+            file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabVersionCompat.java"
+            line="144"
+            column="21"/>
     </issue>
 
     <issue

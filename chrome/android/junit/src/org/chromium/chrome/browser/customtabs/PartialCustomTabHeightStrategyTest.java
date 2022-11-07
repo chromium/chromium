@@ -246,9 +246,9 @@ public class PartialCustomTabHeightStrategyTest {
     }
 
     private PartialCustomTabHeightStrategy createPcctBackgroundDisabled() {
-        PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(mActivity, 500,
-                null, null, false, mOnResizedCallback, mActivityLifecycleDispatcher,
-                mFullscreenManager, false, false);
+        PartialCustomTabHeightStrategy pcct =
+                new PartialCustomTabHeightStrategy(mActivity, 500, false, mOnResizedCallback,
+                        mActivityLifecycleDispatcher, mFullscreenManager, false, false);
         pcct.setMockViewForTesting(
                 mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
         return pcct;
@@ -260,8 +260,8 @@ public class PartialCustomTabHeightStrategyTest {
 
     private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx, boolean isFixedHeight) {
         PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(mActivity,
-                heightPx, null, null, isFixedHeight, mOnResizedCallback,
-                mActivityLifecycleDispatcher, mFullscreenManager, false, true);
+                heightPx, isFixedHeight, mOnResizedCallback, mActivityLifecycleDispatcher,
+                mFullscreenManager, false, true);
         pcct.setMockViewForTesting(
                 mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
         return pcct;

@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
  */
 public class CustomTabHeightStrategy implements FindToolbarObserver {
     public static CustomTabHeightStrategy createStrategy(Activity activity, @Px int initialHeight,
-            Integer navigationBarColor, Integer navigationBarDividerColor,
             boolean isPartialCustomTabFixedHeight, CustomTabsConnection connection,
             @Nullable CustomTabsSessionToken session,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
@@ -30,10 +29,8 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             return new CustomTabHeightStrategy();
         }
 
-        return new PartialCustomTabHeightStrategy(activity, initialHeight, navigationBarColor,
-                navigationBarDividerColor, isPartialCustomTabFixedHeight,
-                size
-                -> connection.onResized(session, size),
+        return new PartialCustomTabHeightStrategy(activity, initialHeight,
+                isPartialCustomTabFixedHeight, size -> connection.onResized(session, size),
                 lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground);
     }
 

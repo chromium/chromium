@@ -469,6 +469,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabHeightStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabInputMethodWrapper.java",
   "java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabTabObserver.java",
+  "java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabVersionCompat.java",
   "java/src/org/chromium/chrome/browser/customtabs/ReparentingTaskProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/RequestThrottler.java",
   "java/src/org/chromium/chrome/browser/customtabs/TranslucentCustomTabActivity.java",
