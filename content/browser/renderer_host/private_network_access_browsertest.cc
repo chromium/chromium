@@ -2546,10 +2546,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from non-secure
-// contexts in the `private` address space.
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
-    PrivateNetworkPolicyIsPreflightWarnByDefaultForInsecurePrivate) {
+// contexts in the `private` address space with a warning.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       PrivateNetworkPolicyIsWarnByDefaultForInsecurePrivate) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2558,7 +2557,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kWarn);
 }
 
 // This test verifies that when the right feature is enabled, the private
@@ -2642,11 +2641,11 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
 // This test verifies that when sending preflights is enabled, the private
 // network request policy for non-secure contexts in the `kPrivate` address
-// space is `kPreflightWarn`.
+// space is `kWarn`.
 // This checks that as long as the "block from insecure private" feature flag
-// is not enabled, we will send preflights for these requests.
+// is not enabled, we will only show warnings for these requests.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsPreflightWarnForInsecurePrivate) {
+                       PrivateNetworkPolicyIsWarnForInsecurePrivate) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2655,7 +2654,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kWarn);
 }
 
 // This test verifies that blocking insecure private network requests from the
@@ -2692,9 +2691,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 // network request policy for non-secure contexts in the `kPrivate` address
 // space is `kPreflightBlock`.
 // This checks that as long as the "block from insecure private" feature flag
-// is not enabled, we will enforce preflights for these requests.
+// is not enabled, we will only show warnings for these requests.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
-                       PrivateNetworkPolicyIsPreflightBlockForInsecurePrivate) {
+                       PrivateNetworkPolicyIsWarnForInsecurePrivate) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2703,7 +2702,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+            network::mojom::PrivateNetworkRequestPolicy::kWarn);
 }
 
 // This test verifies that blocking insecure private network requests from the

@@ -66,8 +66,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
   return {
       {{kNonSecure, AddressSpace::kUnknown}, Policy::kAllow},
       {{kNonSecure, AddressSpace::kPublic}, Policy::kBlock},
-      // TODO(https://crbug.com/1377369): Expect `kWarn` instead.
-      {{kNonSecure, AddressSpace::kPrivate}, Policy::kPreflightWarn},
+      {{kNonSecure, AddressSpace::kPrivate}, Policy::kWarn},
       {{kNonSecure, AddressSpace::kLocal}, Policy::kBlock},
       {{kSecure, AddressSpace::kUnknown}, Policy::kAllow},
       {{kSecure, AddressSpace::kPublic}, Policy::kPreflightWarn},
@@ -113,8 +112,6 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyNoPreflights) {
       {}, {features::kPrivateNetworkAccessSendPreflights});
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
-  // TODO(https://crbug.com/1377369): Remove this.
-  expected[{kNonSecure, AddressSpace::kPrivate}] = Policy::kWarn;
   expected[{kSecure, AddressSpace::kPublic}] = Policy::kAllow;
   expected[{kSecure, AddressSpace::kPrivate}] = Policy::kAllow;
   expected[{kSecure, AddressSpace::kLocal}] = Policy::kAllow;
@@ -127,8 +124,6 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyRespectPreflightResults) {
       features::kPrivateNetworkAccessRespectPreflightResults);
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
-  // TODO(https://crbug.com/1377369): Remove this.
-  expected[{kNonSecure, AddressSpace::kPrivate}] = Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kPublic}] = Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kPrivate}] = Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kLocal}] = Policy::kPreflightBlock;
