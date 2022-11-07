@@ -7531,6 +7531,9 @@ others/histograms.xml -->
   <int value="20"
       label="The Fast Checkout surface is shown instead of autofill
              suggestions."/>
+  <int value="21"
+      label="The Picture-in-picture window overlaps with the autofill
+             suggestion."/>
 </enum>
 
 <enum name="AutofillPredictionsComparisonResult">

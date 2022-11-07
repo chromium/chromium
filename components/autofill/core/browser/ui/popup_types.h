@@ -68,7 +68,9 @@ enum class PopupHidingReason {
   kOverlappingWithAutofillContextMenu = 19,
   // The Fast Checkout surface is shown instead of autofill suggestions.
   kOverlappingWithFastCheckoutSurface = 20,
-  kMaxValue = kOverlappingWithFastCheckoutSurface
+  // The picture-in-picture window overlaps with the autofill suggestions.
+  kOverlappingWithPictureInPictureWindow = 21,
+  kMaxValue = kOverlappingWithPictureInPictureWindow
 };
 
 }  // namespace autofill

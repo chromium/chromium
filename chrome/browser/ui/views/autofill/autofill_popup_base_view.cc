@@ -408,6 +408,11 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
                                  element_bounds, delegate_->IsRTL(),
                                  /*horizontally_centered=*/false);
 
+  if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
+    HideController(PopupHidingReason::kOverlappingWithPictureInPictureWindow);
+    return false;
+  }
+
   // Account for the scroll view's border so that the content has enough space.
   popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());
   GetWidget()->SetBounds(popup_bounds);
