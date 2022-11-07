@@ -10,6 +10,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/common/content_export.h"
@@ -114,5 +115,27 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
 };
 
 }  // namespace content
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    content::SharedStorageWorkletHostManager,
+    content::SharedStorageWorkletHostManager::SharedStorageObserverInterface> {
+  static void AddObserver(
+      content::SharedStorageWorkletHostManager* source,
+      content::SharedStorageWorkletHostManager::SharedStorageObserverInterface*
+          observer) {
+    source->AddSharedStorageObserver(observer);
+  }
+  static void RemoveObserver(
+      content::SharedStorageWorkletHostManager* source,
+      content::SharedStorageWorkletHostManager::SharedStorageObserverInterface*
+          observer) {
+    source->RemoveSharedStorageObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_MANAGER_H_

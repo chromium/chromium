@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
@@ -706,5 +707,24 @@ class IdentityManager : public KeyedService,
 };
 
 }  // namespace signin
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<signin::IdentityManager,
+                               signin::IdentityManager::DiagnosticsObserver> {
+  static void AddObserver(
+      signin::IdentityManager* source,
+      signin::IdentityManager::DiagnosticsObserver* observer) {
+    source->AddDiagnosticsObserver(observer);
+  }
+  static void RemoveObserver(
+      signin::IdentityManager* source,
+      signin::IdentityManager::DiagnosticsObserver* observer) {
+    source->RemoveDiagnosticsObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_MANAGER_H_

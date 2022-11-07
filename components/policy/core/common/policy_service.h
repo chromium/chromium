@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -172,5 +173,24 @@ class POLICY_EXPORT PolicyChangeRegistrar : public PolicyService::Observer {
 };
 
 }  // namespace policy
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<policy::PolicyService,
+                               policy::PolicyService::ProviderUpdateObserver> {
+  static void AddObserver(
+      policy::PolicyService* source,
+      policy::PolicyService::ProviderUpdateObserver* observer) {
+    source->AddProviderUpdateObserver(observer);
+  }
+  static void RemoveObserver(
+      policy::PolicyService* source,
+      policy::PolicyService::ProviderUpdateObserver* observer) {
+    source->RemoveProviderUpdateObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_POLICY_SERVICE_H_

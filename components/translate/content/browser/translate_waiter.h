@@ -50,14 +50,10 @@ class TranslateWaiter : TranslateDriver::LanguageDetectionObserver,
  private:
   WaitEvent wait_event_;
   base::ScopedObservation<TranslateDriver,
-                          TranslateDriver::LanguageDetectionObserver,
-                          &TranslateDriver::AddLanguageDetectionObserver,
-                          &TranslateDriver::RemoveLanguageDetectionObserver>
+                          TranslateDriver::LanguageDetectionObserver>
       scoped_language_detection_observation_{this};
   base::ScopedObservation<ContentTranslateDriver,
-                          ContentTranslateDriver::TranslationObserver,
-                          &ContentTranslateDriver::AddTranslationObserver,
-                          &ContentTranslateDriver::RemoveTranslationObserver>
+                          ContentTranslateDriver::TranslationObserver>
       scoped_translation_observation_{this};
   base::RunLoop run_loop_;
 };

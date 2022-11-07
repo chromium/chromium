@@ -416,11 +416,8 @@ class TestAutofillClient : public AutofillClient {
   LogRouter log_router_;
   std::unique_ptr<LogManager> log_manager_;
   TextLogReceiver text_log_receiver_;
-  base::ScopedObservation<LogRouter,
-                          LogReceiver,
-                          &LogRouter::RegisterReceiver,
-                          &LogRouter::UnregisterReceiver>
-      scoped_logging_subscription_{&text_log_receiver_};
+  base::ScopedObservation<LogRouter, LogReceiver> scoped_logging_subscription_{
+      &text_log_receiver_};
 };
 
 }  // namespace autofill

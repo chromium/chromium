@@ -1277,8 +1277,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, TooManyKeepaliveRequests) {
 // |host| must remain a valid reference for the lifetime of this object.
 class IsProcessBackgroundedObserver : public RenderProcessHostInternalObserver {
  public:
-  explicit IsProcessBackgroundedObserver(RenderProcessHostImpl* host)
-      : host_observation_(this) {
+  explicit IsProcessBackgroundedObserver(RenderProcessHostImpl* host) {
     host_observation_.Observe(host);
   }
 
@@ -1298,10 +1297,8 @@ class IsProcessBackgroundedObserver : public RenderProcessHostInternalObserver {
   // Stores the last observed value of IsProcessBackgrounded for a host.
   absl::optional<bool> backgrounded_;
   base::ScopedObservation<RenderProcessHostImpl,
-                          RenderProcessHostInternalObserver,
-                          &RenderProcessHostImpl::AddInternalObserver,
-                          &RenderProcessHostImpl::RemoveInternalObserver>
-      host_observation_;
+                          RenderProcessHostInternalObserver>
+      host_observation_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, PriorityOverride) {

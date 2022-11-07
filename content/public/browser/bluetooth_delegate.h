@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"
@@ -69,7 +70,7 @@ class CONTENT_EXPORT BluetoothDelegate {
   // if |result_code| is |kSuccess|
   struct PairPromptResult {
     PairPromptResult() = default;
-    explicit PairPromptResult(PairPromptStatus code) : result_code(code){}
+    explicit PairPromptResult(PairPromptStatus code) : result_code(code) {}
     ~PairPromptResult() = default;
 
     PairPromptStatus result_code = PairPromptStatus::kCancelled;
@@ -202,5 +203,25 @@ class CONTENT_EXPORT BluetoothDelegate {
 };
 
 }  // namespace content
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    content::BluetoothDelegate,
+    content::BluetoothDelegate::FramePermissionObserver> {
+  static void AddObserver(
+      content::BluetoothDelegate* source,
+      content::BluetoothDelegate::FramePermissionObserver* observer) {
+    source->AddFramePermissionObserver(observer);
+  }
+  static void RemoveObserver(
+      content::BluetoothDelegate* source,
+      content::BluetoothDelegate::FramePermissionObserver* observer) {
+    source->RemoveFramePermissionObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CONTENT_PUBLIC_BROWSER_BLUETOOTH_DELEGATE_H_

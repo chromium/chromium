@@ -136,9 +136,7 @@ class StorageHandler::CacheStorageObserver
   CacheStorageObserver(const CacheStorageObserver&) = delete;
   CacheStorageObserver& operator=(const CacheStorageObserver&) = delete;
 
-  ~CacheStorageObserver() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  }
+  ~CacheStorageObserver() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
 
   void TrackStorageKey(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -305,9 +303,7 @@ class StorageHandler::SharedStorageObserver
   raw_ptr<StorageHandler> const owner_;
   base::ScopedObservation<
       content::SharedStorageWorkletHostManager,
-      content::SharedStorageWorkletHostManager::SharedStorageObserverInterface,
-      &content::SharedStorageWorkletHostManager::AddSharedStorageObserver,
-      &content::SharedStorageWorkletHostManager::RemoveSharedStorageObserver>
+      content::SharedStorageWorkletHostManager::SharedStorageObserverInterface>
       scoped_observation_{this};
 };
 

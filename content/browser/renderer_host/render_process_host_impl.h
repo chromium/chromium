@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1236,5 +1237,24 @@ class CONTENT_EXPORT RenderProcessHostImpl
 };
 
 }  // namespace content
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<content::RenderProcessHostImpl,
+                               content::RenderProcessHostInternalObserver> {
+  static void AddObserver(
+      content::RenderProcessHostImpl* source,
+      content::RenderProcessHostInternalObserver* observer) {
+    source->AddInternalObserver(observer);
+  }
+  static void RemoveObserver(
+      content::RenderProcessHostImpl* source,
+      content::RenderProcessHostInternalObserver* observer) {
+    source->RemoveInternalObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CONTENT_BROWSER_RENDERER_HOST_RENDER_PROCESS_HOST_IMPL_H_

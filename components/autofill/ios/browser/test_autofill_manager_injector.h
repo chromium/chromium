@@ -83,11 +83,8 @@ class TestAutofillManagerInjector : public web::WebStateObserver {
   }
 
   web::WebState* web_state_;
-  base::ScopedObservation<web::WebState,
-                          web::WebStateObserver,
-                          &web::WebState::AddObserver,
-                          &web::WebState::RemoveObserver>
-      observation_{this};
+  base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
+      this};
 };
 
 }  // namespace autofill

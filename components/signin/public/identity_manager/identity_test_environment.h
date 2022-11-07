@@ -460,10 +460,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
 
   std::unique_ptr<TestIdentityManagerObserver> test_identity_manager_observer_;
 
-  base::ScopedObservation<IdentityManager,
-                          IdentityManager::DiagnosticsObserver,
-                          &IdentityManager::AddDiagnosticsObserver,
-                          &IdentityManager::RemoveDiagnosticsObserver>
+  base::ScopedObservation<IdentityManager, IdentityManager::DiagnosticsObserver>
       diagnostics_observation_{this};
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};

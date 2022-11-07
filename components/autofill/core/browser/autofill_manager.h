@@ -34,7 +34,7 @@
 
 namespace gfx {
 class RectF;
-}
+}  // namespace gfx
 
 namespace autofill {
 
@@ -530,11 +530,8 @@ class AutofillManager
   const raw_ptr<LogManager> log_manager_;
 
   // Observer needed to re-run heuristics when the language has been detected.
-  base::ScopedObservation<
-      translate::TranslateDriver,
-      translate::TranslateDriver::LanguageDetectionObserver,
-      &translate::TranslateDriver::AddLanguageDetectionObserver,
-      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
+  base::ScopedObservation<translate::TranslateDriver,
+                          translate::TranslateDriver::LanguageDetectionObserver>
       translate_observation_{this};
 
   // Our copy of the form data.

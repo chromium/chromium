@@ -536,9 +536,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 #endif
 
   base::ScopedObservation<BluetoothDelegate,
-                          BluetoothDelegate::FramePermissionObserver,
-                          &BluetoothDelegate::AddFramePermissionObserver,
-                          &BluetoothDelegate::RemoveFramePermissionObserver>
+                          BluetoothDelegate::FramePermissionObserver>
       observer_{this};
 
   base::WeakPtrFactory<WebBluetoothServiceImpl> weak_ptr_factory_{this};

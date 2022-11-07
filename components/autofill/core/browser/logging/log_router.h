@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -63,5 +64,21 @@ class LogRouter : public KeyedService {
 };
 
 }  // namespace autofill
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<autofill::LogRouter, autofill::LogReceiver> {
+  static void AddObserver(autofill::LogRouter* source,
+                          autofill::LogReceiver* observer) {
+    source->RegisterReceiver(observer);
+  }
+  static void RemoveObserver(autofill::LogRouter* source,
+                             autofill::LogReceiver* observer) {
+    source->UnregisterReceiver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_ROUTER_H_

@@ -6,6 +6,7 @@
 #define COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_SERVICE_H_
 
 #include "base/callback_forward.h"
+#include "base/scoped_observation_traits.h"
 #include "base/values.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
@@ -124,5 +125,22 @@ class InvalidationService {
 };
 
 }  // namespace invalidation
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<invalidation::InvalidationService,
+                               invalidation::InvalidationHandler> {
+  static void AddObserver(invalidation::InvalidationService* source,
+                          invalidation::InvalidationHandler* observer) {
+    source->RegisterInvalidationHandler(observer);
+  }
+  static void RemoveObserver(invalidation::InvalidationService* source,
+                             invalidation::InvalidationHandler* observer) {
+    source->UnregisterInvalidationHandler(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_SERVICE_H_

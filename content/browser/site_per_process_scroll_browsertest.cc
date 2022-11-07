@@ -467,9 +467,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   ScrollObserver scroll_observer(0, -5);
   base::ScopedObservation<RenderWidgetHostImpl,
-                          RenderWidgetHost::InputEventObserver,
-                          &RenderWidgetHostImpl::AddInputEventObserver,
-                          &RenderWidgetHostImpl::RemoveInputEventObserver>
+                          RenderWidgetHost::InputEventObserver>
       scroll_observation_(&scroll_observer);
   scroll_observation_.Observe(
       root->current_frame_host()->GetRenderWidgetHost());

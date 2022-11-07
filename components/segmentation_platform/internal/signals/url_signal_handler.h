@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -92,5 +93,25 @@ class UrlSignalHandler {
 };
 
 }  // namespace segmentation_platform
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    segmentation_platform::UrlSignalHandler,
+    segmentation_platform::UrlSignalHandler::HistoryDelegate> {
+  static void AddObserver(
+      segmentation_platform::UrlSignalHandler* source,
+      segmentation_platform::UrlSignalHandler::HistoryDelegate* observer) {
+    source->AddHistoryDelegate(observer);
+  }
+  static void RemoveObserver(
+      segmentation_platform::UrlSignalHandler* source,
+      segmentation_platform::UrlSignalHandler::HistoryDelegate* observer) {
+    source->RemoveHistoryDelegate(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_URL_SIGNAL_HANDLER_H_

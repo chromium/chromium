@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/scoped_observation_traits.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
@@ -448,5 +449,25 @@ class USER_MANAGER_EXPORT UserManager {
 };
 
 }  // namespace user_manager
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    user_manager::UserManager,
+    user_manager::UserManager::UserSessionStateObserver> {
+  static void AddObserver(
+      user_manager::UserManager* source,
+      user_manager::UserManager::UserSessionStateObserver* observer) {
+    source->AddSessionStateObserver(observer);
+  }
+  static void RemoveObserver(
+      user_manager::UserManager* source,
+      user_manager::UserManager::UserSessionStateObserver* observer) {
+    source->RemoveSessionStateObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_USER_MANAGER_USER_MANAGER_H_

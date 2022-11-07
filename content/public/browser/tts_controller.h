@@ -15,6 +15,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_utterance.h"
@@ -204,5 +205,22 @@ class CONTENT_EXPORT TtsController {
 };
 
 }  // namespace content
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<content::TtsController,
+                               content::VoicesChangedDelegate> {
+  static void AddObserver(content::TtsController* source,
+                          content::VoicesChangedDelegate* observer) {
+    source->AddVoicesChangedDelegate(observer);
+  }
+  static void RemoveObserver(content::TtsController* source,
+                             content::VoicesChangedDelegate* observer) {
+    source->RemoveVoicesChangedDelegate(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CONTENT_PUBLIC_BROWSER_TTS_CONTROLLER_H_

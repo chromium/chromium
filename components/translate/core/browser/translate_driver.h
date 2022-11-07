@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
@@ -102,5 +103,25 @@ class TranslateDriver {
 };
 
 }  // namespace translate
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    translate::TranslateDriver,
+    translate::TranslateDriver::LanguageDetectionObserver> {
+  static void AddObserver(
+      translate::TranslateDriver* source,
+      translate::TranslateDriver::LanguageDetectionObserver* observer) {
+    source->AddLanguageDetectionObserver(observer);
+  }
+  static void RemoveObserver(
+      translate::TranslateDriver* source,
+      translate::TranslateDriver::LanguageDetectionObserver* observer) {
+    source->RemoveLanguageDetectionObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_DRIVER_H_
