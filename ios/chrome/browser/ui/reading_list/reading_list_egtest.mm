@@ -777,11 +777,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads offline version by tapping on entry with delayed web server.
 - (void)testSavingToReadingListAndLoadBadNetwork {
-  // TODO(crbug.com/1350732): Re-enable when flake fixed.
-  if (@available(iOS 16, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test consistently failing on iOS16 iPhone 8.");
-  }
-
   [ReadingListAppInterface forceConnectionToWifi];
   GURL distillableURL = self.testServer->GetURL(kDistillableURL);
   // Open http://potato
@@ -861,11 +856,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that the "Cancel", "Edit" and "Mark Unread" buttons are not visible
 // after delete (using swipe).
 - (void)testVisibleButtonsAfterSwipeDeletion {
-  // TODO(crbug.com/1046978): Test fails on iOS 13.3 iPad
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 13.3 iPad and later.");
-  }
-
   AddEntriesAndOpenReadingList();
 
   [[[EarlGrey
@@ -878,11 +868,30 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_text(@"Delete"),
-                                          grey_ancestor(grey_kindOfClassName(
-                                              @"UISwipeActionPullView")),
-                                          nil)] performAction:grey_tap()];
+  id<GREYMatcher> deleteButtonMatcher =
+      grey_allOf(grey_accessibilityLabel(@"Delete"),
+                 grey_kindOfClassName(@"UISwipeActionStandardButton"), nil);
+  // Depending on the device, the swipe may have deleted the element or just
+  // displayed the "Delete" button. Check if the delete button is still on
+  // screen and tap it if it is the case.
+  GREYCondition* waitForDeleteToDisappear = [GREYCondition
+      conditionWithName:@"Element is already deleted"
+                  block:^{
+                    NSError* error = nil;
+                    [[EarlGrey selectElementWithMatcher:deleteButtonMatcher]
+                        assertWithMatcher:grey_nil()
+                                    error:&error];
+                    return error == nil;
+                  }];
+
+  bool matchedElement = [waitForDeleteToDisappear
+      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
+
+  if (!matchedElement) {
+    // Delete button is still on screen, tap it
+    [[EarlGrey selectElementWithMatcher:deleteButtonMatcher]
+        performAction:grey_tap()];
+  }
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarMarkButtonID);
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarCancelButtonID);
@@ -1203,11 +1212,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
 - (void)testContextMenuMarkAsReadAndBack {
-  // TODO(crbug.com/1350732): Re-enable when flake fixed.
-  if (@available(iOS 16, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test consistently failing on iOS16 iPhone 8.");
-  }
-
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
