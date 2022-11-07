@@ -378,6 +378,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
       item.state = status.transferState === 'completed' ?
           ProgressItemState.COMPLETED :
           ProgressItemState.CANCELED;
+      this.speedometers_[item.id].reset();
       this.progressCenter_.updateItem(item);
       this.syncing_ = false;
       this.dispatchEvent(new Event(this.getCompletedEventName()));

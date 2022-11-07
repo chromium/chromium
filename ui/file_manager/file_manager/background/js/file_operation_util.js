@@ -130,7 +130,7 @@ fileOperationUtil.Speedometer = class {
     this.maxSamples_ = maxSamples;
 
     /**
-     * @private @const {!Array<!{time: number, bytes: number}>} Recent samples.
+     * @private {!Array<!{time: number, bytes: number}>} Recent samples.
      *     |time| is in milliseconds.
      */
     this.samples_ = [];
@@ -178,6 +178,19 @@ fileOperationUtil.Speedometer = class {
    */
   setTotalBytes(totalBytes) {
     this.totalBytes_ = totalBytes;
+  }
+
+  /**
+   * The current speedometer implementation is not designed to be automatically
+   * reused by different "in progress" operations. Call this method after
+   * finishing a given operation (or batch of simultaneous "in progress"
+   * operations) to make sure the speedometer reports proper remaining time
+   * estimates when it's reused.
+   */
+  reset() {
+    this.samples_ = [];
+    this.first_ = null;
+    this.totalBytes_ = 0;
   }
 
   /**
