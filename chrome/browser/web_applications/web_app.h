@@ -538,7 +538,7 @@ class WebApp {
   //  - WebAppTest.SampleAppAsDebugValue
   //  - web_app.proto
   // If parsed from manifest, also add to:
-  //  - ManifestUpdateTask::IsUpdateNeededForManifest()
+  //  - IsUpdateNeededForManifest() inside manifest_update_utils.h
   //  - SetWebAppManifestFields()
 };
 

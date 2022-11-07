@@ -571,9 +571,9 @@ chromium-metrics-reviews@google.com.
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The HTTP status code returned for a list of icons when updating single
-    WebApp. Recorded when ManifestUpdateTask finishes downloading icons for
-    update. Icon download attempts with identical codes produce only one event
-    for this histogram.
+    WebApp. Recorded when ManifestUpdateDataFetchCommand finishes downloading
+    icons for update. Icon download attempts with identical codes produce only
+    one event for this histogram.
   </summary>
 </histogram>
 
@@ -606,7 +606,7 @@ chromium-metrics-reviews@google.com.
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The overall result returned by WebAppIconDownloader. Recorded when
-    ManifestUpdateTask finishes downloading icons.
+    ManifestUpdateDataFetchCommand finishes downloading icons.
   </summary>
 </histogram>
 
@@ -638,7 +638,8 @@ chromium-metrics-reviews@google.com.
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The HTTP status code class returned for each icon loaded when updating a
-    WebApp. Recorded when ManifestUpdateTask finishes downloading icons.
+    WebApp. Recorded when ManifestUpdateDataFetchCommand finishes downloading
+    icons.
   </summary>
 </histogram>
 

@@ -2235,7 +2235,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
 }
 
 // Functional tests. More tests for detecting file handler updates are
-// available in unit tests at ManifestUpdateTaskTest.
+// available in unit tests at ManifestUpdateDataFetchUtilsTest.
 class ManifestUpdateManagerBrowserTestWithFileHandling
     : public ManifestUpdateManagerBrowserTest {
  public:
