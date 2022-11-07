@@ -37,6 +37,9 @@ using ::attribution_reporting::mojom::SourceRegistrationError;
 using AttributionAggregationKeys = ::attribution_reporting::AggregationKeys;
 using AttributionFilterData = ::attribution_reporting::FilterData;
 
+// TODO(apaseltiner): Move all parsing-related tests to
+// components/attribution_reporting/source_registration_unittest.cc.
+
 TEST(AttributionRegistrationParsingTest, ParseAggregationKeys) {
   const struct {
     const char* description;

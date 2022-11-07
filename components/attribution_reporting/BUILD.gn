@@ -19,6 +19,8 @@ component("attribution_reporting") {
     "filters.h",
     "parse.cc",
     "parse.h",
+    "source_registration.cc",
+    "source_registration.h",
   ]
 
   public_deps = [
