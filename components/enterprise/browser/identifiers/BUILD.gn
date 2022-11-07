@@ -1,0 +1,39 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("identifiers") {
+  public = [
+    "identifiers_prefs.h",
+    "profile_id_delegate.h",
+    "profile_id_service.h",
+  ]
+
+  sources = [
+    "identifiers_prefs.cc",
+    "profile_id_service.cc",
+  ]
+
+  public_deps = [
+    "//components/keyed_service/core",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "mock_profile_id_delegate.h" ]
+
+  sources = [ "mock_profile_id_delegate.cc" ]
+
+  public_deps = [
+    ":identifiers",
+    "//testing/gmock",
+  ]
+}

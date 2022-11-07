@@ -129,6 +129,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "browser/identifiers/profile_id_service_unittest.cc",
     "browser/reporting/chrome_profile_request_generator_unittest.cc",
     "browser/reporting/report_uploader_unittest.cc",
     "common/proto/connectors_unittest.cc",
@@ -140,7 +141,10 @@ source_set("unit_tests") {
     "common/proto:connectors_proto",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//components/enterprise/browser/identifiers",
+    "//components/enterprise/browser/identifiers:test_support",
     "//components/policy/core/common:test_support",
+    "//components/prefs:test_support",
     "//components/version_info",
     "//testing/gmock",
     "//testing/gtest",
@@ -157,7 +161,6 @@ source_set("unit_tests") {
       ":test_support",
       "//base",
       "//components/policy/core/browser:test_support",
-      "//components/prefs:test_support",
     ]
   }
 
