@@ -60,6 +60,7 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -186,7 +187,7 @@ public class FeedSurfaceMediator
     private static PrefService sPrefServiceForTest;
     private static final int SPAN_COUNT_SMALL_WIDTH = 1;
     private static final int SPAN_COUNT_LARGE_WIDTH = 2;
-    private static final int SMALL_WIDTH = 600;
+    private static final int SMALL_WIDTH_DP = 600;
 
     private final FeedSurfaceCoordinator mCoordinator;
     private final Context mContext;
@@ -344,7 +345,8 @@ public class FeedSurfaceMediator
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     mSnapScrollHelper.handleScroll();
                     if (FeedFeatures.isMultiColumnFeedEnabled(mContext)) {
-                        boolean useSingleSpan = (right - left) <= SMALL_WIDTH;
+                        boolean useSingleSpan =
+                                (right - left) <= ViewUtils.dpToPx(mContext, SMALL_WIDTH_DP);
                         Stream stream = mTabToStreamMap.get(mSectionHeaderModel.get(
                                 SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
                         boolean supportsOptions = (stream != null) && stream.supportsOptions();
