@@ -148,6 +148,10 @@ BASE_FEATURE(kOmitNonUserGesturesFromReferrerChain,
              "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRealTimeUrlFilteringForEnterprise,
+             "RealTimeUrlFilteringForEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass,
              "SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -243,16 +247,15 @@ constexpr struct {
       {&kExtensionTelemetryTabsExecuteScriptSignal, true},
       {&kFileTypePoliciesTag, true},
       {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
-      {&kNestedArchives, true},
-      {&kOmitNonUserGesturesFromReferrerChain, true},
+      {&kNestedArchives, true}, {&kOmitNonUserGesturesFromReferrerChain, true},
+      {&kRealTimeUrlFilteringForEnterprise, true},
       {&kRealTimeUrlLookupForEnterpriseAllowlistBypass, true},
       {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
       {&kSafeBrowsingCsbrrWithToken, true},
       {&kSafeBrowsingDisableConsumerCsdForEnterprise, true},
       {&kSafeBrowsingEnterpriseCsd, true},
       {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
-      {&kSevenZipEvaluationEnabled, true},
-      {&kSimplifiedUrlDisplay, true},
+      {&kSevenZipEvaluationEnabled, true}, {&kSimplifiedUrlDisplay, true},
       {&kSuspiciousSiteTriggerQuotaFeature, true},
       {&kTailoredSecurityDesktopNotice, true},
       {&kTailoredSecurityIntegration, true},

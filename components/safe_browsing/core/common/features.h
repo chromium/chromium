@@ -136,6 +136,11 @@ BASE_DECLARE_FEATURE(kNestedArchives);
 // Enable omitting non-user gesture from referrer chain.
 BASE_DECLARE_FEATURE(kOmitNonUserGesturesFromReferrerChain);
 
+// Controls whether we are using admin rules for filtering URLs, showing warn or
+// block intersitial and reporting the interstitial shown event on enterprise
+// managed browsers.
+BASE_DECLARE_FEATURE(kRealTimeUrlFilteringForEnterprise);
+
 // Bypass RealTime URL Lookup allowlist for enterprise users.
 BASE_DECLARE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass);
 
