@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
@@ -49,9 +48,8 @@ class AggregationServiceInternalsWebUiBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
 
     auto aggregation_service = std::make_unique<MockAggregationService>();
-    aggregation_service_ = aggregation_service.get();
 
-    ON_CALL(*aggregation_service_, GetPendingReportRequestsForWebUI)
+    ON_CALL(*aggregation_service, GetPendingReportRequestsForWebUI)
         .WillByDefault([](GetPendingReportsCallback callback) {
           std::move(callback).Run(
               AggregatableReportRequestsAndIdsBuilder().Build());
@@ -95,7 +93,15 @@ class AggregationServiceInternalsWebUiBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  raw_ptr<MockAggregationService, DanglingUntriaged> aggregation_service_;
+  MockAggregationService& aggregation_service() {
+    AggregationService* agg_service =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition())
+            ->GetAggregationService();
+    return static_cast<MockAggregationService&>(*agg_service);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
@@ -124,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
 
   base::Time now = base::Time::Now();
 
-  ON_CALL(*aggregation_service_, GetPendingReportRequestsForWebUI)
+  ON_CALL(aggregation_service(), GetPendingReportRequestsForWebUI)
       .WillByDefault([now](GetPendingReportsCallback callback) {
         std::move(callback).Run(
             AggregatableReportRequestsAndIdsBuilder()
@@ -144,14 +150,14 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request_1, {hpke_key.public_key});
 
-  aggregation_service_->NotifyReportHandled(
+  aggregation_service().NotifyReportHandled(
       std::move(request_1), AggregationServiceStorage::RequestId(1),
       std::move(report_1), /*report_handled_time=*/now + base::Hours(1),
       AggregationServiceObserver::ReportStatus::kSent);
 
   AggregatableReportRequest request_2 =
       aggregation_service::CreateExampleRequest();
-  aggregation_service_->NotifyReportHandled(
+  aggregation_service().NotifyReportHandled(
       std::move(request_2), AggregationServiceStorage::RequestId(2),
       /*report=*/absl::nullopt,
       /*report_handled_time=*/now + base::Hours(2),
@@ -163,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request_3, {hpke_key.public_key});
 
-  aggregation_service_->NotifyReportHandled(
+  aggregation_service().NotifyReportHandled(
       std::move(request_3), AggregationServiceStorage::RequestId(3),
       std::move(report_3),
       /*report_handled_time=*/now + base::Hours(3),
@@ -257,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
-  EXPECT_CALL(*aggregation_service_, GetPendingReportRequestsForWebUI)
+  EXPECT_CALL(aggregation_service(), GetPendingReportRequestsForWebUI)
       .WillOnce([](GetPendingReportsCallback callback) {
         std::move(callback).Run(
             AggregatableReportRequestsAndIdsBuilder().Build());
@@ -276,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kPrivateAggregationInternalsUrl)));
 
-  EXPECT_CALL(*aggregation_service_,
+  EXPECT_CALL(aggregation_service(),
               SendReportsForWebUI(
                   testing::ElementsAre(AggregationServiceStorage::RequestId(5)),
                   testing::_))
@@ -312,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
 
   // The real aggregation service would do this itself, but the test aggregation
   // service requires manual triggering.
-  aggregation_service_->NotifyRequestStorageModified();
+  aggregation_service().NotifyRequestStorageModified();
 
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
@@ -321,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
                        WebUIClearStorage_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kPrivateAggregationInternalsUrl)));
 
-  ON_CALL(*aggregation_service_, GetPendingReportRequestsForWebUI)
+  ON_CALL(aggregation_service(), GetPendingReportRequestsForWebUI)
       .WillByDefault([](GetPendingReportsCallback callback) {
         std::move(callback).Run(
             AggregatableReportRequestsAndIdsBuilder()
@@ -338,13 +344,13 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request, {hpke_key.public_key});
 
-  aggregation_service_->NotifyReportHandled(
+  aggregation_service().NotifyReportHandled(
       std::move(request), AggregationServiceStorage::RequestId(10),
       std::move(report),
       /*report_handled_time=*/base::Time::Now() + base::Hours(1),
       AggregationServiceObserver::ReportStatus::kSent);
 
-  EXPECT_CALL(*aggregation_service_, ClearData)
+  EXPECT_CALL(aggregation_service(), ClearData)
       .WillOnce(base::test::RunOnceCallback<3>());
 
   // Verify both rows get rendered.
