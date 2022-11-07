@@ -119,8 +119,6 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
   switch (type) {
     case ContentLayerType::kSeparatorColor:
       return color_provider->GetColor(kColorAshSeparatorColor);
-    case ContentLayerType::kShelfHandleColor:
-      return color_provider->GetColor(kColorAshShelfHandleColor);
     case ContentLayerType::kIconColorSecondary:
       return color_provider->GetColor(kColorAshIconColorSecondary);
     case ContentLayerType::kIconColorSecondaryBackground:

@@ -107,9 +107,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kAppStateIndicatorColor,
     kAppStateIndicatorColorInactive,
 
-    // Color for the shelf drag handle in tablet mode.
-    kShelfHandleColor,
-
     // Color for slider.
     kSliderColorActive,
     kSliderColorInactive,

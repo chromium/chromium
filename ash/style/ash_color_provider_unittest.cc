@@ -309,9 +309,6 @@ INSTANTIATE_TEST_SUITE_P(
           ColorProvider::ContentLayerType::kAppStateIndicatorColorInactive,
           SkColorSetARGB(0x60, 0x20, 0x21, 0x24)},
 
-         {ColorMode::kLight, ColorProvider::ContentLayerType::kShelfHandleColor,
-          SkColorSetARGB(0x24, 0x0, 0x0, 0x0)},
-
          {ColorMode::kLight,
           ColorProvider::ContentLayerType::kSliderColorActive,
           SkColorSetRGB(0x1A, 0x73, 0xE8)},
@@ -442,9 +439,6 @@ INSTANTIATE_TEST_SUITE_P(
          {ColorMode::kDark,
           ColorProvider::ContentLayerType::kAppStateIndicatorColorInactive,
           SkColorSetARGB(0x60, 0xE8, 0xEA, 0xED)},
-
-         {ColorMode::kDark, ColorProvider::ContentLayerType::kShelfHandleColor,
-          SkColorSetARGB(0x24, 0xFF, 0xFF, 0xFF)},
 
          {ColorMode::kDark, ColorProvider::ContentLayerType::kSliderColorActive,
           SkColorSetRGB(0x8A, 0xB4, 0xF8)},

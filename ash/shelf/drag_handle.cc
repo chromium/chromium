@@ -15,7 +15,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/bind.h"
@@ -233,8 +233,7 @@ void DragHandle::SetWindowDragFromShelfInProgress(bool gesture_in_progress) {
 }
 
 void DragHandle::UpdateColor() {
-  layer()->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kShelfHandleColor));
+  layer()->SetColor(GetColorProvider()->GetColor(kColorAshShelfHandleColor));
 }
 
 void DragHandle::OnGestureEvent(ui::GestureEvent* event) {

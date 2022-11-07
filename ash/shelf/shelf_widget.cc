@@ -483,9 +483,8 @@ void ShelfWidget::DelegateView::OnThemeChanged() {
   shelf_widget_->background_animator_.PaintBackground(
       shelf_widget_->shelf_layout_manager()->GetShelfBackgroundType(),
       AnimationChangeType::IMMEDIATE);
-  animating_drag_handle_.SetOpacity(StyleUtil::GetInkDropOpacity() + 0.075);
   animating_drag_handle_.SetColor(
-      GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
+      GetColorProvider()->GetColor(kColorAshShelfHandleColor));
 }
 
 bool ShelfWidget::DelegateView::CanActivate() const {
