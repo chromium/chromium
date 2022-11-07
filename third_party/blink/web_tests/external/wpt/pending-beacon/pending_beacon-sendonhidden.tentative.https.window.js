@@ -78,7 +78,6 @@ for (const beaconType of BeaconTypes) {
     // Navigates away to trigger beacon sending.
     rc1.navigateToNew();
 
-    // TODO(crbug.com/1378830): expectBeacon count should be 1 after fixing.
-    await expectBeacon(uuid, {count: 0});
+    await expectBeacon(uuid, {count: 1});
   }, `${beaconName}: sends on page entering hidden state (w/o BFCache).`);
 }

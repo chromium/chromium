@@ -814,6 +814,11 @@ void RenderFrameHostManager::UnloadOldFrame(
   // RenderFrameHost should not be trying to commit a navigation.
   old_render_frame_host->ResetNavigationRequests();
 
+  // Sends out all pending beacons on navigation away.
+  // Whether or not `old_render_frame_host` is put into BackForwardCache is not
+  // relevant.
+  // TODO(crbug.com/1378833): Allow to keep pending beacons when the old rfh is
+  // put into BackForwardCache.
   if (base::FeatureList::IsEnabled(blink::features::kPendingBeaconAPI) &&
       blink::features::kPendingBeaconAPIForcesSendingOnNavigation.Get()) {
     old_render_frame_host->SendAllPendingBeaconsOnNavigation();

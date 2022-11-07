@@ -23,28 +23,6 @@
 namespace content {
 namespace {
 
-// Returns true if `host` has the Background Sync permission granted for current
-// document.
-bool IsBackgroundSyncGranted(RenderFrameHost* host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(host);
-
-  auto* permission_controller =
-      host->GetBrowserContext()->GetPermissionController();
-  DCHECK(permission_controller);
-
-  // Cannot use `PermissionController::GetPermissionStatusForCurrentDocument()`
-  // as `host` might not have all its states available when in PendingBeaconHost
-  // dtor even if it's still alive (See `DocumentUserData::render_frame_host()`)
-  // Specifically, it will crash on Android when the controller requests a
-  // RenderViewHost.
-  return permission_controller
-             ->GetPermissionResultForOriginWithoutContext(
-                 blink::PermissionType::BACKGROUND_SYNC,
-                 host->GetLastCommittedOrigin())
-             .status == blink::mojom::PermissionStatus::GRANTED;
-}
-
 // Tells if `url` can be used by PendingBeacon.
 // The renderer checks these criteria in pending_beacon.cc and should have
 // already returned an exception instead of making an IPC to the browser.
@@ -94,12 +72,12 @@ PendingBeaconHost::~PendingBeaconHost() {
   }
   CHECK(!IsInObserverList());
 
-  // Checks if it has Background Sync granted before sending out the rest of
-  // beacons.
-  // https://github.com/WICG/pending-beacon#privacy
-  if (IsBackgroundSyncGranted(&render_frame_host())) {
-    Send(beacons_);
-  }
+  // PendingBeaconHost gets cleared when either RenderFrameHost is deleted or
+  // a cross-document non-BFCached navigation is committed in the same
+  // RenderFrameHost (See content::DocumentUserData).
+  // In both of the above case, pending beacons should be sent per Case B-1 from
+  // https://github.com/WICG/pending-beacon/issues/3#issuecomment-1286397825
+  Send(beacons_);
 }
 
 void PendingBeaconHost::DeleteBeacon(Beacon* beacon) {
@@ -130,6 +108,12 @@ void PendingBeaconHost::Send(
   if (beacons.empty()) {
     return;
   }
+
+  // TODO(crbug.com/1378833): When document is in BackForwardCache, checks if it
+  // has Background Sync granted before sending out the rest of beacons.
+  // https://github.com/WICG/pending-beacon#privacy
+  // Right now it cannot happen as `kPendingBeaconAPIForcesSendingOnNavigation`
+  // is enabled.
 
   service_->SendBeacons(beacons, shared_url_factory_.get());
 }

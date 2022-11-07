@@ -327,8 +327,7 @@ TEST_P(PendingBeaconHostTest, SendOnDocumentUnloadWithBackgroundSync) {
   ExpectTotalNetworkRequests(FROM_HERE, total);
 }
 
-TEST_P(PendingBeaconHostTest,
-       DoesNotSendOnDocumentUnloadWithoutBackgroundSync) {
+TEST_P(PendingBeaconHostTest, SendOnDocumentUnloadWithoutBackgroundSync) {
   const std::string method = GetParam();
   const size_t total = 5;
 
@@ -340,7 +339,7 @@ TEST_P(PendingBeaconHostTest,
   // Forces deleting the page where `host` resides.
   DeleteContents();
 
-  ExpectTotalNetworkRequests(FROM_HERE, 0);
+  ExpectTotalNetworkRequests(FROM_HERE, total);
 }
 
 TEST_P(PendingBeaconHostTest, SendOnNavigation) {
