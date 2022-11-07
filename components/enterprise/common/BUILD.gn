@@ -17,8 +17,8 @@ static_library("download_item_reroute_info") {
   deps = [ "proto:download_item_reroute_info_proto" ]
 }
 
-static_library("files_scan_data") {
-  if (!is_ios) {
+if (!is_ios) {
+  static_library("files_scan_data") {
     sources = [
       "files_scan_data.cc",
       "files_scan_data.h",
