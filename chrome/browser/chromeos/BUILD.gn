@@ -143,7 +143,6 @@ source_set("chromeos") {
     "//ash/webui/shimless_rma",
     "//ash/webui/shimless_rma/backend",
     "//ash/webui/shortcut_customization_ui",
-    "//ash/webui/telemetry_extension_ui/mojom",
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",

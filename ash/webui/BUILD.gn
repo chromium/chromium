@@ -37,7 +37,6 @@ test("ash_webui_unittests") {
     "//ash/webui/shimless_rma/backend:unit_tests",
     "//ash/webui/shimless_rma/mojom:unit_tests",
     "//ash/webui/shortcut_customization_ui/backend:unit_tests",
-    "//ash/webui/telemetry_extension_ui/services:unit_tests",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
