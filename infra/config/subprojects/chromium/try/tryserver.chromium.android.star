@@ -39,6 +39,7 @@ try_.builder(
     mirrors = [
         "ci/android-10-arm64-rel",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -488,7 +489,6 @@ try_.builder(
 
 try_.builder(
     name = "android_arm64_dbg_recipe",
-    goma_jobs = goma.jobs.J300,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
     ],
@@ -496,6 +496,7 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -508,6 +509,7 @@ try_.builder(
 
 try_.builder(
     name = "android_blink_rel",
+    goma_backend = None,
 )
 
 try_.builder(
@@ -606,6 +608,7 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -614,6 +617,7 @@ try_.builder(
         "ci/Android arm64 Builder (dbg)",
         "ci/Marshmallow 64 bit Tester",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -635,6 +639,7 @@ try_.builder(
         "ci/Android arm64 Builder (dbg)",
         "ci/Nougat Phone Tester",
     ],
+    goma_backend = None,
 )
 
 try_.gpu.optional_tests_builder(
@@ -690,4 +695,5 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "ui/gl/.+"),
         ],
     ),
+    goma_backend = None,
 )

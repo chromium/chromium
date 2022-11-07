@@ -13,7 +13,7 @@
       "system_webview_package_name": "com.google.android.webview.debug",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-11-x86-rel": {
@@ -1020,7 +1020,7 @@
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android_blink_rel": {
@@ -1034,7 +1034,7 @@
       "strip_debug_info": true,
       "symbol_level": 0,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android_compile_dbg": {
@@ -1111,10 +1111,10 @@
       "target_cpu": "arm",
       "target_os": "android",
       "use_crash_key_stubs": true,
-      "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
+      "use_remoteexec": true,
       "use_thin_lto": false
     }
   },
@@ -1128,7 +1128,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android_optional_gpu_tests_rel": {
@@ -1141,7 +1141,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -1281,7 +1281,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }

@@ -29,6 +29,7 @@ consoles.list_view(
 try_.builder(
     name = "android-angle-chromium-try",
     executable = "recipe:angle_chromium_trybot",
+    goma_backend = None,
 )
 
 try_.builder(

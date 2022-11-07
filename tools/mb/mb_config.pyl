@@ -954,7 +954,7 @@
     },
 
     'tryserver.chromium.android': {
-      'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome',
+      'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome_reclient',
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome',
       'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
       'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome',
@@ -1010,15 +1010,15 @@
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_webview_shell',
       'android-x64-cast': 'android_cast_debug_static_bot_compile_only',
       'android_archive_rel_ng': 'android_release_trybot',
-      'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild',
-      'android_blink_rel': 'android_release_trybot',
+      'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
+      'android_blink_rel': 'android_release_trybot_reclient',
       'android_compile_dbg': 'android_debug_trybot_compile_only',
       'android_compile_x64_dbg': 'android_debug_trybot_compile_only_x64',
       'android_compile_x86_dbg': 'android_debug_trybot_compile_only_x86',
       'android_coverage': 'android_debug_trybot_java_coverage',
-      'android_cronet': 'android_cronet_release_trybot_arm_no_neon',
-      'android_n5x_swarming_dbg': 'android_debug_trybot_arm64',
-      'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot',
+      'android_cronet': 'android_cronet_release_trybot_arm_no_neon_reclient',
+      'android_n5x_swarming_dbg': 'android_debug_trybot_arm64_reclient',
+      'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot_reclient',
       'android_unswarmed_pixel_aosp': 'android_debug_trybot_arm64',
       'gpu-fyi-try-android-l-nexus-5-32': 'gpu_tests_android_release_trybot',
       'gpu-fyi-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64',
@@ -1028,11 +1028,11 @@
       'gpu-fyi-try-android-r-pixel-4-32': 'gpu_tests_android_release_trybot',
       'gpu-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64',
       'linux_android_dbg_ng': 'android_debug_bot',
-      'try-nougat-phone-tester': 'android_debug_trybot_arm64',
+      'try-nougat-phone-tester': 'android_debug_trybot_arm64_reclient',
     },
 
     'tryserver.chromium.angle': {
-      'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild',
+      'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild_reclient',
       'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia',
       'ios-angle-try-intel': 'angle_deqp_release_trybot_ios',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
@@ -1544,8 +1544,8 @@
       'strip_debug_info',
     ],
 
-    'android_cronet_release_trybot_arm_no_neon': [
-      'android', 'cronet_android', 'release_trybot', 'arm_no_neon',
+    'android_cronet_release_trybot_arm_no_neon_reclient': [
+      'android', 'cronet_android', 'release_trybot_reclient', 'arm_no_neon',
     ],
 
     'android_debug_bot': [
@@ -1581,12 +1581,20 @@
       'android', 'debug_bot', 'arm64',
     ],
 
+    'android_debug_trybot_arm64_reclient': [
+      'android', 'debug_bot_reclient', 'arm64',
+    ],
+
     'android_debug_trybot_compile_only': [
       'android', 'debug_bot', 'compile_only',
     ],
 
     'android_debug_trybot_compile_only_arm64_fastbuild': [
       'android', 'debug_bot', 'compile_only', 'arm64', 'android_fastbuild'
+    ],
+
+    'android_debug_trybot_compile_only_arm64_fastbuild_reclient': [
+      'android', 'debug_bot_reclient', 'compile_only', 'arm64', 'android_fastbuild'
     ],
 
     'android_debug_trybot_compile_only_x64': [
@@ -1689,8 +1697,8 @@
       'android', 'release_trybot', 'strip_debug_info',
     ],
 
-    'android_release_trybot_arm64_fastbuild_webview_trichrome': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
+    'android_release_trybot_arm64_fastbuild_webview_trichrome_reclient': [
+      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_trichrome',
     ],
 
@@ -1741,6 +1749,10 @@
       'android', 'release_trybot', 'minimal_symbols', 'x86',
       'strip_debug_info', 'android_fastbuild', 'webview_monochrome',
       'disable_proguard'
+    ],
+
+    'android_release_trybot_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info',
     ],
 
     'android_release_trybot_x64_fastbuild_webview_trichrome': [
@@ -2653,8 +2665,8 @@
       'gpu_tests', 'android', 'release_trybot_minimal_symbols', 'arm64', 'static_angle',
     ],
 
-    'gpu_tests_android_release_trybot_arm64_fastbuild': [
-      'gpu_tests', 'android', 'release_trybot', 'arm64', 'static_angle',
+    'gpu_tests_android_release_trybot_arm64_fastbuild_reclient': [
+      'gpu_tests', 'android', 'release_trybot_reclient', 'arm64', 'static_angle',
       'android_fastbuild',
     ],
 
