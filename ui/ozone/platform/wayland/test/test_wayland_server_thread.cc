@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
 #include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
 
@@ -58,9 +59,19 @@ TestWaylandServerThread::TestWaylandServerThread()
 }
 
 TestWaylandServerThread::~TestWaylandServerThread() {
-  // Stop watching the descriptor here to guarantee that no new events
-  // will come during or after the destruction of the display.
-  controller_.StopWatchingFileDescriptor();
+  // TODO(crbug.com/1365887): remove this condition once all the tests are
+  // refactored.
+  if (is_async_) {
+    // Stop watching the descriptor here to guarantee that no new events
+    // will come during or after the destruction of the display. This must be
+    // done on the correct thread to avoid data races.
+    auto stop_controller_on_server_thread =
+        [](wl::TestWaylandServerThread* server) {
+          server->controller_.StopWatchingFileDescriptor();
+        };
+    RunAndWait(base::BindLambdaForTesting(
+        std::move(stop_controller_on_server_thread)));
+  }
 
   Resume();
   Stop();
