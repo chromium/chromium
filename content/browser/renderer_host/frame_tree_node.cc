@@ -1100,4 +1100,9 @@ bool FrameTreeNode::AncestorOrSelfHasCSPEE() const {
   return csp_attribute() || (parent() && parent()->required_csp());
 }
 
+void FrameTreeNode::RestartNavigationAsCrossDocument(
+    std::unique_ptr<NavigationRequest> navigation_request) {
+  navigator().RestartNavigationAsCrossDocument(std::move(navigation_request));
+}
+
 }  // namespace content

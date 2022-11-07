@@ -421,6 +421,9 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   CHECK(!page->render_frame_host()->GetParentOrOuterDocumentOrEmbedder());
 
   page->render_frame_host()->SetFrameTreeNode(*(target_frame_tree.root()));
+
+  page->render_frame_host()->SetRenderFrameHostOwner(target_frame_tree.root());
+
   // Copy frame name into the replication state of the primary main frame to
   // ensure that the replication state of the primary main frame after
   // activation matches the replication state stored in the renderer.

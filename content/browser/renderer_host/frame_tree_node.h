@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
+#include "content/browser/renderer_host/render_frame_host_owner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
@@ -54,7 +55,7 @@ class FrameTree;
 // allows subframe FrameTreeNodes to stay alive while a RenderFrameHost is
 // still alive - for example while pending deletion, after a new current
 // RenderFrameHost has replaced it.
-class CONTENT_EXPORT FrameTreeNode {
+class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
  public:
   class Observer {
    public:
@@ -96,7 +97,7 @@ class CONTENT_EXPORT FrameTreeNode {
   FrameTreeNode(const FrameTreeNode&) = delete;
   FrameTreeNode& operator=(const FrameTreeNode&) = delete;
 
-  ~FrameTreeNode();
+  ~FrameTreeNode() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -611,6 +612,10 @@ class CONTENT_EXPORT FrameTreeNode {
   // it will be used by HTMLFencedFrameElement::canLoadOpaqueURL for information
   // it can't get on its own.
   bool AncestorOrSelfHasCSPEE() const;
+
+  // RenderFrameHostOwner implementation:
+  void RestartNavigationAsCrossDocument(
+      std::unique_ptr<NavigationRequest> navigation_request) override;
 
  private:
   friend class CSPEmbeddedEnforcementUnitTest;

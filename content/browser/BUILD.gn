@@ -1800,6 +1800,7 @@ source_set("browser") {
     "renderer_host/render_frame_host_impl.h",
     "renderer_host/render_frame_host_manager.cc",
     "renderer_host/render_frame_host_manager.h",
+    "renderer_host/render_frame_host_owner.h",
     "renderer_host/render_frame_metadata_provider_impl.cc",
     "renderer_host/render_frame_metadata_provider_impl.h",
     "renderer_host/render_frame_proxy_host.cc",

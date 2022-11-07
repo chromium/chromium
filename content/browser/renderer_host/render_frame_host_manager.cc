@@ -40,6 +40,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_owner.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
@@ -3951,6 +3952,18 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
           ->DecrementRelatedActiveContentsCount();
     }
   }
+
+  // Update the owner of the new RenderFrameHost to point to the current frame.
+  // Note that this is a no-op for pending commit RenderFrameHosts (which start
+  // with owner pointing to the FrameTreeNode owning them) and prerendering
+  // activations (where RenderFrameHost's owner has been updated in
+  // PrerenderPageHolder::Activate), but is necessary for RFHs restored from
+  // back/forward cache.
+  if (render_frame_host_)
+    render_frame_host_->SetRenderFrameHostOwner(frame_tree_node_);
+
+  if (old_render_frame_host)
+    old_render_frame_host->SetRenderFrameHostOwner(nullptr);
 
   return old_render_frame_host;
 }
