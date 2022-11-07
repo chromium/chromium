@@ -17,7 +17,7 @@
 
 namespace ash {
 FaceMLAppUI::FaceMLAppUI(content::WebUI* web_ui,
-                         std::unique_ptr<UserProvider> user_provider)
+                         std::unique_ptr<FaceMLUserProvider> user_provider)
     : ui::MojoWebUIController(web_ui),
       user_provider_(std::move(user_provider)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();

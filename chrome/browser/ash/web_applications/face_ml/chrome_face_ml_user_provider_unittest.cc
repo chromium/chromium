@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/web_applications/face_ml/chrome_user_provider.h"
+#include "chrome/browser/ash/web_applications/face_ml/chrome_face_ml_user_provider.h"
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -20,9 +20,9 @@ mojom::face_ml_app::UserInformation ExampleUserInformation() {
 }
 }  // namespace
 
-class FaceMLChromeUserProviderTest : public BrowserWithTestWindowTest {
+class ChromeFaceMLUserProviderTest : public BrowserWithTestWindowTest {
  public:
-  FaceMLChromeUserProviderTest()
+  ChromeFaceMLUserProviderTest()
       : user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(
             std::unique_ptr<FakeChromeUserManager>(user_manager_)) {}
@@ -42,9 +42,9 @@ class FaceMLChromeUserProviderTest : public BrowserWithTestWindowTest {
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 
-// Tests ChromeUserProvider provides correct user profile from browser context
-// to FaceML.
-TEST_F(FaceMLChromeUserProviderTest,
+// Tests ChromeFaceMLUserProvider provides correct user profile from browser
+// context to FaceML.
+TEST_F(ChromeFaceMLUserProviderTest,
        GetCurrentUserInformationReturnsCurrentProfileFromeBrowser) {
   std::unique_ptr<TestingProfile> profile = CreateRegularProfile();
   std::unique_ptr<content::WebContents> web_contents(
@@ -53,7 +53,7 @@ TEST_F(FaceMLChromeUserProviderTest,
   content::TestWebUI test_web_ui;
   test_web_ui.set_web_contents(web_contents.get());
 
-  ChromeUserProvider chrome_user_provider{&test_web_ui};
+  ChromeFaceMLUserProvider chrome_user_provider{&test_web_ui};
   mojom::face_ml_app::UserInformation user_info =
       chrome_user_provider.GetCurrentUserInformation();
 

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_FACE_ML_CHROME_USER_PROVIDER_H_
-#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_FACE_ML_CHROME_USER_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_FACE_ML_CHROME_FACE_ML_USER_PROVIDER_H_
+#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_FACE_ML_CHROME_FACE_ML_USER_PROVIDER_H_
 
+#include "ash/webui/face_ml_app_ui/face_ml_user_provider.h"
 #include "ash/webui/face_ml_app_ui/mojom/face_ml_app_ui.mojom.h"
-#include "ash/webui/face_ml_app_ui/user_provider.h"
 #include "base/memory/raw_ref.h"
 
 namespace content {
@@ -17,14 +17,14 @@ namespace ash {
 // GetProfileUserNameImplementation of the ParticipantManager interface.
 // Provides the FaceML App code with functions that only exist in chrome/.
 //
-// The ChromeUserProvider provides information of current Chromium user
+// The ChromeFaceMLUserProvider provides information of current Chromium user
 // from browser context.
-class ChromeUserProvider : public UserProvider {
+class ChromeFaceMLUserProvider : public FaceMLUserProvider {
  public:
-  explicit ChromeUserProvider(content::WebUI* web_ui);
+  explicit ChromeFaceMLUserProvider(content::WebUI* web_ui);
 
-  ChromeUserProvider(const ChromeUserProvider&) = delete;
-  ChromeUserProvider& operator=(const ChromeUserProvider&) = delete;
+  ChromeFaceMLUserProvider(const ChromeFaceMLUserProvider&) = delete;
+  ChromeFaceMLUserProvider& operator=(const ChromeFaceMLUserProvider&) = delete;
 
   mojom::face_ml_app::UserInformation GetCurrentUserInformation() override;
 
@@ -33,4 +33,4 @@ class ChromeUserProvider : public UserProvider {
 };
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_FACE_ML_CHROME_USER_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_FACE_ML_CHROME_FACE_ML_USER_PROVIDER_H_

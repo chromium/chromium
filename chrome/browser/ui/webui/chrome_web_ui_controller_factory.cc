@@ -240,7 +240,7 @@
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/face_ml/chrome_user_provider.h"
+#include "chrome/browser/ash/web_applications/face_ml/chrome_face_ml_user_provider.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
@@ -983,7 +983,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (!ash::features::IsFaceMLSwaEnabled()) {
       return nullptr;
     }
-    return &NewComponentUI<ash::FaceMLAppUI, ash::ChromeUserProvider>;
+    return &NewComponentUI<ash::FaceMLAppUI, ash::ChromeFaceMLUserProvider>;
   }
   if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
     return &NewComponentUI<ash::file_manager::FileManagerUI,

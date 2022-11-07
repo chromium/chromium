@@ -15,9 +15,9 @@ static_library("face_ml_app_ui") {
     "face_ml_app_untrusted_ui.h",
     "face_ml_page_handler.cc",
     "face_ml_page_handler.h",
+    "face_ml_user_provider.h",
     "url_constants.cc",
     "url_constants.h",
-    "user_provider.h",
   ]
 
   deps = [
