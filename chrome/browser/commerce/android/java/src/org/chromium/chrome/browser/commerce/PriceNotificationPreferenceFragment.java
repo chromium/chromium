@@ -130,7 +130,7 @@ public class PriceNotificationPreferenceFragment extends PreferenceFragmentCompa
     private boolean arePriceTrackingNotificationsEnabled() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = mNotificationManagerProxy.getNotificationChannel(
-                    ChromeChannelDefinitions.ChannelId.PRICE_DROP);
+                    ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
             if (mNotificationManagerProxy.areNotificationsEnabled() && channel != null
                     && channel.getImportance() != NotificationManager.IMPORTANCE_NONE) {
                 return true;

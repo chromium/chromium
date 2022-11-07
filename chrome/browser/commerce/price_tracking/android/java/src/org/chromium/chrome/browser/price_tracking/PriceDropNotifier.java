@@ -138,7 +138,7 @@ public class PriceDropNotifier {
     protected NotificationWrapperBuilder getNotificationBuilder(
             @SystemNotificationType int notificationType, int notificationId) {
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                ChannelId.PRICE_DROP,
+                ChannelId.PRICE_DROP_DEFAULT,
                 new NotificationMetadata(notificationType, NOTIFICATION_TAG, notificationId));
     }
 
