@@ -273,6 +273,7 @@ class DlpFilesController {
   // Called when `transferred_files` is ready. Constructs CheckFilesTransfer
   // request and forwards it to the dlp daemon.
   void OnGetFilesUrls(storage::FileSystemURL destination,
+                      bool is_move,
                       GetDisallowedTransfersCallback result_callback,
                       std::vector<storage::FileSystemURL> transferred_files);
 

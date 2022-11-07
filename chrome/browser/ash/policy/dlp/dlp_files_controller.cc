@@ -457,7 +457,7 @@ void DlpFilesController::GetDisallowedTransfers(
       file_system_context, transferred_files,
       base::BindOnce(&DlpFilesController::OnGetFilesUrls,
                      weak_ptr_factory_.GetWeakPtr(), std::move(destination),
-                     std::move(result_callback)));
+                     is_move, std::move(result_callback)));
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&RootsRecursionDelegate::Run,
@@ -950,6 +950,7 @@ void DlpFilesController::MaybeReportEvent(
 
 void DlpFilesController::OnGetFilesUrls(
     storage::FileSystemURL destination,
+    bool is_move,
     GetDisallowedTransfersCallback result_callback,
     std::vector<storage::FileSystemURL> transferred_files) {
   ::dlp::CheckFilesTransferRequest request;
@@ -969,8 +970,9 @@ void DlpFilesController::OnGetFilesUrls(
   }
 
   request.set_destination_url(destination.path().value());
-  // TODO(crbug.com/1356109): Set move or copy action instead of transfer.
-  request.set_file_action(::dlp::FileAction::TRANSFER);
+  request.set_file_action(is_move ? ::dlp::FileAction::MOVE
+                                  : ::dlp::FileAction::COPY);
+
   auto return_transfers_callback =
       base::BindOnce(&DlpFilesController::ReturnDisallowedTransfers,
                      weak_ptr_factory_.GetWeakPtr(), std::move(filtered_files),
