@@ -83,7 +83,7 @@ void NativeInputMethodEngine::Initialize(
           nullptr);
   assistive_suggester_ = assistive_suggester.get();
   std::unique_ptr<AutocorrectManager> autocorrect_manager =
-      std::make_unique<AutocorrectManager>(this);
+      std::make_unique<AutocorrectManager>(this, profile);
   autocorrect_manager_ = autocorrect_manager.get();
 
   auto suggestions_service_client =

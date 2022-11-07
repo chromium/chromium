@@ -195,6 +195,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="InputMethod.Assistive.AutocorrectV2.PkUserPreference.{Language}"
+    enum="IMEAutocorrectPreference" expires_after="2023-05-01">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This histogram records the value of the user's physical keyboard autocorrect
+    preference once when an input method is activated. The metric is broken down
+    into two extra buckets, English and All languages. When a user has an
+    english based input method enabled, the metric will be recorded twice, once
+    for the English bucket and once for the All bucket. All other input methods
+    will be recorded once in the All bucket.
+  </summary>
+  <token key="Language">
+    <variant name="All" summary="All languages"/>
+    <variant name="English" summary="English language only"/>
+  </token>
+</histogram>
+
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted"
     enum="IMEAutocorrectQualityBreakdown" expires_after="2023-05-01">
   <owner>mehrab@google.com</owner>

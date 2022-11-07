@@ -8,10 +8,14 @@
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -62,6 +66,19 @@ constexpr char kAutocorrectV2QualityPkAcceptedHistName[] =
     "InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted";
 constexpr char kAutocorrectV2QualityPkRejectedHistName[] =
     "InputMethod.Assistive.AutocorrectV2.Quality.PkRejected";
+constexpr char kAutocorrectV2PkUserPreferenceAll[] =
+    "InputMethod.Assistive.AutocorrectV2.PkUserPreference.All";
+constexpr char kAutocorrectV2PkUserPreferenceEnglish[] =
+    "InputMethod.Assistive.AutocorrectV2.PkUserPreference.English";
+
+constexpr char kUsEnglishEngineId[] = "xkb:us::eng";
+constexpr char kUsInternationalEngineId[] = "xkb:us:intl:eng";
+constexpr char kSpainSpanishEngineId[] = "xkb:es::spa";
+constexpr char kLatinAmericaSpanishEngineId[] = "xkb:latam::spa";
+constexpr char kBrazilPortugeseEngineId[] = "xkb:br::por";
+constexpr char kFranceFrenchEngineId[] = "xkb:fr::fra";
+
+constexpr int kContextId = 5;
 
 // A helper for testing autocorrect histograms. There are redundant metrics
 // for each autocorrect action and the helper ensures that all the relevant
@@ -249,6 +266,21 @@ ui::KeyEvent CreateKeyEvent(ui::DomKey key, ui::DomCode code) {
                       key, ui::EventTimeForNow());
 }
 
+ui::KeyEvent KeyA() {
+  return CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
+}
+
+void SetAutocorrectPreferenceTo(Profile& profile,
+                                const std::string& engine_id,
+                                bool autocorrect_enabled) {
+  base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  input_method_setting.SetPath(
+      engine_id + ".physicalKeyboardAutoCorrectionLevel",
+      base::Value(autocorrect_enabled ? 1 : 0));
+  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
+                          input_method_setting);
+}
+
 class MockSuggestionHandler : public SuggestionHandlerInterface {
  public:
   MOCK_METHOD(bool,
@@ -298,7 +330,9 @@ class MockSuggestionHandler : public SuggestionHandlerInterface {
 
 class AutocorrectManagerTest : public testing::Test {
  protected:
-  AutocorrectManagerTest() : manager_(&mock_suggestion_handler_) {
+  AutocorrectManagerTest()
+      : profile_(std::make_unique<TestingProfile>()),
+        manager_(&mock_suggestion_handler_, profile_.get()) {
     // Disable ImeRulesConfigs by default.
     feature_list_.InitWithFeatures({}, {ash::features::kImeRuleConfig});
     ui::IMEBridge::Get()->SetInputContextHandler(
@@ -307,11 +341,13 @@ class AutocorrectManagerTest : public testing::Test {
     keyboard_client_->set_keyboard_visible_for_test(false);
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   ::base::test::ScopedFeatureList feature_list_;
   ui::MockIMEInputContextHandler mock_ime_input_context_handler_;
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler_;
-  AutocorrectManager manager_;
+  std::unique_ptr<Profile> profile_;
   std::unique_ptr<ChromeKeyboardControllerClient> keyboard_client_;
+  AutocorrectManager manager_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -1996,6 +2032,192 @@ TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForPkRejected) {
   histogram_tester_.ExpectTotalCount(kAutocorrectV2QualityPkRejectedHistName,
                                      2);
 }
+
+struct PkUserPrefCase {
+  std::string test_name;
+  std::string engine_id;
+  bool autocorrect_enabled;
+  bool vk_visible;
+  absl::optional<AutocorrectPreference> expected_all_pref;
+  absl::optional<AutocorrectPreference> expected_eng_pref;
+};
+
+class PkUserPreferenceMetric
+    : public AutocorrectManagerTest,
+      public testing::WithParamInterface<PkUserPrefCase> {};
+
+TEST_P(PkUserPreferenceMetric, IsNotRecordedWhenKeyEventNotEncountered) {
+  const PkUserPrefCase& test_case = GetParam();
+  SetAutocorrectPreferenceTo(/*profile=*/*profile_,
+                             /*engine_id=*/test_case.engine_id,
+                             /*enabled=*/test_case.autocorrect_enabled);
+
+  manager_.OnActivate(test_case.engine_id);
+  manager_.OnFocus(kContextId);
+
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkUserPreferenceAll, 0);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkUserPreferenceEnglish, 0);
+}
+
+TEST_P(PkUserPreferenceMetric, IsRecordedCorrectlyAfterOnFocusThenOnKeyEvent) {
+  const PkUserPrefCase& test_case = GetParam();
+  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  SetAutocorrectPreferenceTo(/*profile=*/*profile_,
+                             /*engine_id=*/test_case.engine_id,
+                             /*enabled=*/test_case.autocorrect_enabled);
+
+  manager_.OnActivate(test_case.engine_id);
+  manager_.OnFocus(kContextId);
+  manager_.OnKeyEvent(KeyA());
+  manager_.OnFocus(kContextId);
+  manager_.OnKeyEvent(KeyA());
+  manager_.OnKeyEvent(KeyA());
+
+  // There are two successive OnFocus then OnKeyEvent sequences above. Thus we
+  // expect that there should be two recordings of the metric.
+  int expected_all_count = test_case.expected_all_pref ? 2 : 0;
+  int expected_eng_count = test_case.expected_eng_pref ? 2 : 0;
+
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkUserPreferenceAll,
+                                     expected_all_count);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkUserPreferenceEnglish,
+                                     expected_eng_count);
+  if (test_case.expected_all_pref) {
+    histogram_tester_.ExpectBucketCount(kAutocorrectV2PkUserPreferenceAll,
+                                        test_case.expected_all_pref.value(),
+                                        expected_all_count);
+  }
+
+  if (test_case.expected_eng_pref) {
+    histogram_tester_.ExpectBucketCount(kAutocorrectV2PkUserPreferenceEnglish,
+                                        test_case.expected_eng_pref.value(),
+                                        expected_eng_count);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutocorrectManagerTest,
+    PkUserPreferenceMetric,
+    testing::ValuesIn<PkUserPrefCase>({
+        // US_ENGLISH examples
+        {"UsEnglishEnabled",
+         /*engine_id=*/kUsEnglishEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kEnabled,
+         /*expected_eng_pref=*/AutocorrectPreference::kEnabled},
+        {"UsEnglishDisabled",
+         /*engine_id=*/kUsEnglishEngineId,
+         /*autocorrect_enabled=*/false,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kDisabled,
+         /*expected_eng_pref=*/AutocorrectPreference::kDisabled},
+        {"UsEnglishNotRecordedWithVK",
+         /*engine_id=*/kUsEnglishEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/true,
+         /*expected_all_pref=*/absl::nullopt,
+         /*expected_eng_pref=*/absl::nullopt},
+
+        // ALL EXAMPLES
+        {"UsInternationalEnabled",
+         /*engine_id=*/kUsInternationalEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kEnabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"UsInternationalDisabled",
+         /*engine_id=*/kUsInternationalEngineId,
+         /*autocorrect_enabled=*/false,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kDisabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"UsInternationalNotRecordedWithVK",
+         /*engine_id=*/kUsInternationalEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/true,
+         /*expected_all_pref=*/absl::nullopt,
+         /*expected_eng_pref=*/absl::nullopt},
+
+        {"SpainSpanishEnabled",
+         /*engine_id=*/kSpainSpanishEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kEnabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"SpainSpanishDisabled",
+         /*engine_id=*/kSpainSpanishEngineId,
+         /*autocorrect_enabled=*/false,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kDisabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"SpainSpanishNotRecordedWithVK",
+         /*engine_id=*/kSpainSpanishEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/true,
+         /*expected_all_pref=*/absl::nullopt,
+         /*expected_eng_pref=*/absl::nullopt},
+
+        {"LatinAmericaSpanishEnabled",
+         /*engine_id=*/kLatinAmericaSpanishEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kEnabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"LatinAmericaSpanishDisabled",
+         /*engine_id=*/kLatinAmericaSpanishEngineId,
+         /*autocorrect_enabled=*/false,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kDisabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"LatinAmericaNotRecordedWithVK",
+         /*engine_id=*/kLatinAmericaSpanishEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/true,
+         /*expected_all_pref=*/absl::nullopt,
+         /*expected_eng_pref=*/absl::nullopt},
+
+        {"BrazilPortugeseEnabled",
+         /*engine_id=*/kBrazilPortugeseEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kEnabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"BrazilPortugeseDisabled",
+         /*engine_id=*/kBrazilPortugeseEngineId,
+         /*autocorrect_enabled=*/false,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kDisabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"BrazilPortugeseNotRecordedWithVK",
+         /*engine_id=*/kBrazilPortugeseEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/true,
+         /*expected_all_pref=*/absl::nullopt,
+         /*expected_eng_pref=*/absl::nullopt},
+
+        {"FranceFrenchEnabled",
+         /*engine_id=*/kFranceFrenchEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kEnabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"FranceFrenchDisabled",
+         /*engine_id=*/kFranceFrenchEngineId,
+         /*autocorrect_enabled=*/false,
+         /*vk_visible=*/false,
+         /*expected_all_pref=*/AutocorrectPreference::kDisabled,
+         /*expected_eng_pref=*/absl::nullopt},
+        {"FranceFrenchNotRecordedWithVK",
+         /*engine_id=*/kFranceFrenchEngineId,
+         /*autocorrect_enabled=*/true,
+         /*vk_visible=*/true,
+         /*expected_all_pref=*/absl::nullopt,
+         /*expected_eng_pref=*/absl::nullopt},
+    }),
+    [](const testing::TestParamInfo<PkUserPrefCase> info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 }  // namespace input_method

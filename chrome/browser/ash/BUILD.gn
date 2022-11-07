@@ -1248,6 +1248,7 @@ source_set("ash") {
     "input_method/assistive_window_controller_delegate.h",
     "input_method/assistive_window_properties.cc",
     "input_method/assistive_window_properties.h",
+    "input_method/autocorrect_enums.h",
     "input_method/autocorrect_manager.cc",
     "input_method/autocorrect_manager.h",
     "input_method/candidate_window_controller.cc",

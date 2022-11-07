@@ -22,6 +22,8 @@ namespace input_method {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// TODO(b/257146732): Move to autocorrect_enums.h
 enum class AutocorrectActions {
   kWindowShown = 0,
   kUnderlined = 1,
@@ -36,6 +38,8 @@ enum class AutocorrectActions {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// TODO(b/257146732): Move to autocorrect_enums.h
 enum class AutocorrectInternalStates {
   // Autocorrect handles an empty range.
   kHandleEmptyRange = 0,
@@ -100,6 +104,8 @@ enum class AutocorrectInternalStates {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// TODO(b/257146732): Move to autocorrect_enums.h
 enum class AutocorrectQualityBreakdown {
   // All the suggestions that resolved.
   kSuggestionResolved = 0,
@@ -131,9 +137,10 @@ enum class AutocorrectQualityBreakdown {
 // it to be undone easily.
 class AutocorrectManager {
  public:
-  // `suggestion_handler_` must be alive for the duration of the lifetime of
-  // this instance.
-  explicit AutocorrectManager(SuggestionHandlerInterface* suggestion_handler);
+  // `profile` and `suggestion_handler` must be alive for the lifetime of this
+  // instance.
+  explicit AutocorrectManager(SuggestionHandlerInterface* suggestion_handler,
+                              Profile* profile);
   ~AutocorrectManager();
 
   AutocorrectManager(const AutocorrectManager&) = delete;
@@ -150,6 +157,9 @@ class AutocorrectManager {
   void HandleAutocorrect(gfx::Range autocorrect_range,
                          const std::u16string& original_text,
                          const std::u16string& current_text);
+
+  // Called when a new input method is activated.
+  void OnActivate(const std::string& engine_id);
 
   // Handles interactions with Undo UI.
   bool OnKeyEvent(const ui::KeyEvent& event);
@@ -263,6 +273,11 @@ class AutocorrectManager {
     bool virtual_keyboard_visible = false;
   };
 
+  struct PendingPhysicalKeyboardUserPrefMetric {
+    // The currently active engine id.
+    std::string engine_id;
+  };
+
   // State variable for pending autocorrect, nullopt means no autocorrect
   // suggestion is pending. The state is kept to avoid issue where
   // InputContext returns stale autocorrect range.
@@ -276,7 +291,19 @@ class AutocorrectManager {
   // focusing on the text field.
   int num_handled_autocorrect_in_text_field_ = 0;
 
+  // Holds the currently active engine_id. There are cases where this could be
+  // a nullopt, for example, when the object has been constructed and the
+  // OnActivate method has not been invoked.
+  absl::optional<std::string> active_engine_id_;
+
+  // Holds a pending physical keyboard user preference metric ready to be
+  // recorded. This metric should be recorded once per input focused, and only
+  // if the user is currently using the physical keyboard.
+  absl::optional<PendingPhysicalKeyboardUserPrefMetric>
+      pending_user_pref_metric_;
+
   SuggestionHandlerInterface* suggestion_handler_;
+  Profile* profile_;
   int context_id_ = 0;
 
   DiacriticsInsensitiveStringComparator

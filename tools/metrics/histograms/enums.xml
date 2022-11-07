@@ -51480,6 +51480,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="23" label="HANDLE_SUGGESTION_IN_DENYLISTED_APP"/>
 </enum>
 
+<enum name="IMEAutocorrectPreference">
+  <int value="0" label="DEFAULT"/>
+  <int value="1" label="ENABLED"/>
+  <int value="2" label="DISABLED"/>
+</enum>
+
 <enum name="IMEAutocorrectQualityBreakdown">
   <int value="0" label="SUGGESTION_RESOLVED"/>
   <int value="1" label="ORIGINAL_TEXT_IS_ASCII"/>
