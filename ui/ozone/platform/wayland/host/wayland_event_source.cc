@@ -835,25 +835,25 @@ void WaylandEventSource::ProcessPointerScrollData() {
 
   int flags = pointer_flags_ | keyboard_modifiers_;
 
-  static constexpr bool supports_trackpad_kinetic_scrolling =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      true;
-#else
-      false;
-#endif
-
   // Dispatch Fling event if pointer.axis_stop is notified and the recent
   // pointer.axis events meets the criteria to start fling scroll.
   if (pointer_scroll_data_->dx == 0 && pointer_scroll_data_->dy == 0 &&
-      pointer_scroll_data_->is_axis_stop &&
-      supports_trackpad_kinetic_scrolling) {
+      pointer_scroll_data_->is_axis_stop) {
     gfx::Vector2dF initial_velocity = ComputeFlingVelocity();
     float vx = initial_velocity.x();
     float vy = initial_velocity.y();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     ScrollEvent event(
         vx == 0 && vy == 0 ? ET_SCROLL_FLING_CANCEL : ET_SCROLL_FLING_START,
         pointer_location_, pointer_location_, EventTimeForNow(), flags, vx, vy,
         vx, vy, kGestureScrollFingerCount);
+#else
+    // In Linux there is no axis event with 0 delta when start scrolling.
+    ScrollEvent event(ET_SCROLL_FLING_START, pointer_location_,
+                      pointer_location_, EventTimeForNow(), flags, vx, vy, vx,
+                      vy, kGestureScrollFingerCount);
+    is_fling_active_ = true;
+#endif
     pointer_frames_.push_back(
         std::make_unique<FrameData>(event, base::NullCallback()));
   } else if (pointer_scroll_data_->axis_source) {
@@ -869,6 +869,17 @@ void WaylandEventSource::ProcessPointerScrollData() {
                    WL_POINTER_AXIS_SOURCE_FINGER ||
                *pointer_scroll_data_->axis_source ==
                    WL_POINTER_AXIS_SOURCE_CONTINUOUS) {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+      // Fling has to be stopped if a new scroll event is received.
+      if (is_fling_active_) {
+        is_fling_active_ = false;
+        ScrollEvent stop_fling_event(
+            ET_SCROLL_FLING_START, pointer_location_, pointer_location_,
+            EventTimeForNow(), flags, 0, 0, 0, 0, kGestureScrollFingerCount);
+        pointer_frames_.push_back(std::make_unique<FrameData>(
+            stop_fling_event, base::NullCallback()));
+      }
+#endif
       ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
                         EventTimeForNow(), flags, pointer_scroll_data_->dx,
                         pointer_scroll_data_->dy, pointer_scroll_data_->dx,

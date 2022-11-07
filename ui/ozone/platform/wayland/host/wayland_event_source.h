@@ -277,6 +277,11 @@ class WaylandEventSource : public PlatformEventSource,
   // wl_pointer::frame event.
   std::deque<std::unique_ptr<FrameData>> pointer_frames_;
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Status of fling.
+  bool is_fling_active_ = false;
+#endif
+
   // Map that keeps track of the current touch points, associating touch IDs to
   // to the surface/location where they happened.
   struct TouchPoint;
