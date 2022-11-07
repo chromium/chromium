@@ -68,6 +68,14 @@ bool IPCDataSource::PassedTimingAllowOriginCheck() {
   return false;
 }
 
+bool IPCDataSource::WouldTaintOrigin() {
+  // The mojo ipc channel doesn't support this yet, so cautiously return true,
+  // for now.
+  // TODO(crbug/1377053): Rework this method to be asynchronous, if possible,
+  // so that the mojo interface can be queried.
+  return true;
+}
+
 void IPCDataSource::ReadMediaData(uint8_t* destination,
                                   DataSource::ReadCB callback,
                                   int size) {

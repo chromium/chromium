@@ -298,6 +298,15 @@ bool MultiBufferDataSource::PassedTimingAllowOriginCheck() {
   return url_data_->passed_timing_allow_origin_check();
 }
 
+bool MultiBufferDataSource::WouldTaintOrigin() {
+  // When the resource is redirected to another origin we think of it as
+  // tainted. This is actually not specified, and is under discussion.
+  // See https://github.com/whatwg/fetch/issues/737.
+  if (!HasSingleOrigin() && cors_mode() == UrlData::CORS_UNSPECIFIED)
+    return true;
+  return IsCorsCrossOrigin();
+}
+
 UrlData::CorsMode MultiBufferDataSource::cors_mode() const {
   return url_data_->cors_mode();
 }
