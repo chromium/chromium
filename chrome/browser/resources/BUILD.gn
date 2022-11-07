@@ -129,10 +129,7 @@ if (enable_js_type_check) {
   group("closure_compile") {
     deps = []
     if (is_linux || is_chromeos || is_win || is_mac) {
-      deps += [
-        "gaia_auth_host:closure_compile",
-        "image_editor:closure_compile",
-      ]
+      deps += [ "gaia_auth_host:closure_compile" ]
     }
     if (is_chromeos_ash) {
       deps += [
