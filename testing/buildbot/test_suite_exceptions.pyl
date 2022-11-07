@@ -1324,7 +1324,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter',
         ],
         'swarming': {
-          'shards': 35,
+          'shards': 50,
           'dimension_sets': [
             {
               'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
