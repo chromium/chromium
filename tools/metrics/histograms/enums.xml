@@ -58638,7 +58638,6 @@ from previous Chrome versions.
   <int value="-1486521264" label="UseMediaHistoryStore:disabled"/>
   <int value="-1486198877" label="VrIconInDaydreamHome:disabled"/>
   <int value="-1485461805" label="EnterpriseReportingInBrowser:enabled"/>
-  <int value="-1484619809" label="MessagesForAndroidSafetyTip:enabled"/>
   <int value="-1484372060" label="BlockMigratedDefaultChromeAppSync:enabled"/>
   <int value="-1483720693" label="ChipLocationIconOverride:enabled"/>
   <int value="-1482730792" label="stop-in-background:enabled"/>
@@ -61592,7 +61591,6 @@ from previous Chrome versions.
   <int value="267706621" label="WallpaperPerDesk:disabled"/>
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
-  <int value="268794953" label="MessagesForAndroidSafetyTip:disabled"/>
   <int value="269631838" label="BorealisLinuxMode:disabled"/>
   <int value="270038252" label="SignInProfileCreationEnterprise:disabled"/>
   <int value="270118291" label="SyncAutofillWalletOfferData:disabled"/>

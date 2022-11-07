@@ -77,10 +77,6 @@ BASE_FEATURE(kMessagesForAndroidReaderMode,
              "MessagesForAndroidReaderMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidSafetyTip,
-             "MessagesForAndroidSafetyTip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidSaveCard,
              "MessagesForAndroidSaveCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -131,11 +127,6 @@ bool IsPasswordMessagesUiEnabled() {
 bool IsPopupBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidPopupBlocked);
-}
-
-bool IsSafetyTipMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidSafetyTip);
 }
 
 bool IsSaveCardMessagesUiEnabled() {

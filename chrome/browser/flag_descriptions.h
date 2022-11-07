@@ -2150,9 +2150,6 @@ extern const char kMessagesForAndroidPWAInstallDescription[];
 extern const char kMessagesForAndroidReaderModeName[];
 extern const char kMessagesForAndroidReaderModeDescription[];
 
-extern const char kMessagesForAndroidSafetyTipName[];
-extern const char kMessagesForAndroidSafetyTipDescription[];
-
 extern const char kMessagesForAndroidSaveCardName[];
 extern const char kMessagesForAndroidSaveCardDescription[];
 

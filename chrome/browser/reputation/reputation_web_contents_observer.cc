@@ -26,10 +26,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/messages/android/messages_feature.h"
-#endif
-
 namespace {
 
 void RecordHeuristicsUKMData(ReputationCheckResult result,
@@ -317,24 +313,19 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
       !result.suggested_url.is_valid()) {
     RecordPostFlagCheckHistogram(result.safety_tip_status);
 
-    bool should_call_safety_tip_dialog = true;
     base::OnceCallback<void(SafetyTipInteraction)> close_callback =
         base::BindOnce(OnSafetyTipClosed, result, navigation_source_id,
                        profile_, result.url, result.safety_tip_status,
                        std::move(safety_tip_close_callback_for_testing_));
 #if BUILDFLAG(IS_ANDROID)
-    if (messages::IsSafetyTipMessagesUiEnabled()) {
-      should_call_safety_tip_dialog = false;
-      delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
-                                       result.suggested_url, web_contents(),
-                                       std::move(close_callback));
-    }
-#endif
+    delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
+                                     result.suggested_url, web_contents(),
+                                     std::move(close_callback));
+#else
 
-    if (should_call_safety_tip_dialog) {
-      ShowSafetyTipDialog(web_contents(), result.safety_tip_status,
-                          result.suggested_url, std::move(close_callback));
-    }
+    ShowSafetyTipDialog(web_contents(), result.safety_tip_status,
+                        result.suggested_url, std::move(close_callback));
+#endif
     MaybeCallReputationCheckCallback(true);
     return;
   }
@@ -370,23 +361,18 @@ void ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult(
 
   RecordPostFlagCheckHistogram(result.safety_tip_status);
 
-  bool should_call_safety_tip_dialog = true;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback =
       base::BindOnce(OnSafetyTipClosed, result, navigation_source_id, profile_,
                      result.url, result.safety_tip_status,
                      std::move(safety_tip_close_callback_for_testing_));
 #if BUILDFLAG(IS_ANDROID)
-  if (messages::IsSafetyTipMessagesUiEnabled()) {
-    should_call_safety_tip_dialog = false;
-    delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
-                                     result.suggested_url, web_contents(),
-                                     std::move(close_callback));
-  }
+  delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
+                                   result.suggested_url, web_contents(),
+                                   std::move(close_callback));
+#else
+  ShowSafetyTipDialog(web_contents(), result.safety_tip_status,
+                      result.suggested_url, std::move(close_callback));
 #endif
-  if (should_call_safety_tip_dialog) {
-    ShowSafetyTipDialog(web_contents(), result.safety_tip_status,
-                        result.suggested_url, std::move(close_callback));
-  }
   MaybeCallReputationCheckCallback(/*heuristics_checked=*/true);
 }
 

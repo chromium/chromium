@@ -50,10 +50,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidPopupBlocked);
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidReaderMode);
 
-// Feature that controls whether "safety tip" prompts use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidSafetyTip);
-
 // Feature that controls whether "save card" prompts use Messages or
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);

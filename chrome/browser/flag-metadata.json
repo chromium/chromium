@@ -4622,11 +4622,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "messages-for-android-safety-tip",
-    "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "messages-for-android-save-card",
     "owners": [ "lazzzis", "aishwaryarj" ],
     "expiry_milestone": 112

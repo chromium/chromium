@@ -3749,10 +3749,6 @@ const char kMessagesForAndroidReaderModeName[] = "Reader Mode Messages UI";
 const char kMessagesForAndroidReaderModeDescription[] =
     "When enabled, reader mode prompt will use the new Messages UI.";
 
-const char kMessagesForAndroidSafetyTipName[] = "Safety Tip Messages UI";
-const char kMessagesForAndroidSafetyTipDescription[] =
-    "When enabled, safety tip prompt will use the new Messages UI.";
-
 const char kMessagesForAndroidSaveCardName[] = "Save Card Messages UI";
 const char kMessagesForAndroidSaveCardDescription[] =
     "When enabled, save card prompt will use the new Messages UI.";
