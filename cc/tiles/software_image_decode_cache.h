@@ -41,9 +41,13 @@ class CC_EXPORT SoftwareImageDecodeCache
   ~SoftwareImageDecodeCache() override;
 
   // ImageDecodeCache overrides.
-  TaskResult GetTaskForImageAndRef(const DrawImage& image,
+  // |client_id| is not used by the SoftwareImageDecodeCache for both of these
+  // tasks.
+  TaskResult GetTaskForImageAndRef(ClientId client_id,
+                                   const DrawImage& image,
                                    const TracingInfo& tracing_info) override;
   TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
+      ClientId client_id,
       const DrawImage& image) override;
   void UnrefImage(const DrawImage& image) override;
   DecodedDrawImage GetDecodedImageForDraw(const DrawImage& image) override;
@@ -58,6 +62,7 @@ class CC_EXPORT SoftwareImageDecodeCache
   size_t GetMaximumMemoryLimitBytes() const override;
   bool UseCacheForDrawImage(const DrawImage& image) const override;
   void RecordStats() override {}
+  ClientId GenerateClientId() override;
 
   // Decode the given image and store it in the cache. This is only called by an
   // image decode task from a worker thread.

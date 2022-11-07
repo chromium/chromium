@@ -134,11 +134,14 @@ void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
                        ImageDecodeCache::TracingInfo());
     StopWorkerTasks();
     image_cache_max_limit_bytes_ = 0u;
+    image_cache_client_id_ = 0u;
   }
 
   cache_ = cache;
 
   if (cache_) {
+    DCHECK_EQ(image_cache_client_id_, 0u);
+    image_cache_client_id_ = cache_->GenerateClientId();
     image_cache_max_limit_bytes_ = cache_->GetMaximumMemoryLimitBytes();
     GenerateTasksForOrphanedRequests();
   }
@@ -161,8 +164,8 @@ void ImageController::ConvertImagesToTasks(
     // been painted before raster and so do not need raster-time work.
     DCHECK(!it->paint_image().IsPaintWorklet());
 
-    ImageDecodeCache::TaskResult result =
-        cache_->GetTaskForImageAndRef(*it, tracing_info);
+    ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
+        image_cache_client_id_, *it, tracing_info);
     *has_at_raster_images |= result.is_at_raster_decode;
 
     ImageType image_type =
@@ -232,7 +235,8 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
       /*is_at_raster_decode=*/false,
       /*can_do_hardware_accelerated_decode=*/false);
   if (is_image_lazy)
-    result = cache_->GetOutOfRasterDecodeTaskForImageAndRef(draw_image);
+    result = cache_->GetOutOfRasterDecodeTaskForImageAndRef(
+        image_cache_client_id_, draw_image);
   // If we don't need to unref this, we don't actually have a task.
   DCHECK(result.need_unref || !result.task);
 
@@ -372,7 +376,8 @@ void ImageController::GenerateTasksForOrphanedRequests() {
     if (request.draw_image.paint_image().IsLazyGenerated()) {
       // Get the task for this decode.
       ImageDecodeCache::TaskResult result =
-          cache_->GetOutOfRasterDecodeTaskForImageAndRef(request.draw_image);
+          cache_->GetOutOfRasterDecodeTaskForImageAndRef(image_cache_client_id_,
+                                                         request.draw_image);
       request.need_unref = result.need_unref;
       request.task = result.task;
     }

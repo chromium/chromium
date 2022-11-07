@@ -45,6 +45,8 @@ class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
       uint32_t id,
       std::unique_ptr<ServiceTransferCacheEntry> entry) override;
 
+  size_t num_of_entries() const { return entries_.size(); }
+
  protected:
   // Serialization helpers.
   bool LockEntryInternal(const EntryKey& key) override;

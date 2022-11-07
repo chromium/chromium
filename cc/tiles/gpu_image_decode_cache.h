@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
@@ -154,10 +155,14 @@ class CC_EXPORT GpuImageDecodeCache
   // ImageDecodeCache overrides.
 
   // Finds the existing uploaded image for the provided DrawImage. Creates an
-  // upload task to upload the image if an exsiting image does not exist.
-  TaskResult GetTaskForImageAndRef(const DrawImage& image,
+  // upload task to upload the image if an existing image does not exist.
+  // See |GetTaskForImageAndRefInternal| to learn about the |client_id|.
+  TaskResult GetTaskForImageAndRef(ClientId client_id,
+                                   const DrawImage& image,
                                    const TracingInfo& tracing_info) override;
+  // See |GetTaskForImageAndRefInternal| to learn about the |client_id|.
   TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
+      ClientId client_id,
       const DrawImage& image) override;
   void UnrefImage(const DrawImage& image) override;
   DecodedDrawImage GetDecodedImageForDraw(const DrawImage& draw_image) override;
@@ -217,6 +222,7 @@ class CC_EXPORT GpuImageDecodeCache
 
  private:
   enum class DecodedDataMode { kGpu, kCpu, kTransferCache };
+  using ImageTaskMap = base::flat_map<ClientId, scoped_refptr<TileTask>>;
 
   // Stores stats tracked by both DecodedImageData and UploadedImageData.
   struct ImageDataBase {
@@ -235,7 +241,7 @@ class CC_EXPORT GpuImageDecodeCache
 
     uint32_t ref_count = 0;
     // If non-null, this is the pending task to populate this data.
-    scoped_refptr<TileTask> task;
+    ImageTaskMap task_map;
 
    protected:
     using YUVSkImages = std::array<sk_sp<SkImage>, kNumYUVPlanes>;
@@ -311,7 +317,7 @@ class CC_EXPORT GpuImageDecodeCache
     bool decode_failure = false;
     // Similar to |task|, but only is generated if there is no associated upload
     // generated for this task (ie, this is an out-of-raster request for decode.
-    scoped_refptr<TileTask> stand_alone_task;
+    ImageTaskMap stand_alone_task_map;
 
     // Dark mode color filter cache.
     struct SkIRectCompare {
@@ -596,13 +602,18 @@ class CC_EXPORT GpuImageDecodeCache
   // Similar to GetTaskForImageAndRef, but gets the dependent decode task
   // rather than the upload task, if necessary.
   scoped_refptr<TileTask> GetImageDecodeTaskAndRef(
+      ClientId client_id,
       const DrawImage& image,
       const TracingInfo& tracing_info,
       DecodeTaskType task_type);
 
   // Note that this function behaves as if it was public (all of the same locks
-  // need to be acquired).
-  TaskResult GetTaskForImageAndRefInternal(const DrawImage& image,
+  // need to be acquired). Uses |client_id| to identify which client created a
+  // task as the client run their tasks in different namespaces. The client
+  // which ran their task first will execute the task. All the other clients
+  // will have their tasks executed as no-op.
+  TaskResult GetTaskForImageAndRefInternal(ClientId client_id,
+                                           const DrawImage& image,
                                            const TracingInfo& tracing_info,
                                            DecodeTaskType task_type);
 
@@ -761,6 +772,10 @@ class CC_EXPORT GpuImageDecodeCache
 
   // Adds mips to an image if required.
   void UpdateMipsIfNeeded(const DrawImage& draw_image, ImageData* image_data);
+
+  static scoped_refptr<TileTask> GetTaskFromMapForClientId(
+      const ClientId client_id,
+      const ImageTaskMap& task_map);
 
   const SkColorType color_type_;
   const bool use_transfer_cache_ = false;

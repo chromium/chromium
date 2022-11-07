@@ -177,16 +177,22 @@ SoftwareImageDecodeCache::~SoftwareImageDecodeCache() {
 }
 
 ImageDecodeCache::TaskResult SoftwareImageDecodeCache::GetTaskForImageAndRef(
+    ClientId client_id,
     const DrawImage& image,
     const TracingInfo& tracing_info) {
   DCHECK_EQ(tracing_info.task_type, TaskType::kInRaster);
+  DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
+      << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
   return GetTaskForImageAndRefInternal(image, tracing_info,
                                        DecodeTaskType::USE_IN_RASTER_TASKS);
 }
 
 ImageDecodeCache::TaskResult
 SoftwareImageDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(
+    ClientId client_id,
     const DrawImage& image) {
+  DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
+      << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
   return GetTaskForImageAndRefInternal(
       image, TracingInfo(0, TilePriority::NOW, TaskType::kOutOfRaster),
       DecodeTaskType::USE_OUT_OF_RASTER_TASKS);
@@ -543,6 +549,15 @@ bool SoftwareImageDecodeCache::UseCacheForDrawImage(
   }
 
   return false;
+}
+
+ImageDecodeCache::ClientId SoftwareImageDecodeCache::GenerateClientId() {
+  ClientId next_client_id = ImageDecodeCache::GenerateClientId();
+  // The software decode cache cannot be shared between multiple clients. Thus,
+  // this DCHECK helps us to verify the software cache has only a single client
+  // that generated a client id for itself only oce.
+  DCHECK_EQ(ImageDecodeCache::kDefaultClientId, next_client_id);
+  return next_client_id;
 }
 
 DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDraw(

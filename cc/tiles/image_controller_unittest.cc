@@ -33,7 +33,8 @@ class TestableCache : public StubDecodeCache {
  public:
   ~TestableCache() override { EXPECT_EQ(number_of_refs_, 0); }
 
-  TaskResult GetTaskForImageAndRef(const DrawImage& image,
+  TaskResult GetTaskForImageAndRef(uint32_t client_id,
+                                   const DrawImage& image,
                                    const TracingInfo& tracing_info) override {
     // Return false for large images to mimic "won't fit in memory"
     // behavior.
@@ -52,8 +53,9 @@ class TestableCache : public StubDecodeCache {
                       /*can_do_hardware_accelerated_decode=*/false);
   }
   TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
+      uint32_t client_id,
       const DrawImage& image) override {
-    return GetTaskForImageAndRef(image, TracingInfo());
+    return GetTaskForImageAndRef(client_id, image, TracingInfo());
   }
 
   void UnrefImage(const DrawImage& image) override {
@@ -197,7 +199,6 @@ class ImageControllerTest : public testing::Test {
     controller_ = std::make_unique<ImageController>(
         task_runner_,
         base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits()));
-    cache_ = TestableCache();
     controller_->SetImageDecodeCache(&cache_);
   }
 
