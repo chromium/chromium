@@ -23,7 +23,7 @@
         "--num-samples",
         "200",
         "--jobs",
-        "4"
+        "2"
       ],
       "cl_title": "Remove stale Blink expectations",
       "reviewer_list": {

@@ -2244,7 +2244,7 @@ ci.builder(
                     # to avoid having large memory usage spikes that can kill
                     # the bot due to swap space not being enabled.
                     "--jobs",
-                    "4",
+                    "2",
                 ],
             },
         ],
