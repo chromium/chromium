@@ -99846,6 +99846,12 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Line Feed (\xA)"/>
 </enum>
 
+<enum name="TrustedVaultDegradedRecoverabilityValue">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not degraded"/>
+  <int value="2" label="Degraded"/>
+</enum>
+
 <enum name="TrustedVaultDeviceRegistrationState">
   <int value="0" label="Already registered V0"/>
   <int value="1" label="Local keys are stale"/>

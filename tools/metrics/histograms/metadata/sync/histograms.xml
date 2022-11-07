@@ -1365,6 +1365,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultDegradedRecoverabilityValue"
+    enum="TrustedVaultDegradedRecoverabilityValue" expires_after="2023-04-09">
+  <owner>mmrashad@google.com</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the known degraded recoverability value when the primary account is
+    set. Note that the value reflects state restored from the file and recorded
+    before sending new request to the server.
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultDeviceRegistered" enum="Boolean"
     expires_after="2023-04-16">
   <owner>mmoskvitin@google.com</owner>

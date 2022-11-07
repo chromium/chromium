@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sync/base/features.h"
@@ -13,7 +14,10 @@
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 
+namespace syncer {
+
 namespace {
+
 base::TimeDelta ComputeTimeUntilNextRefresh(
     const base::TimeDelta& refresh_period,
     const base::TimeTicks& last_refresh_time) {
@@ -43,8 +47,6 @@ MakeDegradedRecoverabilityState(
 
 }  // namespace
 
-namespace syncer {
-
 TrustedVaultDegradedRecoverabilityHandler::
     TrustedVaultDegradedRecoverabilityHandler(
         TrustedVaultConnection* connection,
@@ -62,6 +64,9 @@ TrustedVaultDegradedRecoverabilityHandler::
   current_refresh_period_ = long_degraded_recoverability_refresh_period_;
   degraded_recoverability_value_ =
       degraded_recoverability_state.degraded_recoverability_value();
+  base::UmaHistogramExactLinear("Sync.TrustedVaultDegradedRecoverabilityValue",
+                                degraded_recoverability_value_,
+                                sync_pb::DegradedRecoverabilityValue_ARRAYSIZE);
   base::Time last_refresh_time =
       ProtoTimeToTime(degraded_recoverability_state
                           .last_refresh_time_millis_since_unix_epoch());

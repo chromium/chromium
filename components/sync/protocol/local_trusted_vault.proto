@@ -9,6 +9,10 @@ option optimize_for = LITE_RUNTIME;
 option java_package = "sync_pb";
 package sync_pb;
 
+// This enum is used in histograms. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused, only add
+// at the end and. Also remember to update in tools/metrics/histograms/enums.xml
+// TrustedVaultDegradedRecoverabilityValue enum.
 enum DegradedRecoverabilityValue {
   kUnknown = 0;
   kNotDegraded = 1;
