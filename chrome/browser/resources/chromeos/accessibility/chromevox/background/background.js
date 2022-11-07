@@ -35,6 +35,7 @@ import {FocusBounds} from './focus_bounds.js';
 import {GestureCommandHandler} from './gesture_command_handler.js';
 import {BackgroundKeyboardHandler} from './keyboard_handler.js';
 import {LiveRegions} from './live_regions.js';
+import {EventStreamLogger} from './logging/event_stream_logger.js';
 import {LogStore} from './logging/log_store.js';
 import {MathHandler} from './math_handler.js';
 import {MediaAutomationHandler} from './media_automation_handler.js';
@@ -116,6 +117,7 @@ export class Background extends ChromeVoxState {
     ConsoleTts.init();
     DesktopAutomationHandler.init();
     DownloadHandler.init();
+    EventStreamLogger.init();
     FindHandler.init();
     FocusAutomationHandler.init();
     JaPhoneticData.init(JaPhoneticMap.MAP);
