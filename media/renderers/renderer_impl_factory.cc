@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/renderers/default_renderer_factory.h"
+#include "media/renderers/renderer_impl_factory.h"
 
 #include <memory>
 #include <utility>
@@ -20,7 +20,7 @@
 namespace media {
 
 #if BUILDFLAG(IS_ANDROID)
-DefaultRendererFactory::DefaultRendererFactory(
+RendererImplFactory::RendererImplFactory(
     MediaLog* media_log,
     DecoderFactory* decoder_factory,
     const GetGpuFactoriesCB& get_gpu_factories_cb,
@@ -32,7 +32,7 @@ DefaultRendererFactory::DefaultRendererFactory(
   DCHECK(decoder_factory_);
 }
 #else
-DefaultRendererFactory::DefaultRendererFactory(
+RendererImplFactory::RendererImplFactory(
     MediaLog* media_log,
     DecoderFactory* decoder_factory,
     const GetGpuFactoriesCB& get_gpu_factories_cb,
@@ -47,10 +47,10 @@ DefaultRendererFactory::DefaultRendererFactory(
 }
 #endif
 
-DefaultRendererFactory::~DefaultRendererFactory() = default;
+RendererImplFactory::~RendererImplFactory() = default;
 
 std::vector<std::unique_ptr<AudioDecoder>>
-DefaultRendererFactory::CreateAudioDecoders(
+RendererImplFactory::CreateAudioDecoders(
     const scoped_refptr<base::SequencedTaskRunner>& media_task_runner) {
   // Create our audio decoders and renderer.
   std::vector<std::unique_ptr<AudioDecoder>> audio_decoders;
@@ -61,7 +61,7 @@ DefaultRendererFactory::CreateAudioDecoders(
 }
 
 std::vector<std::unique_ptr<VideoDecoder>>
-DefaultRendererFactory::CreateVideoDecoders(
+RendererImplFactory::CreateVideoDecoders(
     const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space,
@@ -76,7 +76,7 @@ DefaultRendererFactory::CreateVideoDecoders(
   return video_decoders;
 }
 
-std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
+std::unique_ptr<Renderer> RendererImplFactory::CreateRenderer(
     const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     AudioRendererSink* audio_renderer_sink,
@@ -93,7 +93,7 @@ std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
       // RendererWrapper::Stop -> RendererWrapper::DestroyRenderer(). And the
       // RendererFactory is owned by WMPI and gets called after WMPI destructor
       // finishes.
-      base::BindRepeating(&DefaultRendererFactory::CreateAudioDecoders,
+      base::BindRepeating(&RendererImplFactory::CreateAudioDecoders,
                           base::Unretained(this), media_task_runner),
       media_log_, media_player_id_
 #if BUILDFLAG(IS_ANDROID)
@@ -122,7 +122,7 @@ std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
       // RendererWrapper::Stop -> RendererWrapper::DestroyRenderer(). And the
       // RendererFactory is owned by WMPI and gets called after WMPI destructor
       // finishes.
-      base::BindRepeating(&DefaultRendererFactory::CreateVideoDecoders,
+      base::BindRepeating(&RendererImplFactory::CreateVideoDecoders,
                           base::Unretained(this), media_task_runner,
                           std::move(request_overlay_info_cb),
                           target_color_space, gpu_factories),

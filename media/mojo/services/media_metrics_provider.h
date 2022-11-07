@@ -165,7 +165,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   bool is_mse_;
   mojom::MediaURLScheme url_scheme_;
   mojom::MediaStreamType media_stream_type_;
-  RendererType renderer_type_ = RendererType::kDefault;
+  RendererType renderer_type_ = RendererType::kRendererImpl;
   std::string key_system_;
   bool is_hardware_secure_ = false;
 

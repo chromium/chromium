@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_RENDERERS_DEFAULT_RENDERER_FACTORY_H_
-#define MEDIA_RENDERERS_DEFAULT_RENDERER_FACTORY_H_
+#ifndef MEDIA_RENDERERS_RENDERER_IMPL_FACTORY_H_
+#define MEDIA_RENDERERS_RENDERER_IMPL_FACTORY_H_
 
 #include <memory>
 #include <vector>
@@ -37,18 +37,18 @@ using CreateVideoDecodersCB =
     base::RepeatingCallback<std::vector<std::unique_ptr<VideoDecoder>>()>;
 
 // The default factory class for creating RendererImpl.
-class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
+class MEDIA_EXPORT RendererImplFactory final : public RendererFactory {
  public:
   using GetGpuFactoriesCB =
       base::RepeatingCallback<GpuVideoAcceleratorFactories*()>;
 
 #if BUILDFLAG(IS_ANDROID)
-  DefaultRendererFactory(MediaLog* media_log,
-                         DecoderFactory* decoder_factory,
-                         const GetGpuFactoriesCB& get_gpu_factories_cb,
-                         MediaPlayerLoggingID media_player_id);
+  RendererImplFactory(MediaLog* media_log,
+                      DecoderFactory* decoder_factory,
+                      const GetGpuFactoriesCB& get_gpu_factories_cb,
+                      MediaPlayerLoggingID media_player_id);
 #else
-  DefaultRendererFactory(
+  RendererImplFactory(
       MediaLog* media_log,
       DecoderFactory* decoder_factory,
       const GetGpuFactoriesCB& get_gpu_factories_cb,
@@ -56,10 +56,10 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
       std::unique_ptr<SpeechRecognitionClient> speech_recognition_client);
 #endif
 
-  DefaultRendererFactory(const DefaultRendererFactory&) = delete;
-  DefaultRendererFactory& operator=(const DefaultRendererFactory&) = delete;
+  RendererImplFactory(const RendererImplFactory&) = delete;
+  RendererImplFactory& operator=(const RendererImplFactory&) = delete;
 
-  ~DefaultRendererFactory() final;
+  ~RendererImplFactory() final;
 
   std::unique_ptr<Renderer> CreateRenderer(
       const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
@@ -97,4 +97,4 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
 
 }  // namespace media
 
-#endif  // MEDIA_RENDERERS_DEFAULT_RENDERER_FACTORY_H_
+#endif  // MEDIA_RENDERERS_RENDERER_IMPL_FACTORY_H_

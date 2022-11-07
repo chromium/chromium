@@ -21,7 +21,7 @@
 #include "media/base/renderer_factory.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/renderers/default_decoder_factory.h"
-#include "media/renderers/default_renderer_factory.h"
+#include "media/renderers/renderer_impl_factory.h"
 
 namespace media {
 
@@ -64,13 +64,13 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
 
   if (!renderer_factory_) {
 #if BUILDFLAG(IS_ANDROID)
-    renderer_factory_ = std::make_unique<DefaultRendererFactory>(
+    renderer_factory_ = std::make_unique<RendererImplFactory>(
         media_log, decoder_factory_.get(),
-        DefaultRendererFactory::GetGpuFactoriesCB(), player_id);
+        RendererImplFactory::GetGpuFactoriesCB(), player_id);
 #else
-    renderer_factory_ = std::make_unique<DefaultRendererFactory>(
+    renderer_factory_ = std::make_unique<RendererImplFactory>(
         media_log, decoder_factory_.get(),
-        DefaultRendererFactory::GetGpuFactoriesCB(), player_id, nullptr);
+        RendererImplFactory::GetGpuFactoriesCB(), player_id, nullptr);
 #endif
   }
 
@@ -81,7 +81,7 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
       false, base::Seconds(1.0 / 60), NullVideoSink::NewFrameCB(), task_runner);
   auto* video_sink_ptr = video_sink.get();
 
-  // Hold created sinks since DefaultRendererFactory only takes raw pointers to
+  // Hold created sinks since RendererImplFactory only takes raw pointers to
   // the sinks. We are not cleaning up them even after a created Renderer is
   // destroyed. But this is fine since this class is only used for tests.
   audio_sinks_.push_back(audio_sink);

@@ -27,7 +27,7 @@ class VideoRendererSink;
 namespace content {
 
 // RendererFactory implementation for Cast. This class is similar to
-// DefaultRendererFactory, but provides its own CastAudioRenderer for audio.
+// RendererImplFactory, but provides its own CastAudioRenderer for audio.
 class CastRendererFactory final : public media::RendererFactory {
  public:
   using GetGpuFactoriesCB =

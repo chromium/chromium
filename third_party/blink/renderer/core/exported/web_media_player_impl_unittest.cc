@@ -49,7 +49,7 @@
 #include "media/mojo/services/video_decode_stats_recorder.h"
 #include "media/mojo/services/watch_time_recorder.h"
 #include "media/renderers/default_decoder_factory.h"
-#include "media/renderers/default_renderer_factory.h"
+#include "media/renderers/renderer_impl_factory.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -408,17 +408,17 @@ class WebMediaPlayerImplTest
         media::GetNextMediaPlayerLoggingID();
 #if BUILDFLAG(IS_ANDROID)
     factory_selector->AddBaseFactory(
-        media::RendererType::kDefault,
-        std::make_unique<media::DefaultRendererFactory>(
+        media::RendererType::kRendererImpl,
+        std::make_unique<media::RendererImplFactory>(
             media_log.get(), decoder_factory_.get(),
-            media::DefaultRendererFactory::GetGpuFactoriesCB(), player_id));
+            media::RendererImplFactory::GetGpuFactoriesCB(), player_id));
     factory_selector->StartRequestRemotePlayStateCB(base::DoNothing());
 #else
     factory_selector->AddBaseFactory(
-        media::RendererType::kDefault,
-        std::make_unique<media::DefaultRendererFactory>(
+        media::RendererType::kRendererImpl,
+        std::make_unique<media::RendererImplFactory>(
             media_log.get(), decoder_factory_.get(),
-            media::DefaultRendererFactory::GetGpuFactoriesCB(), player_id,
+            media::RendererImplFactory::GetGpuFactoriesCB(), player_id,
             nullptr));
 #endif
 

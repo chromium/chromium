@@ -273,8 +273,8 @@ template <>
 struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
   static media::mojom::RendererType ToMojom(::media::RendererType input) {
     switch (input) {
-      case ::media::RendererType::kDefault:
-        return media::mojom::RendererType::kDefault;
+      case ::media::RendererType::kRendererImpl:
+        return media::mojom::RendererType::kRendererImpl;
       case ::media::RendererType::kMojo:
         return media::mojom::RendererType::kMojo;
       case ::media::RendererType::kMediaPlayer:
@@ -306,8 +306,8 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
   static bool FromMojom(media::mojom::RendererType input,
                         ::media::RendererType* output) {
     switch (input) {
-      case media::mojom::RendererType::kDefault:
-        *output = ::media::RendererType::kDefault;
+      case media::mojom::RendererType::kRendererImpl:
+        *output = ::media::RendererType::kRendererImpl;
         return true;
       case media::mojom::RendererType::kMojo:
         *output = ::media::RendererType::kMojo;

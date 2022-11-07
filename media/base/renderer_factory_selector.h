@@ -57,9 +57,6 @@ class MEDIA_EXPORT RendererFactorySelector {
 
   // Sets the base factory to be returned, when there are no signals telling us
   // to select any specific factory.
-  // NOTE: |type| can be different than RendererType::kDefault. kDefault is used
-  // to identify the DefaultRendererFactory, not to indicate that a factory
-  // should be used by default.
   void SetBaseRendererType(RendererType type);
 
   // Returns the type of the Renderer for what GetCurrentFactory() would return.

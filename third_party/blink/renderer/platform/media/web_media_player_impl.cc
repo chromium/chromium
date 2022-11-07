@@ -4106,7 +4106,7 @@ void WebMediaPlayerImpl::UnregisterFrameSinkHierarchy() {
 }
 
 void WebMediaPlayerImpl::ReportSessionUMAs() const {
-  if (renderer_type_ != media::RendererType::kDefault &&
+  if (renderer_type_ != media::RendererType::kRendererImpl &&
       renderer_type_ != media::RendererType::kMediaFoundation) {
     return;
   }

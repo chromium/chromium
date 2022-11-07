@@ -23,7 +23,7 @@ class VideoRendererSink;
 }  // namespace media
 
 // RendererFactory implementation used on Fuchsia. It works the same as
-// DefaultRendererFactory, except that it uses WebEngineAudioRenderer for audio.
+// RendererImplFactory, except that it uses WebEngineAudioRenderer for audio.
 class WebEngineMediaRendererFactory final : public media::RendererFactory {
  public:
   using GetGpuFactoriesCB =

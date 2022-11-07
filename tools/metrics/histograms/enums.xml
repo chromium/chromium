@@ -67082,7 +67082,7 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <enum name="MediaRendererType">
-  <int value="0" label="kDefault"/>
+  <int value="0" label="kRendererImpl"/>
   <int value="1" label="kMojo"/>
   <int value="2" label="kMediaPlayer"/>
   <int value="3" label="kCourier"/>
@@ -104774,7 +104774,7 @@ others/histograms.xml -->
 </enum>
 
 <enum name="WebMediaPlayerWatchTimeType">
-  <int value="0" label="DefaultRendererFactory"/>
+  <int value="0" label="RendererImplFactory"/>
   <int value="1" label="MojoRendererFactory"/>
   <int value="2" label="MediaPlayerRendererClientFactory"/>
   <int value="3" label="CourierRendererFactory"/>

@@ -509,7 +509,7 @@ enum InputStreamErrorCode {
 
 // See media/base/renderer.h for description.
 enum RendererType {
-  kDefault = 0,          // DefaultRendererFactory
+  kRendererImpl = 0,     // RendererImplFactory
   kMojo = 1,             // MojoRendererFactory
   kMediaPlayer = 2,      // MediaPlayerRendererClientFactory
   kCourier = 3,          // CourierRendererFactory

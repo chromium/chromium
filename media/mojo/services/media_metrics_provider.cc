@@ -112,7 +112,7 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
   // Add Renderer name when not using the default RendererImpl.
   if (renderer_type_ == RendererType::kMediaFoundation) {
     return uma_name + GetRendererName(RendererType::kMediaFoundation);
-  } else if (renderer_type_ != RendererType::kDefault) {
+  } else if (renderer_type_ != RendererType::kRendererImpl) {
     return uma_name + "UnknownRenderer";
   }
 

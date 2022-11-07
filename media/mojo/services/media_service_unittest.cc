@@ -94,7 +94,7 @@ ACTION_P(QuitLoop, run_loop) {
 
 // Tests MediaService using TestMojoMediaClient, which supports CDM creation
 // using DefaultCdmFactory (only supports Clear Key key system), and Renderer
-// creation using DefaultRendererFactory that always create media::RendererImpl.
+// creation using RendererImplFactory that always create media::RendererImpl.
 class MediaServiceTest : public testing::Test {
  public:
   MediaServiceTest()

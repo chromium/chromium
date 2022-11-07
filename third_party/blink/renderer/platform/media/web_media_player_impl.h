@@ -1095,7 +1095,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   base::CancelableOnceClosure have_enough_after_lazy_load_cb_;
 
-  media::RendererType renderer_type_ = media::RendererType::kDefault;
+  media::RendererType renderer_type_ = media::RendererType::kRendererImpl;
   media::SimpleWatchTimer simple_watch_timer_;
 
   LearningExperimentHelper will_play_helper_;

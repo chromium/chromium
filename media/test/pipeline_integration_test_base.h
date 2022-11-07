@@ -138,7 +138,7 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   }
 
   // Saves a test callback, ownership of which will be transferred to the next
-  // AudioRendererImpl created by CreateDefaultRenderer().
+  // AudioRendererImpl created by CreateRendererImpl().
   void set_audio_play_delay_cb(AudioRendererImpl::PlayDelayCBForTesting cb) {
     audio_play_delay_cb_ = std::move(cb);
   }
@@ -175,18 +175,18 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   base::TimeDelta current_duration_;
   AudioRendererImpl::PlayDelayCBForTesting audio_play_delay_cb_;
 
-  // By default RendererImpl will be created using CreateDefaultRenderer(). But
+  // By default RendererImpl will be created using CreateRendererImpl(). But
   // if |create_renderer_cb_| is set, it'll be used to create the Renderer
   // instead.
   using CreateRendererCB = base::RepeatingCallback<std::unique_ptr<Renderer>(
       absl::optional<RendererType> renderer_type)>;
   CreateRendererCB create_renderer_cb_;
 
-  std::unique_ptr<Renderer> CreateDefaultRenderer(
+  std::unique_ptr<Renderer> CreateRendererImpl(
       absl::optional<RendererType> renderer_type);
 
   // Sets |create_renderer_cb_| which will be used to wrap the Renderer created
-  // by CreateDefaultRenderer().
+  // by CreateRendererImpl().
   void SetCreateRendererCB(CreateRendererCB create_renderer_cb);
 
   PipelineStatus StartInternal(

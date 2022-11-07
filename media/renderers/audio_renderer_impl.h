@@ -39,7 +39,7 @@
 #include "media/base/time_source.h"
 #include "media/filters/audio_renderer_algorithm.h"
 #include "media/filters/decoder_stream.h"
-#include "media/renderers/default_renderer_factory.h"
+#include "media/renderers/renderer_impl_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

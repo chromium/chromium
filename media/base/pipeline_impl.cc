@@ -608,7 +608,7 @@ void PipelineImpl::RendererWrapper::CreateRendererInternal(
       // type is set to MediaFoundation. In order to ensure DRM systems
       // built on non-Media Foundation pipelines continue to work we
       // explicitly set renderer_type to Default.
-      renderer_type = RendererType::kDefault;
+      renderer_type = RendererType::kRendererImpl;
     }
   }
 #endif  // BUILDFLAG(IS_WIN)

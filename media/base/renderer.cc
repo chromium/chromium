@@ -11,7 +11,7 @@ namespace media {
 // existing return names.
 std::string GetRendererName(RendererType renderer_type) {
   switch (renderer_type) {
-    case RendererType::kDefault:
+    case RendererType::kRendererImpl:
       return "RendererImpl";
     case RendererType::kMojo:
       return "MojoRenderer";

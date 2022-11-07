@@ -43,7 +43,7 @@ std::unique_ptr<media::Renderer> CastRendererFactory::CreateRenderer(
   auto audio_renderer = std::make_unique<chromecast::media::CastAudioRenderer>(
       media_task_runner, media_log_, interface_broker_);
 
-  // VideoRenderer construction logic is copied from DefaultRendererFactory.
+  // VideoRenderer construction logic is copied from RendererImplFactory.
   media::GpuVideoAcceleratorFactories* gpu_factories = nullptr;
   if (get_gpu_factories_cb_)
     gpu_factories = get_gpu_factories_cb_.Run();

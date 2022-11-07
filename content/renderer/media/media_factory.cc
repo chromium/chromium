@@ -43,7 +43,7 @@
 #include "media/mojo/buildflags.h"
 #include "media/renderers/decrypting_renderer_factory.h"
 #include "media/renderers/default_decoder_factory.h"
-#include "media/renderers/default_renderer_factory.h"
+#include "media/renderers/renderer_impl_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/connect.h"
@@ -246,27 +246,27 @@ void LogRoughness(
   }
 }
 
-std::unique_ptr<media::DefaultRendererFactory> CreateDefaultRendererFactory(
+std::unique_ptr<media::RendererImplFactory> CreateRendererImplFactory(
     media::MediaPlayerLoggingID player_id,
     media::MediaLog* media_log,
     media::DecoderFactory* decoder_factory,
     content::RenderThreadImpl* render_thread,
     content::RenderFrameImpl* render_frame) {
 #if BUILDFLAG(IS_ANDROID)
-  auto default_factory = std::make_unique<media::DefaultRendererFactory>(
+  auto factory = std::make_unique<media::RendererImplFactory>(
       media_log, decoder_factory,
       base::BindRepeating(&content::RenderThreadImpl::GetGpuFactories,
                           base::Unretained(render_thread)),
       player_id);
 #else
-  auto default_factory = std::make_unique<media::DefaultRendererFactory>(
+  auto factory = std::make_unique<media::RendererImplFactory>(
       media_log, decoder_factory,
       base::BindRepeating(&content::RenderThreadImpl::GetGpuFactories,
                           base::Unretained(render_thread)),
       player_id,
       render_frame->CreateSpeechRecognitionClient(base::OnceClosure()));
 #endif
-  return default_factory;
+  return factory;
 }
 
 enum class MediaPlayerType {
@@ -721,17 +721,17 @@ MediaFactory::CreateRendererFactorySelector(
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   if (renderer_media_playback_options.is_remoting_renderer_enabled()) {
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
-    auto default_factory_remoting = std::make_unique<CastRendererClientFactory>(
+    auto factory_remoting = std::make_unique<CastRendererClientFactory>(
         media_log, CreateMojoRendererFactory());
 #else   // BUILDFLAG(ENABLE_CAST_RENDERER)
-    auto default_factory_remoting = CreateDefaultRendererFactory(
+    auto factory_remoting = CreateRendererImplFactory(
         player_id, media_log, decoder_factory, render_thread, render_frame_);
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
     mojo::PendingRemote<media::mojom::Remotee> remotee;
     interface_broker_->GetInterface(remotee.InitWithNewPipeAndPassReceiver());
     auto remoting_renderer_factory =
         std::make_unique<media::remoting::RemotingRendererFactory>(
-            std::move(remotee), std::move(default_factory_remoting),
+            std::move(remotee), std::move(factory_remoting),
             render_thread->GetMediaSequencedTaskRunner());
     auto is_remoting_media = base::BindRepeating(
         [](const GURL& url) -> bool {
@@ -749,10 +749,10 @@ MediaFactory::CreateRendererFactorySelector(
     // this method were significantly refactored to split things up by
     // Android/non-Android/Cast/etc...
     is_base_renderer_factory_set = true;
-    auto default_factory = CreateDefaultRendererFactory(
+    auto renderer_impl_factory = CreateRendererImplFactory(
         player_id, media_log, decoder_factory, render_thread, render_frame_);
-    factory_selector->AddBaseFactory(RendererType::kDefault,
-                                     std::move(default_factory));
+    factory_selector->AddBaseFactory(RendererType::kRendererImpl,
+                                     std::move(renderer_impl_factory));
   }
 
   return factory_selector;
