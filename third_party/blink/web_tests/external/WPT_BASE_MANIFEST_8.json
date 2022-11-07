@@ -312278,7 +312278,7 @@
       ]
      },
      "round-function-expected.txt": [
-      "9283f175c3735927953fd4dd7144a269d039afc6",
+      "e4c2c681e01f996c96056ad49b34fe3267b754ec",
       []
      ],
      "round-function.html.ini": [
@@ -312286,7 +312286,7 @@
       []
      ],
      "round-mod-rem-computed-expected.txt": [
-      "896b861b0161fcf4ecbe2fcb48eeb58b9e65bc30",
+      "09a103c0f3c137590f8dc90489bcae45794676ab",
       []
      ],
      "round-mod-rem-computed.html.ini": [
@@ -343737,8 +343737,16 @@
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
         []
        ],
+       "dialog-focus-shadow-expected.txt": [
+        "a3f268e6e0187a5c4a52cce5894ac9152f3d2ad1",
+        []
+       ],
        "dialog-focus-shadow.html.ini": [
         "00b2942953480a7f98370498e74516d99e19c117",
+        []
+       ],
+       "dialog-focusing-steps-inert-expected.txt": [
+        "64ea5844df5ab957cb8c06489bcd385076a2fee3",
         []
        ],
        "dialog-focusing-steps-inert.html.ini": [
@@ -364115,12 +364123,24 @@
      []
     ],
     "focus": {
+     "click-focus-delegatesFocus-click-expected.txt": [
+      "4a77e1a9036a0b67830c0947a99d346f7c9c0c09",
+      []
+     ],
      "click-focus-delegatesFocus-click.html.ini": [
       "88970163b70b81607b742105866461bb27ead003",
       []
      ],
+     "focus-autofocus-expected.txt": [
+      "f61743f965bbb068618c3c138b16c678b576a9be",
+      []
+     ],
      "focus-autofocus.html.ini": [
       "361f67855eb94fb8179927e649a70881f19a26f3",
+      []
+     ],
+     "focus-method-delegatesFocus-expected.txt": [
+      "361c14d641c734975e7789d123d52868cae6abd5",
       []
      ],
      "focus-method-delegatesFocus.html.ini": [
@@ -439692,14 +439712,14 @@
       ]
      ],
      "round-function.html": [
-      "dd4cfbea8d34e8ea7f16b32a9b69210d9a966f8e",
+      "bc8734b011a6e7c55e206e1bb13c40b0fc555958",
       [
        null,
        {}
       ]
      ],
      "round-mod-rem-computed.html": [
-      "a98e4a4332250c08b5996a03455a682d26abdc5e",
+      "581b838744f195108d61bc1afb59a6ec1500ac80",
       [
        null,
        {}
@@ -522943,7 +522963,7 @@
         ]
        ],
        "dialog-focus-shadow.html": [
-        "e9ea15516e271198c4c1b293ff659d9396705acd",
+        "b4c7590ba2e6f49aaf6eca9a67ccce42292a307a",
         [
          null,
          {}
