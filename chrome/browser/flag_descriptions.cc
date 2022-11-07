@@ -3904,12 +3904,6 @@ const char kRelatedSearchesDescription[] =
     "Enables requesting related searches suggestions. These will be requested "
     "but not shown unless the UI flag is also enabled.";
 
-const char kRelatedSearchesAlternateUxName[] =
-    "Enables showing Related Searches in an alternate user experience.";
-const char kRelatedSearchesAlternateUxDescription[] =
-    "Enables showing related searches with an alternative from the normal "
-    "user experience treatment.";
-
 const char kRelatedSearchesInBarName[] =
     "Enables showing Related Searches in the peeking bar.";
 const char kRelatedSearchesInBarDescription[] =

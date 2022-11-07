@@ -474,7 +474,6 @@ public abstract class ChromeFeatureList {
     public static final String RECOVER_FROM_NEVER_SAVE_ANDROID = "RecoverFromNeverSaveAndroid";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_SEARCHES = "RelatedSearches";
-    public static final String RELATED_SEARCHES_ALTERNATE_UX = "RelatedSearchesAlternateUx";
     public static final String RELATED_SEARCHES_IN_BAR = "RelatedSearchesInBar";
     public static final String RELATED_SEARCHES_UI = "RelatedSearchesUi";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS = "RequestDesktopSiteDefaults";

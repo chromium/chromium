@@ -2001,41 +2001,6 @@ const FeatureEntry::FeatureVariation kRelatedSearchesInBarVariations[] = {
      std::size(kRelatedSearchesInBarShowDefaultChipWith120SpEllipsis), nullptr},
 };
 
-const FeatureEntry::FeatureParam kRelatedSearchesAlternateUxNoShowDefaultChip =
-    {"default_query_chip", "false"};
-const FeatureEntry::FeatureParam kRelatedSearchesAlternateUxShowDefaultChip = {
-    "default_query_chip", "true"};
-const FeatureEntry::FeatureParam
-    kRelatedSearchesAlternateUxShowDefaultChipWith110SpEllipsis[] = {
-        {"default_query_chip", "true"},
-        {"default_query_max_width_sp", "110"}};
-const FeatureEntry::FeatureParam
-    kRelatedSearchesAlternateUxShowDefaultChipWith115SpEllipsis[] = {
-        {"default_query_chip", "true"},
-        {"default_query_max_width_sp", "115"}};
-const FeatureEntry::FeatureParam
-    kRelatedSearchesAlternateUxShowDefaultChipWith120SpEllipsis[] = {
-        {"default_query_chip", "true"},
-        {"default_query_max_width_sp", "120"}};
-const FeatureEntry::FeatureVariation kRelatedSearchesAlternateUxVariations[] = {
-    {"without default query chip",
-     &kRelatedSearchesAlternateUxNoShowDefaultChip, 1, nullptr},
-    {"with default query chip", &kRelatedSearchesAlternateUxShowDefaultChip, 1,
-     nullptr},
-    {"with 110sp ellipsized default query chip",
-     kRelatedSearchesAlternateUxShowDefaultChipWith110SpEllipsis,
-     std::size(kRelatedSearchesAlternateUxShowDefaultChipWith110SpEllipsis),
-     nullptr},
-    {"with 115sp ellipsized default query chip",
-     kRelatedSearchesAlternateUxShowDefaultChipWith115SpEllipsis,
-     std::size(kRelatedSearchesAlternateUxShowDefaultChipWith115SpEllipsis),
-     nullptr},
-    {"with 120sp ellipsized default query chip",
-     kRelatedSearchesAlternateUxShowDefaultChipWith120SpEllipsis,
-     std::size(kRelatedSearchesAlternateUxShowDefaultChipWith120SpEllipsis),
-     nullptr},
-};
-
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith300Dp[] =
     {{"contextual_search_minimum_page_height_dp", "300"}};
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith400Dp[] =
@@ -3769,13 +3734,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearchesInBar,
                                     kRelatedSearchesInBarVariations,
                                     "RelatedSearchesInBar")},
-    {"related-searches-alternate-ux",
-     flag_descriptions::kRelatedSearchesAlternateUxName,
-     flag_descriptions::kRelatedSearchesAlternateUxDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kRelatedSearchesAlternateUx,
-         kRelatedSearchesAlternateUxVariations,
-         "RelatedSearchesAlternateUx")},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,

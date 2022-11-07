@@ -2243,9 +2243,6 @@ extern const char kReengagementNotificationDescription[];
 extern const char kRelatedSearchesName[];
 extern const char kRelatedSearchesDescription[];
 
-extern const char kRelatedSearchesAlternateUxName[];
-extern const char kRelatedSearchesAlternateUxDescription[];
-
 extern const char kRelatedSearchesInBarName[];
 extern const char kRelatedSearchesInBarDescription[];
 

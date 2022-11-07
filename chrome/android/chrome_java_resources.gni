@@ -492,7 +492,6 @@ chrome_java_resources = [
   "java/res/layout/contextual_search_context_view.xml",
   "java/res/layout/contextual_search_promo_view.xml",
   "java/res/layout/contextual_search_quick_action_icon_view.xml",
-  "java/res/layout/contextual_search_related_searches_in_content_view.xml",
   "java/res/layout/contextual_search_related_searches_view.xml",
   "java/res/layout/contextual_search_term_view.xml",
   "java/res/layout/custom_tabs_bottombar.xml",

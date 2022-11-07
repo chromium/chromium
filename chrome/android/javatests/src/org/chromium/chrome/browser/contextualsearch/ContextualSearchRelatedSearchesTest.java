@@ -228,9 +228,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
                 ()
                         -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
                                 QuickActionCategory.NONE, ResolvedSearchTerm.CardTag.CT_DEFINITION,
-                                inBarSuggestions, false /* showDefaultSearchInBar */,
-                                null /* relatedSearchesInContent */,
-                                false /* showDefaultSearchInContent */));
+                                inBarSuggestions, false /* showDefaultSearchInBar */));
         boolean didPanelGetTaller = mPanel.getHeight() > normalHeight;
         Assert.assertTrue(
                 "Related Searches should show in a taller Bar when there's a definition card, "

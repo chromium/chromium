@@ -606,9 +606,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 ()
                         -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
                                 QuickActionCategory.PHONE, CardTag.CT_CONTACT,
-                                null /* relatedSearchesInBar */, false /* showDefaultSearchInBar */,
-                                null /* relatedSearchesInContent */,
-                                false /* showDefaultSearchInContent */));
+                                null /* relatedSearchesInBar */,
+                                false /* showDefaultSearchInBar */));
 
         ContextualSearchBarControl barControl = mPanel.getSearchBarControl();
         ContextualSearchQuickActionControl quickActionControl = barControl.getQuickActionControl();
@@ -673,9 +672,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 ()
                         -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
                                 QuickActionCategory.PHONE, CardTag.CT_CONTACT,
-                                null /* relatedSearchesInBar */, false /* showDefaultSearchInBar */,
-                                null /* relatedSearchesInContent */,
-                                false /* showDefaultSearchInContent */));
+                                null /* relatedSearchesInBar */,
+                                false /* showDefaultSearchInBar */));
 
         sActivityTestRule.getActivity().onUserInteraction();
         retryPanelBarInteractions(() -> {
@@ -708,9 +706,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 ()
                         -> mPanel.onSearchTermResolved("search", null, testUrl,
                                 QuickActionCategory.WEBSITE, CardTag.CT_URL,
-                                null /* relatedSearchesInBar */, false /* showDefaultSearchInBar */,
-                                null /* relatedSearchesInContent */,
-                                false /* showDefaultSearchInContent */));
+                                null /* relatedSearchesInBar */,
+                                false /* showDefaultSearchInBar */));
         retryPanelBarInteractions(() -> {
             // Tap on the portion of the bar that should trigger the quick action.
             clickPanelBar();
@@ -728,9 +725,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 ()
                         -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
                                 QuickActionCategory.NONE, cardTag, null /* relatedSearchesInBar */,
-                                false /* showDefaultSearchInBar */,
-                                null /* relatedSearchesInContent */,
-                                false /* showDefaultSearchInContent */));
+                                false /* showDefaultSearchInBar */));
 
         expandPanelAndAssert();
     }

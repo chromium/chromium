@@ -275,7 +275,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReaderModeInCCT,
     &kReengagementNotification,
     &kRelatedSearches,
-    &kRelatedSearchesAlternateUx,
     &kRelatedSearchesInBar,
     &kRelatedSearchesUi,
     &kRequestDesktopSiteDefaults,
@@ -890,10 +889,6 @@ BASE_FEATURE(kReengagementNotification,
 BASE_FEATURE(kRelatedSearches,
              "RelatedSearches",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRelatedSearchesAlternateUx,
-             "RelatedSearchesAlternateUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRelatedSearchesInBar,
              "RelatedSearchesInBar",

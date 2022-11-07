@@ -94,25 +94,12 @@ public class ContextualSearchFieldTrial {
                 RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME, true);
     }
 
-    static boolean showDefaultChipInPanel() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
-                RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME, false);
-    }
-
     /* Return the max width of the bar's default chip in Sp. */
     static int getDefaultChipWidthSpInBar() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
                 RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME,
                 RELATED_SEARCHES_DEFAULT_QUERY_CHIP_DEFAULT_MAX_WIDTH_SP);
-    }
-
-    /* Return the max width of the panel's default chip in Sp. */
-    static int getDefaultChipWidthSpInPanel() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
-                RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME, 0);
     }
 
     /** Return The minimum height dp for the contextual search page. */

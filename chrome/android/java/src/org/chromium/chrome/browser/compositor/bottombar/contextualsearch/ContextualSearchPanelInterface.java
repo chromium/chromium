@@ -38,14 +38,11 @@ public interface ContextualSearchPanelInterface {
     @VisibleForTesting
     void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum,
-            @Nullable List<String> inBarRelatedSearches, boolean showDefaultSearchInBar,
-            @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent);
+            @Nullable List<String> inBarRelatedSearches, boolean showDefaultSearchInBar);
     void onSearchTermResolved(String searchTerm, @Nullable String pronunciation,
             String thumbnailUrl, String quickActionUri, int quickActionCategory,
             @CardTag int cardTagEnum, @Nullable List<String> inBarRelatedSearches,
-            boolean showDefaultSearchInBar, @Px int defaultQueryInBarTextMaxWidthPx,
-            @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent,
-            @Px int defaultQueryInContentTextMaxWidthPx);
+            boolean showDefaultSearchInBar, @Px int defaultQueryInBarTextMaxWidthPx);
     void setCaption(String caption);
     void ensureCaption();
     void hideCaption();

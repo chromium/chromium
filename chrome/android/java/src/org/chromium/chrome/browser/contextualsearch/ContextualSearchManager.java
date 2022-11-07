@@ -813,14 +813,9 @@ public class ContextualSearchManager
         }
 
         boolean showDefaultSearchInBar = ContextualSearchFieldTrial.showDefaultChipInBar();
-        boolean showDefaultSearchInPanel = ContextualSearchFieldTrial.showDefaultChipInPanel();
         List<String> inBarRelatedSearches =
-                buildRelatedSearches(true, searchTerm, showDefaultSearchInBar);
-        List<String> inPanelRelatedSearches =
-                buildRelatedSearches(false, searchTerm, showDefaultSearchInPanel);
-
+                buildRelatedSearches(searchTerm, showDefaultSearchInBar);
         int defaultQueryWidthSpInBar = ContextualSearchFieldTrial.getDefaultChipWidthSpInBar();
-        int defaultQueryWidthSpInPanel = ContextualSearchFieldTrial.getDefaultChipWidthSpInPanel();
 
         // Check if the searchTerm is a composite (used for Definitions for pronunciation).
         // The middle-dot character is returned by the server and marks the beginning of the
@@ -842,8 +837,7 @@ public class ContextualSearchManager
         mSearchPanel.onSearchTermResolved(message, pronunciation, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
                 resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, showDefaultSearchInBar,
-                spToPx(defaultQueryWidthSpInBar), inPanelRelatedSearches, showDefaultSearchInPanel,
-                spToPx(defaultQueryWidthSpInPanel));
+                spToPx(defaultQueryWidthSpInBar));
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             setCaption(resolvedSearchTerm.caption());
         }
@@ -1329,21 +1323,18 @@ public class ContextualSearchManager
     }
 
     @Override
-    public void onRelatedSearchesSuggestionClicked(int suggestionIndex, boolean isInBarSuggestion) {
-        boolean showDefaultSearch = isInBarSuggestion
-                ? ContextualSearchFieldTrial.showDefaultChipInBar()
-                : ContextualSearchFieldTrial.showDefaultChipInPanel();
+    public void onRelatedSearchesSuggestionClicked(int suggestionIndex) {
+        boolean showDefaultSearch = ContextualSearchFieldTrial.showDefaultChipInBar();
         int defaultSearchAdjustment = showDefaultSearch ? 1 : 0;
         assert mRelatedSearches
                 != null : "There is no valid list of Related Searches for this click! "
                           + "Please update crbug.com/1307267 with this repro.";
-        assert (suggestionIndex - defaultSearchAdjustment)
-                < mRelatedSearches.getQueries(isInBarSuggestion).size();
+        assert (suggestionIndex - defaultSearchAdjustment) < mRelatedSearches.getQueries().size();
 
         // TODO(crbug.com/1307267) remove this check once we figure out how this can happen.
         if (mRelatedSearches == null) return;
 
-        if (isInBarSuggestion && mSearchPanel.isPeeking()) {
+        if (mSearchPanel.isPeeking()) {
             mSearchPanel.expandPanel(StateChangeReason.CLICK);
         }
         if (showDefaultSearch && suggestionIndex == 0) {
@@ -1355,10 +1346,10 @@ public class ContextualSearchManager
             mSearchPanel.setSearchTerm(mResolvedSearchTerm.searchTerm());
             mIsRelatedSearchesSerp = false;
         } else {
-            String searchQuery = mRelatedSearches.getQueries(isInBarSuggestion)
-                                         .get(suggestionIndex - defaultSearchAdjustment);
-            Uri searchUri = mRelatedSearches.getSearchUri(
-                    suggestionIndex - defaultSearchAdjustment, isInBarSuggestion);
+            String searchQuery =
+                    mRelatedSearches.getQueries().get(suggestionIndex - defaultSearchAdjustment);
+            Uri searchUri =
+                    mRelatedSearches.getSearchUri(suggestionIndex - defaultSearchAdjustment);
             if (searchUri != null) {
                 mSearchRequest = new ContextualSearchRequest(searchUri);
             } else {
@@ -1875,22 +1866,18 @@ public class ContextualSearchManager
 
     /**
      * Build the searches suggestions for the Bar or Panel.
-     * @param isInBarSuggestion Whether the query was displayed in the Bar or content area of the
-     *         Panel.
      * @param defaultSearch The resolved search term..
      * @param showDefaultSearch Whether the default query should been shown.
      * @return A {@code List<String>} of search suggestions in the bar or the Panel, or {@code null}
      *         if the feature for showing chips is not enabled.
      */
     private @Nullable List<String> buildRelatedSearches(
-            boolean isInBarSuggestion, String defaultSearch, boolean showDefaultSearch) {
-        if (!ChromeFeatureList.isEnabled(isInBarSuggestion
-                            ? ChromeFeatureList.RELATED_SEARCHES_IN_BAR
-                            : ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX)) {
+            String defaultSearch, boolean showDefaultSearch) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
             return null;
         }
 
-        List<String> queries = mRelatedSearches.getQueries(isInBarSuggestion);
+        List<String> queries = mRelatedSearches.getQueries();
         if (!showDefaultSearch || queries.size() == 0) {
             return queries;
         }

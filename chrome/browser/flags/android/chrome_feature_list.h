@@ -125,7 +125,6 @@ BASE_DECLARE_FEATURE(kReachedCodeProfiler);
 BASE_DECLARE_FEATURE(kReengagementNotification);
 BASE_DECLARE_FEATURE(kReaderModeInCCT);
 BASE_DECLARE_FEATURE(kRelatedSearches);
-BASE_DECLARE_FEATURE(kRelatedSearchesAlternateUx);
 BASE_DECLARE_FEATURE(kRelatedSearchesInBar);
 BASE_DECLARE_FEATURE(kRelatedSearchesUi);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteDefaults);

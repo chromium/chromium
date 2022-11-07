@@ -54,9 +54,6 @@ void ContextualSearchLayer::SetProperties(
     float search_promo_opacity,
     int search_promo_background_color,
     // Related Searches
-    int related_searches_in_content_resource_id,
-    bool related_searches_in_content_visible,
-    float related_searches_in_content_height,
     int related_searches_in_bar_resource_id,
     bool related_searches_in_bar_visible,
     float related_searches_in_bar_height,
@@ -108,8 +105,7 @@ void ContextualSearchLayer::SetProperties(
       open_tab_icon_resource_id, close_icon_resource_id);
 
   //  TODO(donnd): Update when moving Related Searches.
-  float content_view_top = search_bar_bottom + search_promo_height +
-                           related_searches_in_content_height;
+  float content_view_top = search_bar_bottom + search_promo_height;
   float should_render_bar_border = search_bar_border_visible
       && !should_render_progress_bar;
 
@@ -168,33 +164,6 @@ void ContextualSearchLayer::SetProperties(
   } else if (related_searches_in_bar_.get() &&
              related_searches_in_bar_->parent()) {
     related_searches_in_bar_->RemoveFromParent();
-  }
-
-  // ---------------------------------------------------------------------------
-  // Related Searches In-Content Control
-  // ---------------------------------------------------------------------------
-  if (related_searches_in_content_visible) {
-    // Grabs the Related Searches in-content resource.
-    ui::Resource* related_searches_resource =
-        resource_manager_->GetResource(ui::ANDROID_RESOURCE_TYPE_DYNAMIC,
-                                       related_searches_in_content_resource_id);
-    DCHECK(related_searches_resource);
-    if (related_searches_resource) {
-      int related_searches_height = related_searches_resource->size().height();
-      gfx::Size related_searches_size(search_panel_width,
-                                      related_searches_height);
-      if (related_searches_in_content_->parent() != layer_)
-        layer_->AddChild(related_searches_in_content_);
-      related_searches_in_content_->SetUIResourceId(
-          related_searches_resource->ui_resource()->id());
-      related_searches_in_content_->SetBounds(related_searches_size);
-      related_searches_in_content_->SetPosition(
-          gfx::PointF(0.f, next_section_top));
-      next_section_top += related_searches_height;
-    }
-  } else if (related_searches_in_content_.get() &&
-             related_searches_in_content_->parent()) {
-    related_searches_in_content_->RemoveFromParent();
   }
 
   // ---------------------------------------------------------------------------
@@ -599,7 +568,6 @@ ContextualSearchLayer::ContextualSearchLayer(
       search_promo_(cc::UIResourceLayer::Create()),
       search_promo_container_(cc::SolidColorLayer::Create()),
       related_searches_in_bar_(cc::UIResourceLayer::Create()),
-      related_searches_in_content_(cc::UIResourceLayer::Create()),
       search_caption_(cc::UIResourceLayer::Create()),
       text_layer_(cc::UIResourceLayer::Create()),
       touch_highlight_layer_(cc::SolidColorLayer::Create()) {
@@ -617,7 +585,6 @@ ContextualSearchLayer::ContextualSearchLayer(
 
   // Related Searches sections
   related_searches_in_bar_->SetIsDrawable(true);
-  related_searches_in_content_->SetIsDrawable(true);
 
   // Icon - holds thumbnail, search provider icon and/or quick action icon
   icon_layer_->SetIsDrawable(true);
