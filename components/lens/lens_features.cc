@@ -22,10 +22,6 @@ BASE_FEATURE(kLensSearchOptimizations,
              "LensSearchOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensTransparentImagesFix,
-             "LensTransparentImagesFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensSearchImageInScreenshotSharing,
              "LensSearchImageInScreenshotSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -102,6 +98,12 @@ const base::FeatureParam<bool> kUseSelectionIconWithImage{
 
 const base::FeatureParam<bool> kUseAltChipString{
     &kLensInstructionChipImprovements, "use-alt-chip-string", false};
+
+const base::FeatureParam<bool> kUseWebpInImageSearch{
+    &kLensImageFormatOptimizations, "use-webp-image-search", true};
+
+const base::FeatureParam<int> kEncodingQualityImageSearch{
+    &kLensImageFormatOptimizations, "encoding-quality-image-search", 90};
 
 const base::FeatureParam<bool> kUseWebpInRegionSearch{
     &kLensImageFormatOptimizations, "use-webp-region-search", true};
@@ -187,11 +189,6 @@ bool IsLensSidePanelEnabledForRegionSearch() {
   return IsLensSidePanelEnabled() && !IsLensFullscreenSearchEnabled();
 }
 
-bool GetSendImagesAsPng() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensTransparentImagesFix);
-}
-
 bool IsLensInScreenshotSharingEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensSearchImageInScreenshotSharing);
@@ -225,6 +222,15 @@ bool EnablePersistentBubble() {
 
 bool IsLensRegionSearchStaticPageEnabled() {
   return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
+}
+
+bool IsWebpForImageSearchEnabled() {
+  return base::FeatureList::IsEnabled(kLensImageFormatOptimizations) &&
+         kUseWebpInImageSearch.Get();
+}
+
+int GetImageSearchEncodingQuality() {
+  return kEncodingQualityImageSearch.Get();
 }
 
 bool IsWebpForRegionSearchEnabled() {

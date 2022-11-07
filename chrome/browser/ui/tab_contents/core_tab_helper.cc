@@ -275,9 +275,10 @@ void CoreTabHelper::SearchByImageImpl(
   auto* thumbnail_capturer_proxy = chrome_render_frame.get();
   thumbnail_capturer_proxy->RequestImageForContextNode(
       thumbnail_min_size, gfx::Size(thumbnail_max_width, thumbnail_max_height),
-      lens::features::GetSendImagesAsPng() ? chrome::mojom::ImageFormat::PNG
-                                           : chrome::mojom::ImageFormat::JPEG,
-      chrome::mojom::kDefaultQuality,
+      lens::features::IsWebpForImageSearchEnabled()
+          ? chrome::mojom::ImageFormat::WEBP
+          : chrome::mojom::ImageFormat::JPEG,
+      lens::features::GetImageSearchEncodingQuality(),
       base::BindOnce(&CoreTabHelper::DoSearchByImage,
                      weak_factory_.GetWeakPtr(), std::move(chrome_render_frame),
                      src_url, additional_query_params, use_side_panel));

@@ -1013,6 +1013,9 @@ extern const char kLensCameraAssistedSearchDescription[];
 extern const char kLensRegionSearchStaticPageName[];
 extern const char kLensRegionSearchStaticPageDescription[];
 
+extern const char kLensImageFormatOptimizationsName[];
+extern const char kLensImageFormatOptimizationsDescription[];
+
 extern const char kLensOnQuickActionSearchWidgetName[];
 extern const char kLensOnQuickActionSearchWidgetDescription[];
 

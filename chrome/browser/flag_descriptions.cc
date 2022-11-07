@@ -1793,6 +1793,11 @@ const char kLensRegionSearchStaticPageDescription[] =
     "Enables use of a static page in a new tab when using the Lens region "
     "search feature.";
 
+const char kLensImageFormatOptimizationsName[] = "Lens Optimized Image Formats";
+const char kLensImageFormatOptimizationsDescription[] =
+    "Enables the use of either WebP or JPEG on all Lens quries to reduce "
+    "network load and improve latency";
+
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
 const char kLogJsConsoleMessagesDescription[] =

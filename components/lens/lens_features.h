@@ -23,9 +23,6 @@ BASE_DECLARE_FEATURE(kLensImageCompression);
 // Lens features.
 BASE_DECLARE_FEATURE(kLensSearchOptimizations);
 
-// Enables a fix to properly handle transparent images in Lens Image Search
-BASE_DECLARE_FEATURE(kLensTransparentImagesFix);
-
 // Enables Lens integration into the Chrome screenshot sharing feature by adding
 // a "Search Image" button.
 BASE_DECLARE_FEATURE(kLensSearchImageInScreenshotSharing);
@@ -96,6 +93,13 @@ extern const base::FeatureParam<bool> kUseSelectionIconWithImage;
 // Enables the use of an alternative string for the instruction chip.
 extern const base::FeatureParam<bool> kUseAltChipString;
 
+// Enables encoding to WebP for image search queries.
+extern const base::FeatureParam<bool> kUseWebpInImageSearch;
+
+// Value in range 0-100 that dictates the encoding quality for image search
+// lossy formats, with 100 being the best quality.
+extern const base::FeatureParam<int> kEncodingQualityImageSearch;
+
 // Enables encoding to WebP for region search queries. This param takes
 // precedence over kUseJpegInRegionSearch.
 extern const base::FeatureParam<bool> kUseWebpInRegionSearch;
@@ -162,9 +166,6 @@ extern bool IsLensSidePanelEnabled();
 // Returns whether the Lens side panel is enabled for region search.
 extern bool IsLensSidePanelEnabledForRegionSearch();
 
-// Returns whether to send images to Lens Standalone as PNG
-extern bool GetSendImagesAsPng();
-
 // Returns whether the Search Image button in the Chrome Screenshot Sharing
 // feature is enabled
 extern bool IsLensInScreenshotSharingEnabled();
@@ -189,6 +190,12 @@ extern bool UseAltChipString();
 
 // Returns whether we should use a WebUI static page for region search.
 extern bool IsLensRegionSearchStaticPageEnabled();
+
+// Returns whether to use WebP encoding for image search queries.
+extern bool IsWebpForImageSearchEnabled();
+
+// Get the encoding quality for image search queries.
+extern int GetImageSearchEncodingQuality();
 
 // Returns whether to use WebP encoding for region search queries.
 extern bool IsWebpForRegionSearchEnabled();

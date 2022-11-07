@@ -3411,6 +3411,15 @@ constexpr FeatureEntry::FeatureVariation kLensInstructionChipVariations[] = {
      std::size(kLensInstructionChipWithAltString), nullptr},
 };
 
+constexpr FeatureEntry::FeatureParam kLensFormatOptimizationJPEG[] = {
+    {"use-webp-image-search", "false"},
+    {"use-webp-region-search", "false"},
+    {"use-jpeg-region-search", "true"}};
+constexpr FeatureEntry::FeatureVariation kLensImageFormatVariations[] = {
+    {"use JPEG", kLensFormatOptimizationJPEG,
+     std::size(kLensFormatOptimizationJPEG), nullptr},
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kAlwaysEnableHdcpChoices[] = {
     {flag_descriptions::kAlwaysEnableHdcpDefault, "", ""},
@@ -8545,6 +8554,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensRegionSearchStaticPageName,
      flag_descriptions::kLensRegionSearchStaticPageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensRegionSearchStaticPage)},
+
+    {"enable-lens-image-format-optimizations",
+     flag_descriptions::kLensImageFormatOptimizationsName,
+     flag_descriptions::kLensImageFormatOptimizationsDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         lens::features::kLensImageFormatOptimizations,
+         kLensImageFormatVariations,
+         "LensImageFormatOptimizations")},
 
     {"enable-region-search-on-pdf-viewer",
      flag_descriptions::kEnableRegionSearchOnPdfViewerName,

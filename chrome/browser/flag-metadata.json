@@ -2574,6 +2574,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-lens-image-format-optimizations",
+    "owners": ["mercerd@google.com", "stanfield@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-lens-in-home-screen-widget",
     "owners": [ "schechter", "hujasonx" ],
     "expiry_milestone": 120
