@@ -90,8 +90,8 @@ bool ContainsBetterAncestor(Setting setting,
 
   // Check primary subpage only. Alternate subpages aren't used enough for the
   // check to be worthwhile.
-  if (metadata.primary.second) {
-    const auto parent_subpage = metadata.primary.second.value();
+  if (metadata.primary.subpage) {
+    const auto parent_subpage = metadata.primary.subpage.value();
     const auto it = subpages.find(parent_subpage);
     if ((it != subpages.end() && it->second >= score) ||
         ContainsBetterAncestor(parent_subpage, score, hierarchy, subpages,
@@ -100,7 +100,7 @@ bool ContainsBetterAncestor(Setting setting,
   }
 
   // Check section.
-  const auto it = sections.find(metadata.primary.first);
+  const auto it = sections.find(metadata.primary.section);
   return it != sections.end() && it->second >= score;
 }
 

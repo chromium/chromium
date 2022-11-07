@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
@@ -77,7 +76,7 @@ void SettingsUserActionTracker::RecordSettingChangeWithDetails(
 
   // Get the primary section location of the changed setting and log the metric.
   chromeos::settings::mojom::Section section_id =
-      hierarchy_->GetSettingMetadata(setting).primary.first;
+      hierarchy_->GetSettingMetadata(setting).primary.section;
   const OsSettingsSection* section = sections_->GetSection(section_id);
   // new_value is initialized as null. Null value is used in cases that don't
   // require extra metadata.

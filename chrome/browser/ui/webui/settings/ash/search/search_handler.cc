@@ -6,7 +6,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_concept.h"
@@ -179,15 +178,15 @@ void SearchHandler::AddParentResults(
             hierarchy_->GetSettingMetadata(result->id->get_setting());
 
         // Nested setting.
-        if (metadata.primary.second) {
-          it = AddSubpageResultIfPossible(it, result, *metadata.primary.second,
+        if (metadata.primary.subpage) {
+          it = AddSubpageResultIfPossible(it, result, *metadata.primary.subpage,
                                           result->relevance_score,
                                           search_results);
           break;
         }
 
         // Top-level setting.
-        it = AddSectionResultIfPossible(it, result, metadata.primary.first,
+        it = AddSectionResultIfPossible(it, result, metadata.primary.section,
                                         search_results);
         break;
       }
@@ -283,9 +282,9 @@ mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
     }
     case mojom::SearchResultType::kSetting: {
       mojom::Setting setting = search_concept->id.setting;
-      url =
-          GetModifiedUrl(*search_concept,
-                         hierarchy_->GetSettingMetadata(setting).primary.first);
+      url = GetModifiedUrl(
+          *search_concept,
+          hierarchy_->GetSettingMetadata(setting).primary.section);
       result_id = mojom::SearchResultIdentifier::NewSetting(setting);
       hierarchy_strings = hierarchy_->GenerateAncestorHierarchyStrings(setting);
       break;

@@ -43,7 +43,7 @@ void FakeHierarchy::AddSettingMetadata(
     absl::optional<mojom::Subpage> parent_subpage) {
   auto pair = setting_map_.emplace(setting, section);
   DCHECK(pair.second);
-  pair.first->second.primary.second = parent_subpage;
+  pair.first->second.primary.subpage = parent_subpage;
 }
 
 std::string FakeHierarchy::ModifySearchResultUrl(

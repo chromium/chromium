@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/constants_util.h"
@@ -64,29 +63,29 @@ class Hierarchy::PerSectionHierarchyGenerator
 
   void RegisterTopLevelSetting(mojom::Setting setting) override {
     Hierarchy::SettingMetadata& metadata = GetSettingMetadata(setting);
-    CHECK_EQ(section_, metadata.primary.first)
+    CHECK_EQ(section_, metadata.primary.section)
         << "Setting registered in multiple primary sections: " << setting;
-    CHECK(!metadata.primary.second)
+    CHECK(!metadata.primary.subpage)
         << "Setting registered in multiple primary locations: " << setting;
   }
 
   void RegisterNestedSetting(mojom::Setting setting,
                              mojom::Subpage subpage) override {
     Hierarchy::SettingMetadata& metadata = GetSettingMetadata(setting);
-    CHECK_EQ(section_, metadata.primary.first)
+    CHECK_EQ(section_, metadata.primary.section)
         << "Setting registered in multiple primary sections: " << setting;
-    CHECK(!metadata.primary.second)
+    CHECK(!metadata.primary.subpage)
         << "Setting registered in multiple primary locations: " << setting;
-    metadata.primary.second = subpage;
+    metadata.primary.subpage = subpage;
   }
 
   void RegisterTopLevelAltSetting(mojom::Setting setting) override {
     Hierarchy::SettingMetadata& metadata = GetSettingMetadata(setting);
-    CHECK(metadata.primary.first != section_ || metadata.primary.second)
+    CHECK(metadata.primary.section != section_ || metadata.primary.subpage)
         << "Setting's primary and alternate locations are identical: "
         << setting;
     for (const auto& alternate : metadata.alternates) {
-      CHECK(alternate.first != section_ || alternate.second)
+      CHECK(alternate.section != section_ || alternate.subpage)
           << "Setting has multiple identical alternate locations: " << setting;
     }
     metadata.alternates.emplace_back(section_, /*subpage=*/absl::nullopt);
@@ -95,12 +94,12 @@ class Hierarchy::PerSectionHierarchyGenerator
   void RegisterNestedAltSetting(mojom::Setting setting,
                                 mojom::Subpage subpage) override {
     Hierarchy::SettingMetadata& metadata = GetSettingMetadata(setting);
-    CHECK(metadata.primary.first != section_ ||
-          metadata.primary.second != subpage)
+    CHECK(metadata.primary.section != section_ ||
+          metadata.primary.subpage != subpage)
         << "Setting's primary and alternate locations are identical: "
         << setting;
     for (const auto& alternate : metadata.alternates) {
-      CHECK(alternate.first != section_ || alternate.second != subpage)
+      CHECK(alternate.section != section_ || alternate.subpage != subpage)
           << "Setting has multiple identical alternate locations: " << setting;
     }
     metadata.alternates.emplace_back(section_, subpage);
@@ -202,9 +201,7 @@ Hierarchy::SettingMetadata::~SettingMetadata() = default;
 
 Hierarchy::Hierarchy(const OsSettingsSections* sections) : sections_(sections) {
   for (const auto& section : constants::AllSections()) {
-    auto pair = section_map_.emplace(std::piecewise_construct,
-                                     std::forward_as_tuple(section),
-                                     std::forward_as_tuple(section, this));
+    auto pair = section_map_.insert({section, SectionMetadata(section, this)});
     CHECK(pair.second);
 
     PerSectionHierarchyGenerator generator(section, this);
@@ -270,14 +267,14 @@ std::vector<std::u16string> Hierarchy::GenerateAncestorHierarchyStrings(
   const SettingMetadata& setting_metadata = GetSettingMetadata(setting);
 
   // Top-level setting; simply return section hierarchy.
-  if (!setting_metadata.primary.second)
-    return GenerateHierarchyStrings(setting_metadata.primary.first);
+  if (!setting_metadata.primary.subpage)
+    return GenerateHierarchyStrings(setting_metadata.primary.section);
 
   // Nested setting; use subpage ancestors, then append subpage name itself.
   std::vector<std::u16string> hierarchy_strings =
-      GenerateAncestorHierarchyStrings(*setting_metadata.primary.second);
+      GenerateAncestorHierarchyStrings(*setting_metadata.primary.subpage);
   hierarchy_strings.push_back(
-      GetSubpageMetadata(*setting_metadata.primary.second)
+      GetSubpageMetadata(*setting_metadata.primary.subpage)
           .ToSearchResult(kDummyRelevanceScore)
           ->text);
   return hierarchy_strings;
