@@ -352,6 +352,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                                     || permissions[i].equals(PermissionConstants.READ_MEDIA_IMAGES)
                                     || permissions[i].equals(
                                             PermissionConstants.READ_MEDIA_VIDEO)) {
+                                WindowAndroid.showError(R.string.permission_denied_error);
                                 onFileNotSelected();
                                 return;
                             }
