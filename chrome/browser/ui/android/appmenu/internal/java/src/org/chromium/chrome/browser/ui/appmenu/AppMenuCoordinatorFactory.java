@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /**
@@ -27,13 +29,14 @@ public class AppMenuCoordinatorFactory {
      *         activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
      *            displayed using a hardware button.
+     * @param appRect Supplier of the app area in Window that the menu should fit in.
      */
     public static AppMenuCoordinator createAppMenuCoordinator(Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             MenuButtonDelegate buttonDelegate, AppMenuDelegate appMenuDelegate, View decorView,
-            View hardwareButtonAnchorView) {
+            View hardwareButtonAnchorView, Supplier<Rect> appRect) {
         return new AppMenuCoordinatorImpl(context, activityLifecycleDispatcher, buttonDelegate,
-                appMenuDelegate, decorView, hardwareButtonAnchorView);
+                appMenuDelegate, decorView, hardwareButtonAnchorView, appRect);
     }
 
     /** @param reporter A means of reporting an exception without crashing. */

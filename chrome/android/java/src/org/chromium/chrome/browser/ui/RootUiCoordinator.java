@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -1291,7 +1292,8 @@ public class RootUiCoordinator
             mAppMenuCoordinator = AppMenuCoordinatorFactory.createAppMenuCoordinator(mActivity,
                     mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
-                    mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
+                    mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub),
+                    this::getAppRectInWindow);
             AppMenuCoordinatorFactory.setExceptionReporter(
                     (throwable)
                             -> ChromePureJavaExceptionReporter.reportJavaException(
@@ -1316,6 +1318,15 @@ public class RootUiCoordinator
             };
             mAppMenuCoordinator.getAppMenuHandler().addObserver(mAppMenuObserver);
         }
+    }
+
+    /**
+     * Returns {@link Rect} that represents the app client area the app menu should fit in.
+     */
+    protected Rect getAppRectInWindow() {
+        Rect appRect = new Rect();
+        mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(appRect);
+        return appRect;
     }
 
     private void hideAppMenu() {
