@@ -142,8 +142,8 @@ promise_test(async t => {
   const reader = recv_stream.getReader({mode: 'byob'});
   assert_true(reader instanceof ReadableStreamBYOBReader);
   const half_buffer_size = buffer_size / 2;
+  let buffer = new ArrayBuffer(half_buffer_size);
   for (let i = 0; i < 2; i++) {
-    let buffer = new ArrayBuffer(half_buffer_size);
     buffer = await readInto(reader, buffer);
     assert_array_equals(
         new Uint8Array(buffer),

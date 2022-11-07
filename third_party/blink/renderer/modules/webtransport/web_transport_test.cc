@@ -989,6 +989,80 @@ TEST_F(WebTransportTest, ReceiveDatagramDuringRead) {
   EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
 }
 
+TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReader) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  auto* readable = web_transport->datagrams()->readable();
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromise result = reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, result);
+
+  const std::array<uint8_t, 1> chunk = {'A'};
+  client_remote_->OnDatagramReceived(chunk);
+
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
+}
+
+bool IsRangeError(ScriptState* script_state,
+                  ScriptValue value,
+                  const String& message) {
+  v8::Local<v8::Object> object;
+  if (!value.V8Value()->ToObject(script_state->GetContext()).ToLocal(&object)) {
+    return false;
+  }
+  if (!object->IsNativeError())
+    return false;
+
+  const auto& Has = [script_state, object](const String& key,
+                                           const String& value) -> bool {
+    v8::Local<v8::Value> actual;
+    return object
+               ->Get(script_state->GetContext(),
+                     V8AtomicString(script_state->GetIsolate(), key))
+               .ToLocal(&actual) &&
+           ToCoreStringWithUndefinedOrNullCheck(actual) == value;
+  };
+
+  return Has("name", "RangeError") && Has("message", message);
+}
+
+TEST_F(WebTransportTest, ReceiveDatagramWithoutEnoughBuffer) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  auto* readable = web_transport->datagrams()->readable();
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromise result = reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, result);
+
+  const std::array<uint8_t, 3> chunk = {'A', 'B', 'C'};
+  client_remote_->OnDatagramReceived(chunk);
+
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  EXPECT_TRUE(IsRangeError(script_state, tester.Value(),
+                           "supplied view is not large enough."));
+}
+
 TEST_F(WebTransportTest, CancelDatagramReadableWorks) {
   V8TestingScope scope;
   auto* web_transport =

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -244,12 +246,13 @@ void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
   switch (result) {
     case MOJO_RESULT_OK: {
       in_two_phase_read_ = true;
-      // EnqueueBytes() may re-enter this method via pull().
-      EnqueueBytes(buffer, buffer_num_bytes, exception_state);
+      // RespondBYOBRequestOrEnqueueBytes() may re-enter this method via pull().
+      uint32_t read_bytes = RespondBYOBRequestOrEnqueueBytes(
+          buffer, buffer_num_bytes, exception_state);
       if (exception_state.HadException()) {
         return;
       }
-      data_pipe_->EndReadData(buffer_num_bytes);
+      data_pipe_->EndReadData(read_bytes);
       in_two_phase_read_ = false;
       if (read_pending_) {
         read_pending_ = false;
@@ -277,16 +280,29 @@ void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
   }
 }
 
-void IncomingStream::EnqueueBytes(const void* source,
-                                  uint32_t byte_length,
-                                  ExceptionState& exception_state) {
-  DVLOG(1) << "IncomingStream::EnqueueBytes() this=" << this;
+uint32_t IncomingStream::RespondBYOBRequestOrEnqueueBytes(
+    const void* source,
+    uint32_t byte_length,
+    ExceptionState& exception_state) {
+  DVLOG(1) << "IncomingStream::RespondBYOBRequestOrEnqueueBytes() this="
+           << this;
 
   ScriptState::Scope scope(script_state_);
+
+  if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
+    DOMArrayPiece view(request->view().Get());
+    size_t byob_response_length = 0;
+    byob_response_length =
+        std::min(view.ByteLength(), static_cast<size_t>(byte_length));
+    memcpy(view.Data(), source, byob_response_length);
+    request->respond(script_state_, byob_response_length, exception_state);
+    return static_cast<uint32_t>(byob_response_length);
+  }
 
   auto* buffer =
       DOMUint8Array::Create(static_cast<const uint8_t*>(source), byte_length);
   controller_->enqueue(script_state_, NotShared(buffer), exception_state);
+  return byte_length;
 }
 
 void IncomingStream::CloseAbortAndReset(ExceptionState& exception_state) {

@@ -105,6 +105,18 @@ class IncomingStreamTest : public ::testing::Test {
     return IteratorFromReadResult(scope, tester.Value().V8Value());
   }
 
+  static Iterator Read(V8TestingScope& scope,
+                       ReadableStreamBYOBReader* reader,
+                       NotShared<DOMArrayBufferView> view) {
+    auto* script_state = scope.GetScriptState();
+    ScriptPromise read_promise =
+        reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+    ScriptPromiseTester tester(script_state, read_promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    return IteratorFromReadResult(scope, tester.Value().V8Value());
+  }
+
   static Iterator IteratorFromReadResult(V8TestingScope& scope,
                                          v8::Local<v8::Value> result) {
     CHECK(result->IsObject());
@@ -148,6 +160,35 @@ TEST_F(IncomingStreamTest, ReadArrayBuffer) {
   Iterator result = Read(scope, reader);
   EXPECT_FALSE(result.done);
   EXPECT_THAT(result.value, ElementsAre('A'));
+}
+
+// Respond BYOB requests created before and after receiving data.
+TEST_F(IncomingStreamTest, ReadArrayBufferWithBYOBReader) {
+  V8TestingScope scope;
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+  auto* script_state = scope.GetScriptState();
+  auto* reader = incoming_stream->Readable()->GetBYOBReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromise read_promise =
+      reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, read_promise);
+  EXPECT_FALSE(tester.IsFulfilled());
+
+  WriteToPipe({'A', 'B', 'C'});
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  Iterator result = IteratorFromReadResult(scope, tester.Value().V8Value());
+  EXPECT_FALSE(result.done);
+  EXPECT_THAT(result.value, ElementsAre('A'));
+
+  view = NotShared<DOMUint8Array>(DOMUint8Array::Create(2));
+  result = Read(scope, reader, view);
+  EXPECT_FALSE(result.done);
+  EXPECT_THAT(result.value, ElementsAre('B', 'C'));
 }
 
 // Reading data followed by a remote close should not lose data.

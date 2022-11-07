@@ -32,12 +32,14 @@
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/bidirectional_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/datagram_duplex_stream.h"
@@ -344,7 +346,6 @@ class WebTransport::DatagramUnderlyingSource final
     }
 
     DCHECK_GT(data.size(), 0u);
-    auto* datagram = DOMUint8Array::Create(data.data(), data.size());
 
     // This fast path is expected to be hit frequently. Avoid the queue.
     if (waiting_for_datagrams_) {
@@ -353,10 +354,36 @@ class WebTransport::DatagramUnderlyingSource final
       // This may run JavaScript, so it has to be called immediately before
       // returning to avoid confusion caused by re-entrant usage.
       ScriptState::Scope scope(script_state_);
-      // |enqueue| throws if close has been requested, stream state
+      // |enqueue| and |respond| throw if close has been requested, stream state
       // is not readable, or buffer is invalid. We checked
-      // |close_when_queue_empty_| and data.size() so it should not throw.
+      // |close_when_queue_empty_| and data.size() so stream is readable and
+      // buffer size is not 0.
+      // |respond| also throws if controller is undefined or destination's
+      // buffer size is not large enough. Controller is defined because
+      // the BYOB request is a property of the given controller. If
+      // destination's buffer size is not large enough, stream is errored before
+      // respond.
       NonThrowableExceptionState exception_state;
+
+      if (ReadableStreamBYOBRequest* request = controller->byobRequest()) {
+        DOMArrayPiece view(request->view().Get());
+        // If the view supplied is not large enough, error the stream to avoid
+        // splitting a datagram.
+        if (view.ByteLength() < data.size()) {
+          controller->error(
+              script_state_,
+              ScriptValue(script_state_->GetIsolate(),
+                          V8ThrowException::CreateRangeError(
+                              script_state_->GetIsolate(),
+                              "supplied view is not large enough.")));
+          return;
+        }
+        memcpy(view.Data(), data.data(), data.size());
+        request->respond(script_state_, data.size(), exception_state);
+        return;
+      }
+
+      auto* datagram = DOMUint8Array::Create(data.data(), data.size());
       controller->enqueue(script_state_, NotShared(datagram), exception_state);
       return;
     }
@@ -378,6 +405,7 @@ class WebTransport::DatagramUnderlyingSource final
       queue_.pop_front();
     }
 
+    auto* datagram = DOMUint8Array::Create(data.data(), data.size());
     auto now = base::TimeTicks::Now();
     queue_.push_back(MakeGarbageCollected<QueueEntry>(datagram, now));
     MaybeExpireDatagrams(now);

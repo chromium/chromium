@@ -23,7 +23,8 @@ async function write_datagrams(writer, signal) {
   return sentTokens;
 }
 
-// Read datagrams until the consumer has received enough i.e. N datagrams.
+// Read datagrams until the consumer has received enough i.e. N datagrams. Call
+// abort() after reading.
 async function read_datagrams(reader, controller, N) {
   const decoder = new TextDecoder();
   const receivedTokens = [];
@@ -40,11 +41,10 @@ async function read_datagrams(reader, controller, N) {
 async function write_numbers(writer, signal) {
   let counter = 0;
   const sentNumbers = [];
-  const aborted = new Promise((resolve) => {
-    signal.addEventListener('abort', resolve);
-  });
+  const aborted =
+    new Promise((resolve) => signal.addEventListener('abort', resolve));
   // Counter should be less than 256 because reader stores numbers in Uint8Array.
-  while (true && counter < 256) {
+  while (counter < 256) {
     await Promise.race([writer.ready, aborted])
     if (signal.aborted) {
       break;
@@ -58,7 +58,22 @@ async function write_numbers(writer, signal) {
   return sentNumbers;
 }
 
-// Read datagrams with BYOB reader until the consumer has received enough i.e. N datagrams.
+// Write large datagrams of size 10 until the producer receives the AbortSignal.
+async function write_large_datagrams(writer, signal) {
+  const aborted = new Promise((resolve) => {
+    signal.addEventListener('abort', resolve);
+  });
+  while (true) {
+    await Promise.race([writer.ready, aborted]);
+    if (signal.aborted) {
+      break;
+    }
+    writer.write(new Uint8Array(10));
+  }
+}
+
+// Read datagrams with BYOB reader until the consumer has received enough i.e. N
+// datagrams. Call abort() after reading.
 async function read_numbers_byob(reader, controller, N) {
   let buffer = new ArrayBuffer(N);
   buffer = await readInto(reader, buffer);
@@ -115,6 +130,30 @@ promise_test(async t => {
   const subset = receiveNumbers.every(token => sentNumbers.includes(token));
   assert_true(subset);
 }, 'Successfully reading datagrams with BYOB reader.');
+
+promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  await wt.ready;
+
+  const writer = wt.datagrams.writable.getWriter();
+  const reader = wt.datagrams.readable.getReader({ mode: 'byob' });
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  // Write datagrams of size 10, but only 1 byte buffer is provided for BYOB
+  // reader. To avoid splitting a datagram, stream will be errored.
+  const buffer = new ArrayBuffer(1);
+  const [error, _] = await Promise.all([
+    reader.read(new Uint8Array(buffer)).catch(e => {
+      controller.abort();
+      return e;
+    }),
+    write_large_datagrams(writer, signal)
+  ]);
+  assert_equals(error.name, 'RangeError');
+}, 'Reading datagrams with insufficient buffer should be rejected.');
 
 promise_test(async t => {
   // Make a WebTransport connection, but session is not necessarily established.
