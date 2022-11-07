@@ -12,6 +12,9 @@ import models
 
 _OBSOLETE_TYPE = models.TextNodeType('obsolete')
 _OWNER_TYPE = models.TextNodeType('owner', single_line=True)
+# If present, it's intentional that the histogram is currently expired and
+# automation should not suggest for its implementation to be cleaned up.
+_EXPIRED_INTENTIONALLY_TYPE = models.TextNodeType('expired_intentionally')
 _COMPONENT_TYPE = models.TextNodeType('component', single_line=True)
 _SUMMARY_TYPE = models.TextNodeType('summary', single_line=True)
 
@@ -126,20 +129,22 @@ _TOKEN_TYPE = models.ObjectNodeType(
         models.ChildType(_VARIANT_TYPE.tag, _VARIANT_TYPE, multiple=True),
     ])
 
+_EXPIRED_AFTER_RE = (
+    r'^$|^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$|^M[0-9]+$|^never$'
+)
+
 _HISTOGRAM_TYPE = models.ObjectNodeType(
     'histogram',
     attributes=[
-        ('base', str, r'^$|^true|false|True|False$'),
+        ('base', str, r'^$|^true|false$'),
         ('name', str, None),
         ('enum', str, r'^[A-Za-z0-9._]*$'),
         ('units', str, None),
-        ('expires_after', str,
-         r'^$|^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$' \
-         '|^M[0-9]+$|^never|Never$'
-         ),
+        ('expires_after', str, _EXPIRED_AFTER_RE),
     ],
     required_attributes=['name'],
     alphabetization=[
+        (_EXPIRED_INTENTIONALLY_TYPE.tag, _KEEP_ORDER),
         (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
         (_OWNER_TYPE.tag, _KEEP_ORDER),
         (_COMPONENT_TYPE.tag, _KEEP_ORDER),
@@ -148,6 +153,9 @@ _HISTOGRAM_TYPE = models.ObjectNodeType(
     ],
     extra_newlines=(1, 1, 1),
     children=[
+        models.ChildType(_EXPIRED_INTENTIONALLY_TYPE.tag,
+                         _EXPIRED_INTENTIONALLY_TYPE,
+                         multiple=False),
         models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
         models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
         models.ChildType(_COMPONENT_TYPE.tag, _COMPONENT_TYPE, multiple=True),
@@ -168,18 +176,18 @@ _HISTOGRAMS_TYPE = models.ObjectNodeType(
         models.ChildType(_HISTOGRAM_TYPE.tag, _HISTOGRAM_TYPE, multiple=True),
     ])
 
-_SUFFIX_TYPE = models.ObjectNodeType(
-    'suffix',
-    attributes=[
-        ('base', str,
-        r'^$|^true|false|True|False$'),
-        ('name', str, None),
-        ('label', str, None),
-    ],
-    required_attributes=['name'],
-    children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
-    ])
+_SUFFIX_TYPE = models.ObjectNodeType('suffix',
+                                     attributes=[
+                                         ('base', str, r'^$|^true|false$'),
+                                         ('name', str, None),
+                                         ('label', str, None),
+                                     ],
+                                     required_attributes=['name'],
+                                     children=[
+                                         models.ChildType(_OBSOLETE_TYPE.tag,
+                                                          _OBSOLETE_TYPE,
+                                                          multiple=False),
+                                     ])
 
 _WITH_SUFFIX_TYPE = models.ObjectNodeType(
     'with-suffix',
