@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SYNC_BUBBLE_SYNC_PROMO_SIGNIN_BUTTON_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/hover_button.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"

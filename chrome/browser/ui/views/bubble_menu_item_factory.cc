@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include <memory>
 
-#include "chrome/browser/ui/views/hover_button.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"

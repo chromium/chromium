@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/views/hover_button.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 #include "chrome/test/base/testing_profile.h"
