@@ -41,7 +41,9 @@ void WaylandZAuraShell::Instantiate(WaylandConnection* connection,
   }
 
   auto zaura_shell = wl::Bind<struct zaura_shell>(
-      registry, name, std::min(version, kMaxVersion));
+      registry, name,
+      wl::CalculateBindVersion(version, kMaxVersion,
+                               zaura_shell_interface.version));
   if (!zaura_shell) {
     LOG(ERROR) << "Failed to bind zaura_shell";
     return;

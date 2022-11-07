@@ -24,11 +24,7 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 2;
-#if CHROME_WAYLAND_CHECK_VERSION(1, 20, 0)
 constexpr uint32_t kMaxVersion = 4;
-#else
-constexpr uint32_t kMaxVersion = 2;
-#endif
 }  // namespace
 
 // static
@@ -47,8 +43,10 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
     return;
   }
 
-  auto output =
-      wl::Bind<wl_output>(registry, name, std::min(version, kMaxVersion));
+  auto output = wl::Bind<wl_output>(
+      registry, name,
+      wl::CalculateBindVersion(version, kMaxVersion,
+                               wl_output_interface.version));
   if (!output) {
     LOG(ERROR) << "Failed to bind to wl_output global";
     return;

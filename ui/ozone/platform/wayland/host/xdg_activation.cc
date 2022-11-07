@@ -62,8 +62,10 @@ void XdgActivation::Instantiate(WaylandConnection* connection,
   if (connection->xdg_activation_)
     return;
 
-  auto instance = wl::Bind<::xdg_activation_v1>(registry, name,
-                                                std::min(version, kMaxVersion));
+  auto instance = wl::Bind<::xdg_activation_v1>(
+      registry, name,
+      wl::CalculateBindVersion(version, kMaxVersion,
+                               xdg_activation_v1_interface.version));
   if (!instance) {
     LOG(ERROR) << "Failed to bind " << kInterfaceName;
     return;

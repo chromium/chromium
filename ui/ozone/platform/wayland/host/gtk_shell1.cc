@@ -38,8 +38,10 @@ void GtkShell1::Instantiate(WaylandConnection* connection,
     return;
   }
 
-  auto gtk_shell1 =
-      wl::Bind<::gtk_shell1>(registry, name, std::min(version, kMaxVersion));
+  auto gtk_shell1 = wl::Bind<::gtk_shell1>(
+      registry, name,
+      wl::CalculateBindVersion(version, kMaxVersion,
+                               gtk_shell1_interface.version));
   if (!gtk_shell1) {
     LOG(ERROR) << "Failed to bind gtk_shell1";
     return;

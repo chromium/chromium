@@ -148,6 +148,14 @@ bool CanBind(const std::string& interface,
   return true;
 }
 
+uint32_t CalculateBindVersion(uint32_t impl_version,
+                              uint32_t compositor_version,
+                              int libwayland_version) {
+  return std::min(
+      impl_version,
+      std::min(compositor_version, static_cast<uint32_t>(libwayland_version)));
+}
+
 void (*ObjectTraits<wl_cursor_theme>::deleter)(wl_cursor_theme*) =
     &wl_cursor_theme_destroy;
 

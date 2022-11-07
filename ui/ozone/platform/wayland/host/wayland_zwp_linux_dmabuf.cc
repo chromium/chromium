@@ -38,7 +38,9 @@ void WaylandZwpLinuxDmabuf::Instantiate(WaylandConnection* connection,
   }
 
   auto zwp_linux_dmabuf = wl::Bind<zwp_linux_dmabuf_v1>(
-      registry, name, std::min(version, kMaxVersion));
+      registry, name,
+      wl::CalculateBindVersion(version, kMaxVersion,
+                               zwp_linux_dmabuf_v1_interface.version));
   if (!zwp_linux_dmabuf) {
     LOG(ERROR) << "Failed to bind zwp_linux_dmabuf_v1";
     return;
