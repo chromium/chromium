@@ -94,7 +94,7 @@ BASE_FEATURE(kEnhancedProtectionPhase2IOS,
 
 BASE_FEATURE(kExtensionTelemetry,
              "SafeBrowsingExtensionTelemetry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
     &kExtensionTelemetry, "UploadIntervalSeconds",
@@ -118,7 +118,7 @@ BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
 
 BASE_FEATURE(kExtensionTelemetryReportContactedHosts,
              "SafeBrowsingExtensionTelemetryReportContactedHosts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket,
              "SafeBrowsingExtensionTelemetryReportHostsContactedViaWebsocket",
@@ -126,7 +126,7 @@ BASE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket,
 
 BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
              "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryCookiesGetSignal,
              "SafeBrowsingExtensionTelemetryCookiesGetSignal",

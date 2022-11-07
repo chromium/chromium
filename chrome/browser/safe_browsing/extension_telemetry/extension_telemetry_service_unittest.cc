@@ -109,8 +109,9 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
   extension_prefs_ = extensions::ExtensionPrefs::Get(&profile_);
   extension_registry_ = extensions::ExtensionRegistry::Get(&profile_);
 
-  // Create telemetry service instance.
   profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  // Create telemetry service instance.
   telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
       &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
       extension_registry_, extension_prefs_);

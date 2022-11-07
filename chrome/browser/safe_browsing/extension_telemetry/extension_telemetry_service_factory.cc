@@ -67,4 +67,8 @@ bool ExtensionTelemetryServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
 }
+
+bool ExtensionTelemetryServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
 }  // namespace safe_browsing
