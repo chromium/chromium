@@ -75,7 +75,7 @@ struct IntentLaunchInfo {
 //
 // See components/services/app_service/README.md.
 class AppServiceProxyBase : public KeyedService,
-                            public apps::IconLoader,
+                            public IconLoader,
                             public apps::mojom::Subscriber,
                             public PreferredAppsImpl::Host {
  public:
@@ -128,7 +128,7 @@ class AppServiceProxyBase : public KeyedService,
       IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
-      apps::LoadIconCallback callback) override;
+      LoadIconCallback callback) override;
 
   // Launches the app for the given |app_id|. |event_flags| provides additional
   // context about the action which launches the app (e.g. a middle click
@@ -304,16 +304,17 @@ class AppServiceProxyBase : public KeyedService,
 
  protected:
   // An adapter, presenting an IconLoader interface based on the underlying
-  // Mojo service (or on a fake implementation for testing).
+  // service (or on a fake implementation for testing).
   //
   // Conceptually, the ASP (the AppServiceProxyBase) is itself such an adapter:
   // UI clients call the IconLoader::LoadIconFromIconKey method (which the ASP
-  // implements) and the ASP translates (i.e. adapts) these to Mojo calls (or
-  // C++ calls to the Fake). This diagram shows control flow going left to
-  // right (with "=c=>" and "=m=>" denoting C++ and Mojo calls), and the
-  // responses (callbacks) then run right to left in LIFO order:
+  // implements) and the ASP translates (i.e. adapts) these to publisher's
+  // LoadIcon calls (or C++ calls to the Fake). This diagram shows control flow
+  // going left to right (with "=c=>" and "=> Publisher::LoadIcon" denoting C++
+  // and publisher's LoadIcon calls), and the responses (callbacks) then run
+  // right to left in LIFO order:
   //
-  //   UI =c=> ASP =+=m=> MojoService
+  //   UI =c=> ASP => Publisher::LoadIcon
   //                |       or
   //                +=c=> Fake
   //
@@ -328,7 +329,8 @@ class AppServiceProxyBase : public KeyedService,
   //
   //           +------------------ ASP ------------------+
   //           |                                         |
-  //   UI =c=> | Outer =c=> MoreDecorators... =c=> Inner | =+=m=> MojoService
+  //   UI =c=> | Outer =c=> MoreDecorators... =c=> Inner | =>
+  //   Publisher::LoadIcon
   //           |                                         |  |       or
   //           +-----------------------------------------+  +=c=> Fake
   //
