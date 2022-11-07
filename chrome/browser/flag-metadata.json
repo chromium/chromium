@@ -6532,8 +6532,8 @@
   },
   {
     "name": "tab-groups-save",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
-    "expiry_milestone": 110
+    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning" ],
+    "expiry_milestone": 115
   },
   {
     "name": "tab-hover-card-images",
