@@ -4,6 +4,7 @@
 
 #include "base/task/common/task_annotator.h"
 
+#include <stdint.h>
 #include <algorithm>
 #include <array>
 
@@ -11,6 +12,7 @@
 #include "base/debug/activity_tracker.h"
 #include "base/debug/alias.h"
 #include "base/hash/md5.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
@@ -47,10 +49,28 @@ GetTLSForCurrentScopedIpcHash() {
   return instance.get();
 }
 
+ThreadLocalPointer<TaskAnnotator::LongTaskTracker>*
+GetTLSForCurrentLongTaskTracker() {
+  static NoDestructor<ThreadLocalPointer<TaskAnnotator::LongTaskTracker>>
+      instance;
+  return instance.get();
+}
+
 }  // namespace
 
 const PendingTask* TaskAnnotator::CurrentTaskForThread() {
   return GetTLSForCurrentPendingTask()->Get();
+}
+
+void TaskAnnotator::OnIPCReceived(const char* interface_name,
+                                  uint32_t (*method_info)()) {
+  base::TaskAnnotator::LongTaskTracker* current_long_task_tracker =
+      GetTLSForCurrentLongTaskTracker()->Get();
+
+  if (!current_long_task_tracker)
+    return;
+
+  current_long_task_tracker->SetIpcDetails(interface_name, method_info);
 }
 
 TaskAnnotator::TaskAnnotator() = default;
@@ -242,13 +262,22 @@ TaskAnnotator::LongTaskTracker::LongTaskTracker(const TickClock* tick_clock,
     : tick_clock_(tick_clock),
       pending_task_(pending_task),
       task_annotator_(task_annotator) {
+  auto* tls_long_task_tracker = GetTLSForCurrentLongTaskTracker();
+  old_long_task_tracker_ = tls_long_task_tracker->Get();
+
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("scheduler.long_tasks", &is_tracing_);
   if (is_tracing_) {
     task_start_time_ = tick_clock_->NowTicks();
   }
+
+  tls_long_task_tracker->Set(this);
 }
 
 TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
+  auto* tls_long_task_tracker = GetTLSForCurrentLongTaskTracker();
+  DCHECK_EQ(this, tls_long_task_tracker->Get());
+  tls_long_task_tracker->Set(old_long_task_tracker_.get());
+
   if (!is_tracing_)
     return;
   TimeTicks task_end_time = tick_clock_->NowTicks();
@@ -257,10 +286,48 @@ TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
                       perfetto::Track::ThreadScoped(task_annotator_),
                       task_start_time_, [&](perfetto::EventContext& ctx) {
                         TaskAnnotator::EmitTaskLocation(ctx, pending_task_);
+                        EmitReceivedIPCDetails(ctx);
                       });
     TRACE_EVENT_END("scheduler.long_tasks",
                     perfetto::Track::ThreadScoped(task_annotator_),
                     task_end_time);
   }
 }
+
+void TaskAnnotator::LongTaskTracker::SetIpcDetails(const char* interface_name,
+                                                   uint32_t (*method_info)()) {
+  ipc_interface_name_ = interface_name;
+
+  if (!method_info)
+    return;
+
+  ipc_hash_ = (*method_info)();
+  ipc_method_info_ = method_info;
+}
+
+void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
+    perfetto::EventContext& ctx) {
+  if (!ipc_interface_name_ || !ipc_hash_ || !ipc_method_info_)
+    return;
+
+  // Emit all of the IPC hash information if this task
+  // comes from a mojo interface.
+  auto* info = ctx.event()->set_chrome_mojo_event_info();
+  info->set_mojo_interface_tag(ipc_interface_name_);
+  info->set_ipc_hash(ipc_hash_);
+
+#if !BUILDFLAG(IS_NACL)
+  // The Native client will not build as the relevant implementation of
+  // base::ModuleCache::CreateModuleForAddress is not implemented for it.
+  // Thus the below code must be included on a conditional basis.
+  const auto ipc_method_address = reinterpret_cast<uintptr_t>(ipc_method_info_);
+  const absl::optional<size_t> location_iid =
+      base::trace_event::InternedUnsymbolizedSourceLocation::Get(
+          &ctx, ipc_method_address);
+  if (location_iid) {
+    info->set_mojo_interface_method_iid(*location_iid);
+  }
+#endif
+}
+
 }  // namespace base

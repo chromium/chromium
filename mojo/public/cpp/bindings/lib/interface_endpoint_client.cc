@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/interned_args_helper.h"
@@ -921,6 +922,13 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
               });
 
   DCHECK_EQ(handle_.id(), message->interface_id());
+
+  // Sync messages can be sent and received at arbitrary points in time and we
+  // should not associate them with the top-level scheduler task.
+  if (!message->has_flag(Message::kFlagIsSync)) {
+    const auto method_info = method_info_callback_(*message);
+    base::TaskAnnotator::OnIPCReceived(interface_name_, method_info);
+  }
 
   if (encountered_error_) {
     // This message is received after error has been encountered. For associated

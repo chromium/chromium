@@ -42,6 +42,9 @@ class BASE_EXPORT TaskAnnotator {
 
   static const PendingTask* CurrentTaskForThread();
 
+  static void OnIPCReceived(const char* interface_name,
+                            uint32_t (*method_info)());
+
   TaskAnnotator();
 
   TaskAnnotator(const TaskAnnotator&) = delete;
@@ -144,19 +147,27 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
 
   ~LongTaskTracker();
 
-  void BeginTrackingTask();
-  void EndTrackingTask();
+  void SetIpcDetails(const char* interface_name, uint32_t (*method_info)());
 
  private:
+  void EmitReceivedIPCDetails(perfetto::EventContext& ctx);
+
   // For tracking task duration
   const TickClock* tick_clock_;  // Not owned.
   TimeTicks task_start_time_;
 
   // Tracing variables.
 
-  // Use this to ensure that tracing and lazy_now_.Now() are not called
+  // Use this to ensure that tracing and NowTicks() are not called
   // unnecessarily.
   bool is_tracing_;
+  raw_ptr<LongTaskTracker> old_long_task_tracker_ = nullptr;
+  const char* ipc_interface_name_ = nullptr;
+  uint32_t ipc_hash_ = 0;
+
+  // IPC method info to retrieve IPC hash and method address from trace, if
+  // known. Note that this will not compile in the Native client.
+  uint32_t (*ipc_method_info_)();
   PendingTask& pending_task_;
   TaskAnnotator* task_annotator_;
 };
