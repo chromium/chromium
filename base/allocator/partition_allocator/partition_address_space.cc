@@ -18,6 +18,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/pkey.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -28,7 +29,7 @@
 #include <windows.h>
 #endif  // BUILDFLAG(IS_WIN)
 
-#if defined(PA_ENABLE_SHADOW_METADATA)
+#if defined(PA_ENABLE_SHADOW_METADATA) || BUILDFLAG(ENABLE_PKEYS)
 #include <sys/mman.h>
 #endif
 
@@ -102,7 +103,11 @@ PA_NOINLINE void HandlePoolAllocFailure() {
 
 }  // namespace
 
+#if BUILDFLAG(ENABLE_PKEYS)
+alignas(PA_PKEY_ALIGN_SZ)
+#else
 alignas(kPartitionCachelineSize)
+#endif
     PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
 
 #if defined(PA_ENABLE_SHADOW_METADATA)
@@ -307,6 +312,14 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   // The ConfigurablePool must only be initialized once.
   PA_CHECK(!IsConfigurablePoolInitialized());
 
+#if BUILDFLAG(ENABLE_PKEYS)
+  // It's possible that the pkey pool has been initialized first, in which case
+  // the setup_ memory has been made read-only. Remove the protection
+  // temporarily.
+  if (IsPkeyPoolInitialized())
+    TagGlobalsWithPkey(kDefaultPkey);
+#endif
+
   PA_CHECK(pool_base);
   PA_CHECK(size <= kConfigurablePoolMaxSize);
   PA_CHECK(size >= kConfigurablePoolMinSize);
@@ -318,6 +331,12 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
 
   AddressPoolManager::GetInstance().Add(
       kConfigurablePoolHandle, setup_.configurable_pool_base_address_, size);
+
+#if BUILDFLAG(ENABLE_PKEYS)
+  // Put the pkey protection back in place.
+  if (IsPkeyPoolInitialized())
+    TagGlobalsWithPkey(setup_.pkey_);
+#endif
 }
 
 #if BUILDFLAG(ENABLE_PKEYS)

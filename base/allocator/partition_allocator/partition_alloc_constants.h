@@ -290,6 +290,9 @@ static constexpr pool_handle kBRPPoolHandle = 2;
 static constexpr pool_handle kConfigurablePoolHandle = 3;
 #if BUILDFLAG(ENABLE_PKEYS)
 static constexpr pool_handle kPkeyPoolHandle = 4;
+static_assert(
+    kPkeyPoolHandle == kNumPools,
+    "The pkey pool must come last since we pkey_mprotect its metadata.");
 #endif
 
 // Slots larger than this size will not receive MTE protection. Pages intended

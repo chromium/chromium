@@ -17,10 +17,11 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
+#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(ENABLE_PKEYS)
 #include <sys/mman.h>
 #endif
 

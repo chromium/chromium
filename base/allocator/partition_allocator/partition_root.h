@@ -47,7 +47,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/pkey.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
@@ -67,6 +66,7 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/partition_tag_types.h"
+#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
@@ -644,7 +644,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       return internal::kConfigurablePoolHandle;
     }
 #if BUILDFLAG(ENABLE_PKEYS)
-    if (flags.pkey != internal::base::kDefaultPkey) {
+    if (flags.pkey != internal::kDefaultPkey) {
       return internal::kPkeyPoolHandle;
     }
 #endif

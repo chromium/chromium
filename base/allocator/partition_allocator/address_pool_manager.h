@@ -93,6 +93,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
 
  private:
   friend class AddressPoolManagerForTesting;
+#if BUILDFLAG(ENABLE_PKEYS)
+  // If we use a pkey pool, we need to tag its metadata with the pkey. Allow the
+  // function to get access to the pool pointer.
+  friend void TagGlobalsWithPkey(int pkey);
+#endif
 
   constexpr AddressPoolManager() = default;
   ~AddressPoolManager() = default;
@@ -154,7 +159,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   // initialized.
   void GetPoolStats(pool_handle handle, PoolStats* stats);
 
-  Pool pools_[kNumPools];
+  // If pkey support is enabled, we need to pkey-tag the pkey pool (which needs
+  // to be last). For this, we need to add padding in front of the pools so that
+  // pkey one starts on a page boundary.
+  PA_PKEY_ALIGN struct {
+    char pad_[PA_PKEY_ARRAY_PAD_SZ(Pool, kNumPools)] = {};
+    Pool pools_[kNumPools];
+    char pad_after_[PA_PKEY_FILL_PAGE_SZ(sizeof(Pool))] = {};
+  };
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 

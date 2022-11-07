@@ -7,8 +7,8 @@
 namespace partition_alloc::internal {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-ReservationOffsetTable::_ReservationOffsetTable
-    ReservationOffsetTable::reservation_offset_tables_[];
+ReservationOffsetTable::_PaddedReservationOffsetTables
+    ReservationOffsetTable::padded_reservation_offset_tables_ PA_PKEY_ALIGN;
 #else
 ReservationOffsetTable::_ReservationOffsetTable
     ReservationOffsetTable::reservation_offset_table_;

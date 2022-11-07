@@ -19,6 +19,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
@@ -81,7 +82,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
   static_assert(kReservationOffsetTableLength < kOffsetTagNormalBuckets,
                 "Offsets should be smaller than kOffsetTagNormalBuckets.");
 
-  static PA_CONSTINIT struct _ReservationOffsetTable {
+  struct _ReservationOffsetTable {
     // The number of table elements is less than MAX_UINT16, so the element type
     // can be uint16_t.
     static_assert(
@@ -93,19 +94,30 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
       for (uint16_t& offset : offsets)
         offset = kOffsetTagNotAllocated;
     }
+  };
 #if defined(PA_HAS_64_BITS_POINTERS)
-    // One table per Pool.
-  } reservation_offset_tables_[kNumPools];
+  // If pkey support is enabled, we need to pkey-tag the tables of the pkey
+  // pool. For this, we need to pad the tables so that the pkey ones start on a
+  // page boundary.
+  struct _PaddedReservationOffsetTables {
+    char pad_[PA_PKEY_ARRAY_PAD_SZ(_ReservationOffsetTable, kNumPools)] = {};
+    struct _ReservationOffsetTable tables[kNumPools];
+    char pad_after_[PA_PKEY_FILL_PAGE_SZ(sizeof(_ReservationOffsetTable))] = {};
+  };
+  static PA_CONSTINIT _PaddedReservationOffsetTables
+      padded_reservation_offset_tables_ PA_PKEY_ALIGN;
 #else
     // A single table for the entire 32-bit address space.
-  } reservation_offset_table_;
+  static PA_CONSTINIT struct _ReservationOffsetTable reservation_offset_table_;
 #endif
 };
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(pool_handle handle) {
   PA_DCHECK(0 < handle && handle <= kNumPools);
-  return ReservationOffsetTable::reservation_offset_tables_[handle - 1].offsets;
+  return ReservationOffsetTable::padded_reservation_offset_tables_
+      .tables[handle - 1]
+      .offsets;
 }
 
 PA_ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(

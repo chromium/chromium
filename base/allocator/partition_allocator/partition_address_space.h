@@ -15,13 +15,13 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/pkey.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
+#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
@@ -332,7 +332,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
           configurable_pool_base_mask_(0)
 #if BUILDFLAG(ENABLE_PKEYS)
           ,
-          pkey_(base::kInvalidPkey)
+          pkey_(kInvalidPkey)
 #endif
     {
     }
@@ -359,22 +359,45 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
       };
 
+#if BUILDFLAG(ENABLE_PKEYS)
+      // With pkey support, we want to be able to pkey-tag all global metadata
+      // which requires page granularity.
+      char one_page_[SystemPageSize()];
+#else
       char one_cacheline_[kPartitionCachelineSize];
+#endif
     };
   };
+#if BUILDFLAG(ENABLE_PKEYS)
+  static_assert(sizeof(PoolSetup) % SystemPageSize() == 0,
+                "PoolSetup has to fill a page(s)");
+#else
   static_assert(sizeof(PoolSetup) % kPartitionCachelineSize == 0,
                 "PoolSetup has to fill a cacheline(s)");
+#endif
 
   // See the comment describing the address layout above.
   //
   // These are write-once fields, frequently accessed thereafter. Make sure they
   // don't share a cacheline with other, potentially writeable data, through
   // alignment and padding.
-  alignas(kPartitionCachelineSize) static PoolSetup setup_ PA_CONSTINIT;
+#if BUILDFLAG(ENABLE_PKEYS)
+  static_assert(PA_PKEY_ALIGN_SZ >= kPartitionCachelineSize);
+  alignas(PA_PKEY_ALIGN_SZ)
+#else
+  alignas(kPartitionCachelineSize)
+#endif
+      static PoolSetup setup_ PA_CONSTINIT;
 
 #if defined(PA_ENABLE_SHADOW_METADATA)
   static std::ptrdiff_t regular_pool_shadow_offset_;
   static std::ptrdiff_t brp_pool_shadow_offset_;
+#endif
+
+#if BUILDFLAG(ENABLE_PKEYS)
+  // If we use a pkey pool, we need to tag its metadata with the pkey. Allow the
+  // function to get access to the PoolSetup.
+  friend void TagGlobalsWithPkey(int pkey);
 #endif
 };
 
