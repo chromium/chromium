@@ -86,6 +86,10 @@ using WorkletToken = MultiToken<AnimationWorkletToken,
                                 PaintWorkletToken>;
 
 ////////////////////////////////////////////////////////////////////////////////
+// SHADOW REALM TOKENS
+using ShadowRealmToken = base::TokenType<class ShadowRealmTokenTypeMarker>;
+
+////////////////////////////////////////////////////////////////////////////////
 // OTHER TOKENS
 //
 // Keep this section last.
@@ -110,7 +114,8 @@ using ExecutionContextToken = MultiToken<LocalFrameToken,
                                          AnimationWorkletToken,
                                          AudioWorkletToken,
                                          LayoutWorkletToken,
-                                         PaintWorkletToken>;
+                                         PaintWorkletToken,
+                                         ShadowRealmToken>;
 
 // Identifies a blink::PortalContents / blink::HTMLPortalElement in the
 // renderer process, and a content::Portal in the browser process.

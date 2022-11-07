@@ -46,6 +46,7 @@
     },
     "DedicatedWorkerGlobalScope",
     "Screen",
+    "ShadowRealmGlobalScope",
     "SharedWorker",
     "SharedWorkerGlobalScope",
     "Worker",
