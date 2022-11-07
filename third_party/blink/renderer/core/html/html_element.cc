@@ -1755,6 +1755,8 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event) {
   DCHECK_NE(Event::PhaseType::kNone, event.eventPhase());
   if (event.eventPhase() == Event::PhaseType::kBubblingPhase)
     return;
+  if (!event.isTrusted())
+    return;
   // Ensure that shadow DOM event retargeting is considered when computing
   // the event target node.
   auto* target_node = event.GetEventPath()[0].Target()->ToNode();
