@@ -88,7 +88,7 @@
 namespace blink {
 
 struct SameSizeAsCSSValue final : public GarbageCollected<SameSizeAsCSSValue> {
-  char bitfields[sizeof(uint16_t) + sizeof(uint8_t)];
+  char bitfields[sizeof(uint32_t)];
 };
 ASSERT_SIZE(CSSValue, SameSizeAsCSSValue);
 
