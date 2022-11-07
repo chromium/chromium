@@ -83,6 +83,16 @@ export type AcceleratorConfig = {
   [source in AcceleratorSource]?: {[actionId: number]: AcceleratorInfo[]}
 };
 
+/** Enumeration of accelerator subcategory. */
+export type AcceleratorSubcategory =
+    AcceleratorInfoTypes.AcceleratorSubcategory;
+export const AcceleratorSubcategory =
+    AcceleratorInfoTypes.AcceleratorSubcategory;
+
+/** Enumeration of accelerator category. */
+export type AcceleratorCategory = AcceleratorInfoTypes.AcceleratorCategory;
+export const AcceleratorCategory = AcceleratorInfoTypes.AcceleratorCategory;
+
 /** Enumeration of layout styles.*/
 export type LayoutStyle = AcceleratorInfoTypes.AcceleratorLayoutStyle;
 export const LayoutStyle = AcceleratorInfoTypes.AcceleratorLayoutStyle;

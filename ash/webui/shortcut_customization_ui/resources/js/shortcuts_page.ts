@@ -11,6 +11,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorSubsectionElement} from './accelerator_subsection.js';
+import {AcceleratorCategory, AcceleratorSubcategory} from './shortcut_types';
 import {getTemplate} from './shortcuts_page.html.js';
 
 /**
@@ -43,8 +44,8 @@ export class ShortcutsPageElement extends PolymerElement {
     };
   }
 
-  initialData: {category: number};
-  private subcategories_: number[];
+  initialData: {category: AcceleratorCategory};
+  private subcategories_: AcceleratorSubcategory[];
   private lookupManager_: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 

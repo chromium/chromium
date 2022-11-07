@@ -9,7 +9,7 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_subsection.html.js';
 import {fakeSubCategories} from './fake_data.js';
-import {AcceleratorInfo, AcceleratorState, AcceleratorType} from './shortcut_types.js';
+import {AcceleratorCategory, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType} from './shortcut_types.js';
 
 export interface Accelerator {
   description: string;
@@ -65,8 +65,8 @@ export class AcceleratorSubsectionElement extends PolymerElement {
   }
 
   override title: string;
-  category: number;
-  subcategory: number;
+  category: AcceleratorCategory;
+  subcategory: AcceleratorSubcategory;
   acceleratorContainer: Accelerator[];
   private lookupManager_: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();

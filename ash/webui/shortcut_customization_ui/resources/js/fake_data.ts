@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorConfig, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, LayoutStyle, Modifier} from './shortcut_types.js';
+import {AcceleratorConfig, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfoList, LayoutStyle, Modifier} from './shortcut_types.js';
 
-export const fakeSubCategories: Map<number, string> = new Map([
+export const fakeSubCategories: Map<AcceleratorSubcategory, string> = new Map([
   [0, 'Window Management'],
   [1, 'Virtual Desks'],
   [2, 'Tabs'],

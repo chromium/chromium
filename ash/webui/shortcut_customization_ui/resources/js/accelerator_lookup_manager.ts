@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {Accelerator, AcceleratorConfig, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorConfig, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
 import {areAcceleratorsEqual} from './shortcut_utils.js';
 
 type AcceleratorLookupMap = Map<string, AcceleratorInfo[]>;
@@ -69,7 +69,9 @@ export class AcceleratorLookupManager {
     return acceleratorInfos;
   }
 
-  getAcceleratorLayout(category: number, subCategory: number): LayoutInfo[] {
+  getAcceleratorLayout(
+      category: AcceleratorCategory,
+      subCategory: AcceleratorSubcategory): LayoutInfo[] {
     const categoryMap = this.acceleratorLayoutLookup_.get(category);
     assert(categoryMap);
     const subCategoryMap = categoryMap.get(subCategory);
@@ -77,7 +79,8 @@ export class AcceleratorLookupManager {
     return subCategoryMap;
   }
 
-  getSubcategories(category: number): Map<number, LayoutInfo[]>|undefined {
+  getSubcategories(category: AcceleratorCategory):
+      Map<number, LayoutInfo[]>|undefined {
     return this.acceleratorLayoutLookup_.get(category);
   }
 
