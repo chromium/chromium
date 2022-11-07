@@ -1,4 +1,76 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "GPU FYI Win x64 Builder",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Win10 FYI x64 Exp Release (NVIDIA)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Win x64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "GPU FYI Win x64 Builder",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "Win10 FYI x64 Exp Release (NVIDIA)",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
   "$build/goma": {
     "enable_ats": false,
     "rpc_extra_params": "?prod",

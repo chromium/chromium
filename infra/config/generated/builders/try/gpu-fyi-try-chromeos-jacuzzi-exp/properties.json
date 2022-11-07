@@ -1,4 +1,51 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "gpu-fyi-chromeos-jacuzzi-exp",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_arch": "arm",
+                "target_bits": 32,
+                "target_cros_boards": [
+                  "jacuzzi"
+                ],
+                "target_platform": "chromeos"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "arm",
+                  "chromeos"
+                ],
+                "config": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "gpu-fyi-chromeos-jacuzzi-exp",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
   "$build/goma": {
     "enable_ats": true,
     "rpc_extra_params": "?prod",
