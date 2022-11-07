@@ -13,12 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "headless/public/devtools/domains/emulation.h"
-#include "headless/public/devtools/domains/inspector.h"
-#include "headless/public/devtools/domains/page.h"
-#include "headless/public/devtools/domains/runtime.h"
+#include "base/values.h"
+#include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "headless/public/headless_browser.h"
-#include "headless/public/headless_devtools_client.h"
 #include "headless/public/headless_web_contents.h"
 
 class GURL;
@@ -26,10 +23,7 @@ class GURL;
 namespace headless {
 
 // An application which implements a simple headless browser.
-class HeadlessShell : public HeadlessWebContents::Observer,
-                      public emulation::ExperimentalObserver,
-                      public inspector::ExperimentalObserver,
-                      public page::ExperimentalObserver {
+class HeadlessShell : public HeadlessWebContents::Observer {
  public:
   HeadlessShell();
 
@@ -38,24 +32,16 @@ class HeadlessShell : public HeadlessWebContents::Observer,
 
   ~HeadlessShell() override;
 
-  void OnStart(HeadlessBrowser* browser);
-
-  HeadlessDevToolsClient* devtools_client() const {
-    return devtools_client_.get();
-  }
+  void OnBrowserStart(HeadlessBrowser* browser);
 
  private:
   // HeadlessWebContents::Observer implementation:
   void DevToolsTargetReady() override;
-  void OnTargetCrashed(const inspector::TargetCrashedParams& params) override;
   void HeadlessWebContentsDestroyed() override;
 
-  // emulation::Observer implementation:
-  void OnVirtualTimeBudgetExpired(
-      const emulation::VirtualTimeBudgetExpiredParams& params) override;
-
-  // page::Observer implementation:
-  void OnLoadEventFired(const page::LoadEventFiredParams& params) override;
+  void OnTargetCrashed(const base::Value::Dict&);
+  void OnLoadEventFired(const base::Value::Dict&);
+  void OnVirtualTimeBudgetExpired(const base::Value::Dict&);
 
   void Detach();
   void ShutdownSoon();
@@ -67,50 +53,47 @@ class HeadlessShell : public HeadlessWebContents::Observer,
 
   void PollReadyState();
 
-  void OnReadyState(std::unique_ptr<runtime::EvaluateResult> result);
+  void OnEvaluateReadyStateResult(base::Value::Dict result);
 
   void OnPageReady();
 
   void FetchDom();
-
-  void OnDomFetched(std::unique_ptr<runtime::EvaluateResult> result);
+  void OnEvaluateFetchDomResult(base::Value::Dict result);
 
   void InputExpression();
-
-  void OnExpressionResult(std::unique_ptr<runtime::EvaluateResult> result);
+  void OnEvaluateExpressionResult(base::Value::Dict result);
 
   void CaptureScreenshot();
-
-  void OnScreenshotCaptured(
-      std::unique_ptr<page::CaptureScreenshotResult> result);
+  void OnCaptureScreenshotResult(base::Value::Dict result);
 
   void PrintToPDF();
-
-  void OnPDFCreated(std::unique_ptr<page::PrintToPDFResult> result);
+  void OnPrintToPDFDone(base::Value::Dict result);
 
   void WriteFile(const std::string& file_path_switch,
                  const std::string& default_file_name,
-                 const protocol::Binary& data);
-  void OnFileOpened(const protocol::Binary& data,
+                 std::string data);
+  void OnFileOpened(std::string data,
                     const base::FilePath file_name,
                     base::File::Error error_code);
   void OnFileWritten(const base::FilePath file_name,
                      const size_t length,
                      base::File::Error error_code,
-                     int write_result);
+                     int bytes_written);
   void OnFileClosed(base::File::Error error_code);
 
   bool RemoteDebuggingEnabled() const;
 
   GURL url_;
   raw_ptr<HeadlessBrowser> browser_ = nullptr;  // Not owned.
-  std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
+  simple_devtools_protocol_client::SimpleDevToolsProtocolClient
+      devtools_client_;
   raw_ptr<HeadlessWebContents> web_contents_ = nullptr;
   raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;
   bool processed_page_ready_ = false;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   std::unique_ptr<base::FileProxy> file_proxy_;
   bool shutdown_pending_ = false;
+
   base::WeakPtrFactory<HeadlessShell> weak_factory_{this};
 };
 

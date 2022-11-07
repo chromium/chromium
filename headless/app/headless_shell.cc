@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -35,7 +36,7 @@
 #include "headless/app/headless_shell.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
-#include "headless/lib/browser/headless_devtools.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
 #include "headless/public/headless_devtools_target.h"
 #include "net/base/filename_util.h"
@@ -102,6 +103,20 @@ bool ParseFontRenderHinting(
     return false;
   }
   return true;
+}
+
+base::Value::Dict GetColorDictFromHexColor(const std::string& color_hex) {
+  uint32_t color;
+  CHECK(base::HexStringToUInt(color_hex, &color))
+      << "Expected a hex value for --default-background-color=";
+
+  base::Value::Dict dict;
+  dict.Set("r", static_cast<int>((color & 0xff000000) >> 24));
+  dict.Set("g", static_cast<int>((color & 0x00ff0000) >> 16));
+  dict.Set("b", static_cast<int>((color & 0x0000ff00) >> 8));
+  dict.Set("a", static_cast<int>((color & 0x000000ff)));
+
+  return dict;
 }
 
 GURL ConvertArgumentToURL(const base::CommandLine::StringType& arg) {
@@ -202,7 +217,7 @@ HeadlessShell::HeadlessShell() = default;
 
 HeadlessShell::~HeadlessShell() = default;
 
-void HeadlessShell::OnStart(HeadlessBrowser* browser) {
+void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   browser_ = browser;
 
 #if defined(HEADLESS_USE_POLICY)
@@ -214,7 +229,6 @@ void HeadlessShell::OnStart(HeadlessBrowser* browser) {
   }
 #endif
 
-  devtools_client_ = HeadlessDevToolsClient::Create();
   file_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
@@ -271,12 +285,7 @@ void HeadlessShell::OnGotURLs(const std::vector<GURL>& urls) {
 
 void HeadlessShell::Detach() {
   if (!RemoteDebuggingEnabled()) {
-    devtools_client_->GetEmulation()->GetExperimental()->RemoveObserver(this);
-    devtools_client_->GetInspector()->GetExperimental()->RemoveObserver(this);
-    devtools_client_->GetPage()->GetExperimental()->RemoveObserver(this);
-    if (web_contents_->GetDevToolsTarget()) {
-      web_contents_->GetDevToolsTarget()->DetachClient(devtools_client_.get());
-    }
+    devtools_client_.DetachClient();
   }
   web_contents_->RemoveObserver(this);
   web_contents_ = nullptr;
@@ -302,40 +311,41 @@ void HeadlessShell::Shutdown() {
 
 void HeadlessShell::DevToolsTargetReady() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  devtools_client_.AttachToWebContents(
+      HeadlessWebContentsImpl::From(web_contents_)->web_contents());
   HeadlessDevToolsTarget* target = web_contents_->GetDevToolsTarget();
-  target->AttachClient(devtools_client_.get());
   if (!target->IsAttached()) {
     LOG(ERROR) << "Could not attach DevTools target.";
     ShutdownSoon();
     return;
   }
 
-  devtools_client_->GetInspector()->GetExperimental()->AddObserver(this);
-  devtools_client_->GetPage()->GetExperimental()->AddObserver(this);
-  devtools_client_->GetPage()->Enable();
+  devtools_client_.AddEventHandler(
+      "Inspector.targetCrashed",
+      base::BindRepeating(&HeadlessShell::OnTargetCrashed,
+                          weak_factory_.GetWeakPtr()));
 
-  devtools_client_->GetEmulation()->GetExperimental()->AddObserver(this);
+  devtools_client_.AddEventHandler(
+      "Page.loadEventFired",
+      base::BindRepeating(&HeadlessShell::OnLoadEventFired,
+                          weak_factory_.GetWeakPtr()));
+  devtools_client_.SendCommand("Page.enable");
+
+  devtools_client_.AddEventHandler(
+      "Emulation.virtualTimeBudgetExpired",
+      base::BindRepeating(&HeadlessShell::OnVirtualTimeBudgetExpired,
+                          weak_factory_.GetWeakPtr()));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDefaultBackgroundColor)) {
     std::string color_hex =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kDefaultBackgroundColor);
-    uint32_t color;
-    CHECK(base::HexStringToUInt(color_hex, &color))
-        << "Expected a hex value for --default-background-color=";
-    auto rgba = dom::RGBA::Builder()
-                    .SetR((color & 0xff000000) >> 24)
-                    .SetG((color & 0x00ff0000) >> 16)
-                    .SetB((color & 0x0000ff00) >> 8)
-                    .SetA(color & 0x000000ff)
-                    .Build();
-    devtools_client_->GetEmulation()
-        ->GetExperimental()
-        ->SetDefaultBackgroundColorOverride(
-            emulation::SetDefaultBackgroundColorOverrideParams::Builder()
-                .SetColor(std::move(rgba))
-                .Build());
+    base::Value::Dict params;
+    params.Set("color", GetColorDictFromHexColor(color_hex));
+    devtools_client_.SendCommand("Emulation.setDefaultBackgroundColorOverride",
+                                 std::move(params));
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -346,12 +356,12 @@ void HeadlessShell::DevToolsTargetReady() {
     int budget_ms;
     CHECK(base::StringToInt(budget_ms_ascii, &budget_ms))
         << "Expected an integer value for --virtual-time-budget=";
-    devtools_client_->GetEmulation()->GetExperimental()->SetVirtualTimePolicy(
-        emulation::SetVirtualTimePolicyParams::Builder()
-            .SetPolicy(
-                emulation::VirtualTimePolicy::PAUSE_IF_NETWORK_FETCHES_PENDING)
-            .SetBudget(budget_ms)
-            .Build());
+
+    base::Value::Dict params;
+    params.Set("budget", budget_ms);
+    params.Set("policy", "pauseIfNetworkFetchesPending");
+    devtools_client_.SendCommand("Emulation.setVirtualTimePolicy",
+                                 std::move(params));
   } else {
     // Check if the document had already finished loading by the time we
     // attached.
@@ -371,7 +381,6 @@ void HeadlessShell::DevToolsTargetReady() {
                        weak_factory_.GetWeakPtr()),
         base::Milliseconds(timeout_ms));
   }
-  // TODO(skyostil): Implement more features to demonstrate the devtools API.
 }
 
 void HeadlessShell::HeadlessWebContentsDestroyed() {
@@ -383,8 +392,7 @@ void HeadlessShell::HeadlessWebContentsDestroyed() {
 
 void HeadlessShell::FetchTimeout() {
   LOG(INFO) << "Timeout.";
-  devtools_client_->GetPage()->GetExperimental()->StopLoading(
-      page::StopLoadingParams::Builder().Build());
+  devtools_client_.SendCommand("Page.stopLoading");
   // After calling page.stopLoading() the page will not fire any
   // life cycle events, so we have to proceed on our own.
   browser_->BrowserMainThread()->PostTask(
@@ -392,8 +400,7 @@ void HeadlessShell::FetchTimeout() {
       base::BindOnce(&HeadlessShell::OnPageReady, weak_factory_.GetWeakPtr()));
 }
 
-void HeadlessShell::OnTargetCrashed(
-    const inspector::TargetCrashedParams& params) {
+void HeadlessShell::OnTargetCrashed(const base::Value::Dict&) {
   LOG(ERROR) << "Abnormal renderer termination.";
   // NB this never gets called if remote debugging is enabled.
   ShutdownSoon();
@@ -401,40 +408,42 @@ void HeadlessShell::OnTargetCrashed(
 
 void HeadlessShell::PollReadyState() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // We need to check the current location in addition to the ready state to
   // be sure the expected page is ready.
-  devtools_client_->GetRuntime()->Evaluate(
-      "document.readyState + ' ' + document.location.href",
-      base::BindOnce(&HeadlessShell::OnReadyState, weak_factory_.GetWeakPtr()));
+  base::Value::Dict params;
+  params.Set("expression",
+             "document.readyState + ' ' + document.location.href");
+  devtools_client_.SendCommand(
+      "Runtime.evaluate", std::move(params),
+      base::BindOnce(&HeadlessShell::OnEvaluateReadyStateResult,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void HeadlessShell::OnReadyState(
-    std::unique_ptr<runtime::EvaluateResult> result) {
-  // |result| can be nullptr if HeadlessDevToolsClientImpl::DispatchMessageReply
-  // sees an error.
-  if (result && result->GetResult()->GetValue()->is_string()) {
-    std::stringstream stream(result->GetResult()->GetValue()->GetString());
-    std::string ready_state;
-    std::string url;
-    stream >> ready_state;
-    stream >> url;
+void HeadlessShell::OnEvaluateReadyStateResult(base::Value::Dict result) {
+  const std::string* result_value =
+      result.FindStringByDottedPath("result.result.value");
+  if (!result_value)
+    return;
 
-    if (ready_state == "complete" &&
-        (url_.spec() == url || url != "about:blank")) {
-      OnPageReady();
-      return;
-    }
+  std::stringstream stream(*result_value);
+  std::string ready_state;
+  std::string url;
+  stream >> ready_state;
+  stream >> url;
+
+  if (ready_state == "complete" &&
+      (url_.spec() == url || url != "about:blank")) {
+    OnPageReady();
+    return;
   }
 }
 
-// emulation::Observer implementation:
-void HeadlessShell::OnVirtualTimeBudgetExpired(
-    const emulation::VirtualTimeBudgetExpiredParams& params) {
+void HeadlessShell::OnVirtualTimeBudgetExpired(const base::Value::Dict&) {
   OnPageReady();
 }
 
-// page::Observer implementation:
-void HeadlessShell::OnLoadEventFired(const page::LoadEventFiredParams& params) {
+void HeadlessShell::OnLoadEventFired(const base::Value::Dict&) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kVirtualTimeBudget)) {
     return;
@@ -467,26 +476,36 @@ void HeadlessShell::OnPageReady() {
 
 void HeadlessShell::FetchDom() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  devtools_client_->GetRuntime()->Evaluate(
+
+  base::Value::Dict params;
+  params.Set(
+      "expression",
       "(document.doctype ? new "
       "XMLSerializer().serializeToString(document.doctype) + '\\n' : '') + "
-      "document.documentElement.outerHTML",
-      base::BindOnce(&HeadlessShell::OnDomFetched, weak_factory_.GetWeakPtr()));
+      "document.documentElement.outerHTML");
+  devtools_client_.SendCommand(
+      "Runtime.evaluate", std::move(params),
+      base::BindOnce(&HeadlessShell::OnEvaluateFetchDomResult,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void HeadlessShell::OnDomFetched(
-    std::unique_ptr<runtime::EvaluateResult> result) {
-  if (result->HasExceptionDetails()) {
-    LOG(ERROR) << "Failed to serialize document: "
-               << result->GetExceptionDetails()->GetText();
-  } else {
-    printf("%s\n", result->GetResult()->GetValue()->GetString().c_str());
+void HeadlessShell::OnEvaluateFetchDomResult(base::Value::Dict result) {
+  if (const base::Value::Dict* result_exception_details =
+          result.FindDictByDottedPath("result.exceptionDetails")) {
+    LOG(ERROR) << "Failed to serialize document:\n"
+               << *result_exception_details->FindStringByDottedPath(
+                      "exception.description");
+  } else if (const std::string* result_value =
+                 result.FindStringByDottedPath("result.result.value")) {
+    printf("%s\n", result_value->c_str());
   }
+
   ShutdownSoon();
 }
 
 void HeadlessShell::InputExpression() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // Note that a real system should read user input asynchronously, because
   // otherwise all other browser activity is suspended (e.g., page loading).
   printf(">>> ");
@@ -510,67 +529,84 @@ void HeadlessShell::InputExpression() {
     ShutdownSoon();
     return;
   }
-  devtools_client_->GetRuntime()->Evaluate(
-      expression.str(), base::BindOnce(&HeadlessShell::OnExpressionResult,
-                                       weak_factory_.GetWeakPtr()));
+
+  base::Value::Dict params;
+  params.Set("expression", expression.str());
+  devtools_client_.SendCommand(
+      "Runtime.evaluate", std::move(params),
+      base::BindOnce(&HeadlessShell::OnEvaluateExpressionResult,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void HeadlessShell::OnExpressionResult(
-    std::unique_ptr<runtime::EvaluateResult> result) {
-  base::Value value = result->Serialize();
+void HeadlessShell::OnEvaluateExpressionResult(base::Value::Dict result) {
   std::string result_json;
-  base::JSONWriter::Write(value, &result_json);
+  base::JSONWriter::Write(result, &result_json);
   printf("%s\n", result_json.c_str());
+
   InputExpression();
 }
 
 void HeadlessShell::CaptureScreenshot() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  devtools_client_->GetPage()->GetExperimental()->CaptureScreenshot(
-      page::CaptureScreenshotParams::Builder().Build(),
-      base::BindOnce(&HeadlessShell::OnScreenshotCaptured,
+
+  devtools_client_.SendCommand(
+      "Page.captureScreenshot",
+      base::BindOnce(&HeadlessShell::OnCaptureScreenshotResult,
                      weak_factory_.GetWeakPtr()));
 }
 
-void HeadlessShell::OnScreenshotCaptured(
-    std::unique_ptr<page::CaptureScreenshotResult> result) {
-  if (!result) {
+void HeadlessShell::OnCaptureScreenshotResult(base::Value::Dict result) {
+  const std::string* result_data = result.FindStringByDottedPath("result.data");
+  if (!result_data) {
     LOG(ERROR) << "Capture screenshot failed";
     ShutdownSoon();
     return;
   }
-  WriteFile(switches::kScreenshot, kDefaultScreenshotFileName,
-            result->GetData());
+
+  std::string data;
+  if (!base::Base64Decode(*result_data, &data)) {
+    LOG(ERROR) << "Invalid screenshot data";
+    return;
+  }
+
+  WriteFile(switches::kScreenshot, kDefaultScreenshotFileName, std::move(data));
 }
 
 void HeadlessShell::PrintToPDF() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool display_header_footer =
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kPrintToPDFNoHeader);
-  devtools_client_->GetPage()->GetExperimental()->PrintToPDF(
-      page::PrintToPDFParams::Builder()
-          .SetDisplayHeaderFooter(display_header_footer)
-          .SetPrintBackground(true)
-          .SetPreferCSSPageSize(true)
-          .Build(),
-      base::BindOnce(&HeadlessShell::OnPDFCreated, weak_factory_.GetWeakPtr()));
+  base::Value::Dict params;
+  params.Set("printBackground", true);
+  params.Set("preferCSSPageSize", true);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kPrintToPDFNoHeader)) {
+    params.Set("displayHeaderFooter", false);
+  }
+  devtools_client_.SendCommand("Page.printToPDF", std::move(params),
+                               base::BindOnce(&HeadlessShell::OnPrintToPDFDone,
+                                              weak_factory_.GetWeakPtr()));
 }
 
-void HeadlessShell::OnPDFCreated(
-    std::unique_ptr<page::PrintToPDFResult> result) {
-  if (!result) {
+void HeadlessShell::OnPrintToPDFDone(base::Value::Dict result) {
+  const std::string* result_data = result.FindStringByDottedPath("result.data");
+  if (!result_data) {
     LOG(ERROR) << "Print to PDF failed";
     ShutdownSoon();
     return;
   }
-  WriteFile(switches::kPrintToPDF, kDefaultPDFFileName, result->GetData());
+
+  std::string data;
+  if (!base::Base64Decode(*result_data, &data)) {
+    LOG(ERROR) << "Invalid PDF data";
+    return;
+  }
+
+  WriteFile(switches::kPrintToPDF, kDefaultPDFFileName, std::move(data));
 }
 
 void HeadlessShell::WriteFile(const std::string& file_path_switch,
                               const std::string& default_file_name,
-                              const protocol::Binary& data) {
+                              std::string data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::FilePath file_name =
@@ -583,16 +619,18 @@ void HeadlessShell::WriteFile(const std::string& file_path_switch,
   if (!file_proxy_->CreateOrOpen(
           file_name, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE,
           base::BindOnce(&HeadlessShell::OnFileOpened,
-                         weak_factory_.GetWeakPtr(), data, file_name))) {
+                         weak_factory_.GetWeakPtr(), std::move(data),
+                         file_name))) {
     // Operation could not be started.
-    OnFileOpened(protocol::Binary(), file_name, base::File::FILE_ERROR_FAILED);
+    OnFileOpened(std::move(data), file_name, base::File::FILE_ERROR_FAILED);
   }
 }
 
-void HeadlessShell::OnFileOpened(const protocol::Binary& data,
+void HeadlessShell::OnFileOpened(std::string data,
                                  const base::FilePath file_name,
                                  base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (!file_proxy_->IsValid()) {
     LOG(ERROR) << "Writing to file " << file_name.value()
                << " was unsuccessful, could not open file: "
@@ -600,6 +638,7 @@ void HeadlessShell::OnFileOpened(const protocol::Binary& data,
     ShutdownSoon();
     return;
   }
+
   if (!file_proxy_->Write(
           0, reinterpret_cast<const char*>(data.data()), data.size(),
           base::BindOnce(&HeadlessShell::OnFileWritten,
@@ -612,9 +651,10 @@ void HeadlessShell::OnFileOpened(const protocol::Binary& data,
 void HeadlessShell::OnFileWritten(const base::FilePath file_name,
                                   const size_t length,
                                   base::File::Error error_code,
-                                  int write_result) {
+                                  int bytes_written) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (write_result < static_cast<int>(length)) {
+
+  if (bytes_written < static_cast<int>(length)) {
     // TODO(eseckler): Support recovering from partial writes.
     LOG(ERROR) << "Writing to file " << file_name.value()
                << " was unsuccessful: "
@@ -806,7 +846,7 @@ int HeadlessShellMain(int argc, const char** argv) {
 
   return HeadlessBrowserMain(
       builder.Build(),
-      base::BindOnce(&HeadlessShell::OnStart, base::Unretained(&shell)));
+      base::BindOnce(&HeadlessShell::OnBrowserStart, base::Unretained(&shell)));
 }
 
 int HeadlessShellMain(const content::ContentMainParams& params) {
