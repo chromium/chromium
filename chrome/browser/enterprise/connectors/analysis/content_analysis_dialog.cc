@@ -500,13 +500,14 @@ void ContentAnalysisDialog::UpdateDialog() {
   DCHECK(contents_view_);
   DCHECK(is_result());
 
-  auto height_before = contents_view_->GetPreferredSize().height();
+  int height_before = contents_view_->GetPreferredSize().height();
 
   UpdateViews();
 
   // Resize the dialog's height. This is needed since the text might take more
   // lines after changing.
-  auto height_after = contents_view_->GetPreferredSize().height();
+  int height_after = contents_view_->GetHeightForWidth(contents_view_->width());
+
   int height_to_add = std::max(height_after - height_before, 0);
   if (height_to_add > 0 && GetWidget())
     Resize(height_to_add);
