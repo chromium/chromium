@@ -1316,7 +1316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordsInOtherApps.AutoFillStatusChange"
-    enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
+    enum="PasswordAutoFillEnrollmentStatus" expires_after="2023-03-11">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -1327,7 +1327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordsInOtherApps.Dismiss"
-    enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
+    enum="PasswordAutoFillEnrollmentStatus" expires_after="2023-03-11">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
