@@ -57,14 +57,31 @@ TEST(UserDemographicsTest, UserDemographicsResult_ForStatus) {
 class UserDemographicsPrefsTest : public testing::Test {
  protected:
   UserDemographicsPrefsTest() {
+    RegisterDemographicsLocalStatePrefs(pref_service_.registry());
     RegisterDemographicsProfilePrefs(pref_service_.registry());
   }
 
   void SetDemographics(int birth_year, UserDemographicsProto::Gender gender) {
+    SetDemographicsImpl(kSyncDemographicsPrefName, birth_year, gender);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetOsDemographics(int birth_year, UserDemographicsProto::Gender gender) {
+    SetDemographicsImpl(kSyncOsDemographicsPrefName, birth_year, gender);
+  }
+#endif
+
+  PrefService* GetLocalState() { return &pref_service_; }
+  PrefService* GetProfilePrefs() { return &pref_service_; }
+
+ private:
+  void SetDemographicsImpl(const std::string& pref_name,
+                           int birth_year,
+                           UserDemographicsProto::Gender gender) {
     base::DictionaryValue dict;
     dict.SetIntPath(kSyncDemographicsBirthYearPath, birth_year);
     dict.SetIntPath(kSyncDemographicsGenderPath, static_cast<int>(gender));
-    pref_service_.Set(kSyncDemographicsPrefName, dict);
+    GetProfilePrefs()->Set(pref_name, dict);
   }
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
@@ -81,7 +98,8 @@ TEST_F(UserDemographicsPrefsTest, ReadDemographicsWithRandomOffset) {
   int provided_birth_year;
   {
     UserDemographicsResult demographics_result =
-        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), &pref_service_);
+        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), GetLocalState(),
+                                                 GetProfilePrefs());
     ASSERT_TRUE(demographics_result.IsSuccess());
     EXPECT_EQ(user_demographics_gender, demographics_result.value().gender);
     // Verify that the provided birth year is within the range.
@@ -95,19 +113,57 @@ TEST_F(UserDemographicsPrefsTest, ReadDemographicsWithRandomOffset) {
   // same when doing more that one read of the birth year.
   {
     ASSERT_TRUE(
-        pref_service_.HasPrefPath(kSyncDemographicsBirthYearOffsetPrefName));
+        GetLocalState()->HasPrefPath(kUserDemographicsBirthYearOffsetPrefName));
     UserDemographicsResult demographics_result =
-        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), &pref_service_);
+        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), GetLocalState(),
+                                                 GetProfilePrefs());
     ASSERT_TRUE(demographics_result.IsSuccess());
     EXPECT_EQ(provided_birth_year, demographics_result.value().birth_year);
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(UserDemographicsPrefsTest, ReadOsDemographicsWithRandomOffset) {
+  int user_demographics_birth_year = 1983;
+  UserDemographicsProto_Gender user_demographics_gender =
+      UserDemographicsProto::GENDER_MALE;
+
+  // Set user demographic prefs.
+  SetOsDemographics(user_demographics_birth_year, user_demographics_gender);
+
+  int provided_birth_year;
+  {
+    UserDemographicsResult demographics_result =
+        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), GetLocalState(),
+                                                 GetProfilePrefs());
+    ASSERT_TRUE(demographics_result.IsSuccess());
+    EXPECT_EQ(user_demographics_gender, demographics_result.value().gender);
+    // Verify that the provided birth year is within the range.
+    provided_birth_year = demographics_result.value().birth_year;
+    int delta = provided_birth_year - user_demographics_birth_year;
+    EXPECT_LE(delta, kUserDemographicsBirthYearNoiseOffsetRange);
+    EXPECT_GE(delta, -kUserDemographicsBirthYearNoiseOffsetRange);
+  }
+
+  // Verify that the offset is cached and that the randomized birth year is the
+  // same when doing more that one read of the birth year.
+  {
+    ASSERT_TRUE(
+        GetLocalState()->HasPrefPath(kUserDemographicsBirthYearOffsetPrefName));
+    UserDemographicsResult demographics_result =
+        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), GetLocalState(),
+                                                 GetProfilePrefs());
+    ASSERT_TRUE(demographics_result.IsSuccess());
+    EXPECT_EQ(provided_birth_year, demographics_result.value().birth_year);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(UserDemographicsPrefsTest, ReadAndClearUserDemographicPreferences) {
   // Verify demographic prefs are not available when there is nothing set.
-  ASSERT_FALSE(
-      GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), &pref_service_)
-          .IsSuccess());
+  ASSERT_FALSE(GetUserNoisedBirthYearAndGenderFromPrefs(
+                   GetNowTime(), GetLocalState(), GetProfilePrefs())
+                   .IsSuccess());
 
   // Set demographic prefs directly from the pref service interface because
   // demographic prefs will only be set on the server-side. The SyncPrefs
@@ -115,29 +171,95 @@ TEST_F(UserDemographicsPrefsTest, ReadAndClearUserDemographicPreferences) {
   SetDemographics(1983, UserDemographicsProto::GENDER_FEMALE);
 
   // Set birth year noise offset to not have it randomized.
-  pref_service_.SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
+  GetProfilePrefs()->SetInteger(kUserDemographicsBirthYearOffsetPrefName, 2);
 
   // Verify that demographics are provided.
   {
     UserDemographicsResult demographics_result =
-        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), &pref_service_);
+        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), GetLocalState(),
+                                                 GetProfilePrefs());
     ASSERT_TRUE(demographics_result.IsSuccess());
   }
 
-  ClearDemographicsPrefs(&pref_service_);
+  ClearDemographicsPrefs(GetProfilePrefs());
 
   // Verify that demographics are not provided and kSyncDemographics is cleared.
-  // Note that we retain kSyncDemographicsBirthYearOffset. If the user resumes
+  // Note that we retain k*DemographicsBirthYearOffset. If the user resumes
   // syncing, causing these prefs to be recreated, we don't want them to start
   // reporting a different randomized birth year as this could narrow down or
   // even reveal their true birth year.
-  EXPECT_FALSE(
-      GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), &pref_service_)
-          .IsSuccess());
-  EXPECT_FALSE(pref_service_.HasPrefPath(kSyncDemographicsPrefName));
+  EXPECT_FALSE(GetUserNoisedBirthYearAndGenderFromPrefs(
+                   GetNowTime(), GetLocalState(), GetProfilePrefs())
+                   .IsSuccess());
+  EXPECT_FALSE(GetProfilePrefs()->HasPrefPath(kSyncDemographicsPrefName));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_FALSE(GetProfilePrefs()->HasPrefPath(kSyncOsDemographicsPrefName));
+#endif
   EXPECT_TRUE(
-      pref_service_.HasPrefPath(kSyncDemographicsBirthYearOffsetPrefName));
+      GetLocalState()->HasPrefPath(kUserDemographicsBirthYearOffsetPrefName));
+  // Deprecated offset is not created if it does not already exist.
+  EXPECT_FALSE(GetProfilePrefs()->HasPrefPath(
+      kDeprecatedDemographicsBirthYearOffsetPrefName));
 }
+
+TEST_F(UserDemographicsPrefsTest, ReadAndClearDeprecatedOffsetPref) {
+  // Verify demographic prefs are not available when there is nothing set.
+  ASSERT_FALSE(GetUserNoisedBirthYearAndGenderFromPrefs(
+                   GetNowTime(), GetLocalState(), GetProfilePrefs())
+                   .IsSuccess());
+
+  // Set demographic prefs directly from the pref service interface because
+  // demographic prefs will only be set on the server-side. The SyncPrefs
+  // interface cannot set demographic prefs.
+  SetDemographics(1983, UserDemographicsProto::GENDER_FEMALE);
+
+  // Set deprecated birth year noise offset in the UserPrefs
+  GetProfilePrefs()->SetInteger(kDeprecatedDemographicsBirthYearOffsetPrefName,
+                                2);
+
+  // Verify that demographics are provided.
+  {
+    UserDemographicsResult demographics_result =
+        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), GetLocalState(),
+                                                 GetProfilePrefs());
+    ASSERT_TRUE(demographics_result.IsSuccess());
+  }
+
+  // Offset if migrated to new pref.
+  EXPECT_EQ(
+      2, GetLocalState()->GetInteger(kUserDemographicsBirthYearOffsetPrefName));
+  // TODO(crbug/1367338): clear/remove deprecated pref after 2023/09
+  EXPECT_TRUE(GetProfilePrefs()->HasPrefPath(
+      kDeprecatedDemographicsBirthYearOffsetPrefName));
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(UserDemographicsPrefsTest, ChromeOsAsh) {
+  // Verify demographic prefs are not available when there is nothing set.
+  ASSERT_FALSE(GetUserNoisedBirthYearAndGenderFromPrefs(
+                   GetNowTime(), GetLocalState(), GetProfilePrefs())
+                   .IsSuccess());
+
+  // Set OS demographic prefs directly within the pref service interface.
+  SetOsDemographics(1983, UserDemographicsProto::GENDER_FEMALE);
+
+  // Set  birth year noise offset in the UserPrefs
+  GetLocalState()->SetInteger(kUserDemographicsBirthYearOffsetPrefName, 2);
+
+  // Verify that demographics are provided.
+  {
+    UserDemographicsResult demographics_result =
+        GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), GetLocalState(),
+                                                 GetProfilePrefs());
+    ASSERT_TRUE(demographics_result.IsSuccess());
+  }
+
+  EXPECT_FALSE(GetProfilePrefs()->HasPrefPath(kSyncDemographicsPrefName));
+  EXPECT_TRUE(GetProfilePrefs()->HasPrefPath(kSyncOsDemographicsPrefName));
+  EXPECT_TRUE(
+      GetLocalState()->HasPrefPath(kUserDemographicsBirthYearOffsetPrefName));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 struct DemographicsTestParam {
   // Birth year of the user.
@@ -166,12 +288,13 @@ TEST_P(UserDemographicsPrefsTestWithParam, ReadDemographics_OffsetIsNotRandom) {
   SetDemographics(param.birth_year, param.gender);
 
   // Set birth year noise offset to not have it randomized.
-  pref_service_.SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
-                           param.birth_year_offset);
+  GetLocalState()->SetInteger(kUserDemographicsBirthYearOffsetPrefName,
+                              param.birth_year_offset);
 
   // Verify provided demographics for the different parameterized test cases.
   UserDemographicsResult demographics_result =
-      GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), &pref_service_);
+      GetUserNoisedBirthYearAndGenderFromPrefs(GetNowTime(), GetLocalState(),
+                                               GetProfilePrefs());
   if (param.status == UserDemographicsStatus::kSuccess) {
     ASSERT_TRUE(demographics_result.IsSuccess());
     EXPECT_EQ(param.birth_year + param.birth_year_offset,

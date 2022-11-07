@@ -13,6 +13,7 @@
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#import "components/metrics/demographics/user_demographics.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -110,6 +111,7 @@ PrefService* ApplicationContext::GetLocalState() {
     update_client::RegisterPrefs(pref_registry.get());
     component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
         pref_registry.get());
+    metrics::RegisterDemographicsLocalStatePrefs(pref_registry.get());
 
     base::FilePath local_state_path;
     base::PathService::Get(base::DIR_APP_DATA, &local_state_path);

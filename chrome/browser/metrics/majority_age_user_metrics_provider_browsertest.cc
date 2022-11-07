@@ -58,6 +58,8 @@ class MajorityAgeUserMetricsProviderTest
 
   int GetAge() { return GetParam(); }
 
+  PrefService* local_state() { return g_browser_process->local_state(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -96,8 +98,7 @@ IN_PROC_BROWSER_TEST_P(MajorityAgeUserMetricsProviderTest,
 
   const int noised_age =
       exploded_now_time.year -
-      metrics::test::GetNoisedBirthYear(*browser()->profile()->GetPrefs(),
-                                        test_birth_year);
+      metrics::test::GetNoisedBirthYear(local_state(), test_birth_year);
   const bool is_eligible =
       noised_age > metrics::kUserDemographicsMinAgeInYears &&
       noised_age <= metrics::kUserDemographicsMaxAgeInYears;

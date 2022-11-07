@@ -77,6 +77,8 @@ class MetricsServiceUserDemographicsBrowserTest
     SyncTest::SetUp();
   }
 
+  PrefService* local_state() { return g_browser_process->local_state(); }
+
   // Forces a log record to be generated. Returns a copy of the record on
   // success; otherwise, returns nullptr.
   std::unique_ptr<ChromeUserMetricsExtension> GenerateLogRecord() {
@@ -136,9 +138,8 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
 
   // Check log content and the histogram.
   if (param.expect_reported_demographics) {
-    EXPECT_EQ(
-        test::GetNoisedBirthYear(*test_profile->GetPrefs(), test_birth_year),
-        uma_proto->user_demographics().birth_year());
+    EXPECT_EQ(test::GetNoisedBirthYear(local_state(), test_birth_year),
+              uma_proto->user_demographics().birth_year());
     EXPECT_EQ(test_gender, uma_proto->user_demographics().gender());
     histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
                                  UserDemographicsStatus::kSuccess, 1);

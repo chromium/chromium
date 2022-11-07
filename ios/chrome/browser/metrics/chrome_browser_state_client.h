@@ -22,7 +22,8 @@ class ChromeBrowserStateClient
   // DemographicMetricsProvider::ProfileClient:
   int GetNumberOfProfilesOnDisk() override;
   syncer::SyncService* GetSyncService() override;
-  PrefService* GetPrefService() override;
+  PrefService* GetLocalState() override;
+  PrefService* GetProfilePrefs() override;
   base::Time GetNetworkTime() const override;
 };
 

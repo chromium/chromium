@@ -407,7 +407,11 @@ class ProfileClientImpl
     return g_browser_process->profile_manager()->GetNumberOfProfiles();
   }
 
-  PrefService* GetPrefService() override {
+  PrefService* GetLocalState() override {
+    return g_browser_process->local_state();
+  }
+
+  PrefService* GetProfilePrefs() override {
     Profile* profile = cached_metrics_profile_.GetMetricsProfile();
     if (!profile)
       return nullptr;

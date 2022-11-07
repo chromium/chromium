@@ -445,6 +445,8 @@ class UkmBrowserTestWithDemographics
   UkmBrowserTestWithDemographics& operator=(
       const UkmBrowserTestWithDemographics&) = delete;
 
+  PrefService* local_state() { return g_browser_process->local_state(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -729,9 +731,8 @@ IN_PROC_BROWSER_TEST_P(UkmBrowserTestWithDemographics,
   // Check the log's content and the histogram.
   std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
   if (param.expect_reported_demographics) {
-    EXPECT_EQ(
-        test::GetNoisedBirthYear(*test_profile->GetPrefs(), test_birth_year),
-        report->user_demographics().birth_year());
+    EXPECT_EQ(test::GetNoisedBirthYear(local_state(), test_birth_year),
+              report->user_demographics().birth_year());
     EXPECT_EQ(test_gender, report->user_demographics().gender());
     histogram.ExpectUniqueSample("UKM.UserDemographics.Status",
                                  UserDemographicsStatus::kSuccess, 1);

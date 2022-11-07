@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/rand_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -16,19 +17,38 @@
 namespace metrics {
 
 // Root dictionary pref to store the user's birth year and gender that are
-// provided by the sync server. This is a read-only syncable priority pref, sent
-// from the sync server to the client.
+// provided by the sync server. This is a read-only syncable priority pref on
+// all platforms except ChromeOS Ash, where it is a syncable OS-level priority
+// pref.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kSyncDemographicsPrefName[] = "sync.demographics";
+constexpr auto kSyncDemographicsPrefFlags =
+    user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF;
+#else
+const char kSyncOsDemographicsPrefName[] = "sync.os_demographics";
+constexpr auto kSyncOsDemographicsPrefFlags =
+    user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF;
+// TODO(crbug/1367338): Make this non-syncable (on Ash only) after full rollout
+// of the syncable os priority pref; then delete it locally from Ash devices.
+const char kSyncDemographicsPrefName[] = "sync.demographics";
+constexpr auto kSyncDemographicsPrefFlags =
+    user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF;
+#endif
 
 // Stores a "secret" offset that is used to randomize the birth year for metrics
 // reporting. This value should not be logged to UMA directly; instead, it
 // should be summed with the kSyncDemographicsBirthYear. This value is generated
 // locally on the client the first time a user begins to merge birth year data
-// into their UMA reports. The value is synced to the user's other devices so
-// that the user consistently uses the same offset across login/logout events
-// and after clearing their other browser data.
-const char kSyncDemographicsBirthYearOffsetPrefName[] =
+// into their UMA reports.
+const char kUserDemographicsBirthYearOffsetPrefName[] =
+    "demographics_birth_year_offset";
+constexpr auto kUserDemographicsBirthYearOffsetPrefFlags =
+    PrefRegistry::NO_REGISTRATION_FLAGS;
+// TODO(crbug/1367338): Delete after 2023/09
+const char kDeprecatedDemographicsBirthYearOffsetPrefName[] =
     "sync.demographics_birth_year_offset";
+constexpr auto kDeprecatedDemographicsBirthYearOffsetPrefFlags =
+    PrefRegistry::NO_REGISTRATION_FLAGS;
 
 // This pref value is subordinate to the kSyncDemographics dictionary pref and
 // is synced to the client. It stores the self-reported birth year of the
@@ -46,17 +66,46 @@ const char kSyncDemographicsGenderPath[] = "gender";
 
 namespace {
 
-// Gets an offset to add noise to the birth year. If not present in prefs, the
-// offset will be randomly generated within the offset range and cached in
-// syncable prefs.
-int GetBirthYearOffset(PrefService* pref_service) {
+const base::Value::Dict& GetDemographicsDict(PrefService* profile_prefs) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug/1367338): On Ash only, clear sync demographics pref once
+  // os-level syncable pref is fully rolled out and Ash drops support for
+  // non-os-level syncable prefs.
+  if (profile_prefs->HasPrefPath(kSyncOsDemographicsPrefName)) {
+    return profile_prefs->GetDict(kSyncOsDemographicsPrefName);
+  }
+#endif
+  return profile_prefs->GetDict(kSyncDemographicsPrefName);
+}
+
+void MigrateBirthYearOffset(PrefService* to_local_state,
+                            PrefService* from_profile_prefs) {
+  const int profile_offset = from_profile_prefs->GetInteger(
+      kDeprecatedDemographicsBirthYearOffsetPrefName);
+  if (profile_offset == kUserDemographicsBirthYearNoiseOffsetDefaultValue)
+    return;
+
+  // TODO(crbug/1367338): clear/remove deprecated pref after 2023/09
+
+  const int local_offset =
+      to_local_state->GetInteger(kUserDemographicsBirthYearOffsetPrefName);
+  if (local_offset == kUserDemographicsBirthYearNoiseOffsetDefaultValue) {
+    to_local_state->SetInteger(kUserDemographicsBirthYearOffsetPrefName,
+                               profile_offset);
+  }
+}
+
+// Returns the noise offset for the birth year. If not found in |local_state|,
+// the offset will be randomly generated within the offset range and cached in
+// |local_state|.
+int GetBirthYearOffset(PrefService* local_state) {
   int offset =
-      pref_service->GetInteger(kSyncDemographicsBirthYearOffsetPrefName);
+      local_state->GetInteger(kUserDemographicsBirthYearOffsetPrefName);
   if (offset == kUserDemographicsBirthYearNoiseOffsetDefaultValue) {
-    // Generate a random offset when not cached in prefs.
+    // Generate a new random offset when not already cached.
     offset = base::RandInt(-kUserDemographicsBirthYearNoiseOffsetRange,
                            kUserDemographicsBirthYearNoiseOffsetRange);
-    pref_service->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, offset);
+    local_state->SetInteger(kUserDemographicsBirthYearOffsetPrefName, offset);
   }
   return offset;
 }
@@ -166,29 +215,44 @@ UserDemographicsResult::UserDemographicsResult(UserDemographics value,
                                                UserDemographicsStatus status)
     : value_(std::move(value)), status_(status) {}
 
-void RegisterDemographicsProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(
-      kSyncDemographicsPrefName,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+void RegisterDemographicsLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
-      kSyncDemographicsBirthYearOffsetPrefName,
+      kUserDemographicsBirthYearOffsetPrefName,
       kUserDemographicsBirthYearNoiseOffsetDefaultValue,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      kUserDemographicsBirthYearOffsetPrefFlags);
 }
 
-void ClearDemographicsPrefs(PrefService* pref_service) {
-  // Clear user's birth year and gender.
-  // Note that we retain kSyncDemographicsBirthYearOffset. If the user resumes
-  // syncing, causing these prefs to be recreated, we don't want them to start
-  // reporting a different randomized birth year as this could narrow down or
-  // even reveal their true birth year.
-  pref_service->ClearPref(kSyncDemographicsPrefName);
+void RegisterDemographicsProfilePrefs(PrefRegistrySimple* registry) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDictionaryPref(kSyncOsDemographicsPrefName,
+                                   kSyncOsDemographicsPrefFlags);
+#endif
+  registry->RegisterDictionaryPref(kSyncDemographicsPrefName,
+                                   kSyncDemographicsPrefFlags);
+  registry->RegisterIntegerPref(
+      kDeprecatedDemographicsBirthYearOffsetPrefName,
+      kUserDemographicsBirthYearNoiseOffsetDefaultValue,
+      kDeprecatedDemographicsBirthYearOffsetPrefFlags);
+}
+
+void ClearDemographicsPrefs(PrefService* profile_prefs) {
+  // Clear the dict holding the user's birth year and gender.
+  //
+  // Note: We never clear kUserDemographicsBirthYearOffset from local state.
+  // The device should continue to use the *same* noise value as long as the
+  // device's UMA client id remains the same. If the noise value were allowed
+  // to change for a given user + client id, then the min/max noisy birth year
+  // values could both be reported, revealing the true value in the middle.
+  profile_prefs->ClearPref(kSyncDemographicsPrefName);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kSyncOsDemographicsPrefName);
+#endif
 }
 
 UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
     base::Time now,
-    PrefService* pref_service) {
+    PrefService* local_state,
+    PrefService* profile_prefs) {
   // Verify that the now time is available. There are situations where the now
   // time cannot be provided.
   if (now.is_null()) {
@@ -196,14 +260,13 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
         UserDemographicsStatus::kCannotGetTime);
   }
 
-  // Get the synced user’s noised birth year and gender from synced prefs. Only
-  // one error status code should be used to represent the case where
-  // demographics are ineligible, see doc of UserDemographicsStatus in
+  // Get the synced user’s noised birth year and gender from synced profile
+  // prefs. Only one error status code should be used to represent the case
+  // where demographics are ineligible, see doc of UserDemographicsStatus in
   // user_demographics.h for more details.
 
   // Get the pref that contains the user's birth year and gender.
-  const base::Value::Dict& demographics =
-      pref_service->GetDict(kSyncDemographicsPrefName);
+  const base::Value::Dict& demographics = GetDemographicsDict(profile_prefs);
 
   // Get the user's birth year.
   absl::optional<int> birth_year = GetUserBirthYear(demographics);
@@ -220,8 +283,11 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
         UserDemographicsStatus::kIneligibleDemographicsData);
   }
 
-  // Get the offset and do one last check that the birth year is eligible.
-  int offset = GetBirthYearOffset(pref_service);
+  // Get the offset from local_state/profile_prefs and do one last check that
+  // the birth year is eligible.
+  // TODO(crbug/1367338): remove profile_prefs after 2023/09
+  MigrateBirthYearOffset(local_state, profile_prefs);
+  int offset = GetBirthYearOffset(local_state);
   if (!HasEligibleBirthYear(now, *birth_year, offset)) {
     return UserDemographicsResult::ForStatus(
         UserDemographicsStatus::kIneligibleDemographicsData);

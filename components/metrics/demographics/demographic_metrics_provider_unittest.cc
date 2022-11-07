@@ -48,6 +48,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
   TestProfileClient(int number_of_profiles,
                     TestSyncServiceState sync_service_state)
       : number_of_profiles_(number_of_profiles) {
+    RegisterDemographicsLocalStatePrefs(pref_service_.registry());
     RegisterDemographicsProfilePrefs(pref_service_.registry());
 
     switch (sync_service_state) {
@@ -100,7 +101,9 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
   syncer::SyncService* GetSyncService() override { return sync_service_.get(); }
 
-  PrefService* GetPrefService() override { return &pref_service_; }
+  PrefService* GetLocalState() override { return &pref_service_; }
+
+  PrefService* GetProfilePrefs() override { return &pref_service_; }
 
   base::Time GetNetworkTime() const override {
     base::Time time;
@@ -134,8 +137,8 @@ TEST(DemographicMetricsProviderTest,
 
   // Set birth year noise offset to not have it randomized.
   const int kBirthYearOffset = 3;
-  client->GetPrefService()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
-                                       kBirthYearOffset);
+  client->GetLocalState()->SetInteger(kUserDemographicsBirthYearOffsetPrefName,
+                                      kBirthYearOffset);
 
   // Run demographics provider.
   DemographicMetricsProvider provider(
@@ -338,8 +341,8 @@ TEST(DemographicMetricsProviderTest,
 
   // Set birth year noise offset to not have it randomized.
   const int kBirthYearOffset = 3;
-  client->GetPrefService()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
-                                       kBirthYearOffset);
+  client->GetLocalState()->SetInteger(kUserDemographicsBirthYearOffsetPrefName,
+                                      kBirthYearOffset);
 
   // Run demographics provider.
   DemographicMetricsProvider provider(

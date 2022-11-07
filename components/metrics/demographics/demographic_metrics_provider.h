@@ -53,8 +53,11 @@ class DemographicMetricsProvider : public MetricsProvider,
     // is being synced.
     virtual syncer::SyncService* GetSyncService() = 0;
 
-    // Gets a pointer to the PrefService of the profile.
-    virtual PrefService* GetPrefService() = 0;
+    // Gets a pointer to the PrefService for the Local State of the device.
+    virtual PrefService* GetLocalState() = 0;
+
+    // Gets a pointer to the PrefService of the user profile.
+    virtual PrefService* GetProfilePrefs() = 0;
 
     // Gets the network time that represents now.
     // TODO(crbug/1145655): Remove this function and replace with

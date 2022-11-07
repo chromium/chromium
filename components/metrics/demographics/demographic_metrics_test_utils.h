@@ -54,10 +54,10 @@ void UpdateNetworkTime(const base::Time& now,
 int GetMaximumEligibleBirthYear(const base::Time& now);
 
 // Gets the noised birth year of the user, where the |raw_birth_year|
-// is the true birth year, pre-noise, and |pref_service| is the service with the
+// is the true birth year, pre-noise, and |local_state| is the service with the
 // user's noise pref. This function should be run only after a
 // DemographicMetricsProvider has provided user demographics to a report.
-int GetNoisedBirthYear(const PrefService& pref_service, int raw_birth_year);
+int GetNoisedBirthYear(const PrefService* local_state, int raw_birth_year);
 
 // If data are available, creates an UMA log and stores it in the
 // MetricsService's MetricsLogStore.

@@ -43,7 +43,11 @@ syncer::SyncService* ChromeBrowserStateClient::GetSyncService() {
           ->GetOriginalChromeBrowserState());
 }
 
-PrefService* ChromeBrowserStateClient::GetPrefService() {
+PrefService* ChromeBrowserStateClient::GetLocalState() {
+  return GetApplicationContext()->GetLocalState();
+}
+
+PrefService* ChromeBrowserStateClient::GetProfilePrefs() {
   // Get PrefService from BrowserState that was the last to be used. Will create
   // a new BrowserState if no BrowserState exists.
   return GetApplicationContext()

@@ -34,11 +34,8 @@ bool g_metrics_enabled = false;
 
 chrome_test_util::HistogramTester* g_histogram_tester = nullptr;
 
-PrefService* GetProfilePrefs() {
-  return GetApplicationContext()
-      ->GetChromeBrowserStateManager()
-      ->GetLastUsedBrowserState()
-      ->GetPrefs();
+PrefService* GetLocalState() {
+  return GetApplicationContext()->GetLocalState();
 }
 
 ukm::UkmService* GetUkmService() {
@@ -124,7 +121,7 @@ metrics::MetricsService* GetMetricsService() {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
   int noisedBirthYear =
-      metrics::test::GetNoisedBirthYear(*GetProfilePrefs(), year);
+      metrics::test::GetNoisedBirthYear(GetLocalState(), year);
 
   return report && gender == report->user_demographics().gender() &&
          noisedBirthYear == report->user_demographics().birth_year();
@@ -152,7 +149,7 @@ metrics::MetricsService* GetMetricsService() {
   std::unique_ptr<metrics::ChromeUserMetricsExtension> log =
       metrics::test::GetLastUmaLog(GetMetricsService());
   int noisedBirthYear =
-      metrics::test::GetNoisedBirthYear(*GetProfilePrefs(), year);
+      metrics::test::GetNoisedBirthYear(GetLocalState(), year);
 
   return noisedBirthYear == log->user_demographics().birth_year() &&
          gender == log->user_demographics().gender();
