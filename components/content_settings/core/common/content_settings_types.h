@@ -292,6 +292,11 @@ enum class ContentSettingsType : int32_t {
   // store origin blocklist from review notification permissions feature.
   NOTIFICATION_PERMISSION_REVIEW,
 
+  // Website setting to store permissions granted to access particular devices
+  // in private network.
+  PRIVATE_NETWORK_GUARD,
+  PRIVATE_NETWORK_CHOOSER_DATA,
+
   NUM_TYPES,
 };
 

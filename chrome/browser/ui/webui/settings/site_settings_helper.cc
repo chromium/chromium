@@ -59,6 +59,7 @@
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/origin.h"
 
@@ -119,6 +120,9 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
      "file-system-access-handles-data"},
     {ContentSettingsType::FEDERATED_IDENTITY_API, "federated-identity-api"},
+    {ContentSettingsType::PRIVATE_NETWORK_GUARD, "private-network-devices"},
+    {ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA,
+     "private-network-devices-data"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -437,6 +441,11 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
     if (base::FeatureList::IsEnabled(
             subresource_filter::kSafeBrowsingSubresourceFilter)) {
       base_types->push_back(ContentSettingsType::ADS);
+    }
+
+    if (base::FeatureList::IsEnabled(
+            blink::features::kPrivateNetworkAccessPermissionPrompt)) {
+      base_types->push_back(ContentSettingsType::PRIVATE_NETWORK_GUARD);
     }
 
     initialized = true;

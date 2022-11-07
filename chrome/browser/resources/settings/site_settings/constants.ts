@@ -33,6 +33,7 @@ export enum ContentSettingsTypes {
   NOTIFICATIONS = 'notifications',
   PAYMENT_HANDLER = 'payment-handler',
   POPUPS = 'popups',
+  PRIVATE_NETWORK_DEVICES = 'private-network-devices',
   PROTECTED_CONTENT = 'protected-content',
   PROTOCOL_HANDLERS = 'register-protocol-handler',
   SENSORS = 'sensors',
@@ -73,6 +74,7 @@ export enum ChooserType {
   SERIAL_PORTS = 'serial-ports-data',
   HID_DEVICES = 'hid-devices-data',
   BLUETOOTH_DEVICES = 'bluetooth-devices-data',
+  PRIVATE_NETWORK_DEVICES = 'private-network-devices-data',
 }
 
 /**

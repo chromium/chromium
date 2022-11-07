@@ -801,6 +801,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::NOTIFICATION_INTERACTIONS, delete_begin_,
         delete_end_, website_settings_filter);
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::PRIVATE_NETWORK_GUARD, delete_begin_, delete_end_,
+        website_settings_filter);
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA, delete_begin_,
+        delete_end_, website_settings_filter);
 
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
         ->RemoveEmbargoAndResetCounts(filter);
