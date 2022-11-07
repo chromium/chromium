@@ -134,7 +134,7 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-          GetNotificationTitle(app_name), GetNotificationMessage(),
+          GetNotificationTitle(), GetNotificationMessage(app_name),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
@@ -144,23 +144,23 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
   return notification;
 }
 
-std::u16string MicrophoneMuteNotificationController::GetNotificationMessage()
-    const {
-  return mic_muted_by_mute_switch_
-             ? l10n_util::GetStringUTF16(
-                   IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE)
-             : l10n_util::GetStringUTF16(
-                   IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE);
+std::u16string MicrophoneMuteNotificationController::GetNotificationMessage(
+    const absl::optional<std::u16string>& app_name) const {
+  if (mic_muted_by_mute_switch_) {
+    return l10n_util::GetStringUTF16(
+        IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE);
+  }
+  if (app_name.value_or(u"").empty()) {
+    return l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE);
+  }
+  return l10n_util::GetStringFUTF16(
+      IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_APP_NAME,
+      app_name.value());
 }
 
-std::u16string MicrophoneMuteNotificationController::GetNotificationTitle(
-    const absl::optional<std::u16string>& app_name) const {
-  return !app_name.value_or(u"").empty()
-             ? l10n_util::GetStringFUTF16(
-                   IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE_WITH_APP_NAME,
-                   app_name.value())
-             : l10n_util::GetStringUTF16(
-                   IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE);
+std::u16string MicrophoneMuteNotificationController::GetNotificationTitle()
+    const {
+  return l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE);
 }
 
 void MicrophoneMuteNotificationController::RemoveMicrophoneMuteNotification() {
