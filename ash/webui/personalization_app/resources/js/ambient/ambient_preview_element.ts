@@ -214,8 +214,16 @@ export class AmbientPreview extends WithPersonalizationStore {
   }
 
   private getPreviewContainerClass_(): string {
-    return this.ambientModeEnabled_ || this.loading_ ? 'zero-state-disabled' :
-                                                       '';
+    const classes = [];
+    if (this.ambientModeEnabled_ || this.loading_) {
+      classes.push('zero-state-disabled');
+    }
+    /* TODO(b/253470553): Remove this condition after Ambient subpage UI change
+     * is released. */
+    if (!loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled')) {
+      classes.push('pre-ui-change');
+    }
+    return classes.join(' ');
   }
 
   private getCollageContainerClass_(): string {

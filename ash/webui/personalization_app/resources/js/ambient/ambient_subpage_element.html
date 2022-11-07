@@ -3,20 +3,19 @@
     flex-grow: 1;
   }
   #container {
+    display: grid;
+    grid-template-areas:
+      '. . preview . .'
+      '. . content . .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
     margin-block-end: 48px;
   }
   #mainSettings {
-    display: grid;
-    grid-template-areas:
-      '. . toggles   . .'
-      '. . zeroState . .'
-      '. . preview   . .'
-      '. . animation . .'
-      '. . sources   . .'
-      '. . weather   . .';
-    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
-    grid-template-rows: auto;
+    display: flex;
+    flex-direction: column;
+    grid-area: content;
   }
   toggle-row,
   #toggleRowPlaceholder {
@@ -26,39 +25,16 @@
   ambient-zero-state {
     grid-area: zeroState;
   }
-  ambient-preview {
-    grid-area: preview;
+  /* TODO(b/253470553): Remove after Ambient subpage UI change is released. */
+  ambient-preview.pre-ui-change {
     margin: 20px 8px 0 8px;
   }
-  animation-theme-list,
-  #animationThemePlaceholder {
-    grid-area: animation;
-  }
-  topic-source-list,
-  #topicSourcePlaceholder {
-    grid-area: sources;
-  }
-  ambient-weather-unit,
-  #weatherUnitPlaceholder {
-    grid-area: weather;
-  }
-  #albumsSubpage {
-    display: grid;
-    grid-template-areas:
-      '. . albums-subpage . .';
-    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
-    grid-template-rows: auto;
-    height: 100%;
-    position: relative;
-    width: 100%;
+  ambient-preview {
+    grid-area: preview;
+    margin: 0 8px;
   }
   albums-subpage {
-    grid-area: albums-subpage;
-  }
-  iron-list {
-    height: 100%;
-    overflow: hidden;
-    width: 100%;
+    grid-area: content;
   }
   .animation-placeholder-list {
     width: 516px;
@@ -120,6 +96,9 @@
   }
 </style>
 <div id="container">
+  <template is="dom-if" if="[[isAmbientSubpageUIChangeEnabled_]]">
+    <ambient-preview></ambient-preview>
+  </template>
   <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
   <template is="dom-if" if="[[shouldShowMainSettings_(path)]]" restamp>
     <div id="mainSettings">
@@ -136,7 +115,10 @@
         </toggle-row>
       </template>
       <template is="dom-if" if="[[ambientModeEnabled_]]">
-        <ambient-preview></ambient-preview>
+        <!-- TODO(b/253470553): Remove after Ambient subpage UI change is released. -->
+        <template is="dom-if" if="[[!isAmbientSubpageUIChangeEnabled_]]">
+          <ambient-preview class="pre-ui-change"></ambient-preview>
+        </template>
         <template is="dom-if" if="[[loadingSettings_]]">
           <div id="animationThemePlaceholder">
             <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
@@ -197,10 +179,8 @@
   </template>
   <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
   <template is="dom-if" if="[[shouldShowAlbums_(path)]]" restamp>
-    <div id="albumsSubpage">
-      <albums-subpage topic-source="[[getTopicSource_(queryParams)]]"
-          albums="[[getAlbums_(albums_, queryParams)]]">
-      </albums-subpage>
-    </div>
+    <albums-subpage topic-source="[[getTopicSource_(queryParams)]]"
+        albums="[[getAlbums_(albums_, queryParams)]]">
+    </albums-subpage>
   </template>
 </div>

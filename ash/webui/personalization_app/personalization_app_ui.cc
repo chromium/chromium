@@ -370,6 +370,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isScreenSaverPreviewEnabled",
                      features::IsScreenSaverPreviewEnabled());
+
+  source->AddBoolean("isAmbientSubpageUIChangeEnabled",
+                     features::IsAmbientSubpageUIChangeEnabled());
 }
 
 void PersonalizationAppUI::HandleWebUIRequest(

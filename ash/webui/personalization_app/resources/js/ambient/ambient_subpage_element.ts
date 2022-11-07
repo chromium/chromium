@@ -16,6 +16,7 @@ import './toggle_row_element.js';
 import './topic_source_list_element.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
@@ -58,6 +59,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
         computed:
             'computeLoadingSettings_(albums_, temperatureUnit_, topicSource_)',
       },
+      isAmbientSubpageUIChangeEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled'),
+      },
     };
   }
 
@@ -68,6 +73,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private animationTheme_: AnimationTheme|null = null;
   private temperatureUnit_: TemperatureUnit|null = null;
   private topicSource_: TopicSource|null = null;
+  private isAmbientSubpageUIChangeEnabled_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
   // another window, and then re-focuses personalization app.

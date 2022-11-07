@@ -46,7 +46,8 @@
     margin-top: 20px;
   }
 
-  :host(:not([main-page])) #container {
+  /* TODO(b/253470553): Remove after Ambient subpage UI change is released. */
+  :host(:not([main-page])) #container.pre-ui-change {
     border: none;
     display: grid;
     grid-template-areas:
@@ -55,6 +56,16 @@
       '.              . .';
     grid-template-columns: 224px 32px minmax(0,1fr);
     grid-template-rows: 20px 152px 20px;
+  }
+
+  :host(:not([main-page])) #container {
+    border: none;
+    display: grid;
+    grid-template-areas:
+      'image          . subpage-desc'
+      '.              . .';
+    grid-template-columns: 224px 32px minmax(0,1fr);
+    grid-template-rows: 152px 20px;
   }
 
   :host([main-page]) .currently-set-text {
