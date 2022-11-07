@@ -67,7 +67,7 @@ state.GetFontBuilder().{{property.setter}}
   {{set_value(property)}}(ComputedStyleInitialValues::{{property.initial}}());
       {% endif %}
       {% if property.independent %}
-  state.Style()->{{property.is_inherited_setter}}(false);
+  state.StyleBuilder().{{property.is_inherited_setter}}(false);
       {% endif %}
     {% endcall %}
     {% call(property) apply_inherit(property) %}
@@ -77,13 +77,13 @@ state.GetFontBuilder().{{property.setter}}
   {{set_value(property)}}(state.ParentStyle()->{{property.getter}}());
       {% endif %}
       {% if property.independent %}
-  state.Style()->{{property.is_inherited_setter}}(true);
+  state.StyleBuilder().{{property.is_inherited_setter}}(true);
       {% endif %}
     {% endcall %}
     {% call(property) apply_value(property) %}
   {{convert_and_set_value(property)}}
         {% if property.independent %}
-  state.Style()->{{property.is_inherited_setter}}(false);
+  state.StyleBuilder().{{property.is_inherited_setter}}(false);
         {% endif %}
     {% endcall %}
   {% elif property.style_builder_template == 'empty' %}
@@ -304,16 +304,16 @@ state.GetFontBuilder().{{property.setter}}
   {% elif property.style_builder_template == 'counter' %}
     {% set action = property.style_builder_template_args['action'] %}
     {% call(property) apply_initial(property) %}
-  state.Style()->Clear{{action}}Directives();
+  state.StyleBuilder().Clear{{action}}Directives();
     {% endcall %}
 
     {% call(property) apply_inherit(property) %}
-  state.Style()->Clear{{action}}Directives();
+  state.StyleBuilder().Clear{{action}}Directives();
   const CounterDirectiveMap* parent_map = state.ParentStyle()->GetCounterDirectives();
   if (!parent_map)
     return;
 
-  CounterDirectiveMap& map = state.Style()->AccessCounterDirectives();
+  CounterDirectiveMap& map = state.StyleBuilder().AccessCounterDirectives();
   DCHECK(!parent_map->empty());
 
   typedef CounterDirectiveMap::const_iterator Iterator;
@@ -325,7 +325,7 @@ state.GetFontBuilder().{{property.setter}}
     {% endcall %}
 
     {% call(property) apply_value(property) %}
-  state.Style()->Clear{{action}}Directives();
+  state.StyleBuilder().Clear{{action}}Directives();
 
   const auto* list = DynamicTo<CSSValueList>(value);
   if (!list) {
@@ -333,7 +333,7 @@ state.GetFontBuilder().{{property.setter}}
     return;
   }
 
-  CounterDirectiveMap& map = state.Style()->AccessCounterDirectives();
+  CounterDirectiveMap& map = state.StyleBuilder().AccessCounterDirectives();
 
   for (const CSSValue* item : *list) {
     const auto& pair = To<CSSValuePair>(*item);

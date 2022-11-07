@@ -559,6 +559,7 @@
       wrapper_pointer_name: "std::unique_ptr",
       include_paths: ["third_party/blink/renderer/core/style/counter_directives.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      readonly: true,
     },
     {
       name: "Animations",

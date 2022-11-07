@@ -1551,14 +1551,6 @@ const CounterDirectiveMap* ComputedStyle::GetCounterDirectives() const {
   return CounterDirectivesInternal().get();
 }
 
-CounterDirectiveMap& ComputedStyle::AccessCounterDirectives() {
-  std::unique_ptr<CounterDirectiveMap>& map =
-      MutableCounterDirectivesInternal();
-  if (!map)
-    map = std::make_unique<CounterDirectiveMap>();
-  return *map;
-}
-
 const CounterDirectives ComputedStyle::GetCounterDirectives(
     const AtomicString& identifier) const {
   if (GetCounterDirectives()) {
@@ -1567,41 +1559,6 @@ const CounterDirectives ComputedStyle::GetCounterDirectives(
       return it->value;
   }
   return CounterDirectives();
-}
-
-void ComputedStyle::ClearIncrementDirectives() {
-  if (!GetCounterDirectives())
-    return;
-
-  // This makes us copy even if we may not be removing any items.
-  CounterDirectiveMap& map = AccessCounterDirectives();
-  typedef CounterDirectiveMap::iterator Iterator;
-
-  Iterator end = map.end();
-  for (Iterator it = map.begin(); it != end; ++it)
-    it->value.ClearIncrement();
-}
-
-void ComputedStyle::ClearResetDirectives() {
-  if (!GetCounterDirectives())
-    return;
-
-  // This makes us copy even if we may not be removing any items.
-  CounterDirectiveMap& map = AccessCounterDirectives();
-  typedef CounterDirectiveMap::iterator Iterator;
-
-  Iterator end = map.end();
-  for (Iterator it = map.begin(); it != end; ++it)
-    it->value.ClearReset();
-}
-
-void ComputedStyle::ClearSetDirectives() {
-  if (!GetCounterDirectives())
-    return;
-
-  auto& map = AccessCounterDirectives();
-  for (auto& value_pair : map)
-    value_pair.value.ClearSet();
 }
 
 AtomicString ComputedStyle::LocaleForLineBreakIterator() const {

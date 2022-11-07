@@ -938,7 +938,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Counters.
   const CounterDirectiveMap* GetCounterDirectives() const;
-  CounterDirectiveMap& AccessCounterDirectives();
   const CounterDirectives GetCounterDirectives(
       const AtomicString& identifier) const;
   bool CounterDirectivesEqual(const ComputedStyle& other) const {
@@ -947,9 +946,6 @@ class ComputedStyle : public ComputedStyleBase,
     return base::ValuesEquivalent(CounterDirectivesInternal().get(),
                                   other.CounterDirectivesInternal().get());
   }
-  void ClearIncrementDirectives();
-  void ClearResetDirectives();
-  void ClearSetDirectives();
 
   bool IsDeprecatedWebkitBox() const {
     return Display() == EDisplay::kWebkitBox ||
@@ -2846,6 +2842,33 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetHasAutoColumnWidth() {
     SetHasAutoColumnWidthInternal(true);
     SetColumnWidthInternal(0);
+  }
+
+  // counter-*
+  CounterDirectiveMap& AccessCounterDirectives() {
+    std::unique_ptr<CounterDirectiveMap>& map =
+        MutableCounterDirectivesInternal();
+    if (!map)
+      map = std::make_unique<CounterDirectiveMap>();
+    return *map;
+  }
+  void ClearIncrementDirectives() {
+    if (const auto& map = MutableCounterDirectivesInternal()) {
+      for (auto& value_pair : *map)
+        value_pair.value.ClearIncrement();
+    }
+  }
+  void ClearResetDirectives() {
+    if (const auto& map = MutableCounterDirectivesInternal()) {
+      for (auto& value_pair : *map)
+        value_pair.value.ClearReset();
+    }
+  }
+  void ClearSetDirectives() {
+    if (const auto& map = MutableCounterDirectivesInternal()) {
+      for (auto& value_pair : *map)
+        value_pair.value.ClearSet();
+    }
   }
 
   // cursor
