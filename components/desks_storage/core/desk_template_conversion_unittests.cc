@@ -365,12 +365,8 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
           .SetName(kBrowserTemplateName)
           .SetType(ash::DeskTemplateType::kSaveAndRecall)
           .SetCreatedTime(created_time)
-          .AddAppWindow(
-              SavedDeskBrowserBuilder()
-                  .SetGenericBuilder(SavedDeskGenericAppBuilder().SetWindowId(
-                      kBrowserWindowId))
-                  .SetUrls({GURL(kBrowserUrl1), GURL(kBrowserUrl2)})
-                  .Build())
+          .AddLacrosBrowserAppWindow(kBrowserWindowId,
+                                     {GURL(kBrowserUrl1), GURL(kBrowserUrl2)})
           .Build();
 
   base::Value desk_template_value =

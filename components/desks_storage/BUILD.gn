@@ -80,7 +80,5 @@ source_set("unit_tests") {
     "//components/app_constants",
     "//components/sync:test_support",
     "//testing/gtest",
-    "//ui/gfx/geometry",
-    "//ui/gfx/range",
   ]
 }
