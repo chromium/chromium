@@ -31,6 +31,7 @@
 #include "chrome/browser/support_tool/support_packet_metadata.h"
 #include "components/feedback/pii_types.h"
 #include "components/feedback/redaction_tool.h"
+#include "data_collector_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 
@@ -151,10 +152,7 @@ void SupportToolHandler::OnDataCollected(
 }
 
 void SupportToolHandler::AddDetectedPII(const PIIMap& pii_map) {
-  for (auto& pii_data : pii_map) {
-    detected_pii_[pii_data.first].insert(pii_data.second.begin(),
-                                         pii_data.second.end());
-  }
+  MergePIIMaps(detected_pii_, pii_map);
 }
 
 void SupportToolHandler::OnAllDataCollected() {

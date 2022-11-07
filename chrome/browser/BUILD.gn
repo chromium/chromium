@@ -4274,6 +4274,8 @@ static_library("browser") {
       "storage/storage_notification_service_impl.cc",
       "storage/storage_notification_service_impl.h",
       "support_tool/data_collector.h",
+      "support_tool/data_collector_utils.cc",
+      "support_tool/data_collector_utils.h",
       "support_tool/policy_data_collector.cc",
       "support_tool/policy_data_collector.h",
       "support_tool/support_packet_metadata.cc",

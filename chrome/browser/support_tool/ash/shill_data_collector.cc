@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/system_logs/shill_log_pii_identifiers.h"
+#include "chrome/browser/support_tool/data_collector_utils.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -68,10 +69,7 @@ PIIMap DetectPII(
   base::JSONWriter::WriteWithOptions(
       shill_log, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
   PIIMap pii_in_logs = redaction_tool->Detect(std::move(json));
-  for (const auto& pii_data : pii_in_logs) {
-    detected_pii[pii_data.first].insert(pii_data.second.begin(),
-                                        pii_data.second.end());
-  }
+  MergePIIMaps(detected_pii, pii_in_logs);
   return detected_pii;
 }
 

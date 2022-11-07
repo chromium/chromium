@@ -21,20 +21,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "chrome/browser/support_tool/data_collector_utils.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/feedback/pii_types.h"
 #include "components/feedback/redaction_tool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
-
-// Adds the contents of `map_to_merge` into `target_map`.
-void MergePIIMaps(PIIMap& target_map, PIIMap& map_to_merge) {
-  for (auto& pii_data : map_to_merge) {
-    target_map[pii_data.first].insert(pii_data.second.begin(),
-                                      pii_data.second.end());
-  }
-}
 
 // Detects PII sensitive data that `network_routes` contains and returns
 // the detected PII map.
