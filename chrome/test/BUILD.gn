@@ -10553,6 +10553,24 @@ if (!is_android) {
         "//ui/resources",
       ]
     }
+    if (is_fuchsia) {
+      use_test_server = true
+
+      test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+      additional_manifest_fragments = [
+        "//build/config/fuchsia/test/network.shard.test-cml",
+        "//build/config/fuchsia/test/present_view.shard.test-cml",
+      ]
+
+      # This is a workaround to create the chrome/test/data/ folder under /pkg.
+      # When a browser test is being initialized in
+      # //chrome/test/base/in_process_browser_test.cc, an HTTP server will be
+      # created under the test data directory. If the directory does not exit,
+      # create one. However, /pkg is read-only in runtime.
+      # This is not an issue in other browser tests. Because they include test
+      # data directories in the Fuchsia package via gn "data" entries.
+      data = [ "//chrome/test/data/empty.html" ]
+    }
 
     if (toolkit_views) {
       deps += [ "//ui/views" ]

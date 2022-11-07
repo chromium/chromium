@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -30,17 +31,26 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 }  // namespace
 
-class DictionarySyncPerfTest : public SyncTest {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1296569): Enable when spell check dictionary issues are
+// addressed.
+#define MAYBE_DictionarySyncPerfTest DISABLED_DictionarySyncPerfTest
+#else
+#define MAYBE_DictionarySyncPerfTest DictionarySyncPerfTest
+#endif
+
+class MAYBE_DictionarySyncPerfTest : public SyncTest {
  public:
-  DictionarySyncPerfTest() : SyncTest(TWO_CLIENT) {}
+  MAYBE_DictionarySyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
-  DictionarySyncPerfTest(const DictionarySyncPerfTest&) = delete;
-  DictionarySyncPerfTest& operator=(const DictionarySyncPerfTest&) = delete;
+  MAYBE_DictionarySyncPerfTest(const MAYBE_DictionarySyncPerfTest&) = delete;
+  MAYBE_DictionarySyncPerfTest& operator=(const MAYBE_DictionarySyncPerfTest&) =
+      delete;
 
-  ~DictionarySyncPerfTest() override = default;
+  ~MAYBE_DictionarySyncPerfTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DictionarySyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
   ASSERT_TRUE(
