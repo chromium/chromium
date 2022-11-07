@@ -15,6 +15,28 @@ get to decide.
 
 [TOC]
 
+## Java 10 language Features
+
+### Type deduction using `var`
+
+A variable declaration can use the `var` keyword in place of the type (similar
+to the `auto` keyword in C++). In line with the [guidance for
+C++](https://google.github.io/styleguide/cppguide.html#Type_deduction), the
+`var` keyword may be used when it aids readability and the type of the value is
+already clear (ex. `var bundle = new Bundle()` is OK, but `var something =
+returnValueIsNotObvious()` may be unclear to readers who are new to this part of
+the code).
+
+The `var` keyword may also be used in try-with-resources when the resource is
+not directly accessed (or when it falls under the previous guidance), such as:
+
+```java
+try (var ignored = StrictModeContext.allowDiskWrites()) {
+    // 'var' is permitted so long as the 'ignored' variable is not used directly
+    // in the code.
+}
+```
+
 ## Java 8 Language Features
 [Desugar](https://github.com/bazelbuild/bazel/blob/master/src/tools/android/java/com/google/devtools/build/android/desugar/Desugar.java)
 is used to rewrite some Java 7 & 8 language constructs in a way that is
