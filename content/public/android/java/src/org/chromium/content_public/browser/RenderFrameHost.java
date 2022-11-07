@@ -87,9 +87,6 @@ public interface RenderFrameHost {
      * trying to make a mojo connection to it. This can be done via
      * isRenderFrameLive() if the caller is not inside the call-stack of an
      * IPC form the renderer (which would guarantee its existence at that time).
-     *
-     * @param pipe The message pipe to be connected to the renderer. If it fails
-     * to make the connection, the pipe will be closed.
      */
     <I extends Interface, P extends Interface.Proxy> P getInterfaceToRendererFrame(
             Interface.Manager<I, P> manager);
@@ -98,7 +95,7 @@ public interface RenderFrameHost {
      * Kills the renderer process when it is detected to be misbehaving and has
      * made a bad request.
      *
-     * @param reason The BadMessageReason code from content::BadMessageReasons.
+     * @param reason The BadMessageReason code from content::bad_message::BadMessageReason.
      */
     void terminateRendererDueToBadMessage(int reason);
 
