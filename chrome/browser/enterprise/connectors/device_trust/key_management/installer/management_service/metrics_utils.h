@@ -17,11 +17,15 @@ enum class ManagementServiceError {
   kCommandMissingPipeName,
   kCommandMissingRotateDTKey,
   kCommandMissingDMServerUrl,
-  kInvalidUrlLoaderFactory,
+  kInvalidPendingUrlLoaderFactory,
   kUnBoundUrlLoaderFactory,
+  kDisconnectedUrlLoaderFactory,
   kInvalidRotateCommand,
   kIncorrectlyEncodedArgument,
-  kMaxValue = kIncorrectlyEncodedArgument,
+  kInvalidPlatformChannelEndpoint,
+  kInvalidMojoInvitation,
+  kInvalidMessagePipeHandle,
+  kMaxValue = kInvalidMessagePipeHandle,
 };
 
 // Records the `error` of any invalid rotation commands, mojo failures, and

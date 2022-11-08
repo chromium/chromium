@@ -884,6 +884,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.ManagementService.ExitCode.{Sign}"
+    units="exit_code" expires_after="2023-10-26">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Captures the management service binary processes {Sign} after it completes
+    the execution of a command (e.g. key rotation).
+  </summary>
+  <token key="Sign">
+    <variant name="Negative" summary="Negative exit code"/>
+    <variant name="Positive" summary="Positive exit code"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Origin" enum="DTOrigin"
     expires_after="2023-08-01">
   <owner>lmasopust@google.com</owner>

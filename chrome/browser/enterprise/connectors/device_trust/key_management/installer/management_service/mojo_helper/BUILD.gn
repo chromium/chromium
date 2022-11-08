@@ -1,0 +1,32 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("mojo_helper") {
+  public = [ "mojo_helper.h" ]
+
+  sources = [ "mojo_helper.cc" ]
+
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "mock_mojo_helper.h" ]
+
+  sources = [ "mock_mojo_helper.cc" ]
+
+  public_deps = [
+    ":mojo_helper",
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+  ]
+}

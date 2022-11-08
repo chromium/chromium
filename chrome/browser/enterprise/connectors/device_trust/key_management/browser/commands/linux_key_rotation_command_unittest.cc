@@ -11,10 +11,12 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -29,6 +31,12 @@ using testing::_;
 namespace enterprise_connectors {
 
 namespace {
+
+constexpr char kManagementServicePositiveExitCodeHistogramName[] =
+    "Enterprise.DeviceTrust.ManagementService.ExitCode.Positive";
+
+constexpr char kManagementServiceNegativeExitCodeHistogramName[] =
+    "Enterprise.DeviceTrust.ManagementService.ExitCode.Negative";
 
 constexpr char kNonce[] = "nonce";
 
@@ -99,6 +107,8 @@ class LinuxKeyRotationCommandTest : public testing::Test {
     run_loop.Run();
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -149,41 +159,58 @@ MULTIPROCESS_TEST_MAIN(MojoInvitation) {
 
 TEST_F(LinuxKeyRotationCommandTest, MojoAcceptInvitation) {
   StartTestRotation("MojoInvitation", KeyRotationCommand::Status::SUCCEEDED);
+  histogram_tester_.ExpectUniqueSample(
+      kManagementServicePositiveExitCodeHistogramName, Status::kSuccess, 1);
 }
 
 // Tests for a key rotation when the chrome management service succeeded.
 MULTIPROCESS_TEST_MAIN(Success) {
-  return kSuccess;
+  return Status::kSuccess;
 }
 
 TEST_F(LinuxKeyRotationCommandTest, RotateSuccess) {
   StartTestRotation("Success", KeyRotationCommand::Status::SUCCEEDED);
+  histogram_tester_.ExpectUniqueSample(
+      kManagementServicePositiveExitCodeHistogramName, Status::kSuccess, 1);
 }
 
 // Tests for a key rotation failure when the chrome management service failed.
 MULTIPROCESS_TEST_MAIN(Failure) {
-  return kFailure;
+  return Status::kFailure;
 }
 
 TEST_F(LinuxKeyRotationCommandTest, RotateFailure) {
   StartTestRotation("Failure", KeyRotationCommand::Status::FAILED);
+  histogram_tester_.ExpectUniqueSample(
+      kManagementServicePositiveExitCodeHistogramName, Status::kFailure, 1);
 }
 
 // Tests for a key rotation failure when the chrome management service failed
 // with an unknown error.
 MULTIPROCESS_TEST_MAIN(UnknownFailure) {
-  return 3;
+  return Status::kUnknownFailure;
 }
 
 TEST_F(LinuxKeyRotationCommandTest, RotateFailure_UnknownError) {
   StartTestRotation("UnknownFailure", KeyRotationCommand::Status::FAILED);
+  histogram_tester_.ExpectUniqueSample(
+      kManagementServicePositiveExitCodeHistogramName, Status::kUnknownFailure,
+      1);
 }
 
 // Tests for a key rotation failure when an invalid process was launched.
 TEST_F(LinuxKeyRotationCommandTest, RotateFailureInvalidProcess) {
   StartTestRotation("InvalidProcess", KeyRotationCommand::Status::FAILED);
+  histogram_tester_.ExpectTotalCount(
+      kManagementServicePositiveExitCodeHistogramName, 0);
 }
 
-// TODO(b/220871981): Add test for timeout.
+// Tests that the correct histogram is populated when the LogExitCode method
+// receives a negative exit code.
+TEST_F(LinuxKeyRotationCommandTest, NegativeExitCode) {
+  LogManagementServiceExitCode(-1);
+  histogram_tester_.ExpectUniqueSample(
+      kManagementServiceNegativeExitCodeHistogramName, 1, 1);
+}
 
 }  // namespace enterprise_connectors

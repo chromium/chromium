@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_INSTALLER_MANAGEMENT_SERVICE_CHROME_MANAGEMENT_SERVICE_H_
 
 #include <cstdint>
+#include <memory>
 
 #include "base/callback.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -17,6 +17,8 @@ class CommandLine;
 }  // namespace base
 
 namespace enterprise_connectors {
+
+class MojoHelper;
 
 // Drives the key rotation operation for the ChromeManagementService
 // process.
@@ -42,10 +44,12 @@ class ChromeManagementService {
 
   // Strictly used for testing and allows mocking the permissions check
   // and starting the key rotation. The `permissions_callback` is the
-  // callback to the CheckBinaryPermissions function, and the
-  // `rotation_callback` is a callback to the StartRotation function.
+  // callback to the CheckBinaryPermissions function, the
+  // `rotation_callback` is a callback to the StartRotation function,
+  // and the `mojo_helper` is the helper that issues mojo APIs.
   ChromeManagementService(PermissionsCallback permissions_callback,
-                          RotationCallback rotation_callback);
+                          RotationCallback rotation_callback,
+                          std::unique_ptr<MojoHelper> mojo_helper);
 
   // Starts the key rotation using the `command_line` for the current process.
   //
@@ -61,6 +65,9 @@ class ChromeManagementService {
   // Remote url loader factory bound to the url loader from the browser
   // process.
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory_;
+
+  // Helper class responsible for issuing mojo APIs.
+  std::unique_ptr<MojoHelper> mojo_helper_;
 };
 
 }  // namespace enterprise_connectors

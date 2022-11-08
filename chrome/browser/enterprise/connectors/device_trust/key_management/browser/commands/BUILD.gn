@@ -8,9 +8,13 @@ source_set("commands") {
   public = [
     "key_rotation_command.h",
     "key_rotation_command_factory.h",
+    "metrics_utils.h",
   ]
 
-  sources = [ "key_rotation_command_factory.cc" ]
+  sources = [
+    "key_rotation_command_factory.cc",
+    "metrics_utils.cc",
+  ]
 
   public_deps = [ "//base" ]
 

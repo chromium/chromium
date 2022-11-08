@@ -29839,12 +29839,20 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="The Rotate command is missing the pipe name."/>
   <int value="5" label="The Rotate command is missing the dm token."/>
   <int value="6" label="The Rotate command is missing the dm server url."/>
-  <int value="7" label="The url loader factory is invalid."/>
+  <int value="7" label="The pending remote url loader factory is invalid."/>
   <int value="8"
-      label="Failure binding the url loader factory to the browser process."/>
-  <int value="9" label="Invalid command to rotate."/>
-  <int value="10"
+      label="Failure binding the remote url loader factory to the browser
+             process."/>
+  <int value="9"
+      label="Failure connecting the remote url loader factory to the browser
+             process."/>
+  <int value="10" label="Invalid command to rotate."/>
+  <int value="11"
       label="An argument used in the rotate request is incorrectly encoded."/>
+  <int value="12"
+      label="Invalid platform channel endpoint in key rotation command."/>
+  <int value="13" label="Invalid mojo invitation."/>
+  <int value="14" label="Invalid message pipe handle in mojo invitation."/>
 </enum>
 
 <enum name="DTOrigin">
