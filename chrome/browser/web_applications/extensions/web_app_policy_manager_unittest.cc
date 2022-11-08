@@ -346,11 +346,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     web_app_policy_manager_ = web_app_policy_manager.get();
     provider_->SetWebAppPolicyManager(std::move(web_app_policy_manager));
 
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-
-    externally_managed_app_manager().SetSubsystems(&app_registrar(), nullptr,
-                                                   nullptr, nullptr, nullptr);
-    externally_managed_app_manager().SetHandleInstallRequestCallback(
+    fake_externally_managed_app_manager_->SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const ExternalInstallOptions& install_options) {
               const GURL& install_url = install_options.install_url;
@@ -374,7 +370,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
               return ExternallyManagedAppManager::InstallResult(
                   install_result_code_);
             }));
-    externally_managed_app_manager().SetHandleUninstallRequestCallback(
+    fake_externally_managed_app_manager_->SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const GURL& app_url,
                    ExternalInstallSource install_source) -> bool {
@@ -385,14 +381,11 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
               }
               return true;
             }));
-
-    policy_manager().SetSubsystems(&externally_managed_app_manager(),
-                                   &app_registrar(), &sync_bridge(),
-                                   &provider()->os_integration_manager());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy_manager().SetSystemWebAppDelegateMap(
+    web_app_policy_manager_->SetSystemWebAppDelegateMap(
         &system_app_manager().system_app_delegates());
 #endif
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override {
@@ -418,20 +411,6 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
         profile()->GetPrefs(), &sync_bridge(),
         GenerateAppId(/*manifest_id=*/absl::nullopt, url), url,
         ExternalInstallSource::kExternalPolicy, /*is_placeholder=*/true);
-  }
-
-  void AwaitPolicyManagerAppsSynchronized() {
-    base::RunLoop loop;
-    policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
-        loop.QuitClosure());
-    loop.Run();
-  }
-
-  void AwaitPolicyManagerRefreshPolicySettings() {
-    base::RunLoop loop;
-    policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
-        loop.QuitClosure());
-    loop.Run();
   }
 
  protected:
@@ -562,10 +541,14 @@ TEST_P(WebAppPolicyManagerTest, NoForceInstalledApps) {
 TEST_P(WebAppPolicyManagerTest, NoWebAppSettings) {
   if (ShouldSkipPWASpecificTest())
     return;
+
+  base::RunLoop loop;
+  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+      loop.QuitClosure());
   profile()->GetPrefs()->Set(prefs::kWebAppSettings,
                              base::Value(base::Value::Type::LIST));
+  loop.Run();
 
-  AwaitPolicyManagerRefreshPolicySettings();
   ValidateEmptyWebAppSettingsPolicy();
 }
 
@@ -579,8 +562,12 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsInvalidDefaultConfiguration) {
     }
   ])";
 
+  base::RunLoop loop;
+  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+      loop.QuitClosure());
   SetWebAppSettingsListPref(kWebAppSettingInvalidDefaultConfiguration);
-  AwaitPolicyManagerRefreshPolicySettings();
+  loop.Run();
+
   ValidateEmptyWebAppSettingsPolicy();
 }
 
@@ -599,8 +586,12 @@ TEST_P(WebAppPolicyManagerTest,
     }
   ])";
 
+  base::RunLoop loop;
+  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+      loop.QuitClosure());
   SetWebAppSettingsListPref(kWebAppSettingInvalidDefaultConfiguration);
-  AwaitPolicyManagerRefreshPolicySettings();
+  loop.Run();
+
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
@@ -632,8 +623,11 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsNoDefaultConfiguration) {
     }
   ])";
 
+  base::RunLoop loop;
+  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+      loop.QuitClosure());
   SetWebAppSettingsListPref(kWebAppSettingNoDefaultConfiguration);
-  AwaitPolicyManagerRefreshPolicySettings();
+  loop.Run();
 
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
@@ -647,8 +641,12 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsNoDefaultConfiguration) {
 TEST_P(WebAppPolicyManagerTest, WebAppSettingsWithDefaultConfiguration) {
   if (ShouldSkipPWASpecificTest())
     return;
+
+  base::RunLoop loop;
+  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+      loop.QuitClosure());
   SetWebAppSettingsListPref(kWebAppSettingWithDefaultConfiguration);
-  AwaitPolicyManagerRefreshPolicySettings();
+  loop.Run();
 
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
@@ -1193,8 +1191,13 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
 
   MockAppRegistrarObserver mock_observer;
   app_registrar().AddObserver(&mock_observer);
+
+  base::RunLoop loop;
+  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+      loop.QuitClosure());
   SetWebAppSettingsListPref(kWebAppSettingInitialConfiguration);
-  AwaitPolicyManagerRefreshPolicySettings();
+  loop.Run();
+
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
@@ -1222,9 +1225,12 @@ TEST_P(WebAppPolicyManagerTest,
   base::Value list(base::Value::Type::LIST);
   list.Append(GetWindowedItem());
   list.Append(GetTabbedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  AwaitPolicyManagerAppsSynchronized();
+  base::RunLoop loop;
+  policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
+      loop.QuitClosure());
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  loop.Run();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -1258,8 +1264,13 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   // Apply WebAppSettings Policy
   MockAppRegistrarObserver mock_observer;
   app_registrar().AddObserver(&mock_observer);
+
+  base::RunLoop settings_loop;
+  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+      settings_loop.QuitClosure());
   SetWebAppSettingsListPref(kWebAppSettingWithDefaultConfiguration);
-  AwaitPolicyManagerAppsSynchronized();
+  settings_loop.Run();
+
   EXPECT_EQ(1, mock_observer.GetOnWebAppSettingsPolicyChangedCalledCount());
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
@@ -1273,9 +1284,13 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   base::Value list(base::Value::Type::LIST);
   list.Append(GetWindowedItem());
   list.Append(GetTabbedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  AwaitPolicyManagerAppsSynchronized();
+  base::RunLoop force_install_loop;
+  policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
+      force_install_loop.QuitClosure());
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  force_install_loop.Run();
+
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 
   const auto& install_requests =

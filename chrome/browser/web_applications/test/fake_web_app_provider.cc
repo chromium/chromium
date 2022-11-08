@@ -83,7 +83,14 @@ FakeWebAppProvider::~FakeWebAppProvider() = default;
 
 void FakeWebAppProvider::SetRunSubsystemStartupTasks(
     bool run_subsystem_startup_tasks) {
+  CheckNotStarted();
   run_subsystem_startup_tasks_ = run_subsystem_startup_tasks;
+}
+
+void FakeWebAppProvider::SetSynchronizePreinstalledAppsOnStartup(
+    bool synchronize_on_startup) {
+  CheckNotStarted();
+  synchronize_preinstalled_app_on_startup_ = synchronize_on_startup;
 }
 
 void FakeWebAppProvider::SetRegistrar(
@@ -187,6 +194,11 @@ AbstractWebAppDatabaseFactory& FakeWebAppProvider::GetDatabaseFactory() const {
   return *database_factory_;
 }
 
+WebAppUiManager& FakeWebAppProvider::GetUiManager() const {
+  DCHECK(ui_manager_);
+  return *ui_manager_;
+}
+
 WebAppInstallManager& FakeWebAppProvider::GetInstallManager() const {
   DCHECK(install_manager_);
   return *install_manager_;
@@ -270,6 +282,8 @@ void FakeWebAppProvider::CheckNotStarted() const {
 }
 
 void FakeWebAppProvider::StartImpl() {
+  preinstalled_web_app_manager_->SetSkipStartupSynchronizeForTesting(
+      !synchronize_preinstalled_app_on_startup_);
   if (run_subsystem_startup_tasks_) {
     WebAppProvider::StartImpl();
   } else {

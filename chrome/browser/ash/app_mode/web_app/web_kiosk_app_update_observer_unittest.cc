@@ -340,27 +340,19 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldNotUpdateAppInfoForPlaceholders) {
   // Install app as placeholder.
   std::string app_id;
   {
-    std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp(
-        GURL(kAppLaunchUrl), web_app::WebAppManagement::kKiosk);
-    web_app->SetName(kAppTitle);
-    app_id = web_app->app_id();
-    std::unique_ptr<web_app::WebAppRegistryUpdate> update =
-        sync_bridge().BeginUpdate();
-    update->CreateApp(std::move(web_app));
+    auto app_info = std::make_unique<WebAppInstallInfo>();
+    app_info->start_url = GURL(kAppLaunchUrl);
+    app_info->scope = GURL(kAppInstallUrl);
+    app_info->title = u"placeholder_title";
+    app_info->is_placeholder = true;
 
-    // TODO(crbug/1379290): Use `TestFuture<void>` in all these tests
     EXEC_AND_WAIT_FOR_CALL(
         {
-          TestFuture<bool> success_future;
-          sync_bridge().CommitUpdate(std::move(update),
-                                     success_future.GetCallback());
-          EXPECT_TRUE(success_future.Get());
+          app_id =
+              web_app::test::InstallWebApp(profile(), std::move(app_info), true,
+                                           webapps::WebappInstallSource::KIOSK);
         },
         *mock_app_registry_observer(), OnAppUpdate);
-
-    web_app::test::AddInstallUrlAndPlaceholderData(
-        profile()->GetPrefs(), &sync_bridge(), app_id, GURL(kAppInstallUrl),
-        web_app::ExternalInstallSource::kKiosk, /*is_placeholder=*/true);
   }
 
   // Update app info.

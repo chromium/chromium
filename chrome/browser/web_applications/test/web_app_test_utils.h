@@ -32,10 +32,14 @@ class WebApp;
 
 namespace test {
 
+// Do not use this for installation! Instead, use the utilities in
+// web_app_install_test_util.h.
 std::unique_ptr<WebApp> CreateWebApp(
     const GURL& start_url = GURL("https://example.com/path"),
     WebAppManagement::Type source_type = WebAppManagement::kSync);
 
+// Do not use this for installation! Instead, use the utilities in
+// web_app_install_test_util.h.
 std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
                                            uint32_t seed,
                                            bool allow_system_source = true);

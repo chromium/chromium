@@ -46,6 +46,9 @@ class WebAppCommandManager {
   explicit WebAppCommandManager(Profile* profile, WebAppProvider* provider);
   ~WebAppCommandManager();
 
+  // Starts running commands.
+  void Start();
+
   // Enqueues the given command in the queue corresponding to the command's
   // `queue_id()`. `Start()` will always be called asynchronously.
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command);
@@ -113,6 +116,8 @@ class WebAppCommandManager {
 
   SEQUENCE_CHECKER(command_sequence_checker_);
 
+  std::vector<std::unique_ptr<WebAppCommand>> commands_waiting_for_start_;
+
   raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_;
 
@@ -121,6 +126,7 @@ class WebAppCommandManager {
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<content::WebContents> shared_web_contents_;
 
+  bool started_ = false;
   bool is_in_shutdown_ = false;
   std::deque<base::Value> command_debug_log_;
 

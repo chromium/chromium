@@ -67,9 +67,23 @@ WebAppCommandManager::~WebAppCommandManager() {
   DCHECK(is_in_shutdown_);
 }
 
+void WebAppCommandManager::Start() {
+  started_ = true;
+  std::vector<std::unique_ptr<WebAppCommand>> to_schedule;
+  std::swap(commands_waiting_for_start_, to_schedule);
+
+  for (auto& command : to_schedule) {
+    ScheduleCommand(std::move(command));
+  }
+}
+
 void WebAppCommandManager::ScheduleCommand(
     std::unique_ptr<WebAppCommand> command) {
   DCHECK(command);
+  if (!started_) {
+    commands_waiting_for_start_.push_back(std::move(command));
+    return;
+  }
   if (is_in_shutdown_) {
     AddValueToLog(CreateLogValue(*command, CommandResult::kShutdown));
     return;

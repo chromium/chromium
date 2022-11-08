@@ -9,18 +9,15 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "ui/events/devices/device_data_manager.h"
-#include "ui/events/devices/input_device_event_observer.h"
 #include "url/gurl.h"
 
 namespace user_prefs {
@@ -99,7 +96,7 @@ class PreinstalledWebAppManager {
 
   // Loads the preinstalled app configs and synchronizes them with the device's
   // installed apps.
-  void Start();
+  void Start(base::OnceClosure on_init_complete);
 
   void LoadAndSynchronizeForTesting(SynchronizeCallback callback);
 
@@ -108,6 +105,10 @@ class PreinstalledWebAppManager {
   void AddObserver(PreinstalledWebAppManager::Observer* observer);
 
   void RemoveObserver(PreinstalledWebAppManager::Observer* observer);
+
+  // Must be called before `Start`. Similar to `SkipStartupForTesting` but not a
+  // global setting.
+  void SetSkipStartupSynchronizeForTesting(bool skip_startup);
 
   // Debugging info used by: chrome://web-app-internals
   struct DebugInfo {
@@ -168,6 +169,7 @@ class PreinstalledWebAppManager {
       externally_managed_app_manager_ = nullptr;
   const raw_ptr<Profile> profile_;
 
+  bool skip_startup_for_testing_ = false;
   std::unique_ptr<DebugInfo> debug_info_;
 
   std::unique_ptr<DeviceDataInitializedEvent> device_data_initialized_event_;

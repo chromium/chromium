@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -300,41 +301,18 @@ class ExternallyManagedAppInstallTaskTest
     url_loader_ = std::make_unique<TestWebAppUrlLoader>();
 
     auto* provider = FakeWebAppProvider::Get(profile());
-
-    auto registrar = std::make_unique<WebAppRegistrarMutable>(profile());
-    registrar_ = registrar.get();
+    provider->SetDefaultFakeSubsystems();
+    registrar_ = &provider->GetRegistrarMutable();
+    command_manager_ = &provider->GetCommandManager();
+    ui_manager_ = static_cast<FakeWebAppUiManager*>(&provider->GetUiManager());
 
     auto install_finalizer =
         std::make_unique<TestExternallyManagedAppInstallFinalizer>(
-            registrar.get());
+            &provider->GetRegistrarMutable());
     install_finalizer_ = install_finalizer.get();
-
-    auto command_manager = std::make_unique<WebAppCommandManager>(
-        profile(), FakeWebAppProvider::Get(profile()));
-    command_manager_ = command_manager.get();
-
-    auto os_integration_manager = std::make_unique<FakeOsIntegrationManager>(
-        profile(), /*app_shortcut_manager=*/nullptr,
-        /*file_handler_manager=*/nullptr,
-        /*protocol_handler_manager=*/nullptr,
-        /*url_handler_manager*/ nullptr);
-
-    auto ui_manager = std::make_unique<FakeWebAppUiManager>();
-    ui_manager_ = ui_manager.get();
-
-    auto sync_bridge = std::make_unique<WebAppSyncBridge>(registrar.get());
-    sync_bridge->SetSubsystems(&provider->GetDatabaseFactory(),
-                               /*install_delegate=*/nullptr,
-                               command_manager.get());
-
-    provider->SetRegistrar(std::move(registrar));
-    provider->SetSyncBridge(std::move(sync_bridge));
     provider->SetInstallFinalizer(std::move(install_finalizer));
-    provider->SetWebAppUiManager(std::move(ui_manager));
-    provider->SetOsIntegrationManager(std::move(os_integration_manager));
-    provider->SetCommandManager(std::move(command_manager));
 
-    provider->Start();
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
  protected:

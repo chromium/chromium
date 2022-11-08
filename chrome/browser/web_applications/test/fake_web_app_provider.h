@@ -61,6 +61,12 @@ class FakeWebAppProvider : public WebAppProvider {
   // if it's a part of TestingProfile (see BuildDefault() method above).
   void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
 
+  // The PreinstalledWebAppManager waits for some dependencies (extensions and
+  // device initialization) on startup, and then processes the preinstalled apps
+  // configurion to install (or uninstall) apps on the profile. This is disabled
+  // by default for unit tests, and can be enabled by setting this flag to true.
+  void SetSynchronizePreinstalledAppsOnStartup(bool synchronize_on_startup);
+
   // NB: If you replace the Registrar, you also have to replace the SyncBridge
   // accordingly.
   void SetRegistrar(std::unique_ptr<WebAppRegistrar> registrar);
@@ -94,6 +100,7 @@ class FakeWebAppProvider : public WebAppProvider {
   WebAppIconManager& GetIconManager() const;
   WebAppCommandManager& GetCommandManager() const;
   AbstractWebAppDatabaseFactory& GetDatabaseFactory() const;
+  WebAppUiManager& GetUiManager() const;
   WebAppInstallManager& GetInstallManager() const;
 
   // Starts this WebAppProvider and its subsystems. It does not wait for systems
@@ -125,6 +132,9 @@ class FakeWebAppProvider : public WebAppProvider {
   // WebAppProvider::StartImpl() and fire startup tasks like a real
   // WebAppProvider.
   bool run_subsystem_startup_tasks_ = true;
+  // If true, preinstalled apps will be processed & installed (or uninstalled)
+  // after the system starts.
+  bool synchronize_preinstalled_app_on_startup_ = false;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };
 

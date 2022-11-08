@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -63,7 +63,7 @@ class WebAppPolicyManager {
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
 
-  void Start();
+  void Start(base::OnceClosure initialization_complete);
 
   void ReinstallPlaceholderAppIfNecessary(const GURL& url);
 

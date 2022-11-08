@@ -44,6 +44,11 @@ void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
   DCHECK(provider);
   provider->StartWithSubsystems();
   WaitUntilReady(provider);
+
+  base::RunLoop run_loop;
+  provider->on_external_managers_synchronized().Post(FROM_HERE,
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 AppId InstallDummyWebApp(Profile* profile,

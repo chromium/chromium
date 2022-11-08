@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -210,7 +212,8 @@ const OsIntegrationManager& WebAppProvider::os_integration_manager() const {
 }
 
 WebAppCommandManager& WebAppProvider::command_manager() {
-  CheckIsConnected();
+  // Note: It is OK to access the command manager before connection or start.
+  // Internally it will queue commands to only happen after it has started.
   return *command_manager_;
 }
 
@@ -349,16 +352,30 @@ void WebAppProvider::OnSyncBridgeReady() {
   }
   DoMigrateProfilePrefs(profile_);
 
+  // Note: This does not wait for the call from the ChromeOS
+  // SystemWebAppManager, which is a separate keyed service.
+  int num_barrier_calls = 2;
+  base::RepeatingClosure external_manager_barrier = base::BarrierClosure(
+      num_barrier_calls,
+      base::BindOnce(
+          [](base::WeakPtr<WebAppProvider> provider) {
+            if (!provider)
+              return;
+            provider->on_external_managers_synchronized_.Signal();
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+
   registrar_->Start();
   install_finalizer_->Start();
   icon_manager_->Start();
   translation_manager_->Start();
   install_manager_->Start();
-  preinstalled_web_app_manager_->Start();
-  web_app_policy_manager_->Start();
+  preinstalled_web_app_manager_->Start(external_manager_barrier);
+  web_app_policy_manager_->Start(external_manager_barrier);
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
+  command_manager_->Start();
 
   on_registry_ready_.Signal();
   is_registry_ready_ = true;
