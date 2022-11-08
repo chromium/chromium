@@ -723,9 +723,15 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
   auto* curr = first_extent;
   while (curr != nullptr) {
     auto* next = curr->next;
+    uintptr_t address = SuperPagesBeginFromExtent(curr);
+    size_t size =
+        internal::kSuperPageSize * curr->number_of_consecutive_super_pages;
+#if !defined(PA_HAS_64_BITS_POINTERS)
+    internal::AddressPoolManager::GetInstance().MarkUnused(pool_handle, address,
+                                                           size);
+#endif
     internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
-        pool_handle, SuperPagesBeginFromExtent(curr),
-        internal::kSuperPageSize * curr->number_of_consecutive_super_pages);
+        pool_handle, address, size);
     curr = next;
   }
 }
