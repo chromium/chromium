@@ -31,6 +31,14 @@ _POLICIES_YAML_PATH = os.path.join(
       'components', 'policy', 'resources', 'templates', 'policies.yaml')
 _HISTOGRAMS_PATH = os.path.join(
       'tools', 'metrics', 'histograms', 'enums.xml')
+_DEVICE_POLICY_PROTO_PATH = os.path.join(
+      'components', 'policy', 'proto', 'chrome_device_policy.proto')
+_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
+      'components', 'policy', 'resources', 'templates',
+      'device_policy_proto_map.yaml')
+_LEGACY_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
+      'components', 'policy', 'resources', 'templates',
+      'legacy_device_policy_proto_map.yaml')
 
 
 def _SkipPresubmitChecks(input_api, files_watchlist):
@@ -297,6 +305,54 @@ def _CheckMissingPlaceholders(input_api, output_api, legacy_template_data):
           warning = ('Character \'$\' found outside of a placeholder in "%s". '
                      'Should it be in a placeholder ?') % item[key]
           results.append(output_api.PresubmitPromptWarning(warning))
+  return results
+
+# TODO(crbug/1171839): Remove this from syntax_check_policy_template_json.py
+# as this check is now duplicated.
+def CheckDevicePolicyProtos(input_api, output_api):
+  results = []
+  if _SkipPresubmitChecks(
+      input_api,
+      [_DEVICE_POLICY_PROTO_PATH, _DEVICE_POLICY_PROTO_MAP_PATH,
+       _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH, _PRESUBMIT_PATH]):
+    return results
+  root = input_api.change.RepositoryRoot()
+
+  proto_map = _LoadYamlFile(root, _DEVICE_POLICY_PROTO_MAP_PATH)
+  legacy_proto_map = _LoadYamlFile(root, _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH)
+  with open(os.path.join(root, _DEVICE_POLICY_PROTO_PATH),
+            'r', encoding='utf-8') as file:
+    protos = file.read()
+  results = []
+  # Check that proto_map does not have duplicate values.
+  proto_paths = set()
+  for proto_path in proto_map.values():
+    if proto_path in proto_paths:
+      results.append(output_api.PresubmitError(
+          f'Duplicate proto path {proto_path} in '
+          f'{os.path.basename(_DEVICE_POLICY_PROTO_MAP_PATH)}. '
+          'Did you set the right path for your device policy?'))
+    proto_paths.add(proto_path)
+
+  # Check that legacy_proto_map does not have duplicate values.
+  for proto_path_list in legacy_proto_map.values():
+    for proto_path in proto_path_list:
+      if not proto_path:
+        continue
+      if proto_path in proto_paths:
+        results.append(output_api.PresubmitError(
+          f'Duplicate proto path {proto_path} in '
+          'legacy_device_policy_proto_map.yaml.'
+          'Did you set the right path for your device policy?'))
+      proto_paths.add(proto_path)
+
+  for policy, proto_path in proto_map.items():
+    fields = proto_path.split(".")
+    for field in fields:
+      if field not in protos:
+        results.append(output_api.PresubmitError(
+         f"Policy '{policy}': Expected field \'{field}\' not found in "
+         "chrome_device_policy.proto."))
   return results
 
 
