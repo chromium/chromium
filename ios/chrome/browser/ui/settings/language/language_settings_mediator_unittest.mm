@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "base/time/time.h"
 #import "components/language/core/browser/language_prefs.h"
 #import "components/language/core/browser/pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -43,7 +44,7 @@ using ::testing::ElementsAreArray;
 namespace {
 
 // Constant for timeout while waiting for asynchronous sync operations.
-const NSTimeInterval kSyncOperationTimeout = 10.0;
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 std::vector<std::u16string> ExtractDisplayNamesFromLanguageItems(
     NSArray<LanguageItem*>* language_items) {

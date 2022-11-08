@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store_consumer.h"
@@ -62,9 +63,10 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
     results_.clear();
     ResetObtained();
     GetPasswordStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
-    bool responded = base::test::ios::WaitUntilConditionOrTimeout(2.0, ^bool {
-      return !AreObtainedReset();
-    });
+    bool responded =
+        base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), ^bool {
+          return !AreObtainedReset();
+        });
     if (responded) {
       AppendObtainedToResults();
     }
