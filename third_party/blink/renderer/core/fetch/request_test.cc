@@ -122,18 +122,17 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
   EXPECT_EQ(fetch_api_request_headers, second_fetch_api_request->headers);
 }
 
-TEST(ServiceWorkerRequestTest, ToFetchAPIRequestStripsURLFragment) {
+TEST(ServiceWorkerRequestTest, ToFetchAPIRequestDoesNotStripURLFragment) {
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
-  String url_without_fragment = "http://www.example.com/";
-  String url = url_without_fragment + "#fragment";
-  Request* request =
-      Request::Create(scope.GetScriptState(), url, exception_state);
+  String url_with_fragment = "http://www.example.com/#fragment";
+  Request* request = Request::Create(scope.GetScriptState(), url_with_fragment,
+                                     exception_state);
   DCHECK(request);
 
   mojom::blink::FetchAPIRequestPtr fetch_api_request =
       request->CreateFetchAPIRequest();
-  EXPECT_EQ(url_without_fragment, fetch_api_request->url);
+  EXPECT_EQ(url_with_fragment, fetch_api_request->url);
 }
 
 }  // namespace

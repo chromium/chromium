@@ -208,6 +208,7 @@ cache_test(function(cache) {
 cache_test(function(cache) {
     var first_url = test_url;
     var second_url = first_url + '#(O_o)';
+    var third_url = first_url + '#fragment';
     var alternate_response_body = 'New body';
     var alternate_response = new Response(alternate_response_body,
                                           { statusText: 'New status' });
@@ -228,8 +229,20 @@ cache_test(function(cache) {
       .then(function(body) {
           assert_equals(body, alternate_response_body,
                         'Cache put should store new response body.');
+        })
+      .then(function() {
+          return cache.put(new Request(third_url), alternate_response.clone());
+        })
+      .then(function() {
+          return cache.keys();
+        })
+      .then(function(results) {
+          // Should match urls (without fragments or with different ones) to the
+          // same cache key. However, result.url should be the latest url used.
+          assert_equals(results[0].url, third_url);
+          return;
         });
-  }, 'Cache.put called twice with request URLs that differ only by a fragment');
+}, 'Cache.put called multiple times with request URLs that differ only by a fragment');
 
 cache_test(function(cache) {
     var url = 'http://example.com/foo';

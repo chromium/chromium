@@ -331,6 +331,15 @@ GURL GURL::GetWithoutFilename() const {
   return Resolve(".");
 }
 
+GURL GURL::GetWithoutRef() const {
+  if (!has_ref())
+    return GURL(*this);
+
+  Replacements replacements;
+  replacements.ClearRef();
+  return ReplaceComponents(replacements);
+}
+
 bool GURL::IsStandard() const {
   return url::IsStandard(spec_.data(), parsed_.scheme);
 }

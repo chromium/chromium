@@ -31,12 +31,6 @@ gfx::ImageSkia GetWindowIcon(aura::Window* window) {
   return image ? *image : gfx::ImageSkia();
 }
 
-GURL GetWithoutRef(const GURL& url) {
-  GURL::Replacements replacements;
-  replacements.ClearRef();
-  return url.ReplaceComponents(replacements);
-}
-
 }  // namespace
 
 // The maximum number of entries that can be kept in the
@@ -52,13 +46,13 @@ DlpConfidentialContent::DlpConfidentialContent(
     content::WebContents* web_contents)
     : icon(favicon::TabFaviconFromWebContents(web_contents).AsImageSkia()),
       title(web_contents->GetTitle()),
-      url(GetWithoutRef(web_contents->GetLastCommittedURL())) {}
+      url(web_contents->GetLastCommittedURL().GetWithoutRef()) {}
 
 DlpConfidentialContent::DlpConfidentialContent(aura::Window* window,
                                                const GURL& url)
     : icon(GetWindowIcon(window)),
       title(window->GetTitle()),
-      url(GetWithoutRef(url)) {}
+      url(url.GetWithoutRef()) {}
 
 DlpConfidentialContent::DlpConfidentialContent(
     const DlpConfidentialContent& other) = default;

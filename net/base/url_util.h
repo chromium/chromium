@@ -62,6 +62,21 @@ AppendOrReplaceQueryParameter(const GURL& url,
                               base::StringPiece name,
                               absl::optional<base::StringPiece> value);
 
+// Returns a new GURL by appending the provided ref (also named fragment).
+// Unsafe characters are escaped. The original fragment is replaced
+// if it's present.
+//
+// Examples:
+//
+// AppendOrReplaceRef(
+//     GURL("http://example.com"), "ref").spec()
+// => "http://example.com#ref"
+// AppendOrReplaceRef(
+//     GURL("http://example.com#ref"), "ref2").spec()
+// => "http://example.com#ref2"
+NET_EXPORT GURL AppendOrReplaceRef(const GURL& url,
+                                   const base::StringPiece& ref);
+
 // Iterates over the key-value pairs in the query portion of |url|.
 // NOTE: QueryIterator stores reference to |url| and creates base::StringPiece
 // instances which refer to the data inside |url| query. Therefore |url| must

@@ -605,6 +605,10 @@ class CacheStorageCacheTest : public testing::Test {
     return net::AppendQueryParameter(BodyUrl(), "query", "test");
   }
 
+  GURL BodyUrlWithRef(std::string ref = "ref") const {
+    return net::AppendOrReplaceRef(BodyUrl(), ref);
+  }
+
   GURL NoBodyUrl() const {
     GURL::Replacements replacements;
     replacements.SetPathStr("/no_body.html");
@@ -624,6 +628,12 @@ class CacheStorageCacheTest : public testing::Test {
                                           blink::mojom::Referrer::New(), false);
     body_request_with_query_ =
         CreateFetchAPIRequest(BodyUrlWithQuery(), "GET", kHeaders,
+                              blink::mojom::Referrer::New(), false);
+    body_request_with_fragment_ =
+        CreateFetchAPIRequest(BodyUrlWithRef(), "GET", kHeaders,
+                              blink::mojom::Referrer::New(), false);
+    body_request_with_different_fragment_ =
+        CreateFetchAPIRequest(BodyUrlWithRef("ref2"), "GET", kHeaders,
                               blink::mojom::Referrer::New(), false);
     no_body_request_ = CreateFetchAPIRequest(
         NoBodyUrl(), "GET", kHeaders, blink::mojom::Referrer::New(), false);
@@ -1012,6 +1022,8 @@ class CacheStorageCacheTest : public testing::Test {
 
   blink::mojom::FetchAPIRequestPtr body_request_;
   blink::mojom::FetchAPIRequestPtr body_request_with_query_;
+  blink::mojom::FetchAPIRequestPtr body_request_with_fragment_;
+  blink::mojom::FetchAPIRequestPtr body_request_with_different_fragment_;
   blink::mojom::FetchAPIRequestPtr no_body_request_;
   blink::mojom::FetchAPIRequestPtr body_head_request_;
   std::string expected_blob_uuid_ = "blob-id:myblob";
@@ -1137,6 +1149,14 @@ TEST_P(CacheStorageCacheTestP, MatchAllLimit) {
   match_options->ignore_search = true;
   EXPECT_FALSE(MatchAll(body_request_, match_options->Clone(), &responses));
   EXPECT_EQ(CacheStorageError::kErrorQueryTooLarge, callback_error_);
+}
+
+TEST_P(CacheStorageCacheTestP, MatchWithFragment) {
+  // When putting in the cache a request with body and fragment, it
+  // must be retrievable using a different fragment or without any fragment.
+  EXPECT_TRUE(Put(body_request_with_fragment_, CreateNoBodyResponse()));
+  EXPECT_TRUE(Match(body_request_with_different_fragment_));
+  EXPECT_TRUE(Match(body_request_));
 }
 
 TEST_P(CacheStorageCacheTestP, KeysLimit) {

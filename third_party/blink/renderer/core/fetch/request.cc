@@ -1020,13 +1020,7 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
   fetch_api_request->is_history_navigation = request_->IsHistoryNavigation();
   fetch_api_request->destination = request_->Destination();
   fetch_api_request->request_initiator = request_->Origin();
-
-  // Strip off the fragment part of URL. So far, all callers expect the fragment
-  // to be excluded.
-  KURL url(request_->Url());
-  if (request_->Url().HasFragmentIdentifier())
-    url.RemoveFragmentIdentifier();
-  fetch_api_request->url = url;
+  fetch_api_request->url = KURL(request_->Url());
 
   HTTPHeaderMap headers;
   for (const auto& header : headers_->HeaderList()->List()) {

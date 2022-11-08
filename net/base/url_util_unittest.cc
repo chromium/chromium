@@ -163,6 +163,40 @@ TEST(UrlUtilTest, AppendOrReplaceQueryParameter) {
           .spec());
 }
 
+TEST(UrlUtilTest, AppendOrReplaceRef) {
+  // Setting a new ref should append it.
+  EXPECT_EQ("http://example.com/path#ref",
+            AppendOrReplaceRef(GURL("http://example.com/path"), "ref").spec());
+
+  // Setting a ref over an existing one should replace it.
+  EXPECT_EQ("http://example.com/path#ref",
+            AppendOrReplaceRef(GURL("http://example.com/path#old_ref"), "ref")
+                .spec());
+
+  // Setting a ref on a url with existing query parameters should simply append
+  // it at the end
+  EXPECT_EQ(
+      "http://example.com/path?query=value#ref",
+      AppendOrReplaceRef(GURL("http://example.com/path?query=value#ref"), "ref")
+          .spec());
+
+  // Setting a ref on a url with existing query parameters and with special
+  // encoded characters: `special-chars?query=value#ref chars%\";'`
+  EXPECT_EQ(
+      "http://example.com/special-chars?query=value#ref%20chars%%22;'",
+      AppendOrReplaceRef(GURL("http://example.com/special-chars?query=value"),
+                         "ref chars%\";'")
+          .spec());
+
+  // Testing adding a ref to a URL with specially encoded characters.
+  // `special chars%\";'?query=value#ref`
+  EXPECT_EQ(
+      "http://example.com/special%20chars%%22;'?query=value#ref",
+      AppendOrReplaceRef(
+          GURL("http://example.com/special chars%\";'?query=value"), "ref")
+          .spec());
+}
+
 TEST(UrlUtilTest, GetValueForKeyInQuery) {
   GURL url("http://example.com/path?name=value&boolParam&"
            "url=http://test.com/q?n1%3Dv1%26n2");

@@ -426,10 +426,7 @@ bool WebNavigationTabObserver::IsReferenceFragmentNavigation(
   if (existing_url == url)
     return false;
 
-  GURL::Replacements replacements;
-  replacements.ClearRef();
-  return existing_url.ReplaceComponents(replacements) ==
-         url.ReplaceComponents(replacements);
+  return existing_url.EqualsIgnoringRef(url);
 }
 
 void WebNavigationTabObserver::RenderFrameHostPendingDeletion(

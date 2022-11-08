@@ -39,6 +39,7 @@ message CacheHeaderMap {
 message CacheRequest {
   required string method = 1;
   repeated CacheHeaderMap headers = 2;
+  optional string fragment = 3;
 }
 
 message CacheResponse {

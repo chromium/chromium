@@ -127,6 +127,12 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
   return url.ReplaceComponents(replacements);
 }
 
+GURL AppendOrReplaceRef(const GURL& url, const base::StringPiece& ref) {
+  GURL::Replacements replacements;
+  replacements.SetRefStr(ref);
+  return url.ReplaceComponents(replacements);
+}
+
 QueryIterator::QueryIterator(const GURL& url)
     : url_(url),
       at_end_(!url.is_valid()) {

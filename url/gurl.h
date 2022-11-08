@@ -189,6 +189,14 @@ class COMPONENT_EXPORT(URL) GURL {
   // scheme, authority or path, it will return an empty, invalid GURL.
   GURL GetWithoutFilename() const;
 
+  // A helper function to return a GURL without the Ref (also named Fragment
+  // Identifier). For example,
+  // GURL("https://www.foo.com/index.html#test").GetWithoutRef().spec()
+  // will return "https://www.foo.com/index.html".
+  // If the GURL is invalid or missing a
+  // scheme, authority or path, it will return an empty, invalid GURL.
+  GURL GetWithoutRef() const;
+
   // A helper function to return a GURL containing just the scheme, host,
   // and port from a URL. Equivalent to clearing any username and password,
   // replacing the path with a slash, and clearing everything after that. If

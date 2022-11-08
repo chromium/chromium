@@ -48,6 +48,7 @@
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -228,6 +229,16 @@ void ReadMetadataDidReadMetadata(disk_cache::Entry* entry,
                                  scoped_refptr<net::IOBufferWithSize> buffer,
                                  int rv);
 
+// This method will return a normalized Cache URL. In this case, the only
+// normalization being done is to remove the fragment (ref is a synonym
+// for fragment).
+GURL NormalizeCacheUrl(const GURL& url) {
+  if (url.has_ref())
+    return url.GetWithoutRef();
+
+  return url;
+}
+
 bool VaryMatches(const blink::FetchAPIRequestHeadersMap& request,
                  const blink::FetchAPIRequestHeadersMap& cached_request,
                  network::mojom::FetchResponseType response_type,
@@ -403,7 +414,10 @@ blink::mojom::FetchAPIRequestPtr CreateRequest(
     const proto::CacheMetadata& metadata,
     const GURL& request_url) {
   auto request = blink::mojom::FetchAPIRequest::New();
-  request->url = request_url;
+  request->url =
+      metadata.request().has_fragment()
+          ? net::AppendOrReplaceRef(request_url, metadata.request().fragment())
+          : request_url;
   request->method = metadata.request().method();
   request->is_reload = false;
   request->referrer = blink::mojom::Referrer::New();
@@ -1091,7 +1105,7 @@ void CacheStorageCache::QueryCache(blink::mojom::FetchAPIRequestPtr request,
 
   std::string request_url;
   if (request)
-    request_url = request->url.spec();
+    request_url = NormalizeCacheUrl(request->url).spec();
 
   std::unique_ptr<QueryCacheContext> query_cache_context(
       new QueryCacheContext(std::move(request), std::move(options),
@@ -1211,7 +1225,7 @@ void CacheStorageCache::QueryCacheFilterEntry(
 
   if (query_cache_context->request &&
       !query_cache_context->request->url.is_empty()) {
-    GURL requestURL = query_cache_context->request->url;
+    GURL requestURL = NormalizeCacheUrl(query_cache_context->request->url);
     GURL cachedURL = GURL(entry->GetKey());
 
     if (query_cache_context->options &&
@@ -1595,8 +1609,9 @@ void CacheStorageCache::WriteSideDataImpl(ErrorCallback callback,
   // Note, the simple disk_cache priority is not important here because we
   // only allow one write operation at a time.  Therefore there will be no
   // competing operations in the disk_cache queue.
-  disk_cache::EntryResult result = backend_->OpenEntry(
-      url.spec(), net::MEDIUM, std::move(split_callback.first));
+  disk_cache::EntryResult result =
+      backend_->OpenEntry(NormalizeCacheUrl(url).spec(), net::MEDIUM,
+                          std::move(split_callback.first));
   if (result.net_error() != net::ERR_IO_PENDING)
     std::move(split_callback.second).Run(std::move(result));
 }
@@ -1856,7 +1871,8 @@ void CacheStorageCache::PutDidDeleteEntry(
 
   DCHECK(scheduler_->IsRunningExclusiveOperation());
   disk_cache::EntryResult result = backend_ptr->OpenOrCreateEntry(
-      request_.url.spec(), net::MEDIUM, std::move(split_callback.first));
+      NormalizeCacheUrl(request_.url).spec(), net::MEDIUM,
+      std::move(split_callback.first));
 
   if (result.net_error() != net::ERR_IO_PENDING)
     std::move(split_callback.second).Run(std::move(result));
@@ -1886,6 +1902,9 @@ void CacheStorageCache::PutDidCreateEntry(
   metadata.set_entry_time(base::Time::Now().ToInternalValue());
   proto::CacheRequest* request_metadata = metadata.mutable_request();
   request_metadata->set_method(put_context->request->method);
+  if (put_context->request->url.has_ref())
+    request_metadata->set_fragment(put_context->request->url.ref());
+
   for (const auto& header : put_context->request->headers) {
     DCHECK_EQ(std::string::npos, header.first.find('\0'));
     DCHECK_EQ(std::string::npos, header.second.find('\0'));
