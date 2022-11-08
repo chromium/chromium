@@ -1413,9 +1413,7 @@ WebTimeRanges WebMediaPlayerImpl::Seekable() const {
 
   // Allow a special exception for seeks to zero for streaming sources with a
   // finite duration; this allows looping to work.
-  const bool is_finite_stream = mb_data_source_ &&
-                                mb_data_source_->IsStreaming() &&
-                                std::isfinite(seekable_end);
+  const bool is_finite_stream = IsStreaming() && std::isfinite(seekable_end);
 
   // Do not change the seekable range when using the MediaPlayerRenderer. It
   // will take care of dropping invalid seeks.
