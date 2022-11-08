@@ -307,6 +307,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ClientSidePhishingDetection.AllowlistMatchResult"
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-05-07">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the result of checking a URL against the local client-side phishing
+    detection allowlist. This is triggered whenever the allowlist is checked,
+    which applies both to client-side detection checks and password protection
+    requests.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.CookieAgeHours" units="hours"
     expires_after="2023-03-19">
   <owner>drubery@chromium.org</owner>

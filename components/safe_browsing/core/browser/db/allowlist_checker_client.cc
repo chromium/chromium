@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace safe_browsing {
 
@@ -33,6 +34,8 @@ void AllowlistCheckerClient::StartCheckCsdAllowlist(
   }
 
   AsyncMatch match = database_manager->CheckCsdAllowlistUrl(url, client.get());
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ClientSidePhishingDetection.AllowlistMatchResult", match);
   InvokeCallbackOrRelease(match, std::move(client));
 }
 
