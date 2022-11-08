@@ -7004,7 +7004,7 @@
   {
     "name": "wallpaper-fast-refresh",
     "owners": ["ckincaid@google.com", "assistive-eng@google.com"],
-    "expiry_milestone": 105
+    "expiry_milestone": 120
   },
   {
     "name": "wallpaper-fullscreen-preview",
