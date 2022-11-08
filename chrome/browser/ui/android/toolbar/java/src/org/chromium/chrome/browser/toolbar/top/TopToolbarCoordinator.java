@@ -785,4 +785,9 @@ public class TopToolbarCoordinator implements Toolbar {
     public StartSurfaceToolbarCoordinator getStartSurfaceToolbarForTesting() {
         return mStartSurfaceToolbarCoordinator;
     }
+
+    @Override
+    public void setHairlineVisibility(boolean isVisible) {
+        mToolbarLayout.setHairlineVisibility(isVisible);
+    }
 }

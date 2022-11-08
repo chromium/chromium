@@ -374,12 +374,15 @@ public class FeedSurfaceCoordinator
         mMediator.updateContent();
     }
 
-    /**
-     * TODO(b/241271058): update toolbar height by calling delegate instead of passing it as a
-     * parameter.
-     */
-    public int getToolbarHeight() {
+    int getToolbarHeight() {
         return mToolbarHeight;
+    }
+
+    void setToolbarHairlineVisibility(boolean isVisible) {
+        Toolbar toolbar = mToolbarSupplier.get();
+        if(toolbar != null){
+            toolbar.setHairlineVisibility(isVisible);
+        }
     }
 
     /** @return the position of the in-feed header. */

@@ -916,4 +916,15 @@ public abstract class ToolbarLayout
             mToolbarColorObserver.onToolbarColorChanged(color);
         }
     }
+
+    /**
+     * This method sets the toolbar hairline visibility.
+     * @param isHairlineVisible whether the toolbar hairline should be visible.
+     */
+    public void setHairlineVisibility(boolean isHairlineVisible) {
+        ImageView shadow = getRootView().findViewById(R.id.toolbar_hairline);
+        if(shadow != null) {
+            shadow.setVisibility(isHairlineVisible ? VISIBLE : GONE);
+        }
+    }
 }

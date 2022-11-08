@@ -210,6 +210,7 @@ public class FeedSurfaceMediator
     private boolean mFeedEnabled;
     private boolean mTouchEnabled = true;
     private boolean mStreamContentChanged;
+    private boolean mIsStickyHeaderEnabledInLayout;
     private int mThumbnailWidth;
     private int mThumbnailHeight;
     private int mThumbnailScrollY;
@@ -344,6 +345,10 @@ public class FeedSurfaceMediator
         mCoordinator.getView().addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     mSnapScrollHelper.handleScroll();
+                    float pixelToDp = mContext.getResources().getDisplayMetrics().density;
+                    int widthDp = (int) ((right - left) / pixelToDp);
+                    int heightDp = (int) ((bottom - top) / pixelToDp);
+                    mIsStickyHeaderEnabledInLayout = (widthDp >= 360 && heightDp >= 360);
                     if (FeedFeatures.isMultiColumnFeedEnabled(mContext)) {
                         boolean useSingleSpan =
                                 (right - left) <= ViewUtils.dpToPx(mContext, SMALL_WIDTH_DP);
@@ -493,13 +498,14 @@ public class FeedSurfaceMediator
             public void onScrolled(RecyclerView v, int dx, int dy) {
                 int headerPosition = mCoordinator.getFeedHeaderPosition();
                 int toolbarHeight = mCoordinator.getToolbarHeight();
-
                 // When the distance from the header to the top is bigger than the toolbar height,
                 // it hasn't yet reached the position where it should be fixed/sticky,
                 // so the sticky header is kept hidden. Show it otherwise.
                 boolean isHeaderOutOfView = headerPosition < toolbarHeight;
+                boolean isStickyHeaderVisible = isHeaderOutOfView && mIsStickyHeaderEnabledInLayout;
                 mSectionHeaderModel.set(SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY,
-                        isHeaderOutOfView);
+                        isStickyHeaderVisible);
+                mCoordinator.setToolbarHairlineVisibility(!isStickyHeaderVisible);
 
                 if (mSnapScrollHelper != null) {
                     mSnapScrollHelper.handleScroll();
