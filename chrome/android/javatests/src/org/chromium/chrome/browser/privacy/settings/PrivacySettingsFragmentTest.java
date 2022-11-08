@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -34,7 +35,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -84,6 +84,11 @@ public class PrivacySettingsFragmentTest {
             return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_targeted_help)
                     != null;
         });
+    }
+
+    private void scrollToSetting(Matcher<View> matcher) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 
     private View getIncognitoReauthSettingView(PrivacySettings privacySettings) {
@@ -141,17 +146,14 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-    @DisabledTest(message = "crbug.com/1381526")
     public void testPrivacySandboxView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
         // Scroll down and open Privacy Sandbox page.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-        });
+        scrollToSetting(withText(R.string.prefs_privacy_sandbox));
         onView(withText(R.string.prefs_privacy_sandbox)).perform(click());
         // Verify that the right view is shown depending on feature state.
+        scrollToSetting(withText(R.string.privacy_sandbox_toggle));
         onView(withText(R.string.privacy_sandbox_toggle)).check(matches(isDisplayed()));
     }
 
@@ -162,10 +164,7 @@ public class PrivacySettingsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
         // Scroll down and open Privacy Sandbox page.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-        });
+        scrollToSetting(withText(R.string.prefs_privacy_sandbox));
         onView(withText(R.string.prefs_privacy_sandbox)).perform(click());
         // Verify that the right view is shown depending on feature state.
         onView(withText(R.string.privacy_sandbox_ad_personalization_title))
