@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 
 namespace named_mojo_ipc_server {
@@ -17,7 +18,8 @@ namespace named_mojo_ipc_server {
 class NamedMojoServerEndpointConnectorLinux final
     : public NamedMojoServerEndpointConnector {
  public:
-  explicit NamedMojoServerEndpointConnectorLinux(Delegate* delegate);
+  explicit NamedMojoServerEndpointConnectorLinux(
+      base::SequenceBound<Delegate> delegate);
   NamedMojoServerEndpointConnectorLinux(
       const NamedMojoServerEndpointConnectorLinux&) = delete;
   NamedMojoServerEndpointConnectorLinux& operator=(
@@ -32,7 +34,7 @@ class NamedMojoServerEndpointConnectorLinux final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::SequenceBound<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // These are only valid/non-null when there is a pending connection.
   // Note that `pending_server_endpoint_` must outlive

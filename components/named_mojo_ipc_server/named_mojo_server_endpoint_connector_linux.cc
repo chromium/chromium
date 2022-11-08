@@ -11,13 +11,14 @@
 #include "base/check.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
+#include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
 namespace named_mojo_ipc_server {
 
 NamedMojoServerEndpointConnectorLinux::NamedMojoServerEndpointConnectorLinux(
-    Delegate* delegate)
-    : delegate_(delegate) {
+    base::SequenceBound<Delegate> delegate)
+    : delegate_(std::move(delegate)) {
   DCHECK(delegate_);
 }
 
@@ -51,12 +52,12 @@ void NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
   pending_server_endpoint_.reset();
   if (!success) {
     LOG(ERROR) << "AcceptSocketConnection failed.";
-    delegate_->OnServerEndpointConnectionFailed();
+    delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
   if (!socket.is_valid()) {
     LOG(ERROR) << "Socket is invalid.";
-    delegate_->OnServerEndpointConnectionFailed();
+    delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
 
@@ -65,7 +66,7 @@ void NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
   if (getsockopt(socket.get(), SOL_SOCKET, SO_PEERCRED, &unix_peer_identity,
                  &len) != 0) {
     PLOG(ERROR) << "getsockopt failed.";
-    delegate_->OnServerEndpointConnectionFailed();
+    delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
 
@@ -73,19 +74,23 @@ void NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
       mojo::PlatformHandle(std::move(socket)));
   if (!endpoint.is_valid()) {
     LOG(ERROR) << "Endpoint is invalid.";
-    delegate_->OnServerEndpointConnectionFailed();
+    delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
   auto connection = std::make_unique<mojo::IsolatedConnection>();
   auto message_pipe = connection->Connect(std::move(endpoint));
-  delegate_->OnServerEndpointConnected(
-      std::move(connection), std::move(message_pipe), unix_peer_identity.pid);
+  delegate_.AsyncCall(&Delegate::OnServerEndpointConnected)
+      .WithArgs(std::move(connection), std::move(message_pipe),
+                unix_peer_identity.pid);
 }
 
 // static
-std::unique_ptr<NamedMojoServerEndpointConnector>
-NamedMojoServerEndpointConnector::Create(Delegate* delegate) {
-  return std::make_unique<NamedMojoServerEndpointConnectorLinux>(delegate);
+base::SequenceBound<NamedMojoServerEndpointConnector>
+NamedMojoServerEndpointConnector::Create(
+    base::SequenceBound<Delegate> delegate,
+    scoped_refptr<base::SequencedTaskRunner> io_sequence) {
+  return base::SequenceBound<NamedMojoServerEndpointConnectorLinux>(
+      io_sequence, std::move(delegate));
 }
 
 }  // namespace named_mojo_ipc_server

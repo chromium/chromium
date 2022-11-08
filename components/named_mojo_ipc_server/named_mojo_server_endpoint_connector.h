@@ -7,10 +7,16 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
+#include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace named_mojo_ipc_server {
 
@@ -44,9 +50,12 @@ class NamedMojoServerEndpointConnector {
   };
 
   // Creates the platform-specific MojoServerEndpointConnector. |delegate| must
-  // outlives the created object.
-  static std::unique_ptr<NamedMojoServerEndpointConnector> Create(
-      Delegate* delegate);
+  // outlive the created object.
+  // The endpoint connector will be bound to |io_sequence| and post replies to
+  // the |callback_sequence|.
+  static base::SequenceBound<NamedMojoServerEndpointConnector> Create(
+      base::SequenceBound<Delegate> delegate,
+      scoped_refptr<base::SequencedTaskRunner> io_sequence);
 
   virtual ~NamedMojoServerEndpointConnector() = default;
 

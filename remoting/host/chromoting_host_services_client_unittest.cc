@@ -35,12 +35,16 @@ class ChromotingHostServicesClientTest : public testing::Test,
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
       override;
 
+  void TearDown() override;
+
  protected:
   void SetChromeRemoteDesktopSessionEnvVar(bool is_crd_session);
   void WaitForInvitationSent();
   void WaitForSessionServicesBound();
   void SetRemoteDisconnectCallback(base::OnceClosure callback);
 
+  base::test::TaskEnvironment task_environment_;
+  raw_ptr<base::Environment> environment_;
   std::unique_ptr<ChromotingHostServicesClient> client_;
   std::unique_ptr<
       named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>
@@ -50,10 +54,6 @@ class ChromotingHostServicesClientTest : public testing::Test,
 
  private:
   void OnInvitationSent();
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO};
-  raw_ptr<base::Environment> environment_;
 
   // Used to block the thread until the server has sent out an invitation.
   std::unique_ptr<base::RunLoop> on_invitation_sent_run_loop_;
@@ -86,6 +86,11 @@ void ChromotingHostServicesClientTest::BindSessionServices(
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
   receivers_.push_back(std::move(receiver));
   session_services_bound_run_loop_->Quit();
+}
+
+void ChromotingHostServicesClientTest::TearDown() {
+  ipc_server_->StopServer();
+  task_environment_.RunUntilIdle();
 }
 
 void ChromotingHostServicesClientTest::SetChromeRemoteDesktopSessionEnvVar(

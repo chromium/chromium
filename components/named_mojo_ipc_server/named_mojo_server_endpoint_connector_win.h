@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -22,7 +23,8 @@ namespace named_mojo_ipc_server {
 class NamedMojoServerEndpointConnectorWin final
     : public NamedMojoServerEndpointConnector {
  public:
-  explicit NamedMojoServerEndpointConnectorWin(Delegate* delegate);
+  explicit NamedMojoServerEndpointConnectorWin(
+      base::SequenceBound<Delegate> delegate);
   NamedMojoServerEndpointConnectorWin(
       const NamedMojoServerEndpointConnectorWin&) = delete;
   NamedMojoServerEndpointConnectorWin& operator=(
@@ -41,7 +43,7 @@ class NamedMojoServerEndpointConnectorWin final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::SequenceBound<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::WaitableEventWatcher client_connection_watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

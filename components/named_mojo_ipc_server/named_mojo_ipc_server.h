@@ -11,12 +11,14 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "components/named_mojo_ipc_server/ipc_server.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
@@ -32,12 +34,9 @@ class IsolatedConnection;
 }
 
 namespace named_mojo_ipc_server {
-
 // Template-less base class to keep implementations in the .cc file. For usage,
 // see MojoIpcServer.
-class NamedMojoIpcServerBase
-    : public IpcServer,
-      public NamedMojoServerEndpointConnector::Delegate {
+class NamedMojoIpcServerBase : public IpcServer {
  public:
   using IsTrustedMojoEndpointCallback =
       base::RepeatingCallback<bool(base::ProcessId)>;
@@ -83,14 +82,32 @@ class NamedMojoIpcServerBase
   base::RepeatingClosure disconnect_handler_;
 
  private:
+  // Forwards callbacks from a NamedMojoServerEndpointConnector to a
+  // NamedMojoIpcServerBase. This allows the server to create a SequenceBound
+  // interface to post callbacks from the IO sequence to the main sequence.
+  class DelegateProxy : public NamedMojoServerEndpointConnector::Delegate {
+   public:
+    explicit DelegateProxy(base::WeakPtr<NamedMojoIpcServerBase> server);
+    ~DelegateProxy() override;
+
+    // Overrides for NamedMojoServerEndpointConnector::Delegate
+    void OnServerEndpointConnected(
+        std::unique_ptr<mojo::IsolatedConnection> connection,
+        mojo::ScopedMessagePipeHandle message_pipe,
+        base::ProcessId peer_pid) override;
+    void OnServerEndpointConnectionFailed() override;
+
+   private:
+    base::WeakPtr<NamedMojoIpcServerBase> server_;
+  };
+
   void OnServerEndpointCreated(mojo::PlatformChannelServerEndpoint endpoint);
 
-  // MojoServerEndpointConnector::Delegate implementation.
   void OnServerEndpointConnected(
       std::unique_ptr<mojo::IsolatedConnection> connection,
       mojo::ScopedMessagePipeHandle message_pipe,
-      base::ProcessId peer_pid) override;
-  void OnServerEndpointConnectionFailed() override;
+      base::ProcessId peer_pid);
+  void OnServerEndpointConnectionFailed();
 
   using ActiveConnectionMap =
       base::flat_map<mojo::ReceiverId,
@@ -104,11 +121,12 @@ class NamedMojoIpcServerBase
   // A task runner to run blocking jobs.
   scoped_refptr<base::SequencedTaskRunner> io_sequence_;
 
-  std::unique_ptr<NamedMojoServerEndpointConnector> endpoint_connector_;
+  base::SequenceBound<NamedMojoServerEndpointConnector> endpoint_connector_;
   ActiveConnectionMap active_connections_;
   base::OneShotTimer resent_invitation_on_error_timer_;
 
-  base::RepeatingClosure on_invitation_sent_callback_for_testing_;
+  base::RepeatingClosure on_invitation_sent_callback_for_testing_ =
+      base::DoNothing();
 
   base::WeakPtrFactory<NamedMojoIpcServerBase> weak_factory_{this};
 };
@@ -147,6 +165,12 @@ class NamedMojoIpcServerBase
 //     MojoIpcServer<mojom::MyInterface> server_{"my_server_name", this,
 //         base::BindRepeating(&MyInterfaceImpl::IsTrustedMojoEndpoint)};
 //   };
+// Note: In unittests base::test:TaskEnvironment run until idle after
+// NamedMojoIpcServer is shutdown. Otherwise, memory may leak. E.g:
+//  void MyTestFixture::TearDown() {
+//    ipc_server_->StopServer();
+//    task_environment_.RunUntilIdle();
+//  }
 template <typename Interface>
 class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
  public:

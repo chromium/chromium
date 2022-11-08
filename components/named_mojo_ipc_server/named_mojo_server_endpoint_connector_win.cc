@@ -12,10 +12,12 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -26,8 +28,8 @@
 namespace named_mojo_ipc_server {
 
 NamedMojoServerEndpointConnectorWin::NamedMojoServerEndpointConnectorWin(
-    Delegate* delegate)
-    : delegate_(delegate),
+    base::SequenceBound<Delegate> delegate)
+    : delegate_(std::move(delegate)),
       client_connected_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED) {
   DCHECK(delegate_);
@@ -107,21 +109,24 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
   ResetConnectionObjects();
   auto connection = std::make_unique<mojo::IsolatedConnection>();
   auto message_pipe = connection->Connect(std::move(endpoint));
-  delegate_->OnServerEndpointConnected(std::move(connection),
-                                       std::move(message_pipe), peer_pid);
+  delegate_.AsyncCall(&Delegate::OnServerEndpointConnected)
+      .WithArgs(std::move(connection), std::move(message_pipe), peer_pid);
 }
 
 void NamedMojoServerEndpointConnectorWin::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ResetConnectionObjects();
-  delegate_->OnServerEndpointConnectionFailed();
+  delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
 }
 
 // static
-std::unique_ptr<NamedMojoServerEndpointConnector>
-NamedMojoServerEndpointConnector::Create(Delegate* delegate) {
-  return std::make_unique<NamedMojoServerEndpointConnectorWin>(delegate);
+base::SequenceBound<NamedMojoServerEndpointConnector>
+NamedMojoServerEndpointConnector::Create(
+    base::SequenceBound<Delegate> delegate,
+    scoped_refptr<base::SequencedTaskRunner> io_sequence) {
+  return base::SequenceBound<NamedMojoServerEndpointConnectorWin>(
+      io_sequence, std::move(delegate));
 }
 
 void NamedMojoServerEndpointConnectorWin::ResetConnectionObjects() {

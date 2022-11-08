@@ -10,8 +10,10 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
@@ -55,6 +57,26 @@ mojo::PlatformChannelServerEndpoint CreateServerEndpointOnIoSequence(
 
 }  // namespace
 
+NamedMojoIpcServerBase::DelegateProxy::DelegateProxy(
+    base::WeakPtr<NamedMojoIpcServerBase> server)
+    : server_(server) {}
+
+NamedMojoIpcServerBase::DelegateProxy::~DelegateProxy() = default;
+
+void NamedMojoIpcServerBase::DelegateProxy::OnServerEndpointConnected(
+    std::unique_ptr<mojo::IsolatedConnection> connection,
+    mojo::ScopedMessagePipeHandle message_pipe,
+    base::ProcessId peer_pid) {
+  if (server_)
+    server_->OnServerEndpointConnected(std::move(connection),
+                                       std::move(message_pipe), peer_pid);
+}
+
+void NamedMojoIpcServerBase::DelegateProxy::OnServerEndpointConnectionFailed() {
+  if (server_)
+    server_->OnServerEndpointConnectionFailed();
+}
+
 NamedMojoIpcServerBase::NamedMojoIpcServerBase(
     const mojo::NamedPlatformChannel::ServerName& server_name,
     IsTrustedMojoEndpointCallback is_trusted_endpoint_callback)
@@ -74,7 +96,12 @@ void NamedMojoIpcServerBase::StartServer() {
   if (server_started_) {
     return;
   }
-  endpoint_connector_ = NamedMojoServerEndpointConnector::Create(this);
+
+  endpoint_connector_ = NamedMojoServerEndpointConnector::Create(
+      base::SequenceBound<DelegateProxy>(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          weak_factory_.GetWeakPtr()),
+      io_sequence_);
   server_started_ = true;
   SendInvitation();
 }
@@ -86,7 +113,7 @@ void NamedMojoIpcServerBase::StopServer() {
     return;
   }
   server_started_ = false;
-  endpoint_connector_.reset();
+  endpoint_connector_.Reset();
   UntrackAllMessagePipes();
   active_connections_.clear();
 }
@@ -118,19 +145,21 @@ void NamedMojoIpcServerBase::OnIpcDisconnected() {
 
 void NamedMojoIpcServerBase::OnServerEndpointCreated(
     mojo::PlatformChannelServerEndpoint endpoint) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!server_started_) {
     // A server endpoint might be created on |io_sequence_| after StopServer()
     // is called, which should be ignored.
     return;
   }
-  if (on_invitation_sent_callback_for_testing_) {
-    on_invitation_sent_callback_for_testing_.Run();
-  }
+
   if (!endpoint.is_valid()) {
     OnServerEndpointConnectionFailed();
     return;
   }
-  endpoint_connector_->Connect(std::move(endpoint));
+
+  endpoint_connector_.AsyncCall(&NamedMojoServerEndpointConnector::Connect)
+      .WithArgs(std::move(endpoint))
+      .Then(on_invitation_sent_callback_for_testing_);
 }
 
 void NamedMojoIpcServerBase::OnServerEndpointConnected(

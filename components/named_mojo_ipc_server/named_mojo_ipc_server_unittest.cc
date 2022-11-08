@@ -63,6 +63,7 @@ class NamedMojoIpcServerTest : public testing::Test, public test::mojom::Echo {
   ~NamedMojoIpcServerTest() override;
 
   void SetUp() override;
+  void TearDown() override;
 
  protected:
   mojo::PlatformChannelEndpoint ConnectToTestServer();
@@ -70,6 +71,7 @@ class NamedMojoIpcServerTest : public testing::Test, public test::mojom::Echo {
       mojo::IsolatedConnection& client_connection);
   void WaitForInvitationSent();
 
+  base::test::TaskEnvironment task_environment_;
   base::Thread ipc_thread_{"ipc!"};
   std::unique_ptr<NamedMojoIpcServer<test::mojom::Echo>> ipc_server_;
 
@@ -87,9 +89,6 @@ class NamedMojoIpcServerTest : public testing::Test, public test::mojom::Echo {
 
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
   mojo::NamedPlatformChannel::ServerName test_server_name_;
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO};
 
   // Run loops that wait for NamedMojoIpcServerBase::ObserverForTesting methods
   // to be called.
@@ -117,6 +116,12 @@ NamedMojoIpcServerTest::~NamedMojoIpcServerTest() = default;
 void NamedMojoIpcServerTest::SetUp() {
   ipc_server_->StartServer();
   WaitForInvitationSent();
+}
+
+void NamedMojoIpcServerTest::TearDown() {
+  if (ipc_server_)
+    ipc_server_->StopServer();
+  task_environment_.RunUntilIdle();
 }
 
 mojo::PlatformChannelEndpoint NamedMojoIpcServerTest::ConnectToTestServer() {
