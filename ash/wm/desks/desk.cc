@@ -699,6 +699,22 @@ std::vector<aura::Window*> Desk::GetAllAppWindows() {
   return app_windows;
 }
 
+std::vector<aura::Window*> Desk::GetAllAssociatedWindows() const {
+  // Note that floated window needs to be handled separately since it doesn't
+  // store in desk container.
+  if (auto* floated_window =
+          !chromeos::wm::features::IsFloatWindowEnabled()
+              ? nullptr
+              : Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
+                    this)) {
+    std::vector<aura::Window*> all_windows;
+    base::ranges::copy(windows_, std::back_inserter(all_windows));
+    all_windows.push_back(floated_window);
+    return all_windows;
+  }
+  return windows_;
+}
+
 void Desk::MoveWindowToDeskInternal(aura::Window* window,
                                     Desk* target_desk,
                                     aura::Window* target_root) {

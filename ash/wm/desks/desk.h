@@ -190,6 +190,12 @@ class ASH_EXPORT Desk {
   // Gets all app windows on this desk that should be closed.
   std::vector<aura::Window*> GetAllAppWindows();
 
+  // Gets desk windows including floated window (if any).
+  // Note that floated window isn't tracked in `windows_` but still "belongs" to
+  // this desk, it's stored in the float container and managed by
+  // `FloatController`.
+  std::vector<aura::Window*> GetAllAssociatedWindows() const;
+
  private:
   friend class DesksTestApi;
 

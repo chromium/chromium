@@ -622,6 +622,28 @@ TEST_F(WindowFloatTest, FloatWindowActivationActivatesBelongingDesk) {
   EXPECT_TRUE(desk_1->is_active());
 }
 
+// Test when we combine desks, floated window is updated on overview.
+TEST_F(WindowFloatTest, FloatWindowUpdatedOnOverview) {
+  auto* desks_controller = DesksController::Get();
+  auto* desk_1 = desks_controller->desks()[0].get();
+  // Float `window` at `desk_1`.
+  std::unique_ptr<aura::Window> window(CreateFloatedWindow());
+  // Verify `window` belongs to `desk_1`.
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window.get()), desk_1);
+  NewDesk();
+  ASSERT_EQ(desks_controller->desks().size(), 2u);
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  RemoveDesk(desk_1, DeskCloseType::kCombineDesks);
+  ASSERT_EQ(desks_controller->desks().size(), 1u);
+  // Floated window should be appended to overview items.
+  const std::vector<std::unique_ptr<OverviewItem>>& overview_items =
+      GetOverviewItemsForRoot(0);
+  ASSERT_EQ(overview_items.size(), 1u);
+  EXPECT_EQ(window.get(), overview_items[0]->GetWindow());
+}
+
 class TabletWindowFloatTest : public WindowFloatTest {
  public:
   TabletWindowFloatTest() = default;

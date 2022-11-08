@@ -1567,7 +1567,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   auto* overview_controller = shell->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
   const std::vector<aura::Window*> removed_desk_windows =
-      removed_desk->windows();
+      removed_desk->GetAllAssociatedWindows();
 
   // No need to spend time refreshing the mini_views of the removed desk.
   auto removed_desk_mini_views_pauser =
@@ -1640,7 +1640,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     // Now that the windows from the removed and target desks merged, add them
     // all to the grid in the order of the new MRU.
     if (in_overview)
-      AppendWindowsToOverview(target_desk->windows());
+      AppendWindowsToOverview(target_desk->GetAllAssociatedWindows());
+
   } else if (close_type == DeskCloseType::kCombineDesks) {
     // We will refresh the mini_views of the active desk only once at the end.
     auto active_desk_mini_view_pauser =
@@ -1741,7 +1742,7 @@ void DesksController::UndoDeskRemoval() {
     RestackVisibleOnAllDesksWindowsOnActiveDesk();
 
     if (in_overview)
-      AppendWindowsToOverview(readded_desk_ptr->windows());
+      AppendWindowsToOverview(readded_desk_ptr->GetAllAssociatedWindows());
   }
 
   Shell::Get()
