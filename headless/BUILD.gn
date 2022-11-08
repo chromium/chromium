@@ -480,6 +480,8 @@ component("headless_non_renderer") {
     "//components/cookie_config",
     "//components/embedder_support",
     "//components/keyed_service/content",
+    "//components/origin_trials:browser",
+    "//components/origin_trials:common",
     "//components/os_crypt:os_crypt",
     "//components/policy:generated",
     "//components/policy/core/browser",
