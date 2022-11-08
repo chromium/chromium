@@ -111,4 +111,58 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   CloseDialog(dialog_contents);
 }
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ReturnSuccessfulResponseUsingKeyPress \
+  DISABLED_ReturnSuccessfulResponseUsingKeyPress
+#else
+#define MAYBE_ReturnSuccessfulResponseUsingKeyPress \
+  ReturnSuccessfulResponseUsingKeyPress
+#endif
+IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
+                       MAYBE_ReturnSuccessfulResponseUsingKeyPress) {
+  const char kEndpointResponseSuccess[] =
+      R"({
+      "device": {
+        "displayName": "test_device",
+        "id": "1234",
+        "deviceCapabilities": {
+          "videoOut": true,
+          "videoIn": true,
+          "audioOut": true,
+          "audioIn": true,
+          "devMode": true
+        },
+        "networkInfo": {
+          "hostName": "GoogleNet",
+          "port": "666",
+          "ipV4Address": "192.0.2.146",
+          "ipV6Address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        }
+      }
+    })";
+
+  // Mock a successful fetch from our server.
+  SetEndpointFetcherMockResponse(kEndpointResponseSuccess, net::HTTP_OK,
+                                 net::OK);
+
+  // Simulate a successful opening of the channel.
+  SetMockOpenChannelCallbackResponse(true);
+
+  EnableAccessCodeCasting();
+
+  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
+                                      browser()->profile());
+
+  auto* dialog_contents = ShowDialog();
+  SetAccessCodeUsingKeyPress("ABCDEF");
+  ExpectStartRouteCallFromTabMirroring(
+      "cast:<1234>",
+      MediaSource::ForTab(
+          sessions::SessionTabHelper::IdForTab(web_contents()).id())
+          .id(),
+      web_contents());
+
+  PressSubmitAndWaitForCloseUsingKeyPress(dialog_contents);
+}
+
 }  // namespace media_router

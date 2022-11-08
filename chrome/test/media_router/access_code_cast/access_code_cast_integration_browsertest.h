@@ -78,6 +78,12 @@ class AccessCodeCastIntegrationBrowserTest
   void PressSubmit(content::WebContents* dialog_contents);
   void PressSubmitAndWaitForClose(content::WebContents* dialog_contents);
 
+  void SetAccessCodeUsingKeyPress(const std::string& access_code);
+  void PressSubmitUsingKeyPress();
+  void PressSubmitAndWaitForCloseUsingKeyPress(
+      content::WebContents* dialog_contents);
+  void CloseDialogUsingKeyPress();
+
   // This function spins the run loop until an error code is surfaced.
   int WaitForAddSinkErrorCode(content::WebContents* dialog_contents);
 

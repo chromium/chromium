@@ -20,6 +20,7 @@
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/test/test_helper.h"
@@ -33,6 +34,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
@@ -269,6 +271,10 @@ void AccessCodeCastIntegrationBrowserTest::ShowUi(const std::string& name) {
 
 content::WebContents* AccessCodeCastIntegrationBrowserTest::ShowDialog() {
   content::WebContentsAddedObserver observer;
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
   // This string is empty since the ShowUi function requires a string. We do not
   // need one in the context we are using the function.
   ShowUi("");
@@ -309,6 +315,38 @@ void AccessCodeCastIntegrationBrowserTest::PressSubmitAndWaitForClose(
     content::WebContents* dialog_contents) {
   CloseObserver close_observer(dialog_contents);
   PressSubmit(dialog_contents);
+  close_observer.Wait();
+}
+
+void AccessCodeCastIntegrationBrowserTest::CloseDialogUsingKeyPress() {
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::KeyboardCode::VKEY_ESCAPE, false, false, false, false));
+}
+
+void AccessCodeCastIntegrationBrowserTest::SetAccessCodeUsingKeyPress(
+    const std::string& access_code) {
+  for (const char& letter : access_code) {
+#if BUILDFLAG(IS_WIN)
+    ui::KeyboardCode keyboard_code = ui::KeyboardCode(toupper(letter));
+#else
+    ui::KeyboardCode keyboard_code =
+        static_cast<ui::KeyboardCode>(toupper(letter));
+#endif
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), keyboard_code, false,
+                                                false, false, false));
+  }
+}
+
+void AccessCodeCastIntegrationBrowserTest::PressSubmitUsingKeyPress() {
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::KeyboardCode::VKEY_RETURN, false, false, false, false));
+}
+
+void AccessCodeCastIntegrationBrowserTest::
+    PressSubmitAndWaitForCloseUsingKeyPress(
+        content::WebContents* dialog_contents) {
+  CloseObserver close_observer(dialog_contents);
+  PressSubmitUsingKeyPress();
   close_observer.Wait();
 }
 
