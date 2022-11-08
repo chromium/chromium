@@ -535,4 +535,23 @@ TEST_F(ResizeShadowAndCursorTest, OverviewModeChange) {
   VerifyResizeShadow(true);
 }
 
+// Tests that the code does not break when we unparent a window with a shadow
+// and then try to rearrange the hierarchy. (b/257306979)
+TEST_F(ResizeShadowAndCursorTest, ShadowCanExistInUnparentedWindow) {
+  ASSERT_FALSE(GetShadow());
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  auto* controller = Shell::Get()->resize_shadow_controller();
+  controller->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
+  window()->Show();
+  auto* parent = window()->parent();
+  parent->RemoveChild(window());
+
+  // Previously this would break the code because a hierarchy change on an
+  // unparented window with a shadow would try to use the window layer's null
+  // parent layer to reparent the shadow.
+  ASSERT_TRUE(parent);
+  parent->AddChild(window());
+}
+
 }  // namespace ash
