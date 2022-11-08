@@ -347,10 +347,10 @@ found in the LICENSE file.
                          aria-labelledby="pinned-toggle-label">
               </cr-toggle>
             </div>
-            <button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
+            <cr-button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
                     tabindex="0" hidden
                     aria-label="$i18n{TASKS_BUTTON_LABEL}">
-            </button>
+            </cr-button>
             <cr-button id="sharesheet-button" class="icon-button menu-button" tabindex="0" hidden
                     aria-label="$i18n{SHARESHEET_BUTTON_LABEL}"
                     visibleif="full-page"
@@ -380,7 +380,6 @@ found in the LICENSE file.
               <cr-button id="search-button" class="icon-button menu-button" tabindex="0"
                       aria-label="$i18n{SEARCH_TEXT_LABEL}"
                       has-tooltip>
-                <files-toggle-ripple></files-toggle-ripple>
                 <div class="icon"></div>
               </cr-button>
               <div id="search-box">
@@ -403,32 +402,29 @@ found in the LICENSE file.
                     has-tooltip>
               <div class="icon"></div>
             </cr-button>
-            <button id="sort-button" class="icon-button menu-button" tabindex="0"
+            <cr-button id="sort-button" class="icon-button menu-button" tabindex="0"
                     menu="#sort-menu"
                     aria-haspopup="true"
                     aria-label="$i18n{SORT_BUTTON_TOOLTIP}"
                     aria-activedescendant="sort-menu"
                     has-tooltip>
-              <files-toggle-ripple></files-toggle-ripple>
               <div class="icon"></div>
-            </button>
-            <button id="gear-button" class="icon-button menu-button" tabindex="0"
+            </cr-button>
+            <cr-button id="gear-button" class="icon-button menu-button" tabindex="0"
                     menu="#gear-menu"
                     aria-label="$i18n{GEAR_BUTTON_TOOLTIP}"
                     aria-haspopup="true"
                     aria-activedescendant="gear-menu"
                     has-tooltip>
-              <files-toggle-ripple></files-toggle-ripple>
               <div class="icon"></div>
-            </button>
-            <button id="selection-menu-button" class="icon-button menu-button" tabindex="0"
+            </cr-button>
+            <cr-button id="selection-menu-button" class="icon-button menu-button" tabindex="0"
                     menu="#file-context-menu"
                     aria-label="$i18n{SELECTION_MENU_BUTTON_TOOLTIP}"
                     aria-activedescendant="file-context-menu"
                     has-tooltip hidden>
-              <files-toggle-ripple></files-toggle-ripple>
               <div class="icon"></div>
-            </button>
+            </cr-button>
           </div>
         </div>
         <div class="dialog-body">

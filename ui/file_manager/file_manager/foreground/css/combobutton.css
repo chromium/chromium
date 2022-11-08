@@ -21,24 +21,6 @@
   display: flex;
 }
 
-.dialog-header .combobutton > .ripples {
-  height: 100%;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-
-.dialog-header .combobutton > .ripples > files-toggle-ripple {
-  height: 28px;
-  top: 2px;
-}
-
-.dialog-header .combobutton > .ripples > paper-ripple {
-  color: black;
-}
-
 .dialog-header .combobutton > .button > .action {
   background-position: left center;
   background-repeat: no-repeat;

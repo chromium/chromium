@@ -782,7 +782,6 @@ js_library("search_box") {
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",

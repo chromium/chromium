@@ -41,7 +41,6 @@ js_type_check("closure_compile_jsmodules") {
     ":files_quick_view",
     ":files_safe_media",
     ":files_spinner",
-    ":files_toggle_ripple",
     ":files_tooltip",
     ":xf_button",
     ":xf_circular_progress",
@@ -60,7 +59,6 @@ html_to_js("web_components") {
     "files_quick_view.js",
     "files_safe_media.js",
     "files_spinner.js",
-    "files_toggle_ripple.js",
     "files_tooltip.js",
     "icons.js",
     "xf_button.js",
@@ -153,13 +151,6 @@ html_to_wrapper("polymer_elements") {
   in_files = [ "files_toast.html" ]
   scheme = "relative"
   minify = true
-}
-
-# TODO(tapted): Move this to //ui/file_manager/base.
-js_library("files_toggle_ripple") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.

@@ -258,29 +258,11 @@ export class FileManagerUI {
     this.sortButton = queryDecoratedElement('#sort-button', MultiMenuButton);
 
     /**
-     * Ripple effect of sort button.
-     * @type {!FilesToggleRippleElement}
-     * @const
-     */
-    this.sortButtonToggleRipple =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.sortButton));
-
-    /**
      * The button to open gear menu.
      * @type {!MultiMenuButton}
      * @const
      */
     this.gearButton = queryDecoratedElement('#gear-button', MultiMenuButton);
-
-    /**
-     * Ripple effect of gear button.
-     * @type {!FilesToggleRippleElement}
-     * @const
-     */
-    this.gearButtonToggleRipple =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.gearButton));
 
     /**
      * @type {!GearMenu}

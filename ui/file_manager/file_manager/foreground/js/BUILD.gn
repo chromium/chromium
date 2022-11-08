@@ -531,7 +531,6 @@ js_library("deferred_elements") {
     "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_spinner",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/elements:xf_button",
     "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress",
@@ -1141,7 +1140,6 @@ js_library("selection_menu_controller") {
     "ui:menu",
     "ui:multi_menu_button",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
   ]
 }
@@ -1151,7 +1149,6 @@ js_library("sort_menu_controller") {
     ":file_list_model",
     "ui:multi_menu_button",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
 }
 

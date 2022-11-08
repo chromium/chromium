@@ -11,7 +11,6 @@ import {util} from '../../../common/js/util.js';
 import {FilesMenuItem} from './files_menu.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 
-
 /**
  * @fileoverview This implements a combobutton control.
  */
@@ -30,9 +29,6 @@ export class ComboButton extends MultiMenuButton {
 
     /** @private {?Element} */
     this.actionNode_ = null;
-
-    /** @private {?Element} */
-    this.filesToggleRipple_ = null;
 
     /** @private {boolean} */
     this.disabled = false;
@@ -191,23 +187,7 @@ export class ComboButton extends MultiMenuButton {
 
     buttonLayer.appendChild(this.trigger_);
 
-    const ripplesLayer = this.ownerDocument.createElement('div');
-    ripplesLayer.classList.add('ripples');
-    this.appendChild(ripplesLayer);
-    ripplesLayer.setAttribute('hidden', '');
-
-    this.filesToggleRipple_ =
-        this.ownerDocument.createElement('files-toggle-ripple');
-    ripplesLayer.appendChild(this.filesToggleRipple_);
-
-    /** @private {!PaperRipple} */
-    this.paperRipple_ = /** @type {!PaperRipple} */
-        (this.ownerDocument.createElement('paper-ripple'));
-    ripplesLayer.appendChild(this.paperRipple_);
-
     this.addEventListener('click', this.handleButtonClick_.bind(this));
-    this.addEventListener('menushow', this.handleMenuShow_.bind(this));
-    this.addEventListener('menuhide', this.handleMenuHide_.bind(this));
 
     this.trigger_.addEventListener(
         'click', this.handleTriggerClicked_.bind(this));
@@ -256,18 +236,9 @@ export class ComboButton extends MultiMenuButton {
       }
     } else {
       // When there is only 1 choice, just dispatch to open.
-      this.paperRipple_.simulatedRipple();
       this.blur();
       this.dispatchSelectEvent(this.defaultItem_);
     }
-  }
-
-  handleMenuShow_() {
-    this.filesToggleRipple_.activated = true;
-  }
-
-  handleMenuHide_() {
-    this.filesToggleRipple_.activated = false;
   }
 
   dispatchSelectEvent(item) {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../elements/files_toggle_ripple.js';
-
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
 
@@ -13,13 +11,9 @@ import {MultiMenuButton} from './ui/multi_menu_button.js';
 export class SortMenuController {
   /**
    * @param {!MultiMenuButton} sortButton
-   * @param {!FilesToggleRippleElement} toggleRipple
    * @param {!FileListModel} fileListModel
    */
-  constructor(sortButton, toggleRipple, fileListModel) {
-    /** @private @const {!FilesToggleRippleElement} */
-    this.toggleRipple_ = toggleRipple;
-
+  constructor(sortButton, fileListModel) {
     /** @private @const {!FileListModel} */
     this.fileListModel_ = fileListModel;
 
@@ -37,7 +31,6 @@ export class SortMenuController {
         queryRequiredElement('#sort-menu-sort-by-date', sortButton.menu);
 
     sortButton.addEventListener('menushow', this.updateCheckmark_.bind(this));
-    sortButton.addEventListener('menuhide', this.onHideSortMenu_.bind(this));
   }
 
   /**
@@ -45,7 +38,6 @@ export class SortMenuController {
    * @private
    */
   updateCheckmark_() {
-    this.toggleRipple_.activated = true;
     const sortField = this.fileListModel_.sortStatus.field;
 
     this.setCheckStatus_(this.sortByNameButton_, sortField === 'name');
@@ -53,14 +45,6 @@ export class SortMenuController {
     this.setCheckStatus_(this.sortByTypeButton_, sortField === 'type');
     this.setCheckStatus_(
         this.sortByDateButton_, sortField === 'modificationTime');
-  }
-
-  /**
-   * Handle hide event of sort menu button.
-   * @private
-   */
-  onHideSortMenu_() {
-    this.toggleRipple_.activated = false;
   }
 
   /**

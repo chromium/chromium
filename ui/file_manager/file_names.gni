@@ -352,7 +352,6 @@ generated_js_files = [
   "file_manager/foreground/elements/files_quick_view.js",
   "file_manager/foreground/elements/files_safe_media.js",
   "file_manager/foreground/elements/files_spinner.js",
-  "file_manager/foreground/elements/files_toggle_ripple.js",
   "file_manager/foreground/elements/files_tooltip.js",
   "file_manager/foreground/elements/icons.js",
   "file_manager/foreground/elements/xf_button.js",

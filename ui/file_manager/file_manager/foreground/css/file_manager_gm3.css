@@ -465,8 +465,7 @@ body[type='open-multi-file'].check-select .dialog-header {
   flex: auto;
 }
 
-.dialog-header cr-button,
-.dialog-header button {
+.dialog-header cr-button {
   --active-bg: var(--cros-ripple-color);
   --hover-bg-color: var(--cros-ripple-color);
   --ink-color: var(--cros-ripple-color);
@@ -486,42 +485,37 @@ body[type='open-multi-file'].check-select .dialog-header {
   z-index: 1;
 }
 
-html.pointer-active .dialog-header.files-ng cr-button:not(:active):hover {
+html.pointer-active .dialog-header cr-button:not(:active):hover {
   background-color: unset;
   cursor: default;
 }
 
-.dialog-header.files-ng cr-button::after {
+.dialog-header cr-button::after {
   content: '';
   height: 48px;
   position: absolute;
   width: 48px;
 }
 
-.dialog-header.files-ng button[menu-shown] {
-  background: var(--cros-icon-button-pressed-color);
+.dialog-header cr-button[menu-shown] {
+ background: var(--cros-icon-button-pressed-color);
 }
 
-.dialog-header.files-ng button:not([menu-shown]):not(:active):hover {
+.dialog-header cr-button:not([menu-shown]):not(:active):hover {
   background-color: var(--cros-ripple-color);
 }
 
-html.pointer-active .dialog-header.files-ng button:not([menu-shown]):not(:active):hover {
+html.pointer-active .dialog-header cr-button:not([menu-shown]):not(:active):hover {
   background-color: unset;
   cursor: default;
 }
 
-.dialog-header.files-ng button:active {
+.dialog-header cr-button:active {
   background: var(--cros-icon-button-pressed-color);
 }
 
-html.focus-outline-visible .dialog-header.files-ng cr-button:not(:active):focus,
-html.focus-outline-visible .dialog-header.files-ng button:not(:active):focus {
+html.focus-outline-visible .dialog-header cr-button:not(:active):focus {
   border: 2px solid var(--cros-focus-ring-color);
-}
-
-.dialog-header files-toggle-ripple {
-  display: none;
 }
 
 body.check-select button,
@@ -567,23 +561,6 @@ body.check-select .dialog-header
   position: relative;
 }
 
-.dialog-header button.icon-button > iron-icon {
-  margin: 8px;
-}
-
-.dialog-header button.icon-button > files-toggle-ripple {
-  height: 28px;
-  left: 2px;
-  top: 2px;
-  width: 28px;
-}
-
-html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
-  left: auto;
-  right: 2px;
-}
-
-.dialog-header button.icon-button > .icon,
 .dialog-header cr-button.icon-button > .icon {
   background-position: center;
   background-repeat: no-repeat;
@@ -597,16 +574,15 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
   width: 48px;
 }
 
-.dialog-header.files-ng #tasks {
+.dialog-header #tasks {
   border-radius: 4px;
   height: 32px;
   padding: 0 12px;
 }
 
-.dialog-header.files-ng cr-button > .icon,
-.dialog-header.files-ng button > .icon,
-.dialog-header.files-ng #search-box .clear,
-.dialog-header.files-ng #read-only-icon {
+.dialog-header cr-button > .icon,
+.dialog-header #search-box .clear,
+.dialog-header #read-only-icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   background-color: currentColor;
@@ -2427,14 +2403,6 @@ list.autocomplete-suggestions > [lead] {
 
 .signals-overscroll {
   min-height: calc(68px + 24px);
-}
-
-files-toggle-ripple {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 #quick-view {

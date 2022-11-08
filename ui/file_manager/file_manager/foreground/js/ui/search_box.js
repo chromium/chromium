@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../elements/files_toggle_ripple.js';
-
 import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
@@ -51,15 +49,6 @@ export class SearchBox extends EventTarget {
      * @type {!Element}
      */
     this.searchButton = searchButton;
-
-    /**
-     * Ripple effect of search button.
-     * @private {!FilesToggleRippleElement}
-     * @const
-     */
-    this.searchButtonToggleRipple_ =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.searchButton));
 
     /**
      * Text input of the search box.
@@ -210,7 +199,6 @@ export class SearchBox extends EventTarget {
     this.searchWrapper.classList.toggle('has-cursor', true);
     this.autocompleteList.attachToInput(this.inputElement);
     this.updateStyles_();
-    this.searchButtonToggleRipple_.activated = true;
     metrics.recordUserAction('SelectSearch');
   }
 
@@ -225,7 +213,6 @@ export class SearchBox extends EventTarget {
     this.searchWrapper.classList.toggle('hide-pending', true);
     this.autocompleteList.detach();
     this.updateStyles_();
-    this.searchButtonToggleRipple_.activated = false;
   }
 
   /**
