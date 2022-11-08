@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
@@ -35,7 +36,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // Timeout for calling on ImageFetchTabHelper::GetImageData.
-const NSTimeInterval kWaitForGetImageDataTimeout = 1.0;
+constexpr base::TimeDelta kWaitForGetImageDataTimeout = base::Seconds(1);
 
 const char kImageUrl[] = "http://www.chrooooooooooome.com/";
 const char kImageData[] = "abc";
