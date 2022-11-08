@@ -16,7 +16,9 @@
  */
 
 module.exports = {
-  semi: true,
+  bracketSpacing: false, // clang-format does not do this
+  semi: true, // https://google.github.io/styleguide/jsguide.html#disallowed-features-automatic-semicolon-insertion
+  singleQuote: true, // https://google.github.io/styleguide/jsguide.html#features-strings-use-single-quotes
   trailingComma: 'es5',
-  singleQuote: true,
+  useTabs: false, // https://google.github.io/styleguide/jsguide.html#whitespace-characters
 };

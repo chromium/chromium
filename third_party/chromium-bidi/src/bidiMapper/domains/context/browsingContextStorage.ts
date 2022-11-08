@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { BrowsingContextImpl } from './browsingContextImpl';
-import { NoSuchFrameException } from '../protocol/error';
+import {BrowsingContextImpl} from './browsingContextImpl';
+import {NoSuchFrameException} from '../protocol/error';
 
 export class BrowsingContextStorage {
   static #contexts: Map<string, BrowsingContextImpl> = new Map();

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { StubTransport } from '../tests/stubTransport.spec';
+import {StubTransport} from '../tests/stubTransport.spec';
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -23,7 +23,7 @@ chai.use(chaiAsPromised);
 
 import * as sinon from 'sinon';
 
-import { CdpConnection } from './cdpConnection';
+import {CdpConnection} from './cdpConnection';
 
 const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';
@@ -56,7 +56,7 @@ describe('CdpConnection', function () {
 
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.attachedToTarget',
-      params: { sessionId: SOME_SESSION_ID },
+      params: {sessionId: SOME_SESSION_ID},
     });
 
     const cdpClient = cdpConnection.getCdpClient(SOME_SESSION_ID);
@@ -69,7 +69,7 @@ describe('CdpConnection', function () {
 
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.attachedToTarget',
-      params: { sessionId: SOME_SESSION_ID },
+      params: {sessionId: SOME_SESSION_ID},
     });
 
     const cdpClient = cdpConnection.getCdpClient(SOME_SESSION_ID);
@@ -77,7 +77,7 @@ describe('CdpConnection', function () {
 
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.detachedFromTarget',
-      params: { sessionId: SOME_SESSION_ID },
+      params: {sessionId: SOME_SESSION_ID},
     });
 
     chai.assert.throws(
@@ -90,7 +90,7 @@ describe('CdpConnection', function () {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
-    const browserMessage = { method: 'Browser.downloadWillBegin' };
+    const browserMessage = {method: 'Browser.downloadWillBegin'};
     const sessionMessage = {
       sessionId: SOME_SESSION_ID,
       method: 'Page.frameNavigated',
@@ -116,7 +116,7 @@ describe('CdpConnection', function () {
     // Attach session A.
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.attachedToTarget',
-      params: { sessionId: SOME_SESSION_ID },
+      params: {sessionId: SOME_SESSION_ID},
     });
 
     const sessionClient = cdpConnection.getCdpClient(SOME_SESSION_ID)!;
@@ -139,7 +139,7 @@ describe('CdpConnection', function () {
     // Attach session B.
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.attachedToTarget',
-      params: { sessionId: ANOTHER_SESSION_ID },
+      params: {sessionId: ANOTHER_SESSION_ID},
     });
 
     const otherSessionClient = cdpConnection.getCdpClient(ANOTHER_SESSION_ID)!;

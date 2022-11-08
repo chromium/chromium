@@ -15,7 +15,7 @@ function convertFile(filename) {
 
   fs.writeFileSync(
     filename.replace('.json', '_commands_only.json'),
-    JSON.stringify({ domains })
+    JSON.stringify({domains})
   );
 }
 

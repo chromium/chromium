@@ -16,14 +16,14 @@
  */
 
 import * as chai from 'chai';
-import { CommonDataTypes } from '../protocol/bidiProtocolTypes';
-import { getRemoteValuesText } from './logHelper';
+import {CommonDataTypes} from '../protocol/bidiProtocolTypes';
+import {getRemoteValuesText} from './logHelper';
 
 const expect = chai.expect;
 
 describe('test getRemoteValuesText', () => {
   it('single line input test', () => {
-    const inputArgs = [{ type: 'string', value: 'line 1' }];
+    const inputArgs = [{type: 'string', value: 'line 1'}];
     const outputString = 'line 1';
     expect(
       getRemoteValuesText(inputArgs as CommonDataTypes.RemoteValue[], false)
@@ -32,8 +32,8 @@ describe('test getRemoteValuesText', () => {
 
   it('multiple line input test', () => {
     const inputArgs = [
-      { type: 'string', value: 'line 1' },
-      { type: 'string', value: 'line 2' },
+      {type: 'string', value: 'line 1'},
+      {type: 'string', value: 'line 2'},
     ];
     const outputString = 'line 1\u0020line 2';
     expect(

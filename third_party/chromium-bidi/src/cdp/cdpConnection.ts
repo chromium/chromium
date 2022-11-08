@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { ITransport } from '../utils/transport';
-import { CdpMessage } from './cdpMessage';
-import { CdpClient, createClient } from './cdpClient';
+import {ITransport} from '../utils/transport';
+import {CdpMessage} from './cdpMessage';
+import {CdpClient, createClient} from './cdpClient';
 
-import { log, LogType } from '../utils/log';
+import {log, LogType} from '../utils/log';
 
 const logCdp = log(LogType.cdp);
 
@@ -49,7 +49,7 @@ export class CdpConnection {
    */
   close() {
     this._transport.close();
-    for (const [_id, { reject }] of this._commandCallbacks) {
+    for (const [_id, {reject}] of this._commandCallbacks) {
       reject(new Error('Disconnected'));
     }
     this._commandCallbacks.clear();
@@ -83,8 +83,8 @@ export class CdpConnection {
   ): Promise<object> {
     return new Promise((resolve, reject) => {
       const id = this._nextId++;
-      this._commandCallbacks.set(id, { resolve, reject });
-      let messageObj: CdpMessage = { id, method, params };
+      this._commandCallbacks.set(id, {resolve, reject});
+      let messageObj: CdpMessage = {id, method, params};
       if (sessionId) {
         messageObj.sessionId = sessionId;
       }
@@ -103,10 +103,10 @@ export class CdpConnection {
     // Update client map if a session is attached or detached.
     // Listen for these events on every session.
     if (parsed.method === 'Target.attachedToTarget') {
-      const { sessionId } = parsed.params;
+      const {sessionId} = parsed.params;
       this._sessionCdpClients.set(sessionId, createClient(this, sessionId));
     } else if (parsed.method === 'Target.detachedFromTarget') {
-      const { sessionId } = parsed.params;
+      const {sessionId} = parsed.params;
       const client = this._sessionCdpClients.get(sessionId);
       if (client) {
         this._sessionCdpClients.delete(sessionId);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { ITransport } from '../utils/transport';
+import {ITransport} from '../utils/transport';
 import WebSocket from 'ws';
 
 export class WebSocketTransport implements ITransport {

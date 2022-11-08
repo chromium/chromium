@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { MapperTabPage } from '../bidiMapper/utils/mapperTabPage';
+import {MapperTabPage} from '../bidiMapper/utils/mapperTabPage';
 
 export enum LogType {
   system = 'System',

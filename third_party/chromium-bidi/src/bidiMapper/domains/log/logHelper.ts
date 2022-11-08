@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { CommonDataTypes } from '../protocol/bidiProtocolTypes';
+import {CommonDataTypes} from '../protocol/bidiProtocolTypes';
 
 const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
 
@@ -31,9 +31,7 @@ export function logMessageFormatter(
   args: CommonDataTypes.RemoteValue[]
 ): string {
   let output = '';
-  const argFormat = (
-    args[0] as { type: string; value: string }
-  ).value.toString();
+  const argFormat = (args[0] as {type: string; value: string}).value.toString();
   const argValues = args.slice(1, undefined);
   const tokens = argFormat.split(
     new RegExp(specifiers.map((spec) => '(' + spec + ')').join('|'), 'g')
@@ -44,7 +42,7 @@ export function logMessageFormatter(
       continue;
     }
     if (isFormmatSpecifier(token)) {
-      const arg = argValues.shift() as { type: string; value: any };
+      const arg = argValues.shift() as {type: string; value: any};
       // raise an exception when less value is provided
       if (arg === undefined) {
         throw new Error(

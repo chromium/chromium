@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { assert, spy, SinonSpy } from 'sinon';
-import { ITransport } from '../utils/transport';
+import {assert, spy, SinonSpy} from 'sinon';
+import {ITransport} from '../utils/transport';
 
 type TypedSpy<T extends (...args: any[]) => any> = SinonSpy<
   Parameters<T>,

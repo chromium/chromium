@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { log, LogType } from '../../utils/log';
-import { EventEmitter } from 'events';
+import {log, LogType} from '../../utils/log';
+import {EventEmitter} from 'events';
 
-import { ITransport } from '../../utils/transport';
-import { Message } from '../domains/protocol/bidiProtocolTypes';
+import {ITransport} from '../../utils/transport';
+import {Message} from '../domains/protocol/bidiProtocolTypes';
 
 const logBidi = log(LogType.bidi);
 
@@ -153,7 +153,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     }
 
     // Extract amd validate id, method and params.
-    const { id, method, params } = messageObj;
+    const {id, method, params} = messageObj;
 
     const idType = this.#getJsonType(id);
     if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
@@ -184,6 +184,6 @@ export class BidiServer extends EventEmitter implements IBidiServer {
       }
     }
 
-    return { id, method, params, channel };
+    return {id, method, params, channel};
   }
 }

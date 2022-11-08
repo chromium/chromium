@@ -16,15 +16,15 @@
  */
 
 import * as chai from 'chai';
-import { CommonDataTypes } from '../protocol/bidiProtocolTypes';
-import { logMessageFormatter } from './logHelper';
+import {CommonDataTypes} from '../protocol/bidiProtocolTypes';
+import {logMessageFormatter} from './logHelper';
 
 const expect = chai.expect;
 
 const STRING_FORMAT_TEST_CASES = [
   {
     name: 'undefined',
-    arg: { type: 'undefined' },
+    arg: {type: 'undefined'},
     expected: {
       d: 'NaN',
       f: 'NaN',
@@ -36,7 +36,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: 'null',
-    arg: { type: 'null' },
+    arg: {type: 'null'},
     expected: {
       d: 'NaN',
       f: 'NaN',
@@ -48,7 +48,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: '"STRING "\' ARGUMENT"',
-    arg: { type: 'string', value: 'STRING ARGUMENT' },
+    arg: {type: 'string', value: 'STRING ARGUMENT'},
     expected: {
       d: 'NaN',
       f: 'NaN',
@@ -60,7 +60,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: '"42"',
-    arg: { type: 'string', value: '42' },
+    arg: {type: 'string', value: '42'},
     expected: {
       d: '42',
       f: '42',
@@ -72,7 +72,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: '42',
-    arg: { type: 'number', value: 42 },
+    arg: {type: 'number', value: 42},
     expected: {
       d: '42',
       f: '42',
@@ -84,7 +84,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: 'NaN',
-    arg: { type: 'number', value: 'NaN' },
+    arg: {type: 'number', value: 'NaN'},
     expected: {
       d: 'NaN',
       f: 'NaN',
@@ -96,7 +96,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: '-0',
-    arg: { type: 'number', value: '-0' },
+    arg: {type: 'number', value: '-0'},
     expected: {
       d: '0',
       f: '0',
@@ -108,7 +108,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: 'Infinity',
-    arg: { type: 'number', value: 'Infinity' },
+    arg: {type: 'number', value: 'Infinity'},
     expected: {
       d: 'NaN',
       f: 'Infinity',
@@ -120,7 +120,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: '-Infinity',
-    arg: { type: 'number', value: '-Infinity' },
+    arg: {type: 'number', value: '-Infinity'},
     expected: {
       d: 'NaN',
       f: '-Infinity',
@@ -132,7 +132,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: '1.234',
-    arg: { type: 'number', value: 1.234 },
+    arg: {type: 'number', value: 1.234},
     expected: {
       d: '1',
       f: '1.234',
@@ -144,7 +144,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: 'true',
-    arg: { type: 'boolean', value: true },
+    arg: {type: 'boolean', value: true},
     expected: {
       d: 'NaN',
       f: 'NaN',
@@ -156,7 +156,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: 'false',
-    arg: { type: 'boolean', value: false },
+    arg: {type: 'boolean', value: false},
     expected: {
       d: 'NaN',
       f: 'NaN',
@@ -168,7 +168,7 @@ const STRING_FORMAT_TEST_CASES = [
   },
   {
     name: '1234567890n',
-    arg: { type: 'bigint', value: '1234567890' },
+    arg: {type: 'bigint', value: '1234567890'},
     expected: {
       d: '1234567890',
       f: '1234567890',
@@ -182,10 +182,7 @@ const STRING_FORMAT_TEST_CASES = [
     name: 'Array',
     arg: {
       type: 'array',
-      value: [
-        { type: 'undefined' },
-        { type: 'string', value: 'STRING ARGUMENT' },
-      ],
+      value: [{type: 'undefined'}, {type: 'string', value: 'STRING ARGUMENT'}],
     },
     expected: {
       d: 'NaN',
@@ -218,8 +215,8 @@ const STRING_FORMAT_TEST_CASES = [
     arg: {
       type: 'map',
       value: [
-        ['nameWithoutDashes', { type: 'number', value: 42 }],
-        ['NAME-WITH-DASH', { type: 'string', value: 'STRING ARGUMENT' }],
+        ['nameWithoutDashes', {type: 'number', value: 42}],
+        ['NAME-WITH-DASH', {type: 'string', value: 'STRING ARGUMENT'}],
       ],
     },
     expected: {
@@ -236,8 +233,8 @@ const STRING_FORMAT_TEST_CASES = [
     arg: {
       type: 'object',
       value: [
-        ['nameWithoutDashes', { type: 'number', value: 42 }],
-        ['NAME-WITH-DASH', { type: 'string', value: 'STRING ARGUMENT' }],
+        ['nameWithoutDashes', {type: 'number', value: 42}],
+        ['NAME-WITH-DASH', {type: 'string', value: 'STRING ARGUMENT'}],
       ],
     },
     expected: {
@@ -253,7 +250,7 @@ const STRING_FORMAT_TEST_CASES = [
     name: '/abc?/g',
     arg: {
       type: 'regexp',
-      value: { pattern: 'abc?', flags: 'g' },
+      value: {pattern: 'abc?', flags: 'g'},
     },
     expected: {
       d: 'NaN',
@@ -268,10 +265,7 @@ const STRING_FORMAT_TEST_CASES = [
     name: 'Set(undefined, "STRING_ARGUMENT")',
     arg: {
       type: 'set',
-      value: [
-        { type: 'undefined' },
-        { type: 'string', value: 'STRING ARGUMENT' },
-      ],
+      value: [{type: 'undefined'}, {type: 'string', value: 'STRING ARGUMENT'}],
     },
     expected: {
       d: 'NaN',
@@ -359,9 +353,9 @@ describe('test logMessageFormatter', () => {
 
   it('more values', () => {
     const inputArgs = [
-      { type: 'string', value: 'test string %i string test' },
-      { type: 'number', value: 1 },
-      { type: 'number', value: 2 },
+      {type: 'string', value: 'test string %i string test'},
+      {type: 'number', value: 1},
+      {type: 'number', value: 2},
     ];
 
     expect(
@@ -374,8 +368,8 @@ describe('test logMessageFormatter', () => {
 
   it('less values', () => {
     const inputArgs = [
-      { type: 'string', value: 'test string %i %i string test' },
-      { type: 'number', value: 1 },
+      {type: 'string', value: 'test string %i %i string test'},
+      {type: 'number', value: 1},
     ];
     const outputString =
       'Less value is provided: "test string %i %i string test 1"';

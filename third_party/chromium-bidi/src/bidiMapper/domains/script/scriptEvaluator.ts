@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
-import { Realm } from './realm';
-import { InvalidArgumentException } from '../protocol/error';
+import {Protocol} from 'devtools-protocol';
+import {CommonDataTypes, Script} from '../protocol/bidiProtocolTypes';
+import {Realm} from './realm';
+import {InvalidArgumentException} from '../protocol/error';
 
 export class ScriptEvaluator {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
@@ -166,7 +166,7 @@ export class ScriptEvaluator {
       return;
     }
     try {
-      await realm.cdpClient.Runtime.releaseObject({ objectId: handle });
+      await realm.cdpClient.Runtime.releaseObject({objectId: handle});
     } catch (e: any) {
       // Heuristic to determine if the problem is in the unknown handler.
       // Ignore the error if so.
@@ -241,7 +241,7 @@ export class ScriptEvaluator {
       // Remember all the handles sent to client.
       this.#knownHandlesToRealm.set(objectId, realm.realmId);
     } else {
-      await realm.cdpClient.Runtime.releaseObject({ objectId });
+      await realm.cdpClient.Runtime.releaseObject({objectId});
     }
 
     return bidiValue as CommonDataTypes.RemoteValue;
@@ -288,31 +288,31 @@ export class ScriptEvaluator {
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('handle' in argumentValue) {
-      return { objectId: argumentValue.handle };
+      return {objectId: argumentValue.handle};
     }
     switch (argumentValue.type) {
       // Primitive Protocol Value
       // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
       case 'undefined': {
-        return { unserializableValue: 'undefined' };
+        return {unserializableValue: 'undefined'};
       }
       case 'null': {
-        return { unserializableValue: 'null' };
+        return {unserializableValue: 'null'};
       }
       case 'string': {
-        return { value: argumentValue.value };
+        return {value: argumentValue.value};
       }
       case 'number': {
         if (argumentValue.value === 'NaN') {
-          return { unserializableValue: 'NaN' };
+          return {unserializableValue: 'NaN'};
         } else if (argumentValue.value === '-0') {
-          return { unserializableValue: '-0' };
+          return {unserializableValue: '-0'};
         } else if (argumentValue.value === '+Infinity') {
-          return { unserializableValue: '+Infinity' };
+          return {unserializableValue: '+Infinity'};
         } else if (argumentValue.value === 'Infinity') {
-          return { unserializableValue: 'Infinity' };
+          return {unserializableValue: 'Infinity'};
         } else if (argumentValue.value === '-Infinity') {
-          return { unserializableValue: '-Infinity' };
+          return {unserializableValue: '-Infinity'};
         } else {
           return {
             value: argumentValue.value,
@@ -320,7 +320,7 @@ export class ScriptEvaluator {
         }
       }
       case 'boolean': {
-        return { value: !!argumentValue.value };
+        return {value: !!argumentValue.value};
       }
       case 'bigint': {
         return {
@@ -369,7 +369,7 @@ export class ScriptEvaluator {
 
         // TODO(sadym): dispose nested objects.
 
-        return { objectId: argEvalResult.result.objectId };
+        return {objectId: argEvalResult.result.objectId};
       }
       case 'object': {
         // TODO(sadym): if non of the nested keys and values has remote
@@ -403,7 +403,7 @@ export class ScriptEvaluator {
 
         // TODO(sadym): dispose nested objects.
 
-        return { objectId: argEvalResult.result.objectId };
+        return {objectId: argEvalResult.result.objectId};
       }
       case 'array': {
         // TODO(sadym): if non of the nested items has remote reference,
@@ -425,7 +425,7 @@ export class ScriptEvaluator {
 
         // TODO(sadym): dispose nested objects.
 
-        return { objectId: argEvalResult.result.objectId };
+        return {objectId: argEvalResult.result.objectId};
       }
       case 'set': {
         // TODO(sadym): if non of the nested items has remote reference,
@@ -441,7 +441,7 @@ export class ScriptEvaluator {
           returnByValue: false,
           executionContextId: realm.executionContextId,
         });
-        return { objectId: argEvalResult.result.objectId };
+        return {objectId: argEvalResult.result.objectId};
       }
 
       // TODO(sadym): dispose nested objects.
@@ -466,7 +466,7 @@ export class ScriptEvaluator {
 
       if (typeof key === 'string') {
         // Key is a string.
-        keyArg = { value: key };
+        keyArg = {value: key};
       } else {
         // Key is a serialized value.
         keyArg = await this.#deserializeToCdpArg(key, realm);

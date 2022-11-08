@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
+import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor';
 import {
   BrowsingContext,
   CDP,
@@ -23,9 +23,9 @@ import {
   Script,
   Session,
 } from './domains/protocol/bidiProtocolTypes';
-import { CdpConnection } from '../cdp';
-import { IBidiServer } from './utils/bidiServer';
-import { IEventManager } from './domains/events/EventManager';
+import {CdpConnection} from '../cdp';
+import {IBidiServer} from './utils/bidiServer';
+import {IEventManager} from './domains/events/EventManager';
 import {
   ErrorResponseClass,
   UnknownCommandException,
@@ -77,7 +77,7 @@ export class CommandProcessor {
 
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
   async #process_session_status(): Promise<Session.StatusResult> {
-    return { result: { ready: false, message: 'already connected' } };
+    return {result: {ready: false, message: 'already connected'}};
   }
 
   async #process_session_subscribe(
@@ -89,7 +89,7 @@ export class CommandProcessor {
       params.contexts ?? [null],
       channel
     );
-    return { result: {} };
+    return {result: {}};
   }
 
   async #process_session_unsubscribe(
@@ -101,7 +101,7 @@ export class CommandProcessor {
       params.contexts ?? [null],
       channel
     );
-    return { result: {} };
+    return {result: {}};
   }
 
   async #processCommand(

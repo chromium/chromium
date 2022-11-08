@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { CommonDataTypes } from '../protocol/bidiProtocolTypes';
+import {CommonDataTypes} from '../protocol/bidiProtocolTypes';
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;
@@ -42,7 +42,7 @@ export class SubscriptionManager {
         ),
         channel,
       }))
-      .filter(({ priority, channel }) => priority !== null) as {
+      .filter(({priority, channel}) => priority !== null) as {
       priority: number;
       channel: string | null;
     }[];
@@ -50,7 +50,7 @@ export class SubscriptionManager {
     // Sort channels by priority.
     return prioritiesAndChannels
       .sort((a, b) => a.priority - b.priority)
-      .map(({ priority, channel }) => channel);
+      .map(({priority, channel}) => channel);
   }
 
   #getEventSubscriptionPriorityForChannel(

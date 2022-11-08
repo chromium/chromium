@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { CdpClient } from '../../../cdp';
-import { Log, Script } from '../protocol/bidiProtocolTypes';
-import { getRemoteValuesText } from './logHelper';
-import { Protocol } from 'devtools-protocol';
-import { Realm } from '../script/realm';
-import { IEventManager } from '../events/EventManager';
+import {CdpClient} from '../../../cdp';
+import {Log, Script} from '../protocol/bidiProtocolTypes';
+import {getRemoteValuesText} from './logHelper';
+import {Protocol} from 'devtools-protocol';
+import {Realm} from '../script/realm';
+import {IEventManager} from '../events/EventManager';
 
 export class LogManager {
   readonly #contextId: string;
@@ -175,6 +175,6 @@ export class LogManager {
       };
     });
 
-    return stackFrames ? { callFrames: stackFrames } : undefined;
+    return stackFrames ? {callFrames: stackFrames} : undefined;
   }
 }

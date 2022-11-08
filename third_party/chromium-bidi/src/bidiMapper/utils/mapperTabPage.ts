@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LogType } from '../../utils/log';
+import {LogType} from '../../utils/log';
 
 export class MapperTabPage {
   // HTML source code for the user-facing Mapper tab.

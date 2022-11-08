@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { EventResponseClass } from './event';
-import { z as zod, ZodType } from 'zod';
-import { InvalidArgumentException } from './error';
-import { log, LogType } from '../../../utils/log';
+import {EventResponseClass} from './event';
+import {z as zod, ZodType} from 'zod';
+import {InvalidArgumentException} from './error';
+import {log, LogType} from '../../../utils/log';
 
 const logParser = log(LogType.commandParser);
 const MAX_INT = 9007199254740991 as const;
@@ -55,7 +55,7 @@ export namespace Message {
     channel?: string;
   };
 
-  export type CommandRequest = { id: number } & (
+  export type CommandRequest = {id: number} & (
     | BrowsingContext.Command
     | Script.Command
     | Session.Command
@@ -97,13 +97,13 @@ export namespace CommonDataTypes {
   // UndefinedValue = {
   //   type: "undefined",
   // }
-  const UndefinedValueSchema = zod.object({ type: zod.literal('undefined') });
+  const UndefinedValueSchema = zod.object({type: zod.literal('undefined')});
 
   //
   // NullValue = {
   //   type: "null",
   // }
-  const NullValueSchema = zod.object({ type: zod.literal('null') });
+  const NullValueSchema = zod.object({type: zod.literal('null')});
 
   // StringValue = {
   //   type: "string",
@@ -515,7 +515,7 @@ export namespace Script {
   };
 
   export type GetRealmsResult = {
-    result: { realms: RealmInfo[] };
+    result: {realms: RealmInfo[]};
   };
 
   export type EvaluateCommand = {
@@ -590,7 +590,7 @@ export namespace Script {
     return parseObject(params, DisownParametersSchema);
   }
 
-  export type DisownResult = { result: {} };
+  export type DisownResult = {result: {}};
 
   export type CallFunctionCommand = {
     method: 'script.callFunction';
@@ -768,7 +768,7 @@ export namespace BrowsingContext {
     return parseObject(params, CloseParametersSchema);
   }
 
-  export type CloseResult = { result: {} };
+  export type CloseResult = {result: {}};
 
   // events
   export class LoadEvent extends EventResponseClass<NavigationInfo> {
@@ -909,7 +909,7 @@ export namespace CDP {
     return parseObject(params, SendCommandParamsSchema);
   }
 
-  export type SendCommandResult = { result: any };
+  export type SendCommandResult = {result: any};
 
   export type GetSessionCommand = {
     method: 'cdp.getSession';
@@ -925,7 +925,7 @@ export namespace CDP {
     return parseObject(params, GetSessionParamsSchema);
   }
 
-  export type GetSessionResult = { result: { session: string } };
+  export type GetSessionResult = {result: {session: string}};
 
   export class EventReceivedEvent extends EventResponseClass<EventReceivedParams> {
     static readonly method = 'cdp.eventReceived';
@@ -988,12 +988,12 @@ export namespace Session {
     return parseObject(params, SubscribeParametersSchema);
   }
 
-  export type SubscribeResult = { result: {} };
+  export type SubscribeResult = {result: {}};
 
   export type UnsubscribeCommand = {
     method: 'session.unsubscribe';
     params: SubscribeParameters;
   };
 
-  export type UnsubscribeResult = { result: {} };
+  export type UnsubscribeResult = {result: {}};
 }

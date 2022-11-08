@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
-import { CdpClient } from '../../../cdp';
-import { IEventManager } from '../events/EventManager';
-import { Deferred } from '../../utils/deferred';
-import { UnknownException } from '../protocol/error';
-import { LogManager } from '../log/logManager';
-import { IBidiServer } from '../../utils/bidiServer';
-import { Realm, RealmType } from '../script/realm';
-import { BrowsingContextStorage } from './browsingContextStorage';
+import {Protocol} from 'devtools-protocol';
+import {BrowsingContext, Script} from '../protocol/bidiProtocolTypes';
+import {CdpClient} from '../../../cdp';
+import {IEventManager} from '../events/EventManager';
+import {Deferred} from '../../utils/deferred';
+import {UnknownException} from '../protocol/error';
+import {LogManager} from '../log/logManager';
+import {IBidiServer} from '../../utils/bidiServer';
+import {Realm, RealmType} from '../script/realm';
+import {BrowsingContextStorage} from './browsingContextStorage';
 import LoadEvent = BrowsingContext.LoadEvent;
 
 export class BrowsingContextImpl {
@@ -195,7 +195,7 @@ export class BrowsingContextImpl {
     );
     await this.#cdpClient.Runtime.enable();
     await this.#cdpClient.Page.enable();
-    await this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+    await this.#cdpClient.Page.setLifecycleEventsEnabled({enabled: true});
     await this.#cdpClient.Target.setAutoAttach({
       autoAttach: true,
       waitForDebuggerOnStart: true,
@@ -251,7 +251,7 @@ export class BrowsingContextImpl {
               c.serializeToBidiValue(maxDepth - 1, false)
             )
           : null,
-      ...(addParentFiled ? { parent: this.#parentId } : {}),
+      ...(addParentFiled ? {parent: this.#parentId} : {}),
     };
   }
 
@@ -503,7 +503,7 @@ export class BrowsingContextImpl {
       document.querySelector(resultsSelector)
     );
     const _arguments: Script.ArgumentValue[] = [
-      { type: 'string', value: selector },
+      {type: 'string', value: selector},
     ];
 
     // TODO: execute in isolated world.

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { CdpConnection } from './cdpConnection';
-import { StubTransport } from '../tests/stubTransport.spec';
+import {CdpConnection} from './cdpConnection';
+import {StubTransport} from '../tests/stubTransport.spec';
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -24,7 +24,7 @@ chai.use(chaiAsPromised);
 
 import * as sinon from 'sinon';
 
-import { Protocol } from 'devtools-protocol';
+import {Protocol} from 'devtools-protocol';
 
 const TEST_TARGET_ID = 'TargetA';
 const ANOTHER_TARGET_ID = 'TargetB';
@@ -44,7 +44,7 @@ describe('CdpClient tests.', function () {
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     const cdpClient = cdpConnection.browserClient();
-    cdpClient.Target.activateTarget({ targetId: TEST_TARGET_ID });
+    cdpClient.Target.activateTarget({targetId: TEST_TARGET_ID});
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
@@ -68,7 +68,7 @@ describe('CdpClient tests.', function () {
     sinon.assert.calledOnce(mockCdpServer.sendMessage);
 
     // Notify 'cdpClient' the CDP command is finished.
-    await mockCdpServer.emulateIncomingMessage({ id: 0, result: {} });
+    await mockCdpServer.emulateIncomingMessage({id: 0, result: {}});
 
     // Assert 'cdpClient' resolved message promise.
     chai.assert.eventually.deepEqual(commandPromise, {});
@@ -86,8 +86,8 @@ describe('CdpClient tests.', function () {
     const expectedResult2 = {
       anotherResult: 2,
     } as any as Protocol.Target.AttachToTargetResponse;
-    const commandResult1 = { id: 0, result: expectedResult1 };
-    const commandResult2 = { id: 1, result: expectedResult2 };
+    const commandResult1 = {id: 0, result: expectedResult1};
+    const commandResult2 = {id: 1, result: expectedResult2};
 
     // Send 2 CDP commands and store returned promises.
     const commandPromise1 = cdpClient.Target.attachToTarget({
@@ -129,14 +129,14 @@ describe('CdpClient tests.', function () {
     // Send a CDP event.
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.attachedToTarget',
-      params: { targetId: TEST_TARGET_ID },
+      params: {targetId: TEST_TARGET_ID},
     });
 
     // Verify that callbacks are called.
     sinon.assert.calledOnceWithExactly(
       genericCallback,
       'Target.attachedToTarget',
-      { targetId: TEST_TARGET_ID }
+      {targetId: TEST_TARGET_ID}
     );
     genericCallback.resetHistory();
 
@@ -151,7 +151,7 @@ describe('CdpClient tests.', function () {
 
     // Send another CDP event.
     await mockCdpServer.emulateIncomingMessage({
-      params: { targetId: TEST_TARGET_ID },
+      params: {targetId: TEST_TARGET_ID},
     });
 
     sinon.assert.notCalled(genericCallback);
@@ -175,7 +175,7 @@ describe('CdpClient tests.', function () {
       // Notify 'cdpClient' the CDP command is finished.
       await mockCdpServer.emulateIncomingMessage({
         id: 0,
-        result: { targetId: TEST_TARGET_ID },
+        result: {targetId: TEST_TARGET_ID},
       });
 
       // Assert sendCommand resolved message promise.

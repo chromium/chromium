@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { CommonDataTypes, Message } from '../protocol/bidiProtocolTypes';
-import { IBidiServer } from '../../utils/bidiServer';
-import { SubscriptionManager } from './SubscriptionManager';
-import { IdWrapper } from '../../../utils/idWrapper';
-import { Buffer } from '../../../utils/buffer';
-import { BrowsingContextStorage } from '../context/browsingContextStorage';
+import {CommonDataTypes, Message} from '../protocol/bidiProtocolTypes';
+import {IBidiServer} from '../../utils/bidiServer';
+import {SubscriptionManager} from './SubscriptionManager';
+import {IdWrapper} from '../../../utils/idWrapper';
+import {Buffer} from '../../../utils/buffer';
+import {BrowsingContextStorage} from '../context/browsingContextStorage';
 
 class EventWrapper extends IdWrapper {
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
@@ -106,7 +106,7 @@ export class EventManager implements IEventManager {
     browsingContext: CommonDataTypes.BrowsingContext | null,
     channel: string | null | undefined = undefined
   ) {
-    return JSON.stringify({ eventName, browsingContext, channel });
+    return JSON.stringify({eventName, browsingContext, channel});
   }
 
   async sendEvent(

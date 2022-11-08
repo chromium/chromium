@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
-import { ScriptEvaluator } from './scriptEvaluator';
-import { BrowsingContextStorage } from '../context/browsingContextStorage';
-import { NoSuchFrameException } from '../protocol/error';
-import { CdpClient } from '../../../cdp';
+import {Protocol} from 'devtools-protocol';
+import {CommonDataTypes, Script} from '../protocol/bidiProtocolTypes';
+import {ScriptEvaluator} from './scriptEvaluator';
+import {BrowsingContextStorage} from '../context/browsingContextStorage';
+import {NoSuchFrameException} from '../protocol/error';
+import {CdpClient} from '../../../cdp';
 
 export enum RealmType {
   window = 'window',
@@ -128,7 +128,7 @@ export class Realm {
   }
 
   static clearBrowsingContext(browsingContextId: string) {
-    Realm.findRealms({ browsingContextId }).map((realm) => realm.delete());
+    Realm.findRealms({browsingContextId}).map((realm) => realm.delete());
   }
 
   delete() {
@@ -171,7 +171,7 @@ export class Realm {
       origin: this.origin,
       type: this.type,
       context: this.browsingContextId,
-      ...(this.#sandbox !== undefined ? { sandbox: this.#sandbox } : {}),
+      ...(this.#sandbox !== undefined ? {sandbox: this.#sandbox} : {}),
     };
   }
 

@@ -17,16 +17,16 @@
  * @license
  */
 
-import { CommandProcessor } from './commandProcessor';
+import {CommandProcessor} from './commandProcessor';
 
-import { CdpClient, CdpConnection } from '../cdp';
-import { BidiServer } from './utils/bidiServer';
-import { ITransport } from '../utils/transport';
+import {CdpClient, CdpConnection} from '../cdp';
+import {BidiServer} from './utils/bidiServer';
+import {ITransport} from '../utils/transport';
 
-import { log, LogType } from '../utils/log';
-import { EventManager } from './domains/events/EventManager';
-import { BrowsingContextStorage } from './domains/context/browsingContextStorage';
-import { MapperTabPage } from './utils/mapperTabPage';
+import {log, LogType} from '../utils/log';
+import {EventManager} from './domains/events/EventManager';
+import {BrowsingContextStorage} from './domains/context/browsingContextStorage';
+import {MapperTabPage} from './utils/mapperTabPage';
 
 const logSystem = log(LogType.system);
 
@@ -73,7 +73,7 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   logSystem('launched');
 
-  bidiServer.sendMessage({ launched: true }, null);
+  bidiServer.sendMessage({launched: true}, null);
 })();
 
 function _createCdpConnection() {
@@ -148,7 +148,7 @@ async function _waitSelfTargetId(): Promise<string> {
 
 async function _prepareCdp(cdpClient: CdpClient) {
   // Needed to get events about new targets.
-  await cdpClient.Target.setDiscoverTargets({ discover: true });
+  await cdpClient.Target.setDiscoverTargets({discover: true});
 
   // Needed to automatically attach to new targets.
   await cdpClient.Target.setAutoAttach({

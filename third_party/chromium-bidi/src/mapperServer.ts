@@ -23,7 +23,7 @@ const debugLog = debug('bidiMapper:log');
 import WebSocket from 'ws';
 import Protocol from 'devtools-protocol';
 
-import { CdpClient, CdpConnection, WebSocketTransport } from './cdp';
+import {CdpClient, CdpConnection, WebSocketTransport} from './cdp';
 
 export class MapperServer {
   private _handlers: ((message: string) => void)[] = new Array();
@@ -124,11 +124,11 @@ export class MapperServer {
 
     const browserClient = cdpConnection.browserClient();
 
-    const { targetId } = await browserClient.Target.createTarget({
+    const {targetId} = await browserClient.Target.createTarget({
       url: 'about:blank',
     });
-    const { sessionId: mapperSessionId } =
-      await browserClient.Target.attachToTarget({ targetId, flatten: true });
+    const {sessionId: mapperSessionId} =
+      await browserClient.Target.attachToTarget({targetId, flatten: true});
 
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
     if (!mapperCdpClient) {
@@ -171,7 +171,7 @@ export class MapperServer {
       mapperCdpClient.Runtime.on('bindingCalled', onBindingCalled);
     });
 
-    await mapperCdpClient.Runtime.evaluate({ expression: mapperContent });
+    await mapperCdpClient.Runtime.evaluate({expression: mapperContent});
 
     // Let Mapper know what is it's TargetId to filter out related targets.
     await mapperCdpClient.Runtime.evaluate({

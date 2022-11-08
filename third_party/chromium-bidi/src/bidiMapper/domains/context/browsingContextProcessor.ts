@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { log, LogType } from '../../../utils/log';
-import { CdpClient, CdpConnection } from '../../../cdp';
-import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
+import {log, LogType} from '../../../utils/log';
+import {CdpClient, CdpConnection} from '../../../cdp';
+import {BrowsingContext, CDP, Script} from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
-import { IBidiServer } from '../../utils/bidiServer';
-import { IEventManager } from '../events/EventManager';
-import { InvalidArgumentException } from '../protocol/error';
-import { BrowsingContextImpl } from './browsingContextImpl';
-import { Realm } from '../script/realm';
-import { BrowsingContextStorage } from './browsingContextStorage';
+import {IBidiServer} from '../../utils/bidiServer';
+import {IEventManager} from '../events/EventManager';
+import {InvalidArgumentException} from '../protocol/error';
+import {BrowsingContextImpl} from './browsingContextImpl';
+import {Realm} from '../script/realm';
+import {BrowsingContextStorage} from './browsingContextStorage';
 
 const logContext = log(LogType.browsingContexts);
 
@@ -105,7 +105,7 @@ export class BrowsingContextProcessor {
     params: Protocol.Target.AttachedToTargetEvent,
     parentSessionCdpClient: CdpClient
   ) {
-    const { sessionId, targetInfo } = params;
+    const {sessionId, targetInfo} = params;
 
     let targetSessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
 
@@ -189,7 +189,7 @@ export class BrowsingContextProcessor {
       url: 'about:blank',
       newWindow: params.type === 'window',
       ...(referenceContext?.cdpBrowserContextId
-        ? { browserContextId: referenceContext.cdpBrowserContextId }
+        ? {browserContextId: referenceContext.cdpBrowserContextId}
         : {}),
     });
 
@@ -220,7 +220,7 @@ export class BrowsingContextProcessor {
 
   static async #getRealm(target: Script.Target): Promise<Realm> {
     if ('realm' in target) {
-      return Realm.getRealm({ realmId: target.realm });
+      return Realm.getRealm({realmId: target.realm});
     }
     const context = BrowsingContextStorage.getKnownContext(target.context);
     return await context.getOrCreateSandbox(target.sandbox);
@@ -248,7 +248,7 @@ export class BrowsingContextProcessor {
       browsingContextId: params.context,
       type: params.type,
     }).map((realm) => realm.toBiDi());
-    return { result: { realms } };
+    return {result: {realms}};
   }
 
   async process_script_callFunction(
@@ -271,7 +271,7 @@ export class BrowsingContextProcessor {
   ): Promise<Script.DisownResult> {
     const realm = await BrowsingContextProcessor.#getRealm(params.target);
     await Promise.all(params.handles.map(async (h) => await realm.disown(h)));
-    return { result: {} };
+    return {result: {}};
   }
 
   async process_PROTO_browsingContext_findElement(
@@ -319,7 +319,7 @@ export class BrowsingContextProcessor {
     // for `detachedFromTarget` if it hasn't emitted.
     await detachedFromTargetPromise;
 
-    return { result: {} };
+    return {result: {}};
   }
 
   #isValidTarget(target: Protocol.Target.TargetInfo) {
@@ -346,8 +346,8 @@ export class BrowsingContextProcessor {
     const sessionId =
       BrowsingContextStorage.getKnownContext(context).cdpSessionId;
     if (sessionId === undefined) {
-      return { result: { cdpSession: null } };
+      return {result: {cdpSession: null}};
     }
-    return { result: { cdpSession: sessionId } };
+    return {result: {cdpSession: sessionId}};
   }
 }
