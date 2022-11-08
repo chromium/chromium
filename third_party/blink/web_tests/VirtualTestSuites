@@ -936,8 +936,8 @@
   },
   {
     "prefix": "no-alloc-direct-call",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/canvas", "external/wpt/html/canvas"],
+    "platforms": ["Linux"],
+    "bases": ["fast/canvas"],
     "args": ["--enable-fake-no-alloc-direct-call-for-testing"]
   },
   {
