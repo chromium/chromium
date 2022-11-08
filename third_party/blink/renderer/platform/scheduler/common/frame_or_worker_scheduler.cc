@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 FrameOrWorkerScheduler::Observer::Observer() {
@@ -93,16 +95,31 @@ void FrameOrWorkerScheduler::RemoveLifecycleObserver(Observer* observer) {
   lifecycle_observers_.erase(found);
 }
 
+struct CompareObserverByPointerId {
+  bool operator()(const std::pair<FrameOrWorkerScheduler::Observer*,
+                                  FrameOrWorkerScheduler::ObserverType>& a,
+                  const std::pair<FrameOrWorkerScheduler::Observer*,
+                                  FrameOrWorkerScheduler::ObserverType>& b) const {
+    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+      int ida = recordreplay::PointerId(a.first);
+      int idb = recordreplay::PointerId(b.first);
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return (uintptr_t)a.first < (uintptr_t)b.first;
+  }
+};
+
 void FrameOrWorkerScheduler::NotifyLifecycleObservers() {
-  std::vector<Observer*> observers;
+  std::vector<std::pair<Observer*, ObserverType>> observers;
   for (const auto& observer : lifecycle_observers_)
-    observers.push_back(observer);
+    observers.emplace_back(observer.key, observer.value);
   std::sort(observers.begin(), observers.end(),
-            recordreplay::CompareByPointerId());
+            CompareObserverByPointerId());
 
   for (const auto& observer : observers) {
-    observer.key->OnLifecycleStateChanged(
-        CalculateLifecycleState(observer.value));
+    observer.first->OnLifecycleStateChanged(
+        CalculateLifecycleState(observer.second));
   }
 }
 
