@@ -121,7 +121,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * Shows the tester's dialog.
    */
   async showTester(evdevId: number): Promise<void> {
-    await this.inputDataProvider.moveAppToTestingScreen(evdevId);
+    this.inputDataProvider.moveAppToTestingScreen(evdevId);
 
     this.receiver_ = new TabletModeObserverReceiver(this);
     const {isTabletMode} = await this.inputDataProvider.observeTabletMode(

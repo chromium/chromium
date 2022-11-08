@@ -2336,22 +2336,17 @@ TEST_F(InputDataProviderTest, MoveAppToTestingScreen) {
 
   // Call MoveAppToTestingScreen function with the touchscreen evdev id 2, which
   // maps to the secondary display.
-  base::test::RepeatingTestFuture<bool> moveAppToTestingScreenFuture;
-  provider_->MoveAppToTestingScreen(/*evdev_id=*/2,
-                                    moveAppToTestingScreenFuture.GetCallback());
+  provider_->MoveAppToTestingScreen(/*evdev_id=*/2);
 
   // Confirm the app has been moved to the secondary display.
   ASSERT_EQ(secondary_display_id, screen->GetDisplayNearestWindow(window).id());
-  ASSERT_TRUE(moveAppToTestingScreenFuture.Take());
 
   // Call MoveAppToTestingScreen function with the touchscreen evdev id 14,
   // which maps to the third display.
-  provider_->MoveAppToTestingScreen(/*evdev_id=*/14,
-                                    moveAppToTestingScreenFuture.GetCallback());
+  provider_->MoveAppToTestingScreen(/*evdev_id=*/14);
 
   // Confirm the app has been moved to the third display.
   ASSERT_EQ(third_display_id, screen->GetDisplayNearestWindow(window).id());
-  ASSERT_TRUE(moveAppToTestingScreenFuture.Take());
 }
 
 // Test the app can be moved back to original screen.
@@ -2401,22 +2396,16 @@ TEST_F(InputDataProviderTest, MoveAppBackToPreviousScreen) {
 
   // Call MoveAppToTestingScreen function with the touchscreen evdev id 2, which
   // maps to the secondary display.
-  base::test::TestFuture<bool> moveAppToTestingScreenFuture;
-  provider_->MoveAppToTestingScreen(/*evdev_id=*/2,
-                                    moveAppToTestingScreenFuture.GetCallback());
+  provider_->MoveAppToTestingScreen(/*evdev_id=*/2);
 
   // Confirm the app has been moved to the secondary display.
   ASSERT_EQ(secondary_display_id, screen->GetDisplayNearestWindow(window).id());
-  ASSERT_TRUE(moveAppToTestingScreenFuture.Get());
 
   // Call MoveAppBackToPreviousScreen to move the app back to original display.
-  base::test::TestFuture<bool> moveAppBackToPreviousScreenFuture;
-  provider_->MoveAppBackToPreviousScreen(
-      moveAppBackToPreviousScreenFuture.GetCallback());
+  provider_->MoveAppBackToPreviousScreen();
 
   // Confirm the app has been moved back to the original display.
   ASSERT_EQ(primary_display_id, screen->GetDisplayNearestWindow(window).id());
-  ASSERT_TRUE(moveAppBackToPreviousScreenFuture.Get());
 }
 
 }  // namespace diagnostics

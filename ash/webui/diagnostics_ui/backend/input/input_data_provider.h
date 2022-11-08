@@ -90,11 +90,9 @@ class InputDataProvider : public mojom::InputDataProvider,
       mojo::PendingRemote<mojom::InternalDisplayPowerStateObserver> observer)
       override;
 
-  void MoveAppToTestingScreen(uint32_t evdev_id,
-                              MoveAppToTestingScreenCallback callback) override;
+  void MoveAppToTestingScreen(uint32_t evdev_id) override;
 
-  void MoveAppBackToPreviousScreen(
-      MoveAppBackToPreviousScreenCallback callback) override;
+  void MoveAppBackToPreviousScreen() override;
 
   // ui::DeviceEventObserver:
   void OnDeviceEvent(const ui::DeviceEvent& event) override;

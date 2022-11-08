@@ -192,58 +192,51 @@ void InputDataProvider::OnPowerStateChanged(
   }
 }
 
-void InputDataProvider::MoveAppToTestingScreen(
-    uint32_t evdev_id,
-    MoveAppToTestingScreenCallback callback) {
+void InputDataProvider::MoveAppToTestingScreen(uint32_t evdev_id) {
   aura::Window* window = widget_->GetNativeWindow();
-  int64_t current_display_id =
+  const int64_t current_display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
 
   // Find the testing touchscreen device.
   auto it = touch_devices_.find((int)evdev_id);
-  if (it != touch_devices_.end()) {
-    // Use device name to find the targeting display id.
-    // Since we use evdev_id as the device id in our implementation, which
-    // does not match the device id from ui::DeviceDataManager. So we use
-    // the name property to find the correct device. TODO(zhangwenyu): Double
-    // check if each touchscreen device from DeviceDataManager has a unique
-    // name.
-    for (const ui::TouchscreenDevice& device :
-         ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
+  if (it == touch_devices_.end())
+    return;
+
+  // Use device name to find the targeting display id.
+  // Since we use evdev_id as the device id in our implementation, which
+  // does not match the device id from ui::DeviceDataManager. So we use
+  // the name property to find the correct device. TODO(zhangwenyu): Double
+  // check if each touchscreen device from DeviceDataManager has a unique
+  // name.
+  for (const ui::TouchscreenDevice& device :
+       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
+    if (device.name == it->second->name) {
       // Only move if the app is not already in the correct display.
-      if (device.name == it->second->name &&
-          current_display_id != device.target_display_id &&
-          device.target_display_id != display::kInvalidDisplayId) {
-        if (window_util::MoveWindowToDisplay(window,
-                                             device.target_display_id)) {
-          // Only if window is successfully moved, we record the
-          // `previous_display_id_` so that we can move the window back when the
-          // tester is closed.
-          previous_display_id_ = current_display_id;
-          std::move(callback).Run(true);
-          return;
-        }
+      if (current_display_id != device.target_display_id &&
+          device.target_display_id != display::kInvalidDisplayId &&
+          window_util::MoveWindowToDisplay(window, device.target_display_id)) {
+        // Only if window is successfully moved, we record the
+        // `previous_display_id_` so that we can move the window back when the
+        // tester is closed.
+        previous_display_id_ = current_display_id;
       }
+      // Early break the loop as we've found the matching device, no matter if
+      // we have called the move function or not. e.g. if the device is already
+      // in the correct display.
+      break;
     }
   }
-
-  std::move(callback).Run(false);
 }
 
-void InputDataProvider::MoveAppBackToPreviousScreen(
-    MoveAppBackToPreviousScreenCallback callback) {
-  if (previous_display_id_ != display::kInvalidDisplayId &&
-      window_util::MoveWindowToDisplay(widget_->GetNativeWindow(),
-                                       previous_display_id_)) {
-    previous_display_id_ = display::kInvalidDisplayId;
-    std::move(callback).Run(true);
-    return;
+void InputDataProvider::MoveAppBackToPreviousScreen() {
+  if (previous_display_id_ != display::kInvalidDisplayId) {
+    window_util::MoveWindowToDisplay(widget_->GetNativeWindow(),
+                                     previous_display_id_);
   }
 
   // Always reset previous_display_id_ after MoveAppBackToPreviousScreen is
   // called. So it won't affect next time the function is used.
   previous_display_id_ = display::kInvalidDisplayId;
-  std::move(callback).Run(false);
 }
 
 void InputDataProvider::UpdateMaySendEvents() {

@@ -201,9 +201,8 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   /**
    * Fakes the function to move the Diagnostics app to the testing touchscreen.
    */
-  moveAppToTestingScreen(): Promise<{isMoved: boolean}> {
+  moveAppToTestingScreen(): void {
     this.moveAppToTestingScreenCalled++;
-    return Promise.resolve({isMoved: true});
   }
 
   /**
@@ -216,9 +215,8 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   /**
    * Fakes the function to move the Diagnostics app back to previous screen.
    */
-  moveAppBackToPreviousScreen(): Promise<{isMoved: boolean}> {
+  moveAppBackToPreviousScreen(): void {
     this.moveAppBackToPreviousScreenCalled++;
-    return Promise.resolve({isMoved: true});
   }
 
   /**
