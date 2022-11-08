@@ -19,6 +19,7 @@
 #include <limits>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "util/file/filesystem.h"
@@ -26,7 +27,7 @@
 
 namespace crashpad {
 
-#if BUILDFLAG(IS_FUCHSIA)
+#if !CRASHPAD_FLOCK_ALWAYS_SUPPORTED
 
 Settings::ScopedLockedFileHandle::ScopedLockedFileHandle()
     : handle_(kInvalidFileHandle), lockfile_path_() {
@@ -69,7 +70,7 @@ void Settings::ScopedLockedFileHandle::Destroy() {
   }
 }
 
-#else  // BUILDFLAG(IS_FUCHSIA)
+#else  // !CRASHPAD_FLOCK_ALWAYS_SUPPORTED
 
 #if BUILDFLAG(IS_IOS)
 
@@ -217,25 +218,50 @@ bool Settings::SetLastUploadAttemptTime(time_t time) {
   return WriteSettings(handle.get(), settings);
 }
 
+#if !CRASHPAD_FLOCK_ALWAYS_SUPPORTED
+// static
+bool Settings::IsLockExpired(const base::FilePath& file_path,
+                             time_t lockfile_ttl) {
+  time_t now = time(nullptr);
+  base::FilePath lock_path(file_path.value() + Settings::kLockfileExtension);
+  ScopedFileHandle lock_fd(LoggingOpenFileForRead(lock_path));
+  time_t lock_timestamp;
+  if (!LoggingReadFileExactly(
+          lock_fd.get(), &lock_timestamp, sizeof(lock_timestamp))) {
+    return false;
+  }
+  return now >= lock_timestamp + lockfile_ttl;
+}
+#endif  // !CRASHPAD_FLOCK_ALWAYS_SUPPORTED
+
 // static
 Settings::ScopedLockedFileHandle Settings::MakeScopedLockedFileHandle(
-    FileHandle file,
+    const internal::MakeScopedLockedFileHandleOptions& options,
     FileLocking locking,
     const base::FilePath& file_path) {
-  ScopedFileHandle scoped(file);
-#if BUILDFLAG(IS_FUCHSIA)
-  base::FilePath lockfile_path(file_path.value() + ".__lock__");
+#if !CRASHPAD_FLOCK_ALWAYS_SUPPORTED
+  base::FilePath lockfile_path(file_path.value() +
+                               Settings::kLockfileExtension);
+  ScopedFileHandle lockfile_scoped(
+      LoggingOpenFileForWrite(lockfile_path,
+                              FileWriteMode::kCreateOrFail,
+                              FilePermissions::kWorldReadable));
+  if (!lockfile_scoped.is_valid()) {
+    return ScopedLockedFileHandle();
+  }
+  time_t now = time(nullptr);
+  if (!LoggingWriteFile(lockfile_scoped.get(), &now, sizeof(now))) {
+    return ScopedLockedFileHandle();
+  }
+  ScopedFileHandle scoped(GetHandleFromOptions(file_path, options));
   if (scoped.is_valid()) {
-    ScopedFileHandle lockfile_scoped(
-        LoggingOpenFileForWrite(lockfile_path,
-                                FileWriteMode::kCreateOrFail,
-                                FilePermissions::kWorldReadable));
-    // This is a lightweight attempt to try to catch racy behavior.
-    DCHECK(lockfile_scoped.is_valid());
     return ScopedLockedFileHandle(scoped.release(), lockfile_path);
   }
-  return ScopedLockedFileHandle(scoped.release(), base::FilePath());
+  bool success = LoggingRemoveFile(lockfile_path);
+  DCHECK(success);
+  return ScopedLockedFileHandle();
 #else
+  ScopedFileHandle scoped(GetHandleFromOptions(file_path, options));
   // It's important to create the ScopedLockedFileHandle before calling
   // LoggingLockFile on iOS, so a ScopedBackgroundTask is created *before*
   // the LoggingLockFile call below.
@@ -249,29 +275,50 @@ Settings::ScopedLockedFileHandle Settings::MakeScopedLockedFileHandle(
   }
   handle.reset(scoped.release());
   return handle;
-#endif
+#endif  // !CRASHPAD_FLOCK_ALWAYS_SUPPORTED
+}
+
+// static
+FileHandle Settings::GetHandleFromOptions(
+    const base::FilePath& file_path,
+    const internal::MakeScopedLockedFileHandleOptions& options) {
+  switch (options.function_enum) {
+    case internal::FileOpenFunction::kLoggingOpenFileForRead:
+      return LoggingOpenFileForRead(file_path);
+    case internal::FileOpenFunction::kLoggingOpenFileForReadAndWrite:
+      return LoggingOpenFileForReadAndWrite(
+          file_path, options.mode, options.permissions);
+    case internal::FileOpenFunction::kOpenFileForReadAndWrite:
+      return OpenFileForReadAndWrite(
+          file_path, options.mode, options.permissions);
+  }
+  NOTREACHED();
+  return kInvalidFileHandle;
 }
 
 Settings::ScopedLockedFileHandle Settings::OpenForReading() {
-  return MakeScopedLockedFileHandle(
-      LoggingOpenFileForRead(file_path()), FileLocking::kShared, file_path());
+  internal::MakeScopedLockedFileHandleOptions options;
+  options.function_enum = internal::FileOpenFunction::kLoggingOpenFileForRead;
+  return MakeScopedLockedFileHandle(options, FileLocking::kShared, file_path());
 }
 
 Settings::ScopedLockedFileHandle Settings::OpenForReadingAndWriting(
     FileWriteMode mode, bool log_open_error) {
   DCHECK(mode != FileWriteMode::kTruncateOrCreate);
 
-  FileHandle handle;
+  internal::MakeScopedLockedFileHandleOptions options;
+  options.mode = mode;
+  options.permissions = FilePermissions::kOwnerOnly;
   if (log_open_error) {
-    handle = LoggingOpenFileForReadAndWrite(
-        file_path(), mode, FilePermissions::kOwnerOnly);
+    options.function_enum =
+        internal::FileOpenFunction::kLoggingOpenFileForReadAndWrite;
   } else {
-    handle = OpenFileForReadAndWrite(
-        file_path(), mode, FilePermissions::kOwnerOnly);
+    options.function_enum =
+        internal::FileOpenFunction::kOpenFileForReadAndWrite;
   }
 
   return MakeScopedLockedFileHandle(
-      handle, FileLocking::kExclusive, file_path());
+      options, FileLocking::kExclusive, file_path());
 }
 
 bool Settings::OpenAndReadSettings(Data* out_data) {

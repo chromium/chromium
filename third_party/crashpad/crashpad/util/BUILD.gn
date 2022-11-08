@@ -585,6 +585,8 @@ crashpad_static_library("util") {
     "$mini_chromium_source_parent:chromeos_buildflags",
   ]
 
+  configs = [ "../build:flock_always_supported_defines" ]
+
   if (crashpad_is_mac || crashpad_is_ios) {
     include_dirs += [ "$root_gen_dir" ]
     deps += [ ":mig_output" ]

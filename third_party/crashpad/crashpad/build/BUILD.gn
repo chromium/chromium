@@ -30,6 +30,12 @@ config("crashpad_is_in_fuchsia") {
   }
 }
 
+config("flock_always_supported_defines") {
+  defines = [
+    "CRASHPAD_FLOCK_ALWAYS_SUPPORTED=$crashpad_flock_always_supported",
+  ]
+}
+
 group("default_exe_manifest_win") {
   if (crashpad_is_in_chromium) {
     deps = [ "//build/win:default_exe_manifest" ]

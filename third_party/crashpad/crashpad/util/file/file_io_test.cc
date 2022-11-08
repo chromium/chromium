@@ -546,7 +546,9 @@ TEST(FileIO, FileShareMode_Write_Write) {
 // Fuchsia does not currently support any sort of file locking. See
 // https://crashpad.chromium.org/bug/196 and
 // https://crashpad.chromium.org/bug/217.
-#if !BUILDFLAG(IS_FUCHSIA)
+// Android can conditionally not support file locking depending on what type of
+// filesystem is being used to store settings.dat.
+#if CRASHPAD_FLOCK_ALWAYS_SUPPORTED
 
 TEST(FileIO, MultipleSharedLocks) {
   ScopedTempDir temp_dir;
@@ -721,7 +723,7 @@ TEST(FileIO, ExclusiveVsExclusivesNonBlocking) {
   EXPECT_TRUE(LoggingUnlockFile(handle2.get()));
 }
 
-#endif  // !BUILDFLAG(IS_FUCHSIA)
+#endif  // CRASHPAD_FLOCK_ALWAYS_SUPPORTED
 
 TEST(FileIO, FileSizeByHandle) {
   EXPECT_EQ(LoggingFileSizeByHandle(kInvalidFileHandle), -1);
