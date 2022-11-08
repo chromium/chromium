@@ -433,6 +433,7 @@ void FloatController::OnMovingAllWindowsOutToDesk(Desk* original_desk,
 }
 
 void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
+                                                  Desk* active_desk,
                                                   Desk* target_desk,
                                                   aura::Window* target_root) {
   auto* target_desk_floated_window = FindFloatedWindowOfDesk(target_desk);
@@ -443,6 +444,7 @@ void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
   }
   auto* float_info = MaybeGetFloatedWindowInfo(floated_window);
   DCHECK(float_info);
+  DCHECK_EQ(float_info->desk(), active_desk);
   float_info->set_desk(target_desk);
   if (root != target_root) {
     // If `floated_window_` is dragged to a desk on a different display, we
@@ -455,6 +457,8 @@ void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
 
   // Hide `floated_window` since it's been moved to an inactive desk.
   HideFloatedWindow(floated_window);
+  active_desk->NotifyContentChanged();
+  target_desk->NotifyContentChanged();
 }
 
 void FloatController::OnTabletModeStarting() {

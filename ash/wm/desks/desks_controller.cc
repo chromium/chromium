@@ -867,7 +867,7 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   // handles its desk-window relationship.
   if (is_floated) {
     Shell::Get()->float_controller()->OnMovingFloatedWindowToDesk(
-        window, target_desk, target_root);
+        window, active_desk_, target_desk, target_root);
   } else {
     active_desk_->MoveWindowToDesk(window, target_desk, target_root,
                                    /*unminimize=*/true);
