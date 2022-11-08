@@ -159,7 +159,7 @@ class ScriptsSmokeTest(unittest.TestCase):
             self.options.browser_type,
             os.path.join(tempdir, 'output.json')
         ))
-    self.assertEqual(return_code, 0)
+    self.assertNotEqual(return_code, 0)
     try:
       with open(os.path.join(tempdir, 'output.json')) as f:
         test_results = json.load(f)
