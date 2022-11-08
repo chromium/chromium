@@ -2336,6 +2336,8 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
     BucketTableEntries entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  base::UmaHistogramCounts100000("Quota.TotalBucketCount", entries.size());
+
   std::map<StorageKey, int64_t> usage_map =
       GetUsageTracker(StorageType::kTemporary)->GetCachedStorageKeysUsage();
   base::Time now = QuotaDatabase::GetNow();

@@ -259,6 +259,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Quota.TotalBucketCount" units="buckets"
+    expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Total number of entries in the QuotaDatabase buckets table for a profile.
+    Logged hourly.
+  </summary>
+</histogram>
+
 <histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2023-04-16">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
