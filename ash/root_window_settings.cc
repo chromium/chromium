@@ -15,15 +15,14 @@ namespace ash {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(RootWindowSettings,
                                    kRootWindowSettingsKey,
-                                   NULL)
+                                   nullptr)
 
 RootWindowSettings::RootWindowSettings()
-    : display_id(display::kInvalidDisplayId), controller(NULL) {}
+    : display_id(display::kInvalidDisplayId), controller(nullptr) {}
 
 RootWindowSettings* InitRootWindowSettings(aura::Window* root) {
-  RootWindowSettings* settings = new RootWindowSettings();
-  root->SetProperty(kRootWindowSettingsKey, settings);
-  return settings;
+  return root->SetProperty(kRootWindowSettingsKey,
+                           std::make_unique<RootWindowSettings>());
 }
 
 RootWindowSettings* GetRootWindowSettings(aura::Window* root) {

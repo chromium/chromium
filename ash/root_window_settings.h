@@ -5,7 +5,7 @@
 #ifndef ASH_ROOT_WINDOW_SETTINGS_H_
 #define ASH_ROOT_WINDOW_SETTINGS_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "ash/ash_export.h"
 
