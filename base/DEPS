@@ -26,3 +26,10 @@ include_rules = [
   # //base/util can use //base but not vice versa.
   "-util",
 ]
+
+specific_include_rules = {
+  # Special case
+  "process/current_process(|_test)\.h": [
+    "+third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h",
+  ],
+}

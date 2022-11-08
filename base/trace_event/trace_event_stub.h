@@ -226,7 +226,9 @@ class TracedArray {
 template <class T>
 void WriteIntoTracedValue(TracedValue, T&&) {}
 
-namespace protos::pbzero::SequenceManagerTask {
+namespace protos::pbzero {
+namespace SequenceManagerTask {
+
 enum class QueueName {
   UNKNOWN_TQ = 0,
   DEFAULT_TQ = 1,
@@ -248,7 +250,19 @@ inline const char* QueueName_Name(QueueName value) {
       return "TEST_TQ";
   }
 }
-}  // namespace protos::pbzero::SequenceManagerTask
+
+}  // namespace SequenceManagerTask
+
+namespace ChromeProcessDescriptor {
+
+enum ProcessType {};
+inline const char* ProcessType_Name(ProcessType process_type) {
+  return "";
+}
+
+}  // namespace ChromeProcessDescriptor
+
+}  // namespace protos::pbzero
 }  // namespace perfetto
 
 #endif  // BASE_TRACE_EVENT_TRACE_EVENT_STUB_H_
