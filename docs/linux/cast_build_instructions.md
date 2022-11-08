@@ -104,7 +104,7 @@ to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory, run:
 
 ```shell
-$ gn gen out/Default --args='is_chromecast=true'
+$ gn gen out/Default --args='enable_cast_receiver=true is_castos=true'
 ```
 
 * You only have to run this once for each new build directory, Ninja will

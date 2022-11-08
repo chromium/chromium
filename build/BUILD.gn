@@ -37,10 +37,6 @@ buildflag_header("chromecast_buildflags") {
     "IS_CASTOS=$is_castos",
     "IS_CAST_ANDROID=$is_cast_android",
     "ENABLE_CAST_RECEIVER=$enable_cast_receiver",
-
-    # TODO(crbug.com/1219802): IS_CHROMECAST is deprecated and will be removed.
-    # The above flags should be used instead.
-    "IS_CHROMECAST=$is_chromecast",
   ]
 }
 

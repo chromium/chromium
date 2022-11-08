@@ -8,13 +8,6 @@
 #
 # TODO(crbug.com/1294964): Rename this file after is_chromecast is removed.
 declare_args() {
-  # DEPRECATED.  This flag will be removed in the future; see https://crbug.com/1219802.
-  #
-  # New code should use enable_cast_receiver if the feature in question is
-  # required for all Cast-enabled browsers, or an alternative buildflag if it is
-  # for specific types of devices.
-  is_chromecast = false
-
   # Set this true for an audio-only Chromecast build.
   # TODO(crbug.com/1293538): Replace with a buildflag for speaker-only builds not
   # specific to Cast.
@@ -40,16 +33,15 @@ declare_args() {
   # Set this to false to use the defaults for Android.
   is_cast_android = false
 }
+
+# Restrict is_castos and is_cast_android to only be set on the target toolchain.
 is_castos = is_castos && current_toolchain == default_toolchain
 is_cast_android = is_cast_android && current_toolchain == default_toolchain
 
 declare_args() {
   # Set this true for a Chromecast build. Chromecast builds are supported on
   # Linux, Android, ChromeOS, and Fuchsia.
-  #
-  # During the migration from is_chromecast, this must be set to the same value
-  # as is_chromecast.
-  enable_cast_receiver = is_chromecast
+  enable_cast_receiver = false
 }
 
 declare_args() {
@@ -122,9 +114,6 @@ assert(is_linux || is_chromeos || is_android || is_fuchsia ||
 assert(enable_cast_receiver || !is_cast_audio_only,
        "is_cast_audio_only = true requires enable_cast_receiver = true.")
 
-assert(enable_cast_receiver || !is_chromecast,
-       "is_chromecast = true requires enable_cast_receiver = true.")
-
 assert(enable_cast_receiver || !is_castos,
        "is_castos = true requires enable_cast_receiver = true.")
 assert(is_linux || !is_castos, "is_castos = true requires is_linux = true.")
@@ -133,6 +122,3 @@ assert(enable_cast_receiver || !is_cast_android,
        "is_cast_android = true requires enable_cast_receiver = true.")
 assert(is_android || !is_cast_android,
        "is_cast_android = true requires is_android = true.")
-
-assert(!is_fuchsia || !is_chromecast,
-       "is_chromecast is no longer supported on Fuchsia.")
