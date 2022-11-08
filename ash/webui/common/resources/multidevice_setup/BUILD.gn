@@ -40,8 +40,8 @@ js_library("fake_mojo_service") {
 
 js_library("mojo_api") {
   deps = [
+    "//ash/webui/common/resources:cr_deprecated",
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
@@ -54,10 +54,10 @@ js_library("multidevice_setup") {
     ":password_page",
     ":setup_succeeded_page",
     ":start_setup_page",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

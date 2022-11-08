@@ -409,13 +409,13 @@ js_library("volume_manager_impl") {
     ":entry_location_impl",
     ":volume_info_list_impl",
     ":volume_manager_util",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }

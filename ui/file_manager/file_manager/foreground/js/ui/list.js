@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {define as crUiDefine} from '../../../common/js/ui.js';
-import {getPropertyDescriptor, PropertyKind, dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
+import {getPropertyDescriptor, PropertyKind, dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
+import {define as crUiDefine} from '../../../common/js/ui.js';
 
 import {ListSelectionModel} from './list_selection_model.js';
 import {ListSelectionController} from './list_selection_controller.js';

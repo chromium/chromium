@@ -6,7 +6,8 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
-import {dispatchPropertyChange} from 'chrome://resources/js/cr_deprecated.js';
+import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
+
 import {decorate} from '../../../common/js/ui.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';

@@ -41,19 +41,6 @@ TEST_F('CrModuleTest', 'WebUIListeners', function() {
   mocha.fgrep('CrModuleWebUIListenersTest').run();
 });
 
-GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-var CrDeprecatedModuleTest = class extends WebUIResourceModuleAsyncTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=js/cr_deprecated_test.js';
-  }
-};
-
-TEST_F('CrDeprecatedModuleTest', 'AddSingletonGetter', function() {
-  mocha.fgrep('CrDeprecatedModuleAddSingletonGetterTest').run();
-});
-GEN('#endif')
-
 var IconModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {

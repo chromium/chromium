@@ -185,8 +185,8 @@ js_library("source_select") {
 
 js_library("scanning_browser_proxy") {
   deps = [
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

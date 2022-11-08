@@ -4,7 +4,7 @@
 
 // clang-format off
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
-import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr_deprecated.js';
+import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {define as crUiDefine, limitInputWidth} from '../../../common/js/ui.js';
 // clang-format on

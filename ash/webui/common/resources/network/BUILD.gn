@@ -44,8 +44,8 @@ js_type_check("closure_compile_module") {
 
 js_library("mojo_interface_provider") {
   deps = [
+    "//ash/webui/common/resources:cr_deprecated",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

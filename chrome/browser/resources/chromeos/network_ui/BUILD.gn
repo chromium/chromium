@@ -120,8 +120,8 @@ js_library("network_state_ui") {
 
 js_library("network_ui_browser_proxy") {
   deps = [
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

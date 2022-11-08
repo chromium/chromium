@@ -7,7 +7,7 @@
  * to interact with the browser.
  */
 
-// #import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
+// #import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 cr.define('assistant', function() {
   var requestPrefix = 'login.AssistantOptInFlowScreen.';

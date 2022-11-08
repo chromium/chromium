@@ -17,7 +17,7 @@ group("js_modules") {
 
 js_library("table_column") {
   deps = [
-    "//ui/webui/resources/js:cr_deprecated",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -28,18 +28,18 @@ js_library("table") {
     ":table_column_model",
     ":table_header",
     ":table_list",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/foreground/js/ui:list",
     "//ui/file_manager/file_manager/foreground/js/ui:list_item",
     "//ui/file_manager/file_manager/foreground/js/ui:list_single_selection_model",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
 js_library("table_column_model") {
   deps = [
     ":table_column",
-    "//ui/webui/resources/js:cr_deprecated",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -47,22 +47,22 @@ js_library("table_column_model") {
 js_library("table_header") {
   deps = [
     ":table_splitter",
-    "//ui/webui/resources/js:cr_deprecated",
+    "//ash/webui/common/resources:cr_deprecated",
   ]
 }
 
 js_library("table_list") {
   deps = [
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/foreground/js/ui:list",
     "//ui/file_manager/file_manager/foreground/js/ui:list_item",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
 js_library("table_splitter") {
   deps = [
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/foreground/js/ui:splitter",
-    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }

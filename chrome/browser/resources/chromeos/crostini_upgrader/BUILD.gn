@@ -29,8 +29,8 @@ js_library("app") {
 
 js_library("browser_proxy") {
   deps = [
+    "//ash/webui/common/resources:cr_deprecated",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

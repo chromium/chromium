@@ -10,7 +10,7 @@
  * It is column model responsibility to resize other columns accordingly.
  */
 
-import {dispatchSimpleEvent, getPropertyDescriptor} from 'chrome://resources/js/cr_deprecated.js';
+import {dispatchSimpleEvent, getPropertyDescriptor} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {Splitter} from '../splitter.js';
 

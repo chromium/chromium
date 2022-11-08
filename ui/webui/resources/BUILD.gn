@@ -159,10 +159,6 @@ generate_definitions_js_files = [
   "js/util.js",
 ]
 
-if (is_chromeos_ash) {
-  generate_definitions_js_files += [ "js/cr_deprecated.js" ]
-}
-
 if (is_ios) {
   generate_definitions_js_files += [ "js/ios/web_ui.js" ]
 }

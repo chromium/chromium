@@ -143,23 +143,23 @@ js_library("log_object") {
 js_library("nearby_logs_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
 js_library("nearby_prefs_browser_proxy") {
   deps = [
     ":types",
-    "//ui/webui/resources/js:cr_deprecated",
+    "//ash/webui/common/resources:cr_deprecated",
   ]
 }
 
 js_library("nearby_http_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
@@ -183,8 +183,8 @@ js_library("http_message_object") {
 js_library("nearby_ui_trigger_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
@@ -231,8 +231,8 @@ js_library("contact_object") {
 js_library("nearby_contact_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

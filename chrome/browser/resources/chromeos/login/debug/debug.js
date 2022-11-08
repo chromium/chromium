@@ -6,7 +6,7 @@
  * @fileoverview Root element of the OOBE UI Debugger.
  */
 
-// #import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
+// #import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 // #import {loadTimeData} from '../i18n_setup.js';
 // #import {Oobe} from '../cr_ui.m.js'
 // #import {$} from 'chrome://resources/js/util.js';

@@ -86,10 +86,6 @@ preprocess_if_expr("preprocess_src") {
     "util.js",
   ]
 
-  if (is_chromeos_ash) {
-    in_files += [ "cr_deprecated.js" ]
-  }
-
   if (is_chromeos_ash || is_ios) {
     # Used by ChromeOS UIs and ios inspect and omaha UIs
     in_files += [ "util_deprecated.js" ]
@@ -146,10 +142,6 @@ js_type_check("js_resources_modules") {
     ":promise_resolver",
     ":util",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ ":cr_deprecated" ]
-  }
 }
 
 js_library("assert") {
@@ -161,12 +153,6 @@ js_library("cr.m") {
     ":promise_resolver",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("cr_deprecated") {
-    deps = [ ":assert" ]
-  }
 }
 
 js_library("load_time_data.m") {

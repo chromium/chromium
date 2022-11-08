@@ -91,6 +91,7 @@ web_component_files = [
 
 non_web_component_files = [
   "cr.js",
+  "cr_deprecated.js",
   "bluetooth/bluetooth_metrics_utils.js",
   "bluetooth/bluetooth_types.js",
   "bluetooth/bluetooth_utils.js",
@@ -277,6 +278,7 @@ generate_definitions_js_files = [
   "cellular_setup/cellular_setup_icons.html.js",
   "cellular_setup/esim_manager_utils.js",
   "cellular_setup/mojo_interface_provider.js",
+  "cr_deprecated.js",
   "cr_picture/cr_camera.html.js",
   "cr_picture/cr_picture_list.html.js",
   "cr_picture/cr_picture_list.js",
@@ -410,6 +412,7 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   is_polymer3 = true
   deps = [
+    ":cr_deprecated",
     ":event_tracker",
     ":fake_method_resolver",
     ":fake_observables",
@@ -428,6 +431,10 @@ js_type_check("closure_compile_local") {
     ":parse_html_subset",
     ":webui_resource_test",
   ]
+}
+
+js_library("cr_deprecated") {
+  deps = [ "//ui/webui/resources/js:assert" ]
 }
 
 js_library("cr_container_shadow_behavior") {

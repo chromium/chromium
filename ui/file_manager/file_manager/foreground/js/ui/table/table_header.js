@@ -6,7 +6,7 @@
  * @fileoverview This implements a table header.
  */
 
-import {getPropertyDescriptor} from 'chrome://resources/js/cr_deprecated.js';
+import {getPropertyDescriptor} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {Table} from './table.js';
 import {TableSplitter} from './table_splitter.js';

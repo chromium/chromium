@@ -379,8 +379,8 @@ js_library("cr_ui.m") {
       [ "$root_gen_dir/chrome/browser/resources/chromeos/login/cr_ui.m.js" ]
   deps = [
     ":display_manager.m",
+    "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":modulize" ]

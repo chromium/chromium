@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 
 /** @interface */
 export class BrowserProxy {

@@ -208,8 +208,8 @@ js_library("emoji_picker") {
 
 js_library("emoji_picker_api_proxy") {
   deps = [
+    "//ash/webui/common/resources:cr_deprecated",
     "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
@@ -339,6 +339,7 @@ ts_library("build_ts") {
     ":copy_fuse",
     ":copy_mojo",
     ":html_wrapper_files",
+    "//ash/webui/common/resources:generate_definitions",
   ]
 }
 

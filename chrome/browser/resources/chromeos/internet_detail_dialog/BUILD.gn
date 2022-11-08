@@ -99,7 +99,7 @@ js_library("internet_detail_dialog") {
 }
 
 js_library("internet_detail_dialog_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr_deprecated" ]
+  deps = [ "//ash/webui/common/resources:cr_deprecated" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 

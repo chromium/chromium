@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
+import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 /**

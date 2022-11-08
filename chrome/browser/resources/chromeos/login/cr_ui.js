@@ -11,7 +11,7 @@
 // #import {assert} from 'chrome://resources/js/assert.js';
 // #import {$} from 'chrome://resources/js/util.js';
 // #import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// #import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
+// #import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 // #import {DisplayManager} from './display_manager.m.js';
 // #import {DISPLAY_TYPE} from './components/display_manager_types.m.js';

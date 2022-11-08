@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr_deprecated.js';
+import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';

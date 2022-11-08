@@ -6,7 +6,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import './crostini_upgrader.mojom-lite.js';
 
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
+import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 export class BrowserProxy {
   constructor() {
