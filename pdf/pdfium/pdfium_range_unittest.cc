@@ -36,7 +36,7 @@ class PDFiumRangeTest : public PDFiumTestBase {
   std::unique_ptr<PDFiumEngine> engine_;
 };
 
-TEST_F(PDFiumRangeTest, Empty) {
+TEST_P(PDFiumRangeTest, Empty) {
   PDFiumPage page(engine(), 0);
   page.MarkAvailable();
   {
@@ -53,7 +53,7 @@ TEST_F(PDFiumRangeTest, Empty) {
   }
 }
 
-TEST_F(PDFiumRangeTest, Forward) {
+TEST_P(PDFiumRangeTest, Forward) {
   PDFiumPage page(engine(), 0);
   page.MarkAvailable();
   {
@@ -82,7 +82,7 @@ TEST_F(PDFiumRangeTest, Forward) {
   }
 }
 
-TEST_F(PDFiumRangeTest, Backward) {
+TEST_P(PDFiumRangeTest, Backward) {
   PDFiumPage page(engine(), 0);
   page.MarkAvailable();
   {
@@ -110,5 +110,7 @@ TEST_F(PDFiumRangeTest, Backward) {
     EXPECT_EQ(u"!", range.GetText());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumRangeTest, testing::Bool());
 
 }  // namespace chrome_pdf

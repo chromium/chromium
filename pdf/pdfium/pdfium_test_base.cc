@@ -19,6 +19,7 @@
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -113,11 +114,13 @@ void PDFiumTestBase::InitializePDFium() {
 #endif
 
   FPDF_LIBRARY_CONFIG config;
-  config.version = 3;
+  config.version = 4;
   config.m_pUserFontPaths = font_paths_.data();
   config.m_pIsolate = nullptr;
   config.m_v8EmbedderSlot = 0;
   config.m_pPlatform = nullptr;
+  config.m_RendererType =
+      GetParam() ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
   FPDF_InitLibraryWithConfig(&config);
 }
 

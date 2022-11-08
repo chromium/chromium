@@ -85,7 +85,7 @@ void ExpectInitialSearchResults(FindTextTestClient& client, int count) {
 
 using FindTextTest = PDFiumTestBase;
 
-TEST_F(FindTextTest, FindText) {
+TEST_P(FindTextTest, FindText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -95,7 +95,7 @@ TEST_F(FindTextTest, FindText) {
   engine->StartFind("o", /*case_sensitive=*/true);
 }
 
-TEST_F(FindTextTest, FindHyphenatedText) {
+TEST_P(FindTextTest, FindHyphenatedText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
@@ -105,7 +105,7 @@ TEST_F(FindTextTest, FindHyphenatedText) {
   engine->StartFind("application", /*case_sensitive=*/true);
 }
 
-TEST_F(FindTextTest, FindLineBreakText) {
+TEST_P(FindTextTest, FindLineBreakText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
@@ -115,7 +115,7 @@ TEST_F(FindTextTest, FindLineBreakText) {
   engine->StartFind("is the first system", /*case_sensitive=*/true);
 }
 
-TEST_F(FindTextTest, FindSimpleQuotationMarkText) {
+TEST_P(FindTextTest, FindSimpleQuotationMarkText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bug_142627.pdf"));
@@ -125,7 +125,7 @@ TEST_F(FindTextTest, FindSimpleQuotationMarkText) {
   engine->StartFind("don't", /*case_sensitive=*/true);
 }
 
-TEST_F(FindTextTest, FindFancyQuotationMarkText) {
+TEST_P(FindTextTest, FindFancyQuotationMarkText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bug_142627.pdf"));
@@ -138,7 +138,7 @@ TEST_F(FindTextTest, FindFancyQuotationMarkText) {
   engine->StartFind(base::UTF16ToUTF8(term), /*case_sensitive=*/true);
 }
 
-TEST_F(FindTextTest, FindHiddenCroppedText) {
+TEST_P(FindTextTest, FindHiddenCroppedText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
@@ -149,7 +149,7 @@ TEST_F(FindTextTest, FindHiddenCroppedText) {
   engine->StartFind("Hello", /*case_sensitive=*/true);
 }
 
-TEST_F(FindTextTest, FindVisibleCroppedText) {
+TEST_P(FindTextTest, FindVisibleCroppedText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
@@ -160,7 +160,7 @@ TEST_F(FindTextTest, FindVisibleCroppedText) {
   engine->StartFind("world", /*case_sensitive=*/true);
 }
 
-TEST_F(FindTextTest, FindVisibleCroppedTextRepeatedly) {
+TEST_P(FindTextTest, FindVisibleCroppedTextRepeatedly) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
@@ -174,7 +174,7 @@ TEST_F(FindTextTest, FindVisibleCroppedTextRepeatedly) {
   engine->StartFind("world", /*case_sensitive=*/true);
 }
 
-TEST_F(FindTextTest, SelectFindResult) {
+TEST_P(FindTextTest, SelectFindResult) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -199,7 +199,7 @@ TEST_F(FindTextTest, SelectFindResult) {
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/false));
 }
 
-TEST_F(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
+TEST_P(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
   FindTextTestClient client(/*expected_case_sensitive=*/false);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -239,5 +239,7 @@ TEST_F(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
   }
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, FindTextTest, testing::Bool());
 
 }  // namespace chrome_pdf
