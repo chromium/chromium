@@ -189,6 +189,14 @@ export class SearchPageElement extends SearchPageElementBase {
     this.shadowRoot.querySelector('#descriptionText')
         .addEventListener(
             'input', (event) => this.checkForShowQuestionnaire_(event));
+
+    window.addEventListener('message', (e) => {
+      const message = e.data;
+      if (message.iframeHeight) {
+        this.style.setProperty(
+            '--iframe-height', message.iframeHeight.toString() + 'px');
+      }
+    }, false);
   }
 
   /**

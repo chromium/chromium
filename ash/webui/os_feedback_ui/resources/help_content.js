@@ -97,7 +97,20 @@ export class HelpContentElement extends HelpContentElementBase {
     window.addEventListener('offline', () => {
       this.isOnline_ = false;
     });
+
+    // Send the height of the content to the parent window so that it can set
+    // the height of the iframe correctly.
+    const helpContent = this.shadowRoot.querySelector('#helpContentContainer');
+    const resizeObserver = new ResizeObserver(() => {
+      window.parent.postMessage(
+          {iframeHeight: helpContent.scrollHeight}, OS_FEEDBACK_TRUSTED_ORIGIN);
+    });
+    if (helpContent) {
+      resizeObserver.observe(helpContent);
+    }
   }
+
+  notifyParent() {}
 
   /**
    * Compute the label to use.
