@@ -321,6 +321,10 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
     quick_unlock::QuickUnlockStorage* quick_unlock_storage =
         quick_unlock::QuickUnlockFactory::GetForUser(user);
     if (quick_unlock_storage) {
+      if (unlock_attempt_type_ == AUTH_PASSWORD ||
+          unlock_attempt_type_ == AUTH_CHALLENGE_RESPONSE) {
+        quick_unlock_storage->MarkStrongAuth();
+      }
       quick_unlock_storage->pin_storage_prefs()->ResetUnlockAttemptCount();
       quick_unlock_storage->fingerprint_storage()->ResetUnlockAttemptCount();
     }
