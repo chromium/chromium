@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -22,7 +23,7 @@
 
 namespace {
 
-constexpr CGFloat kDefaultMargin = 16;
+constexpr CGFloat kDefaultMargin = 32;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kContentWidthMultiplier = 0.8;
 constexpr CGFloat kButtonHorizontalMargin = 4;
@@ -293,10 +294,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   if (!_titleLabel) {
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.numberOfLines = 0;
-    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleLargeTitle];
-    UIFontDescriptor* boldFontDescriptor = [font.fontDescriptor
-        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-    _titleLabel.font = [UIFont fontWithDescriptor:boldFontDescriptor size:0];
+    _titleLabel.font =
+        CreateDynamicFont(UIFontTextStyleTitle1, UIFontWeightBold);
     _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _titleLabel.text = self.titleText;
     _titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -315,7 +314,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     _subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _subtitleLabel.numberOfLines = 0;
-    _subtitleLabel.textColor = [UIColor colorNamed:kGrey800Color];
+    _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _subtitleLabel.text = self.subtitleText;
     _subtitleLabel.textAlignment = NSTextAlignmentCenter;
     _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
