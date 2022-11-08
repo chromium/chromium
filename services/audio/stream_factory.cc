@@ -181,8 +181,9 @@ void StreamFactory::BindMuter(
   if (it == muters_.end()) {
     auto muter_ptr = std::make_unique<LocalMuter>(&coordinator_, group_id);
     muter = muter_ptr.get();
-    muter->SetAllBindingsLostCallback(base::BindRepeating(
-        &StreamFactory::DestroyMuter, base::Unretained(this), muter));
+    muter->SetAllBindingsLostCallback(
+        base::BindRepeating(&StreamFactory::DestroyMuter,
+                            base::Unretained(this), muter_ptr->GetWeakPtr()));
     muters_.emplace_back(std::move(muter_ptr));
   } else {
     muter = it->get();
@@ -254,9 +255,10 @@ void StreamFactory::DestroyOutputStream(OutputStream* stream) {
   DCHECK_EQ(1u, erased);
 }
 
-void StreamFactory::DestroyMuter(LocalMuter* muter) {
+void StreamFactory::DestroyMuter(base::WeakPtr<LocalMuter> muter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  DCHECK(muter);
+  if (!muter)
+    return;
 
   // Output streams have a task posting before destruction (see the OnError
   // function in output_stream.cc). To ensure that stream destruction and
@@ -265,11 +267,10 @@ void StreamFactory::DestroyMuter(LocalMuter* muter) {
   // Otherwise, a "destroy all streams, then destroy the muter" sequence may
   // result in a brief blip of audio.
   auto do_destroy = [](base::WeakPtr<StreamFactory> weak_this,
-                       LocalMuter* muter) {
-    if (weak_this) {
-      const auto it = base::ranges::find_if(weak_this->muters_,
-                                            base::MatchesUniquePtr(muter));
-      DCHECK(it != weak_this->muters_.end());
+                       base::WeakPtr<LocalMuter> muter) {
+    if (weak_this && muter) {
+      const auto it = base::ranges::find_if(
+          weak_this->muters_, base::MatchesUniquePtr(muter.get()));
 
       // The LocalMuter can still have receivers if a receiver was bound after
       // DestroyMuter is called but before the do_destroy task is run.
@@ -280,8 +281,8 @@ void StreamFactory::DestroyMuter(LocalMuter* muter) {
   };
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(do_destroy, weak_ptr_factory_.GetWeakPtr(),
-                                base::UnsafeDanglingUntriaged(muter)));
+      FROM_HERE,
+      base::BindOnce(do_destroy, weak_ptr_factory_.GetWeakPtr(), muter));
 }
 
 void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
