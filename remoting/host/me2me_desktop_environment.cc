@@ -124,19 +124,16 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += protocol::kRemoteWebAuthnCapability;
   }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
   capabilities += " ";
   capabilities += protocol::kMultiStreamCapability;
 
-#if defined(REMOTING_USE_X11)
   // Client-controlled layout is only supported with Xorg+video-dummy.
   if (UsingVideoDummyDriver()) {
     capabilities += " ";
     capabilities += protocol::kClientControlledLayoutCapability;
   }
-#endif  // defined(REMOTING_USE_X11)
-
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
 
   return capabilities;
 }
