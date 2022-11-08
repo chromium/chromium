@@ -87,18 +87,14 @@ FirmwareUpdateNotificationController::FirmwareUpdateNotificationController(
     message_center::MessageCenter* message_center)
     : message_center_(message_center) {
   DCHECK(message_center_);
-}
-
-FirmwareUpdateNotificationController::~FirmwareUpdateNotificationController() {
-  if (ash::FirmwareUpdateManager::IsInitialized())
-    ash::FirmwareUpdateManager::Get()->RemoveObserver(this);
-}
-
-void FirmwareUpdateNotificationController::
-    OnFirmwareUpdateManagerInitialized() {
   DCHECK(ash::FirmwareUpdateManager::IsInitialized());
 
   ash::FirmwareUpdateManager::Get()->AddObserver(this);
+}
+
+FirmwareUpdateNotificationController::~FirmwareUpdateNotificationController() {
+  DCHECK(ash::FirmwareUpdateManager::IsInitialized());
+  ash::FirmwareUpdateManager::Get()->RemoveObserver(this);
 }
 
 void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {
@@ -130,7 +126,7 @@ void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {
 }
 
 void FirmwareUpdateNotificationController::OnFirmwareUpdateReceived() {
-  if (ShouldShowNotification()) {
+  if (should_show_notification_for_test_ || ShouldShowNotification()) {
     NotifyFirmwareUpdateAvailable();
   }
 }

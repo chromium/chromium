@@ -2387,6 +2387,7 @@ component("ash") {
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/components/dbus/fwupd",
     "//chromeos/ash/components/dbus/hammerd",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/human_presence",

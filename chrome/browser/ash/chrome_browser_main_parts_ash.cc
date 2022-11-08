@@ -13,7 +13,6 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
-#include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -23,7 +22,6 @@
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_installer.h"
@@ -1349,15 +1347,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
                                 base::Unretained(ash_usb_detector_.get())));
 
   if (features::IsFirmwareUpdaterAppEnabled()) {
-    firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
     fwupd_download_client_ = std::make_unique<FwupdDownloadClientImpl>();
-    // The notification controller is registered as an observer before
-    // requesting updates to allow a notification to be shown if a critical
-    // firmware update is found.
-    Shell::Get()
-        ->firmware_update_notification_controller()
-        ->OnFirmwareUpdateManagerInitialized();
-    firmware_update_manager_->RequestAllUpdates();
   }
 
   // The local_state pref may not be available at this stage of Chrome's
@@ -1451,8 +1441,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   assistant_delegate_.reset();
 
   assistant_state_client_.reset();
-
-  firmware_update_manager_.reset();
 
   if (pre_profile_init_called_)
     Shell::Get()->RemovePreTargetHandler(MagnificationManager::Get());

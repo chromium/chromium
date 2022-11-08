@@ -28,10 +28,6 @@ class ASH_EXPORT FirmwareUpdateNotificationController
       const FirmwareUpdateNotificationController&) = delete;
   ~FirmwareUpdateNotificationController() override;
 
-  // Call when FirmwareUpdateManager is initialized so that this class can start
-  // observering requests for notifications.
-  void OnFirmwareUpdateManagerInitialized();
-
   // chromeos::FirmwareUpdateManager::Observer
   void OnFirmwareUpdateReceived() override;
 
@@ -39,8 +35,14 @@ class ASH_EXPORT FirmwareUpdateNotificationController
   // available.
   void NotifyFirmwareUpdateAvailable();
 
+  void set_should_show_notification_for_test(bool show_notification) {
+    should_show_notification_for_test_ = show_notification;
+  }
+
  private:
   friend class FirmwareUpdateNotificationControllerTest;
+
+  bool should_show_notification_for_test_ = false;
 
   // MessageCenter for adding notifications.
   message_center::MessageCenter* const message_center_;

@@ -139,7 +139,7 @@ class FakeUpdateProgressObserver
 
 namespace ash {
 
-class FirmwareUpdateManagerTest : public AshTestBase {
+class FirmwareUpdateManagerTest : public testing::Test {
  public:
   FirmwareUpdateManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -173,6 +173,9 @@ class FirmwareUpdateManagerTest : public AshTestBase {
       delete;
 
   ~FirmwareUpdateManagerTest() override {
+    if (message_center::MessageCenter::Get()) {
+      message_center::MessageCenter::Shutdown();
+    }
     // Destructor depends on FirmwareUpdateManager.
     firmware_update_notification_controller_.reset();
     // Destructor depends on FwupdClient.
@@ -185,7 +188,7 @@ class FirmwareUpdateManagerTest : public AshTestBase {
                       dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
     ASSERT_FALSE(dbus_responses_.empty());
     auto response = std::move(dbus_responses_.front());
-    task_environment()->GetMainThreadTaskRunner()->PostTask(
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(*callback),
                                   std::move(response)));
     dbus_responses_.pop_front();
@@ -193,11 +196,12 @@ class FirmwareUpdateManagerTest : public AshTestBase {
 
  protected:
   void InitializeNotificationController() {
+    message_center::MessageCenter::Initialize();
     firmware_update_notification_controller_ =
         std::make_unique<FirmwareUpdateNotificationController>(
             message_center());
     firmware_update_notification_controller_
-        ->OnFirmwareUpdateManagerInitialized();
+        ->set_should_show_notification_for_test(/*show_notification=*/true);
   }
 
   void StartInstall(const std::string& device_id,
@@ -549,6 +553,8 @@ class FirmwareUpdateManagerTest : public AshTestBase {
   }
 
   void RequestAllUpdates() { firmware_update_manager_->RequestAllUpdates(); }
+
+  base::test::TaskEnvironment task_environment_;
 
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   FwupdClient* dbus_client_ = nullptr;
@@ -1041,8 +1047,6 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
     firmware_update_notification_controller_ =
         std::make_unique<FirmwareUpdateNotificationController>(
             message_center());
-    firmware_update_notification_controller_
-        ->OnFirmwareUpdateManagerInitialized();
   }
 
   message_center::MessageCenter* message_center() const {

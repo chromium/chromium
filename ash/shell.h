@@ -129,6 +129,7 @@ class EventClientImpl;
 class EventRewriterControllerImpl;
 class EventTransformationHandler;
 class WindowRestoreController;
+class FirmwareUpdateManager;
 class FirmwareUpdateNotificationController;
 class FloatController;
 class FocusCycler;
@@ -857,6 +858,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DisplayHighlightController> display_highlight_controller_;
   std::unique_ptr<DisplaySpeakerController> display_speaker_controller_;
   std::unique_ptr<DragDropController> drag_drop_controller_;
+  std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   std::unique_ptr<FirmwareUpdateNotificationController>
       firmware_update_notification_controller_;
   std::unique_ptr<FocusCycler> focus_cycler_;

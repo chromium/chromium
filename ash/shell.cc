@@ -35,6 +35,8 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/control_v_histogram_recorder.h"
 #include "ash/color_enhancement/color_enhancement_controller.h"
+#include "ash/components/fwupd/firmware_update_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/controls/contextual_tooltip.h"
@@ -204,6 +206,7 @@
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/dbus/usb/usbguard_client.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
@@ -968,6 +971,8 @@ Shell::~Shell() {
 
   firmware_update_notification_controller_.reset();
 
+  firmware_update_manager_.reset();
+
   pcie_peripheral_notification_controller_.reset();
 
   usb_peripheral_notification_controller_.reset();
@@ -996,6 +1001,9 @@ Shell::~Shell() {
 
   // Must be shut down after detachable_base_handler_.
   HammerdClient::Shutdown();
+
+  if (FwupdClient::Get())
+    FwupdClient::Shutdown();
 
   for (auto& observer : shell_observers_)
     observer.OnShellDestroyed();
@@ -1075,10 +1083,6 @@ void Shell::Init(
     diagnostics_log_controller_ =
         std::make_unique<diagnostics::DiagnosticsLogController>();
   }
-
-  firmware_update_notification_controller_ =
-      std::make_unique<FirmwareUpdateNotificationController>(
-          message_center::MessageCenter::Get());
 
   pcie_peripheral_notification_controller_ =
       std::make_unique<PciePeripheralNotificationController>(
@@ -1662,6 +1666,24 @@ void Shell::OnSessionStateChanged(session_manager::SessionState state) {
   if (is_session_active && !shelf_window_watcher_) {
     shelf_window_watcher_ =
         std::make_unique<ShelfWindowWatcher>(shelf_controller()->model());
+  }
+
+  // Initialize the fwupd (firmware updater) DBus client only when the user
+  // session is active. Since the fwupd service is only relevant during an
+  // active user session, this prevents a bug in which the service would start
+  // up earlier than expected and causes a delay during boot.
+  // See b/250002264 for more details.
+  if (is_session_active && features::IsFirmwareUpdaterAppEnabled() &&
+      !FwupdClient::Get() && !firmware_update_notification_controller_) {
+    chromeos::InitializeDBusClient<FwupdClient>(dbus_bus_.get());
+    firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
+    // The notification controller is registered as an observer before
+    // requesting updates to allow a notification to be shown if a critical
+    // firmware update is found.
+    firmware_update_notification_controller_ =
+        std::make_unique<FirmwareUpdateNotificationController>(
+            message_center::MessageCenter::Get());
+    firmware_update_manager_->RequestAllUpdates();
   }
 
   // Disable drag-and-drop during OOBE and GAIA login screens by only enabling
