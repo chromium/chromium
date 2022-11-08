@@ -11,8 +11,7 @@ TestPersistenceProvider::TestPersistenceProvider() = default;
 TestPersistenceProvider::~TestPersistenceProvider() = default;
 
 base::flat_set<origin_trials::PersistedTrialToken>
-TestPersistenceProvider::GetPersistentTrialTokens(
-    const url::Origin& origin) const {
+TestPersistenceProvider::GetPersistentTrialTokens(const url::Origin& origin) {
   std::map<url::Origin,
            base::flat_set<origin_trials::PersistedTrialToken>>::const_iterator
       entry = storage_.find(origin);
@@ -30,6 +29,10 @@ void TestPersistenceProvider::SavePersistentTrialTokens(
   } else {
     storage_[origin] = tokens;
   }
+}
+
+void TestPersistenceProvider::ClearPersistedTokens() {
+  storage_.clear();
 }
 
 }  // namespace origin_trials::test

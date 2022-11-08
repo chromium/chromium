@@ -114,15 +114,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessPersistentOriginTrialsBrowserTest,
   HeadlessBrowserContextImpl* context_impl =
       HeadlessBrowserContextImpl::From(browser_context);
 
-#if defined(HEADLESS_USE_PREFS)
   EXPECT_TRUE(context_impl->GetOriginTrialsControllerDelegate())
-      << "Headless browser should have an OriginTrialsControllerDelegate if "
-         "HEADLESS_USE_PREFS is enabled";
-#else
-  EXPECT_FALSE(context_impl->GetOriginTrialsControllerDelegate())
-      << "Headless browser should not have an OriginTrialsControllerDelegate "
-         "if HEADLESS_USE_PREFS is disabled";
-#endif  // defined(HEADLESS_USE_PREFS)
+      << "Headless browser should have an OriginTrialsControllerDelegate";
 }
 
 }  // namespace headless

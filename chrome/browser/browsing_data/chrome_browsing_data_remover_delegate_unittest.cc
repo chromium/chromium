@@ -114,7 +114,6 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_field_info_store.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
@@ -3764,18 +3763,24 @@ TEST_F(ChromeBrowsingDataRemoverDelegateOriginTrialsTest,
   ASSERT_TRUE(SubresourceFilterProfileContextFactory::GetForProfile(profile));
 
   std::vector<std::string> tokens{kPersistentOriginTrialToken};
-  profile->GetOriginTrialsControllerDelegate()->PersistTrialsFromTokens(
-      origin, tokens, kPersistentOriginTrialValidTime);
+  content::OriginTrialsControllerDelegate* delegate =
+      profile->GetOriginTrialsControllerDelegate();
+  delegate->PersistTrialsFromTokens(origin, tokens,
+                                    kPersistentOriginTrialValidTime);
 
   // Delete all data types that trigger website setting deletions.
   uint64_t mask = constants::DATA_TYPE_HISTORY |
                   constants::DATA_TYPE_SITE_DATA |
                   constants::DATA_TYPE_CONTENT_SETTINGS;
 
-  auto* prefs = profile->GetPrefs();
-  EXPECT_FALSE(prefs->GetDict(origin_trials::kOriginTrialPrefKey).empty());
+  EXPECT_FALSE(
+      delegate
+          ->GetPersistedTrialsForOrigin(origin, kPersistentOriginTrialValidTime)
+          .empty());
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(), mask, false);
-
-  EXPECT_TRUE(prefs->GetDict(origin_trials::kOriginTrialPrefKey).empty());
+  EXPECT_TRUE(
+      delegate
+          ->GetPersistedTrialsForOrigin(origin, kPersistentOriginTrialValidTime)
+          .empty());
 }

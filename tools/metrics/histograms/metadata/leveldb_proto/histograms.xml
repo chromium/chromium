@@ -68,6 +68,8 @@ chromium-metrics-reviews@google.com.
       summary="Database for page entity metadata."/>
   <variant name="PersistedStateDatabase"
       summary="Database for NonCriticalPersistedTabData"/>
+  <variant name="PersistentOriginTrials"
+      summary="Database for Persistent Origin Trial tokens"/>
   <variant name="PreviewsHintCacheStore"
       summary="Databases for Previews Hints"/>
   <variant name="PrintJobDatabase" summary="Database for print job metadata."/>

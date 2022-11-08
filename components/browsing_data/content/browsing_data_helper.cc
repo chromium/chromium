@@ -173,12 +173,6 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
 #endif
 }
 
-void RemovePersistentOriginTrials(PrefService* pref_service) {
-  if (pref_service->HasPrefPath(origin_trials::kOriginTrialPrefKey)) {
-    pref_service->ClearPref(origin_trials::kOriginTrialPrefKey);
-  }
-}
-
 void RemoveFederatedSiteSettingsData(
     const base::Time& delete_begin,
     const base::Time& delete_end,

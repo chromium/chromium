@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
@@ -50,8 +49,6 @@ const char kFrobulatePersistentToken[] =
 class OriginTrialsBrowserTest : public WebLayerBrowserTest {
  public:
   OriginTrialsBrowserTest() {
-    disable_token_cleanup_for_test_ = origin_trials::
-        PrefServicePersistenceProvider::DisableCleanupExpiredTokensForTesting();
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kPersistentOriginTrials);
   }
@@ -66,8 +63,9 @@ class OriginTrialsBrowserTest : public WebLayerBrowserTest {
 
   void TearDownOnMainThread() override {
     // Clean up any saved settings after test run
-    PrefService* pref_service = user_prefs::UserPrefs::Get(GetBrowserContext());
-    browsing_data::RemovePersistentOriginTrials(pref_service);
+    GetBrowserContext()
+        ->GetOriginTrialsControllerDelegate()
+        ->ClearPersistedTokens();
 
     url_loader_interceptor_.reset();
 
@@ -126,7 +124,6 @@ class OriginTrialsBrowserTest : public WebLayerBrowserTest {
   }
 
  protected:
-  std::unique_ptr<base::AutoReset<bool>> disable_token_cleanup_for_test_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };

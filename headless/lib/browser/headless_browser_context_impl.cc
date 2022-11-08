@@ -14,6 +14,9 @@
 #include "base/path_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/origin_trials/browser/leveldb_persistence_provider.h"
+#include "components/origin_trials/browser/origin_trials.h"
+#include "components/origin_trials/common/features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,15 +27,12 @@
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_permission_manager.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(HEADLESS_USE_PREFS)
-#include "components/origin_trials/browser/origin_trials.h"  // nogncheck
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"  // nogncheck
-#include "components/origin_trials/common/features.h"  // nogncheck
+#if defined(HEADLESS_USE_POLICY)
 #include "components/user_prefs/user_prefs.h"  // nogncheck
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"  // nogncheck
-#endif  // defined(HEADLESS_USE_PREFS)
+#endif                                         // defined(HEADLESS_USE_POLICY)
 
 namespace headless {
 
@@ -79,10 +79,14 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
   profile_metrics::SetBrowserProfileType(
       this, IsOffTheRecord() ? profile_metrics::BrowserProfileType::kIncognito
                              : profile_metrics::BrowserProfileType::kRegular);
-#if defined(HEADLESS_USE_PREFS)
+#if defined(HEADLESS_USE_POLICY)
   if (PrefService* pref_service = browser->GetPrefs())
     user_prefs::UserPrefs::Set(this, pref_service);
-#endif  // defined(HEADLESS_USE_PREFS)
+#endif  // defined(HEADLESS_USE_POLICY)
+
+  // Ensure the delegate is initialized early to give it time to load its
+  // persistence.
+  GetOriginTrialsControllerDelegate();
 }
 
 HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
@@ -297,21 +301,18 @@ HeadlessBrowserContextImpl::GetReduceAcceptLanguageControllerDelegate() {
 
 content::OriginTrialsControllerDelegate*
 HeadlessBrowserContextImpl::GetOriginTrialsControllerDelegate() {
-#if defined(HEADLESS_USE_PREFS)
   if (!origin_trials::features::IsPersistentOriginTrialsEnabled())
     return nullptr;
 
   if (!origin_trials_controller_delegate_) {
     origin_trials_controller_delegate_ =
         std::make_unique<origin_trials::OriginTrials>(
-            std::make_unique<origin_trials::PrefServicePersistenceProvider>(
-                this),
+            std::make_unique<origin_trials::LevelDbPersistenceProvider>(
+                GetPath(),
+                GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
             std::make_unique<blink::TrialTokenValidator>());
   }
   return origin_trials_controller_delegate_.get();
-#else   // defined(HEADLESS_USE_PREFS)
-  return nullptr;
-#endif  // defined(HEADLESS_USE_PREFS)
 }
 
 HeadlessWebContents* HeadlessBrowserContextImpl::CreateWebContents(

@@ -131,6 +131,19 @@ TEST_F(PrefServicePersistenceProviderUnitTest, CleanupRemovesExpiredTokens) {
   // The origin key has been removed when there are no more tokens
   EXPECT_FALSE(origin_prefs);
 }
+TEST_F(PrefServicePersistenceProviderUnitTest, ClearTokens) {
+  base::Time expiry = base::Time::Now() + base::Days(1);
+  base::flat_set<PersistedTrialToken> tokens = {
+      {kPersistentTrialName, expiry, blink::TrialToken::UsageRestriction::kNone,
+       kDummySignature}};
+  persistence_provider_->SavePersistentTrialTokens(trial_enabled_origin_,
+                                                   tokens);
+
+  EXPECT_TRUE(prefs_.HasPrefPath(kOriginTrialPrefKey));
+  persistence_provider_->ClearPersistedTokens();
+
+  EXPECT_FALSE(prefs_.HasPrefPath(kOriginTrialPrefKey));
+}
 
 }  // namespace
 

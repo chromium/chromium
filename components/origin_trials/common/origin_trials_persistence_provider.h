@@ -21,12 +21,15 @@ class OriginTrialsPersistenceProvider {
   // Return the list of persistent origin trial tokens that were previously
   // saved for |origin|.
   virtual base::flat_set<PersistedTrialToken> GetPersistentTrialTokens(
-      const url::Origin& origin) const = 0;
+      const url::Origin& origin) = 0;
 
   // Save the list of enabled trial tokens for |origin|.
   virtual void SavePersistentTrialTokens(
       const url::Origin& origin,
       const base::flat_set<PersistedTrialToken>& tokens) = 0;
+
+  // Clear any stored trial tokens.
+  virtual void ClearPersistedTokens() = 0;
 };
 
 }  // namespace origin_trials

@@ -1,6 +1,8 @@
 include_rules = [
   "+components/origin_trials/common",
+  "+components/origin_trials/proto",
 
+  "+components/leveldb_proto/public",
   "+components/keyed_service",
   "+components/prefs",
   "+components/user_prefs",
@@ -13,6 +15,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest\.cc": [
+    "+components/leveldb_proto/testing/fake_db.h",
     "+components/sync_preferences/testing_pref_service_syncable.h",
     "+content/public/test",
   ]

@@ -18,7 +18,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/origin_trials/browser/origin_trials.h"
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/common/content_features.h"
@@ -57,8 +56,6 @@ const char kOriginTrialResourceJavascriptPath[] = "/origin-trial-script.js";
 class OriginTrialsBrowserTest : public PlatformBrowserTest {
  public:
   OriginTrialsBrowserTest() {
-    disable_token_cleanup_for_test_ = origin_trials::
-        PrefServicePersistenceProvider::DisableCleanupExpiredTokensForTesting();
     test_features_.InitAndEnableFeature(::features::kPersistentOriginTrials);
   }
 
@@ -117,9 +114,10 @@ class OriginTrialsBrowserTest : public PlatformBrowserTest {
 
   void TearDownOnMainThread() override {
     // Clean up any saved settings after test run
-    PrefService* pref_service =
-        user_prefs::UserPrefs::Get(browser()->profile());
-    browsing_data::RemovePersistentOriginTrials(pref_service);
+    browser()
+        ->profile()
+        ->GetOriginTrialsControllerDelegate()
+        ->ClearPersistedTokens();
 
     url_loader_interceptor_.reset();
     PlatformBrowserTest::TearDownOnMainThread();
@@ -157,7 +155,6 @@ class OriginTrialsBrowserTest : public PlatformBrowserTest {
   }
 
  protected:
-  std::unique_ptr<base::AutoReset<bool>> disable_token_cleanup_for_test_;
   base::test::ScopedFeatureList test_features_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   base::flat_map<std::string, int> received_request_counts_;

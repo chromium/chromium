@@ -47,10 +47,11 @@ class PrefServicePersistenceProvider : public OriginTrialsPersistenceProvider {
 
   // OriginTrialPersistenceProvider implementation
   base::flat_set<PersistedTrialToken> GetPersistentTrialTokens(
-      const url::Origin& origin) const override;
+      const url::Origin& origin) override;
   void SavePersistentTrialTokens(
       const url::Origin& origin,
       const base::flat_set<PersistedTrialToken>& tokens) override;
+  void ClearPersistedTokens() override;
 
   // For testing. Will automatically re-enable once the returned unique_ptr is
   // destroyed

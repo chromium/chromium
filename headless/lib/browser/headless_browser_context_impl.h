@@ -149,10 +149,8 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   std::unique_ptr<HeadlessRequestContextManager> request_context_manager_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
 
-#if defined(HEADLESS_USE_PREFS)
   std::unique_ptr<content::OriginTrialsControllerDelegate>
       origin_trials_controller_delegate_;
-#endif  // defined(HEADLESS_USE_PREFS)
 };
 
 }  // namespace headless

@@ -56,6 +56,7 @@ class OriginTrials : public KeyedService,
   base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
       base::Time current_time) override;
+  void ClearPersistedTokens() override;
 
  private:
   std::unique_ptr<OriginTrialsPersistenceProvider> persistence_provider_;

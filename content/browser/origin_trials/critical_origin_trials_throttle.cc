@@ -4,6 +4,7 @@
 
 #include "content/browser/origin_trials/critical_origin_trials_throttle.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/origin_trials/origin_trials_utils.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
@@ -105,6 +106,10 @@ void CriticalOriginTrialsThrottle::MaybeRestartWithTrials(
       needs_restart = true;
     }
   }
+
+  // The header was present, emit a histogram to track if we need a restart.
+  UMA_HISTOGRAM_BOOLEAN("OriginTrials.PersistentOriginTrial.CriticalRestart",
+                        needs_restart);
 
   if (needs_restart) {
     // Persist the trials that were set, so we can try again.

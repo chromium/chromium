@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package origin_trials_pb;
+
+message TrialTokenDbEntry {
+  optional string trial_name = 1;
+  optional uint64 token_expiry = 2;
+  optional uint32 usage_restriction = 3;
+  optional bytes token_signature = 4;
+}
+
+// Message to store an already-parsed origin to avoid re-parsing origins from
+// serialized URLs
+message OriginMessage {
+  optional string scheme = 1;
+  optional string host = 2;
+  optional uint32 port = 3;
+}
+
+message TrialTokenDbEntries {
+  optional OriginMessage origin = 1;
+  repeated TrialTokenDbEntry tokens = 2;
+}

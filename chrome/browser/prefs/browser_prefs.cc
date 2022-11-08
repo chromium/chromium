@@ -1999,6 +1999,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   feed::MigrateObsoleteProfilePrefsOct_2022(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(origin_trials::kOriginTrialPrefKey);
 
   // Once this migration is complete, the tracked preference
   // `kGoogleServicesLastAccountIdDeprecated` can be removed.

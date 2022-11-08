@@ -13,6 +13,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/favicon/favicon_service_impl.h"
@@ -111,8 +112,10 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
   if (remove_mask & DATA_TYPE_SITE_SETTINGS) {
     browsing_data::RemoveSiteSettingsData(delete_begin, delete_end,
                                           host_content_settings_map);
-    browsing_data::RemovePersistentOriginTrials(
-        user_prefs::UserPrefs::Get(browser_context_));
+    content::OriginTrialsControllerDelegate* delegate =
+        browser_context_->GetOriginTrialsControllerDelegate();
+    if (delegate)
+      delegate->ClearPersistedTokens();
   }
 
   RunCallbackIfDone();

@@ -84,6 +84,8 @@ class MockOriginTrialsDelegate
     persist_trials_from_tokens_count_++;
   }
 
+  void ClearPersistedTokens() override { persisted_trials_.clear(); }
+
   void AddPersistedTrialForTest(const base::StringPiece url,
                                 const base::StringPiece trial_name) {
     url::Origin key = url::Origin::Create(GURL(url));

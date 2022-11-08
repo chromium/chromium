@@ -130,6 +130,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
@@ -677,14 +678,18 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       should_clear_password_account_storage_settings_ = true;
     }
 
-    // Persistent Origin Trial preferences are only saved until the next page
+    // Persistent Origin Trial tokens are only saved until the next page
     // load from the same origin. For that reason, they are not saved with
     // last-modified information, so deletion will clear all stored information.
     // Sites should omit setting the Origin-Trial header to clear their
     // individual information, so rather than filtering origins, we only perform
     // the removal if we are removing information for all origins.
-    if (filter_builder->MatchesAllOriginsAndDomains())
-      browsing_data::RemovePersistentOriginTrials(prefs);
+    if (filter_builder->MatchesAllOriginsAndDomains()) {
+      content::OriginTrialsControllerDelegate* delegate =
+          profile_->GetOriginTrialsControllerDelegate();
+      if (delegate)
+        delegate->ClearPersistedTokens();
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

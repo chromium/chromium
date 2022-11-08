@@ -9527,6 +9527,105 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OriginTrials.PersistentOriginTrial.CriticalRestart"
+    enum="Boolean" expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Reports whether the presence of a Critical-Origin-Trial header caused a
+    network request restart due to the origin trial not being enabled.
+
+    The Critical-Origin-Trial header is only processed for navigation requests
+    (loading either a main- or sub-frame) using a safe HTTP verb (per section
+    4.2.1 of RFC 7231). On those requests, this metric will be emitted if the
+    Critical-Origin-Trial header is present on the response, to report the
+    decision made by the CriticalOriginTrialThrottle.
+
+    The request may still be restarted due to other throttles, even if this
+    metric reported &quot;false&quot;.
+  </summary>
+</histogram>
+
+<histogram name="OriginTrials.PersistentOriginTrial.LevelDbInitSuccess"
+    enum="Boolean" expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Reports status of LevelDB initialization for persistent origin trials. This
+    is emitted on the Init callback during browser startup, and should not be
+    false. A high rate of &quot;false&quot; would indicate a problem with the
+    shared LevelDB database.
+  </summary>
+</histogram>
+
+<histogram name="OriginTrials.PersistentOriginTrial.LevelDbLoadSize"
+    units="origins" expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Counts the number of origins in the LevelDb database at time of load during
+    browser startup.
+
+    This metric is for reporting only, and expected to get worse if you are in
+    the process of launching a persistent origin trial.
+  </summary>
+</histogram>
+
+<histogram name="OriginTrials.PersistentOriginTrial.LevelDbLoadSuccess"
+    enum="Boolean" expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Reports status of LevelDB load for persistent origin trials. This is emitted
+    on the Load callback during browser startup, and should not be false. A high
+    rate of &quot;false&quot; would indicate a problem with the shared LevelDB
+    database.
+  </summary>
+</histogram>
+
+<histogram name="OriginTrials.PersistentOriginTrial.LevelDbLoadTime" units="ms"
+    expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Measures the time to load the data from LevelDb during startup in wall clock
+    time.
+
+    This metric is for reporting only, and expected to get worse if you are in
+    the process of launching a persistent origin trial.
+  </summary>
+</histogram>
+
+<histogram name="OriginTrials.PersistentOriginTrial.OriginLookupsBeforeDbLoad"
+    units="origins" expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Counts the number of lookups for origins arriving to the
+    LevelDbPersistenceProvider before the database was loaded from disk. Any
+    such lookup would not have seen the persisted value.
+
+    Since the database is loaded asynchronously, it is possible for the browser
+    to start using the PersistentOriginTrial component before it is fully
+    loaded. Due to this, it is expected to see this metric at 1, possibly 2.
+    Large numbers can be caused by a browser restart with a lot of saved tabs
+    being loaded at the same time.
+  </summary>
+</histogram>
+
+<histogram name="OriginTrials.PersistentOriginTrial.OriginsAddedBeforeDbLoad"
+    units="origins" expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Counts the number of origins added to the LevelDbPersistenceProvider before
+    the persited origins have loaded from disk. This number represents the
+    number of page loads for pages enrolled in persistent origin trials where
+    the trial was either not activated or the request had to restart due to the
+    presence of the Persistent-Origin-Trial header.
+  </summary>
+</histogram>
+
 <histogram name="OriginTrials.ValidationResult" enum="OriginTrialTokenStatus"
     expires_after="2021-10-10">
   <owner>chasej@chromium.org</owner>

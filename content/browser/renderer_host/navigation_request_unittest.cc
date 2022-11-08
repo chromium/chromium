@@ -1057,6 +1057,8 @@ class OriginTrialsControllerDelegateMock
     return base::flat_set<std::string>();
   }
 
+  void ClearPersistedTokens() override { persisted_tokens_.clear(); }
+
   base::flat_map<url::Origin, std::vector<std::string>> persisted_tokens_;
 };
 

@@ -18,7 +18,6 @@
 #include "headless/lib/browser/headless_select_file_dialog_factory.h"
 
 #if defined(HEADLESS_USE_PREFS)
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"  // nogncheck
 #include "components/os_crypt/os_crypt.h"  // nogncheck
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
@@ -173,9 +172,6 @@ void HeadlessBrowserMainParts::CreatePrefService() {
   BrowserContextDependencyManager::GetInstance()
       ->RegisterProfilePrefsForServices(pref_registry.get());
 #endif  // defined(HEADLESS_USE_POLICY)
-
-  origin_trials::PrefServicePersistenceProvider::RegisterProfilePrefs(
-      pref_registry.get());
 
   factory.set_user_prefs(pref_store);
   local_state_ = factory.Create(std::move(pref_registry));

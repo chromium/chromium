@@ -92,4 +92,8 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
   return enabled_trials;
 }
 
+void OriginTrials::ClearPersistedTokens() {
+  persistence_provider_->ClearPersistedTokens();
+}
+
 }  // namespace origin_trials

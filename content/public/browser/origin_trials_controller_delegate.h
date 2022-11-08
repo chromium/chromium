@@ -46,6 +46,9 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
   virtual base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
       base::Time current_time) = 0;
+
+  // Remove all persisted tokens. Used to clear browsing data.
+  virtual void ClearPersistedTokens() = 0;
 };
 
 }  // namespace content

@@ -2,8 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 source_set("browser") {
   sources = [
+    "browser/leveldb_persistence_provider.cc",
+    "browser/leveldb_persistence_provider.h",
     "browser/origin_trials.cc",
     "browser/origin_trials.h",
     "browser/prefservice_persistence_provider.cc",
@@ -11,7 +15,10 @@ source_set("browser") {
   ]
   deps = [
     ":common",
+    ":db_trial_token",
+    ":proto",
     "//base",
+    "//components/leveldb_proto",
     "//components/prefs",
     "//components/user_prefs",
     "//content/public/browser",
@@ -36,9 +43,29 @@ source_set("common") {
   ]
 }
 
+proto_library("db_trial_token") {
+  visibility = [ "//components/origin_trials:*" ]
+  sources = [ "proto/db_trial_token.proto" ]
+}
+
+source_set("proto") {
+  visibility = [ "//components/origin_trials:*" ]
+  sources = [
+    "proto/proto_util.cc",
+    "proto/proto_util.h",
+  ]
+  deps = [
+    ":common",
+    ":db_trial_token",
+    "//base",
+    "//url:url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "browser/leveldb_persistence_provider_unittest.cc",
     "browser/origin_trials_unittest.cc",
     "browser/prefservice_persistence_provider_unittest.cc",
     "common/persisted_trial_token_unittest.cc",
@@ -46,9 +73,12 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":common",
+    ":db_trial_token",
+    ":proto",
     "./test",
     "//base",
     "//base/test:test_support",
+    "//components/leveldb_proto:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_prefs:user_prefs",
     "//content/public/browser",

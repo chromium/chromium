@@ -106,7 +106,7 @@ void PrefServicePersistenceProvider::DeleteExpiredTokens(
 
 base::flat_set<PersistedTrialToken>
 PrefServicePersistenceProvider::GetPersistentTrialTokens(
-    const url::Origin& origin) const {
+    const url::Origin& origin) {
   DCHECK(!origin.opaque());
 
   PrefService* service = pref_service();
@@ -158,6 +158,10 @@ void PrefServicePersistenceProvider::SavePersistentTrialTokens(
     }
     storage_dict.Set(origin_key, std::move(token_dicts));
   }
+}
+
+void PrefServicePersistenceProvider::ClearPersistedTokens() {
+  pref_service()->ClearPref(kOriginTrialPrefKey);
 }
 
 PrefService* PrefServicePersistenceProvider::pref_service() const {

@@ -840,6 +840,9 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
 
   if (breadcrumbs::IsEnabled())
     BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(this);
+
+  // Request an OriginTrialsControllerDelegate to ensure it is initialized.
+  GetOriginTrialsControllerDelegate();
 }
 
 base::FilePath ProfileImpl::last_selected_directory() {

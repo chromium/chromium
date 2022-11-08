@@ -110,6 +110,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "PageEntityMetadataDatabase";
     case ProtoDbType::WEBRTC_VIDEO_STATS_DB:
       return "WebrtcVideoStatsDB";
+    case ProtoDbType::PERSISTENT_ORIGIN_TRIALS:
+      return "PersistentOriginTrials";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();

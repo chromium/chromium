@@ -5,9 +5,11 @@
 #include "weblayer/browser/origin_trials_factory.h"
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/origin_trials/common/features.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace weblayer {
@@ -38,7 +40,9 @@ OriginTrialsFactory::~OriginTrialsFactory() noexcept = default;
 KeyedService* OriginTrialsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new origin_trials::OriginTrials(
-      std::make_unique<origin_trials::PrefServicePersistenceProvider>(context),
+      std::make_unique<origin_trials::LevelDbPersistenceProvider>(
+          context->GetPath(),
+          context->GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
       std::make_unique<blink::TrialTokenValidator>());
 }
 
