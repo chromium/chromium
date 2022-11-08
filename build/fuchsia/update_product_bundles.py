@@ -10,6 +10,7 @@ import argparse
 import json
 import logging
 import os
+import subprocess
 import sys
 
 from contextlib import ExitStack
@@ -26,6 +27,7 @@ _PRODUCT_BUNDLES = [
     'workstation_eng.qemu-x64',
 ]
 
+# TODO(crbug/1361089): Remove when the old scripts have been deprecated.
 _IMAGE_TO_PRODUCT_BUNDLE = {
     'core.x64-dfv2-release': 'core.x64-dfv2',
     'qemu.arm64': 'terminal.qemu-arm64',
@@ -43,6 +45,9 @@ def convert_to_product_bundle(images_list):
 
   product_bundle_list = []
   for image in images_list:
+    if image in _IMAGE_TO_PRODUCT_BUNDLE:
+      logging.warning(f'Image name {image} has been deprecated. Use '
+                      f'{_IMAGE_TO_PRODUCT_BUNDLE.get(image)} instead.')
     product_bundle_list.append(_IMAGE_TO_PRODUCT_BUNDLE.get(image, image))
   return product_bundle_list
 
@@ -62,7 +67,16 @@ def download_product_bundle(product_bundle, ffx_runner):
   """Download product bundles using the SDK."""
 
   logging.info('Downloading Fuchsia product bundle %s', product_bundle)
-  ffx_runner.run_ffx(('product-bundle', 'get', product_bundle))
+  try:
+    ffx_runner.run_ffx(('product-bundle', 'get', product_bundle))
+  except subprocess.CalledProcessError as cpe:
+    logging.error('Product bundle download has failed. This could be '
+                  'because an earlier version of the product bundle was not '
+                  'properly removed. Run |ffx product-bundle list|, remove '
+                  'the available product bundles listed using '
+                  '|ffx product-bundle remove|, remove the directory '
+                  f'{common.IMAGES_ROOT} and rerun hooks/this script.')
+    raise
 
 
 def main():
@@ -96,8 +110,11 @@ def main():
 
   with ExitStack() as stack:
     ffx_runner = ffx_session.FfxRunner(log_manager.LogManager(None))
-    stack.enter_context(
-        ffx_runner.scoped_config('pbms.storage.path', common.IMAGES_ROOT))
+
+    # Re-set the directory to which product bundles are downloaded so that
+    # these bundles are located inside the Chromium codebase.
+    ffx_runner.run_ffx(
+        ('config', 'set', 'pbms.storage.path', common.IMAGES_ROOT))
 
     # TODO(crbug/1380807): Remove when product bundles can be downloaded
     # for custom SDKs without editing metadata

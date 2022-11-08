@@ -102,10 +102,10 @@ class FfxEmulator(AbstractContextManager):
         node_name_suffix = random.randint(1, 9999)
         self._node_name = f'fuchsia-emulator-{node_name_suffix}'
 
-        # Always set the download path parallel to Fuchsia SDK directory
-        # so that old product bundles can be properly removed.
-        self._scoped_pb_storage = ScopedFfxConfig(
-            'pbms.storage.path', os.path.join(SDK_ROOT, os.pardir, 'images'))
+        # Set the download path parallel to Fuchsia SDK directory
+        # permanently so that scripts can always find the product bundles.
+        run_ffx_command(('config', 'set', 'pbms.storage.path',
+                         os.path.join(SDK_ROOT, os.pardir, 'images')))
 
         override_file = os.path.join(os.path.dirname(__file__), os.pardir,
                                      'sdk_override.txt')
@@ -134,7 +134,6 @@ class FfxEmulator(AbstractContextManager):
             The node name of the emulator.
         """
 
-        self._scoped_pb_storage.__enter__()
         if self._scoped_pb_metadata:
             self._scoped_pb_metadata.__enter__()
         self._check_ssh_config_file()
@@ -207,7 +206,6 @@ class FfxEmulator(AbstractContextManager):
 
         if self._scoped_pb_metadata:
             self._scoped_pb_metadata.__exit__(exc_type, exc_value, traceback)
-        self._scoped_pb_storage.__exit__(exc_type, exc_value, traceback)
 
         # Do not suppress exceptions.
         return False
