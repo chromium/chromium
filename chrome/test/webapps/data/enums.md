@@ -30,9 +30,9 @@ The tables in this file are parsed as action templates for critical user journey
 | IsOn | On | Off |  |  |  |  |  |
 | Display | Standalone | MinimalUi | Wco | Browser |  |  |  |
 | FileExtension | Foo | Bar |  |  |  |  |  |
-| Location | StartUrl | FileHandleUrlForTxt | FileHandleUrlForPng |  |  |  |  |
+| Location | StartUrl | FileHandleUrlForFoo | FileHandleUrlForBar |  |  |  |  |
 | Number | One | Two |  |  |  |  |  |
-| FilesOptions | OneTextFile | MultipleTextFiles | OnePngFile | MultiplePngFiles | AllTestAndPngFiles |  |  |
+| FilesOptions | OneFooFile | MultipleFooFiles | OneBarFile | MultipleBarFiles | AllFooAndBarFiles |  |  |
 | AllowDenyOptions | Allow | Deny |
 | AskAgainOptions | AskAgain | Remember |
 | ShortcutOptions | WithShortcut | NoShortcut |

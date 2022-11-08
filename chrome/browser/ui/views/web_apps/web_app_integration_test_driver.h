@@ -99,11 +99,11 @@ enum class AskAgainOptions { kAskAgain, kRemember };
 enum class FileExtension { kFoo, kBar };
 
 enum class FilesOptions {
-  kOneTextFile,
-  kMultipleTextFiles,
-  kOnePngFile,
-  kMultiplePngFiles,
-  kAllTextAndPngFiles
+  kOneFooFile,
+  kMultipleFooFiles,
+  kOneBarFile,
+  kMultipleBarFiles,
+  kAllFooAndBarFiles
 };
 
 enum class UpdateDialogResponse {

@@ -285,20 +285,20 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_or_shortcut(FileHandler) | check_site_handles_file(FileHandler, Foo) | check_site_handles_file(FileHandler, Bar) |
 | # Single open & multiple open behavior |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, OneTextFile) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultipleTextFiles) | check_file_handling_dialog(Shown)
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultipleTextFiles) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, MultipleTextFiles) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OnePngFile) | check_file_handling_dialog(Shown) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OnePngFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, OnePngFile) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultiplePngFiles) | check_file_handling_dialog(Shown) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultiplePngFiles) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, Two) | check_files_loaded_in_site(MinimalUi, MultiplePngFiles) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneFooFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneFooFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, OneFooFile) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultipleFooFiles) | check_file_handling_dialog(Shown)
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultipleFooFiles) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, MultipleFooFiles) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneBarFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneBarFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, OneBarFile) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultipleBarFiles) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultipleBarFiles) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, Two) | check_files_loaded_in_site(MinimalUi, MultipleBarFiles) |
 | # Dialog options |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Allow, Remember) | launch_file(OneTextFile) | check_file_handling_dialog(NotShown) | check_pwa_window_created(MinimalUi, One) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Allow, AskAgain) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Deny, AskAgain) | check_window_not_created | check_site_handles_file(MinimalUi, Txt) | check_site_handles_file(MinimalUi, Png) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Deny, AskAgain) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
-| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Deny, Remember) | check_window_not_created | check_site_not_handles_file(MinimalUi, Txt) | check_site_not_handles_file(MinimalUi, Png) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneFooFile) | file_handling_dialog(Allow, Remember) | launch_file(OneFooFile) | check_file_handling_dialog(NotShown) | check_pwa_window_created(MinimalUi, One) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneFooFile) | file_handling_dialog(Allow, AskAgain) | launch_file(OneFooFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneFooFile) | file_handling_dialog(Deny, AskAgain) | check_window_not_created | check_site_handles_file(MinimalUi, Foo) | check_site_handles_file(MinimalUi, Bar) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneFooFile) | file_handling_dialog(Deny, AskAgain) | launch_file(OneFooFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneFooFile) | file_handling_dialog(Deny, Remember) | check_window_not_created | check_site_not_handles_file(MinimalUi, Foo) | check_site_not_handles_file(MinimalUi, Bar) |
 | # Policy approval |
-| WMLC | install_or_shortcut(MinimalUi) | add_file_handling_policy_approval(MinimalUi) | launch_file(OneTextFile) | check_file_handling_dialog(NotShown) | check_pwa_window_created(MinimalUi, One) |
-| WMLC | install_or_shortcut(MinimalUi) | add_file_handling_policy_approval(MinimalUi) | remove_file_handling_policy_approval(MinimalUi) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | add_file_handling_policy_approval(MinimalUi) | launch_file(OneFooFile) | check_file_handling_dialog(NotShown) | check_pwa_window_created(MinimalUi, One) |
+| WMLC | install_or_shortcut(MinimalUi) | add_file_handling_policy_approval(MinimalUi) | remove_file_handling_policy_approval(MinimalUi) | launch_file(OneFooFile) | check_file_handling_dialog(Shown) |

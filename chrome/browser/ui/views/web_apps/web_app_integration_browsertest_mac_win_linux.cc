@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectDialog) {
   helper_.InstallMenuOption(InstallableSite::kFileHandler);
   helper_.ClosePwa();
-  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
+  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneFooFile,
                                  AllowDenyOptions::kAllow,
                                  AskAgainOptions::kAskAgain);
   helper_.CheckWindowCreated();
@@ -86,13 +86,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Allow) {
   helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
   helper_.ClosePwa();
   // Open the file and set AskAgainOption to kRemember.
-  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
+  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneFooFile,
                                  AllowDenyOptions::kAllow,
                                  AskAgainOptions::kRemember);
   helper_.ClosePwa();
   // Open the file again.
   helper_.LaunchFileExpectNoDialog(Site::kFileHandler,
-                                   FilesOptions::kOneTextFile);
+                                   FilesOptions::kOneFooFile);
   helper_.CheckWindowCreated();
 }
 
@@ -100,13 +100,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Deny) {
   helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
   helper_.ClosePwa();
   // Open the file and set AskAgainOption to kRemember.
-  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
+  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneFooFile,
                                  AllowDenyOptions::kDeny,
                                  AskAgainOptions::kRemember);
 
   // Open the file again.
   helper_.LaunchFileExpectNoDialog(Site::kFileHandler,
-                                   FilesOptions::kOneTextFile);
+                                   FilesOptions::kOneFooFile);
   // Despite previous denial, a new window should still have been created. The
   // only difference with the Allow case is that no files would have been passed
   // to the launched app.

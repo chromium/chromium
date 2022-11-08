@@ -1552,28 +1552,28 @@ base::FilePath WebAppIntegrationTestDriver::GetResourceFile(
 std::vector<base::FilePath> WebAppIntegrationTestDriver::GetTestFilePaths(
     FilesOptions files_options) {
   std::vector<base::FilePath> file_paths;
-  base::FilePath txt_file_path = GetResourceFile(
-      FILE_PATH_LITERAL("webapps_integration/files/file_handler_test.txt"));
-  base::FilePath png_file_path = GetResourceFile(
-      FILE_PATH_LITERAL("webapps_integration/files/file_handler_test.png"));
+  base::FilePath foo_file_path = GetResourceFile(
+      FILE_PATH_LITERAL("webapps_integration/files/file_handler_test.foo"));
+  base::FilePath bar_file_path = GetResourceFile(
+      FILE_PATH_LITERAL("webapps_integration/files/file_handler_test.bar"));
   switch (files_options) {
-    case FilesOptions::kOneTextFile:
-      file_paths.push_back(txt_file_path);
+    case FilesOptions::kOneFooFile:
+      file_paths.push_back(foo_file_path);
       break;
-    case FilesOptions::kMultipleTextFiles:
-      file_paths.push_back(txt_file_path);
-      file_paths.push_back(txt_file_path);
+    case FilesOptions::kMultipleFooFiles:
+      file_paths.push_back(foo_file_path);
+      file_paths.push_back(foo_file_path);
       break;
-    case FilesOptions::kOnePngFile:
-      file_paths.push_back(png_file_path);
+    case FilesOptions::kOneBarFile:
+      file_paths.push_back(bar_file_path);
       break;
-    case FilesOptions::kMultiplePngFiles:
-      file_paths.push_back(png_file_path);
-      file_paths.push_back(png_file_path);
+    case FilesOptions::kMultipleBarFiles:
+      file_paths.push_back(bar_file_path);
+      file_paths.push_back(bar_file_path);
       break;
-    case FilesOptions::kAllTextAndPngFiles:
-      file_paths.push_back(txt_file_path);
-      file_paths.push_back(png_file_path);
+    case FilesOptions::kAllFooAndBarFiles:
+      file_paths.push_back(foo_file_path);
+      file_paths.push_back(bar_file_path);
       break;
   }
   return file_paths;
