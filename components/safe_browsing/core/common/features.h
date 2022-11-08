@@ -83,6 +83,13 @@ BASE_DECLARE_FEATURE(kEnhancedProtection);
 // Phase 2 of Enhanced Safe Browsing changes.
 BASE_DECLARE_FEATURE(kEnhancedProtectionPhase2IOS);
 
+// Enables instructional improvements when users are directed to the security
+// settings page to enable Enhanced Safe Browsing. Enables the In-page help
+// (IPH) Bubble to be shown when the user is referred from an ESB promotion.
+// The ESB option will also be collapsed on page load. If not enabled,
+// no IPH bubble will appear and the ESB option will be expanded on page load.
+BASE_DECLARE_FEATURE(kEsbIphBubbleAndCollapseSettings);
+
 // Enables collection of signals related to extension activity and uploads
 // of telemetry reports to SB servers.
 BASE_DECLARE_FEATURE(kExtensionTelemetry);
