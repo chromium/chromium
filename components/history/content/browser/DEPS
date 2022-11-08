@@ -3,3 +3,10 @@ include_rules = [
   "+components/visitedlink/browser",
   "+content/public/browser",
 ]
+
+specific_include_rules = {
+  "web_contents_top_sites_observer_unittest.cc": [
+    "+content/public/test",
+    "+third_party/blink/public/common/features.h",
+  ],
+}

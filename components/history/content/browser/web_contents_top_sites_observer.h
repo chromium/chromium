@@ -27,6 +27,7 @@ class WebContentsTopSitesObserver
 
  private:
   friend class content::WebContentsUserData<WebContentsTopSitesObserver>;
+  friend class WebContentsTopSitesObserverTest;
 
   WebContentsTopSitesObserver(content::WebContents* web_contents,
                               TopSites* top_sites);

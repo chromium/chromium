@@ -31,12 +31,15 @@ source_set("unit_tests") {
   sources = [
     "content_history_backend_db_unittest.cc",
     "download_conversions_unittest.cc",
+    "web_contents_top_sites_observer_unittest.cc",
   ]
   deps = [
     ":browser",
     "//base",
     "//components/history/core/browser:browser",
     "//components/history/core/test",
+    "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
