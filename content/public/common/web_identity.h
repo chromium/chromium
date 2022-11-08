@@ -15,11 +15,14 @@ namespace url {
 class Origin;
 }  // namespace url
 
+namespace blink::mojom {
+enum class IdpSigninStatus;
+}  // namespace blink::mojom
+
 namespace content {
 
-enum class IdpSigninStatus { kSignedIn, kSignedOut };
-
-typedef base::RepeatingCallback<void(const url::Origin&, IdpSigninStatus)>
+typedef base::RepeatingCallback<void(const url::Origin&,
+                                     blink::mojom::IdpSigninStatus)>
     SetIdpStatusCallback;
 
 CONTENT_EXPORT std::unique_ptr<blink::URLLoaderThrottle>

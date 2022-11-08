@@ -62,6 +62,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CancelTokenRequest() override;
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
                  LogoutRpsCallback) override;
+  void SetIdpSigninStatus(const url::Origin& origin,
+                          blink::mojom::IdpSigninStatus status) override;
 
   void SetTokenRequestDelayForTests(base::TimeDelta delay);
   void SetNetworkManagerForTests(

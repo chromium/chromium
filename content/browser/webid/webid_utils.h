@@ -8,6 +8,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace blink::mojom {
+enum class IdpSigninStatus;
+}  // namespace blink::mojom
+
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
@@ -23,7 +27,8 @@ bool IsSameOriginWithAncestors(RenderFrameHost* host,
 
 void SetIdpSigninStatus(content::BrowserContext* context,
                         const url::Origin& origin,
-                        IdpSigninStatus status);
+                        blink::mojom::IdpSigninStatus status);
 
 }  // namespace content
+
 #endif  // CONTENT_BROWSER_WEBID_WEBID_UTILS_H_

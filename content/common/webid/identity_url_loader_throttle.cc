@@ -12,7 +12,10 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/origin.h"
+
+using blink::mojom::IdpSigninStatus;
 
 namespace {
 // See the comment in HandleResponseOrRedirect for why we are checking for

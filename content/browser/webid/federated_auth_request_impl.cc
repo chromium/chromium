@@ -39,6 +39,7 @@
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProvider;
 using blink::mojom::IdentityProviderPtr;
+using blink::mojom::IdpSigninStatus;
 using blink::mojom::LogoutRpsStatus;
 using blink::mojom::RequestTokenStatus;
 using FederatedApiPermissionStatus =
@@ -601,6 +602,19 @@ void FederatedAuthRequestImpl::LogoutRps(
   // TODO(kenrb): These should be parallelized rather than being dispatched
   // serially. https://crbug.com/1200581.
   DispatchOneLogout();
+}
+
+void FederatedAuthRequestImpl::SetIdpSigninStatus(const url::Origin& idp_origin,
+                                                  IdpSigninStatus status) {
+  // We only allow setting the IDP signin status when the subresource is
+  // loaded from the same origin as the document. This is to protect from
+  // an RP embedding a tracker resource that would set this signin status
+  // for the tracker, enabling the FedCM request.
+  // This behavior may change in https://crbug.com/1382193
+  if (!origin().IsSameOriginWith(idp_origin))
+    return;
+  sharing_permission_delegate_->SetIdpSigninStatus(
+      idp_origin, status == IdpSigninStatus::kSignedIn);
 }
 
 bool FederatedAuthRequestImpl::HasPendingRequest() const {

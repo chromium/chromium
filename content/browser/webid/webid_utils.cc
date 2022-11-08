@@ -8,6 +8,7 @@
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/web_identity.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
 
@@ -25,9 +26,10 @@ bool IsSameOriginWithAncestors(RenderFrameHost* host,
 
 void SetIdpSigninStatus(content::BrowserContext* context,
                         const url::Origin& origin,
-                        IdpSigninStatus status) {
+                        blink::mojom::IdpSigninStatus status) {
   auto* delegate = context->GetFederatedIdentitySharingPermissionContext();
-  delegate->SetIdpSigninStatus(origin, status == IdpSigninStatus::kSignedIn);
+  delegate->SetIdpSigninStatus(
+      origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
 }
 
 }  // namespace content
