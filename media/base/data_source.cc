@@ -26,4 +26,6 @@ GURL DataSource::GetUrlAfterRedirects() const {
   return GURL();
 }
 
+void DataSource::OnBufferingHaveEnough(bool must_cancel_netops) {}
+
 }  // namespace media

@@ -1784,7 +1784,7 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
 
   // Tell the data source we have enough data so that it may release the
   // connection (unless blink is waiting on us to signal play()).
-  if (mb_data_source_ && !client_->CouldPlayIfEnoughData()) {
+  if (data_source_ && !client_->CouldPlayIfEnoughData()) {
     // `attempting_suspended_start_` will be cleared by OnPipelineSeeked() which
     // will occur after this method during a suspended startup.
     if (attempting_suspended_start_ && did_lazy_load_) {
@@ -1797,17 +1797,17 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
       // enough" to the MultiBufferDataSource.
       //
       // base::Unretained() is safe here since the base::CancelableOnceClosure
-      // will cancel upon destruction of this class and `mb_data_source_` is
-      // gauranteeed to outlive us.
+      // will cancel upon destruction of this class and `data_source_` is
+      // gauranteeed to outlive us as a result of the DestructionHelper.
       have_enough_after_lazy_load_cb_.Reset(
-          base::BindOnce(&MultiBufferDataSource::OnBufferingHaveEnough,
-                         base::Unretained(mb_data_source_), true));
+          base::BindOnce(&media::DataSource::OnBufferingHaveEnough,
+                         base::Unretained(data_source_.get()), true));
       main_task_runner_->PostDelayedTask(
           FROM_HERE, have_enough_after_lazy_load_cb_.callback(),
           base::Milliseconds(250));
     } else {
       have_enough_after_lazy_load_cb_.Cancel();
-      mb_data_source_->OnBufferingHaveEnough(true);
+      data_source_->OnBufferingHaveEnough(true);
     }
   }
 
@@ -2313,12 +2313,12 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
     // It may use this information to update buffer sizes or release unused
     // network connections.
     MaybeUpdateBufferSizesForPlayback();
-    if (mb_data_source_ && !client_->CouldPlayIfEnoughData()) {
+    if (data_source_ && !client_->CouldPlayIfEnoughData()) {
       // For LazyLoad this will be handled during OnPipelineSuspended().
       if (for_suspended_start && did_lazy_load_)
         DCHECK(!have_enough_after_lazy_load_cb_.IsCancelled());
       else
-        mb_data_source_->OnBufferingHaveEnough(false);
+        data_source_->OnBufferingHaveEnough(false);
     }
 
     // Blink expects a timeChanged() in response to a seek().
