@@ -72,14 +72,7 @@ class HeadlessShell : public HeadlessWebContents::Observer {
   void WriteFile(const std::string& file_path_switch,
                  const std::string& default_file_name,
                  std::string data);
-  void OnFileOpened(std::string data,
-                    const base::FilePath file_name,
-                    base::File::Error error_code);
-  void OnFileWritten(const base::FilePath file_name,
-                     const size_t length,
-                     base::File::Error error_code,
-                     int bytes_written);
-  void OnFileClosed(base::File::Error error_code);
+  void OnWriteFileDone(bool success);
 
   bool RemoteDebuggingEnabled() const;
 
@@ -89,9 +82,8 @@ class HeadlessShell : public HeadlessWebContents::Observer {
       devtools_client_;
   raw_ptr<HeadlessWebContents> web_contents_ = nullptr;
   raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;
-  bool processed_page_ready_ = false;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-  std::unique_ptr<base::FileProxy> file_proxy_;
+  bool processed_page_ready_ = false;
   bool shutdown_pending_ = false;
 
   base::WeakPtrFactory<HeadlessShell> weak_factory_{this};

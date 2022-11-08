@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iostream>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -211,6 +212,18 @@ bool ValidateCommandLine(const base::CommandLine& command_line) {
   return true;
 }
 
+bool DoWriteFile(const base::FilePath& file_path, std::string file_data) {
+  auto file_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(file_data.data()), file_data.size());
+  bool success = base::WriteFile(file_path, file_span);
+  PLOG_IF(ERROR, !success) << "Failed to write file " << file_path;
+  if (!success)
+    return false;
+
+  LOG(INFO) << file_data.size() << " bytes written to file " << file_path;
+  return true;
+}
+
 }  // namespace
 
 HeadlessShell::HeadlessShell() = default;
@@ -257,9 +270,8 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   }
 
   if (!args.empty()) {
-    base::PostTaskAndReplyWithResult(
-        file_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&ConvertArgumentsToURLs, args),
+    file_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&ConvertArgumentsToURLs, args),
         base::BindOnce(&HeadlessShell::OnGotURLs, weak_factory_.GetWeakPtr()));
   }
 }
@@ -284,9 +296,9 @@ void HeadlessShell::OnGotURLs(const std::vector<GURL>& urls) {
 }
 
 void HeadlessShell::Detach() {
-  if (!RemoteDebuggingEnabled()) {
+  if (!RemoteDebuggingEnabled())
     devtools_client_.DetachClient();
-  }
+
   web_contents_->RemoveObserver(this);
   web_contents_ = nullptr;
 }
@@ -615,61 +627,13 @@ void HeadlessShell::WriteFile(const std::string& file_path_switch,
   if (file_name.empty())
     file_name = base::FilePath().AppendASCII(default_file_name);
 
-  file_proxy_ = std::make_unique<base::FileProxy>(file_task_runner_.get());
-  if (!file_proxy_->CreateOrOpen(
-          file_name, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE,
-          base::BindOnce(&HeadlessShell::OnFileOpened,
-                         weak_factory_.GetWeakPtr(), std::move(data),
-                         file_name))) {
-    // Operation could not be started.
-    OnFileOpened(std::move(data), file_name, base::File::FILE_ERROR_FAILED);
-  }
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DoWriteFile, file_name, std::move(data)),
+      base::BindOnce(&HeadlessShell::OnWriteFileDone,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void HeadlessShell::OnFileOpened(std::string data,
-                                 const base::FilePath file_name,
-                                 base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!file_proxy_->IsValid()) {
-    LOG(ERROR) << "Writing to file " << file_name.value()
-               << " was unsuccessful, could not open file: "
-               << base::File::ErrorToString(error_code);
-    ShutdownSoon();
-    return;
-  }
-
-  if (!file_proxy_->Write(
-          0, reinterpret_cast<const char*>(data.data()), data.size(),
-          base::BindOnce(&HeadlessShell::OnFileWritten,
-                         weak_factory_.GetWeakPtr(), file_name, data.size()))) {
-    // Operation may have completed successfully or failed.
-    OnFileWritten(file_name, data.size(), base::File::FILE_ERROR_FAILED, 0);
-  }
-}
-
-void HeadlessShell::OnFileWritten(const base::FilePath file_name,
-                                  const size_t length,
-                                  base::File::Error error_code,
-                                  int bytes_written) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (bytes_written < static_cast<int>(length)) {
-    // TODO(eseckler): Support recovering from partial writes.
-    LOG(ERROR) << "Writing to file " << file_name.value()
-               << " was unsuccessful: "
-               << base::File::ErrorToString(error_code);
-  } else {
-    LOG(INFO) << "Written to file " << file_name.value() << ".";
-  }
-  if (!file_proxy_->Close(base::BindOnce(&HeadlessShell::OnFileClosed,
-                                         weak_factory_.GetWeakPtr()))) {
-    // Operation could not be started.
-    OnFileClosed(base::File::FILE_ERROR_FAILED);
-  }
-}
-
-void HeadlessShell::OnFileClosed(base::File::Error error_code) {
+void HeadlessShell::OnWriteFileDone(bool success) {
   ShutdownSoon();
 }
 
