@@ -23,7 +23,7 @@ class StreamType {
       : kind_(k), web_feed_id_(std::move(s)) {}
   bool operator<(const StreamType& rhs) const {
     if (kind_ == rhs.kind_) {
-      if (kind_ != StreamKind::kChannel)
+      if (kind_ != StreamKind::kSingleWebFeed)
         return false;
       return web_feed_id_.compare(rhs.web_feed_id_) < 0;
     }
@@ -34,7 +34,7 @@ class StreamType {
   }
   bool IsForYou() const { return kind_ == StreamKind::kForYou; }
   bool IsWebFeed() const { return kind_ == StreamKind::kFollowing; }
-  bool IsChannelFeed() const { return kind_ == StreamKind::kChannel; }
+  bool IsSingleWebFeed() const { return kind_ == StreamKind::kSingleWebFeed; }
   bool IsValid() const { return kind_ != StreamKind::kUnknown; }
   StreamKind GetKind() const { return kind_; }
   std::string GetWebFeedId() const { return web_feed_id_; }
@@ -50,7 +50,7 @@ class StreamType {
 
  private:
   StreamKind kind_ = StreamKind::kUnknown;
-  // Identifies the feed ID in the case that the feed is a ChannelFeed.
+  // Identifies the feed ID in the case that the feed is a SingleWebFeed.
   std::string web_feed_id_;
 };
 

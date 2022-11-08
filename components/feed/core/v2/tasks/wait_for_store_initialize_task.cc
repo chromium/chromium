@@ -41,7 +41,7 @@ void WaitForStoreInitializeTask::ReadStartupDataDone(
                                    base::Unretained(this)));
     return;
   }
-  // Channel Feed Data is actively pruned and does not need to persist across
+  // Single Web Feed Data is actively pruned and does not need to persist across
   // startups, and is being removed proactively here in the case that there
   // wasn't a chance to clean it up before the previous shutdown.
   const auto orig_size = startup_data.stream_data.size();
@@ -49,7 +49,7 @@ void WaitForStoreInitializeTask::ReadStartupDataDone(
       std::remove_if(
           startup_data.stream_data.begin(), startup_data.stream_data.end(),
           [&](const feedstore::StreamData& e) {
-            return feedstore::StreamTypeFromId(e.stream_id()).IsChannelFeed();
+            return feedstore::StreamTypeFromId(e.stream_id()).IsSingleWebFeed();
           }),
       startup_data.stream_data.end());
 
@@ -57,7 +57,7 @@ void WaitForStoreInitializeTask::ReadStartupDataDone(
 
   if (result_.startup_data.stream_data.size() != orig_size) {
     store_.ClearAllStreamData(
-        StreamKind::kChannel,
+        StreamKind::kSingleWebFeed,
         base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
                        base::Unretained(this)));
   } else {

@@ -44,7 +44,7 @@ constexpr char kSubscribedFeedsKey[] = "subs";
 constexpr char kRecommendedIndexKey[] = "recommendedIndex";
 constexpr char kPendingWebFeedOperationPrefix[] = "W/";
 constexpr char kStreamDataPrefix[] = "S/";
-constexpr char kChannelStreamDataPrefix[] = "S/c";
+constexpr char kkSingleWebFeedStreamDataPrefix[] = "S/c";
 
 leveldb::ReadOptions CreateReadOptions() {
   leveldb::ReadOptions opts;
@@ -767,7 +767,7 @@ void FeedStore::ReadStartupData(
   auto is_startup_data_filter = [](const base::flat_set<std::string>& key_set,
                                    const std::string& key) {
     return key_set.contains(key) ||
-           base::StartsWith(key, kChannelStreamDataPrefix);
+           base::StartsWith(key, kkSingleWebFeedStreamDataPrefix);
   };
 
   database_->LoadEntriesWithFilter(

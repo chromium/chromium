@@ -40,8 +40,8 @@
 namespace feed {
 namespace {
 StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kFollowing,
-                             StreamKind::kChannel};
-// TODO(crbug.com/1369777) Add kChannel streams to metrics reporting below
+                             StreamKind::kSingleWebFeed};
+// TODO(crbug.com/1369777) Add kSingleWebFeed streams to metrics reporting below
 using feed::FeedEngagementType;
 using feed::FeedUserActionType;
 const int kMaxSuggestionsTotal = 50;
@@ -65,7 +65,7 @@ base::StringPiece HistogramReplacement(const StreamType& stream_type) {
       return "Feed.";
     case StreamKind::kFollowing:
       return "Feed.WebFeed.";
-    case StreamKind::kChannel:
+    case StreamKind::kSingleWebFeed:
       return "Feed.SingleWebFeed.";
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
@@ -97,7 +97,7 @@ void ReportContentSuggestionsOpened(const StreamType& stream_type,
       base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Opened",
                                     index_in_stream, kMaxSuggestionsTotal);
       break;
-    case StreamKind::kChannel:
+    case StreamKind::kSingleWebFeed:
       base::UmaHistogramExactLinear(
           "ContentSuggestions.Feed.SingleWebFeed.Opened", index_in_stream,
           kMaxSuggestionsTotal);
@@ -535,7 +535,7 @@ void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
       base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Shown",
                                     index_in_stream, kMaxSuggestionsTotal);
       break;
-    case StreamKind::kChannel:
+    case StreamKind::kSingleWebFeed:
       base::UmaHistogramExactLinear(
           "ContentSuggestions.Feed.SingleWebFeed.Shown", index_in_stream,
           kMaxSuggestionsTotal);
@@ -1132,7 +1132,7 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
     case StreamKind::kForYou:
       return for_you_stats_;
     case StreamKind::kFollowing:
-    case StreamKind::kChannel:
+    case StreamKind::kSingleWebFeed:
       return web_feed_stats_;
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";

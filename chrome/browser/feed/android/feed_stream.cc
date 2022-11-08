@@ -53,7 +53,7 @@ static jlong JNI_FeedStream_InitWebFeed(
   std::string web_feed_id;
   base::android::JavaByteArrayToString(env, j_web_feed_id, &web_feed_id);
   return reinterpret_cast<intptr_t>(new FeedStream(
-      j_this, static_cast<jint>(StreamKind::kChannel), web_feed_id,
+      j_this, static_cast<jint>(StreamKind::kSingleWebFeed), web_feed_id,
       reinterpret_cast<FeedReliabilityLoggingBridge*>(
           native_feed_reliability_logging_bridge)));
 }

@@ -2586,7 +2586,7 @@ TEST_F(FeedApiTest, PersistentKeyValueStoreIsClearedOnClearAll) {
 }
 
 TEST_F(FeedApiTest, LoadMultipleStreams) {
-  // TODO(crbug.com/1369777) Add support for channel feed.
+  // TODO(crbug.com/1369777) Add support for single web feed.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   // WebFeed stream is only fetched when there's a subscription.
@@ -3898,29 +3898,29 @@ TEST_F(FeedApiTest, FeedCloseRefresh_RequestType) {
             network_.query_request_sent->feed_request().feed_query().reason());
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
 }
-TEST_F(FeedApiTest, ChannelFeed_AttachMultiple) {
+TEST_F(FeedApiTest, SingleWebFeed_AttachMultiple) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
 
-  StreamType stream_type_A(StreamKind::kChannel, "A");
-  StreamType stream_type_B(StreamKind::kChannel, "B");
+  StreamType stream_type_A(StreamKind::kSingleWebFeed, "A");
+  StreamType stream_type_B(StreamKind::kSingleWebFeed, "B");
 
-  TestChannelSurface channel_surface_a(stream_.get(), "A");
-  TestChannelSurface channel_surface_b(stream_.get(), "B");
+  TestSingleWebFeedSurface single_web_feed_surface_a(stream_.get(), "A");
+  TestSingleWebFeedSurface single_web_feed_surface_b(stream_.get(), "B");
 
   WaitForIdleTaskQueue();
 
   ASSERT_EQ("loading -> [user@foo] 2 slices",
-            channel_surface_a.DescribeUpdates());
+            single_web_feed_surface_a.DescribeUpdates());
   ASSERT_EQ("loading -> [user@foo] 2 slices",
-            channel_surface_b.DescribeUpdates());
+            single_web_feed_surface_b.DescribeUpdates());
 
   ASSERT_EQ(stream_->GetModel(stream_type_A)->DumpStateForTesting(),
             ModelStateFor(stream_type_A, store_.get()));
   ASSERT_EQ(stream_->GetModel(stream_type_B)->DumpStateForTesting(),
             ModelStateFor(stream_type_B, store_.get()));
 
-  channel_surface_b.Detach();
+  single_web_feed_surface_b.Detach();
 
   WaitForModelToAutoUnload();
   WaitForIdleTaskQueue();
@@ -4071,21 +4071,21 @@ TEST_F(FeedApiTest, CheckDuplicatedContents) {
   }
 }
 
-TEST_F(FeedApiTest, ChannelFeed_DelayedDeletion) {
+TEST_F(FeedApiTest, SingleWebFeed_DelayedDeletion) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  StreamType stream_type(StreamKind::kChannel, "A");
+  StreamType stream_type(StreamKind::kSingleWebFeed, "A");
 
-  TestChannelSurface channel_surface(stream_.get(), "A");
+  TestSingleWebFeedSurface single_web_feed_surface(stream_.get(), "A");
 
   WaitForIdleTaskQueue();
 
   ASSERT_EQ("loading -> [user@foo] 2 slices",
-            channel_surface.DescribeUpdates());
+            single_web_feed_surface.DescribeUpdates());
 
   ASSERT_EQ(stream_->GetModel(stream_type)->DumpStateForTesting(),
             ModelStateFor(stream_type, store_.get()));
 
-  channel_surface.Detach();
+  single_web_feed_surface.Detach();
 
   WaitForModelToAutoUnload();
   EXPECT_TRUE(stream_->GetStreamPresentForTest(stream_type));
@@ -4101,11 +4101,11 @@ TEST_F(FeedApiTest, ChannelFeed_DelayedDeletion) {
   EXPECT_FALSE(stream_->GetStreamPresentForTest(stream_type));
 }
 
-TEST_F(FeedApiTest, ChannelFeed_DataRemovedOnStartup) {
+TEST_F(FeedApiTest, SingleWebFeed_DataRemovedOnStartup) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  StreamType stream_type(StreamKind::kChannel, "A");
+  StreamType stream_type(StreamKind::kSingleWebFeed, "A");
 
-  TestChannelSurface channel_feed_surface(stream_.get(), "A");
+  TestSingleWebFeedSurface single_web_feed_feed_surface(stream_.get(), "A");
   WaitForIdleTaskQueue();
 
   ASSERT_NE("{Failed to load model from store}",
@@ -4118,21 +4118,21 @@ TEST_F(FeedApiTest, ChannelFeed_DataRemovedOnStartup) {
             ModelStateFor(stream_type, store_.get()));
 }
 
-TEST_F(FeedApiTest, ChannelFeed_ReattachedChannelStreamFetches) {
+TEST_F(FeedApiTest, SingleWebFeed_ReattachedSingleWebStreamFetches) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  StreamType stream_type(StreamKind::kChannel, "A");
+  StreamType stream_type(StreamKind::kSingleWebFeed, "A");
 
   EXPECT_EQ(0, prefetch_image_call_count_);
 
-  TestChannelSurface channel_feed_surface(stream_.get(), "A");
+  TestSingleWebFeedSurface single_web_feed_feed_surface(stream_.get(), "A");
   WaitForIdleTaskQueue();
 
   ASSERT_EQ(stream_->GetModel(stream_type)->DumpStateForTesting(),
             ModelStateFor(stream_type, store_.get()));
 
   EXPECT_EQ("loading -> [user@foo] 2 slices",
-            channel_feed_surface.DescribeUpdates());
-  channel_feed_surface.Detach();
+            single_web_feed_feed_surface.DescribeUpdates());
+  single_web_feed_feed_surface.Detach();
 
   WaitForModelToAutoUnload();
   WaitForIdleTaskQueue();
@@ -4141,10 +4141,11 @@ TEST_F(FeedApiTest, ChannelFeed_ReattachedChannelStreamFetches) {
 
   task_environment_.FastForwardBy(base::Seconds(40));
 
-  channel_feed_surface.Attach(stream_.get());
+  single_web_feed_feed_surface.Attach(stream_.get());
   WaitForIdleTaskQueue();
   // verify no new fetches were required to populate reattach.
-  EXPECT_EQ("loading -> 2 slices", channel_feed_surface.DescribeUpdates());
+  EXPECT_EQ("loading -> 2 slices",
+            single_web_feed_feed_surface.DescribeUpdates());
 }
 
 // Keep instantiations at the bottom.

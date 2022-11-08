@@ -504,13 +504,14 @@ void FeedStream::AddUnloadModelIfNoSurfacesAttachedTask(
       FROM_HERE, std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
                      &FeedStream::UnloadModelIfNoSurfacesAttachedTask,
                      base::Unretained(this), stream_type)));
-  // If this is a channel stream, remove it and delete stream data on a delay.
-  if (stream_type.IsChannelFeed()) {
+  // If this is a SingleWebFeed stream, remove it and delete stream data on a
+  // delay.
+  if (stream_type.IsSingleWebFeed()) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FeedStream::ClearStream, GetWeakPtr(), stream_type,
                        sequence_number),
-        GetFeedConfig().channel_stream_clear_timeout);
+        GetFeedConfig().single_web_feed_stream_clear_timeout);
   }
 }
 
@@ -992,7 +993,7 @@ RequestMetadata FeedStream::GetSignedInRequestMetadata() const {
 RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
                                                bool is_for_next_page) const {
   const Stream* stream = FindStream(stream_type);
-  // TODO(crbug.com/1370127) handle null channel streams
+  // TODO(crbug.com/1370127) handle null single web feed streams
   DCHECK(stream);
   RequestMetadata result;
   if (is_for_next_page) {
@@ -1202,7 +1203,7 @@ void FeedStream::FinishClearAll() {
 
 void FeedStream::FinishClearStream(const StreamType& stream_type) {
   Stream* stream = FindStream(stream_type);
-  if (stream && stream_type.IsChannelFeed()) {
+  if (stream && stream_type.IsSingleWebFeed()) {
     streams_.erase(stream_type);
   }
 }

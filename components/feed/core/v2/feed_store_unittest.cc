@@ -935,14 +935,14 @@ TEST_F(FeedStoreTest, ReadRecommendedWebFeedInfoNotPresent) {
 TEST_F(FeedStoreTest, ClearAllStreamData) {
   // Write stream records to store.
   MakeFeedStore({});
-  store_->OverwriteStream(StreamType(StreamKind::kChannel, "A"),
+  store_->OverwriteStream(StreamType(StreamKind::kSingleWebFeed, "A"),
                           MakeTypicalInitialModelState(), base::DoNothing());
   fake_db_->UpdateCallback(true);
   ASSERT_NE("", StoreToString());
 
   // ClearAll() and verify the DB is empty.
   CallbackReceiver<bool> receiver;
-  store_->ClearAllStreamData(StreamKind::kChannel, receiver.Bind());
+  store_->ClearAllStreamData(StreamKind::kSingleWebFeed, receiver.Bind());
   fake_db_->UpdateCallback(true);
 
   ASSERT_TRUE(receiver.GetResult());

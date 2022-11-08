@@ -333,8 +333,10 @@ TestForYouSurface::TestForYouSurface(FeedStream* stream)
     : TestSurfaceBase(StreamType(StreamKind::kForYou), stream) {}
 TestWebFeedSurface::TestWebFeedSurface(FeedStream* stream)
     : TestSurfaceBase(StreamType(StreamKind::kFollowing), stream) {}
-TestChannelSurface::TestChannelSurface(FeedStream* stream, std::string channel)
-    : TestSurfaceBase(StreamType(StreamKind::kChannel, channel), stream) {}
+TestSingleWebFeedSurface::TestSingleWebFeedSurface(FeedStream* stream,
+                                                   std::string web_feed_id)
+    : TestSurfaceBase(StreamType(StreamKind::kSingleWebFeed, web_feed_id),
+                      stream) {}
 
 TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
 TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;

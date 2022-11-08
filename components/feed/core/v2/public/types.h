@@ -248,10 +248,10 @@ enum class StreamKind : int {
   kForYou = 1,
   // Following stream.
   kFollowing = 2,
-  // Channel stream.
-  kChannel = 3,
+  // Single Web Feed (Cormorant) stream.
+  kSingleWebFeed = 3,
 
-  kMaxValue = kChannel,
+  kMaxValue = kSingleWebFeed,
 };
 
 // For testing and debugging only.

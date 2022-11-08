@@ -45,9 +45,9 @@ struct Config {
   // If no surfaces are attached, the stream model is unloaded after this
   // timeout.
   base::TimeDelta model_unload_timeout = base::Seconds(1);
-  // If no surfaces are attached, the channel stream stream model is cleared
+  // If no surfaces are attached, the singleWebFeed stream model is cleared
   // after this timeout.
-  base::TimeDelta channel_stream_clear_timeout = base::Seconds(60);
+  base::TimeDelta single_web_feed_stream_clear_timeout = base::Seconds(60);
   // How far ahead in number of items from last visible item to final item
   // before attempting to load more content.
   int load_more_trigger_lookahead = 5;

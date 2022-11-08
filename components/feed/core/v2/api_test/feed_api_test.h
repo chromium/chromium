@@ -181,9 +181,10 @@ class TestWebFeedSurface : public TestSurfaceBase {
  public:
   explicit TestWebFeedSurface(FeedStream* stream = nullptr);
 };
-class TestChannelSurface : public TestSurfaceBase {
+class TestSingleWebFeedSurface : public TestSurfaceBase {
  public:
-  explicit TestChannelSurface(FeedStream* stream = nullptr, std::string = "");
+  explicit TestSingleWebFeedSurface(FeedStream* stream = nullptr,
+                                    std::string = "");
 };
 
 class TestImageFetcher : public ImageFetcher {

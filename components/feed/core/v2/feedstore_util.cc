@@ -21,12 +21,12 @@ std::string StreamKey(const StreamType& stream_type) {
     return kForYouStreamKey;
   if (stream_type.IsWebFeed())
     return kFollowStreamKey;
-  DCHECK(stream_type.IsChannelFeed());
+  DCHECK(stream_type.IsSingleWebFeed());
   std::string encoding;
   base::Base64UrlEncode(stream_type.GetWebFeedId(),
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &encoding);
-  return std::string(kChannelStreamKeyPrefix) + encoding;
+  return std::string(kSingleWebFeedStreamKeyPrefix) + encoding;
 }
 
 base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
@@ -34,21 +34,21 @@ base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
     return kForYouStreamKey;
   if (stream_kind == feed::StreamKind::kFollowing)
     return kFollowStreamKey;
-  DCHECK(stream_kind == feed::StreamKind::kChannel);
-  return kChannelStreamKeyPrefix;
+  DCHECK(stream_kind == feed::StreamKind::kSingleWebFeed);
+  return kSingleWebFeedStreamKeyPrefix;
 }
 StreamType StreamTypeFromId(base::StringPiece id) {
   if (id == kForYouStreamKey)
     return StreamType(feed::StreamKind::kForYou);
   if (id == kFollowStreamKey)
     return StreamType(feed::StreamKind::kFollowing);
-  if (base::StartsWith(id, kChannelStreamKeyPrefix,
+  if (base::StartsWith(id, kSingleWebFeedStreamKeyPrefix,
                        base::CompareCase::SENSITIVE)) {
-    std::string channel_key;
-    if (base::Base64UrlDecode(id.substr(kChannelStreamKeyPrefix.size()),
+    std::string single_web_feed_key;
+    if (base::Base64UrlDecode(id.substr(kSingleWebFeedStreamKeyPrefix.size()),
                               base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                              &channel_key)) {
-      return StreamType(feed::StreamKind::kChannel, channel_key);
+                              &single_web_feed_key)) {
+      return StreamType(feed::StreamKind::kSingleWebFeed, single_web_feed_key);
     }
   }
   return {};

@@ -24,14 +24,15 @@ public interface FeedLaunchReliabilityLogger {
         int START_SURFACE = 2;
     }
 
-    /** Type of stream being launched (the "For you","Following", or "Channel" feed). */
-    @IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED, StreamType.CHANNEL})
+    /** Type of stream being launched (the "For you","Following", or "SingleWebFeed" feed). */
+    @IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED,
+            StreamType.SINGLE_WEB_FEED})
     @Retention(RetentionPolicy.SOURCE)
     @interface StreamType {
         int UNSPECIFIED = 0;
         int FOR_YOU = 1;
         int WEB_FEED = 2;
-        int CHANNEL = 3;
+        int SINGLE_WEB_FEED = 3;
     }
 
     /**

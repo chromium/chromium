@@ -223,7 +223,7 @@ feedwire::Request CreateFeedQueryRequest(
   } else if (stream_type.IsWebFeed()) {
     entry_point.set_feed_entry_point_source_value(
         feedwire::FeedEntryPointSource::CHROME_FOLLOWING_FEED);
-  } else if (stream_type.IsChannelFeed()) {
+  } else if (stream_type.IsSingleWebFeed()) {
     // TODO (add other param to branch on other entry points)
     entry_point.set_feed_entry_point_source_value(
         feedwire::FeedEntryPointSource::CHROME_SINGLE_WEB_FEED_MENU);

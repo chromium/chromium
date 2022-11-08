@@ -75,18 +75,18 @@ using feed::StreamType;
 TEST(feedstore_util_test, StreamTypeFromId) {
   StreamType for_you = StreamType(StreamKind::kForYou);
   StreamType following = StreamType(StreamKind::kFollowing);
-  StreamType channel = StreamType(StreamKind::kChannel);
-  StreamType channel_a = StreamType(StreamKind::kChannel, "A");
+  StreamType single_web_feed = StreamType(StreamKind::kSingleWebFeed);
+  StreamType single_web_feed_a = StreamType(StreamKind::kSingleWebFeed, "A");
   StreamType unknown = StreamType();
 
   EXPECT_EQ(StreamKey(for_you), kForYouStreamKey);
   EXPECT_EQ(StreamKey(following), kFollowStreamKey);
   EXPECT_DCHECK_DEATH(StreamKey(unknown));
 
-  EXPECT_TRUE(StreamTypeFromId(StreamKey(channel)).IsChannelFeed());
-  EXPECT_TRUE(StreamTypeFromId(StreamKey(channel_a)).IsChannelFeed());
+  EXPECT_TRUE(StreamTypeFromId(StreamKey(single_web_feed)).IsSingleWebFeed());
+  EXPECT_TRUE(StreamTypeFromId(StreamKey(single_web_feed_a)).IsSingleWebFeed());
 
-  EXPECT_EQ(StreamTypeFromId(StreamKey(channel_a)).GetWebFeedId(), "A");
+  EXPECT_EQ(StreamTypeFromId(StreamKey(single_web_feed_a)).GetWebFeedId(), "A");
 
   EXPECT_TRUE(StreamTypeFromId(StreamKey(following)).IsWebFeed());
   EXPECT_TRUE(StreamTypeFromId(StreamKey(for_you)).IsForYou());

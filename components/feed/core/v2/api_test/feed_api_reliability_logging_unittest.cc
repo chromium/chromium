@@ -476,8 +476,7 @@ TEST_F(FeedApiReliabilityLoggingTest, WebFeedLoad) {
 
 TEST_F(FeedApiReliabilityLoggingTest, SingleWebFeedLoad) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  // TODO(crbug.com/1381558) change to TestSingleWebFeedSurface
-  TestChannelSurface surface(stream_.get());
+  TestSingleWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   EXPECT_EQ(
       "LogFeedLaunchOtherStart\n"

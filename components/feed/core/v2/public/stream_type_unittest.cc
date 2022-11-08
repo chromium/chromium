@@ -21,59 +21,59 @@ class StreamTypeTest : public testing::Test {
 TEST_F(StreamTypeTest, ComparatorTest) {
   StreamType for_you = StreamType(StreamKind::kForYou);
   StreamType following = StreamType(StreamKind::kFollowing);
-  StreamType channel_a = StreamType(StreamKind::kChannel, "A");
-  StreamType channel_b = StreamType(StreamKind::kChannel, "B");
-  StreamType channel = StreamType(StreamKind::kChannel);
+  StreamType single_web_feed_a = StreamType(StreamKind::kSingleWebFeed, "A");
+  StreamType single_web_feed_b = StreamType(StreamKind::kSingleWebFeed, "B");
+  StreamType single_web_feed = StreamType(StreamKind::kSingleWebFeed);
 
   ASSERT_TRUE(for_you < following);
-  ASSERT_TRUE(following < channel_a);
-  ASSERT_TRUE(channel_a < channel_b);
-  ASSERT_TRUE(for_you < channel_b);
-  ASSERT_TRUE(channel_b == channel_b);
-  ASSERT_FALSE(channel_a < channel);
-  ASSERT_FALSE(channel < for_you);
+  ASSERT_TRUE(following < single_web_feed_a);
+  ASSERT_TRUE(single_web_feed_a < single_web_feed_b);
+  ASSERT_TRUE(for_you < single_web_feed_b);
+  ASSERT_TRUE(single_web_feed_b == single_web_feed_b);
+  ASSERT_FALSE(single_web_feed_a < single_web_feed);
+  ASSERT_FALSE(single_web_feed < for_you);
   ASSERT_FALSE(for_you < for_you);
-  ASSERT_FALSE(channel_b < channel_b);
+  ASSERT_FALSE(single_web_feed_b < single_web_feed_b);
 }
 
 TEST_F(StreamTypeTest, IdentityTest) {
   StreamType for_you = StreamType(StreamKind::kForYou);
   StreamType following = StreamType(StreamKind::kFollowing);
-  StreamType channel = StreamType(StreamKind::kChannel);
+  StreamType single_web_feed = StreamType(StreamKind::kSingleWebFeed);
   StreamType unknown = StreamType();
 
   ASSERT_TRUE(for_you.IsForYou());
   ASSERT_FALSE(for_you.IsWebFeed());
-  ASSERT_FALSE(for_you.IsChannelFeed());
+  ASSERT_FALSE(for_you.IsSingleWebFeed());
   ASSERT_TRUE(for_you.IsValid());
 
   ASSERT_FALSE(following.IsForYou());
   ASSERT_TRUE(following.IsWebFeed());
-  ASSERT_FALSE(following.IsChannelFeed());
+  ASSERT_FALSE(following.IsSingleWebFeed());
   ASSERT_TRUE(following.IsValid());
 
-  ASSERT_FALSE(channel.IsForYou());
-  ASSERT_FALSE(channel.IsWebFeed());
-  ASSERT_TRUE(channel.IsChannelFeed());
-  ASSERT_TRUE(channel.IsValid());
+  ASSERT_FALSE(single_web_feed.IsForYou());
+  ASSERT_FALSE(single_web_feed.IsWebFeed());
+  ASSERT_TRUE(single_web_feed.IsSingleWebFeed());
+  ASSERT_TRUE(single_web_feed.IsValid());
 
   ASSERT_FALSE(unknown.IsForYou());
   ASSERT_FALSE(unknown.IsWebFeed());
-  ASSERT_FALSE(unknown.IsChannelFeed());
+  ASSERT_FALSE(unknown.IsSingleWebFeed());
   ASSERT_FALSE(unknown.IsValid());
 }
 
 TEST_F(StreamTypeTest, StringTest) {
   StreamType for_you = StreamType(StreamKind::kForYou);
   StreamType following = StreamType(StreamKind::kFollowing);
-  StreamType channel = StreamType(StreamKind::kChannel);
-  StreamType channel_a = StreamType(StreamKind::kChannel, "A");
+  StreamType single_web_feed = StreamType(StreamKind::kSingleWebFeed);
+  StreamType single_web_feed_a = StreamType(StreamKind::kSingleWebFeed, "A");
   StreamType unknown = StreamType();
 
   ASSERT_EQ(for_you.ToString(), "ForYou");
   ASSERT_EQ(following.ToString(), "WebFeed");
-  ASSERT_EQ(channel.ToString(), "Channel_");
-  ASSERT_EQ(channel_a.ToString(), "Channel_A");
+  ASSERT_EQ(single_web_feed.ToString(), "SingleWebFeed_");
+  ASSERT_EQ(single_web_feed_a.ToString(), "SingleWebFeed_A");
   ASSERT_EQ(unknown.ToString(), "Unknown");
 }
 }  // namespace feed
