@@ -2549,6 +2549,9 @@ extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];
 
+extern const char kCloudApAuthName[];
+extern const char kCloudApAuthDescription[];
+
 extern const char kEnableMediaFoundationVideoCaptureName[];
 extern const char kEnableMediaFoundationVideoCaptureDescription[];
 

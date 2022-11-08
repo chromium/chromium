@@ -4440,6 +4440,12 @@ const char kCalculateNativeWinOcclusionDescription[] =
     "Calculate window occlusion on Windows will be used in the future "
     "to throttle and potentially unload foreground tabs in occluded windows";
 
+const char kCloudApAuthName[] = "CloudAP authentication";
+const char kCloudApAuthDescription[] =
+    "Enables ambient authentication into supported identity providers using "
+    "the CloudAP framework. Credentials are retrieved from accounts signed "
+    "into the operating system.";
+
 const char kEnableMediaFoundationVideoCaptureName[] =
     "MediaFoundation Video Capture";
 const char kEnableMediaFoundationVideoCaptureDescription[] =

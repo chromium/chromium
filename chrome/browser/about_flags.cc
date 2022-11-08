@@ -300,6 +300,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "ui/color/color_switches.h"  // nogncheck
 #endif
@@ -9897,6 +9898,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPPAPISharedImagesSwapChainDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPPAPISharedImagesSwapChain)},
 #endif
+
+#if BUILDFLAG(IS_WIN)
+    {"cloud-ap-auth", flag_descriptions::kCloudApAuthName,
+     flag_descriptions::kCloudApAuthDescription, kOsWin,
+     FEATURE_VALUE_TYPE(enterprise_auth::kCloudApAuth)},
+#endif  // BUILDFLAG(IS_WIN)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
