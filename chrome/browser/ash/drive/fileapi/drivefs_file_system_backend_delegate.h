@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
+#include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
 
 class Profile;
 

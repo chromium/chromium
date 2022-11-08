@@ -409,7 +409,7 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
       return display_name;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // See chrome/browser/chromeos/fileapi/file_system_backend.cc
+    // See chrome/browser/ash/fileapi/file_system_backend.cc
     base::FilePath download_path;
     if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
                                &download_path)) {

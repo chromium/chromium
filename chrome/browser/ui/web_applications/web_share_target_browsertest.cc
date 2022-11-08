@@ -43,8 +43,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/chromeos/fileapi/recent_file.h"
-#include "chrome/browser/chromeos/fileapi/recent_model.h"
+#include "chrome/browser/ash/fileapi/recent_file.h"
+#include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "storage/browser/file_system/file_system_context.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

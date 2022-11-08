@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/chromeos/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/platform_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"

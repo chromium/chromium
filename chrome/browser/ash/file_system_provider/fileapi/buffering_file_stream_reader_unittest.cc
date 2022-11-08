@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"

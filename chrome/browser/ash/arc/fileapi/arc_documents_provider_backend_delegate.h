@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_async_file_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_watcher_manager.h"
-#include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
+#include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
 
 namespace arc {
 

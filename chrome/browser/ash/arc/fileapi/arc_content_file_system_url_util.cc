@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/escape.h"
-#include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
+#include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace arc {
