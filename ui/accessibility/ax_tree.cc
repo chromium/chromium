@@ -1218,7 +1218,10 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     // Clears |node_set_size_pos_in_set_info_map_|
     node_set_size_pos_in_set_info_map_.clear();
 
+    // A set to track which nodes have already been added to |changes|, so that
+    // nodes aren't added twice.
     std::set<AXNodeID> visited_observer_changes;
+
     for (const AXNodeData& updated_node_data : update_state.updated_nodes) {
       AXNode* node = GetFromId(updated_node_data.id);
       if (!node ||
@@ -1253,7 +1256,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
                               : AXTreeObserver::NODE_CREATED;
         }
       }
-      changes.push_back(AXTreeObserver::Change(node, change));
+      changes.emplace_back(node, change);
     }
 
     // Clear cached information in `AXComputedNodeData` for every node that has
@@ -1272,6 +1275,8 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     // Update the unignored cached values as necessary, ensuring that we only
     // update once for each unignored node.
     // If the node is ignored, we must update from an unignored ancestor.
+    // TODO(alexs) Look into removing this loop and adding unignored ancestors
+    // at the same place we add ids to updated_unignored_cached_values_ids.
     std::set<AXNodeID> updated_unignored_cached_values_ids;
     for (AXNodeID node_id :
          update_state.invalidate_unignored_cached_values_ids) {
@@ -1280,6 +1285,14 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
           updated_unignored_cached_values_ids.insert(unignored_ancestor->id())
               .second) {
         unignored_ancestor->UpdateUnignoredCachedValues();
+        // If the node was ignored, then it's unignored ancestor need to be
+        // considered part of the changed node list, allowing properties such as
+        // hypertext to be recomputed.
+        if (unignored_ancestor->id() != node_id &&
+            visited_observer_changes.emplace(unignored_ancestor->id()).second) {
+          changes.emplace_back(unignored_ancestor,
+                               AXTreeObserver::NODE_CHANGED);
+        }
       }
     }
 
