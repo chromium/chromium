@@ -250,7 +250,7 @@ void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
     }
   }
 
-  if (!manifest.user_preferences.is_null()) {
+  if (manifest.has_dark_theme_color || manifest.has_dark_background_color) {
     UseCounter::Count(GetSupplementable(),
                       WebFeature::kWebAppManifestUserPreferences);
   }

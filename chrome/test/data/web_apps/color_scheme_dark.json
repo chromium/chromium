@@ -3,10 +3,8 @@
   "display": "standalone",
   "theme_color": "#0000FF",
   "background_color": "#0000FF",
-  "user_preferences": {
-    "color_scheme_dark": {
-      "theme_color": "#FF0000",
-      "background_color": "#FF0000"
-    }
-  }
+  "theme_colors":
+    [{"color": "#FF0000", "media": "(prefers-color-scheme: dark) "}],
+  "background_colors":
+    [{"color": "#FF0000", "media": "(prefers-color-scheme: dark) "}]
 }
