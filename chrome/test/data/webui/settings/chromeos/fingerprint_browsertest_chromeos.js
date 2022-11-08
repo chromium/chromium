@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {FingerprintBrowserProxy} */
 class TestFingerprintBrowserProxy extends TestBrowserProxy {

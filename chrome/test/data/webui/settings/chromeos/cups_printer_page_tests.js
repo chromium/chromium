@@ -12,7 +12,7 @@ import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createCupsPrinterInfo, createPrinterListEntry} from './cups_printer_test_utils.js';
 import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';

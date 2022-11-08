@@ -10,7 +10,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('TimezoneSubpageTests', function() {
   /** @type {TimezoneSubpage} */

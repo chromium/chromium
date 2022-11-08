@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {assertTrue, assertFalse} from '../../chai_assert.js';
+import {assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('SwitchAccessActionAssignmentDialogTest', function() {

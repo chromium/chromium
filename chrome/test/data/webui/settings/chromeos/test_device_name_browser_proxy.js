@@ -4,7 +4,7 @@
 
 import {SetDeviceNameResult} from 'chrome://os-settings/chromeos/os_settings.js';
 
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDeviceNameBrowserProxy extends TestBrowserProxy {
   constructor() {

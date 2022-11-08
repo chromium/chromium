@@ -6,7 +6,7 @@ import {PersonalizationHubBrowserProxyImpl, Router} from 'chrome://os-settings/c
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.js';
 

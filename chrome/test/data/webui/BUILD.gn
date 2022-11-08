@@ -481,6 +481,7 @@ generate_grd("build_grd") {
     input_files += [
       "chromeos/arc_account_picker/test_util.js",
       "chromeos/ash_common/i18n_behavior_test.js",
+      "chromeos/fake_network_config_mojom.js",
     ]
   }
 
@@ -613,6 +614,8 @@ generate_grd("build_grd") {
       "chromeos/personalization_app:build_grdp",
       "chromeos/print_management:build_grdp",
       "chromeos/shortcut_customization:build_grdp",
+      "cr_components/chromeos:build_grdp",
+      "nearby_share:build_grdp",
       "settings/chromeos:build_grdp",
       "//ui/file_manager:build_tests_gen_grdp",
       "//ui/file_manager:build_tests_grdp",
@@ -624,6 +627,8 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
       "$target_gen_dir/chromeos/print_management/resources.grdp",
       "$target_gen_dir/chromeos/manage_mirrorsync/resources.grdp",
+      "$target_gen_dir/cr_components/chromeos/resources.grdp",
+      "$target_gen_dir/nearby_share/resources.grdp",
       "$target_gen_dir/settings/chromeos/resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",

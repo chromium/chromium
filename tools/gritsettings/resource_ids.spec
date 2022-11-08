@@ -503,7 +503,7 @@
     "structures": [2800],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/test/data/webui/resources.grd": {
-    "META": {"sizes": {"includes": [900],}},
+    "META": {"sizes": {"includes": [1100],}},
     "includes": [2810],
   },
   "chrome/test/data/webui_test_resources.grd": {

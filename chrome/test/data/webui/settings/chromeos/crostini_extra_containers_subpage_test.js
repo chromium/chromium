@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 

@@ -6,7 +6,7 @@ import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createFakePageContentData, TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 

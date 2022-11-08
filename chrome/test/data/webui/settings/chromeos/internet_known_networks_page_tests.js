@@ -10,7 +10,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('InternetKnownNetworksPage', function() {

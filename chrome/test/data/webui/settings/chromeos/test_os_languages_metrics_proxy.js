@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {LanguagesMetricsProxy} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * A test version of LanguagesMetricsProxy.

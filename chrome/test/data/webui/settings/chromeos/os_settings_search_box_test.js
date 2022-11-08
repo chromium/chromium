@@ -7,8 +7,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {FakePersonalizationSearchHandler} from './fake_personalization_search_handler.js';
 import {FakeSettingsSearchHandler} from './fake_settings_search_handler.js';

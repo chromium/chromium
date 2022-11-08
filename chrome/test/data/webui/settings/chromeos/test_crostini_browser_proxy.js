@@ -4,7 +4,7 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {CrostiniBrowserProxy} */
 export class TestCrostiniBrowserProxy extends TestBrowserProxy {

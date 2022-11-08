@@ -6,7 +6,7 @@ import {NoteAppLockScreenSupport} from 'chrome://os-settings/chromeos/os_setting
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * @implements {DevicePageBrowserProxy}

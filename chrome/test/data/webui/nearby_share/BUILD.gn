@@ -3,8 +3,23 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "Nearby Share is CrOS only")
+
+# Creates the necessary GRDP file with local test files for OS settings.
+generate_grd("build_grdp") {
+  grd_prefix = "nearby_share"
+  out_grd = "$target_gen_dir/resources.grdp"
+  resource_path_prefix = "nearby_share"
+
+  # Add local test files.
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "shared/fake_nearby_share_settings.js",
+    "shared/fake_nearby_contact_manager.js",
+  ]
+}
 
 js_type_check("closure_compile") {
   is_polymer3 = true

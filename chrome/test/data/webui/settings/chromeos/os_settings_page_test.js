@@ -8,10 +8,10 @@ import {CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyS
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 
-import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.js';
-import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.js';
+import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
+import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 
 suite('OsSettingsPageTests', function() {
   /** @type {?OsSettingsPageElement} */

@@ -6,8 +6,8 @@ import {OsSyncBrowserProxyImpl, Router, routes, StatusAction} from 'chrome://os-
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {OsSyncBrowserProxy} */
 class TestOsSyncBrowserProxy extends TestBrowserProxy {

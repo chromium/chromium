@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import {FakeChromeEvent} from '../../fake_chrome_event.js';
+import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 
 
 /**

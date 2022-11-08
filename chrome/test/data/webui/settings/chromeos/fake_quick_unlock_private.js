@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeChromeEvent} from 'chrome://test/fake_chrome_event.js';
+import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 
 /**
  * @fileoverview Fake implementation of chrome.quickUnlockPrivate for testing.

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PageStatus} from 'chrome://os-settings/chromeos/os_settings.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {SyncBrowserProxy} */
 export class TestSyncBrowserProxy extends TestBrowserProxy {

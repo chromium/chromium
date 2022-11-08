@@ -9,8 +9,8 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {FakeChromeEvent} from '../../fake_chrome_event.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * Fake of the chrome.languageSettingsPrivate API.

@@ -12,8 +12,8 @@ import {CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services
 import {AlwaysOnVpnMode, CrosNetworkConfigRemote, InhibitReason, NetworkStateProperties, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
+import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('InternetSubpage', function() {

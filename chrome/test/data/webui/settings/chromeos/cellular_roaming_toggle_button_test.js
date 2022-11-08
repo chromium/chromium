@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/chromeos/os_settings.js';
-import '../../cr_components/chromeos/network/cr_policy_strings.js';
+import 'chrome://webui-test/cr_components/chromeos/network/cr_policy_strings.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 
 suite('CellularRoamingToggleButton', function() {
   /** @type {CellularRoamingToggleButton|undefined} */

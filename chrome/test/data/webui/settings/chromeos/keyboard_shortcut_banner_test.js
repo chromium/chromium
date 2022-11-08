@@ -7,7 +7,7 @@ import 'chrome://os-settings/chromeos/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertDeepEquals, assertEquals, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('keyboard-shortcut-banner', () => {
   /** @type {!HTMLElement|undefined} */

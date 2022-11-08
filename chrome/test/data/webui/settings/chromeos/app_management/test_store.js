@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {AppManagementStore, createEmptyState, reduceAction} from 'chrome://os-settings/chromeos/os_settings.js';
-import {TestStore} from 'chrome://test/chromeos/test_store.js';
+import {TestStore} from 'chrome://webui-test/chromeos/test_store.js';
 
 export class TestAppManagementStore extends TestStore {
   constructor(data) {

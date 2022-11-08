@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {FakeUsersPrivate} from './fake_users_private.js';
 

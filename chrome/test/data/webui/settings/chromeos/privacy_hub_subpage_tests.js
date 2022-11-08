@@ -13,8 +13,8 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertNotReached, assertTrue} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {FakeMediaDevices} from './fake_media_devices.js';
 import {DEVICE_METRICS_CONSENT_PREF_NAME, TestMetricsConsentBrowserProxy} from './test_metrics_consent_browser_proxy.js';

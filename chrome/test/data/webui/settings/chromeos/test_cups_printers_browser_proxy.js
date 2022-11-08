@@ -4,7 +4,7 @@
 
 import {PrinterSetupResult, PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
   constructor() {

@@ -9,12 +9,12 @@ import {mojoString16ToString} from 'chrome://resources/ash/common/bluetooth/blue
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertNotEquals, assertTrue} from '../../../chai_assert.js';
-import {assertFalse} from '../../chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 suite('OsBluetoothSummaryTest', function() {
   /** @type {!FakeBluetoothConfig} */

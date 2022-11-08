@@ -39,7 +39,7 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
 var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.js';
   }
 
   /** @override */
@@ -64,7 +64,7 @@ var OSSettingsPeoplePageAccountManagerV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.js';
   }
 
   /** @override */
@@ -83,7 +83,7 @@ var OSSettingsPeoplePageAccountManagerWithArcAccountRestrictionsEnabledV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.js';
   }
 
   /** @override */
@@ -103,7 +103,7 @@ TEST_F(
 var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/nearby_share_subpage_tests.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/nearby_share_subpage_tests.js';
   }
 
   /** @override */
@@ -119,7 +119,7 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_sync_controls_test.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_sync_controls_test.js';
   }
 };
 
@@ -133,7 +133,7 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_devices_subpage_tests.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_devices_subpage_tests.js';
   }
 
   /** @override */
@@ -158,7 +158,7 @@ var OSSettingsOsBluetoothSavedDevicesSubpageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_subpage_tests.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_subpage_tests.js';
   }
 
   /** @override */
@@ -185,7 +185,7 @@ var OSSettingsOsBluetoothSavedDevicesListV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_list_tests.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_list_tests.js';
   }
 
   /** @override */
@@ -208,7 +208,7 @@ var OSSettingsAppManagementAppDetailsV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/app_management/app_details_item_test.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/app_management/app_details_item_test.js';
   }
 
   /** @override */
@@ -225,7 +225,7 @@ var OSSettingsAppManagementAppDetailsV3Test =
 var OSSettingsApnSubpageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/apn_subpage_tests.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/apn_subpage_tests.js';
   }
 
   /** @override */
@@ -245,7 +245,7 @@ TEST_F('OSSettingsApnSubpageV3Test', 'AllJsTests', () => {
 var OSSettingsInternetDetailPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/internet_detail_page_tests.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/internet_detail_page_tests.js';
   }
 
   /** @override */
@@ -265,7 +265,7 @@ TEST_F('OSSettingsInternetDetailPageV3Test', 'AllJsTests', () => {
 var OSSettingsInternetPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/internet_page_tests.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/internet_page_tests.js';
   }
 
   /** @override */
@@ -292,7 +292,7 @@ TEST_F('OSSettingsAppManagementAppDetailsV3Test', 'AllJsTests', () => {
 var OSSettingsCrostiniPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page_test.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page_test.js';
   }
 
   /** @override */
@@ -309,7 +309,7 @@ var OSSettingsCrostiniExtraContainerPageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_extra_containers_subpage_test.js&host=test';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_extra_containers_subpage_test.js';
   }
 
   /** @override */
@@ -525,7 +525,7 @@ function registerTest(testName, module, featureList) {
     /** @override */
     get browsePreload() {
       return `chrome://os-settings/test_loader.html?module=settings/chromeos/${
-          module}&host=test`;
+          module}`;
     }
   };
 

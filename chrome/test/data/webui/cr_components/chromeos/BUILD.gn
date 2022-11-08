@@ -2,8 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "CrComponents Chromeos tests are Chrome OS only.")
+
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_chromeos"
+  out_grd = "$target_gen_dir/resources.grdp"
+  resource_path_prefix = "cr_components/chromeos"
+
+  # Add local test files.
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "bluetooth/fake_bluetooth_config.js",
+    "bluetooth/fake_device_pairing_handler.js",
+    "cellular_setup/fake_esim_manager_remote.js",
+    "multidevice_setup/integration_test.js",
+    "multidevice_setup/setup_succeeded_page_test.js",
+    "multidevice_setup/start_setup_page_test.js",
+    "network/cr_policy_strings.js",
+  ]
+}
 
 group("closure_compile") {
   deps = [

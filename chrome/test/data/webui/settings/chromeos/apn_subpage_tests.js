@@ -5,7 +5,7 @@
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertTrue} from '../../../chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('ApnSubpageTest', function() {
   /** @type {ApnSubpageElement} */

@@ -7,10 +7,10 @@ import 'chrome://os-settings/strings.m.js';
 
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertTrue} from '../../../chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('OsBluetoothPairingDialogTest', function() {
   /** @type {?SettingsBluetoothPairingDialogElement} */

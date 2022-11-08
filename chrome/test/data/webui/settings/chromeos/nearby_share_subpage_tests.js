@@ -7,10 +7,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals} from '../../chai_assert.js';
-import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.js';
-import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
+import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {FakeReceiveManager} from './fake_receive_manager.js';
 

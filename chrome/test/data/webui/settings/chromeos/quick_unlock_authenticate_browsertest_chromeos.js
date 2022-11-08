@@ -7,11 +7,11 @@ import {LockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/loc
 import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeSettingsPrivate} from 'chrome://test/settings/chromeos/fake_settings_private.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/settings/chromeos/fake_settings_private.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {eventToPromise, isVisible as testUtilIsVisible} from '../../../test_util.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {eventToPromise, isVisible as testUtilIsVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.js';
 import {FakeQuickUnlockUma} from './fake_quick_unlock_uma.js';
