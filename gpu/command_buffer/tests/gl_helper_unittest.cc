@@ -678,7 +678,7 @@ class GLHelperTest : public testing::Test {
                           kRGBA_8888_SkColorType, kPremul_SkAlphaType));
 
     EXPECT_TRUE(ReadBackTexture(
-        dst_texture, scaled_size,
+        dst_texture, gfx::Rect(scaled_size),
         static_cast<unsigned char*>(output_pixels.getPixels()),
         output_pixels.rowBytes(), flip_output, kRGBA_8888_SkColorType));
 
@@ -763,7 +763,7 @@ class GLHelperTest : public testing::Test {
         kRGBA_8888_SkColorType, kPremul_SkAlphaType));
 
     EXPECT_TRUE(ReadBackTexture(
-        dst_texture, entire_output_size,
+        dst_texture, gfx::Rect(entire_output_size),
         static_cast<unsigned char*>(entire_output.getPixels()),
         entire_output.rowBytes(), /*flip_y=*/false, kRGBA_8888_SkColorType));
 
@@ -806,7 +806,7 @@ class GLHelperTest : public testing::Test {
             SkImageInfo::Make(patch_size.width(), patch_size.height(),
                               kRGBA_8888_SkColorType, kPremul_SkAlphaType));
         EXPECT_TRUE(ReadBackTexture(
-            dst_texture, patch_size,
+            dst_texture, gfx::Rect(patch_size),
             static_cast<unsigned char*>(patch_output.getPixels()),
             patch_output.rowBytes(), /*flip_y=*/false, kRGBA_8888_SkColorType));
         SkBitmap expected;
@@ -850,7 +850,7 @@ class GLHelperTest : public testing::Test {
                         dst_texture, gfx::Rect(patch_size));
           gl_->DeleteTextures(1, &src_subset_texture);
           EXPECT_TRUE(ReadBackTexture(
-              dst_texture, patch_size,
+              dst_texture, gfx::Rect(patch_size),
               static_cast<unsigned char*>(patch_output.getPixels()),
               patch_output.rowBytes(), /*flip_y=*/false,
               kRGBA_8888_SkColorType));
@@ -1003,7 +1003,7 @@ class GLHelperTest : public testing::Test {
   }
 
   bool ReadBackTexture(GLuint src_texture,
-                       const gfx::Size& src_size,
+                       const gfx::Rect& src_rect,
                        unsigned char* pixels,
                        size_t pixels_stride,
                        bool flip_y,
@@ -1019,8 +1019,8 @@ class GLHelperTest : public testing::Test {
       format = GL_BGRA_EXT;
 
     helper_->ReadbackTextureAsync(
-        src_texture, GL_TEXTURE_2D, src_size, pixels, pixels_stride, flip_y,
-        format,
+        src_texture, GL_TEXTURE_2D, src_rect.origin(), src_rect.size(), pixels,
+        pixels_stride, flip_y, format,
         base::BindOnce(
             [](bool* success, base::OnceClosure callback, bool result) {
               *success = result;
@@ -1051,7 +1051,7 @@ class GLHelperTest : public testing::Test {
     // When the readback is over output bitmap should have the red color.
     output_pixels.eraseColor(SK_ColorGREEN);
     uint8_t* pixels = static_cast<uint8_t*>(output_pixels.getPixels());
-    if (!ReadBackTexture(src_texture, src_size, pixels,
+    if (!ReadBackTexture(src_texture, gfx::Rect(src_size), pixels,
                          output_pixels.rowBytes(), /*flip_y=*/false,
                          color_type) ||
         !IsEqual(input_pixels, output_pixels)) {
@@ -1065,7 +1065,7 @@ class GLHelperTest : public testing::Test {
                      src_grid_pitch, src_grid_width, input_pixels);
     BindAndAttachTextureWithPixels(src_texture, color_type, src_size,
                                    input_pixels);
-    if (!ReadBackTexture(src_texture, src_size, pixels,
+    if (!ReadBackTexture(src_texture, gfx::Rect(src_size), pixels,
                          output_pixels.rowBytes(), /*flip_y=*/false,
                          color_type) ||
         !IsEqual(input_pixels, output_pixels)) {
@@ -1077,7 +1077,7 @@ class GLHelperTest : public testing::Test {
                         rect_w, rect_h, input_pixels);
     BindAndAttachTextureWithPixels(src_texture, color_type, src_size,
                                    input_pixels);
-    if (!ReadBackTexture(src_texture, src_size, pixels,
+    if (!ReadBackTexture(src_texture, gfx::Rect(src_size), pixels,
                          output_pixels.rowBytes(), /*flip_y=*/false,
                          color_type) ||
         !IsEqual(input_pixels, output_pixels)) {

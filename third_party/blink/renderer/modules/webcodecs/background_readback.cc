@@ -142,11 +142,12 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;
 
+  gfx::Point src_point;
   gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
   ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
   ri->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, origin, info,
-      base::saturated_cast<GLuint>(rgba_stide), dst_pixels,
+      mailbox_holder.mailbox, mailbox_holder.texture_target, origin, src_point,
+      info, base::saturated_cast<GLuint>(rgba_stide), dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsReadCompleted,
                     MakeUnwrappingCrossThreadHandle(this), std::move(result_cb),
                     std::move(txt_frame), std::move(result)));

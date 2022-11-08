@@ -153,8 +153,10 @@ class GPU_EXPORT GLHelper {
     SCALER_QUALITY_BEST = 3,
   };
 
-  // Copies the texture data out of |texture| into |out|.  |dst_size| is the
-  // size of the texture.  No post processing is applied to the pixels.  The
+  // Copies the texture data out of |texture| into |out|.
+  // |src_starting_point| an origin point of the rectangle fragment of the
+  // texture to copy, |dst_size| - size of the rectangle to copy.
+  // No post processing is applied to the pixels.  The
   // texture is assumed to have a format of GL_RGBA or GL_BGRA_EXT with a pixel
   // type of GL_UNSIGNED_BYTE.
   //
@@ -162,6 +164,7 @@ class GPU_EXPORT GLHelper {
   // one caller soon.
   void ReadbackTextureAsync(GLuint texture,
                             GLenum texture_target,
+                            const gfx::Point& src_starting_point,
                             const gfx::Size& dst_size,
                             unsigned char* out,
                             size_t row_stride_bytes,

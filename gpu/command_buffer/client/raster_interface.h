@@ -141,6 +141,7 @@ class RasterInterface : public InterfaceBase {
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
       GrSurfaceOrigin source_origin,
+      const gfx::Point& source_starting_point,
       const SkImageInfo& dst_info,
       GLuint dst_row_bytes,
       unsigned char* out,

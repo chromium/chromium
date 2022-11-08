@@ -150,6 +150,7 @@ class GLHelper::CopyTextureToImpl
 
   void ReadbackTextureAsync(GLuint texture,
                             GLenum texture_target,
+                            const gfx::Point& src_starting_point,
                             const gfx::Size& dst_size,
                             unsigned char* out,
                             size_t row_stride_bytes,
@@ -159,7 +160,8 @@ class GLHelper::CopyTextureToImpl
 
   // Reads back bytes from the currently bound frame buffer.
   // Note that dst_size is specified in bytes, not pixels.
-  void ReadbackAsync(const gfx::Size& dst_size,
+  void ReadbackAsync(const gfx::Point& src_starting_point,
+                     const gfx::Size& dst_size,
                      size_t bytes_per_row,     // generally dst_size.width() * 4
                      size_t row_stride_bytes,  // generally dst_size.width() * 4
                      unsigned char* out,
@@ -346,6 +348,7 @@ std::unique_ptr<GLHelper::ScalerInterface> GLHelper::CreateScaler(
 }
 
 void GLHelper::CopyTextureToImpl::ReadbackAsync(
+    const gfx::Point& src_starting_point,
     const gfx::Size& dst_size,
     size_t bytes_per_row,
     size_t row_stride_bytes,
@@ -371,8 +374,8 @@ void GLHelper::CopyTextureToImpl::ReadbackAsync(
   request->query = 0u;
   gl_->GenQueriesEXT(1, &request->query);
   gl_->BeginQueryEXT(GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM, request->query);
-  gl_->ReadPixels(0, 0, dst_size.width(), dst_size.height(), format, type,
-                  nullptr);
+  gl_->ReadPixels(src_starting_point.x(), src_starting_point.y(),
+                  dst_size.width(), dst_size.height(), format, type, nullptr);
   gl_->EndQueryEXT(GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM);
   gl_->BindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, 0);
   context_support_->SignalQuery(
@@ -383,6 +386,7 @@ void GLHelper::CopyTextureToImpl::ReadbackAsync(
 void GLHelper::CopyTextureToImpl::ReadbackTextureAsync(
     GLuint texture,
     GLenum texture_target,
+    const gfx::Point& src_starting_point,
     const gfx::Size& dst_size,
     unsigned char* out,
     size_t row_stride_bytes,
@@ -408,8 +412,9 @@ void GLHelper::CopyTextureToImpl::ReadbackTextureAsync(
   gl_->BindTexture(texture_target, texture);
   gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             texture_target, texture, 0);
-  ReadbackAsync(dst_size, kBytesPerRow, row_stride_bytes, out, format,
-                GL_UNSIGNED_BYTE, kBytesPerPixel, flip_y, std::move(callback));
+  ReadbackAsync(src_starting_point, dst_size, kBytesPerRow, row_stride_bytes,
+                out, format, GL_UNSIGNED_BYTE, kBytesPerPixel, flip_y,
+                std::move(callback));
   gl_->BindTexture(texture_target, 0);
 }
 
@@ -509,6 +514,7 @@ GLHelper::~GLHelper() {}
 
 void GLHelper::ReadbackTextureAsync(GLuint texture,
                                     GLenum texture_target,
+                                    const gfx::Point& src_starting_point,
                                     const gfx::Size& dst_size,
                                     unsigned char* out,
                                     size_t row_stride_bytes,
@@ -516,9 +522,9 @@ void GLHelper::ReadbackTextureAsync(GLuint texture,
                                     GLenum format,
                                     base::OnceCallback<void(bool)> callback) {
   InitCopyTextToImpl();
-  copy_texture_to_impl_->ReadbackTextureAsync(texture, texture_target, dst_size,
-                                              out, row_stride_bytes, flip_y,
-                                              format, std::move(callback));
+  copy_texture_to_impl_->ReadbackTextureAsync(
+      texture, texture_target, src_starting_point, dst_size, out,
+      row_stride_bytes, flip_y, format, std::move(callback));
 }
 
 void GLHelper::InitCopyTextToImpl() {
@@ -567,7 +573,8 @@ void GLHelper::CopyTextureToImpl::ReadbackPlane(
   // multiple YUV planes.
   const bool kFlipY = false;
   size_t bytes_per_row = paste_rect.width() >> size_shift;
-  ReadbackAsync(texture_size, bytes_per_row, row_stride_bytes, data + offset,
+  ReadbackAsync(gfx::Point(), texture_size, bytes_per_row, row_stride_bytes,
+                data + offset,
                 (swizzle == kSwizzleBGRA) ? GL_BGRA_EXT : GL_RGBA,
                 GL_UNSIGNED_BYTE, 4, kFlipY, std::move(callback));
 }

@@ -1584,6 +1584,7 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
     const gpu::Mailbox& source_mailbox,
     GLenum source_target,
     GrSurfaceOrigin source_origin,
+    const gfx::Point& source_starting_point,
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
     unsigned char* out,
@@ -1600,8 +1601,9 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
     return;
   }
 
-  ReadbackImagePixelsINTERNAL(source_mailbox, dst_info, dst_row_bytes, 0, 0,
-                              std::move(readback_done), out);
+  ReadbackImagePixelsINTERNAL(
+      source_mailbox, dst_info, dst_row_bytes, source_starting_point.x(),
+      source_starting_point.y(), std::move(readback_done), out);
 }
 
 void RasterImplementation::ReadbackImagePixels(

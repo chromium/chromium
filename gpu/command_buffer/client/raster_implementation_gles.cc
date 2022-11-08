@@ -264,6 +264,7 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
     const gpu::Mailbox& source_mailbox,
     GLenum source_target,
     GrSurfaceOrigin src_origin,
+    const gfx::Point& source_starting_point,
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
     unsigned char* out,
@@ -291,8 +292,8 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
   }
 
   GetGLHelper()->ReadbackTextureAsync(
-      texture_id, source_target, dst_gfx_size, out, dst_row_bytes, flip_y,
-      format,
+      texture_id, source_target, source_starting_point, dst_gfx_size, out,
+      dst_row_bytes, flip_y, format,
       base::BindOnce(&RasterImplementationGLES::OnReadARGBPixelsAsync,
                      weak_ptr_factory_.GetWeakPtr(), texture_id,
                      std::move(readback_done)));
