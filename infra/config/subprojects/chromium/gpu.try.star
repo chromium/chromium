@@ -189,6 +189,7 @@ gpu_linux_builder(
         "ci/GPU FYI Linux Builder",
         "ci/Linux FYI Release (AMD RX 5500 XT)",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(
@@ -198,6 +199,7 @@ gpu_linux_builder(
         "ci/GPU FYI Linux Builder",
         "ci/Linux FYI Experimental Release (Intel UHD 630)",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(
@@ -207,6 +209,7 @@ gpu_linux_builder(
         "ci/GPU FYI Linux Builder",
         "ci/Linux FYI Release (Intel UHD 630)",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(
@@ -216,6 +219,7 @@ gpu_linux_builder(
         "ci/GPU FYI Linux Builder (dbg)",
         "ci/Linux FYI Debug (NVIDIA)",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(
@@ -225,6 +229,7 @@ gpu_linux_builder(
         "ci/GPU FYI Linux Builder",
         "ci/Linux FYI Experimental Release (NVIDIA)",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(
@@ -234,6 +239,7 @@ gpu_linux_builder(
         "ci/GPU FYI Linux Builder",
         "ci/Linux FYI Release (NVIDIA)",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(
@@ -242,6 +248,7 @@ gpu_linux_builder(
     mirrors = [
         "ci/Linux FYI GPU TSAN Release",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(

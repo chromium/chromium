@@ -40,6 +40,7 @@ try_.builder(
 
 try_.builder(
     name = "leak_detection_linux",
+    goma_backend = None,
 )
 
 try_.builder(

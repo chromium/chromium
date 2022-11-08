@@ -80,6 +80,7 @@ try_.builder(
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
+    goma_backend = None,
 )
 
 try_.builder(

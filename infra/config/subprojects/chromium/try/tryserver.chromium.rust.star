@@ -35,6 +35,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-rust-x64-rel",
+    goma_backend = None,
 )
 
 try_.builder(
@@ -43,4 +44,5 @@ try_.builder(
 
 try_.builder(
     name = "linux-rust-x64-dbg",
+    goma_backend = None,
 )

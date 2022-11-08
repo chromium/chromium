@@ -57,17 +57,20 @@ swangle_linux_builder(
     pool = "luci.chromium.swangle.chromium.linux.x64.try",
     executable = "recipe:chromium_trybot",
     execution_timeout = 6 * time.hour,
+    goma_backend = None,
 )
 
 swangle_linux_builder(
     name = "linux-swangle-try-tot-swiftshader-x64",
     pool = "luci.chromium.swangle.sws.linux.x64.try",
+    goma_backend = None,
 )
 
 swangle_linux_builder(
     name = "linux-swangle-try-x64",
     pool = "luci.chromium.swangle.deps.linux.x64.try",
     executable = "recipe:chromium_trybot",
+    goma_backend = None,
 )
 
 swangle_mac_builder(

@@ -35,7 +35,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-rust-x64-rel": {
@@ -46,7 +46,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-rust-x64-rel-android-toolchain": {

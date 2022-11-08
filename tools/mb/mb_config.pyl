@@ -1093,7 +1093,7 @@
     'tryserver.chromium.dawn': {
       'android-dawn-arm-rel': 'dawn_tests_android_release_trybot',
       'dawn-android-arm-deps-rel': 'dawn_tests_android_release_trybot',
-      'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot',
+      'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_alloc_none',
@@ -1127,17 +1127,17 @@
       'chromium_presubmit': 'presubmit',
       'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
       'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
-      'gpu-fyi-try-linux-amd-rel': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-linux-intel-exp': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-linux-intel-rel': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-linux-nvidia-dbg': 'gpu_fyi_tests_debug_trybot',
-      'gpu-fyi-try-linux-nvidia-exp': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-linux-nvidia-rel': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-linux-nvidia-tsn': 'gpu_fyi_tests_release_trybot_tsan',
+      'gpu-fyi-try-linux-amd-rel': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-linux-intel-exp': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-linux-intel-rel': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-linux-nvidia-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
+      'gpu-fyi-try-linux-nvidia-exp': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-linux-nvidia-rel': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-linux-nvidia-tsn': 'gpu_fyi_tests_release_trybot_tsan_reclient',
       'gpu-try-linux-nvidia-dbg': 'gpu_tests_debug_bot',
       'gpu-try-linux-nvidia-rel': 'gpu_tests_release_trybot',
       'layout_test_leak_detection': 'release_trybot',
-      'leak_detection_linux': 'release_trybot',
+      'leak_detection_linux': 'release_trybot_reclient',
       'linux-1mbu-compile-fyi-rel': 'release_trybot_reclient',
       'linux-annotator-rel': 'release_trybot',
       'linux-arm64-castos': 'cast_arm64_release_bot',
@@ -1287,15 +1287,15 @@
     'tryserver.chromium.rust': {
       'android-rust-arm-dbg': 'debug_bot_rust_android_arm',
       'android-rust-arm-rel': 'release_rust_android_arm',
-      'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64',
-      'linux-rust-x64-rel': 'release_rust_linux_x64',
+      'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64_reclient',
+      'linux-rust-x64-rel': 'release_rust_linux_x64_reclient',
       'linux-rust-x64-rel-android-toolchain': 'release_rust_linux_x64_android_toolchain',
     },
 
     'tryserver.chromium.swangle': {
-      'linux-swangle-chromium-try-x64': 'gpu_tests_release_trybot',
-      'linux-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot',
-      'linux-swangle-try-x64': 'angle_deqp_release_trybot',
+      'linux-swangle-chromium-try-x64': 'gpu_tests_release_trybot_reclient',
+      'linux-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
+      'linux-swangle-try-x64': 'angle_deqp_release_trybot_reclient',
       'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot',
       'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot',
@@ -2514,10 +2514,6 @@
       'debug_bot_reclient', 'enable_rust', 'android', 'arm',
     ],
 
-    'debug_bot_rust_linux_x64': [
-      'debug_bot', 'enable_rust', 'x64',
-    ],
-
     'debug_bot_rust_linux_x64_reclient': [
       'debug_bot_reclient', 'enable_rust', 'x64',
     ],
@@ -2602,10 +2598,6 @@
 
     'gpu_fyi_tests_release_trybot_reclient': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_release_trybot_tsan': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'tsan', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_tsan_reclient': [
@@ -3537,10 +3529,6 @@
 
     'release_rust_android_arm_reclient': [
       'release_trybot_minimal_symbols_reclient', 'enable_rust', 'android', 'arm',
-    ],
-
-    'release_rust_linux_x64': [
-      'release_trybot_minimal_symbols', 'enable_rust', 'x64',
     ],
 
     'release_rust_linux_x64_android_toolchain': [
