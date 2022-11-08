@@ -45,6 +45,7 @@ public class FeedOptionsCoordinator {
     }
 
     private final FeedOptionsView mView;
+    private final FeedOptionsView mStickyHeaderOptionsView;
     private final Context mContext;
     private List<PropertyModel> mChipModels;
     private PropertyModel mModel;
@@ -56,19 +57,24 @@ public class FeedOptionsCoordinator {
         // nicely with the animations used, causing all chips to render with 0 height.
         this(context,
                 (FeedOptionsView) LayoutInflater.from(context).inflate(
+                        R.layout.feed_options_panel, null, false),
+                (FeedOptionsView) LayoutInflater.from(context).inflate(
                         R.layout.feed_options_panel, null, false));
     }
 
     @VisibleForTesting
-    FeedOptionsCoordinator(Context context, FeedOptionsView view) {
+    FeedOptionsCoordinator(
+            Context context, FeedOptionsView view, FeedOptionsView stickyHeaderOptionsView) {
         mContext = context;
         mView = view;
-
+        mStickyHeaderOptionsView = stickyHeaderOptionsView;
         mChipModels = createAndBindChips();
         mModel = new PropertyModel.Builder(FeedOptionsProperties.getAllKeys())
                          .with(FeedOptionsProperties.VISIBILITY_KEY, false)
                          .build();
         PropertyModelChangeProcessor.create(mModel, mView, FeedOptionsCoordinator::bind);
+        PropertyModelChangeProcessor.create(
+                mModel, mStickyHeaderOptionsView, FeedOptionsCoordinator::bind);
     }
 
     /** Sets listener for feed options. */
@@ -79,6 +85,11 @@ public class FeedOptionsCoordinator {
     /** Returns the view that this coordinator manages. */
     public View getView() {
         return mView;
+    }
+
+    /** Returns the options view which should be added to the sticky header. */
+    public View getStickyHeaderOptionsView() {
+        return mStickyHeaderOptionsView;
     }
 
     /** Toggles visibility of the options panel. */
@@ -152,7 +163,9 @@ public class FeedOptionsCoordinator {
 
         for (PropertyModel model : chipModels) {
             ChipView chip = mView.createNewChip();
+            ChipView stickyHeaderChip = mStickyHeaderOptionsView.createNewChip();
             PropertyModelChangeProcessor.create(model, chip, ChipViewBinder::bind);
+            PropertyModelChangeProcessor.create(model, stickyHeaderChip, ChipViewBinder::bind);
         }
         return chipModels;
     }

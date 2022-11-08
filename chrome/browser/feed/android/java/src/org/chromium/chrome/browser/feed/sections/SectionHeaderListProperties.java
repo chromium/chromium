@@ -49,6 +49,9 @@ public class SectionHeaderListProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View> EXPANDING_DRAWER_VIEW_KEY =
             new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel
+            .WritableObjectPropertyKey<View> STICKY_HEADER_EXPANDING_DRAWER_VIEW_KEY =
+            new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.ReadableIntPropertyKey TOOLBAR_HEIGHT_PX =
             new PropertyModel.ReadableIntPropertyKey();
     /** Visibility state for the sticky header. */
@@ -60,7 +63,8 @@ public class SectionHeaderListProperties {
                 .Builder(IS_SECTION_ENABLED_KEY, SECTION_HEADERS_KEY, CURRENT_TAB_INDEX_KEY,
                         ON_TAB_SELECTED_CALLBACK_KEY, MENU_MODEL_LIST_KEY, MENU_DELEGATE_KEY,
                         IS_TAB_MODE_KEY, IS_LOGO_KEY, INDICATOR_VIEW_VISIBILITY_KEY,
-                        EXPANDING_DRAWER_VIEW_KEY, TOOLBAR_HEIGHT_PX, STICKY_HEADER_VISIBLILITY_KEY)
+                        EXPANDING_DRAWER_VIEW_KEY, TOOLBAR_HEIGHT_PX, STICKY_HEADER_VISIBLILITY_KEY,
+                        STICKY_HEADER_EXPANDING_DRAWER_VIEW_KEY)
                 .with(SECTION_HEADERS_KEY, new PropertyListModel<>())
                 .with(INDICATOR_VIEW_VISIBILITY_KEY, ViewVisibility.INVISIBLE)
                 .with(TOOLBAR_HEIGHT_PX, toolbarHeight)

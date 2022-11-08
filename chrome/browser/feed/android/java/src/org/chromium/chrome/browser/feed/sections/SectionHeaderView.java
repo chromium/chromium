@@ -359,6 +359,12 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     /**
+     * This method sets the sticky header options panel.
+     * @param optionsView the sticky header options panel view
+     */
+    void setStickyHeaderOptionsPanel(View optionsView) {}
+
+    /**
      * Sets whether the texts on the tab layout or title view is enabled.
      */
     void setTextsEnabled(boolean enabled) {

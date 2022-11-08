@@ -43,9 +43,15 @@ public class FeedOptionsCoordinatorTest {
     @Mock
     private FeedOptionsView mView;
     @Mock
+    private FeedOptionsView mStickyHeaderOptionsView;
+    @Mock
     private ChipView mChipView;
     @Mock
+    private ChipView mStickyHeaderChipView;
+    @Mock
     private TextView mTextView;
+    @Mock
+    private TextView mStickyHeaderTextView;
 
     @Rule
     public JniMocker mMocker = new JniMocker();
@@ -61,9 +67,11 @@ public class FeedOptionsCoordinatorTest {
         when(mFeedServiceBridgeJniMock.getContentOrderForWebFeed())
                 .thenReturn(ContentOrder.REVERSE_CHRON);
         when(mView.createNewChip()).thenReturn(mChipView);
+        when(mStickyHeaderOptionsView.createNewChip()).thenReturn(mStickyHeaderChipView);
         when(mChipView.getPrimaryTextView()).thenReturn(mTextView);
+        when(mStickyHeaderChipView.getPrimaryTextView()).thenReturn(mStickyHeaderTextView);
 
-        mCoordinator = new FeedOptionsCoordinator(mContext, mView);
+        mCoordinator = new FeedOptionsCoordinator(mContext, mView, mStickyHeaderOptionsView);
     }
 
     @Test
