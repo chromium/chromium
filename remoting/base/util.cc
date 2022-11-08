@@ -5,6 +5,7 @@
 #include "remoting/base/util.h"
 
 #include <math.h>
+#include <string.h>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
