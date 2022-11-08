@@ -8,3 +8,4 @@
 -ToolsSanityTest.AsanHeapOverflow
 -ToolsSanityTest.AsanHeapUnderflow
 -ToolsSanityTest.AsanHeapUseAfterFree
+-ToolsSanityTest.MemoryLeak
