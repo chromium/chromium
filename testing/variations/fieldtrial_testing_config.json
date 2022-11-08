@@ -5874,8 +5874,7 @@
                 {
                     "name": "Enabled_20220429",
                     "enable_features": [
-                        "OptimizationGuideModelDownloading",
-                        "OptimizationTargetPrediction",
+                        "DownloadServiceForegroundSessionIOSFeature",
                         "TFLiteLanguageDetectionEnabled"
                     ]
                 }
