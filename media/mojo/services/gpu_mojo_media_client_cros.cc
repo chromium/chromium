@@ -80,6 +80,7 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
       // Allow VaapiVideoDecoder on GL.
       if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL)
         return VideoDecoderType::kVaapi;
+#if BUILDFLAG(ENABLE_VULKAN)
       if (gpu_preferences.gr_context_type != gpu::GrContextType::kVulkan)
         return VideoDecoderType::kUnknown;
       // If Vulkan is active, check Vulkan info if VaapiVideoDecoder is allowed.
@@ -104,6 +105,9 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
           return VideoDecoderType::kUnknown;
         }
       }
+#else
+      return VideoDecoderType::kUnknown;
+#endif  // BUILDFLAG(ENABLE_VULKAN)
     }
     default:
       return VideoDecoderType::kUnknown;
