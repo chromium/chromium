@@ -534,7 +534,14 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
   EXPECT_EQ(expected_tabs, app_browser->tab_strip_model()->count());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByAppId) {
+// TODO(crbug.com/1382269): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CommandLineWindowByAppId DISABLED_CommandLineWindowByAppId
+#else
+#define MAYBE_CommandLineWindowByAppId CommandLineWindowByAppId
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
+                       MAYBE_CommandLineWindowByAppId) {
   base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
