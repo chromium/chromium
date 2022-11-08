@@ -13,6 +13,8 @@
 #include "components/performance_manager/test_support/decorators_utils.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -106,7 +108,7 @@ class MockPageLiveStateDelegate
 
  private:
   std::map<ContentSettingsType, ContentSetting> GetContentSettingsForUrl(
-      WebContentsProxy web_contents_proxy,
+      content::WebContents* web_contents,
       const GURL& url) override {
     return {
         {ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
@@ -198,18 +200,17 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
   }
 
   void OnGraphCreated(GraphImpl* graph) override {
-    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
     graph->PassToGraph(std::make_unique<PageLiveStateDecorator>(
-        base::SequenceBound<MockPageLiveStateDelegate>(task_runner_)));
+        base::SequenceBound<MockPageLiveStateDelegate>(
+            content::GetUIThreadTaskRunner({}))));
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
-    return task_runner_;
+    return content::GetUIThreadTaskRunner({});
   }
 
  private:
   std::unique_ptr<TestPageLiveStateObserver> observer_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 TEST_F(PageLiveStateDecoratorTest, OnIsConnectedToUSBDeviceChanged) {
@@ -308,7 +309,7 @@ TEST_F(PageLiveStateDecoratorTest, OnIsActiveTabChanged) {
       TestPageLiveStateObserver::ObserverFunction::kOnIsActiveTabChanged);
 }
 
-TEST_F(PageLiveStateDecoratorTest, DISABLED_OnContentSettingsChanged) {
+TEST_F(PageLiveStateDecoratorTest, OnContentSettingsChanged) {
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
 
@@ -379,7 +380,7 @@ TEST_F(PageLiveStateDecoratorTest, DISABLED_OnContentSettingsChanged) {
       TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
 }
 
-TEST_F(PageLiveStateDecoratorTest, DISABLED_GetContentSettingsOnNavigation) {
+TEST_F(PageLiveStateDecoratorTest, GetContentSettingsOnNavigation) {
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   {

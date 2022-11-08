@@ -25,7 +25,7 @@ class PageLiveStateDelegateImpl
   // Gets the content settings for `url` in the profile of `web_contents_proxy`.
   // Currently only handles the `NOTIFICATIONS` setting.
   std::map<ContentSettingsType, ContentSetting> GetContentSettingsForUrl(
-      WebContentsProxy web_contents_proxy,
+      content::WebContents* web_contents,
       const GURL& url) override;
 };
 

@@ -240,6 +240,21 @@ const char kDescriberName[] = "PageLiveStateDecorator";
 
 }  // namespace
 
+void PageLiveStateDecorator::Delegate::GetContentSettingsAndReply(
+    WebContentsProxy web_contents_proxy,
+    const GURL& url,
+    GetContentSettingsForUrlCallback callback) {
+  content::WebContents* web_contents = web_contents_proxy.Get();
+  if (web_contents) {
+    PerformanceManager::CallOnGraph(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
+            GetContentSettingsForUrl(web_contents, url)));
+  }
+}
+
 PageLiveStateDecorator::PageLiveStateDecorator(
     base::SequenceBound<Delegate> delegate)
     : delegate_(std::move(delegate)) {}
@@ -374,14 +389,24 @@ base::Value PageLiveStateDecorator::DescribePageNodeData(
 
 void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {
   // Get the content settings from the main thread.
-  // TODO(crbug.com/1292183): Start fetching content settings again when
-  // PostTaskAndReply from the PM sequence to the UI thread stops being an issue
-  // at shutdown.
+  // This call is not using `Then` and is instead passing a callback for the
+  // delegate to invoke with `CallOnGraph` on purpose. This is because it's
+  // possible for the first async call to be placed in the UI thread's task
+  // queue, and skipped as part of browser shutdown before being run. When that
+  // happens, the post task's reply has to be destroyed on its owner sequence,
+  // so a task is posted back to the Performance Manager sequence. At that point
+  // shutdown is complete, and the PM sequence is `BLOCK_SHUTDOWN` so a DCHECK
+  // is triggered. See crbug.com/1375270.
+  delegate_.AsyncCall(&Delegate::GetContentSettingsAndReply)
+      .WithArgs(page_node->GetContentsProxy(), page_node->GetMainFrameUrl(),
+                base::BindOnce(
+                    &PageLiveStateDecorator::OnContentSettingsReceived,
+                    weak_factory_.GetWeakPtr(), page_node->GetMainFrameUrl()));
 }
 
 void PageLiveStateDecorator::OnContentSettingsReceived(
-    base::WeakPtr<const PageNode> page_node,
     const GURL& url,
+    base::WeakPtr<const PageNode> page_node,
     const std::map<ContentSettingsType, ContentSetting>& settings) {
   // If the page node doesn't exist anymore, or it has navigated to a different
   // URL, there's nothing to do.

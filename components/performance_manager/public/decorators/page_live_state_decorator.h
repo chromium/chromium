@@ -41,11 +41,20 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   class Delegate {
    public:
     virtual ~Delegate() = default;
+
     // Invoked on the main thread. Returns the relevant content settings for
     // `url` in the web contents' profile.
     virtual std::map<ContentSettingsType, ContentSetting>
-    GetContentSettingsForUrl(WebContentsProxy web_contents_proxy,
+    GetContentSettingsForUrl(content::WebContents* web_contents,
                              const GURL& url) = 0;
+
+    using GetContentSettingsForUrlCallback = base::OnceCallback<void(
+        base::WeakPtr<const PageNode>,
+        const std::map<ContentSettingsType, ContentSetting>&)>;
+
+    void GetContentSettingsAndReply(WebContentsProxy web_contents_proxy,
+                                    const GURL& url,
+                                    GetContentSettingsForUrlCallback callback);
   };
 
   // This object should only be used via its static methods.
@@ -104,8 +113,8 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   void OnMainFrameUrlChanged(const PageNode* page_node) override;
 
   void OnContentSettingsReceived(
-      base::WeakPtr<const PageNode> page_node,
       const GURL& url,
+      base::WeakPtr<const PageNode> page_node,
       const std::map<ContentSettingsType, ContentSetting>& settings);
 
   base::SequenceBound<Delegate> delegate_;
