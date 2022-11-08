@@ -472,6 +472,36 @@ class CertVerifyProcInternalTest
            verify_proc_type() == CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS;
   }
 
+  bool VerifyProcTypeIsMacAtMostOS10_14() const {
+#if BUILDFLAG(IS_MAC)
+    if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
+        base::mac::IsAtMostOS10_14()) {
+      return true;
+    }
+#endif
+    return false;
+  }
+
+  bool VerifyProcTypeIsMacAtMostOS11() const {
+#if BUILDFLAG(IS_MAC)
+    if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
+        base::mac::IsAtMostOS11()) {
+      return true;
+    }
+#endif
+    return false;
+  }
+
+  bool VerifyProcTypeIsIOSAtMostOS14() const {
+#if BUILDFLAG(IS_IOS)
+    if (verify_proc_type() == CERT_VERIFY_PROC_IOS &&
+        !base::ios::IsRunningOnIOS15OrLater()) {
+      return true;
+    }
+#endif
+    return false;
+  }
+
   CertVerifyProc* verify_proc() const { return verify_proc_.get(); }
 
  private:
@@ -4277,6 +4307,157 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_THAT(error, IsOk());
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_EV);
   EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+}
+
+// A set of tests that check how various constraints are enforced when they
+// appear at different points in the chain, such as on the trust anchor versus
+// on intermediates.
+class CertVerifyProcConstraintsTest : public CertVerifyProcInternalTest {
+ protected:
+  void SetUp() override {
+    CertVerifyProcInternalTest::SetUp();
+
+    chain_ = CertBuilder::CreateSimpleChain(/*chain_length=*/4);
+  }
+
+  int Verify() {
+    ScopedTestRoot test_root(chain_.back()->GetX509Certificate().get());
+    CertVerifyResult verify_result;
+    int flags = 0;
+    return CertVerifyProcInternalTest::Verify(
+        chain_.front()->GetX509CertificateChain().get(), "www.example.com",
+        flags, CRLSet::BuiltinCRLSet().get(), CertificateList(),
+        &verify_result);
+  }
+
+  int ExpectedIntermediateConstraintError() {
+    if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID)
+      return ERR_CERT_AUTHORITY_INVALID;
+    return ERR_CERT_INVALID;
+  }
+
+  std::vector<std::unique_ptr<CertBuilder>> chain_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifyProcConstraintsTest,
+                         testing::ValuesIn(kAllCertVerifiers),
+                         VerifyProcTypeToName);
+
+TEST_P(CertVerifyProcConstraintsTest, BaseCase) {
+  // Without changing anything on the test chain, it should validate
+  // successfully. If this is not true then the rest of the tests in this class
+  // are unlikely to be useful.
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotCaRoot) {
+  chain_[3]->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/-1);
+
+  if (VerifyProcTypeIsBuiltin() || VerifyProcTypeIsMacAtMostOS10_14() ||
+      verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotCaIntermediate) {
+  chain_[2]->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/-1);
+
+  EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+}
+
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsPathlen0Root) {
+  chain_[3]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/0);
+
+  if (VerifyProcTypeIsBuiltin() || VerifyProcTypeIsMacAtMostOS11() ||
+      VerifyProcTypeIsIOSAtMostOS14() ||
+      verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsPathlen1Root) {
+  chain_[3]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/1);
+
+  if (VerifyProcTypeIsBuiltin() || VerifyProcTypeIsMacAtMostOS11() ||
+      VerifyProcTypeIsIOSAtMostOS14() ||
+      verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsPathlen2Root) {
+  chain_[3]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/2);
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest,
+       BasicConstraintsPathlen0IntermediateParent) {
+  chain_[2]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/0);
+
+  EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+}
+
+TEST_P(CertVerifyProcConstraintsTest,
+       BasicConstraintsPathlen1IntermediateParent) {
+  chain_[2]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/1);
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest,
+       BasicConstraintsPathlen0IntermediateChild) {
+  chain_[1]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/0);
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest, NameConstraintsNotMatchingRoot) {
+  chain_[3]->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.org"},
+                                        /*excluded_dns_names=*/{});
+
+  if (VerifyProcTypeIsBuiltin() || VerifyProcTypeIsMacAtMostOS10_14() ||
+      verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, NameConstraintsNotMatchingIntermediate) {
+  chain_[2]->SetNameConstraintsDnsNames(
+      /*permitted_dns_names=*/{"example.org"},
+      /*excluded_dns_names=*/{});
+
+  EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+}
+
+TEST_P(CertVerifyProcConstraintsTest, NameConstraintsMatchingRoot) {
+  chain_[3]->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.com"},
+                                        /*excluded_dns_names=*/{});
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest, NameConstraintsMatchingIntermediate) {
+  chain_[2]->SetNameConstraintsDnsNames(
+      /*permitted_dns_names=*/{"example.com"},
+      /*excluded_dns_names=*/{});
+
+  if (VerifyProcTypeIsMacAtMostOS10_14()) {
+    // It appears that Mac OS <= 10.14 does not implement Name Constraints, and
+    // this probably is failing due to unhandled critical extension.
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
 }
 
 TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
