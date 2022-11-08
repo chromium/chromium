@@ -60,6 +60,7 @@ web_component_files = [
   "routine_section.ts",
   "system_page.ts",
   "text_badge.ts",
+  "touchpad_tester.ts",
   "touchscreen_tester.ts",
   "wifi_info.ts",
 ]

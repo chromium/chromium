@@ -81,6 +81,7 @@ const tests = [
   ['SystemPage', 'system_page_test.js', undefined, 'DISABLED_All'],
   ['TextBadge', 'text_badge_test.js'],
   ['TouchscreenTester', 'touchscreen_tester_test.js', 'Input'],
+  ['TouchpadTester', 'touchpad_tester_test.js', 'Input'],
   ['WifiInfo', 'wifi_info_test.js'],
 ];
 
