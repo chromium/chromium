@@ -332,6 +332,7 @@ void InputDataProvider::OnObservedKeyboardInputDisconnect(
 
   // When the last observer has been disconnected, stop forwarding events.
   if (keyboard_observers_[id]->empty()) {
+    keyboard_observers_.erase(id);
     UnforwardKeyboardInput(id);
 
     // The observer RemoteSet remains empty at this point; if a new
