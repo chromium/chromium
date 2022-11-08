@@ -170,6 +170,8 @@ const CGFloat kOmniboxPopupCarouselControlWidth =
     [self.bottomAnchor constraintEqualToAnchor:_label.bottomAnchor
                                       constant:kBackgroundViewMargin]
   ]];
+  [self setNeedsLayout];
+  [self layoutIfNeeded];
 }
 
 #pragma mark - Public methods

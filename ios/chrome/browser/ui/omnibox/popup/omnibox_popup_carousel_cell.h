@@ -27,9 +27,8 @@ NSString* OmniboxPopupCarouselCellReuseIdentifier = @"OmniboxPopupCarouselCell";
 // User tapped on `carouselItem`.
 - (void)carouselCell:(OmniboxPopupCarouselCell*)carouselCell
     didTapCarouselItem:(CarouselItem*)carouselItem;
-// Called when the cell has changed the number of visible cells.
-- (void)carouselCellDidChangeVisibleCount:
-    (OmniboxPopupCarouselCell*)carouselCell;
+// Called when the cell has changed the number of items.
+- (void)carouselCellDidChangeItemCount:(OmniboxPopupCarouselCell*)carouselCell;
 
 @end
 
@@ -54,6 +53,12 @@ NSString* OmniboxPopupCarouselCellReuseIdentifier = @"OmniboxPopupCarouselCell";
 // aren't hidden.
 @property(nonatomic, readonly, assign) NSInteger highlightedTileIndex;
 
+/// Indicates the number of items in the carousel.
+/// - Note: Usually this matches the `carouselItems` passed in
+/// `setupWithCarouselItems:` method. However, the user may long-press and
+/// "delete" a tile. The tile will then be deleted (by `deleteCarouselItem:`
+/// call).
+@property(nonatomic, readonly, assign) NSUInteger tileCount;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_CAROUSEL_CELL_H_

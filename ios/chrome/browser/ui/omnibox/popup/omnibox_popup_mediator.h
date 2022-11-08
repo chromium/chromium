@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
 #import "ui/base/window_open_disposition.h"
 
-@protocol ApplicationCommands;
 @protocol BrowserCommands;
 @class BrowserActionFactory;
 @class CarouselItem;

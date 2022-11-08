@@ -14,8 +14,8 @@
 // An abstract consumer of carousel items.
 @protocol CarouselItemConsumer <NSObject>
 
-// Sets `carouselItem`'s UI visibility to `isVisible`.
-- (void)carouselItem:(CarouselItem*)carouselItem setHidden:(BOOL)hidden;
+// Removes `carouselItem`.
+- (void)deleteCarouselItem:(CarouselItem*)carouselItem;
 
 @end
 

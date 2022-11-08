@@ -94,6 +94,7 @@
   // clean up.
   self.mediator.dispatcher =
       static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
+
   self.mediator.webStateList = self.browser->GetWebStateList();
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(

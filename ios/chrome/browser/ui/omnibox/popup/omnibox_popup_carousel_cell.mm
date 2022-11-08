@@ -57,9 +57,6 @@ UIStackView* CarouselStackView() {
 @property(nonatomic, strong) UIScrollView* scrollView;
 // Horizontal UIStackView containing CarouselItems.
 @property(nonatomic, strong) UIStackView* suggestionsStackView;
-// The subset of controls that correspond to items that aren't hidden.
-@property(nonatomic, strong, readonly)
-    NSArray<OmniboxPopupCarouselControl*>* visibleControls;
 
 #pragma mark Dynamic Spacing
 // Number of that that can be fully visible. Apply dynamic spacing only when the
@@ -84,17 +81,6 @@ UIStackView* CarouselStackView() {
     _viewWidth = 0;
     self.isAccessibilityElement = NO;
     self.contentView.isAccessibilityElement = NO;
-    for (NSUInteger i = 0; i < kCarouselCapacity; ++i) {
-      OmniboxPopupCarouselControl* control =
-          [[OmniboxPopupCarouselControl alloc] init];
-      [_suggestionsStackView addArrangedSubview:control];
-      control.delegate = self;
-      [control addTarget:self
-                    action:@selector(didTapCarouselControl:)
-          forControlEvents:UIControlEventTouchUpInside];
-      control.hidden = YES;
-      control.isAccessibilityElement = YES;
-    }
   }
   return self;
 }
@@ -135,41 +121,39 @@ UIStackView* CarouselStackView() {
   ]];
 }
 
-#pragma mark - Properties
+#pragma mark - properties
 
-- (NSArray<OmniboxPopupCarouselControl*>*)visibleControls {
-  NSMutableArray* visibleControls = [[NSMutableArray alloc] init];
-  for (OmniboxPopupCarouselControl* control in self.suggestionsStackView
-           .arrangedSubviews) {
-    if (!control.hidden) {
-      [visibleControls addObject:control];
-    }
-  }
-  return visibleControls;
+- (NSUInteger)tileCount {
+  return self.suggestionsStackView.arrangedSubviews.count;
 }
 
 #pragma mark - Accessibility
 
 - (NSArray*)accessibilityElements {
-  return self.visibleControls;
+  return self.suggestionsStackView.arrangedSubviews;
 }
 
 #pragma mark - Public methods
 
 - (void)setupWithCarouselItems:(NSArray<CarouselItem*>*)carouselItems {
+  DCHECK(carouselItems.count <= kCarouselCapacity);
+
   if (self.contentView.subviews.count == 0) {
     [self addContentSubviews];
   }
 
-  DCHECK(carouselItems.count <= kCarouselCapacity);
-  for (NSUInteger i = 0; i < kCarouselCapacity; ++i) {
-    OmniboxPopupCarouselControl* control =
-        self.suggestionsStackView.arrangedSubviews[i];
-    CarouselItem* item = i < carouselItems.count ? carouselItems[i] : nil;
-    [control setCarouselItem:item];
-    control.hidden = !item;
-    control.menuProvider = self.menuProvider;
+  // Remove all previous items from carousel.
+  while (self.suggestionsStackView.arrangedSubviews.count != 0) {
+    [self.suggestionsStackView.arrangedSubviews
+            .firstObject removeFromSuperview];
   }
+
+  for (CarouselItem* item in carouselItems) {
+    OmniboxPopupCarouselControl* control = [self newCarouselControl];
+    [self.suggestionsStackView addArrangedSubview:control];
+    [control setCarouselItem:item];
+  }
+
   if (base::FeatureList::IsEnabled(kOmniboxCarouselDynamicSpacing)) {
     if (static_cast<NSInteger>(carouselItems.count) >
         self.visibleTilesCapacity) {
@@ -183,36 +167,33 @@ UIStackView* CarouselStackView() {
 - (void)updateCarouselItem:(CarouselItem*)carouselItem {
   OmniboxPopupCarouselControl* control =
       [self controlForCarouselItem:carouselItem];
-  if (!control || control.hidden) {
+  if (!control) {
     return;
   }
   [control setCarouselItem:carouselItem];
 }
 
-- (void)carouselItem:(CarouselItem*)carouselItem setHidden:(BOOL)hidden {
-  OmniboxPopupCarouselControl* control =
-      [self controlForCarouselItem:carouselItem];
-  if (!control || control.hidden == hidden) {
-    return;
-  }
-  control.hidden = hidden;
-  control.selected = false;
-  [self.delegate carouselCellDidChangeVisibleCount:self];
-}
-
 - (NSInteger)highlightedTileIndex {
   for (OmniboxPopupCarouselControl* control in self.suggestionsStackView
            .arrangedSubviews) {
-    if (control.hidden) {
-      continue;
-    }
-
     if (control.selected) {
       return [self.suggestionsStackView.arrangedSubviews indexOfObject:control];
     }
   }
 
   return NSNotFound;
+}
+
+#pragma mark - CarouselItemConsumer
+
+- (void)deleteCarouselItem:(CarouselItem*)carouselItem {
+  OmniboxPopupCarouselControl* control =
+      [self controlForCarouselItem:carouselItem];
+  if (!control) {
+    return;
+  }
+  [control removeFromSuperview];
+  [self.delegate carouselCellDidChangeItemCount:self];
 }
 
 #pragma mark - UITableViewCell
@@ -266,58 +247,32 @@ UIStackView* CarouselStackView() {
 - (void)highlightFirstTile {
   NSArray<OmniboxPopupCarouselControl*>* allTiles =
       self.suggestionsStackView.arrangedSubviews;
-
-  for (OmniboxPopupCarouselControl* control in allTiles) {
-    if (control.hidden) {
-      continue;
-    }
-    control.selected = YES;
-    return;
-  }
+  allTiles.firstObject.selected = YES;
 }
 
 - (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
   // Find and unhighlight the previously highlighted suggestion.
-  NSInteger previouslyHighlightedIndex = self.highlightedTileIndex;
+  NSInteger prevHighlightedIndex = self.highlightedTileIndex;
 
+  if (prevHighlightedIndex == NSNotFound) {
+    [self highlightFirstTile];
+    return;
+  }
+
+  NSInteger nextHighlightedIndex = self.highlightedTileIndex;
   NSArray<OmniboxPopupCarouselControl*>* allTiles =
       self.suggestionsStackView.arrangedSubviews;
-  if (previouslyHighlightedIndex != NSNotFound) {
-    OmniboxPopupCarouselControl* previouslyHighlightedControl =
-        allTiles[previouslyHighlightedIndex];
-    previouslyHighlightedControl.selected = NO;
 
-    OmniboxPopupCarouselControl* nextHighlightedControl =
-        previouslyHighlightedControl;
-    if (keyboardAction == OmniboxKeyboardActionRightArrow) {
-      for (NSInteger i = previouslyHighlightedIndex + 1;
-           i < static_cast<NSInteger>(allTiles.count); i++) {
-        OmniboxPopupCarouselControl* control = allTiles[i];
-        if (control.hidden) {
-          continue;
-        } else {
-          nextHighlightedControl = control;
-          break;
-        }
-      }
-    } else if (keyboardAction == OmniboxKeyboardActionLeftArrow) {
-      for (NSInteger i = previouslyHighlightedIndex - 1; i >= 0; i--) {
-        OmniboxPopupCarouselControl* control = allTiles[i];
-        if (control.hidden) {
-          continue;
-        } else {
-          nextHighlightedControl = control;
-          break;
-        }
-      }
-    } else {
-      NOTREACHED();
-    }
-
-    nextHighlightedControl.selected = YES;
+  if (keyboardAction == OmniboxKeyboardActionRightArrow) {
+    nextHighlightedIndex =
+        MIN(prevHighlightedIndex + 1, (NSInteger)allTiles.count - 1);
+  } else if (keyboardAction == OmniboxKeyboardActionLeftArrow) {
+    nextHighlightedIndex = MAX(prevHighlightedIndex - 1, 0);
   } else {
-    [self highlightFirstTile];
+    NOTREACHED();
   }
+  allTiles[prevHighlightedIndex].selected = NO;
+  allTiles[nextHighlightedIndex].selected = YES;
 }
 
 #pragma mark - OmniboxPopupCarouselControlDelegate
@@ -364,6 +319,19 @@ UIStackView* CarouselStackView() {
 
   self.dynamicSpacing = extraSpacingPerTile + kMinStackSpacing;
   self.visibleTilesCapacity = nbFullTiles;
+}
+
+- (OmniboxPopupCarouselControl*)newCarouselControl {
+  OmniboxPopupCarouselControl* control =
+      [[OmniboxPopupCarouselControl alloc] init];
+  control.delegate = self;
+  [control addTarget:self
+                action:@selector(didTapCarouselControl:)
+      forControlEvents:UIControlEventTouchUpInside];
+  control.isAccessibilityElement = YES;
+  control.menuProvider = self.menuProvider;
+
+  return control;
 }
 
 @end

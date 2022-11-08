@@ -113,6 +113,11 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 // state.
 @property(nonatomic, strong) OmniboxPopupCarouselCell* carouselCell;
 
+// Flag that tracks if the carousel should be hidden. It is only true when we
+// show the carousel, then the user deletes every item in it before the UI has
+// updated.
+@property(nonatomic, assign) BOOL shouldHideCarousel;
+
 @end
 
 @implementation OmniboxPopupViewController
@@ -319,6 +324,7 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 - (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
     preselectedMatchGroupIndex:(NSInteger)groupIndex {
   DCHECK(groupIndex == 0 || groupIndex < (NSInteger)result.count);
+  self.shouldHideCarousel = NO;
   self.forwardsScrollEvents = NO;
   // Reset highlight state.
   self.highlightedIndexPath = nil;
@@ -657,6 +663,10 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
       return self.currentResult[section].suggestions.count;
     case SuggestionGroupDisplayStyleCarousel:
       DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
+      if (self.shouldHideCarousel) {
+        return 0;
+      }
+
       // The carousel displays suggestions on one row.
       return 1;
   }
@@ -766,8 +776,21 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 
 #pragma mark - OmniboxPopupCarouselCellDelegate
 
-- (void)carouselCellDidChangeVisibleCount:
-    (OmniboxPopupCarouselCell*)carouselCell {
+- (void)carouselCellDidChangeItemCount:(OmniboxPopupCarouselCell*)carouselCell {
+  if (carouselCell.tileCount == 0) {
+    // Hide the carousel row.
+    self.shouldHideCarousel = YES;
+    NSInteger carouselSection =
+        [self.tableView indexPathForCell:self.carouselCell].section;
+    [self.tableView
+        deleteRowsAtIndexPaths:@[ [NSIndexPath
+                                   indexPathForRow:0
+                                         inSection:carouselSection] ]
+              withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self resetHighlighting];
+    return;
+  }
+
   if (self.highlightedIndexPath.section !=
       [self.tableView indexPathForCell:self.carouselCell].section) {
     return;
@@ -915,8 +938,8 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 
 #pragma mark - CarouselItemConsumer
 
-- (void)carouselItem:(CarouselItem*)carouselItem setHidden:(BOOL)hidden {
-  [self.carouselCell carouselItem:carouselItem setHidden:hidden];
+- (void)deleteCarouselItem:(CarouselItem*)carouselItem {
+  [self.carouselCell deleteCarouselItem:carouselItem];
 }
 
 #pragma mark - Private Methods
