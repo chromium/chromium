@@ -1,0 +1,15 @@
+<!doctype html><meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: spelling error with originating decorations</title>
+<link rel="author" name="Delan Azabani" href="mailto:dazabani@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-painting">
+<link rel="help" href="https://crbug.com/1381486">
+<link rel="mismatch" href="spelling-error-006-notref.html">
+<meta name="assert" value="Checks that spelling errors with UA default styles do not prevent rendering of originating decorations.">
+<style>body { text-decoration: line-through; }</style>
+<body contenteditable spellcheck>quikc
+<script>
+    const range = new Range;
+    range.setStart(document.body.firstChild, 0);
+    range.setEnd(document.body.firstChild, 5);
+    internals.setMarker(document, range, "spelling");
+</script>
