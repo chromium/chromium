@@ -967,18 +967,24 @@ void PrePaintTreeWalk::WalkChildren(
     if (traversable_fragment) {
       if (!box->IsLayoutFlowThread() &&
           (!box->IsLayoutNGObject() || !box->PhysicalFragmentCount())) {
-        // Leave LayoutNGBoxFragment-accompanied child LayoutObject traversal,
-        // since this object doesn't support that (or has no fragments (happens
-        // for table columns)). We need to switch back to legacy LayoutObject
-        // traversal for its children. We're then also assuming that we're
-        // either not block-fragmenting, or that this is monolithic content. We
-        // may re-enter LayoutNGBoxFragment-accompanied traversal if we get to a
-        // descendant that supports that.
-        DCHECK(
-            !box->FlowThreadContainingBlock() ||
-            (box->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks));
+        // We can traverse PhysicalFragments in LayoutMedia though it's not
+        // a LayoutNGObject.
+        if (!RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled() ||
+            !box->IsMedia()) {
+          // Leave LayoutNGBoxFragment-accompanied child LayoutObject
+          // traversal, since this object doesn't support that (or has no
+          // fragments (happens for table columns)). We need to switch back to
+          // legacy LayoutObject traversal for its children. We're then also
+          // assuming that we're either not block-fragmenting, or that this is
+          // monolithic content. We may re-enter
+          // LayoutNGBoxFragment-accompanied traversal if we get to a
+          // descendant that supports that.
+          DCHECK(
+              !box->FlowThreadContainingBlock() ||
+              (box->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks));
 
-        traversable_fragment = nullptr;
+          traversable_fragment = nullptr;
+        }
       }
     } else if (box->PhysicalFragmentCount()) {
       // Enter LayoutNGBoxFragment-accompanied child LayoutObject traversal if
