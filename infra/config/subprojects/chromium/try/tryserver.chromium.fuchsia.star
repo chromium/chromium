@@ -14,7 +14,7 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.fuchsia",
     cores = 8,
     orchestrator_cores = 2,
-    compilator_cores = 16,
+    compilator_cores = 32,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
@@ -138,6 +138,28 @@ try_.builder(
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+)
+
+# TODO(crbug.com/1298111): Replace real builder above once verified
+try_.orchestrator_builder(
+    name = "fuchsia-x64-cast-receiver-rel-orchestrator",
+    compilator = "fuchsia-x64-cast-receiver-rel-compilator",
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    main_list_view = "try",
+    mirrors = [
+        "ci/fuchsia-x64-cast-receiver-rel",
+    ],
+    experiments = {
+        "enable_weetbix_queries": 100,
+        "weetbix.retry_weak_exonerations": 100,
+        "weetbix.enable_weetbix_exonerations": 100,
+    },
+)
+
+try_.compilator_builder(
+    name = "fuchsia-x64-cast-receiver-rel-compilator",
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    main_list_view = "try",
 )
 
 try_.builder(

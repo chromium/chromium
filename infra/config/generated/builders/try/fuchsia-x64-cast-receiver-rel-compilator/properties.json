@@ -38,23 +38,14 @@
           "builder": "fuchsia-x64-cast-receiver-rel",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "fuchsia-x64-cast-receiver-rel",
-          "group": "tryserver.chromium.fuchsia"
-        },
-        {
-          "builder": "fuchsia-x64-cast-receiver-rel-orchestrator",
-          "group": "tryserver.chromium.fuchsia"
-        }
       ]
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+  "$build/goma": {
+    "enable_ats": true,
+    "jobs": 150,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -63,9 +54,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fuchsia",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.fuchsia",
+  "recipe": "chromium/compilator"
 }
