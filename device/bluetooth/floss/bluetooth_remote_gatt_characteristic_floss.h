@@ -72,6 +72,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   void GattCharacteristicWrite(std::string address,
                                GattStatus status,
                                int32_t handle) override;
+  void GattNotify(std::string address,
+                  int32_t handle,
+                  const std::vector<uint8_t>& data) override;
 
   // Authentication required to read this characteristic and its descriptors.
   AuthRequired GetAuthForRead() const;
@@ -119,6 +122,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   BluetoothRemoteGattCharacteristicFloss(
       BluetoothRemoteGattServiceFloss* service,
       GattCharacteristic* characteristic);
+
+  // Handles response to |RegisterForNotification| and
+  // |UnregisterForNotification|.
+  void OnRegisterForNotification(
+      device::BluetoothRemoteGattDescriptor* ccc_descriptor,
+      const std::vector<uint8_t>& value,
+      base::OnceClosure callback,
+      ErrorCallback error_callback,
+      DBusResult<GattStatus> result);
 
   // Send notifications to observer on adapter.
   void NotifyValueChanged();

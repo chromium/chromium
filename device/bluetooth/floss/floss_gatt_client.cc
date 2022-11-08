@@ -370,6 +370,8 @@ void FlossGattClient::Init(dbus::Bus* bus,
       gatt::kOnExecuteWrite, &FlossGattClientObserver::GattExecuteWrite);
   exported_callback_manager_.AddMethod(
       gatt::kOnDescriptorRead, &FlossGattClientObserver::GattDescriptorRead);
+  exported_callback_manager_.AddMethod(
+      gatt::kOnDescriptorWrite, &FlossGattClientObserver::GattDescriptorWrite);
   exported_callback_manager_.AddMethod(gatt::kOnNotify,
                                        &FlossGattClientObserver::GattNotify);
   exported_callback_manager_.AddMethod(

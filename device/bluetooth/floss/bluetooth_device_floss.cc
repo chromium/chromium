@@ -192,7 +192,10 @@ bool BluetoothDeviceFloss::ExpectingConfirmation() const {
 }
 
 void BluetoothDeviceFloss::GetConnectionInfo(ConnectionInfoCallback callback) {
-  NOTIMPLEMENTED();
+  // TODO(b/255650738): Floss doesn't currently provide max_transmit_power.
+  std::move(callback).Run(ConnectionInfo(inquiry_rssi_.value_or(0),
+                                         inquiry_tx_power_.value_or(0),
+                                         /*max_transmit_power=*/0));
 }
 
 void BluetoothDeviceFloss::SetConnectionLatency(

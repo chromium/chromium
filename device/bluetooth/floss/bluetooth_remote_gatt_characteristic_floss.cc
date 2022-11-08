@@ -186,6 +186,19 @@ void BluetoothRemoteGattCharacteristicFloss::GattCharacteristicWrite(
   }
 }
 
+void BluetoothRemoteGattCharacteristicFloss::GattNotify(
+    std::string address,
+    int32_t handle,
+    const std::vector<uint8_t>& data) {
+  if (handle != characteristic_->instance_id ||
+      address != service_->GetDevice()->GetAddress()) {
+    return;
+  }
+
+  cached_data_ = data;
+  NotifyValueChanged();
+}
+
 void BluetoothRemoteGattCharacteristicFloss::OnReadCharacteristic(
     ValueCallback callback,
     DBusResult<Void> result) {
@@ -223,26 +236,60 @@ void BluetoothRemoteGattCharacteristicFloss::SubscribeToNotifications(
 #endif  // BUILDFLAG(IS_CHROMEOS)
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  // TODO(b/193685841) - Figure out what to do about notification_type.
-  // Currently it is unused in Floss.
-  BluetoothRemoteGattDescriptorFloss* descriptor =
-      static_cast<BluetoothRemoteGattDescriptorFloss*>(ccc_descriptor);
+#if !BUILDFLAG(IS_CHROMEOS)
+  NotificationType notification_type = NotificationType::kNotification;
+#endif
 
-  DCHECK(descriptor);
-  descriptor->RegisterForNotification(std::move(callback),
-                                      std::move(error_callback));
+  // Set CCCD value to notification type
+  std::vector<uint8_t> value = {static_cast<uint8_t>(notification_type), 0};
+
+  // Register this characteristic for notifications
+  FlossDBusManager::Get()->GetGattClient()->RegisterForNotification(
+      base::BindOnce(
+          &BluetoothRemoteGattCharacteristicFloss::OnRegisterForNotification,
+          weak_ptr_factory_.GetWeakPtr(), ccc_descriptor, value,
+          std::move(callback), std::move(error_callback)),
+      service_->GetDevice()->GetAddress(), characteristic_->instance_id);
 }
 
 void BluetoothRemoteGattCharacteristicFloss::UnsubscribeFromNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
+  // Set CCCD value back to default
+  std::vector<uint8_t> value = {0, 0};
+
+  // Unregister this characteristic for notifications
+  FlossDBusManager::Get()->GetGattClient()->UnregisterNotification(
+      base::BindOnce(
+          &BluetoothRemoteGattCharacteristicFloss::OnRegisterForNotification,
+          weak_ptr_factory_.GetWeakPtr(), ccc_descriptor, value,
+          std::move(callback), std::move(error_callback)),
+      service_->GetDevice()->GetAddress(), characteristic_->instance_id);
+}
+
+void BluetoothRemoteGattCharacteristicFloss::OnRegisterForNotification(
+    device::BluetoothRemoteGattDescriptor* ccc_descriptor,
+    const std::vector<uint8_t>& value,
+    base::OnceClosure callback,
+    ErrorCallback error_callback,
+    DBusResult<GattStatus> result) {
+  if (!result.has_value() || result.value() != GattStatus::kSuccess) {
+    std::move(error_callback)
+        .Run(/*error_code=*/BluetoothGattServiceFloss::GattStatusToServiceError(
+            result.value()));
+
+    return;
+  }
+
   BluetoothRemoteGattDescriptorFloss* descriptor =
       static_cast<BluetoothRemoteGattDescriptorFloss*>(ccc_descriptor);
 
   DCHECK(descriptor);
-  descriptor->UnregisterForNotification(std::move(callback),
-                                        std::move(error_callback));
+
+  // Write to the Client Characteristic Configuration descriptor.
+  descriptor->WriteRemoteDescriptor(value, std::move(callback),
+                                    std::move(error_callback));
 }
 
 AuthRequired BluetoothRemoteGattCharacteristicFloss::GetAuthForRead() const {

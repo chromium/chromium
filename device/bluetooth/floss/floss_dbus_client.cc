@@ -161,6 +161,7 @@ const char kOnCharacteristicRead[] = "OnCharacteristicRead";
 const char kOnCharacteristicWrite[] = "OnCharacteristicWrite";
 const char kOnExecuteWrite[] = "OnExecuteWrite";
 const char kOnDescriptorRead[] = "OnDescriptorRead";
+const char kOnDescriptorWrite[] = "OnDescriptorWrite";
 const char kOnNotify[] = "OnNotify";
 const char kOnReadRemoteRssi[] = "OnReadRemoteRssi";
 const char kOnConfigureMtu[] = "OnConfigureMtu";

@@ -62,14 +62,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorFloss
                   int32_t handle,
                   const std::vector<uint8_t>& data) override;
 
-  // Register for notifications when this descriptor's value is updated.
-  void RegisterForNotification(base::OnceClosure callback,
-                               ErrorCallback error_callback);
-
-  // Unregister any notifications on this descriptor.
-  void UnregisterForNotification(base::OnceClosure callback,
-                                 ErrorCallback error_callback);
-
  private:
   BluetoothRemoteGattDescriptorFloss(
       BluetoothRemoteGattServiceFloss* service,
@@ -84,12 +76,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorFloss
                          ErrorCallback error_callback,
                          std::vector<uint8_t> data,
                          DBusResult<Void> result);
-
-  // Handles response to |RegisterForNotification| and
-  // |UnregisterForNotification|.
-  void OnRegisterForNotification(base::OnceClosure callback,
-                                 ErrorCallback error_callback,
-                                 DBusResult<GattStatus> result);
 
   // Send notifications to observer on adapter.
   void NotifyValueChanged();

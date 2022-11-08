@@ -163,6 +163,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnCharacteristicRead[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnCharacteristicWrite[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnExecuteWrite[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDescriptorRead[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDescriptorWrite[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnNotify[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnReadRemoteRssi[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnConfigureMtu[];
