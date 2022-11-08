@@ -2224,6 +2224,11 @@
       name: "QuotaChange",
       status: "experimental",
     },
+    // If enabled, the Accept-Language header will be reduced.
+    {
+      name: "ReduceAcceptLanguage",
+      origin_trial_feature_name: "ReduceAcceptLanguage"
+    },
     // If enabled, the minor version of the User-Agent string will be reduced.
     // This User-Agent Reduction feature has been enabled starting from M101,
     // but we still keep this flag for future phase tests.

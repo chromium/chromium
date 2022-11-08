@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -20,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/embedder_support/switches.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -38,6 +40,8 @@ namespace {
 using ::content::URLLoaderInterceptor;
 using ::net::test_server::EmbeddedTestServer;
 
+enum class FeatureEnableType { FeatureFlagEnable, OriginTrialEnable };
+
 struct ReduceAcceptLanguageTestOptions {
   absl::optional<std::string> content_language_in_parent = absl::nullopt;
   absl::optional<std::string> variants_in_parent = absl::nullopt;
@@ -46,6 +50,11 @@ struct ReduceAcceptLanguageTestOptions {
   absl::optional<std::string> variants_in_child = absl::nullopt;
   absl::optional<std::string> vary_in_child = absl::nullopt;
   bool is_fenced_frame = false;
+};
+
+struct ServerPortAndValidOriginToken {
+  int port;
+  std::string token;
 };
 
 const char kLargeLanguages[] =
@@ -59,14 +68,40 @@ const char kLargeLanguages[] =
     "so,sl,sk,si,wa,vi,uz,ug,uk,ur,yi,xh,wo,fy,cy,yo,zu,es-CL,es-CO,su,ta,sv,"
     "sw,tg,tn,to,ti,th,te,tt,tr,tk,tw";
 
+static constexpr const char kFirstPartyOriginUrl[] = "https://127.0.0.1:44444";
+static constexpr char kThirdPartyOriginUrl[] = "https://my-site.com:44444";
+
+// Notes: Only use to test origin trial feature with URLLoaderInterceptor.
+// generate_token.py https://127.0.0.1:44444 ReduceAcceptLanguage
+// --expire-timestamp=2000000000
+static constexpr const char kValidFirstPartyToken[] =
+    "A/"
+    "G09eTht7RFkWhm4ZJpY52cJ5OwzQ+"
+    "UZG479jtGNTDhOcn4aZxwfptBJdCra1sn88R81ZqryWDQa2VAzXbLegIAAABeeyJvcmlnaW4iO"
+    "iAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5"
+    "ndWFnZSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==";
+
+// Notes: Only use to test origin trial feature with URLLoaderInterceptor.
+// generate_token.py https://my-site.com:44444 ReduceAcceptLanguage
+// --is-third-party --expire-timestamp=2000000000
+static constexpr const char kValidThirdPartyToken[] =
+    "AyluNgtXRhECzUbr3uisA06MmzzhHjbUG6HBQnk6BBjT+Z9iUH2KG/"
+    "EmrDW+"
+    "zj5pycYyavqEbnorgiaKeP0szwUAAAB2eyJvcmlnaW4iOiAiaHR0cHM6Ly9teS1zaXRlLmNvbT"
+    "o0NDQ0NCIsICJmZWF0dXJlIjogIlJlZHVjZUFjY2VwdExhbmd1YWdlIiwgImV4cGlyeSI6IDIw"
+    "MDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
+
+static constexpr const char kInvalidOriginToken[] =
+    "AjfC47H1q8/Ho5ALFkjkwf9CBK6oUUeRTlFc50Dj+eZEyGGKFIY2WTxMBfy8cLc3"
+    "E0nmFroDA3OmABmO5jMCFgkAAABXeyJvcmlnaW4iOiAiaHR0cDovL3ZhbGlkLmV4"
+    "YW1wbGUuY29tOjgwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlIiwgImV4cGlyeSI6"
+    "IDIwMDAwMDAwMDB9";
+
 }  // namespace
 
 class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
  public:
   ReduceAcceptLanguageBrowserTest() = default;
-
-  static constexpr const char kFirstPartyOriginUrl[] =
-      "https://127.0.0.1:44444";
 
   void SetUp() override {
     EnabledFeatures();
@@ -80,6 +115,15 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
                             base::Unretained(this)));
 
     InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // The public key for the default private key used by the
+    // tools/origin_trials/generate_token.py tool.
+    static constexpr char kOriginTrialTestPublicKey[] =
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
+    command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
+                                    kOriginTrialTestPublicKey);
   }
 
   void TearDownOnMainThread() override {
@@ -108,7 +152,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
         base::StrCat({kFirstPartyOriginUrl, "/same_origin_request.html"}));
   }
 
-  GURL sameOriginIframeUrl() const {
+  GURL SameOriginIframeUrl() const {
     return GURL(
         base::StrCat({kFirstPartyOriginUrl, "/same_origin_iframe.html"}));
   }
@@ -168,6 +212,16 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
     language_prefs->SetUserSelectedLanguagesList(accept_languages);
   }
 
+  // Mock the site set content-language behavior. If site supports the language
+  // in the accept-language request header, set the content-language the same as
+  // accept-language, otherwise set as the first available language.
+  std::string GetResponseContentLanguage(
+      const std::string& accept_language,
+      const std::vector<std::string>& variants_languages) {
+    auto iter = base::ranges::find(variants_languages, accept_language);
+    return iter != variants_languages.end() ? *iter : variants_languages[0];
+  }
+
  protected:
   // Return the feature list for the tests.
   virtual void EnabledFeatures() = 0;
@@ -177,6 +231,69 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   bool HasReceivedHeader(const std::string& header) const {
     return url_loader_interceptor_->GetLastRequestHeaders().HasHeader(header);
   }
+
+  void ResetURLAndAcceptLanguageSequence() {
+    actual_url_accept_language_.clear();
+  }
+
+  void VerifyURLAndAcceptLanguageSequence(
+      const std::vector<std::vector<std::string>>& expect_url_accept_language,
+      const std::string& message = "") {
+    EXPECT_EQ(actual_url_accept_language_, expect_url_accept_language)
+        << message;
+  }
+
+  // As origin trial needs to start a service in a specific port instead of
+  // random port, sometime the specific port is not ready, this can cause tests
+  // are flaky. Allow test server to retry on provided ports and set the origin
+  // trial token if server starts succeed.
+  void StartTestServerAndSetToken(
+      net::EmbeddedTestServer* http_server,
+      std::vector<ServerPortAndValidOriginToken> port_tokens,
+      bool third_party_origin = false) {
+    // Try start server in random ports.
+    if (port_tokens.empty()) {
+      EXPECT_TRUE(http_server->Start());
+      return;
+    }
+
+    // Try different ports and assign the origin token.
+    bool started = false;
+    for (size_t i = 0; i < port_tokens.size(); i++) {
+      LOG(INFO) << "Start server on port " << port_tokens[i].port
+                << " in attempt " << i << ".";
+      started = http_server->Start(port_tokens[i].port);
+
+      if (started) {
+        third_party_origin ? SetValidThirdPartyToken(port_tokens[i].token)
+                           : SetValidFirstPartyToken(port_tokens[i].token);
+        break;
+      }
+    }
+    EXPECT_TRUE(started);
+  }
+
+  void SetValidFirstPartyToken(const std::string& token) {
+    valid_first_party_token_ = token;
+  }
+
+  void SetValidThirdPartyToken(const std::string& token) {
+    valid_third_party_token_ = token;
+  }
+
+  void SetOriginTrialFirstPartyToken(const std::string& token) {
+    origin_trial_first_party_token_ = token;
+  }
+
+  void SetOriginTrialThirdPartyToken(const std::string& token) {
+    origin_trial_third_party_token_ = token;
+  }
+
+  std::vector<std::vector<std::string>> actual_url_accept_language_;
+  std::string origin_trial_first_party_token_;
+  std::string origin_trial_third_party_token_;
+  std::string valid_first_party_token_;
+  std::string valid_third_party_token_;
 
  private:
   // Returns the value of the Accept-Language request header from the last sent
@@ -223,6 +340,23 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       base::StrAppend(&headers, {BuildSubresourceResponseHeader()});
     } else {
       base::StrAppend(&headers, {BuildResponseHeader()});
+    }
+
+    // Build mock header for the first party origin if the token is not empty.
+    if (!origin_trial_first_party_token_.empty()) {
+      base::StrAppend(
+          &headers,
+          {"Origin-Trial: ", origin_trial_first_party_token_, "\r\n"});
+    }
+
+    // Only build mock header with third party origin trial tokens for the third
+    // party requests.
+    const GURL origin = params->url_request.url.DeprecatedGetOriginAsURL();
+    if (!origin_trial_third_party_token_.empty() &&
+        origin == GURL(kThirdPartyOriginUrl)) {
+      base::StrAppend(
+          &headers,
+          {"Origin-Trial: ", origin_trial_third_party_token_, "\r\n"});
     }
 
     static constexpr auto kServiceWorkerPaths =
@@ -324,14 +458,14 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
                   .content_language_in_child = "es",
                   .variants_in_child = "accept-language=(es en-US)",
                   .vary_in_child = "accept-language"},
-                 {sameOriginIframeUrl(), SimpleRequestUrl()});
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
 
   SetPrefsAcceptLanguage({"zh", "en-us"});
 
   // Expect no Accept-Language header added because browser_tests can only check
   // headers in navigation layer, browser_tests can't see headers added by
   // network stack.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(),
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
                                                absl::nullopt);
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }
@@ -733,13 +867,13 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                   .content_language_in_child = "es",
                   .variants_in_child = "accept-language=(es en-US)",
                   .vary_in_child = "accept-language"},
-                 {sameOriginIframeUrl(), SimpleRequestUrl()});
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
 
   SetPrefsAcceptLanguage(base::SplitString(
       kLargeLanguages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-US");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -764,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   // Even Script disabled, it still expects reduced accept-language. The second
   // navigation should use the language after negotiation which is en-us.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-US");
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }
 
@@ -811,12 +945,12 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                   .content_language_in_child = absl::nullopt,
                   .variants_in_child = "accept-language=(es en-US)",
                   .vary_in_child = "accept-language"},
-                 {sameOriginIframeUrl(), SimpleRequestUrl()});
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
 
   SetPrefsAcceptLanguage({"zh", "en-us"});
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-us");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -844,12 +978,12 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                   .content_language_in_child = "es",
                   .variants_in_child = absl::nullopt,
                   .vary_in_child = "accept-language"},
-                 {sameOriginIframeUrl(), SimpleRequestUrl()});
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
 
   SetPrefsAcceptLanguage({"zh", "en-us"});
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-us");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -877,12 +1011,12 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                   .content_language_in_child = "es",
                   .variants_in_child = "accept-language=(es en-US)",
                   .vary_in_child = "accept-language"},
-                 {sameOriginIframeUrl(), SimpleRequestUrl()});
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
 
   SetPrefsAcceptLanguage({"zh", "en-us"});
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-us");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -910,12 +1044,12 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                   .content_language_in_child = "zh",
                   .variants_in_child = "accept-language=(zh)",
                   .vary_in_child = "accept-language"},
-                 {sameOriginIframeUrl(), SimpleRequestUrl()});
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
 
   SetPrefsAcceptLanguage({"zh", "en-us"});
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-us");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -936,27 +1070,23 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 class ThirdPartyReduceAcceptLanguageBrowserTest
     : public ReduceAcceptLanguageBrowserTest {
  public:
-  static constexpr char kThirdPartyOriginUrl[] = "https://my-site.com:44444";
   static constexpr char kOtherSiteOriginUrl[] = "https://other-site.com:44445";
   static constexpr char kOtherSiteBOriginUrl[] =
       "https://other-site-b.com:44445";
 
   GURL CrossOriginIframeUrl() const {
     return GURL(
-        base::StrCat({ReduceAcceptLanguageBrowserTest::kFirstPartyOriginUrl,
-                      "/cross_origin_iframe.html"}));
+        base::StrCat({kFirstPartyOriginUrl, "/cross_origin_iframe.html"}));
   }
 
   GURL TopLevelWithIframeRedirectUrl() const {
-    return GURL(
-        base::StrCat({ReduceAcceptLanguageBrowserTest::kFirstPartyOriginUrl,
-                      "/top_level_with_iframe_redirect.html"}));
+    return GURL(base::StrCat(
+        {kFirstPartyOriginUrl, "/top_level_with_iframe_redirect.html"}));
   }
 
   GURL CrossOriginIframeWithSubresourceUrl() const {
-    return GURL(
-        base::StrCat({ReduceAcceptLanguageBrowserTest::kFirstPartyOriginUrl,
-                      "/cross_origin_iframe_with_subrequests.html"}));
+    return GURL(base::StrCat(
+        {kFirstPartyOriginUrl, "/cross_origin_iframe_with_subrequests.html"}));
   }
 
   GURL SubframeThirdPartyRequestUrl() const {
@@ -1108,9 +1238,6 @@ class FencedFrameReduceAcceptLanguageBrowserTest
       public ::testing::WithParamInterface<
           blink::features::FencedFramesImplementationType> {
  public:
-  static constexpr char kFirstPartyOriginUrl[] = "https://127.0.0.1:44444";
-  static constexpr char kThirdPartyOriginUrl[] = "https://my-site.com:44444";
-
   static std::string DescribeParams(
       const ::testing::TestParamInfo<ParamType>& info) {
     switch (info.param) {
@@ -1127,9 +1254,8 @@ class FencedFrameReduceAcceptLanguageBrowserTest
   }
 
   GURL CrossOriginFencedFrameUrl() const {
-    return GURL(
-        base::StrCat({ReduceAcceptLanguageBrowserTest::kFirstPartyOriginUrl,
-                      "/cross_origin_fenced_frame.html"}));
+    return GURL(base::StrCat(
+        {kFirstPartyOriginUrl, "/cross_origin_fenced_frame.html"}));
   }
 
   GURL SimpleRequestUrl() const {
@@ -1249,7 +1375,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReduceAcceptLanguageBrowserTest,
 class SameOriginRedirectReduceAcceptLanguageBrowserTest
     : public ReduceAcceptLanguageBrowserTest {
  public:
-  SameOriginRedirectReduceAcceptLanguageBrowserTest()
+  explicit SameOriginRedirectReduceAcceptLanguageBrowserTest(
+      const std::vector<ServerPortAndValidOriginToken>& port_tokens = {})
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     https_server_.ServeFilesFromSourceDirectory(
         "chrome/test/data/reduce_accept_language");
@@ -1264,7 +1391,9 @@ class SameOriginRedirectReduceAcceptLanguageBrowserTest
                                 RequestHandlerRedirect,
                             base::Unretained(this)));
 
-    EXPECT_TRUE(https_server_.Start());
+    // Using a specified port for origin trial to generate token instead of
+    // always using an auto selected one.
+    StartTestServerAndSetToken(&https_server_, port_tokens);
 
     same_origin_redirect_ = https_server_.GetURL("/same_origin_redirect.html");
     same_origin_redirect_a_ =
@@ -1291,11 +1420,6 @@ class SameOriginRedirectReduceAcceptLanguageBrowserTest
                   const std::string& content_language_b) {
     content_language_a_ = content_language_a;
     content_language_b_ = content_language_b;
-  }
-
-  void VerifyURLAndAcceptLanguageSequence(
-      const std::vector<std::vector<std::string>>& expect_url_accept_language) {
-    EXPECT_EQ(actual_url_accept_language_, expect_url_accept_language);
   }
 
  protected:
@@ -1337,9 +1461,17 @@ class SameOriginRedirectReduceAcceptLanguageBrowserTest
       response->AddCustomHeader("Content-Language", content_language_b_);
     }
 
-    response->AddCustomHeader(
-        "Variants", base::StrCat({"accept-language=(", content_language_a_, " ",
-                                  content_language_b_, ")"}));
+    if (origin_trial_first_party_token_ != kInvalidOriginToken) {
+      response->AddCustomHeader(
+          "Variants", base::StrCat({"accept-language=(", content_language_a_,
+                                    " ", content_language_b_, ")"}));
+    }
+
+    if (!origin_trial_first_party_token_.empty()) {
+      response->AddCustomHeader("Origin-Trial",
+                                origin_trial_first_party_token_);
+    }
+
     return std::move(response);
   }
 
@@ -1361,7 +1493,6 @@ class SameOriginRedirectReduceAcceptLanguageBrowserTest
   net::EmbeddedTestServer https_server_;
   std::string content_language_a_;
   std::string content_language_b_;
-  std::vector<std::vector<std::string>> actual_url_accept_language_;
 };
 
 IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageBrowserTest,
@@ -1370,8 +1501,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageBrowserTest,
   SetOptions(/*content_language_a=*/"en", /*content_language_b=*/"ja");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
 
-  // 1. initial request to main request(/) with first user accept-language
-  // en.
+  // 1. initial request to main request(/) with first user accept-language en.
   // 2. initial request to A(/en) with the language matches the expected
   // accept-language.
   VerifyURLAndAcceptLanguageSequence({{same_origin_redirect().spec(), "en"},
@@ -1399,7 +1529,9 @@ IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageBrowserTest,
 class CrossOriginRedirectReduceAcceptLanguageBrowserTest
     : public ReduceAcceptLanguageBrowserTest {
  public:
-  CrossOriginRedirectReduceAcceptLanguageBrowserTest()
+  explicit CrossOriginRedirectReduceAcceptLanguageBrowserTest(
+      const std::vector<ServerPortAndValidOriginToken>& port_tokens_a = {},
+      const std::vector<ServerPortAndValidOriginToken>& port_tokens_b = {})
       : https_server_a_(net::EmbeddedTestServer::TYPE_HTTPS),
         https_server_b_(net::EmbeddedTestServer::TYPE_HTTPS) {
     https_server_a_.ServeFilesFromSourceDirectory(
@@ -1426,8 +1558,11 @@ class CrossOriginRedirectReduceAcceptLanguageBrowserTest
             RequestHandlerRedirect,
         base::Unretained(this)));
 
-    EXPECT_TRUE(https_server_a_.Start());
-    EXPECT_TRUE(https_server_b_.Start());
+    // Using a specified port for origin trial to generate token instead of
+    // always using an auto selected one.
+    StartTestServerAndSetToken(&https_server_a_, port_tokens_a);
+    StartTestServerAndSetToken(&https_server_b_, port_tokens_b, true);
+
     // Make sure two origins are different.
     EXPECT_NE(https_server_a_.base_url(), https_server_b_.base_url());
     cross_origin_redirect_a_ =
@@ -1453,13 +1588,10 @@ class CrossOriginRedirectReduceAcceptLanguageBrowserTest
     variants_accept_language_b_ = variants_accept_language_b;
   }
 
-  void ResetURLAndAcceptLanguageSequence() {
-    actual_url_accept_language_.clear();
-  }
-
-  void VerifyURLAndAcceptLanguageSequence(
-      const std::vector<std::vector<std::string>>& expect_url_accept_language) {
-    EXPECT_EQ(actual_url_accept_language_, expect_url_accept_language);
+  void SetOriginTrialFirstPartyToken(const std::string& origin_trial_token_a,
+                                     const std::string& origin_trial_token_b) {
+    origin_trial_token_a_ = origin_trial_token_a;
+    origin_trial_token_b_ = origin_trial_token_b;
   }
 
  protected:
@@ -1487,23 +1619,35 @@ class CrossOriginRedirectReduceAcceptLanguageBrowserTest
           "Content-Language",
           GetResponseContentLanguage(accept_language,
                                      variants_accept_language_a_));
-      response->AddCustomHeader(
-          "Variants",
-          base::StrCat({"accept-language=(",
-                        base::JoinString(variants_accept_language_a_, " "),
-                        ")"}));
+      // Stop sending Variants header as well if tests set an invalid origin
+      // token.
+      if (origin_trial_token_a_ != kInvalidOriginToken) {
+        response->AddCustomHeader(
+            "Variants",
+            base::StrCat({"accept-language=(",
+                          base::JoinString(variants_accept_language_a_, " "),
+                          ")"}));
+      }
       response->AddCustomHeader("Location", cross_origin_redirect_b().spec());
+      if (!origin_trial_token_a_.empty()) {
+        response->AddCustomHeader("Origin-Trial", origin_trial_token_a_);
+      }
     } else if (request.relative_url == "/cross_origin_redirect_b.html") {
       response->set_code(net::HTTP_OK);
       response->AddCustomHeader(
           "Content-Language",
           GetResponseContentLanguage(accept_language,
                                      variants_accept_language_b_));
-      response->AddCustomHeader(
-          "Variants",
-          base::StrCat({"accept-language=(",
-                        base::JoinString(variants_accept_language_b_, " "),
-                        ")"}));
+      if (origin_trial_token_b_ != kInvalidOriginToken) {
+        response->AddCustomHeader(
+            "Variants",
+            base::StrCat({"accept-language=(",
+                          base::JoinString(variants_accept_language_b_, " "),
+                          ")"}));
+      }
+      if (!origin_trial_token_b_.empty()) {
+        response->AddCustomHeader("Origin-Trial", origin_trial_token_b_);
+      }
     }
     return std::move(response);
   }
@@ -1520,23 +1664,14 @@ class CrossOriginRedirectReduceAcceptLanguageBrowserTest
     }
   }
 
-  // Mock the site set content-language behavior. If site supports the language
-  // in the accept-language request header, set the content-language the same as
-  // accept-language, otherwise set as the first available language.
-  std::string GetResponseContentLanguage(
-      const std::string& accept_language,
-      const std::vector<std::string>& variants_languages) {
-    auto iter = base::ranges::find(variants_languages, accept_language);
-    return iter != variants_languages.end() ? *iter : variants_languages[0];
-  }
-
   GURL cross_origin_redirect_a_;
   GURL cross_origin_redirect_b_;
   net::EmbeddedTestServer https_server_a_;
   net::EmbeddedTestServer https_server_b_;
   std::vector<std::string> variants_accept_language_a_;
   std::vector<std::string> variants_accept_language_b_;
-  std::vector<std::vector<std::string>> actual_url_accept_language_;
+  std::string origin_trial_token_a_;
+  std::string origin_trial_token_b_;
 };
 
 IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
@@ -1628,4 +1763,871 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
   VerifyURLAndAcceptLanguageSequence(
       {{cross_origin_redirect_a().spec(), "zh"},
        {cross_origin_redirect_b().spec(), "zh"}});
+}
+
+// Browser tests verify same origin redirect when ReduceAcceptLanguage origin
+// trial enable.
+// NOTES: As URLLoaderInterceptor doesn't support redirect, testing redirects
+// with origin trial requires EmbeddedTestServer to start on specific ports, we
+// can only add a single test in this test class in case the different tests run
+// parallel to cause server can't starts on specific ports. It will cause tests
+// flakiness. Also, we need to make sure it doesn't share port with any other
+// browser_tests.
+class SameOriginRedirectReduceAcceptLanguageOTBrowserTest
+    : public SameOriginRedirectReduceAcceptLanguageBrowserTest {
+ public:
+  SameOriginRedirectReduceAcceptLanguageOTBrowserTest()
+      : SameOriginRedirectReduceAcceptLanguageBrowserTest(
+            GetValidPortsAndTokens()) {
+    // Initialize with valid origin trial token.
+    SetOriginTrialFirstPartyToken(GetValidFirstPartyToken());
+  }
+
+  // Work around solution to test redirect using EmbeddedTestServer. Make a list
+  // port and corresponding OT token for test server to retry if port in use.
+  // generate_token.py https://127.0.0.1:44455 ReduceAcceptLanguage
+  // --expire-timestamp=2000000000
+  const std::vector<ServerPortAndValidOriginToken>& GetValidPortsAndTokens() {
+    static const base::NoDestructor<std::vector<ServerPortAndValidOriginToken>>
+        vec({
+            {44455,
+             "AzSllhJ98+RSJMfR6M+Y+"
+             "x3jxeFpelgI5Vl1nWuclvx2pcGOnRUwaOKXKQSa9jAeclvkuxgdBfENmhA3ZLGzAw"
+             "oAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NTUiLCAiZmVhdHV"
+             "yZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnkiOiAyMDAwMDAwMDAw"
+             "fQ=="},
+            {44456,
+             "A4uA7J+"
+             "vnItIm0hSGWrKOTT2mk7hYwyCIbBjH00QTtrITFNaRkBPcjfkwi5IHkjHjBTtqq2F"
+             "0RXgLbB9MM7xWAcAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0N"
+             "TYiLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnkiOi"
+             "AyMDAwMDAwMDAwfQ=="},
+            {44457,
+             "Az33aL7s0NkKODCoHmeHia1Bw9s6cPBdL4NJZJcIhFpnR60Dd76Vcb8NJhge/"
+             "j8FkZ/"
+             "FptxJi01YJBoQyyor9QMAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6"
+             "NDQ0NTciLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpc"
+             "nkiOiAyMDAwMDAwMDAwfQ=="},
+            {44458,
+             "Az1nlieDv/dL0a41vnsh5RbommI/"
+             "twzSJorFqSoBbUCehLo1HpeuyrRUNosqBFqHlveIgpx7Pf3h3v1bJnEo1QYAAABee"
+             "yJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NTgiLCAiZmVhdHVyZSI6IC"
+             "JSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ=="},
+            {44459,
+             "A+sVf8DEBgKznNyLtNDiMO7HnE+cfBddPCIjVglIXZCj9+HkXKv1+"
+             "b8D3lubralKDSlwL/"
+             "quRzYQENR41DinZwUAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ"
+             "0NTkiLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnki"
+             "OiAyMDAwMDAwMDAwfQ=="},
+        });
+    return *vec;
+  }
+
+  std::string GetValidFirstPartyToken() { return valid_first_party_token_; }
+
+ protected:
+  void EnabledFeatures() override {
+    // Explicit disable feature ReduceAcceptLanguage but enable
+    // ReduceAcceptLanguageOriginTrial.
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine("ReduceAcceptLanguageOriginTrial",
+                                            "ReduceAcceptLanguage");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageOTBrowserTest,
+                       MatchFirstLanguage) {
+  // Match the first language
+  SetPrefsAcceptLanguage({"en", "ja"});
+  SetOptions(/*content_language_a=*/"en", /*content_language_b=*/"ja");
+  SetOriginTrialFirstPartyToken(GetValidFirstPartyToken());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+
+  // First Request.
+  // 1. initial request to main request(/) with unreduced user accept-language
+  // since we can't validate origin trial token before sending requests.
+  // 2. initial request to A(/en) with the reduced language en which persisted
+  // when process request to main request(/).
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "en,ja;q=0.9"},
+       {same_origin_redirect_a().spec(), "en"}},
+      "Verifying the first request sequence failed in matching first "
+      "language.");
+
+  // Second request.
+  ResetURLAndAcceptLanguageSequence();
+  // 1. Second request to main request(/) with the reduced accept-language en.
+  // 2. Second request to A(/en) with the reduced accept-language en.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "en"},
+       {same_origin_redirect_a().spec(), "en"}},
+      "Verifying the second request sequence failed in matching first "
+      "language.");
+
+  // Third Request: reset origin trial token to be invalid.
+  SetOriginTrialFirstPartyToken(kInvalidOriginToken);
+  ResetURLAndAcceptLanguageSequence();
+  // 1. Third request to main request(/) with the reduced accept-language en.
+  // 2. Third request to A(/en) with the reduced accept-language en.
+  // All persisted languages for the givin origin should be cleaned in this
+  // request, all subsequent requests should start sending unreduced
+  // accept-language.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "en"},
+       {same_origin_redirect_a().spec(), "en,ja;q=0.9"}},
+      "Verifying the third request sequence failed in matching first "
+      "language.");
+
+  // Fourth request.
+  ResetURLAndAcceptLanguageSequence();
+  // 1. Fourth request to main request(/) with the unreduced accept-language.
+  // 2. Fourth request to A(/en) with the unreduced accept-language.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "en,ja;q=0.9"},
+       {same_origin_redirect_a().spec(), "en,ja;q=0.9"}},
+      "Verifying the fourth request sequence failed in matching first "
+      "language.");
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageOTBrowserTest,
+                       MatchNonPrimaryLanguage) {
+  // Match non primary language
+  SetPrefsAcceptLanguage({"zh-CN", "ja"});
+  SetOptions(/*content_language_a=*/"en", /*content_language_b=*/"ja");
+  SetOriginTrialFirstPartyToken(GetValidFirstPartyToken());
+
+  ResetURLAndAcceptLanguageSequence();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+
+  // First Request.
+  // 1. initial request to main request(/) with unreduced user accept-language
+  // since we can't validate origin trial token before sending requests.
+  // 2. restart request to main request(/) with the persisted language ja after
+  // language negotiation.
+  // 3. initial request to B(/ja) with the language matches the expected
+  // accept-language.
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "zh-CN,zh;q=0.9,ja;q=0.8"},
+       {same_origin_redirect().spec(), "ja"},
+       {same_origin_redirect_b().spec(), "ja"}},
+      "Verifying the first request sequence failed in matching non-primary "
+      "language.");
+
+  // Second request.
+  ResetURLAndAcceptLanguageSequence();
+  // 1. Second request to main request(/) with the reduced accept-language ja.
+  // 2. Second request to B(/ja) with the language matches the expected
+  // accept-language.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "ja"},
+       {same_origin_redirect_b().spec(), "ja"}},
+      "Verifying the second request sequence failed in matching non-primary "
+      "language.");
+
+  // Third Request: reset origin trial token to be invalid.
+  SetOriginTrialFirstPartyToken(kInvalidOriginToken);
+  ResetURLAndAcceptLanguageSequence();
+  // 1. Third request to main request(/) with the reduced accept-language ja.
+  // 2. Third request to B(/ja) with the reduced accept-language ja.
+  // All persisted languages for the givin origin should be cleaned in this
+  // request, all subsequent requests should start sending unreduced
+  // accept-language.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "ja"},
+       {same_origin_redirect_b().spec(), "zh-CN,zh;q=0.9,ja;q=0.8"}},
+      "Verifying the third request sequence failed in matching non-primary "
+      "language.");
+
+  // Fourth request.
+  ResetURLAndAcceptLanguageSequence();
+  // 1. Fourth request to main request(/) with the unreduced accept-language,
+  // and redirect to the default page A(/en).
+  // 2. Fourth request to A(/en) with the unreduced accept-language .
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "zh-CN,zh;q=0.9,ja;q=0.8"},
+       {same_origin_redirect_a().spec(), "zh-CN,zh;q=0.9,ja;q=0.8"}},
+      "Verifying the fourth request sequence failed in matching non-primary "
+      "language.");
+}
+
+// Browser tests verify cross origin redirect when ReduceAcceptLanguage origin
+// trial enable.
+// NOTES: As URLLoaderInterceptor doesn't support redirect, testing redirects
+// with origin trial requires EmbeddedTestServer to start on specific ports, we
+// can only add a single test in this test class in case the different tests run
+// parallel to cause server can't starts on specific ports. It will cause tests
+// flakiness. Also, we need to make sure it doesn't share port with any other
+// browser_tests.
+class CrossOriginRedirectReduceAcceptLanguageOTBrowserTest
+    : public CrossOriginRedirectReduceAcceptLanguageBrowserTest {
+ public:
+  CrossOriginRedirectReduceAcceptLanguageOTBrowserTest()
+      : CrossOriginRedirectReduceAcceptLanguageBrowserTest(
+            GetValidPortsAndTokensA(),
+            GetValidPortsAndTokensB()) {}
+
+  // generate_token.py https://127.0.0.1:44466 ReduceAcceptLanguage
+  // --expire-timestamp=2000000000
+  const std::vector<ServerPortAndValidOriginToken>& GetValidPortsAndTokensA() {
+    static const base::NoDestructor<std::vector<ServerPortAndValidOriginToken>>
+        vec({
+            {44466,
+             "A74Um5MF3xynlCdMKu2ZNGxTd6BHSw7cGe8BPyLKjIlXLGvj+"
+             "HwaM7rqQuVcy4nm50oJOnLyGG0iRqV8Q18hYwMAAABeeyJvcmlnaW4iOiAiaHR0cH"
+             "M6Ly8xMjcuMC4wLjE6NDQ0NjYiLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5"
+             "ndWFnZSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ=="},
+            {44467,
+             "AzHyNd8z73giti5cN3MIwrz3pOBUx/"
+             "GGen8J7X2r7z8jdVJzppuQ6cz7kMwcd+"
+             "d4zh4czc8L8MllbkOD5H5usAQAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4"
+             "wLjE6NDQ0NjciLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJl"
+             "eHBpcnkiOiAyMDAwMDAwMDAwfQ=="},
+            {44468,
+             "A/"
+             "6KlK14FmDDKt3Q8sl6wpWyh+"
+             "B7GJuR1Fgc38zaz7zniUCK4THnze81TwpJW0Ajfkb1tOjB6/"
+             "bysQG0HChJNAsAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0Njg"
+             "iLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnkiOiAy"
+             "MDAwMDAwMDAwfQ=="},
+            {44469,
+             "A0yYuNVkqdOaWwAUCwORp+IK/m7i7bRQ/5lvSmPWKWT1+kmRKgrXnHQy+X/"
+             "BeQ72Zph6YEW8t0UiwO66hf7usQwAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcu"
+             "MC4wLjE6NDQ0NjkiLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsI"
+             "CJleHBpcnkiOiAyMDAwMDAwMDAwfQ=="},
+            {44470,
+             "A48A+Y2WRyD0epUMEYebGCJ6wHTKxFw36nCKwVgDyy/QFt1sxO0377R6EfHw/"
+             "MQ14HTQdpUjXVtY79PsnSiKCwgAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC"
+             "4wLjE6NDQ0NzAiLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJ"
+             "leHBpcnkiOiAyMDAwMDAwMDAwfQ=="},
+        });
+    return *vec;
+  }
+
+  // generate_token.py https://127.0.0.1:44477 ReduceAcceptLanguage
+  // --expire-timestamp=2000000000
+  const std::vector<ServerPortAndValidOriginToken>& GetValidPortsAndTokensB() {
+    static const base::NoDestructor<std::vector<ServerPortAndValidOriginToken>>
+        vec({
+            {44477,
+             "A50zxBqtR5a+Scjas+8QsZkgVnataBlED3mz8nT5e6UBkW4enP6iXR+53S+"
+             "iN7qirF+Xy0+R8bEv+"
+             "zdnzRbG0AkAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NzciLC"
+             "AiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnkiOiAyMDA"
+             "wMDAwMDAwfQ=="},
+            {44478,
+             "AxMYDxbKzeDQN9le2VPZhVPfgj8x0E8DEX4YVTqQsqs2w0VstbnapwfNq74AQRL5y"
+             "bw4hav2w0fSV/"
+             "Bo+"
+             "BRO0QkAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NzgiLCAiZm"
+             "VhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnkiOiAyMDAwMDA"
+             "wMDAwfQ=="},
+            {44479,
+             "AwbImb/qUq/32dyTuOk4/nUOqcAewg3JDciTHv84oLAFA8MDByjEPihPrG5/"
+             "foecZXSAU3+"
+             "FcCM3jZvBvtuqiQgAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0"
+             "NzkiLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnkiO"
+             "iAyMDAwMDAwMDAwfQ=="},
+            {44480,
+             "AzTbdbqLqo9sZVhyd/5SyLkOOZhz+7oJiN6bcl/"
+             "4xrFIudWsm4XfNqsADWKFs7sjY/"
+             "YQl4b4+f9+PGxA2+"
+             "18bQsAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0ODAiLCAiZmV"
+             "hdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSIsICJleHBpcnkiOiAyMDAwMDAw"
+             "MDAwfQ=="},
+            {44481,
+             "A1+jJE8Wm18wBOx5zNB6M4WbgR//"
+             "63HTtIiUwNBA1ZU7RATSZkX3H5fA+"
+             "cEONlmigEUA01ORpEorVr3agh7GpAQAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMj"
+             "cuMC4wLjE6NDQ0ODEiLCAiZmVhdHVyZSI6ICJSZWR1Y2VBY2NlcHRMYW5ndWFnZSI"
+             "sICJleHBpcnkiOiAyMDAwMDAwMDAwfQ=="},
+        });
+    return *vec;
+  }
+
+  std::string GetValidTokenA() { return valid_first_party_token_; }
+
+  std::string GetValidTokenB() { return valid_third_party_token_; }
+
+  void VerifyRestartOnABBothABOptInOT() {
+    SetPrefsAcceptLanguage({"en-us", "zh"});
+    SetOptions(/*variants_accept_language_a=*/{"ja", "zh"},
+               /*variants_accept_language_b=*/{"de", "zh"});
+
+    // Set A opt-in and B opt-in the origin trial.
+    SetOriginTrialFirstPartyToken(
+        /*origin_trial_token_a=*/GetValidTokenA(),
+        /*origin_trial_token_b=*/GetValidTokenB());
+
+    ResetURLAndAcceptLanguageSequence();
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+    // 1. initial request to A with unreduced accept-language list.
+    // 2. restart request to A with the persisted language zh.
+    // 3. initial request to B with unreduced accept-language list.
+    // 4. restart request to A since redirect the original URL with persisted
+    // language zh.
+    // 5. restart request to B with the persisted language zh.
+    VerifyURLAndAcceptLanguageSequence(
+        {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+         {cross_origin_redirect_a().spec(), "zh"},
+         {cross_origin_redirect_b().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+         {cross_origin_redirect_a().spec(), "zh"},
+         {cross_origin_redirect_b().spec(), "zh"}},
+        "Verifying the first request sequence failed.");
+
+    ResetURLAndAcceptLanguageSequence();
+    // Secondary redirect request expects no restarts and continue with
+    // persisted language.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+    VerifyURLAndAcceptLanguageSequence(
+        {{cross_origin_redirect_a().spec(), "zh"},
+         {cross_origin_redirect_b().spec(), "zh"}},
+        "Verifying the second request sequence failed.");
+  }
+
+ protected:
+  void EnabledFeatures() override {
+    // Explicit disable feature ReduceAcceptLanguage but enable
+    // ReduceAcceptLanguageOriginTrial.
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine("ReduceAcceptLanguageOriginTrial",
+                                            "ReduceAcceptLanguage");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
+                       RestartOnA) {
+  // Restart only happens on A, and only A opt-in the origin trial, then
+  // invalidate only B's token.
+  SetPrefsAcceptLanguage({"en-us", "zh"});
+  SetOptions(/*variants_accept_language_a=*/{"ja", "zh"},
+             /*variants_accept_language_b=*/{"en-us"});
+
+  // Set A opt-in and B opt-out the origin trial.
+  SetOriginTrialFirstPartyToken(
+      /*origin_trial_token_a=*/GetValidTokenA(),
+      /*origin_trial_token_b=*/kInvalidOriginToken);
+
+  ResetURLAndAcceptLanguageSequence();
+  // initial redirect request.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  // 1. initial request to A with with unreduced user accept-language
+  // since we can't validate origin trial token before sending requests.
+  // 2. restart request to A with the persisted language zh.
+  // 3. initial request to B with unreduced user accept-language since B
+  // hasn't participated in the origin trial.
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "en-us,en;q=0.9,zh;q=0.8"}},
+      "Verifying RestartOnA the first request sequence failed.");
+
+  ResetURLAndAcceptLanguageSequence();
+  // Secondary redirect request expects no restarts.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "en-us,en;q=0.9,zh;q=0.8"}},
+      "Verifying RestartOnA the second request sequence failed.");
+
+  // Set A opt-out the origin trial.
+  SetOriginTrialFirstPartyToken(/*origin_trial_token_a=*/kInvalidOriginToken,
+                                /*origin_trial_token_b=*/kInvalidOriginToken);
+
+  base::HistogramTester histograms;
+  ResetURLAndAcceptLanguageSequence();
+  // Accept-Language in the third request header is the same as the second
+  // one, but it will clear the persisted language for the given origin.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "en-us,en;q=0.9,zh;q=0.8"}},
+      "Verifying RestartOnA the third request sequence failed.");
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Clear persist language for Origin A.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 1);
+
+  ResetURLAndAcceptLanguageSequence();
+  // Fourth request will start to send the unreduced Accept-Language header
+  // once the given origin opt-out origin trial.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "en-us,en;q=0.9,zh;q=0.8"}},
+      "Verifying RestartOnA the fourth request sequence failed.");
+}
+
+IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
+                       RestartOnB) {
+  // Restart only happens on B, and only B opt-in the origin trial, then
+  // invalidate only B's token.
+  SetPrefsAcceptLanguage({"en-us", "zh"});
+  SetOptions(/*variants_accept_language_a=*/{"en-us", "zh"},
+             /*variants_accept_language_b=*/{"de", "zh"});
+
+  // Set B opt-in and A opt-out the origin trial.
+  SetOriginTrialFirstPartyToken(/*origin_trial_token_a=*/kInvalidOriginToken,
+                                /*origin_trial_token_b=*/GetValidTokenB());
+
+  ResetURLAndAcceptLanguageSequence();
+  // Initial request.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  // 1. initial request to A with the unreduced user accept-language since A
+  // hasn't participated in the origin trial.
+  // 2. initial request to B with unreduced user accept-language since we
+  // can't validate B's origin trial token before sending requests.
+  // 3. restart request to A still sends the unreduced user accept-language.
+  // 4. restart request to B with the persisted language zh.
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "zh"}},
+      "Verifying RestartOnB the first request sequence failed.");
+
+  ResetURLAndAcceptLanguageSequence();
+  // Secondary redirect request expects no restarts, A sends unreduced
+  // Accept-Language and B sends reduced Accept-Language header.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "zh"}},
+      "Verifying RestartOnB the second request sequence failed.");
+
+  // Set B opt-out the origin trial.
+  SetOriginTrialFirstPartyToken(/*origin_trial_token_a=*/kInvalidOriginToken,
+                                /*origin_trial_token_b=*/kInvalidOriginToken);
+
+  base::HistogramTester histograms;
+  ResetURLAndAcceptLanguageSequence();
+  // Accept-Language in the third request header is the same as the second
+  // one, but it will clear the persisted language for the given origin.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "zh"}},
+      "Verifying RestartOnB the third request sequence failed.");
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Clear persisted language for origin B.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 1);
+
+  ResetURLAndAcceptLanguageSequence();
+  // Fourth request will start to send the unreduced Accept-Language header
+  // once the given origin opt-out origin trial.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "en-us,en;q=0.9,zh;q=0.8"}},
+      "Verifying RestartOnB the fourth request sequence failed.");
+}
+
+IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
+                       RestartOnAB) {
+  // Restart on both A and B, and both origin opt-in the origin trial, then
+  // invalidate A's and B's token.
+  // Verify Accept-Language header in both A and B for the first two requests.
+  VerifyRestartOnABBothABOptInOT();
+
+  // Set A opt-out the origin trial.
+  SetOriginTrialFirstPartyToken(kInvalidOriginToken, GetValidTokenB());
+
+  base::HistogramTester histograms;
+  ResetURLAndAcceptLanguageSequence();
+  // Third request will clear A's persist language.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "zh"}},
+      "Verifying RestartOnAB the third request sequence failed.");
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Clear persisted language for origin A.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 1);
+
+  ResetURLAndAcceptLanguageSequence();
+  // Request to verify A starts sending the unreduced Accept-Language header.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "zh"}},
+      "Verifying RestartOnAB the fourth request sequence failed.");
+
+  // Set A and B both opt-out the origin trial.
+  SetOriginTrialFirstPartyToken(kInvalidOriginToken, kInvalidOriginToken);
+
+  base::HistogramTester histograms2;
+  ResetURLAndAcceptLanguageSequence();
+  // Request will clear B's persist language.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "zh"}},
+      "Verifying RestartOnAB the fifth request sequence failed.");
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Clear persisted language for origin B.
+  histograms2.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 1);
+
+  ResetURLAndAcceptLanguageSequence();
+  // Request verify both A and B start sending the unreduced Accept-Language
+  // header.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us,en;q=0.9,zh;q=0.8"},
+       {cross_origin_redirect_b().spec(), "en-us,en;q=0.9,zh;q=0.8"}},
+      "Verifying RestartOnA the fourth request sequence failed.");
+}
+
+// Browser tests verify same origin origin trial.
+class SameOriginReduceAcceptLanguageOTBrowserTest
+    : public ReduceAcceptLanguageBrowserTest {
+ public:
+  void VerifySubrequestOriginTrial(const std::set<GURL>& expected_request_urls,
+                                   const GURL& url,
+                                   const std::string& last_request_path,
+                                   int expect_fetch_count) {
+    base::HistogramTester histograms;
+    SetTestOptions({.content_language_in_parent = "es",
+                    .variants_in_parent = "accept-language=(es en-US)",
+                    .vary_in_parent = "accept-language",
+                    .content_language_in_child = "es",
+                    .variants_in_child = "accept-language=(es en-US)",
+                    .vary_in_child = "accept-language"},
+                   expected_request_urls);
+    SetPrefsAcceptLanguage({"zh", "en-US"});
+
+    SetOriginTrialFirstPartyToken(kValidFirstPartyToken);
+
+    // initial request.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(url, "en-US");
+    EXPECT_EQ(LastRequestUrl().path(), last_request_path);
+
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    // Ensure restart happen once.
+    histograms.ExpectBucketCount(
+        "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+        /*=kNavigationRestarted=*/3, 1);
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency",
+                                expect_fetch_count);
+
+    // Verify navigator.languages only returns an array length 1 if
+    // has valid origin trial token.
+    VerifyNavigatorLanguages({"zh"});
+
+    // Second request with invalid origin token.
+    SetOriginTrialFirstPartyToken(kInvalidOriginToken);
+    // No Accept-Language added in content navigation request, network layer
+    // will add user's Accept-Language list.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(url, absl::nullopt);
+    EXPECT_EQ(LastRequestUrl().path(), last_request_path);
+    VerifyNavigatorLanguages({"zh", "en-US"});
+  }
+
+  void VerifySameOriginRequestNoRestart(
+      const absl::optional<std::string>& expect_accept_language) {
+    base::HistogramTester histograms;
+    // The first request won't add the Accept-Language in navigation request
+    // since it can't verify the origin trial.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                                 expect_accept_language);
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    // Ensure no restart happen.
+    histograms.ExpectBucketCount(
+        "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+        /*=kNavigationRestarted=*/3, 0);
+    // One Prefs fetch when initially adding header.
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+    // Expect one storage update when response has a valid origin token.
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
+  }
+
+  void VerifySameOriginRequestAfterTokenInvalid(
+      const absl::optional<std::string>& expect_accept_language) {
+    SetOriginTrialFirstPartyToken(kInvalidOriginToken);
+    base::HistogramTester histograms;
+    // First request after token invalid will continue send reduced header since
+    // we can't verify the response header before preparing the request
+    // headers.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                                 expect_accept_language);
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 1);
+
+    // Subsequent requests should not add reduced Accept-Language header.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                                 absl::nullopt);
+  }
+
+ protected:
+  void EnabledFeatures() override {
+    // Explicit disable feature ReduceAcceptLanguage but enable
+    // ReduceAcceptLanguageOriginTrial.
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine("ReduceAcceptLanguageOriginTrial",
+                                            "ReduceAcceptLanguage");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
+                       SimpleRequestOriginTrial_MatchPrimaryLanguage) {
+  SetTestOptions({.content_language_in_parent = "es",
+                  .variants_in_parent = "accept-language=(es en-US)",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+  SetOriginTrialFirstPartyToken(kValidFirstPartyToken);
+  SetPrefsAcceptLanguage({"es", "zh"});
+
+  // The first request won't add the Accept-Language in navigation request
+  // since it can't verify the origin trial.
+  VerifySameOriginRequestNoRestart(absl::nullopt);
+  // The second request should send out with the persist language.
+  VerifySameOriginRequestNoRestart("es");
+  VerifySameOriginRequestAfterTokenInvalid("es");
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
+                       SimpleRequestOriginTrial_MatchNonPrimaryLanguage) {
+  {
+    base::HistogramTester histograms;
+
+    SetTestOptions({.content_language_in_parent = "es",
+                    .variants_in_parent = "accept-language=(es en-US)",
+                    .vary_in_parent = "accept-language"},
+                   {SameOriginRequestUrl()});
+    SetOriginTrialFirstPartyToken(kValidFirstPartyToken);
+    SetPrefsAcceptLanguage({"zh", "en-us"});
+
+    // First request restarts and send Accept-Language with negotiated language:
+    // en-us.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                                 "en-us");
+    // Ensure only restart once.
+    histograms.ExpectBucketCount(
+        "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+        /*=kNavigationRestarted=*/3, 1);
+
+    // Two fetches for initially adding header and restart fetch.
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+    // Expect no perf storage updates.
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
+  }
+
+  {
+    SetTestOptions({.content_language_in_parent = "en-us",
+                    .variants_in_parent = "accept-language=(es en-US)",
+                    .vary_in_parent = "accept-language"},
+                   {SameOriginRequestUrl()});
+
+    // The second request should send out with the first matched negotiation
+    // language en-us.
+    VerifySameOriginRequestNoRestart("en-us");
+    VerifySameOriginRequestAfterTokenInvalid("en-us");
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
+                       SimpleRequestOriginTrial_NoMatchLanguage) {
+  SetTestOptions({.content_language_in_parent = "es",
+                  .variants_in_parent = "accept-language=(es en-US)",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+  SetOriginTrialFirstPartyToken(kValidFirstPartyToken);
+  SetPrefsAcceptLanguage({"zh", "ja"});
+
+  // The first request won't add the Accept-Language in navigation request
+  // since it can't verify the origin trial.
+  VerifySameOriginRequestNoRestart(absl::nullopt);
+  // The second request should send out with the persist language zh.
+  VerifySameOriginRequestNoRestart("zh");
+  VerifySameOriginRequestAfterTokenInvalid("zh");
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
+                       IframeRequestOriginTrial) {
+  // See `expect_fetch_count` explanation on test: IframeReduceAcceptLanguage.
+  VerifySubrequestOriginTrial(
+      /*expected_request_urls=*/{SameOriginIframeUrl(), SimpleRequestUrl()},
+      /*url=*/SameOriginIframeUrl(),
+      /*last_request_path=*/"/subframe_simple.html", /*expect_fetch_count=*/3);
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
+                       ImgSubresourceRequestOriginTrial) {
+  // See `expect_fetch_count` explanation on test:
+  // ImgSubresourceReduceAcceptLanguage.
+  VerifySubrequestOriginTrial(
+      /*expected_request_urls=*/{SameOriginImgUrl(), SimpleImgUrl()},
+      /*url=*/SameOriginImgUrl(),
+      /*last_request_path=*/"/subresource_simple.jpg",
+      /*expect_fetch_count=*/2);
+}
+
+// Browser tests verify third party origin trial. Currently we are not
+// supporting third-party origin trial.
+class ThirdPartyReduceAcceptLanguageOTBrowserTest
+    : public ThirdPartyReduceAcceptLanguageBrowserTest {
+ protected:
+  void EnabledFeatures() override {
+    // Explicit disable feature ReduceAcceptLanguage but enable
+    // ReduceAcceptLanguageOriginTrial.
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine("ReduceAcceptLanguageOriginTrial",
+                                            "ReduceAcceptLanguage");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
+                       ThirdPartyOT_IframeRequests) {
+  base::HistogramTester histograms;
+
+  SetTestOptions({.content_language_in_parent = "es",
+                  .variants_in_parent = "accept-language=(es en-US)",
+                  .vary_in_parent = "accept-language",
+                  .content_language_in_child = "zh",
+                  .variants_in_child = "accept-language=(zh)",
+                  .vary_in_child = "accept-language"},
+                 {CrossOriginIframeUrl(), SimpleThirdPartyRequestUrl()});
+
+  SetOriginTrialThirdPartyToken(kValidThirdPartyToken);
+  SetPrefsAcceptLanguage({"zh", "en-us"});
+
+  // Third party iframe subrequest expect no Accept-Language added in navigation
+  // requests.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(CrossOriginIframeUrl(),
+                                               absl::nullopt);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Ensure no restart happen.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  // One fetch for initially checking whether need to add reduce Accept-Language
+  // header when visiting the following two URLs:
+  // * cross_origin_iframe_url.
+  // * simple_3p_request_url.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // No persist reduce accept language happens.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
+
+  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
+
+  // It won't send reduce Accept-Language when explicitly visiting the url with
+  // origin token enabled third party.
+  base::HistogramTester histograms2;
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SimpleThirdPartyRequestUrl(),
+                                               absl::nullopt);
+  histograms2.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
+                       ThirdPartyOT_IframeWithSubresourceRequests) {
+  base::HistogramTester histograms;
+
+  SetTestOptions(
+      {.content_language_in_parent = "es",
+       .variants_in_parent = "accept-language=(es en-US)",
+       .vary_in_parent = "accept-language",
+       .content_language_in_child = "zh",
+       .variants_in_child = "accept-language=(zh)",
+       .vary_in_child = "accept-language"},
+      {CrossOriginIframeWithSubresourceUrl(), IframeThirdPartyRequestUrl(),
+       OtherSiteCssRequestUrl(), OtherSiteBasicRequestUrl()});
+
+  SetOriginTrialThirdPartyToken(kValidThirdPartyToken);
+  SetPrefsAcceptLanguage({"zh", "en-us"});
+
+  // Third party iframe subrequest expect no Accept-Language added in navigation
+  // requests.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(
+      CrossOriginIframeWithSubresourceUrl(), absl::nullopt);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Ensure no restart happen.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  // One fetch for initially checking whether need to add reduce Accept-Language
+  // header when visiting the following three URLs:
+  // * cross_origin_iframe_with_subrequests_url.
+  // * iframe_3p_request_url.
+  // * other_site_b_basic_request_url.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // No persist reduce accept language happens.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
+
+  EXPECT_EQ(LastRequestUrl().path(), "/subframe_iframe_basic.html");
+}
+
+// Browser tests verify disable origin trial feature flags.
+class DisableReduceAcceptLanguageOTBrowserTest
+    : public ReduceAcceptLanguageBrowserTest {
+ public:
+  void VerifyOriginTrialFeatureDisableWithValidToken(const GURL& url) {
+    SetOriginTrialFirstPartyToken(kValidFirstPartyToken);
+    // Expect no Accept-Language header added for incoming requests.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(url, absl::nullopt);
+    NavigateAndVerifyAcceptLanguageOfLastRequest(url, absl::nullopt);
+    // Even though we disable the feature, blink will verify whether sites send
+    // valid origin trial token in js getter. It will continue send the reduce
+    // accept-language in navigator.languages if sites opt-in the origin trial.
+    VerifyNavigatorLanguages({"zh"});
+  }
+
+ protected:
+  void EnabledFeatures() override {
+    // Explicit disable feature ReduceAcceptLanguage and
+    // ReduceAcceptLanguageOriginTrial.
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine(
+        "", "ReduceAcceptLanguageOriginTrial,ReduceAcceptLanguage");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DisableReduceAcceptLanguageOTBrowserTest,
+                       SimpleRequestOriginTrialDisable) {
+  SetTestOptions({.content_language_in_parent = "en",
+                  .variants_in_parent = "accept-language=(en en-US)",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+  SetPrefsAcceptLanguage({"zh", "en-us"});
+  VerifyOriginTrialFeatureDisableWithValidToken(SameOriginRequestUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DisableReduceAcceptLanguageOTBrowserTest,
+                       IframeRequestOriginTrialDisable) {
+  SetTestOptions({.content_language_in_parent = "es",
+                  .variants_in_parent = "accept-language=(es en-US)",
+                  .vary_in_parent = "accept-language",
+                  .content_language_in_child = "es",
+                  .variants_in_child = "accept-language=(es en-US)",
+                  .vary_in_child = "accept-language"},
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
+  SetPrefsAcceptLanguage({"zh", "en-us"});
+  VerifyOriginTrialFeatureDisableWithValidToken(SameOriginIframeUrl());
+
+  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }

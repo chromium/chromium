@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "content/common/content_export.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -15,7 +16,8 @@ namespace content {
 
 class ReduceAcceptLanguageControllerDelegate;
 
-class ReduceAcceptLanguageThrottle : public blink::URLLoaderThrottle {
+class CONTENT_EXPORT ReduceAcceptLanguageThrottle
+    : public blink::URLLoaderThrottle {
  public:
   explicit ReduceAcceptLanguageThrottle(
       ReduceAcceptLanguageControllerDelegate& accept_language_delegate);

@@ -1415,26 +1415,6 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
   // Should not crash.
 }
 
-// TODO(victortan) Add corresponding web platform tests once feature on.
-TEST_F(FrameFetchContextTest, SetReduceAcceptLanguageWhenDetached) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kReduceAcceptLanguage);
-
-  const KURL url("https://www.example.com/");
-  ResourceRequest request(url);
-
-  FetchParameters::ResourceWidth resource_width;
-  ResourceLoaderOptions options(/*world=*/nullptr);
-
-  document->GetFrame()->SetReducedAcceptLanguage("en-GB");
-  dummy_page_holder = nullptr;
-
-  GetFetchContext()->PopulateResourceRequest(ResourceType::kRaw, resource_width,
-                                             request, options);
-  EXPECT_EQ("en-GB", request.HttpHeaderField("Accept-Language"));
-}
-
 TEST_F(FrameFetchContextTest, SetFirstPartyCookieWhenDetached) {
   const KURL document_url("https://www2.example.com/foo/bar");
   RecreateFetchContext(document_url);
@@ -1533,6 +1513,81 @@ TEST_F(FrameFetchContextSubresourceFilterTest,
                   resource_request, alias_url, ResourceType::kScript,
                   options.initiator_info));
   }
+}
+
+class FrameFetchContextDisableReduceAcceptLanguageTest
+    : public FrameFetchContextTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FrameFetchContextDisableReduceAcceptLanguageTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{network::features::kReduceAcceptLanguage});
+  }
+
+ protected:
+  void SetupForAcceptLanguageTest(bool is_detached, ResourceRequest& request) {
+    FetchParameters::ResourceWidth resource_width;
+    ResourceLoaderOptions options(/*world=*/nullptr);
+
+    document->GetFrame()->SetReducedAcceptLanguage("en-GB");
+
+    if (is_detached)
+      dummy_page_holder = nullptr;
+
+    GetFetchContext()->PopulateResourceRequest(
+        ResourceType::kRaw, resource_width, request, options);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ReduceAcceptLanguage,
+                         FrameFetchContextDisableReduceAcceptLanguageTest,
+                         testing::Bool());
+
+TEST_P(FrameFetchContextDisableReduceAcceptLanguageTest,
+       VerifyReduceAcceptLanguage) {
+  const KURL url("https://www.example.com/");
+  ResourceRequest request(url);
+  SetupForAcceptLanguageTest(/*is_detached=*/GetParam(), request);
+  // Expect no Accept-Language header set when feature is disabled.
+  EXPECT_EQ(nullptr, request.HttpHeaderField("Accept-Language"));
+}
+
+class FrameFetchContextReduceAcceptLanguageTest
+    : private ScopedReduceAcceptLanguageForTest,
+      public FrameFetchContextDisableReduceAcceptLanguageTest {
+ public:
+  FrameFetchContextReduceAcceptLanguageTest()
+      : ScopedReduceAcceptLanguageForTest(true) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::kReduceAcceptLanguage},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ReduceAcceptLanguage,
+                         FrameFetchContextReduceAcceptLanguageTest,
+                         testing::Bool());
+
+// TODO(victortan) Add corresponding web platform tests once feature on.
+TEST_P(FrameFetchContextReduceAcceptLanguageTest, VerifyReduceAcceptLanguage) {
+  const KURL url("https://www.example.com/");
+  ResourceRequest request(url);
+  SetupForAcceptLanguageTest(/*is_detached=*/GetParam(), request);
+  EXPECT_EQ("en-GB", request.HttpHeaderField("Accept-Language"));
+}
+
+TEST_P(FrameFetchContextReduceAcceptLanguageTest, NonHttpFamilyUrl) {
+  const KURL url("ws://www.example.com/");
+  ResourceRequest request(url);
+  SetupForAcceptLanguageTest(/*is_detached=*/GetParam(), request);
+  EXPECT_EQ(nullptr, request.HttpHeaderField("Accept-Language"));
 }
 
 }  // namespace blink

@@ -322,6 +322,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kLegacyWindowsDWriteFontFallback},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
           {"FirstPartySets", features::kFirstPartySets},
+          {"ReduceAcceptLanguage", network::features::kReduceAcceptLanguage},
           {"StorageAccessAPI", net::features::kStorageAccessAPI},
           {"TopicsAPI", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},

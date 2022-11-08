@@ -8,7 +8,9 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/variants_header.mojom.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
@@ -61,14 +63,20 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   //
   // TODO(crbug.com/1323776) confirm with CSP sandbox owner if language
   // preferences need to be hidden from sandboxed origins.
-  static bool ShouldReduceAcceptLanguage(const url::Origin& request_origin);
+  static bool OriginCanReduceAcceptLanguage(const url::Origin& request_origin);
+
+  // Return true if the given `request_origin` opted into the
+  // ReduceAcceptLanguage first-party origin trial.
+  static bool IsReduceAcceptLanguageEnabledForOrigin(
+      const url::Origin& request_origin,
+      const net::HttpResponseHeaders* response_headers);
 
   // Updates the accept-language present in headers and returns the reduced
   // accept language added to accept-language header. This is called when
   // NavigationRequest was created and when language value changes after
   // the NavigationRequest was created.
   //
-  // See `ShouldReduceAcceptLanguage` for `request_origin`.
+  // See `OriginCanReduceAcceptLanguage` for `request_origin`.
   absl::optional<std::string> AddNavigationRequestAcceptLanguageHeaders(
       const url::Origin& request_origin,
       FrameTreeNode* frame_tree_node,
@@ -80,7 +88,8 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   bool ReadAndPersistAcceptLanguageForNavigation(
       const url::Origin& request_origin,
       const net::HttpRequestHeaders& request_headers,
-      const network::mojom::ParsedHeadersPtr& parsed_headers);
+      const network::mojom::ParsedHeadersPtr& parsed_headers,
+      bool is_origin_trial_enabled = false);
 
   // Looks up which reduced accept language should be used.
   //
@@ -94,9 +103,19 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   // - For iframe navigations, this is the current top-level document's origin
   //   retrieved via `frame_tree_node`.
   //
-  // See `ShouldReduceAcceptLanguage` for `request_origin`.
+  // See `OriginCanReduceAcceptLanguage` for `request_origin`.
   absl::optional<std::string> LookupReducedAcceptLanguage(
       const url::Origin& request_origin,
+      FrameTreeNode* frame_tree_node);
+
+  // Remove the persisted language for the given top-level document's `origin`
+  // if the corresponding `persisted_language` is not empty and the response
+  // header doesn't have a valid origin trial token when ReduceAcceptLanguage
+  // origin trial is enabled.
+  void RemoveOriginTrialReducedAcceptLanguage(
+      const std::string& persisted_language,
+      const url::Origin& origin,
+      const network::mojom::URLResponseHead* response,
       FrameTreeNode* frame_tree_node);
 
  private:
@@ -119,7 +138,8 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
       const std::string& initial_accept_language,
       const std::vector<std::string>& content_languages,
       const std::vector<std::string>& preferred_languages,
-      const std::vector<std::string>& available_languages);
+      const std::vector<std::string>& available_languages,
+      bool is_origin_trial_enabled);
 
   // Return the origin to look up the persisted language.
   //

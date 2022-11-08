@@ -86,7 +86,9 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+      base::FeatureList::IsEnabled(
+          network::features::kReduceAcceptLanguageOriginTrial)) {
     std::string variants;
     if (headers->GetNormalizedHeader("Variants", &variants)) {
       parsed_headers->variants_headers = ParseVariantsHeaders(variants);

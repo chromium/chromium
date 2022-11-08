@@ -4618,6 +4618,27 @@ void NavigationRequest::OnRedirectChecksComplete(
   if (auto reduce_accept_lang_utils =
           ReduceAcceptLanguageUtils::Create(browser_context);
       reduce_accept_lang_utils && !devtools_accept_language_override_) {
+    // Remove persisted language for the source origin if needed.
+    const network::mojom::URLResponseHead* response_head =
+        commit_params_->redirect_response.back().get();
+    // ReduceAcceptLanguageThrottle issues a 307 internal redirect without the
+    // original headers, and we don't want to remove persisted language when
+    // there is a potential restart due to language negotiation. This means that
+    // if the site sends a 307 (instead of a 301 or 302), the source origin
+    // persisted language will *not* be removed from the cache if the redirect
+    // response doesn't have a valid origin trial token.
+    if (response_head->headers && response_head->headers->response_code() !=
+                                      net::HTTP_TEMPORARY_REDIRECT) {
+      const url::Origin& source_origin =
+          url::Origin::Create(commit_params_->redirects.back());
+      absl::optional<std::string> persisted_language =
+          reduce_accept_lang_utils.value().LookupReducedAcceptLanguage(
+              source_origin, frame_tree_node_);
+      reduce_accept_lang_utils.value().RemoveOriginTrialReducedAcceptLanguage(
+          persisted_language.value_or(""), source_origin, response_head,
+          frame_tree_node_);
+    }
+
     net::HttpRequestHeaders accept_language_headers;
     absl::optional<std::string> reduced_accept_language =
         reduce_accept_lang_utils.value()
@@ -4627,6 +4648,8 @@ void NavigationRequest::OnRedirectChecksComplete(
     commit_params_->reduced_accept_language =
         reduced_accept_language.value_or("");
     modified_headers.MergeFrom(accept_language_headers);
+    // Remove the Accept-Language header passed from previous request if it has.
+    removed_headers.push_back(net::HttpRequestHeaders::kAcceptLanguage);
   }
 
   net::HttpRequestHeaders cors_exempt_headers;
@@ -5020,6 +5043,17 @@ void NavigationRequest::CommitNavigation() {
   }
 
   PersistOriginTrialsFromHeaders(origin, response(), browser_context);
+
+  // If the final response do not have a valid ReduceAcceptLanguage origin trial
+  // token, stop persisting the accepted language. This happens when the token
+  // expires, is invalid, or is missing when the server stop using it.
+  if (auto reduce_accept_lang_utils =
+          ReduceAcceptLanguageUtils::Create(browser_context);
+      reduce_accept_lang_utils && !devtools_accept_language_override_) {
+    reduce_accept_lang_utils.value().RemoveOriginTrialReducedAcceptLanguage(
+        commit_params_->reduced_accept_language, GetOriginToCommit(),
+        response(), frame_tree_node_);
+  }
 
   // Generate a UKM source and track it on NavigationRequest. This will be
   // passed down to the blink::Document to be created, if any, and used for UKM

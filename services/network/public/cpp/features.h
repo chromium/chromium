@@ -93,6 +93,8 @@ extern const base::FeatureParam<std::string>
     kCacheTransparencyPervasivePayloads;
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kReduceAcceptLanguage);
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kReduceAcceptLanguageOriginTrial);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDisableResourceScheduler);
 

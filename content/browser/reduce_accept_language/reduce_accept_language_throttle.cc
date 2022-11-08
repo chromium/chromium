@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "services/network/public/cpp/features.h"
@@ -45,7 +46,9 @@ ReduceAcceptLanguageThrottle::ReduceAcceptLanguageThrottle(
     ReduceAcceptLanguageControllerDelegate& accept_language_delegate)
     : accept_language_delegate_(accept_language_delegate) {
   DCHECK(
-      base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage));
+      base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+      base::FeatureList::IsEnabled(
+          network::features::kReduceAcceptLanguageOriginTrial));
   LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart::kNavigationStarted);
 }
 
@@ -118,9 +121,19 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
   }
 
   url::Origin last_request_origin = url::Origin::Create(last_request_url_);
-
-  if (!ReduceAcceptLanguageUtils::ShouldReduceAcceptLanguage(
+  if (!ReduceAcceptLanguageUtils::OriginCanReduceAcceptLanguage(
           last_request_origin)) {
+    return;
+  }
+
+  ReduceAcceptLanguageUtils reduce_language_utils(*accept_language_delegate_);
+  // Skip if kReduceAcceptLanguage feature is disabled and response header has
+  // no valid origin trial token.
+  const bool is_origin_trial_enabled =
+      ReduceAcceptLanguageUtils::IsReduceAcceptLanguageEnabledForOrigin(
+          url::Origin::Create(last_request_url_), response_head.headers.get());
+  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) &&
+      !is_origin_trial_enabled) {
     return;
   }
 
@@ -128,11 +141,10 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
   if (!restarted_origins_.insert(last_request_origin).second)
     return;
 
-  ReduceAcceptLanguageUtils reduce_language_utils(*accept_language_delegate_);
   bool need_restart =
       reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
           last_request_origin, initial_request_headers_,
-          response_head.parsed_headers);
+          response_head.parsed_headers, is_origin_trial_enabled);
 
   // Only restart if the initial accept language doesn't match content language.
   if (need_restart) {

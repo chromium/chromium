@@ -66,8 +66,8 @@ void NavigatorLanguage::EnsureUpdatedLanguage() {
       languages_ = ParseAndSanitize(accept_languages_override);
     } else {
       languages_ = ParseAndSanitize(GetAcceptLanguages());
-      if (base::FeatureList::IsEnabled(
-              network::features::kReduceAcceptLanguage)) {
+      if (RuntimeEnabledFeatures::ReduceAcceptLanguageEnabled(
+              execution_context_)) {
         languages_ = Vector<String>({languages_.front()});
       }
     }

@@ -484,7 +484,17 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
     ResourceRequest& request) {
   // If the feature is enabled, then reduce accept language are allowed only on
   // http and https.
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+
+  // For detached frame, we check whether the feature flag turns on because it
+  // will crash when detach frame calls GetExecutionContext().
+  if (GetResourceFetcherProperties().IsDetached() &&
+      !base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+    return;
+  }
+
+  if (!GetResourceFetcherProperties().IsDetached() &&
+      !RuntimeEnabledFeatures::ReduceAcceptLanguageEnabled(
+          GetExecutionContext())) {
     return;
   }
 

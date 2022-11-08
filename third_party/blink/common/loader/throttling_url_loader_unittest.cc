@@ -10,9 +10,11 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -747,6 +749,49 @@ TEST_F(ThrottlingURLLoaderTest, ModifyHeadersBeforeRedirect) {
       "X-Test-Header-4: Bar\r\n\r\n",
       factory_.headers_modified_on_redirect().ToString());
   ASSERT_FALSE(factory_.cors_exempt_headers_modified_on_redirect().IsEmpty());
+  EXPECT_EQ("X-Test-Cors-Exempt-Header-1: Bobble\r\n\r\n",
+            factory_.cors_exempt_headers_modified_on_redirect().ToString());
+}
+
+TEST_F(ThrottlingURLLoaderTest, RemoveAcceptLanguageHeader) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {network::features::kReduceAcceptLanguageOriginTrial}, {});
+
+  // Remove Accept-Language header if new header has no Accept-Language header.
+  throttle_->set_will_redirect_request_callback(base::BindLambdaForTesting(
+      [](blink::URLLoaderThrottle::Delegate* delegate, bool* /* defer */,
+         std::vector<std::string>* removed_headers,
+         net::HttpRequestHeaders* modified_headers,
+         net::HttpRequestHeaders* modified_cors_exempt_headers) {
+        modified_headers->SetHeader("Accept-Language", "en");
+        modified_headers->SetHeader("X-Test-Header-1", "Foo");
+        modified_cors_exempt_headers->SetHeader("X-Test-Cors-Exempt-Header-1",
+                                                "Bubble");
+      }));
+
+  // New header without Accept-Language header.
+  client_.set_on_received_redirect_callback(base::BindLambdaForTesting([&]() {
+    net::HttpRequestHeaders modified_headers;
+    modified_headers.SetHeader("X-Test-Header-2", "Bar");
+    net::HttpRequestHeaders modified_cors_exempt_headers;
+    modified_cors_exempt_headers.SetHeader("X-Test-Cors-Exempt-Header-1",
+                                           "Bobble");
+    loader_->FollowRedirect({"Accept-Language"} /* removed_headers */,
+                            std::move(modified_headers),
+                            std::move(modified_cors_exempt_headers));
+  }));
+
+  CreateLoaderAndStart();
+  factory_.NotifyClientOnReceiveRedirect();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(factory_.headers_removed_on_redirect(),
+              testing::ElementsAre("Accept-Language"));
+  EXPECT_EQ(
+      "X-Test-Header-1: Foo\r\n"
+      "X-Test-Header-2: Bar\r\n\r\n",
+      factory_.headers_modified_on_redirect().ToString());
   EXPECT_EQ("X-Test-Cors-Exempt-Header-1: Bobble\r\n\r\n",
             factory_.cors_exempt_headers_modified_on_redirect().ToString());
 }
