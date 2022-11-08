@@ -199,6 +199,12 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ParseThreadTypes(
       thread = Thread::SERVICE_WORKER_THREAD;
     } else if (comm_cmd.starts_with("WebRTC")) {
       thread = Thread::WEBRTC_THREAD;
+    } else if (comm_cmd.starts_with("dav1d-worker")) {
+      thread = Thread::DAV1D_WORKER_THREAD;
+    } else if (comm_cmd.starts_with("AudioThread")) {
+      thread = Thread::AUDIO_THREAD;
+    } else if (comm_cmd.starts_with("AudioOutputDevi")) {
+      thread = Thread::AUDIO_DEVICE_THREAD;
     }
 
     thread_types.emplace(tid, thread);

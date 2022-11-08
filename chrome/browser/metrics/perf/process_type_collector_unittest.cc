@@ -85,6 +85,7 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   12000 12000 chrome            /opt/google/chrome/chrome --ppapi-flash-path=...
    3000  1107 irq/5-E:<L0000>   [irq/5-E:<L0000>]
    4000  4726 Chrome_IOThread   /opt/google/chrome/chrome --ppapi-flash-path=...
+   7274  7495 AudioOutputDevi   /opt/google/chrome/chrome --type=renderer
   10000 12107 Chrome_ChildIOT   /opt/google/chrome/chrome --type=gpu-process
   11000 12207 VizCompositorTh   /opt/google/chrome/chrome --type=gpu-process
   12103 12112 Compositor/7      /opt/google/chrome/chrome --type=gpu-process
@@ -94,10 +95,12 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   16000 16112 CompositorTileW   /opt/google/chrome/chrome --type=renderer
   17001 17021 MemoryInfra       /opt/google/chrome/chrome --type=renderer
   18020 18211 Media             /opt/google/chrome/chrome --type=renderer
+  18887 19060 dav1d-worker      /opt/google/chrome/chrome --type=renderer 
   19001 19008 DedicatedWorker   /opt/google/chrome/chrome --type=renderer
   19123 19234 ServiceWorker t   /opt/google/chrome/chrome --type=renderer
   19321 19335 WebRTC_Signalin   /opt/google/chrome/chrome --type=renderer
   19321 19345 DrmThread         /opt/google/chrome/chrome --type=gpu-process
+  19390 19428 AudioThread       /opt/google/chrome/chrome 
   12345 12456 OtherThread       /opt/google/chrome/chrome --ppapi-flash-path=...
   21609 21609 chrome            /run/lacros/chrome --ozone-platform=wayland
   21643 21667 ThreadPoolServi   /run/lacros/chrome --type=gpu-process
@@ -125,6 +128,7 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   13456 13566 Compositor/6      non_chrome_exec --some-flag=foo)";
   thread_types->insert(std::pair(12000, Thread::MAIN_THREAD));
   thread_types->insert(std::pair(4726, Thread::IO_THREAD));
+  thread_types->insert(std::pair(7495, Thread::AUDIO_DEVICE_THREAD));
   thread_types->insert(std::pair(12107, Thread::IO_THREAD));
   thread_types->insert(std::pair(12207, Thread::COMPOSITOR_THREAD));
   thread_types->insert(std::pair(12112, Thread::COMPOSITOR_THREAD));
@@ -135,9 +139,11 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   thread_types->insert(std::pair(17021, Thread::MEMORY_INFRA_THREAD));
   thread_types->insert(std::pair(18211, Thread::MEDIA_THREAD));
   thread_types->insert(std::pair(19008, Thread::DEDICATED_WORKER_THREAD));
+  thread_types->insert(std::pair(19060, Thread::DAV1D_WORKER_THREAD));
   thread_types->insert(std::pair(19234, Thread::SERVICE_WORKER_THREAD));
   thread_types->insert(std::pair(19335, Thread::WEBRTC_THREAD));
   thread_types->insert(std::pair(19345, Thread::DRM_THREAD));
+  thread_types->insert(std::pair(19428, Thread::AUDIO_THREAD));
   thread_types->insert(std::pair(12456, Thread::OTHER_THREAD));
   thread_types->insert(std::pair(21609, Thread::MAIN_THREAD));
   thread_types->insert(std::pair(21667, Thread::THREAD_POOL_THREAD));
