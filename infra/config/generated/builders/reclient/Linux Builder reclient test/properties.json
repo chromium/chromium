@@ -43,6 +43,7 @@
   },
   "$build/reclient": {
     "bootstrap_env": {
+      "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "false",
       "RBE_deps_cache_mode": "reproxy",
       "RBE_experimental_goma_deps_cache": "True",
       "RBE_ip_reset_min_delay": "-1s"

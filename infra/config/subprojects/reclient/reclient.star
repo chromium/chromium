@@ -70,6 +70,8 @@ def fyi_reclient_staging_builder(
         "RBE_experimental_goma_deps_cache": "True",
         "RBE_ip_reset_min_delay": "-1s",
         "RBE_deps_cache_mode": "reproxy",
+        # TODO(b/258210757) remove once long term breakpad plans are dertermined
+        "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "false",
     })
     return [
         ci.builder(
