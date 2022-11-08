@@ -303,11 +303,6 @@ webrtc::RtpTransceiverDirection FakeRtpTransceiver::direction() const {
   return direction_;
 }
 
-void FakeRtpTransceiver::SetDirection(
-    webrtc::RtpTransceiverDirection new_direction) {
-  NOTIMPLEMENTED();
-}
-
 absl::optional<webrtc::RtpTransceiverDirection>
 FakeRtpTransceiver::current_direction() const {
   return current_direction_;

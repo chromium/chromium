@@ -123,7 +123,6 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
   bool stopped() const override;
   bool stopping() const override;
   webrtc::RtpTransceiverDirection direction() const override;
-  void SetDirection(webrtc::RtpTransceiverDirection new_direction) override;
   absl::optional<webrtc::RtpTransceiverDirection> current_direction()
       const override;
   void SetTransport(
