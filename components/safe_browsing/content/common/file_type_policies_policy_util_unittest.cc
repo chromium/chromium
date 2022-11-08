@@ -12,21 +12,20 @@
 
 namespace {
 
-base::ListValue CreateStringListValueForTest(
+base::Value::List CreateStringListValueForTest(
     const std::vector<std::string>& items) {
-  base::ListValue list;
+  base::Value::List list;
   for (const auto& item : items) {
     list.Append(item);
   }
   return list;
 }
 
-base::DictionaryValue CreatePolicyEntry(
-    const std::string& extension,
-    const std::vector<std::string>& domains) {
-  base::DictionaryValue out;
-  out.SetKey("file_extension", base::Value{extension});
-  out.SetKey("domains", CreateStringListValueForTest(domains));
+base::Value::Dict CreatePolicyEntry(const std::string& extension,
+                                    const std::vector<std::string>& domains) {
+  base::Value::Dict out;
+  out.Set("file_extension", base::Value{extension});
+  out.Set("domains", CreateStringListValueForTest(domains));
   return out;
 }
 
@@ -53,30 +52,33 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNotConfigured) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNoValuesSet) {
-  base::ListValue list;
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  base::Value::List list;
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   EXPECT_FALSE(IsInNotDangerousOverrideList(
       "exe", GURL{"http://www.example.com"}, &pref_service_));
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest,
        OverrideListIsIgnoredIfNoDomainsSetForExtension) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append(CreatePolicyEntry("txt", {/* empty vector */}));
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   EXPECT_FALSE(IsInNotDangerousOverrideList(
       "txt", GURL{"http://www.example.com"}, &pref_service_));
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanUseWildcards) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append(CreatePolicyEntry("txt", {"example.com"}));
   list.Append(CreatePolicyEntry("exe", {"http://*"}));
   list.Append(CreatePolicyEntry("jpg", {"*"}));
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   EXPECT_TRUE(IsInNotDangerousOverrideList(
       "exe", GURL{"http://www.example.com"}, &pref_service_));
   EXPECT_TRUE(IsInNotDangerousOverrideList(
@@ -90,10 +92,11 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanUseWildcards) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchExactly) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append(CreatePolicyEntry("txt", {"http://www.example.com"}));
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   EXPECT_TRUE(IsInNotDangerousOverrideList(
       "txt", GURL{"http://www.example.com"}, &pref_service_));
   EXPECT_FALSE(IsInNotDangerousOverrideList(
@@ -101,20 +104,22 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchExactly) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchSubPaths) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append(CreatePolicyEntry("txt", {"http://www.example.com"}));
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   EXPECT_TRUE(IsInNotDangerousOverrideList(
       "txt", GURL{"http://www.example.com/some/path/file.html"},
       &pref_service_));
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, CanLimitToHTTPS) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append(CreatePolicyEntry("txt", {"https://example.com"}));
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   EXPECT_TRUE(IsInNotDangerousOverrideList(
       "txt", GURL{"https://www.example.com"}, &pref_service_));
   EXPECT_TRUE(IsInNotDangerousOverrideList(
@@ -125,10 +130,11 @@ TEST_F(FileTypePoliciesPolicyUtilTest, CanLimitToHTTPS) {
 
 TEST_F(FileTypePoliciesPolicyUtilTest,
        OverrideListOnlyWorksForListedExtension) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append(CreatePolicyEntry("txt", {"www.example.com"}));
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   EXPECT_TRUE(IsInNotDangerousOverrideList(
       "txt", GURL{"http://www.example.com"}, &pref_service_));
   EXPECT_FALSE(IsInNotDangerousOverrideList(
@@ -136,10 +142,11 @@ TEST_F(FileTypePoliciesPolicyUtilTest,
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, ValuesAreNotCaseSensitive) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append(CreatePolicyEntry("TxT", {"www.example.com"}));
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   EXPECT_TRUE(IsInNotDangerousOverrideList(
       "tXt", GURL{"hTTp://wWw.example.cOM"}, &pref_service_));
   EXPECT_FALSE(IsInNotDangerousOverrideList(
@@ -147,10 +154,11 @@ TEST_F(FileTypePoliciesPolicyUtilTest, ValuesAreNotCaseSensitive) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, NormalizesBlobURLs) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append(CreatePolicyEntry("txt", {"https://example.com"}));
-  pref_service_.Set(
-      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings, list);
+  pref_service_.SetList(
+      prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
   ASSERT_TRUE(IsInNotDangerousOverrideList(
       "txt", GURL{"https://www.example.com"}, &pref_service_));
   // The blob: version of this URL should also be allowed.
