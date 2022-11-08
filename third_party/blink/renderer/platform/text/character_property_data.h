@@ -107,7 +107,7 @@ static const UChar32 kIsCJKIdeographOrSymbolRanges[] = {
     0x1F3FB, 0x1F3FF,
 
     // Transport
-    0x1F6DD, 0x1F6DF,
+    0x1F6DC, 0x1F6DF,
 
     // Colored circles and squares for use with emoji.
     0x1F7E0, 0x1F7EB,
@@ -118,25 +118,25 @@ static const UChar32 kIsCJKIdeographOrSymbolRanges[] = {
     0x1F900, 0x1F90F,
     // ZIPPER-MOUTH FACE...SIGN OF THE HORNS
     0x1F910, 0x1F918, 0x1F919, 0x1F97F, 0x1F980, 0x1F9BF, 0x1F9C0, 0x1F9FF,
-    // Clothing
-    0x1FA70, 0x1FA74,
-    // Medical symbols
-    0x1FA78, 0x1FA7C,
+    // Clothing, heart and Medical symbols
+    0x1FA70, 0x1FA7C,
     // Toys and sport symbols
-    0x1FA80, 0x1FA86,
+    0x1FA80, 0x1FA88,
     // Miscellaneous objects
-    0x1FA90, 0x1FAAC,
     // Animals and nature
-    0x1FAB0, 0x1FABA,
+    0x1FA90, 0x1FABD,
+    // Animal
     // Body parts
     // People
-    0x1FAC0, 0x1FAC5,
+    0x1FABF, 0x1FAC5,
+    // animal-mammal
+    0x1FACE, 0x1FACF,
     // Food and drink
-    0x1FAD0, 0x1FAD9,
+    0x1FAD0, 0x1FADB,
     // Face
-    0x1FAE0, 0x1FAE7,
+    0x1FAE0, 0x1FAE8,
     // Hand
-    0x1FAF0, 0x1FAF6,
+    0x1FAF0, 0x1FAF8,
     };
 
 // https://html.spec.whatwg.org/C/#prod-potentialcustomelementname
