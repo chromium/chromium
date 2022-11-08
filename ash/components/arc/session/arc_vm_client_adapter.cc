@@ -330,6 +330,9 @@ std::vector<std::string> GenerateKernelCmdline(
   if (base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR))
     result.push_back("androidboot.arc.broadcast_anr_prenotify=1");
 
+  if (base::FeatureList::IsEnabled(arc::kEnableLazyWebViewInit))
+    result.push_back("androidboot.arc.web_view_zygote.lazy_init=1");
+
   return result;
 }
 

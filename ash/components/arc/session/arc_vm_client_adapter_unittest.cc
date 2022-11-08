@@ -2694,5 +2694,29 @@ TEST_F(ArcVmClientAdapterTest, mglruReclaimEnabled) {
   EXPECT_EQ(req.mglru_reclaim_swappiness(), 100);
 }
 
+TEST_F(ArcVmClientAdapterTest, LazyWebViewInitEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kEnableLazyWebViewInit, true);
+  StartParams start_params(GetPopulatedStartParams());
+
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(base::Contains(request.params(),
+                             "androidboot.arc.web_view_zygote.lazy_init=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, LazyWebViewInitDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kEnableLazyWebViewInit, false);
+  StartParams start_params(GetPopulatedStartParams());
+
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(HasParameterWithPrefix(
+      request, "androidboot.arc.web_view_zygote.lazy_init="));
+}
+
 }  // namespace
 }  // namespace arc

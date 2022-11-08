@@ -35,6 +35,11 @@ BASE_FEATURE(kEnableArcNearbyShareFuseBox,
              "ArcNearbyShareFuseBox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether WebView Zygote is lazily initialized in ARC.
+BASE_FEATURE(kEnableLazyWebViewInit,
+             "LazyWebViewInit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether crosvm for ARCVM does per-VM core scheduling on devices with
 // MDS/L1TF vulnerabilities. When this feature is disabled, crosvm does per-vCPU
 // core scheduling which is more secure.
