@@ -790,7 +790,7 @@ class WaylandDesktop(Desktop):
 
   def _init_child_env(self):
     super(WaylandDesktop, self)._init_child_env()
-    self.child_env["GDK_BACKEND"] = "wayland"
+    self.child_env["GDK_BACKEND"] = "wayland,x11"
     self.child_env["XDG_SESSION_TYPE"] = "wayland"
     self.child_env["XDG_RUNTIME_DIR"] = self.runtime_dir
     self._wayland_socket = self._get_unused_wayland_socket()
@@ -800,7 +800,6 @@ class WaylandDesktop(Desktop):
       sys.exit(1)
     else:
       self.child_env["WAYLAND_DISPLAY"] = self._wayland_socket
-      self.child_env["DISPLAY"] = self._wayland_socket
     self.child_env["CHROME_REMOTE_DESKTOP_SESSION"] = "1"
     chrome_profile = os.path.join(CONFIG_DIR, "chrome-profile")
     chrome_config_home = os.path.join(CONFIG_DIR, "chrome-config")
@@ -850,7 +849,7 @@ class WaylandDesktop(Desktop):
   def _gnome_shell_cmd(self):
     gnome_shell_cmd = [
       "gnome-shell", "--wayland", "--headless", "--wayland-display",
-      self._wayland_socket, "--no-x11", "--replace"]
+      self._wayland_socket, "--replace"]
     return gnome_shell_cmd
 
   def _launch_server(self, *args, **kwargs):
