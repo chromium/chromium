@@ -80,6 +80,13 @@ void AddSize(content::WebUIDataSource* source,
 
 }  // namespace
 
+bool PasswordChangeUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return Profile::FromBrowserContext(browser_context)
+      ->GetPrefs()
+      ->GetBoolean(ash::prefs::kSamlInSessionPasswordChangeEnabled);
+}
+
 PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -109,6 +116,13 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
 }
 
 PasswordChangeUI::~PasswordChangeUI() = default;
+
+bool ConfirmPasswordChangeUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return Profile::FromBrowserContext(browser_context)
+      ->GetPrefs()
+      ->GetBoolean(ash::prefs::kSamlInSessionPasswordChangeEnabled);
+}
 
 ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
@@ -155,6 +169,13 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
 }
 
 ConfirmPasswordChangeUI::~ConfirmPasswordChangeUI() = default;
+
+bool UrgentPasswordExpiryNotificationUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return Profile::FromBrowserContext(browser_context)
+      ->GetPrefs()
+      ->GetBoolean(ash::prefs::kSamlInSessionPasswordChangeEnabled);
+}
 
 UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
     content::WebUI* web_ui)

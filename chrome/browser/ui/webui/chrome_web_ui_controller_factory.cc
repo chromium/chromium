@@ -945,28 +945,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == ash::kChromeUIOSFeedbackHost)
       return &NewWebUI<ash::OSFeedbackUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIPasswordChangeHost) {
-    if (!profile->GetPrefs()->GetBoolean(
-            ash::prefs::kSamlInSessionPasswordChangeEnabled)) {
-      return nullptr;
-    }
-    return &NewWebUI<ash::PasswordChangeUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIConfirmPasswordChangeHost) {
-    if (!profile->GetPrefs()->GetBoolean(
-            ash::prefs::kSamlInSessionPasswordChangeEnabled)) {
-      return nullptr;
-    }
-    return &NewWebUI<ash::ConfirmPasswordChangeUI>;
-  }
-  if (url.host_piece() ==
-      chrome::kChromeUIUrgentPasswordExpiryNotificationHost) {
-    if (!profile->GetPrefs()->GetBoolean(
-            ash::prefs::kSamlInSessionPasswordChangeEnabled)) {
-      return nullptr;
-    }
-    return &NewWebUI<ash::UrgentPasswordExpiryNotificationUI>;
-  }
   if (url.host_piece() == chrome::kChromeUILockScreenStartReauthHost) {
     if (!ash::ProfileHelper::IsLockScreenProfile(profile)) {
       return nullptr;

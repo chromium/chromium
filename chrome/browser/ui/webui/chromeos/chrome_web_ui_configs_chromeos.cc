@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/human_presence_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
@@ -77,6 +78,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::AddSupervisionUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::BluetoothPairingDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CertificateManagerDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::ConfirmPasswordChangeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniUpgraderUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CryptohomeUIConfig>());
@@ -94,6 +96,7 @@ void RegisterAshChromeWebUIConfigs() {
       std::make_unique<ash::office_fallback::OfficeFallbackUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::settings::OSSettingsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::PasswordChangeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SetTimeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
@@ -104,6 +107,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<ash::smb_dialog::SmbShareDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SysInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<ash::UrgentPasswordExpiryNotificationUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::VmUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
