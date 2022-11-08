@@ -6,15 +6,16 @@
 <script>
 function check2D(m) {
   assert_true(m.is2D);
-  assert_equals(m.m13, 0);
-  assert_equals(m.m14, 0);
-  assert_equals(m.m23, 0);
-  assert_equals(m.m24, 0);
-  assert_equals(m.m31, 0);
-  assert_equals(m.m32, 0);
+  // assert_equals() distinguish 0 and -0, so use '== 0' instead.
+  assert_true(m.m13 == 0);
+  assert_true(m.m14 == 0);
+  assert_true(m.m23 == 0);
+  assert_true(m.m24 == 0);
+  assert_true(m.m31 == 0);
+  assert_true(m.m32 == 0);
   assert_equals(m.m33, 1);
-  assert_equals(m.m34, 0);
-  assert_equals(m.m43, 0);
+  assert_true(m.m34 == 0);
+  assert_true(m.m43 == 0);
   assert_equals(m.m44, 1);
 }
 
