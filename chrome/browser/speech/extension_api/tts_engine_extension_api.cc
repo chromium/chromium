@@ -36,6 +36,10 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using extensions::EventRouter;
 using extensions::Extension;
 using extensions::ExtensionSystem;
@@ -167,9 +171,21 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool CanUseEnhancedNetworkVoices(const GURL& source_url) {
+bool CanUseEnhancedNetworkVoices(const GURL& source_url, Profile* profile) {
   // Currently only Select-to-speak can use Enhanced Network voices.
-  return source_url.host() == extension_misc::kSelectToSpeakExtensionId;
+  if (source_url.host() != extension_misc::kSelectToSpeakExtensionId)
+    return false;
+
+  // Check if these voices are disallowed by policy.
+  if (!profile->GetPrefs()->GetBoolean(
+          ash::prefs::
+              kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed)) {
+    return false;
+  }
+
+  // Return true if they were enabled by the user.
+  return profile->GetPrefs()->GetBoolean(
+      ash::prefs::kAccessibilitySelectToSpeakEnhancedNetworkVoices);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -222,7 +238,7 @@ void TtsExtensionEngine::GetVoices(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Only authorized sources can use Enhanced Network voices.
     if (extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId &&
-        !CanUseEnhancedNetworkVoices(source_url))
+        !CanUseEnhancedNetworkVoices(source_url, profile))
       continue;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
