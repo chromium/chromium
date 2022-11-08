@@ -92,13 +92,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 help=('Comma-separated-list of builders to pull new baselines '
                       'from (can also be provided multiple times).')),
             self.patchset_option,
-            optparse.make_option('--resultDB',
+            optparse.make_option('--no-resultDB',
                                  dest='resultDB',
-                                 default=False,
-                                 action='store_true',
-                                 help=('Fetch results from resultDB(WIP). '
-                                       'Works with --test-name-file '
-                                       'and positional parameters')),
+                                 action='store_false',
+                                 default=True,
+                                 help='Do not Fetch results from resultDB.'),
             self.no_optimize_option,
             self.dry_run_option,
             self.results_directory_option,
