@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -52,7 +53,7 @@ const char kOnLoadCheckScript[] = "isOnLoadPlaceholderTextVisible()";
 const char kNoOpCheckScript[] = "isNoOpPlaceholderTextVisible()";
 
 // Wait timeout for state updates.
-const NSTimeInterval kWaitForStateUpdateTimeout = 5.0;
+constexpr base::TimeDelta kWaitForStateUpdateTimeout = base::Seconds(5);
 
 }  // namespace
 
