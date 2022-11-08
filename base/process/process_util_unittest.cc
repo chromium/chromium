@@ -216,7 +216,12 @@ TEST_F(ProcessUtilTest, KillSlowChild) {
 }
 
 // Times out on Linux and Win, flakes on other platforms, http://crbug.com/95058
-TEST_F(ProcessUtilTest, DISABLED_GetTerminationStatusExit) {
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_GetTerminationStatusExit GetTerminationStatusExit
+#else
+#define MAYBE_GetTerminationStatusExit DISABLED_GetTerminationStatusExit
+#endif
+TEST_F(ProcessUtilTest, GetTerminationStatusExit) {
   const std::string signal_file = GetSignalFilePath(kSignalFileSlow);
   remove(signal_file.c_str());
   Process process = SpawnChild("SlowChildProcess");
@@ -632,9 +637,7 @@ MULTIPROCESS_TEST_MAIN(CrashingChildProcess) {
 
 // This test intentionally crashes, so we don't need to run it under
 // AddressSanitizer.
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/753490): Access to the process termination reason is not
-// implemented in Fuchsia.
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_GetTerminationStatusCrash DISABLED_GetTerminationStatusCrash
 #else
 #define MAYBE_GetTerminationStatusCrash GetTerminationStatusCrash
@@ -695,14 +698,7 @@ MULTIPROCESS_TEST_MAIN(TerminatedChildProcess) {
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/753490): Access to the process termination reason is not
-// implemented in Fuchsia.
-#define MAYBE_GetTerminationStatusSigKill DISABLED_GetTerminationStatusSigKill
-#else
-#define MAYBE_GetTerminationStatusSigKill GetTerminationStatusSigKill
-#endif
-TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
+TEST_F(ProcessUtilTest, GetTerminationStatusSigKill) {
   const std::string signal_file = GetSignalFilePath(kSignalFileKill);
   remove(signal_file.c_str());
   Process process = SpawnChild("KilledChildProcess");
@@ -1092,14 +1088,16 @@ int ProcessUtilTest::CountOpenFDsInChild() {
   return num_open_files;
 }
 
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_FDRemapping FDRemapping
+#elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
 // ProcessUtilTest.FDRemapping is flaky when ran under xvfb-run on Precise.
 // The problem is 100% reproducible with both ASan and TSan.
 // See http://crbug.com/136720.
 #define MAYBE_FDRemapping DISABLED_FDRemapping
 #else
 #define MAYBE_FDRemapping FDRemapping
-#endif  // defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
+#endif
 TEST_F(ProcessUtilTest, MAYBE_FDRemapping) {
   int fds_before = CountOpenFDsInChild();
 
