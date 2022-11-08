@@ -9,6 +9,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_run_loop_timeout.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -159,7 +160,13 @@ void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
     remove_data();
   }
 
-  run_loop.Run();
+  // Wait until the data is removed. We increase the timeout to 90 seconds here
+  // since this action has been timing out frequently on the bots.
+  {
+    base::test::ScopedRunLoopTimeout data_removal_timeout(FROM_HERE,
+                                                          base::Seconds(90));
+    run_loop.Run();
+  }
 }
 
 NSInteger WebIntTest::GetIndexOfNavigationItem(
