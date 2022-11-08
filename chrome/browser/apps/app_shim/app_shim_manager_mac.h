@@ -308,6 +308,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   bool LoadAndLaunchApp_TryExistingProfileStates(
       const base::FilePath& profile_path,
       const LoadAndLaunchAppParams& params,
+      const std::map<base::FilePath, int>& profiles_with_handlers,
       LoadAndLaunchAppCallback* launch_callback);
   void LoadAndLaunchApp_OnProfilesAndAppReady(
       const std::vector<base::FilePath>& profile_paths_to_launch,
@@ -350,12 +351,17 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // Update the application dock menu for the specified host.
   void UpdateApplicationDockMenu(Profile* profile, ProfileState* profile_state);
 
-  std::unique_ptr<Delegate> delegate_;
-
   // Retrieve the ProfileState for a given (Profile, AppId) pair. If one
   // does not exist, create one.
   ProfileState* GetOrCreateProfileState(Profile* profile,
                                         const web_app::AppId& app_id);
+
+  // Returns a mapping of profile paths to how many of the files and urls passed
+  // in in `params` each profile can handle.
+  static std::map<base::FilePath, int> GetProfilesWithMatchingHandlers(
+      const LoadAndLaunchAppParams& params);
+
+  std::unique_ptr<Delegate> delegate_;
 
   // Weak, reset during OnBeginTearDown.
   raw_ptr<ProfileManager> profile_manager_ = nullptr;
