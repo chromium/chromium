@@ -29,6 +29,7 @@ button {
 .neterror button,
 .pdf button,
 .ssl button,
+.enterprise-block button,
 .enterprise-warn button,
 .safe-browsing-billing button {
   background: var(--primary-button-fill-color);

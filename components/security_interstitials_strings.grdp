@@ -96,6 +96,20 @@
     Close page
   </message>
 
+  <!-- Enterprise Block interstitial -->
+  <message name="IDS_ENTERPRISE_BLOCK_TITLE" desc="Tab title. Context: the requested URL doesn't pass the filtering rules set by the admin.">
+    Blocked by Admin
+  </message>
+  <message name="IDS_ENTERPRISE_BLOCK_HEADING" desc="Large heading. Context: the error page that's shown when the requested URL doesn't pass the filtering rules set by the admin.">
+    The site ahead is blocked by your organization
+  </message>
+  <message name="IDS_ENTERPRISE_BLOCK_PRIMARY_PARAGRAPH" desc="Main paragraph of an error message. Context: the error page that's shown when the requested URL doesn't pass the filtering rules set by the admin.">
+    Your organization has blocked <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DOMAIN">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> because it violates a policy. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="https://support.google.com/chrome/a/?p=block_warn" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_ENTERPRISE_BLOCK_GO_BACK" desc="The text for the button that takes the user back to safety.">
+    Go back
+  </message>
+
     <!-- Enterprise Warn interstitial -->
   <message name="IDS_ENTERPRISE_WARN_TITLE" desc="Tab title. Context: the requested URL doesn't pass the filtering rules set by the admin.">
     Admin warning
