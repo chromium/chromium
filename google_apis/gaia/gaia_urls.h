@@ -26,8 +26,6 @@ class GaiaUrls {
   const GURL& secure_google_url() const;
   const url::Origin& gaia_origin() const;
   GURL gaia_url() const;
-  const GURL& client_login_url() const;
-  const GURL& service_login_url() const;
   const GURL& embedded_setup_chromeos_url(unsigned version) const;
   const GURL& embedded_setup_chromeos_kid_signup_url() const;
   const GURL& embedded_setup_chromeos_kid_signin_url() const;
@@ -36,16 +34,10 @@ class GaiaUrls {
   const GURL& signin_chrome_sync_dice() const;
   const GURL& signin_chrome_sync_keys_retrieval_url() const;
   const GURL& signin_chrome_sync_keys_recoverability_degraded_url() const;
-  const GURL& service_login_auth_url() const;
   const GURL& service_logout_url() const;
-  const GURL& token_auth_url() const;
   const GURL& merge_session_url() const;
-  const GURL& get_oauth_token_url() const;
-  const GURL& oauth_get_access_token_url() const;
   const GURL& oauth_multilogin_url() const;
-  const GURL& oauth_wrap_bridge_url() const;
   const GURL& oauth_user_info_url() const;
-  const GURL& oauth_revoke_token_url() const;
   const GURL& oauth1_login_url() const;
   const GURL& embedded_signin_url() const;
   const GURL& add_account_url() const;
@@ -54,7 +46,6 @@ class GaiaUrls {
 
   const std::string& oauth2_chrome_client_id() const;
   const std::string& oauth2_chrome_client_secret() const;
-  const GURL& oauth2_auth_url() const;
   const GURL& oauth2_token_url() const;
   const GURL& oauth2_issue_token_url() const;
   const GURL& oauth2_token_info_url() const;
@@ -87,8 +78,6 @@ class GaiaUrls {
   GURL oauth_account_manager_origin_url_;
   GURL account_capabilities_origin_url_;
 
-  GURL client_login_url_;
-  GURL service_login_url_;
   GURL embedded_setup_chromeos_url_v2_;
   GURL embedded_setup_chromeos_kid_signup_url_;
   GURL embedded_setup_chromeos_kid_signin_url_;
@@ -97,17 +86,11 @@ class GaiaUrls {
   GURL signin_chrome_sync_dice_;
   GURL signin_chrome_sync_keys_retrieval_url_;
   GURL signin_chrome_sync_keys_recoverability_degraded_url_;
-  GURL service_login_auth_url_;
   GURL service_logout_url_;
   GURL continue_url_for_logout_;
-  GURL token_auth_url_;
   GURL merge_session_url_;
-  GURL get_oauth_token_url_;
-  GURL oauth_get_access_token_url_;
-  GURL oauth_wrap_bridge_url_;
   GURL oauth_multilogin_url_;
   GURL oauth_user_info_url_;
-  GURL oauth_revoke_token_url_;
   GURL oauth1_login_url_;
   GURL list_accounts_url_;
   GURL embedded_signin_url_;
@@ -119,7 +102,6 @@ class GaiaUrls {
   std::string oauth2_chrome_client_id_;
   std::string oauth2_chrome_client_secret_;
 
-  GURL oauth2_auth_url_;
   GURL oauth2_token_url_;
   GURL oauth2_issue_token_url_;
   GURL oauth2_token_info_url_;

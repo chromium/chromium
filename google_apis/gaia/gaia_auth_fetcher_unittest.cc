@@ -66,7 +66,6 @@ class GaiaAuthFetcherTest : public testing::Test {
  protected:
   GaiaAuthFetcherTest()
       : oauth2_token_source_(GaiaUrls::GetInstance()->oauth2_token_url()),
-        token_auth_source_(GaiaUrls::GetInstance()->token_auth_url()),
         merge_session_source_(GaiaUrls::GetInstance()->merge_session_url()),
         uberauth_token_source_(
             GaiaUrls::GetInstance()->oauth1_login_url().Resolve(
@@ -91,7 +90,6 @@ class GaiaAuthFetcherTest : public testing::Test {
   }
 
   GURL oauth2_token_source_;
-  GURL token_auth_source_;
   GURL merge_session_source_;
   GURL uberauth_token_source_;
 

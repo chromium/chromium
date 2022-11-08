@@ -323,10 +323,6 @@ void FakeGaia::Initialize() {
   // Handles /OAuthLogin GAIA call.
   REGISTER_RESPONSE_HANDLER(gaia_urls->oauth1_login_url(), HandleOAuthLogin);
 
-  // Handles /ServiceLoginAuth GAIA call.
-  REGISTER_RESPONSE_HANDLER(gaia_urls->service_login_auth_url(),
-                            HandleServiceLoginAuth);
-
   // Handles /_/embedded/lookup/accountlookup for /embedded/setup/chromeos
   // authentication request.
   REGISTER_PATH_RESPONSE_HANDLER("/_/embedded/lookup/accountlookup",
@@ -649,43 +645,6 @@ void FakeGaia::HandleOAuthLogin(const HttpRequest& request,
                            kTestOAuthLoginLSID, kTestOAuthLoginAuthCode));
     http_response->set_code(net::HTTP_OK);
   }
-}
-
-void FakeGaia::HandleServiceLoginAuth(const HttpRequest& request,
-                                      BasicHttpResponse* http_response) {
-  std::string continue_url =
-      GaiaUrls::GetInstance()->service_login_url().spec();
-  GetQueryParameter(request.content, "continue", &continue_url);
-
-  std::string redirect_url = continue_url;
-
-  std::string email;
-  const bool is_saml =
-      GetQueryParameter(request.content, "Email", &email) &&
-      saml_account_idp_map_.find(email) != saml_account_idp_map_.end();
-
-  if (is_saml) {
-    GURL url(saml_account_idp_map_[email]);
-    url = net::AppendQueryParameter(url, "SAMLRequest", "fake_request");
-    url = net::AppendQueryParameter(url, "RelayState", continue_url);
-    redirect_url = url.spec();
-    http_response->AddCustomHeader("Google-Accounts-SAML", "Start");
-  } else if (!merge_session_params_.auth_sid_cookie.empty() &&
-             !merge_session_params_.auth_lsid_cookie.empty()) {
-    SetCookies(http_response, merge_session_params_.auth_sid_cookie,
-               merge_session_params_.auth_lsid_cookie);
-  }
-
-  http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
-  http_response->AddCustomHeader("Location", redirect_url);
-
-  // SAML sign-ins complete in HandleSSO().
-  if (is_saml)
-    return;
-
-  AddGoogleAccountsSigninHeader(http_response, email);
-  if (issue_oauth_code_cookie_)
-    SetOAuthCodeCookie(http_response);
 }
 
 void FakeGaia::HandleEmbeddedLookupAccountLookup(

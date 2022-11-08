@@ -33,8 +33,6 @@ const char kDefaultAccountCapabilitiesBaseUrl[] =
     "https://accountcapabilities-pa.googleapis.com";
 
 // API calls from accounts.google.com
-const char kClientLoginUrlSuffix[] = "ClientLogin";
-const char kServiceLoginUrlSuffix[] = "ServiceLogin";
 const char kEmbeddedSetupChromeOsUrlSuffixV2[] = "embedded/setup/v2/chromeos";
 const char kEmbeddedReauthChromeOsUrlSuffix[] = "embedded/reauth/chromeos";
 const char kEmbeddedSetupChromeOsKidSignupUrlSuffix[] =
@@ -62,16 +60,11 @@ const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/desktop";
 const char kSigninChromeSyncKeysRecoverabilityUrlSuffix[] =
     "?kdi=CAIaDgoKY2hyb21lc3luYxAB";
 
-const char kServiceLoginAuthUrlSuffix[] = "ServiceLoginAuth";
 const char kServiceLogoutUrlSuffix[] = "Logout";
 const char kContinueUrlForLogoutSuffix[] = "chrome/blank.html";
-const char kTokenAuthUrlSuffix[] = "TokenAuth";
 const char kMergeSessionUrlSuffix[] = "MergeSession";
-const char kOAuthGetAccessTokenUrlSuffix[] = "OAuthGetAccessToken";
-const char kOAuthWrapBridgeUrlSuffix[] = "OAuthWrapBridge";
 const char kOAuth1LoginUrlSuffix[] = "OAuthLogin";
 const char kOAuthMultiloginSuffix[] = "oauth/multilogin";
-const char kOAuthRevokeTokenUrlSuffix[] = "AuthSubRevokeToken";
 const char kListAccountsSuffix[] = "ListAccounts?json=standard";
 const char kEmbeddedSigninSuffix[] = "embedded/setup/chrome/usermenu";
 const char kAddAccountSuffix[] = "AddSession";
@@ -79,8 +72,6 @@ const char kReauthSuffix[] = "embedded/xreauth/chrome";
 const char kGetCheckConnectionInfoSuffix[] = "GetCheckConnectionInfo";
 
 // API calls from accounts.google.com (LSO)
-const char kGetOAuthTokenUrlSuffix[] = "o/oauth/GetOAuthToken/";
-const char kOAuth2AuthUrlSuffix[] = "o/oauth2/auth";
 const char kOAuth2RevokeUrlSuffix[] = "o/oauth2/revoke";
 
 // API calls from www.googleapis.com
@@ -192,14 +183,6 @@ GURL GaiaUrls::gaia_url() const {
   return gaia_origin_.GetURL();
 }
 
-const GURL& GaiaUrls::client_login_url() const {
-  return client_login_url_;
-}
-
-const GURL& GaiaUrls::service_login_url() const {
-  return service_login_url_;
-}
-
 const GURL& GaiaUrls::embedded_setup_chromeos_url(unsigned version) const {
   DCHECK_EQ(version, 2U);
   return embedded_setup_chromeos_url_v2_;
@@ -234,44 +217,20 @@ const GURL& GaiaUrls::signin_chrome_sync_keys_recoverability_degraded_url()
   return signin_chrome_sync_keys_recoverability_degraded_url_;
 }
 
-const GURL& GaiaUrls::service_login_auth_url() const {
-  return service_login_auth_url_;
-}
-
 const GURL& GaiaUrls::service_logout_url() const {
   return service_logout_url_;
-}
-
-const GURL& GaiaUrls::token_auth_url() const {
-  return token_auth_url_;
 }
 
 const GURL& GaiaUrls::merge_session_url() const {
   return merge_session_url_;
 }
 
-const GURL& GaiaUrls::get_oauth_token_url() const {
-  return get_oauth_token_url_;
-}
-
 const GURL& GaiaUrls::oauth_multilogin_url() const {
   return oauth_multilogin_url_;
 }
 
-const GURL& GaiaUrls::oauth_get_access_token_url() const {
-  return oauth_get_access_token_url_;
-}
-
-const GURL& GaiaUrls::oauth_wrap_bridge_url() const {
-  return oauth_wrap_bridge_url_;
-}
-
 const GURL& GaiaUrls::oauth_user_info_url() const {
   return oauth_user_info_url_;
-}
-
-const GURL& GaiaUrls::oauth_revoke_token_url() const {
-  return oauth_revoke_token_url_;
 }
 
 const GURL& GaiaUrls::oauth1_login_url() const {
@@ -300,10 +259,6 @@ const std::string& GaiaUrls::oauth2_chrome_client_id() const {
 
 const std::string& GaiaUrls::oauth2_chrome_client_secret() const {
   return oauth2_chrome_client_secret_;
-}
-
-const GURL& GaiaUrls::oauth2_auth_url() const {
-  return oauth2_auth_url_;
 }
 
 const GURL& GaiaUrls::oauth2_token_url() const {
@@ -385,8 +340,6 @@ void GaiaUrls::InitializeDefault() {
   CHECK(gaia_url.SchemeIsHTTPOrHTTPS());
 
   // URLs from |gaia_origin_|.
-  ResolveURLIfInvalid(&client_login_url_, gaia_url, kClientLoginUrlSuffix);
-  ResolveURLIfInvalid(&service_login_url_, gaia_url, kServiceLoginUrlSuffix);
   ResolveURLIfInvalid(&embedded_setup_chromeos_url_v2_, gaia_url,
                       kEmbeddedSetupChromeOsUrlSuffixV2);
   ResolveURLIfInvalid(&embedded_setup_chromeos_kid_signup_url_, gaia_url,
@@ -405,20 +358,11 @@ void GaiaUrls::InitializeDefault() {
       &signin_chrome_sync_keys_recoverability_degraded_url_, gaia_url,
       base::StrCat({kSigninChromeSyncKeysRetrievalUrl,
                     kSigninChromeSyncKeysRecoverabilityUrlSuffix}));
-  ResolveURLIfInvalid(&service_login_auth_url_, gaia_url,
-                      kServiceLoginAuthUrlSuffix);
   ResolveURLIfInvalid(&service_logout_url_, gaia_url, kServiceLogoutUrlSuffix);
   ResolveURLIfInvalid(&continue_url_for_logout_, gaia_url,
                       kContinueUrlForLogoutSuffix);
-  ResolveURLIfInvalid(&token_auth_url_, gaia_url, kTokenAuthUrlSuffix);
   ResolveURLIfInvalid(&merge_session_url_, gaia_url, kMergeSessionUrlSuffix);
   ResolveURLIfInvalid(&oauth_multilogin_url_, gaia_url, kOAuthMultiloginSuffix);
-  ResolveURLIfInvalid(&oauth_get_access_token_url_, gaia_url,
-                      kOAuthGetAccessTokenUrlSuffix);
-  ResolveURLIfInvalid(&oauth_wrap_bridge_url_, gaia_url,
-                      kOAuthWrapBridgeUrlSuffix);
-  ResolveURLIfInvalid(&oauth_revoke_token_url_, gaia_url,
-                      kOAuthRevokeTokenUrlSuffix);
   ResolveURLIfInvalid(&oauth1_login_url_, gaia_url, kOAuth1LoginUrlSuffix);
   ResolveURLIfInvalid(&list_accounts_url_, gaia_url, kListAccountsSuffix);
   ResolveURLIfInvalid(&embedded_signin_url_, gaia_url, kEmbeddedSigninSuffix);
@@ -428,9 +372,6 @@ void GaiaUrls::InitializeDefault() {
                       kGetCheckConnectionInfoSuffix);
 
   // URLs from |lso_origin_url_|.
-  ResolveURLIfInvalid(&get_oauth_token_url_, lso_origin_url_,
-                      kGetOAuthTokenUrlSuffix);
-  ResolveURLIfInvalid(&oauth2_auth_url_, lso_origin_url_, kOAuth2AuthUrlSuffix);
   ResolveURLIfInvalid(&oauth2_revoke_url_, lso_origin_url_,
                       kOAuth2RevokeUrlSuffix);
 
@@ -471,8 +412,6 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(google_apis_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_account_manager_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_origin_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(client_login_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(service_login_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_chromeos_url_v2));
   config->GetURLIfExists(
       URL_KEY_AND_PTR(embedded_setup_chromeos_kid_signup_url));
@@ -485,17 +424,11 @@ void GaiaUrls::InitializeFromConfig() {
       URL_KEY_AND_PTR(signin_chrome_sync_keys_retrieval_url));
   config->GetURLIfExists(
       URL_KEY_AND_PTR(signin_chrome_sync_keys_recoverability_degraded_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(service_login_auth_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_logout_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(continue_url_for_logout));
-  config->GetURLIfExists(URL_KEY_AND_PTR(token_auth_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(merge_session_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(get_oauth_token_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(oauth_get_access_token_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(oauth_wrap_bridge_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_multilogin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_user_info_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(oauth_revoke_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth1_login_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(list_accounts_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_signin_url));
@@ -503,7 +436,6 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(get_check_connection_info_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_auth_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_issue_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_info_url));

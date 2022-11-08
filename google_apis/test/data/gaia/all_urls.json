@@ -21,12 +21,6 @@
     "account_capabilities_origin_url": {
       "url": "https://accountcapabilities.will-be-overridden.com"
     },
-    "client_login_url": {
-      "url": "https://accounts.example.com/ClientLogin"
-    },
-    "service_login_url": {
-      "url": "https://accounts.example.com/ServiceLogin"
-    },
     "embedded_setup_chromeos_url_v2": {
       "url": "https://accounts.example.com/embedded/setup/v2/chromeos"
     },
@@ -48,38 +42,20 @@
     "signin_chrome_sync_keys_recoverability_degraded_url": {
       "url": "https://accounts.example.com/encryption/unlock/example-platform?kdi=CAIaDgoKY2hyb21lc3luYxAB"
     },
-    "service_login_auth_url": {
-      "url": "https://accounts.example.com/ServiceLoginAuth"
-    },
     "service_logout_url": {
       "url": "https://accounts.example.com/Logout"
     },
     "continue_url_for_logout": {
       "url": "https://accounts.example.com/chrome/blank.html"
     },
-    "token_auth_url": {
-      "url": "https://accounts.example.com/TokenAuth"
-    },
     "merge_session_url": {
       "url": "https://accounts.example.com/MergeSession"
-    },
-    "get_oauth_token_url": {
-      "url": "https://accounts.example.com/o/oauth/GetOAuthToken/"
-    },
-    "oauth_get_access_token_url": {
-      "url": "https://accounts.example.com/OAuthGetAccessToken"
-    },
-    "oauth_wrap_bridge_url": {
-      "url": "https://accounts.example.com/OAuthWrapBridge"
     },
     "oauth_multilogin_url": {
       "url": "https://accounts.example.com/oauth/multilogin"
     },
     "oauth_user_info_url": {
       "url": "https://www.exampleapis.com/oauth2/v1/userinfo"
-    },
-    "oauth_revoke_token_url": {
-      "url": "https://accounts.example.com/AuthSubRevokeToken"
     },
     "oauth1_login_url": {
       "url": "https://accounts.example.com/OAuthLogin"
@@ -101,9 +77,6 @@
     },
     "get_check_connection_info_url": {
       "url": "https://accounts.example.com/GetCheckConnectionInfo"
-    },
-    "oauth2_auth_url": {
-      "url": "https://accounts.example.com/o/oauth2/auth"
     },
     "oauth2_token_url": {
       "url": "https://www.exampleapis.com/oauth2/v4/token"

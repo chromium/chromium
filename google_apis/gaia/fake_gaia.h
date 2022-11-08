@@ -286,9 +286,6 @@ class FakeGaia {
       net::test_server::BasicHttpResponse* http_response);
   void HandleOAuthLogin(const net::test_server::HttpRequest& request,
                         net::test_server::BasicHttpResponse* http_response);
-  void HandleServiceLoginAuth(
-      const net::test_server::HttpRequest& request,
-      net::test_server::BasicHttpResponse* http_response);
   void HandleEmbeddedLookupAccountLookup(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
