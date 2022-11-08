@@ -27,6 +27,33 @@ void EnableTerminationOnHeapCorruption() {
 
 bool UncheckedMalloc(size_t size, void** result) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Unchecked allocations can happen before the default malloc() zone is
+  // registered. In this case, going straight to the shim may explode, since the
+  // memory will come from a zone which is unknown to the dispatching code in
+  // libmalloc. Meaning that if the memory gets free()-d, realloc()-ed, or its
+  // actual size is queried with malloc_size() *before* we get to register our
+  // zone, we crash.
+  //
+  // The cleanest solution would be to detect it and forbid it, but tests (at
+  // least) allocate in static constructors. Meaning that this code is
+  // sufficient to cause a crash:
+  //
+  // void* ptr = []() {
+  //  void* ptr;
+  //  bool ok = base::UncheckedMalloc(1000, &ptr);
+  //  CHECK(ok);
+  //  free(ptr);
+  // }();
+  //
+  // (Our static initializer is supposed to have priority, but it doesn't seem
+  // to work in practice, at least for MachO).
+  //
+  // Since unchecked allocations are rare, let's err on the side of caution.
+  if (!allocator_shim::IsDefaultAllocatorPartitionRootInitialized()) {
+    *result = malloc(size);
+    return *result != nullptr;
+  }
+
   // Unlike use_partition_alloc_as_malloc=false, the default malloc zone is
   // replaced with PartitionAlloc, so the allocator shim functions work best.
   *result = allocator_shim::UncheckedAlloc(size);

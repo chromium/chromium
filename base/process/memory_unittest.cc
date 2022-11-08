@@ -696,3 +696,25 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+// Not a proper test because it needs to be in a static initializer, see the
+// comment in UncheckedMalloc() in memory_mac.mm.
+//
+// The "test" passes if the binary doesn't crash.
+size_t need_a_static_initializer = []() {
+  void* ptr;
+  constexpr size_t kRequestedSize = 1000u;
+  bool ok = base::UncheckedMalloc(kRequestedSize, &ptr);
+  CHECK(ok);
+  size_t actual_size = malloc_size(ptr);
+  // If no known zone owns the pointer, dispatching code in libmalloc returns 0.
+  CHECK_GE(actual_size, kRequestedSize);
+  // If no zone owns the pointer, libmalloc aborts here.
+  free(ptr);
+
+  return actual_size;
+}();
+
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

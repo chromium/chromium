@@ -15,6 +15,7 @@
 
 #include <string.h>
 
+#include <atomic>
 #include <tuple>
 
 #include "base/allocator/early_zone_registration_mac.h"
@@ -312,6 +313,10 @@ void InitializeZone() {
   g_mac_malloc_zone.claimed_address = nullptr;
 }
 
+namespace {
+static std::atomic<bool> g_initialization_is_done;
+}
+
 // Replaces the default malloc zone with our own malloc zone backed by
 // PartitionAlloc.  Since we'd like to make as much code as possible to use our
 // own memory allocator (and reduce bugs caused by mixed use of the system
@@ -349,6 +354,7 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
     // |EarlyMallocZoneRegistration()|.
     malloc_zone_register(&g_mac_malloc_zone);
     malloc_zone_unregister(system_default_zone);
+    g_initialization_is_done.store(true, std::memory_order_release);
     return;
   }
 
@@ -373,9 +379,16 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
 
   // Confirm that our own zone is now the default zone.
   CHECK_EQ(GetDefaultMallocZone(), &g_mac_malloc_zone);
+  g_initialization_is_done.store(true, std::memory_order_release);
 }
 
 }  // namespace
+
+bool IsDefaultAllocatorPartitionRootInitialized() {
+  // Even though zone registration is not thread-safe, let's not make it worse,
+  // and use acquire/release ordering.
+  return g_initialization_is_done.load(std::memory_order_acquire);
+}
 
 }  // namespace allocator_shim
 
