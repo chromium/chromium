@@ -2955,6 +2955,7 @@ constexpr char kBorealisStorageBallooningInternalName[] =
 constexpr char kVmPerBootShaderCacheName[] = "vm-per-boot-shader-cache";
 constexpr char kClipboardHistoryReorderInternalName[] =
     "clipboard-history-reorder";
+constexpr char kQsRevampInternalName[] = "qs-revamp";
 constexpr char kWelcomeScreenInternalName[] = "welcome-screen";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -3999,7 +4000,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOsSettingsSearchFeedbackName,
      flag_descriptions::kOsSettingsSearchFeedbackDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kOsSettingsSearchFeedback)},
-    {"qs-revamp", flag_descriptions::kQsRevampName,
+    {kQsRevampInternalName, flag_descriptions::kQsRevampName,
      flag_descriptions::kQsRevampDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQsRevamp)},
     {"quick-settings-network-revamp",
@@ -10041,6 +10042,11 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Skip glanceables flag on stable channel.
   if (!strcmp(kWelcomeScreenInternalName, entry.internal_name)) {
+    return channel == version_info::Channel::STABLE;
+  }
+
+  // Skip quick-settings revamp flag on stable channel.
+  if (!strcmp(kQsRevampInternalName, entry.internal_name)) {
     return channel == version_info::Channel::STABLE;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
