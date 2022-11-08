@@ -46,6 +46,11 @@ TabletModeFloatWindowResizer::TabletModeFloatWindowResizer(
 }
 
 TabletModeFloatWindowResizer::~TabletModeFloatWindowResizer() {
+  // `SplitViewDragIndicators` has a default delayed animation. Setting the
+  // state to no drag instantly hides the indicators so we don't see this
+  // delayed hide.
+  split_view_drag_indicators_->SetWindowDraggingState(
+      SplitViewDragIndicators::WindowDraggingState::kNoDrag);
   window_state_->DeleteDragDetails();
 }
 
