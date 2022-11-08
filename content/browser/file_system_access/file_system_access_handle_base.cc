@@ -406,12 +406,8 @@ void FileSystemAccessHandleBase::DidConfirmDestinationDoesNotExist(
        result == base::File::FILE_ERROR_NOT_EMPTY ||
        result == base::File::FILE_ERROR_NOT_A_FILE ||
        result == base::File::FILE_ERROR_INVALID_OPERATION)) {
-    // TODO(https://crbug.com/1366652): Change this to
-    // FILE_ERROR_INVALID_OPERATION (which maps to the InvalidModificationError
-    // DOMException). Currently, this incorrectly reports an error as if the
-    // handle was locked.
     std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
+        blink::mojom::FileSystemAccessStatus::kInvalidModificationError));
     return;
   }
 

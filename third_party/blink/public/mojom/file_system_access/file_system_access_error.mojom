@@ -13,8 +13,11 @@ enum FileSystemAccessStatus {
   kPermissionDenied,
   // The website wasn't allowed to ask for permission in the current context.
   kSecurityError,
-  // Modifications to the underlying file system were not allowed.
+  // Modifications to the underlying file system were not allowed. Used to
+  // indicate API-level locking errors.
   kNoModificationAllowedError,
+  // Modifications to the underlying file system were not allowed in that way.
+  kInvalidModificationError,
   // The object being operated on was in an invalid state for the operation.
   kInvalidState,
   // An invalid argument was passed to a method.

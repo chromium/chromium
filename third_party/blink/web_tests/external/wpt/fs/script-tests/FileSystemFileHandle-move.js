@@ -97,7 +97,7 @@ directory_test(async (t, root) => {
   // Can't move handle to overwrite an existing file.
   await stream.close();
   await promise_rejects_dom(
-      t, 'NoModificationAllowedError', handle.move('file-after'));
+      t, 'InvalidModificationError', handle.move('file-after'));
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['file-after', 'file-before']);
 }, 'move(name) while the destination file has an open writable fails');
@@ -290,10 +290,10 @@ directory_test(async (t, root) => {
   // Assert the file is still in the source directory.
   assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file']);
 
-  // Can't move handle once the writable is closed.
+  // Can't move handle to overwrite an existing file.
   await stream.close();
   await promise_rejects_dom(
-      t, 'NoModificationAllowedError', file.move(dir_dest));
+      t, 'InvalidModificationError', file.move(dir_dest));
   assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file']);
 }, 'move(dir) while the destination file has an open writable fails');
 
@@ -314,10 +314,10 @@ directory_test(async (t, root) => {
   // Assert the file is still in the source directory.
   assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file-src']);
 
-  // Can't move handle once the writable is closed.
+  // Can't move handle to overwrite an existing file.
   await stream.close();
   await promise_rejects_dom(
-      t, 'NoModificationAllowedError', file.move(dir_dest, 'file-dest'));
+      t, 'InvalidModificationError', file.move(dir_dest, 'file-dest'));
   // Assert the file is still in the source directory.
   assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file-src']);
   assert_equals(await getFileContents(file), 'abc');
