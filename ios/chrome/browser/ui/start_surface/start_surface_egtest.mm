@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -17,14 +18,14 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-// The delay to wait for an element to appear before tapping on it.
-const CGFloat kWaitElementTimeout = 2;
-}
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// The delay to wait for an element to appear before tapping on it.
+constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
+}  // namespace
 
 // Integration tests for the Start Surface user flows.
 @interface StartSurfaceTestCase : ChromeTestCase
