@@ -28,6 +28,7 @@ constexpr char kDmToken[] = "dm_token";
 
 constexpr base::TimeDelta kMinimumPendingDelay = base::Milliseconds(400);
 constexpr base::TimeDelta kSuccessTimeout = base::Milliseconds(100);
+constexpr base::TimeDelta kShowDialogDelay = base::Milliseconds(0);
 
 class UnresponsiveFilesRequestHandler
     : public enterprise_connectors::FilesRequestHandler {
@@ -100,6 +101,8 @@ DeepScanningBrowserTestBase::DeepScanningBrowserTestBase() {
       SetMinimumPendingDialogTimeForTesting(kMinimumPendingDelay);
   enterprise_connectors::ContentAnalysisDialog::
       SetSuccessDialogTimeoutForTesting(kSuccessTimeout);
+  enterprise_connectors::ContentAnalysisDialog::SetShowDialogDelayForTesting(
+      kShowDialogDelay);
 }
 
 DeepScanningBrowserTestBase::~DeepScanningBrowserTestBase() = default;

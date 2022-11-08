@@ -775,6 +775,7 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
  public:
   ContentAnalysisDialogPlainTests() {
     scoped_feature_list_.InitAndEnableFeature(kBypassJustificationEnabled);
+    ContentAnalysisDialog::SetShowDialogDelayForTesting(kNoDelay);
   }
   void OpenCallback() { ++times_open_called_; }
 
@@ -1052,7 +1053,10 @@ class ContentAnalysysDialogUiTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  ContentAnalysysDialogUiTest() = default;
+  ContentAnalysysDialogUiTest() {
+    ContentAnalysisDialog::SetShowDialogDelayForTesting(kNoDelay);
+  }
+
   ContentAnalysysDialogUiTest(const ContentAnalysysDialogUiTest&) = delete;
   ContentAnalysysDialogUiTest& operator=(const ContentAnalysysDialogUiTest&) =
       delete;

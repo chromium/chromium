@@ -88,9 +88,11 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   static void SetMinimumPendingDialogTimeForTesting(base::TimeDelta delta);
   static void SetSuccessDialogTimeoutForTesting(base::TimeDelta delta);
+  static void SetShowDialogDelayForTesting(base::TimeDelta delta);
 
   static base::TimeDelta GetMinimumPendingDialogTime();
   static base::TimeDelta GetSuccessDialogTimeout();
+  static base::TimeDelta ShowDialogDelay();
 
   ContentAnalysisDialog(std::unique_ptr<ContentAnalysisDelegateBase> delegate,
                         bool is_cloud,
@@ -140,6 +142,11 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     return delegate_->BypassRequiresJustification();
   }
 
+  // Cancels the dialog if it was visible, then deletes the object.  Returns
+  // false if the UI was not visible to indicate that the object is simply
+  // deletng itself.
+  bool CancelDialogAndDelete();
+
   // Returns the side image's logo color depending on `dialog_state_`.
   ui::ColorId GetSideImageLogoColor() const;
 
@@ -166,6 +173,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Friend the unit test class for this so it can call the private dtor.
   friend class ContentAnalysisDialogPlainTest;
 
+  // Friend to allow use of TaskRunner::DeleteSoon().
+  friend class base::DeleteHelper<ContentAnalysisDialog>;
+
   // Enum used to represent what the dialog is currently showing.
   enum class State {
     // The dialog is shown with an explanation that the scan is being performed
@@ -189,6 +199,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   };
 
   ~ContentAnalysisDialog() override;
+
+  // Callback function of delayed timer to make the dialog visible.
+  void ShowDialogNow();
 
   void UpdateStateFromFinalResult(FinalContentAnalysisResult final_result);
 
@@ -325,6 +338,11 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // True when performing a cloud-based content analysis, false when performing
   // a locally based content analysis.
   bool is_cloud_ = true;
+
+  // A reference to the top level web contents of the tab whose content is
+  // being analyzed.  Input events of this contents are ignored for the life
+  // time of the dialog.
+  base::WeakPtr<content::WebContents> top_level_contents_;
 
   base::WeakPtrFactory<ContentAnalysisDialog> weak_ptr_factory_{this};
 };

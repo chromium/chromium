@@ -71,6 +71,7 @@ constexpr size_t kMaxBypassJustificationLength = 280;
 // complete faster.
 base::TimeDelta minimum_pending_dialog_time_ = base::Seconds(2);
 base::TimeDelta success_dialog_timeout_ = base::Seconds(1);
+base::TimeDelta show_dialog_delay_ = base::Seconds(1);
 
 // A simple background class to show a colored circle behind the side icon once
 // the scanning is done.
@@ -209,6 +210,11 @@ base::TimeDelta ContentAnalysisDialog::GetSuccessDialogTimeout() {
   return success_dialog_timeout_;
 }
 
+// static
+base::TimeDelta ContentAnalysisDialog::ShowDialogDelay() {
+  return show_dialog_delay_;
+}
+
 ContentAnalysisDialog::ContentAnalysisDialog(
     std::unique_ptr<ContentAnalysisDelegateBase> delegate,
     bool is_cloud,
@@ -243,7 +249,23 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   if (download_item_)
     download_item_->AddObserver(this);
 
-  constrained_window::ShowWebModalDialogViews(this, web_contents_);
+  // Because the display of the dialog is delayed, it won't block UI
+  // interaction with the tab until it is visible.  To block interaction as of
+  // now, ignore input events manually.
+  top_level_contents_ =
+      constrained_window::GetTopLevelWebContents(web_contents_)->GetWeakPtr();
+  top_level_contents_->ClearFocusedElement();
+  top_level_contents_->SetIgnoreInputEvents(true);
+
+  if (ShowDialogDelay().is_zero()) {
+    ShowDialogNow();
+  } else {
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ContentAnalysisDialog::ShowDialogNow,
+                       weak_ptr_factory_.GetWeakPtr()),
+        ShowDialogDelay());
+  }
 
   if (is_warning() && bypass_requires_justification()) {
     bypass_justification_text_length_->SetEnabledColor(
@@ -253,6 +275,14 @@ ContentAnalysisDialog::ContentAnalysisDialog(
 
   if (observer_for_testing)
     observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
+}
+
+void ContentAnalysisDialog::ShowDialogNow() {
+  // If the contents is valid and dialog is not already either accepted or
+  // cancelled, show it now.  The dialog could already be either if the
+  // verdict was returned before the delay timeout.
+  if (web_contents_ && !accepted_or_cancelled_)
+    constrained_window::ShowWebModalDialogViews(this, web_contents_);
 }
 
 std::u16string ContentAnalysisDialog::GetWindowTitle() const {
@@ -404,6 +434,7 @@ void ContentAnalysisDialog::WebContentsDestroyed() {
   // If |web_contents_| is destroyed, then the scan results don't matter so the
   // delegate can be destroyed as well.
   CancelDialogWithoutCallback();
+  web_contents_ = nullptr;
 }
 
 void ContentAnalysisDialog::PrimaryPageChanged(content::Page& page) {
@@ -432,6 +463,8 @@ void ContentAnalysisDialog::ShowResult(FinalContentAnalysisResult result) {
 }
 
 ContentAnalysisDialog::~ContentAnalysisDialog() {
+  if (top_level_contents_)
+    top_level_contents_->SetIgnoreInputEvents(false);
   if (download_item_)
     download_item_->RemoveObserver(this);
   if (observer_for_testing)
@@ -902,6 +935,16 @@ bool ContentAnalysisDialog::is_print_scan() const {
   return access_point_ == safe_browsing::DeepScanAccessPoint::PRINT;
 }
 
+bool ContentAnalysisDialog::CancelDialogAndDelete() {
+  if (contents_view_) {
+    CancelDialog();
+  } else {
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
+  }
+
+  return true;
+}
+
 ui::ColorId ContentAnalysisDialog::GetSideImageLogoColor() const {
   DCHECK(contents_view_);
 
@@ -930,6 +973,12 @@ void ContentAnalysisDialog::SetMinimumPendingDialogTimeForTesting(
 void ContentAnalysisDialog::SetSuccessDialogTimeoutForTesting(
     base::TimeDelta delta) {
   success_dialog_timeout_ = delta;
+}
+
+// static
+void ContentAnalysisDialog::SetShowDialogDelayForTesting(
+    base::TimeDelta delta) {
+  show_dialog_delay_ = delta;
 }
 
 // static
@@ -994,7 +1043,11 @@ void ContentAnalysisDialog::OnDownloadDestroyed(
 void ContentAnalysisDialog::CancelDialogWithoutCallback() {
   // Reset `delegate` so no logic runs when the dialog is cancelled.
   delegate_.reset(nullptr);
-  CancelDialog();
+
+  // view may be null if the dialog was delayed and never shown before the
+  // verdict is known.
+  if (contents_view_)
+    CancelDialog();
 }
 
 }  // namespace enterprise_connectors

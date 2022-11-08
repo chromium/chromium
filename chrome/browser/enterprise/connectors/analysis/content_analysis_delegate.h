@@ -240,6 +240,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Methods to either show the final result in the analysis dialog and to
   // cancel the dialog.  These methods are protected and virtual for testing.
+  // Returns false if the UI was not enabled to indicate no action was taken.
   virtual bool ShowFinalResultInDialog();
   virtual bool CancelDialog();
 

@@ -417,8 +417,7 @@ bool ContentAnalysisDelegate::CancelDialog() {
   if (!dialog_)
     return false;
 
-  dialog_->CancelDialog();
-  return true;
+  return dialog_->CancelDialogAndDelete();
 }
 
 void ContentAnalysisDelegate::PageRequestCallback(
