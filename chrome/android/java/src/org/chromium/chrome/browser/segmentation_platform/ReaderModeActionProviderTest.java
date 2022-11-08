@@ -129,4 +129,24 @@ public class ReaderModeActionProviderTest {
         // ReaderModeManager should have been notified.
         verify(mMockReaderModeManager).setReaderModeUiShown();
     }
+
+    @Test
+    public void testProviderSetsOnShownAfterDelay_ExceptIfTabIsDestroyed() throws TimeoutException {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                "reader_mode_session_rate_limiting", "true");
+        FeatureList.setTestValues(testValues);
+        when(mMockReaderModeManager.isReaderModeUiRateLimited()).thenReturn(false);
+
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        // Call onActionShown and wait 5 seconds.
+        provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.READER_MODE);
+        when(mMockTab.isDestroyed()).thenReturn(true);
+        mMockTab.getUserDataHost().destroy();
+        shadowOf(getMainLooper()).idleFor(5, TimeUnit.SECONDS);
+
+        // ReaderModeManager should not have been notified, as the tab was destroyed.
+        verify(mMockReaderModeManager, never()).setReaderModeUiShown();
+    }
 }
