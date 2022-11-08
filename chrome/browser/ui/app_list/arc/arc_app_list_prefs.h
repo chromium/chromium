@@ -178,6 +178,8 @@ class ArcAppListPrefs : public KeyedService,
     bool should_sync;
     bool system;  // TODO(b/255671011): This is unused. Remove this.
     bool vpn_provider;
+    // If the package is pre-installed in the system image. This is true even
+    // after the package is updated.
     bool preinstalled;
     // Maps app permission to permission states
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>

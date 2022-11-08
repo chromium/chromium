@@ -117,7 +117,8 @@ struct ArcPackageInfo {
   // see https://developer.android.com/studio/publish/versioning.
   [MinVersion=51] string? version_name;
 
-  // If the package is pre-installed in the system image.
+  // If the package is pre-installed in the system image. This is true even
+  // after the package is updated.
   [MinVersion=55] bool preinstalled;
 };
 
