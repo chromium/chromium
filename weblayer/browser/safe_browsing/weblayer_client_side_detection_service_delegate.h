@@ -29,7 +29,6 @@ class WebLayerClientSideDetectionServiceDelegate
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetSafeBrowsingURLLoaderFactory() override;
-  safe_browsing::ChromeUserPopulation GetUserPopulation() override;
 
  private:
   raw_ptr<BrowserContextImpl> browser_context_;

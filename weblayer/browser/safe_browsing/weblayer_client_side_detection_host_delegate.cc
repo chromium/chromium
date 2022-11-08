@@ -12,6 +12,7 @@
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 #include "weblayer/browser/verdict_cache_manager_factory.h"
 
 namespace weblayer {
@@ -65,6 +66,11 @@ raw_ptr<safe_browsing::VerdictCacheManager>
 WebLayerClientSideDetectionHostDelegate::GetCacheManager() {
   return VerdictCacheManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
+}
+
+safe_browsing::ChromeUserPopulation
+WebLayerClientSideDetectionHostDelegate::GetUserPopulation() {
+  return GetUserPopulationForBrowserContext(web_contents_->GetBrowserContext());
 }
 
 }  // namespace weblayer

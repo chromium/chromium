@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -136,6 +137,13 @@ size_t ChromeClientSideDetectionHostDelegate::CountOfRecentNavigationsToAppend(
                              CountOfRecentNavigationsToAppend(
                                  profile, profile->GetPrefs(), result)
                        : 0u;
+}
+
+ChromeUserPopulation
+ChromeClientSideDetectionHostDelegate::GetUserPopulation() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  return ::safe_browsing::GetUserPopulationForProfile(profile);
 }
 
 }  // namespace safe_browsing

@@ -43,6 +43,7 @@ class WebLayerClientSideDetectionHostDelegate
                         const content::GlobalRenderFrameHostId&
                             current_outermost_main_frame_id) override;
   raw_ptr<safe_browsing::VerdictCacheManager> GetCacheManager() override;
+  safe_browsing::ChromeUserPopulation GetUserPopulation() override;
 
  private:
   raw_ptr<content::WebContents> web_contents_;

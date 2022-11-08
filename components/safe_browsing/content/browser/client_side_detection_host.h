@@ -66,6 +66,8 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
                                   const content::GlobalRenderFrameHostId&
                                       current_outermost_main_frame_id) = 0;
     virtual raw_ptr<VerdictCacheManager> GetCacheManager() = 0;
+    // Returns the management status for current profile.
+    virtual ChromeUserPopulation GetUserPopulation() = 0;
   };
 
   // The caller keeps ownership of the tab object and is responsible for

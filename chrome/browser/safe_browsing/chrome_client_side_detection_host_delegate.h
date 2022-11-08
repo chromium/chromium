@@ -43,6 +43,7 @@ class ChromeClientSideDetectionHostDelegate
                         const content::GlobalRenderFrameHostId&
                             current_outermost_main_frame_id) override;
   raw_ptr<VerdictCacheManager> GetCacheManager() override;
+  ChromeUserPopulation GetUserPopulation() override;
 
   void SetNavigationObserverManagerForTesting(
       SafeBrowsingNavigationObserverManager* navigation_observer_manager) {

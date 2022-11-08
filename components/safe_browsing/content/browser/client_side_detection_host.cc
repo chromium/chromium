@@ -547,6 +547,9 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     if (!verdict->is_phishing())
       return;
 
+    // Fill in metadata about which model we used.
+    *verdict->mutable_population() = delegate_->GetUserPopulation();
+
     raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
     if (cache_manager) {
       ChromeUserPopulation::PageLoadToken token =

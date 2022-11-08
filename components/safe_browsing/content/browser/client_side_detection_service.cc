@@ -207,9 +207,6 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
     return;
   }
 
-  // Fill in metadata about which model we used.
-  *request->mutable_population() = delegate_->GetUserPopulation();
-
   std::string request_data;
   request->SerializeToString(&request_data);
 

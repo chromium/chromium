@@ -12,7 +12,6 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
-#include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 
 namespace weblayer {
 
@@ -40,11 +39,6 @@ WebLayerClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   SafeBrowsingService* sb_service =
       BrowserProcess::GetInstance()->GetSafeBrowsingService();
   return sb_service->GetURLLoaderFactory();
-}
-
-safe_browsing::ChromeUserPopulation
-WebLayerClientSideDetectionServiceDelegate::GetUserPopulation() {
-  return GetUserPopulationForBrowserContext(browser_context_);
 }
 
 }  // namespace weblayer

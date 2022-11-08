@@ -31,7 +31,6 @@ class ChromeClientSideDetectionServiceDelegate
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetSafeBrowsingURLLoaderFactory() override;
-  ChromeUserPopulation GetUserPopulation() override;
 
  private:
   raw_ptr<Profile> profile_;

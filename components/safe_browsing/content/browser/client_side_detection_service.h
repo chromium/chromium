@@ -70,8 +70,6 @@ class ClientSideDetectionService
     GetURLLoaderFactory() = 0;
     virtual scoped_refptr<network::SharedURLLoaderFactory>
     GetSafeBrowsingURLLoaderFactory() = 0;
-    // Returns the management status for current profile.
-    virtual ChromeUserPopulation GetUserPopulation() = 0;
   };
 
   explicit ClientSideDetectionService(std::unique_ptr<Delegate> delegate);
