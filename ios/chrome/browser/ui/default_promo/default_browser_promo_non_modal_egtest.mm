@@ -31,7 +31,7 @@ namespace {
 
 // Wait for 2 seconds longer than the default promo show time, in case it's
 // slightly delayed.
-const int64_t kShowPromoWebpageLoadWaitTime = 5;
+constexpr base::TimeDelta kShowPromoWebpageLoadWaitTime = base::Seconds(5);
 
 // Returns a matcher to "Link You Copied" row.
 id<GREYMatcher> LinkYouCopiedMatcher() {
