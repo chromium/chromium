@@ -52,6 +52,18 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      touchscreenIdUnderTesting: {
+        type: Number,
+        value: -1,
+        notify: true,
+      },
+    };
+  }
+
+  protected touchscreenIdUnderTesting: number;
+
   // Drawing provider.
   private drawingProvider: CanvasDrawingProvider;
 
@@ -133,8 +145,14 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     //  'fullscreenchange' event to handle this case.
     this.eventTracker.add(document, 'fullscreenchange', (e: Event) => {
       e.preventDefault();
-      if (!document.fullscreenElement) {
+      if (!document.fullscreenElement &&
+          this.touchscreenIdUnderTesting !== -1) {
         this.closeTester();
+        // Only when users closes the tester themselves, we call
+        // moveAppBackToPreviousScreen function. If the screen is disconnected
+        // or untestable, the window movement will be handled by display manager
+        // itself.
+        this.inputDataProvider.moveAppBackToPreviousScreen();
       }
     });
 
@@ -150,11 +168,15 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   /**
    * Close touchscreen tester.
    */
-  private async closeTester(): Promise<void> {
+  closeTester(): void {
     this.getDialog(DialogType.INTRO).close();
     this.getDialog(DialogType.CANVAS).close();
-    await this.inputDataProvider.moveAppBackToPreviousScreen();
     this.eventTracker.removeAll();
+    this.touchscreenIdUnderTesting = -1;
+    // Make sure to exit fullscreen if it's not already.
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
     if (this.receiver_) {
       this.receiver_.$.close();
     }

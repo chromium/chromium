@@ -72,6 +72,50 @@ suite('inputListTestSuite', function() {
     return /** @type {!InputCardElement} */ (card);
   }
 
+  /**
+   * openTouchscreenTester is a helper function for some boilerplate code. It
+   * clicks the test button of a touchscreen, then clicks the start testing
+   * button and makes sure canvas dialog is open.
+   * @param touchscreensToInitialize The touchscreens to initialize.
+   * @param isClamshellMode If the tester is opened in clamshell mode.
+   * @returns The touchscreenTester.
+   */
+  async function openTouchscreenTester(
+      touchscreensToInitialize, isClamshellMode = true) {
+    await initializeInputList([], touchscreensToInitialize);
+    if (isClamshellMode) {
+      provider.setStartTesterWithClamshellMode();
+    } else {
+      provider.setStartTesterWithTabletMode();
+    }
+
+    const resolver = new PromiseResolver();
+    const touchscreenTester =
+        inputListElement.shadowRoot.querySelector('touchscreen-tester');
+    const introDialog = touchscreenTester.getDialog('intro-dialog');
+
+    // Mock requestFullscreen function since this API can only be initiated by a
+    // user gesture.
+    introDialog.requestFullscreen = () => {
+      resolver.resolve();
+    };
+
+    const testButton = getCardByDeviceType('touchscreen')
+                           .shadowRoot.querySelector('cr-button');
+    assertTrue(!!testButton);
+    testButton.click();
+    await flushTasks();
+    assertTrue(introDialog.open);
+
+    const getStartedButton = introDialog.querySelector('cr-button');
+    getStartedButton.click();
+    await flushTasks();
+    const canvasDialog = touchscreenTester.getDialog('canvas-dialog');
+    assertTrue(canvasDialog.open);
+
+    return touchscreenTester;
+  }
+
   test('InputListPopulated', async () => {
     await initializeInputList();
     assertEquals(
@@ -231,34 +275,16 @@ suite('inputListTestSuite', function() {
   });
 
   test('TouchscreenTesterShowAndCloseInTabletMode', async () => {
-    await initializeInputList([], [fakeTouchDevices[1]]);
-    provider.setStartTesterWithClamshellMode();
+    await openTouchscreenTester(
+        /*touchscreensToInitialize=*/[fakeTouchDevices[1]]);
 
     const resolver = new PromiseResolver();
     let exitFullscreenCalled = 0;
-
-    const touchscreenTester =
-        inputListElement.shadowRoot.querySelector('touchscreen-tester');
-    const introDialog = touchscreenTester.getDialog('intro-dialog');
-
-    // Mock requestFullscreen function since this API can only be initiated by a
-    // user gesture.
-    introDialog.requestFullscreen = () => {
-      resolver.resolve();
-    };
-
     // Mock exitFullscreen call.
     document.exitFullscreen = () => {
       exitFullscreenCalled++;
       resolver.resolve();
     };
-
-    const testButton = getCardByDeviceType('touchscreen')
-                           .shadowRoot.querySelector('cr-button');
-    assertTrue(!!testButton);
-    testButton.click();
-    await flushTasks();
-    assertTrue(introDialog.open);
 
     provider.startTabletMode();
     await flushTasks();
@@ -270,61 +296,30 @@ suite('inputListTestSuite', function() {
   });
 
   test('StartTouchscreenTesterWithClamshellMode', async () => {
-    await initializeInputList([], [fakeTouchDevices[1]]);
-    provider.setStartTesterWithClamshellMode();
-    await flushTasks();
+    const touchscreenTester = await openTouchscreenTester(
+        /*touchscreensToInitialize=*/[fakeTouchDevices[1]]);
 
-    const resolver = new PromiseResolver();
-    const touchscreenTester =
-        inputListElement.shadowRoot.querySelector('touchscreen-tester');
-    const introDialog = touchscreenTester.getDialog('intro-dialog');
-
-    introDialog.requestFullscreen = () => {
-      resolver.resolve();
-    };
-
-    const testButton = getCardByDeviceType('touchscreen')
-                           .shadowRoot.querySelector('cr-button');
-    assertTrue(!!testButton);
-    testButton.click();
-    await flushTasks();
-
-    assertTrue(introDialog.open);
     assertFalse(touchscreenTester.getIsTabletMode());
 
     provider.startTabletMode();
     await flushTasks();
 
     assertTrue(touchscreenTester.getIsTabletMode());
+    assertTrue(touchscreenTester.getDialog('canvas-dialog').open);
   });
 
   test('StartTouchscreenTesterWithTabletMode', async () => {
-    await initializeInputList([], [fakeTouchDevices[1]]);
-    provider.setStartTesterWithTabletMode();
-    await flushTasks();
+    const touchscreenTester = await openTouchscreenTester(
+        /*touchscreensToInitialize=*/[fakeTouchDevices[1]],
+        /*isClamshellMode=*/ false);
 
-    const resolver = new PromiseResolver();
-    const touchscreenTester =
-        inputListElement.shadowRoot.querySelector('touchscreen-tester');
-    const introDialog = touchscreenTester.getDialog('intro-dialog');
-
-    introDialog.requestFullscreen = () => {
-      resolver.resolve();
-    };
-
-    const testButton = getCardByDeviceType('touchscreen')
-                           .shadowRoot.querySelector('cr-button');
-    assertTrue(!!testButton);
-    testButton.click();
-    await flushTasks();
-
-    assertTrue(introDialog.open);
     assertTrue(touchscreenTester.getIsTabletMode());
 
     provider.endTabletMode();
     await flushTasks();
 
     assertFalse(touchscreenTester.getIsTabletMode());
+    assertTrue(touchscreenTester.getDialog('canvas-dialog').open);
   });
 
   test('OnInternalDisplayPowerStateChanged', async () => {
@@ -341,6 +336,30 @@ suite('inputListTestSuite', function() {
     await flushTasks();
 
     assertTrue(getCardByDeviceType('touchscreen').devices[0].testable);
+  });
+
+  test('InternalDisplayPowerOffWhileTouchscreenTesterIsRunning', async () => {
+    const touchscreenTester = await openTouchscreenTester(
+        /*touchscreensToInitialize=*/[fakeTouchDevices[1]]);
+
+    // Internal display power off.
+    provider.setInternalDisplayPowerOff();
+    await flushTasks();
+
+    // Tester is expecetd to exit.
+    assertFalse(touchscreenTester.getDialog('canvas-dialog').open);
+  });
+
+  test('TouchscreenDisconnectedWhileTesterIsRunning', async () => {
+    const touchscreenTester = await openTouchscreenTester(
+        /*touchscreensToInitialize=*/[fakeTouchDevices[1]]);
+
+    // Remove touchscreen.
+    provider.removeFakeConnectedTouchDeviceById(fakeTouchDevices[1].id);
+    await flushTasks();
+
+    // Tester is expecetd to exit.
+    assertFalse(touchscreenTester.getDialog('canvas-dialog').open);
   });
 
   test('EmptySectionsHidden', async () => {
