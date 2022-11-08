@@ -41,6 +41,15 @@ class H264Decoder : public VideoDecoder {
   // will send Ext Ctrls via IOCTL calls to indicate the start of a frame.
   H264Parser::Result ProcessNextFrame(H264SliceHeader* curr_slice);
 
+  // Sends IOCTL call to device with the frame's SPS, PPS, and Scaling Matrix
+  // data which indicates the beginning of a new frame.
+  VideoDecoder::Result StartNewFrame(int sps_id, int pps_id);
+
+  // Transmits each H264 Slice associated with the current frame to the
+  // device. Additionally sends Decode Parameters and Decode Mode
+  // via IOCTL Ext Ctrls.
+  VideoDecoder::Result SubmitSlice(H264SliceHeader curr_slice, int frame_num);
+
   const std::unique_ptr<H264Parser> parser_;
 };
 
