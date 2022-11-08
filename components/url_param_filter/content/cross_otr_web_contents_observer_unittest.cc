@@ -94,7 +94,7 @@ TEST_F(CrossOtrWebContentsObserverTest, HandleRedirects) {
 
   ASSERT_NE(observer, nullptr);
 
-  std::vector<const std::string> redirect_sequence{
+  std::vector<std::string> redirect_sequence{
       "HTTP/1.1 302 Moved Temporarily",
       "HTTP/1.1 307 Temporary Redirect",  // 2 'external' 307 redirects
       "HTTP/1.1 307 Temporary Redirect",
@@ -132,7 +132,7 @@ TEST_F(CrossOtrWebContentsObserverTest, HandleRedirectsExperimentalMetrics) {
 
   ASSERT_NE(observer, nullptr);
 
-  std::vector<const std::string> redirect_sequence{
+  std::vector<std::string> redirect_sequence{
       "HTTP/1.1 302 Moved Temporarily",
       "HTTP/1.1 307 Temporary Redirect",  // 2 'external' 307 redirects
       "HTTP/1.1 307 Temporary Redirect",
@@ -184,7 +184,7 @@ TEST_F(CrossOtrWebContentsObserverTest,
 
   ASSERT_NE(observer, nullptr);
 
-  std::vector<const std::string> redirect_sequence{
+  std::vector<std::string> redirect_sequence{
       "HTTP/1.1 302 Moved Temporarily",
       "HTTP/1.1 307 Temporary Redirect",  // 2 'external' 307 redirects
       "HTTP/1.1 307 Temporary Redirect",
