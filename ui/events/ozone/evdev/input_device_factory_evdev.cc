@@ -197,6 +197,7 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
         UpdateDirtyFlags(it.second.get());
     }
 
+    input_device_factory_metrics_.OnDeviceAttach(converters_[path].get());
     // Sync settings to new device.
     ApplyInputDeviceSettings();
     ApplyCapsLockLed();

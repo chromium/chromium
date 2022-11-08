@@ -63,6 +63,8 @@ component("evdev") {
     "input_controller_evdev.h",
     "input_device_factory_evdev.cc",
     "input_device_factory_evdev.h",
+    "input_device_factory_evdev_metrics.cc",
+    "input_device_factory_evdev_metrics.h",
     "input_device_factory_evdev_proxy.cc",
     "input_device_factory_evdev_proxy.h",
     "input_device_opener.h",
@@ -244,7 +246,6 @@ source_set("unittests") {
     "event_factory_evdev_unittest.cc",
     "gamepad_event_converter_evdev_unittest.cc",
     "input_controller_evdev_unittest.cc",
-    "input_device_factory_evdev_unittest.cc",
     "input_injector_evdev_unittest.cc",
     "libgestures_glue/haptic_touchpad_handler.cc",
     "libgestures_glue/haptic_touchpad_handler.h",
@@ -281,7 +282,10 @@ source_set("unittests") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [ "numberpad_metrics_unittest.cc" ]
+    sources += [
+      "input_device_factory_evdev_unittest.cc",
+      "numberpad_metrics_unittest.cc",
+    ]
     deps += [ "//chromeos/ash/components/feature_usage" ]
   }
 

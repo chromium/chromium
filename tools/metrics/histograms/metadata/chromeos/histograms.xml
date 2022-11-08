@@ -1127,6 +1127,49 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.AttachmentForm.{Type}" enum="AttachmentForm"
+    expires_after="2023-10-24">
+  <owner>wmahon@google.com</owner>
+  <owner>chromeos-tango@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the device forms (Keyboard, Mouse, Pointing Stick, etc) of {Type}
+    devices, when they are connected. As one physical device can be multiple
+    forms at the same time (eg. a wireless dongle that identifies as both a
+    keyboard and mouse), multiple entries can be generated from a single
+    physical attachment event.
+  </summary>
+  <token key="Type">
+    <variant name="Bluetooth"/>
+    <variant name="Internal"/>
+    <variant name="Unknown"/>
+    <variant name="Usb"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Inputs.AttachmentType.{Form}" enum="AttachmentType"
+    expires_after="2023-10-24">
+  <owner>wmahon@google.com</owner>
+  <owner>chromeos-tango@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the connection types (Internal, Bluetooth, Usb, etc) of {Form}
+    devices, when they are connected. As one physical device can be multiple
+    forms at the same time (eg. a wireless dongle that identifies as both a
+    keyboard and mouse), multiple entries can be generated from a single
+    physical attachment event.
+  </summary>
+  <token key="Form">
+    <variant name="Gamepad"/>
+    <variant name="Keyboard"/>
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+    <variant name="Stylus"/>
+    <variant name="Touchpad"/>
+    <variant name="Touchscreen"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Intents.IntentPickerAction"
     enum="IntentPickerDialogAction" expires_after="2023-05-07">
   <owner>tsergeant@chromium.org</owner>

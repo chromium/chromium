@@ -5320,6 +5320,16 @@ others/histograms.xml -->
   <int value="2" label="FINISHED">AsyncTask is done.</int>
 </enum>
 
+<enum name="AttachmentForm">
+  <int value="0" label="Mouse"/>
+  <int value="1" label="Pointing Stick"/>
+  <int value="2" label="Touchpad"/>
+  <int value="3" label="Touchscreen"/>
+  <int value="4" label="Stylus"/>
+  <int value="5" label="Gamepad"/>
+  <int value="6" label="Keyboard"/>
+</enum>
+
 <enum name="AttachmentServicesResult">
   <int value="0" label="Succeeded with MOTW"/>
   <int value="1" label="Succeeded without MOTW"/>
@@ -5334,6 +5344,13 @@ others/histograms.xml -->
   <int value="10" label="Access denied (file missing)"/>
   <int value="11" label="Other error (file exists)"/>
   <int value="12" label="Other error (file missing)"/>
+</enum>
+
+<enum name="AttachmentType">
+  <int value="0" label="Internal"/>
+  <int value="1" label="USB"/>
+  <int value="2" label="Bluetooth"/>
+  <int value="3" label="Unknown"/>
 </enum>
 
 <enum name="AttemptingMultipleOverlays">
