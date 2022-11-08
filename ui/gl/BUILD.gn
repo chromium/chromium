@@ -596,11 +596,6 @@ test("gl_unittests") {
     sources += [ "glx_api_unittest.cc" ]
   }
 
-  if (is_mac) {
-    sources += [ "gl_image_io_surface_unittest.cc" ]
-    frameworks = [ "IOSurface.framework" ]
-  }
-
   if (is_win) {
     sources += [
       "delegated_ink_point_renderer_gpu_unittest.cc",

@@ -7,8 +7,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -77,6 +75,7 @@ BASE_FEATURE(kAndroidFrameDeadline,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 // Use the passthrough command decoder by default.  This can be overridden with
 // the --use-cmd-decoder=passthrough or --use-cmd-decoder=validating flags.
 // Feature lives in ui/gl because it affects the GL binding initialization on
@@ -84,14 +83,8 @@ BASE_FEATURE(kAndroidFrameDeadline,
 // Launched on Windows, still experimental on other platforms.
 BASE_FEATURE(kDefaultPassthroughCommandDecoder,
              "DefaultPassthroughCommandDecoder",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) ||     \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 
 bool UseGpuVsync() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -113,6 +106,10 @@ bool IsAndroidFrameDeadlineEnabled() {
 }
 
 bool UsePassthroughCommandDecoder() {
+#if defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
+  return true;
+#else
+
   if (!base::FeatureList::IsEnabled(kDefaultPassthroughCommandDecoder))
     return false;
 
@@ -145,6 +142,7 @@ bool UsePassthroughCommandDecoder() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
+#endif  // defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 }
 
 }  // namespace features
