@@ -32,46 +32,43 @@ suite('history-toolbar', function() {
         .then(flushTasks);
   });
 
-  test('selecting checkbox causes toolbar to change', function() {
+  test('selecting checkbox causes toolbar to change', async function() {
     testService.setQueryResult(
         {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
     app.$.history.dispatchEvent(new CustomEvent(
         'query-history', {bubbles: true, composed: true, detail: true}));
-    return testService.whenCalled('queryHistoryContinuation')
-        .then(flushTasks)
-        .then(function() {
-          const item = app.$.history.shadowRoot!.querySelector('history-item')!;
-          item.$.checkbox.click();
+    await testService.whenCalled('queryHistoryContinuation');
+    await flushTasks();
+    const item = app.$.history.shadowRoot!.querySelector('history-item')!;
+    item.$.checkbox.click();
 
-          const toolbar = app.$.toolbar;
+    const toolbar = app.$.toolbar;
 
-          // Ensure that when an item is selected that the count held by the
-          // toolbar increases.
-          assertEquals(1, toolbar.count);
-          assertTrue(toolbar.$.mainToolbar.hasAttribute('has-overlay'));
+    // Ensure that when an item is selected that the count held by the
+    // toolbar increases.
+    assertEquals(1, toolbar.count);
+    assertTrue(toolbar.$.mainToolbar.hasAttribute('has-overlay'));
 
-          item.$.checkbox.click();
+    item.$.checkbox.click();
 
-          // Ensure that when an item is deselected the count held by the
-          // toolbar decreases.
-          assertEquals(0, toolbar.count);
-          assertFalse(toolbar.$.mainToolbar.hasAttribute('has-overlay'));
-        });
+    // Ensure that when an item is deselected the count held by the
+    // toolbar decreases.
+    assertEquals(0, toolbar.count);
+    assertFalse(toolbar.$.mainToolbar.hasAttribute('has-overlay'));
   });
 
-  test('search term gathered correctly from toolbar', function() {
+  test('search term gathered correctly from toolbar', async function() {
     testService.resetResolver('queryHistory');
     const toolbar = app.$.toolbar;
     testService.setQueryResult(
         {info: createHistoryInfo('Test'), value: TEST_HISTORY_RESULTS});
     toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
         'search-changed', {bubbles: true, composed: true, detail: 'Test'}));
-    return testService.whenCalled('queryHistory').then(query => {
-      assertEquals('Test', query);
-    });
+    const query = await testService.whenCalled('queryHistory');
+    assertEquals('Test', query);
   });
 
-  test('spinner is active on search', function() {
+  test('spinner is active on search', async function() {
     testService.resetResolver('queryHistory');
     testService.delayQueryResult();
     testService.setQueryResult({
@@ -81,15 +78,11 @@ suite('history-toolbar', function() {
     const toolbar = app.$.toolbar;
     toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
         'search-changed', {bubbles: true, composed: true, detail: 'Test2'}));
-    return testService.whenCalled('queryHistory')
-        .then(flushTasks)
-        .then(() => {
-          assertTrue(toolbar.spinnerActive);
-          testService.finishQueryHistory();
-        })
-        .then(flushTasks)
-        .then(() => {
-          assertFalse(toolbar.spinnerActive);
-        });
+    await testService.whenCalled('queryHistory');
+    await flushTasks();
+    assertTrue(toolbar.spinnerActive);
+    testService.finishQueryHistory();
+    await flushTasks();
+    assertFalse(toolbar.spinnerActive);
   });
 });

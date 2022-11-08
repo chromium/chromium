@@ -56,17 +56,17 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
 
     // Checks that clicking Done without interacting with the input does not
     // change the name.
-    test('ClickDone', function() {
+    test('ClickDone', async function() {
       assertTrue(isChildVisible(app, '#doneButton'));
       const doneButton = app.$.doneButton;
       assertFalse(doneButton.disabled);
       doneButton.click();
-      return browserProxy.whenCalled('done').then(
-          profileName => assertEquals('TestName', profileName));
+      const profileName = await browserProxy.whenCalled('done');
+      assertEquals('TestName', profileName);
     });
 
     // Checks that the name can be changed.
-    test('ChangeName', function() {
+    test('ChangeName', async function() {
       const nameInput = app.$.nameInput;
       // Check the default value for the input.
       assertEquals('TestName', nameInput.value);
@@ -94,8 +94,8 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
       assertTrue(isChildVisible(app, '#doneButton'));
       assertFalse(doneButton.disabled);
       doneButton.click();
-      return browserProxy.whenCalled('done').then(
-          profileName => assertEquals('Bob', profileName));
+      const profileName = await browserProxy.whenCalled('done');
+      assertEquals('Bob', profileName);
     });
 
     test('ProfileInfo', function() {

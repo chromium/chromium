@@ -78,25 +78,30 @@ suite('NuxNtpBackgroundTest', function() {
     }
   });
 
-  test('test previewing a background and going back to default', function() {
-    const options =
-        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
+  test(
+      'test previewing a background and going back to default',
+      async function() {
+        const options =
+            testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>(
+                '.option');
 
-    options[1]!.click();
-    return testNtpBackgroundProxy.whenCalled('preloadImage').then(() => {
-      assertEquals(
-          testElement.$.backgroundPreview.style.backgroundImage,
-          `url("${backgrounds[0]!.imageUrl}")`);
-      assertTrue(testElement.$.backgroundPreview.classList.contains('active'));
+        options[1]!.click();
+        await testNtpBackgroundProxy.whenCalled('preloadImage');
+        assertEquals(
+            testElement.$.backgroundPreview.style.backgroundImage,
+            `url("${backgrounds[0]!.imageUrl}")`);
+        assertTrue(
+            testElement.$.backgroundPreview.classList.contains('active'));
 
-      // go back to the default option, and pretend all CSS transitions
-      // have completed
-      options[0]!.click();
-      testElement.$.backgroundPreview.dispatchEvent(new Event('transitionend'));
-      assertEquals(testElement.$.backgroundPreview.style.backgroundImage, '');
-      assertFalse(testElement.$.backgroundPreview.classList.contains('active'));
-    });
-  });
+        // go back to the default option, and pretend all CSS transitions
+        // have completed
+        options[0]!.click();
+        testElement.$.backgroundPreview.dispatchEvent(
+            new Event('transitionend'));
+        assertEquals(testElement.$.backgroundPreview.style.backgroundImage, '');
+        assertFalse(
+            testElement.$.backgroundPreview.classList.contains('active'));
+      });
 
   test('test activating a background', function() {
     const options =
@@ -108,21 +113,18 @@ suite('NuxNtpBackgroundTest', function() {
     assertFalse(options[2]!.hasAttribute('active'));
   });
 
-  test('test setting the background when hitting next', function() {
+  test('test setting the background when hitting next', async function() {
     // select the first non-default option and hit 'Next'
     const options =
         testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
     options[1]!.click();
     testElement.shadowRoot!.querySelector<HTMLElement>(
                                '.action-button')!.click();
-    return Promise
-        .all([
-          testMetricsProxy.whenCalled('recordChoseAnOptionAndChoseNext'),
-          testNtpBackgroundProxy.whenCalled('setBackground'),
-        ])
-        .then((responses) => {
-          assertEquals(backgrounds[0]!.id, responses[1]);
-        });
+    const responses = await Promise.all([
+      testMetricsProxy.whenCalled('recordChoseAnOptionAndChoseNext'),
+      testNtpBackgroundProxy.whenCalled('setBackground'),
+    ]);
+    assertEquals(backgrounds[0]!.id, responses[1]);
   });
 
   test('test metrics for selecting an option and skipping', function() {
@@ -147,18 +149,17 @@ suite('NuxNtpBackgroundTest', function() {
 
   test(
       `test metrics aren't sent when previewing the background is a success`,
-      function() {
+      async function() {
         testNtpBackgroundProxy.setPreloadImageSuccess(true);
         const options =
             testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>(
                 '.option');
         options[1]!.click();
-        return testNtpBackgroundProxy.whenCalled('preloadImage').then(() => {
-          assertEquals(
-              0,
-              testNtpBackgroundProxy.getCallCount(
-                  'recordBackgroundImageFailedToLoad'));
-        });
+        await testNtpBackgroundProxy.whenCalled('preloadImage');
+        assertEquals(
+            0,
+            testNtpBackgroundProxy.getCallCount(
+                'recordBackgroundImageFailedToLoad'));
       });
 
   test('test metrics for load times of background images', function() {

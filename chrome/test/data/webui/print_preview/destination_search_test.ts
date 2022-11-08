@@ -87,40 +87,36 @@ suite(destination_search_test.suiteName, function() {
   // capabilities fetch succeeds.
   test(
       assert(destination_search_test.TestNames.GetCapabilitiesSucceeds),
-      function() {
+      async function() {
         const destId = '00112233DEADBEEF';
         nativeLayer.setLocalDestinationCapabilities(getCddTemplate(destId));
 
         const waiter = eventToPromise(
             DestinationStoreEventType.DESTINATION_SELECT, destinationStore);
         requestSetup(destId);
-        return Promise
-            .all([nativeLayer.whenCalled('getPrinterCapabilities'), waiter])
-            .then(function(results) {
-              const actualId = results[0].destinationId;
-              assertEquals(destId, actualId);
-              // After setup or capabilities fetch succeeds, the destination
-              // should be selected.
-              assertNotEquals(null, destinationStore.selectedDestination);
-              assertEquals(destId, destinationStore.selectedDestination!.id);
-            });
+        const results = await Promise.all(
+            [nativeLayer.whenCalled('getPrinterCapabilities'), waiter]);
+        const actualId = results[0].destinationId;
+        assertEquals(destId, actualId);
+        // After setup or capabilities fetch succeeds, the destination
+        // should be selected.
+        assertNotEquals(null, destinationStore.selectedDestination);
+        assertEquals(destId, destinationStore.selectedDestination!.id);
       });
 
   // Tests what happens when capabilities cannot be retrieved for the chosen
   // destination. The destination will still be selected in this case.
   test(
       assert(destination_search_test.TestNames.GetCapabilitiesFails),
-      function() {
+      async function() {
         const destId = '001122DEADBEEF';
         nativeLayer.setLocalDestinationCapabilities(
             getCddTemplate(destId), true);
         requestSetup(destId);
-        return nativeLayer.whenCalled('getPrinterCapabilities')
-            .then(function(args) {
-              assertEquals(destId, args.destinationId);
-              // The destination is selected even though capabilities cannot be
-              // retrieved.
-              assertEquals(destId, destinationStore.selectedDestination!.id);
-            });
+        const args = await nativeLayer.whenCalled('getPrinterCapabilities');
+        assertEquals(destId, args.destinationId);
+        // The destination is selected even though capabilities cannot be
+        // retrieved.
+        assertEquals(destId, destinationStore.selectedDestination!.id);
       });
 });

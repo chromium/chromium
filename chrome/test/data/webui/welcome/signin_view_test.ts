@@ -34,13 +34,14 @@ suite('SigninViewTest', function() {
     testElement.remove();
   });
 
-  test('sign-in button', function() {
+  test('sign-in button', async function() {
     const signinButton = testElement.shadowRoot!.querySelector('cr-button');
     assertTrue(!!signinButton);
 
     signinButton!.click();
-    return testWelcomeBrowserProxy.whenCalled('handleActivateSignIn')
-        .then(redirectUrl => assertEquals(null, redirectUrl));
+    const redirectUrl =
+        await testWelcomeBrowserProxy.whenCalled('handleActivateSignIn');
+    assertEquals(null, redirectUrl);
   });
 
   test('no-thanks button', function() {
