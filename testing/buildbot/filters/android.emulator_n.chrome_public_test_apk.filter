@@ -60,3 +60,9 @@
 
 # TODO(crbug/1377732)
 -org.chromium.chrome.features.start_surface.StartSurfaceTest.testShow_SingleAsHomepage_ResetScrollPosition__Instant_NoReturn
+
+# TODO(crbug/1381326)
+-org.chromium.chrome.browser.tasks.tab_management.PriceAlertsMessageCardTest.testRenderMessageCard_Landscape_AppNotificationsDisabled
+
+# TODO(crbug/1382163)
+-org.chromium.chrome.browser.signin.SyncConsentFragmentTest.testSyncConsentFragmentNewAccount

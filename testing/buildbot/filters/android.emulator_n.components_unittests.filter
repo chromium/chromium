@@ -1,0 +1,2 @@
+# TODO(crbug/1381909)
+-VisitDatabaseTest.GetDailyVisitsToHostWithVisits
