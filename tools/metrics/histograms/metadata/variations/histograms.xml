@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FirstRun.SeedFetchResult"
-    enum="VariationsSeedFetchResult" expires_after="2022-11-20">
+    enum="VariationsSeedFetchResult" expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.DomainOwner" enum="VariationsHeadersOwner"
-    expires_after="2022-10-24">
+    expires_after="2023-11-30">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics</component>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.RequestContextCategory"
-    enum="VariationsHeadersRequestContextCategory" expires_after="2022-10-24">
+    enum="VariationsHeadersRequestContextCategory" expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>jwd@chromium.org</owner>
   <owner>caitlinfischer@google.com</owner>
@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Variations.Headers.URLValidationResult{VariationsHeadersURLValidationResult}"
-    enum="VariationsHeadersURLValidationResult" expires_after="2022-11-20">
+    enum="VariationsHeadersURLValidationResult" expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.InvalidLayerReason"
-    enum="VariationsInvalidLayerReason" expires_after="2022-11-20">
+    enum="VariationsInvalidLayerReason" expires_after="2023-11-01">
   <owner>holte@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.InvalidStudyReason"
-    enum="VariationsInvalidStudyReason" expires_after="2022-11-20">
+    enum="VariationsInvalidStudyReason" expires_after="2023-11-01">
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Variations.LoadPermanentConsistencyCountryResult"
     enum="VariationsPermanentConsistencyCountryResult"
-    expires_after="2022-11-20">
+    expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -282,18 +282,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Variations.PolicyRestriction"
     enum="VariationsRestrictionPolicyValues" expires_after="2022-04-30">
-  <obsolete>
-    This histogram is not interesting anymore but it is still used by test code
-    to verify that the respective log is properly applied so it will be kept in
-    the code even if not collected by the server anymore. TODO(crbug/1345624):
-    Clean this dependency up and remove the histogram.
-  </obsolete>
   <owner>pastarmovj@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Records the restrictions on how experiment variations are applied on the
     client. This is recorded at start up.
+
+    This histogram is not interesting anymore but it is still used by test code
+    to verify that the respective log is properly applied so it will be kept in
+    the code even if not collected by the server anymore. TODO(crbug/1345624):
+    Clean this dependency up and remove the histogram.
   </summary>
 </histogram>
 
@@ -462,7 +461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedFetchResponseOrErrorCode{ConnectionType}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-11-20">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -657,7 +656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.StoreSeedSignature" enum="VariationSeedSignature"
-    expires_after="2022-11-20">
+    expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -679,7 +678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.TimeSinceLastFetchAttempt" units="minutes"
-    expires_after="2022-11-20">
+    expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -723,7 +722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.{Mode}CreateTrials.SeedExpiry"
-    enum="VariationsSeedExpiry" expires_after="2022-11-20">
+    enum="VariationsSeedExpiry" expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
