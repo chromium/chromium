@@ -159,6 +159,8 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "fuchsia-x64-cast-receiver-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    # TODO(crbug.com/1298111): Change to 16
+    cores = 8,
     main_list_view = "try",
 )
 
