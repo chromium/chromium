@@ -85,3 +85,18 @@ fuzzer_test("os_trigger_parse_fuzzer") {
 
   seed_corpus = "//components/attribution_reporting/os_trigger_fuzzer_corpus/"
 }
+
+fuzzer_test("source_registration_fuzzer") {
+  sources = [ "source_registration_fuzzer.cc" ]
+  deps = [
+    ":attribution_reporting",
+    "//base",
+    "//base:i18n",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
+    "//url",
+  ]
+  seed_corpus =
+      "//testing/libfuzzer/fuzzers/attribution_source_registration_corpus/"
+}

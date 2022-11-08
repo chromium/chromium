@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdlib.h>
+
 #include <iostream>
 #include <string>
 #include <tuple>
@@ -12,11 +13,8 @@
 #include "base/i18n/icu_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_header_utils.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -24,7 +22,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace content {
+namespace attribution_reporting {
 
 namespace {
 
@@ -52,14 +50,9 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (!input || !input->is_dict())
     return;
 
-  std::ignore = ParseSourceRegistration(
+  std::ignore = SourceRegistration::Parse(
       std::move(*input).TakeDict(),
-      /*source_time=*/base::Time(),
-      /*reporting_origin=*/url::Origin::Create(GURL("https://r.test/")),
-      /*source_origin=*/url::Origin::Create(GURL("https://s.test/")),
-      // TODO(apaseltiner): Fuzz both source types.
-      AttributionSourceType::kNavigation,
-      /*is_within_fenced_frame=*/false);
+      /*reporting_origin=*/url::Origin::Create(GURL("https://r.test/")));
 }
 
-}  // namespace content
+}  // namespace attribution_reporting
