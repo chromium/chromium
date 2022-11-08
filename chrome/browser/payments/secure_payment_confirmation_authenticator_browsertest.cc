@@ -215,8 +215,8 @@ class SecurePaymentConfirmationAuthenticatorDisableDebugTest
  public:
   SecurePaymentConfirmationAuthenticatorDisableDebugTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSecurePaymentConfirmation},
-        /*disabled_features=*/{features::kSecurePaymentConfirmationDebug});
+        /*enabled_features=*/{::features::kSecurePaymentConfirmation},
+        /*disabled_features=*/{::features::kSecurePaymentConfirmationDebug});
   }
 
  private:

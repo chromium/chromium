@@ -7,6 +7,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
+#include "components/payments/core/features.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -23,9 +24,12 @@ class SecurePaymentConfirmationTest
  public:
   SecurePaymentConfirmationTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSecurePaymentConfirmation,
-                              features::kSecurePaymentConfirmationDebug},
-        /*disabled_features=*/{});
+        /*enabled_features=*/{::features::kSecurePaymentConfirmation,
+                              ::features::kSecurePaymentConfirmationDebug},
+        // TODO(crbug.com/1368590): Refactor code to allow mocking out the
+        // credential store APIs.
+        /*disabled_features=*/{
+            features::kSecurePaymentConfirmationUseCredentialStoreAPIs});
   }
 
   // PaymentRequestPlatformBrowserTestBase

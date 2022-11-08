@@ -917,12 +917,11 @@ BASE_FEATURE(kSavePageAsWebBundle,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Browser-side feature flag for Secure Payment Confirmation (SPC) that also
-// controls the render side feature state. SPC initial launch is intended
-// only for Mac devices with Touch ID and and Windows devices with
-// Windows Hello authentication available and setup.
+// controls the render side feature state. SPC is not currently available on
+// Linux or ChromeOS, as it requires platform authenticator support.
 BASE_FEATURE(kSecurePaymentConfirmation,
              "SecurePaymentConfirmationBrowser",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

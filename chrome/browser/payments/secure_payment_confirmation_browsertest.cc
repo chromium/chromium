@@ -218,8 +218,8 @@ class SecurePaymentConfirmationDisableDebugTest
  public:
   SecurePaymentConfirmationDisableDebugTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSecurePaymentConfirmation},
-        /*disabled_features=*/{features::kSecurePaymentConfirmationDebug});
+        /*enabled_features=*/{::features::kSecurePaymentConfirmation},
+        /*disabled_features=*/{::features::kSecurePaymentConfirmationDebug});
   }
 
  private:
@@ -268,7 +268,7 @@ class SecurePaymentConfirmationDisabledTest
   SecurePaymentConfirmationDisabledTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kSecurePaymentConfirmation});
+        /*disabled_features=*/{::features::kSecurePaymentConfirmation});
   }
 
  private:
@@ -308,7 +308,7 @@ class SecurePaymentConfirmationDisabledByFinchTest
   SecurePaymentConfirmationDisabledByFinchTest() {
     // The feature should get disabled by the feature state despite
     // experimental web platform features being enabled.
-    feature_list_.InitAndDisableFeature(features::kSecurePaymentConfirmation);
+    feature_list_.InitAndDisableFeature(::features::kSecurePaymentConfirmation);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
