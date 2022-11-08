@@ -776,7 +776,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that sharing a web page to the Reading List results in a snackbar
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads offline version by tapping on entry with delayed web server.
-- (void)testSavingToReadingListAndLoadBadNetwork {
+// crbug.com/1382372: Reenable this test.
+- (void)DISABLED_testSavingToReadingListAndLoadBadNetwork {
   [ReadingListAppInterface forceConnectionToWifi];
   GURL distillableURL = self.testServer->GetURL(kDistillableURL);
   // Open http://potato
