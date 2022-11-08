@@ -234,26 +234,6 @@ int32_t ContentHashFromPrefetchMetadata(
   return base::PersistentHash(prefetch_metadata.uri());
 }
 
-void AddMostRecentContentHashes(Metadata& metadata,
-                                std::deque<uint32_t> new_content_hashes) {
-  // Make sure the size of new contents do not exceed the cap.
-  if (new_content_hashes.size() > kMaxMostRecentContentHashes)
-    new_content_hashes.resize(kMaxMostRecentContentHashes);
-  // Combine the existing contents with the new contents.
-  new_content_hashes.insert(new_content_hashes.begin(),
-                            metadata.most_recent_content_hashes().begin(),
-                            metadata.most_recent_content_hashes().end());
-  // Remove the oldest contents to keep the combined contents within the cap.
-  if (new_content_hashes.size() > kMaxMostRecentContentHashes) {
-    auto end_iter = new_content_hashes.begin();
-    end_iter += (new_content_hashes.size() - kMaxMostRecentContentHashes);
-    new_content_hashes.erase(new_content_hashes.begin(), end_iter);
-  }
-  // Now copy over the capped combined contents.
-  metadata.mutable_most_recent_content_hashes()->Assign(
-      new_content_hashes.begin(), new_content_hashes.end());
-}
-
 base::flat_set<uint32_t> GetViewedContentHashes(const Metadata& metadata,
                                                 const StreamType& stream_type) {
   const Metadata::StreamMetadata* stream_metadata =

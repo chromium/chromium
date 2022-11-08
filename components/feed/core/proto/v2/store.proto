@@ -145,11 +145,13 @@ message Metadata {
   // Count of how many times the user has followed from the main menu, so we
   // can show appropriate user education help for the following feed.
   int32 followed_from_web_page_menu_count = 9;
-  // The list of IDs representing the most recent contents received from the.
-  // server. The size of the list is capped to
+  // The list of IDs representing the most recent contents viewed by the user.
+  // The size of the list is capped to
   // feedstore_util::kMaxMostRecentContentHashes. The IDs are stored in the
-  // ascending order of the time when the content is received from the server.
-  repeated uint32 most_recent_content_hashes = 10;
+  // ascending order of the time when the content is viewed by the user.
+  repeated uint32 most_recent_viewed_content_hashes = 11;
+
+  reserved 10;
 }
 
 // A set of StreamStructures that should be applied to a stream.

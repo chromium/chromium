@@ -1308,19 +1308,20 @@ void MetricsReporter::ReportContentDuplication(
     int duplicate_percentage_for_first_10,
     int duplicate_percentage_for_all) {
   base::UmaHistogramBoolean(
-      "ContentSuggestions.Feed.ContentDuplication.Position1",
+      "ContentSuggestions.Feed.ContentDuplication2.Position1",
       is_duplicated_at_pos_1);
   base::UmaHistogramBoolean(
-      "ContentSuggestions.Feed.ContentDuplication.Position2",
+      "ContentSuggestions.Feed.ContentDuplication2.Position2",
       is_duplicated_at_pos_2);
   base::UmaHistogramBoolean(
-      "ContentSuggestions.Feed.ContentDuplication.Position3",
+      "ContentSuggestions.Feed.ContentDuplication2.Position3",
       is_duplicated_at_pos_3);
   base::UmaHistogramPercentage(
-      "ContentSuggestions.Feed.ContentDuplication.First10",
+      "ContentSuggestions.Feed.ContentDuplication2.First10",
       duplicate_percentage_for_first_10);
-  base::UmaHistogramPercentage("ContentSuggestions.Feed.ContentDuplication.All",
-                               duplicate_percentage_for_all);
+  base::UmaHistogramPercentage(
+      "ContentSuggestions.Feed.ContentDuplication2.All",
+      duplicate_percentage_for_all);
 }
 
 }  // namespace feed

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_FEEDSTORE_UTIL_H_
 #define COMPONENTS_FEED_CORE_V2_FEEDSTORE_UTIL_H_
 
-#include <deque>
 #include <string>
 #include "base/containers/flat_set.h"
 #include "base/strings/string_piece_forward.h"
@@ -25,7 +24,6 @@ class Metadata;
 const char kForYouStreamKey[] = "i";
 const char kFollowStreamKey[] = "w";
 constexpr base::StringPiece kChannelStreamKeyPrefix = "c";
-const int kMaxMostRecentContentHashes = 50;
 
 std::string StreamKey(const feed::StreamType& stream_type);
 feed::StreamType StreamTypeFromId(base::StringPiece key);
@@ -88,12 +86,6 @@ feed::ContentHashSet GetViewContentIds(const Metadata& metadata,
                                        const feed::StreamType& stream_type);
 int32_t ContentHashFromPrefetchMetadata(
     const feedwire::PrefetchMetadata& prefetch_metadata);
-
-// Appends `new_content_hashes` to `Metadata.most_recent_content_hashes` whose
-// size is capped to kMaxMostRecentContentHashes. The oldest content appears
-// at the beginning of the list.
-void AddMostRecentContentHashes(Metadata& metadata,
-                                std::deque<uint32_t> new_content_hashes);
 
 base::flat_set<uint32_t> GetViewedContentHashes(
     const Metadata& metadata,

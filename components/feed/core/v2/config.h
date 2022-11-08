@@ -63,6 +63,8 @@ struct Config {
   base::TimeDelta session_id_max_age = base::Days(30);
   // Maximum number of images prefetched per refresh.
   int max_prefetch_image_requests_per_refresh = 50;
+  // Maximum size of most recent viewed content hash list.
+  int max_most_recent_viewed_content_hashes = 100;
 
   // Configuration for Web Feeds.
 

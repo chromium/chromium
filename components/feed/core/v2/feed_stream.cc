@@ -4,14 +4,17 @@
 
 #include "components/feed/core/v2/feed_stream.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -1525,29 +1528,56 @@ void FeedStream::ScheduleFeedCloseRefresh(const StreamType& type) {
 void FeedStream::CheckDuplicatedContentsOnRefresh() {
   StreamType stream_type = StreamType(StreamKind::kForYou);
   Stream& stream = GetStream(stream_type);
-  if (stream.content_ids.IsEmpty())
-    return;
-  base::flat_set<uint32_t> most_recent_content_hashes(
-      metadata_.most_recent_content_hashes().begin(),
-      metadata_.most_recent_content_hashes().end());
-  bool is_duplicated_at_pos_1 = false;
-  bool is_duplicated_at_pos_2 = false;
-  bool is_duplicated_at_pos_3 = false;
-  int duplicate_count_for_top_10 = 0;
-  int duplicate_count_for_all = 0;
-  int total_count = 0;
-  int pos = 0;
-  std::deque<uint32_t> new_content_hashes;
-  for (const feedstore::StreamContentHashList& hash_list :
-       stream.content_ids.original_hashes()) {
-    if (hash_list.hashes_size() == 0)
-      continue;
+  feedstore::Metadata metadata = GetMetadata();
+  feedstore::Metadata::StreamMetadata& stream_metadata =
+      MetadataForStream(metadata, stream_type);
 
-    // For position specific metrics, only the first item is checked for
-    // duplication if there are more than one items in a row, like carousel,
-    // collection or 2-column.
-    if (most_recent_content_hashes.contains(hash_list.hashes(0))) {
-      if (pos < 10) {
+  // Update the most recent list to include the currently view contents.
+  // This is done in the following steps:
+  // 1) If the currently viewed content hash is found in the most recent list,
+  //    it means that the content was viewed in previous sessions. We need to
+  //    remove the content hash from its old position and add it back later.
+  // 2) Append the currently viewed content hashes.
+  std::vector<uint32_t> most_recent_viewed_content_hashes(
+      metadata.most_recent_viewed_content_hashes().begin(),
+      metadata.most_recent_viewed_content_hashes().end());
+  base::flat_set<uint32_t> viewed_content_hashes(
+      stream_metadata.viewed_content_hashes().begin(),
+      stream_metadata.viewed_content_hashes().end());
+  most_recent_viewed_content_hashes.erase(
+      std::remove_if(most_recent_viewed_content_hashes.begin(),
+                     most_recent_viewed_content_hashes.end(),
+                     [&viewed_content_hashes](uint32_t x) {
+                       return viewed_content_hashes.contains(x);
+                     }),
+      most_recent_viewed_content_hashes.end());
+  most_recent_viewed_content_hashes.insert(
+      most_recent_viewed_content_hashes.end(),
+      stream_metadata.viewed_content_hashes().begin(),
+      stream_metadata.viewed_content_hashes().end());
+
+  // Check and report the content duplication.
+  if (!stream.content_ids.IsEmpty()) {
+    base::flat_set<uint32_t> most_recent_content_hashes(
+        most_recent_viewed_content_hashes.begin(),
+        most_recent_viewed_content_hashes.end());
+    bool is_duplicated_at_pos_1 = false;
+    bool is_duplicated_at_pos_2 = false;
+    bool is_duplicated_at_pos_3 = false;
+    int duplicate_count_for_top_10 = 0;
+    int duplicate_count_for_all = 0;
+    int total_count = 0;
+    int pos = 0;
+    for (const feedstore::StreamContentHashList& hash_list :
+         stream.content_ids.original_hashes()) {
+      if (hash_list.hashes_size() == 0)
+        continue;
+
+      // For position specific metrics, only the first item is checked for
+      // duplication if there are more than one items in a row, like carousel,
+      // collection or 2-column.
+      if (pos < 10 &&
+          most_recent_content_hashes.contains(hash_list.hashes(0))) {
         duplicate_count_for_top_10++;
         if (pos == 0)
           is_duplicated_at_pos_1 = true;
@@ -1556,34 +1586,43 @@ void FeedStream::CheckDuplicatedContentsOnRefresh() {
         else if (pos == 2)
           is_duplicated_at_pos_3 = true;
       }
-    }
 
-    for (uint32_t hash : hash_list.hashes()) {
-      total_count++;
-      if (most_recent_content_hashes.contains(hash)) {
-        duplicate_count_for_all++;
-      } else {
-        new_content_hashes.push_back(hash);
+      for (uint32_t hash : hash_list.hashes()) {
+        total_count++;
+        if (most_recent_content_hashes.contains(hash)) {
+          duplicate_count_for_all++;
+        }
       }
+
+      pos++;
     }
 
-    pos++;
+    // Don't report the duplication metrics for the first time.
+    if (most_recent_viewed_content_hashes.size() > 0 && total_count > 0) {
+      metrics_reporter_->ReportContentDuplication(
+          is_duplicated_at_pos_1, is_duplicated_at_pos_2,
+          is_duplicated_at_pos_3,
+          static_cast<int>(duplicate_count_for_top_10 * 10),
+          static_cast<int>(100 * duplicate_count_for_all / total_count));
+    }
   }
-  // Don't report the duplication metrics for the first time.
-  if (metadata_.most_recent_content_hashes().size() > 0 && total_count > 0) {
-    metrics_reporter_->ReportContentDuplication(
-        is_duplicated_at_pos_1, is_duplicated_at_pos_2, is_duplicated_at_pos_3,
-        static_cast<int>(duplicate_count_for_top_10 * 10),
-        static_cast<int>(100 * duplicate_count_for_all / total_count));
-  }
-  feedstore::Metadata metadata = GetMetadata();
-  feedstore::AddMostRecentContentHashes(metadata,
-                                        std::move(new_content_hashes));
 
   // Reset `viewed_content_hashes` after each refresh.
-  feedstore::Metadata::StreamMetadata& stream_metadata =
-      MetadataForStream(metadata, stream_type);
   stream_metadata.clear_viewed_content_hashes();
+  stream.viewed_content_hashes.clear();
+
+  // Cap the most recent list.
+  size_t max_size = static_cast<size_t>(
+      GetFeedConfig().max_most_recent_viewed_content_hashes);
+  if (most_recent_viewed_content_hashes.size() > max_size) {
+    most_recent_viewed_content_hashes.erase(
+        most_recent_viewed_content_hashes.begin(),
+        most_recent_viewed_content_hashes.begin() +
+            (most_recent_viewed_content_hashes.size() - max_size));
+  }
+  metadata.mutable_most_recent_viewed_content_hashes()->Assign(
+      most_recent_viewed_content_hashes.begin(),
+      most_recent_viewed_content_hashes.end());
 
   SetMetadata(metadata);
 }
