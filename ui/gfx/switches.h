@@ -13,6 +13,7 @@ namespace switches {
 
 GFX_SWITCHES_EXPORT extern const char kAnimationDurationScale[];
 GFX_SWITCHES_EXPORT extern const char kDisableFontSubpixelPositioning[];
+GFX_SWITCHES_EXPORT extern const char kDisablePPAPISharedImagesSwapChain[];
 GFX_SWITCHES_EXPORT extern const char kEnableNativeGpuMemoryBuffers[];
 GFX_SWITCHES_EXPORT extern const char kForcePrefersReducedMotion[];
 GFX_SWITCHES_EXPORT extern const char kHeadless[];
@@ -27,6 +28,9 @@ GFX_SWITCHES_EXPORT extern const char kNoXshm[];
 namespace features {
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kOddHeightMultiPlanarBuffers);
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kOddWidthMultiPlanarBuffers);
+GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kPPAPISharedImagesSwapChain);
+
+GFX_SWITCHES_EXPORT bool UseSharedImagesSwapChainForPPAPI();
 }  // namespace features
 
 #endif  // UI_GFX_SWITCHES_H_

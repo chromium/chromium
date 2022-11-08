@@ -5612,6 +5612,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "ppapi-shared-images-swapchain",
+    "owners": [ "vasilyt" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "prefer-constant-frame-rate",
     "owners": [ "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 110

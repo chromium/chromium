@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "ui/gfx/switches.h"
+
+#include "base/command_line.h"
+#include "build/build_config.h"
 
 namespace switches {
 
@@ -15,6 +17,11 @@ const char kAnimationDurationScale[] = "animation-duration-scale";
 // sharpness, kerning, hinting and layout.
 const char kDisableFontSubpixelPositioning[] =
     "disable-font-subpixel-positioning";
+
+// Disables new code to run SharedImages for NaCL swapchain. This overrides
+// value of kPPAPISharedImagesSwapChain feature flag.
+const char kDisablePPAPISharedImagesSwapChain[] =
+    "disable-ppapi-shared-images-swapchain";
 
 // Enable native CPU-mappable GPU memory buffer support on Linux.
 const char kEnableNativeGpuMemoryBuffers[] = "enable-native-gpu-memory-buffers";
@@ -54,5 +61,18 @@ BASE_FEATURE(kOddWidthMultiPlanarBuffers,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE(kPPAPISharedImagesSwapChain,
+             "PPAPISharedImagesSwapChain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+GFX_SWITCHES_EXPORT bool UseSharedImagesSwapChainForPPAPI() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisablePPAPISharedImagesSwapChain)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kPPAPISharedImagesSwapChain);
+}
 
 }  // namespace features

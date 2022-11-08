@@ -59959,6 +59959,7 @@ from previous Chrome versions.
   <int value="-731967727" label="OmahaMinSdkVersionAndroid:disabled"/>
   <int value="-731502579" label="CupsPrintersUiOverhaul:disabled"/>
   <int value="-731133967" label="AutofillSettingsCardTypeSplit:disabled"/>
+  <int value="-729269661" label="PPAPISharedImagesSwapChain:enabled"/>
   <int value="-728461030" label="AutofillPruneSuggestions:disabled"/>
   <int value="-728187009" label="NtpRealboxSuggestionAnswers:enabled"/>
   <int value="-727860269" label="WebAuthenticationBle:disabled"/>
@@ -60209,6 +60210,7 @@ from previous Chrome versions.
   <int value="-583842972"
       label="WebAuthenticationPasskeysUIExperiment:enabled"/>
   <int value="-582870536" label="BluetoothNextHandsfreeProfile:enabled"/>
+  <int value="-582570706" label="PPAPISharedImagesSwapChain:disabled"/>
   <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
   <int value="-579192400" label="disable-input-view"/>

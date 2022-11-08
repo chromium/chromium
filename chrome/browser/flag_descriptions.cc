@@ -175,6 +175,11 @@ const char kPasswordViewPageInSettingsDescription[] =
     "Enables a new password details subpage in the settings password "
     "management UI.";
 
+extern const char kPPAPISharedImagesSwapChainName[] =
+    "Use SharedImages for PPAPI swapchain";
+extern const char kPPAPISharedImagesSwapChainDescription[] =
+    "Switches legacy swap chain code to SharedImages";
+
 const char kPrivacyIndicatorsName[] = "Enable Privacy Indicators";
 const char kPrivacyIndicatorsDescription[] =
     "While screen sharing or camera/microphone is being accessed, show a green "

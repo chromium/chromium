@@ -128,6 +128,9 @@ extern const char kPasswordNotesWithBackupDescription[];
 extern const char kPasswordViewPageInSettingsName[];
 extern const char kPasswordViewPageInSettingsDescription[];
 
+extern const char kPPAPISharedImagesSwapChainName[];
+extern const char kPPAPISharedImagesSwapChainDescription[];
+
 extern const char kPrivacyIndicatorsName[];
 extern const char kPrivacyIndicatorsDescription[];
 

@@ -9882,6 +9882,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(browser_ui::kHighlightManagedPrefDisclaimerAndroid)},
 #endif
 
+#if BUILDFLAG(ENABLE_NACL)
+    {"ppapi-shared-images-swapchain",
+     flag_descriptions::kPPAPISharedImagesSwapChainName,
+     flag_descriptions::kPPAPISharedImagesSwapChainDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPPAPISharedImagesSwapChain)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
