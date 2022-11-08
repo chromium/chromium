@@ -34,6 +34,9 @@ try_.builder(
     mirrors = [
         "ci/android-official",
     ],
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(

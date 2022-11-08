@@ -941,7 +941,7 @@
     },
 
     'tryserver.chromium': {
-      'android-official': 'android_official_optimize_goma_trybot',
+      'android-official': 'android_official_optimize_reclient_trybot',
       'fuchsia-official': 'fuchsia_official_optimize_goma_trybot',
       'linux-official': 'official_optimize_reclient_trybot',
       'mac-official': 'official_optimize_goma_trybot',
@@ -972,13 +972,13 @@
       'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan',
       'android-cronet-lollipop-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
       'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
-      'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86',
-      'android-cronet-x86-dbg-10-tests': 'android_cronet_debug_static_bot_x86',
-      'android-cronet-x86-dbg-11-tests': 'android_cronet_debug_static_bot_x86',
-      'android-cronet-x86-dbg-oreo-tests': 'android_cronet_debug_static_bot_x86',
-      'android-cronet-x86-dbg-pie-tests': 'android_cronet_debug_static_bot_x86',
-      'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86',
-      'android-cronet-x86-rel-kitkat-tests': 'android_cronet_release_bot_minimal_symbols_x86',
+      'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
+      'android-cronet-x86-dbg-10-tests': 'android_cronet_debug_static_bot_x86_reclient',
+      'android-cronet-x86-dbg-11-tests': 'android_cronet_debug_static_bot_x86_reclient',
+      'android-cronet-x86-dbg-oreo-tests': 'android_cronet_debug_static_bot_x86_reclient',
+      'android-cronet-x86-dbg-pie-tests': 'android_cronet_debug_static_bot_x86_reclient',
+      'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
+      'android-cronet-x86-rel-kitkat-tests': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-deterministic-dbg': 'android_debug_bot',
       'android-deterministic-rel': 'android_without_codecs_release_trybot',
       'android-fieldtrial-rel': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
@@ -986,7 +986,7 @@
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-nougat-x86-rel-inverse-fyi': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
-      'android-oreo-arm64-dbg': 'android_debug_trybot_arm64',
+      'android-oreo-arm64-dbg': 'android_debug_trybot_arm64_reclient',
       'android-perfetto-rel': 'perfetto_release_trybot_android',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
@@ -996,12 +996,11 @@
       'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-weblayer-10-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
       'android-weblayer-marshmallow-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-weblayer-pie-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome',
       'android-webview-10-x86-rel-tests': 'android_release_trybot_x86_fastbuild_webview_trichrome',
-      'android-webview-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
+      'android-webview-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
       'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
@@ -1480,10 +1479,6 @@
       'android', 'cronet_android', 'debug_static_bot_reclient', 'arm_no_neon', 'release_java',
     ],
 
-    'android_cronet_debug_static_bot_x86': [
-      'android', 'cronet_android', 'debug_static_bot', 'x86',
-    ],
-
     'android_cronet_debug_static_bot_x86_reclient': [
       'android', 'cronet_android', 'debug_static_bot_reclient', 'x86',
     ],
@@ -1515,11 +1510,6 @@
 
     'android_cronet_release_bot_minimal_symbols_arm_no_neon_reclient': [
       'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'arm_no_neon',
-      'strip_debug_info',
-    ],
-
-    'android_cronet_release_bot_minimal_symbols_x86': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot', 'minimal_symbols', 'x86',
       'strip_debug_info',
     ],
 
@@ -1607,12 +1597,16 @@
       'android', 'debug_bot', 'x64', 'webview_trichrome', 'webview_shell',
     ],
 
-    'android_official_optimize_goma_trybot': [
-      'official_optimize_goma_trybot', 'android_without_codecs',
+    'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient': [
+      'android', 'debug_bot_reclient', 'x64', 'webview_trichrome', 'webview_shell',
     ],
 
     'android_official_optimize_reclient': [
       'official_optimize_reclient', 'android_without_codecs',
+    ],
+
+    'android_official_optimize_reclient_trybot': [
+      'official_optimize_reclient_trybot', 'android_without_codecs',
     ],
 
     # TODO(crbug/1182468) Remove these android coverage expectations after

@@ -6,7 +6,7 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-official": {

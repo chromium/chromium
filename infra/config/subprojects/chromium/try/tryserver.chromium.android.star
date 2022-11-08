@@ -163,10 +163,14 @@ try_.builder(
     mirrors = [
         "ci/android-cronet-x86-dbg",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-x86-rel",
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -187,6 +191,8 @@ try_.builder(
             cq.location_filter(path_regexp = "components/cronet/ios/.+", exclude = True),
         ],
     ),
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -195,6 +201,8 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-11-tests",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -203,6 +211,8 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-oreo-tests",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -211,10 +221,14 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-pie-tests",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-x86-rel-kitkat-tests",
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -300,6 +314,8 @@ try_.builder(
         "ci/Android arm64 Builder (dbg)",
         "ci/Oreo Phone Tester",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -417,6 +433,8 @@ try_.builder(
         "ci/Android x64 Builder (dbg)",
         "ci/android-webview-12-x64-dbg-tests",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
