@@ -326,6 +326,9 @@ tast_disabled_tests_from_chrome_all = [
   "policy.DefaultSearchProviderEnabled",
   "policy.DeveloperToolsAvailability",
   "policy.DisableScreenshotsHotkey",
+  "policy.DownloadRestrictions",
+  "policy.ManagedBookmarks",
+  "policy.NewTabPageLocation",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
