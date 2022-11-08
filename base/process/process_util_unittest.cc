@@ -1088,17 +1088,7 @@ int ProcessUtilTest::CountOpenFDsInChild() {
   return num_open_files;
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_FDRemapping FDRemapping
-#elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
-// ProcessUtilTest.FDRemapping is flaky when ran under xvfb-run on Precise.
-// The problem is 100% reproducible with both ASan and TSan.
-// See http://crbug.com/136720.
-#define MAYBE_FDRemapping DISABLED_FDRemapping
-#else
-#define MAYBE_FDRemapping FDRemapping
-#endif
-TEST_F(ProcessUtilTest, MAYBE_FDRemapping) {
+TEST_F(ProcessUtilTest, FDRemapping) {
   int fds_before = CountOpenFDsInChild();
 
   // Open some dummy fds to make sure they don't propagate over to the
