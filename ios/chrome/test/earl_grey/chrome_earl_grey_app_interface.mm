@@ -23,7 +23,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/pref_names.h"
 #import "components/unified_consent/unified_consent_service.h"
-#import "components/url_param_filter/core/url_param_classifications_loader.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/app/main_controller.h"
@@ -1345,18 +1344,6 @@ int watchRunNumber = 0;
   chrome_test_util::GetMainController().appState.shouldShowDefaultBrowserPromo =
       NO;
   LogUserInteractionWithFullscreenPromo();
-}
-#pragma mark - Url Param Classification utilities
-
-+ (void)setUrlParamClassifications:(NSString*)contents {
-  std::string file_contents = base::SysNSStringToUTF8(contents);
-  url_param_filter::ClassificationsLoader::GetInstance()->ReadClassifications(
-      file_contents);
-}
-
-+ (void)resetUrlParamClassifications {
-  url_param_filter::ClassificationsLoader::GetInstance()
-      ->ResetListsForTesting();
 }
 
 @end

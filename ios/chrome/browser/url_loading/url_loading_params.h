@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_PARAMS_H_
 #define IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_PARAMS_H_
 
-#import "components/url_param_filter/core/url_param_filterer.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/window_open_disposition.h"
@@ -88,9 +87,6 @@ struct UrlLoadParams {
 
   // Opaque way of changing loading behavior.
   UrlLoadStrategy load_strategy;
-
-  // Contains information about experimental filtering of the url being loaded.
-  url_param_filter::FilterResult filtering_result;
 
   bool in_background() const {
     return disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;

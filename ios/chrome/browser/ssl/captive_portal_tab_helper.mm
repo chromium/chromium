@@ -7,7 +7,6 @@
 #import <memory>
 
 #import "base/memory/ptr_util.h"
-#import "components/url_param_filter/core/url_param_filterer.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
@@ -30,7 +29,7 @@ void CaptivePortalTabHelper::DisplayCaptivePortalLoginPage(GURL landing_url) {
           landing_url, ui::PAGE_TRANSITION_TYPED, nullptr),
       nil, false, TabInsertion::kPositionAutomatically,
       /*in_background=*/false, /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false, url_param_filter::FilterResult());
+      /*should_show_start_surface=*/false);
 }
 
 CaptivePortalTabHelper::~CaptivePortalTabHelper() = default;

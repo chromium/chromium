@@ -27,7 +27,6 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/url_formatter/url_formatter.h"
-#import "components/url_param_filter/core/url_param_filterer.h"
 #import "components/version_info/version_info.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -3194,7 +3193,7 @@ bool IsSigninForcedByPolicy() {
   TabInsertionBrowserAgent::FromBrowser(browser)->InsertWebState(
       urlLoadParams.web_params, nil, false, browser->GetWebStateList()->count(),
       /*in_background=*/false, /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false, url_param_filter::FilterResult());
+      /*should_show_start_surface=*/false);
   [self beginActivatingBrowser:browser dismissTabSwitcher:YES focusOmnibox:NO];
 }
 

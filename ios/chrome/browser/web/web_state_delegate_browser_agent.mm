@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/url_param_filter/core/url_param_filterer.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -193,8 +192,7 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
       return tab_insertion_agent_->InsertWebState(
           load_params, source, false, TabInsertion::kPositionAutomatically,
           (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB),
-          /*inherit_opener=*/false, /*should_show_start_surface=*/false,
-          url_param_filter::FilterResult());
+          /*inherit_opener=*/false, /*should_show_start_surface=*/false);
     }
     case WindowOpenDisposition::CURRENT_TAB: {
       source->GetNavigationManager()->LoadURLWithParams(load_params);
@@ -204,8 +202,7 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
       return tab_insertion_agent_->InsertWebState(
           load_params, source, true, TabInsertion::kPositionAutomatically,
           /*in_background=*/false, /*inherit_opener=*/false,
-          /*should_show_start_surface=*/false,
-          url_param_filter::FilterResult());
+          /*should_show_start_surface=*/false);
     }
     default:
       NOTIMPLEMENTED();

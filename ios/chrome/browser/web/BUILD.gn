@@ -89,7 +89,6 @@ source_set("delegate") {
     ":tab_helper_delegates",
     ":web",
     "//base",
-    "//components/url_param_filter/core",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",

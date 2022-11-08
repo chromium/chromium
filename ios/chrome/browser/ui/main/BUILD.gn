@@ -147,7 +147,6 @@ source_set("scene") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/url_formatter",
-    "//components/url_param_filter/core",
     "//components/version_info",
     "//components/web_resource",
     "//ios/chrome/app:app",

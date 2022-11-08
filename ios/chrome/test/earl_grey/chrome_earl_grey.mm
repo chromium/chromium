@@ -1548,14 +1548,4 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface stopWatcher];
 }
 
-#pragma mark - Url Param Classification utilities
-- (void)setUrlParamClassifications:(const std::string&)raw_classifications {
-  [ChromeEarlGreyAppInterface
-      setUrlParamClassifications:base::SysUTF8ToNSString(raw_classifications)];
-}
-
-- (void)resetUrlParamClassifications {
-  [ChromeEarlGreyAppInterface resetUrlParamClassifications];
-}
-
 @end

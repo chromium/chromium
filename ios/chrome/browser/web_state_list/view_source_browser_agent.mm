@@ -6,7 +6,6 @@
 
 #import "base/base64.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/url_param_filter/core/url_param_filterer.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -68,5 +67,5 @@ void ViewSourceBrowserAgent::InsertSourceViewTab(NSString* source,
   insertionAgent->InsertWebState(
       loadParams, web_state, true, TabInsertion::kPositionAutomatically,
       /*in_background=*/false, /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false, url_param_filter::FilterResult());
+      /*should_show_start_surface=*/false);
 }

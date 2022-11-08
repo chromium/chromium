@@ -10,8 +10,6 @@
 #import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
-#import "components/url_param_filter/core/features.h"
-#import "components/url_param_filter/core/url_param_filterer.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -163,47 +161,9 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
       if (!isOffTheRecord) {
         // Open in Incognito Tab.
         UIAction* openIncognitoTab;
-        if (base::FeatureList::IsEnabled(
-                url_param_filter::features::kIncognitoParamFilterEnabled)) {
-          // Experimental filter guarded by the kIncognitoParamFilterEnabled
-          // flag and "should_filter" param.
-          url_param_filter::FilterResult result =
-              url_param_filter::FilterUrl(lastCommittedURL, linkURL);
-          bool should_filter = base::GetFieldTrialParamByFeatureAsBool(
-              url_param_filter::features::kIncognitoParamFilterEnabled,
-              "should_filter", false);
-          GURL targetURL = should_filter && result.filtered_param_count > 0
-                               ? result.filtered_url
-                               : linkURL;
-          loadParams = UrlLoadParams::InNewTab(targetURL);
-          loadParams.in_incognito = YES;
-          loadParams.filtering_result = result;
-          openIncognitoTab =
-              [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
-                ContextMenuConfigurationProvider* strongSelf = weakSelf;
-                if (!strongSelf)
-                  return;
-                UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
-                    ->Load(loadParams);
-              }];
-          // Log to UMA metrics.
-          if (should_filter) {
-            if (result.experimental_status ==
-                url_param_filter::ClassificationExperimentStatus::
-                    EXPERIMENTAL) {
-              base::UmaHistogramCounts100(
-                  "Navigation.UrlParamFilter.FilteredParamCountExperimental",
-                  result.filtered_param_count);
-            }
-            base::UmaHistogramCounts100(
-                "Navigation.UrlParamFilter.FilteredParamCount",
-                result.filtered_param_count);
-          }
-        } else {
-          openIncognitoTab =
-              [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
-                                                       completion:nil];
-        }
+        openIncognitoTab =
+            [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
+                                                     completion:nil];
         [menuElements addObject:openIncognitoTab];
       }
 

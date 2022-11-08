@@ -247,7 +247,6 @@ test("components_unittests") {
     "//components/url_formatter/spoof_checks/common_words:unit_tests",
     "//components/url_formatter/spoof_checks/top_domains:unit_tests",
     "//components/url_matcher:unit_tests",
-    "//components/url_param_filter/core:unit_tests",
     "//components/url_pattern_index:unit_tests",
     "//components/variations:unit_tests",
     "//components/variations/field_trial_config:unit_tests",
@@ -322,7 +321,6 @@ test("components_unittests") {
       "//components/signin/public/identity_manager/objc:unit_tests",
       "//components/translate/ios/browser:unit_tests",
       "//components/ukm/ios:unit_tests",
-      "//components/url_param_filter/ios:unit_tests",
     ]
   } else {  #!is_ios
     deps += [

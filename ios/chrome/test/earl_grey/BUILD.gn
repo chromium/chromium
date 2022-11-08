@@ -79,7 +79,6 @@ source_set("eg_app_support+eg2") {
     "//components/sync/base",
     "//components/translate/core/browser",
     "//components/unified_consent",
-    "//components/url_param_filter/core",
     "//components/variations",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/strings",

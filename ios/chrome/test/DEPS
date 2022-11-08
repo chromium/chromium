@@ -17,7 +17,6 @@ include_rules = [
   "+components/sync_device_info",
   "+components/translate",
   "+components/unified_consent",
-  "+components/url_param_filter/core",
   "+components/variations",
   "+components/version_info",
   "+google_apis",

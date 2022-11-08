@@ -39,7 +39,6 @@ source_set("menu") {
     "//components/open_from_clipboard",
     "//components/prefs",
     "//components/search_engines",
-    "//components/url_param_filter/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/policy:policy_util",

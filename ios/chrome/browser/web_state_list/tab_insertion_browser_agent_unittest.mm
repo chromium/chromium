@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 
-#import "components/url_param_filter/core/url_param_filterer.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -54,47 +53,43 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
 }  // namespace
 
 TEST_F(TabInsertionBrowserAgentTest, InsertUrlSingle) {
-  web::WebState* web_state = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/0,
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* web_state =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/0,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   ASSERT_EQ(1, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
 }
 
 TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
-  web::WebState* web_state0 = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/0,
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
-  web::WebState* web_state1 = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/0,
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
-  web::WebState* web_state2 = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/1,
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* web_state0 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/0,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/0,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
+  web::WebState* web_state2 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/1,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
 
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state1, browser_->GetWebStateList()->GetWebStateAt(0));
@@ -103,48 +98,44 @@ TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
 }
 
 TEST_F(TabInsertionBrowserAgentTest, AppendUrlSingle) {
-  web::WebState* web_state = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/browser_->GetWebStateList()->count(),
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* web_state =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/browser_->GetWebStateList()->count(),
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
 
   ASSERT_EQ(1, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
 }
 
 TEST_F(TabInsertionBrowserAgentTest, AppendUrlMultiple) {
-  web::WebState* web_state0 = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/browser_->GetWebStateList()->count(),
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
-  web::WebState* web_state1 = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/browser_->GetWebStateList()->count(),
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
-  web::WebState* web_state2 = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/browser_->GetWebStateList()->count(),
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* web_state0 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/browser_->GetWebStateList()->count(),
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/browser_->GetWebStateList()->count(),
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
+  web::WebState* web_state2 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/browser_->GetWebStateList()->count(),
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
 
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state0, browser_->GetWebStateList()->GetWebStateAt(0));
@@ -154,96 +145,86 @@ TEST_F(TabInsertionBrowserAgentTest, AppendUrlMultiple) {
 
 TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
   // Create a few tabs with the controller at the front.
-  web::WebState* parent = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/browser_->GetWebStateList()->count(),
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
-  agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/browser_->GetWebStateList()->count(),
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
-  agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/browser_->GetWebStateList()->count(),
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* parent =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/browser_->GetWebStateList()->count(),
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
+  agent_->InsertWebState(Params(GURL(kURL1)),
+                         /*parent=*/nil,
+                         /*opened_by_dom=*/false,
+                         /*index=*/browser_->GetWebStateList()->count(),
+                         /*in_background=*/false,
+                         /*inherit_opener=*/false,
+                         /*should_show_start_surface=*/false);
+  agent_->InsertWebState(Params(GURL(kURL1)),
+                         /*parent=*/nil,
+                         /*opened_by_dom=*/false,
+                         /*index=*/browser_->GetWebStateList()->count(),
+                         /*in_background=*/false,
+                         /*inherit_opener=*/false,
+                         /*should_show_start_surface=*/false);
 
   // Add a new tab, it should be added behind the parent.
-  web::WebState* child = agent_->InsertWebState(
-      Params(GURL(kURL1), ui::PAGE_TRANSITION_LINK),
-      /*parent=*/parent,
-      /*opened_by_dom=*/false,
-      /*index=*/TabInsertion::kPositionAutomatically,
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* child =
+      agent_->InsertWebState(Params(GURL(kURL1), ui::PAGE_TRANSITION_LINK),
+                             /*parent=*/parent,
+                             /*opened_by_dom=*/false,
+                             /*index=*/TabInsertion::kPositionAutomatically,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(parent), 0);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(child), 1);
 
   // Add another new tab without a parent, should go at the end.
-  web::WebState* web_state = agent_->InsertWebState(
-      Params(GURL(kURL1), ui::PAGE_TRANSITION_LINK),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/TabInsertion::kPositionAutomatically,
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* web_state =
+      agent_->InsertWebState(Params(GURL(kURL1), ui::PAGE_TRANSITION_LINK),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/TabInsertion::kPositionAutomatically,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state),
             browser_->GetWebStateList()->count() - 1);
 
   // Same for a tab that's not opened via a LINK transition.
-  web::WebState* web_state2 = agent_->InsertWebState(
-      Params(GURL(kURL1)),
-      /*parent=*/nil,
-      /*opened_by_dom=*/false,
-      /*index=*/browser_->GetWebStateList()->count(),
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* web_state2 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/browser_->GetWebStateList()->count(),
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state2),
             browser_->GetWebStateList()->count() - 1);
 
   // Add a tab in the background. It should appear behind the opening tab.
-  web::WebState* web_state3 = agent_->InsertWebState(
-      Params(GURL(kURL1), ui::PAGE_TRANSITION_LINK),
-      /*parent=*/web_state,
-      /*opened_by_dom=*/false,
-      /*index=*/TabInsertion::kPositionAutomatically,
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* web_state3 =
+      agent_->InsertWebState(Params(GURL(kURL1), ui::PAGE_TRANSITION_LINK),
+                             /*parent=*/web_state,
+                             /*opened_by_dom=*/false,
+                             /*index=*/TabInsertion::kPositionAutomatically,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state3),
             browser_->GetWebStateList()->GetIndexOfWebState(web_state) + 1);
 
   // Add another background tab behind the one we just opened.
-  web::WebState* web_state4 = agent_->InsertWebState(
-      Params(GURL(kURL1), ui::PAGE_TRANSITION_LINK),
-      /*parent=*/web_state3,
-      /*opened_by_dom=*/false,
-      /*index=*/TabInsertion::kPositionAutomatically,
-      /*in_background=*/false,
-      /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*filtered_param_count=*/url_param_filter::FilterResult());
+  web::WebState* web_state4 =
+      agent_->InsertWebState(Params(GURL(kURL1), ui::PAGE_TRANSITION_LINK),
+                             /*parent=*/web_state3,
+                             /*opened_by_dom=*/false,
+                             /*index=*/TabInsertion::kPositionAutomatically,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state4),
             browser_->GetWebStateList()->GetIndexOfWebState(web_state3) + 1);
 }
