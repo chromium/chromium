@@ -133,18 +133,8 @@ bool ExtensionActionHandler::Validate(
   if (!action)
     return true;
 
-  const char* manifest_key = nullptr;
-  switch (action->type) {
-    case ActionInfo::TYPE_ACTION:
-      manifest_key = manifest_keys::kAction;
-      break;
-    case ActionInfo::TYPE_BROWSER:
-      manifest_key = manifest_keys::kBrowserAction;
-      break;
-    case ActionInfo::TYPE_PAGE:
-      manifest_key = manifest_keys::kPageAction;
-      break;
-  }
+  const char* manifest_key =
+      ActionInfo::GetManifestKeyForActionType(action->type);
   DCHECK(manifest_key);
 
   SetWarningsForInvalidDefaultPopup(action, manifest_key, extension, warnings);

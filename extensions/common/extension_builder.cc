@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/api/content_scripts.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -62,20 +63,7 @@ struct ExtensionBuilder::ManifestData {
     }
 
     if (action) {
-      // TODO(devlin): Update this when action_info_test_util.[h|cc] is moved to
-      // //extensions.
-      const char* action_key = nullptr;
-      switch (*action) {
-        case ActionInfo::TYPE_PAGE:
-          action_key = manifest_keys::kPageAction;
-          break;
-        case ActionInfo::TYPE_BROWSER:
-          action_key = manifest_keys::kBrowserAction;
-          break;
-        case ActionInfo::TYPE_ACTION:
-          action_key = manifest_keys::kAction;
-          break;
-      }
+      const char* action_key = ActionInfo::GetManifestKeyForActionType(*action);
       manifest.Set(action_key, std::make_unique<base::DictionaryValue>());
     }
 
