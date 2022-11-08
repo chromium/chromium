@@ -272,7 +272,8 @@ void CommitCardTable() {
 #if PA_STARSCAN_USE_CARD_TABLE
   RecommitSystemPages(PartitionAddressSpace::RegularPoolBase(),
                       sizeof(QuarantineCardTable),
-                      PageAccessibilityConfiguration::kReadWrite,
+                      PageAccessibilityConfiguration(
+                          PageAccessibilityConfiguration::kReadWrite),
                       PageAccessibilityDisposition::kRequireUpdate);
 #endif
 }
@@ -1404,7 +1405,8 @@ PCScanInternal::SuperPages GetSuperPagesAndCommitStateBitmaps(
       *metadata;
       RecommitSystemPages(SuperPageStateBitmapAddr(super_page),
                           state_bitmap_size_to_commit,
-                          PageAccessibilityConfiguration::kReadWrite,
+                          PageAccessibilityConfiguration(
+                              PageAccessibilityConfiguration::kReadWrite),
                           PageAccessibilityDisposition::kRequireUpdate);
       super_pages.push_back(super_page);
     }

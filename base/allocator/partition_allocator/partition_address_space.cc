@@ -189,7 +189,8 @@ void PartitionAddressSpace::Init() {
   // conveniently taken care of by the last guard page of the regular pool.
   setup_.regular_pool_base_address_ =
       AllocPages(glued_pool_sizes, glued_pool_sizes,
-                 PageAccessibilityConfiguration::kInaccessible,
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, pools_fd);
   if (!setup_.regular_pool_base_address_)
     HandlePoolAllocFailure();
@@ -203,7 +204,8 @@ void PartitionAddressSpace::Init() {
 #endif
   setup_.regular_pool_base_address_ =
       AllocPages(regular_pool_size, regular_pool_size,
-                 PageAccessibilityConfiguration::kInaccessible,
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, regular_pool_fd);
   if (!setup_.regular_pool_base_address_)
     HandlePoolAllocFailure();
@@ -223,8 +225,9 @@ void PartitionAddressSpace::Init() {
   uintptr_t base_address = AllocPagesWithAlignOffset(
       0, brp_pool_size + kForbiddenZoneSize, brp_pool_size,
       brp_pool_size - kForbiddenZoneSize,
-      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc,
-      brp_pool_fd);
+      PageAccessibilityConfiguration(
+          PageAccessibilityConfiguration::kInaccessible),
+      PageTag::kPartitionAlloc, brp_pool_fd);
   if (!base_address)
     HandlePoolAllocFailure();
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
@@ -292,7 +295,8 @@ void PartitionAddressSpace::Init() {
   // Reserve memory for the shadow pools.
   uintptr_t regular_pool_shadow_address =
       AllocPages(regular_pool_size, regular_pool_size,
-                 PageAccessibilityConfiguration::kInaccessible,
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, regular_pool_fd);
   regular_pool_shadow_offset_ =
       regular_pool_shadow_address - setup_.regular_pool_base_address_;
@@ -300,8 +304,9 @@ void PartitionAddressSpace::Init() {
   uintptr_t brp_pool_shadow_address = AllocPagesWithAlignOffset(
       0, brp_pool_size + kForbiddenZoneSize, brp_pool_size,
       brp_pool_size - kForbiddenZoneSize,
-      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc,
-      brp_pool_fd);
+      PageAccessibilityConfiguration(
+          PageAccessibilityConfiguration::kInaccessible),
+      PageTag::kPartitionAlloc, brp_pool_fd);
   brp_pool_shadow_offset_ =
       brp_pool_shadow_address - setup_.brp_pool_base_address_;
 #endif
@@ -348,9 +353,11 @@ void PartitionAddressSpace::InitPkeyPool(int pkey) {
   }
 
   size_t pool_size = PkeyPoolSize();
-  setup_.pkey_pool_base_address_ = AllocPages(
-      pool_size, pool_size, PageAccessibilityConfiguration::kInaccessible,
-      PageTag::kPartitionAlloc);
+  setup_.pkey_pool_base_address_ =
+      AllocPages(pool_size, pool_size,
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
+                 PageTag::kPartitionAlloc);
   if (!setup_.pkey_pool_base_address_)
     HandlePoolAllocFailure();
 

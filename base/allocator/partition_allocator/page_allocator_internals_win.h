@@ -134,7 +134,8 @@ void DecommitSystemPagesInternal(
   // Ignore accessibility_disposition, because decommitting is equivalent to
   // making pages inaccessible.
   SetSystemPagesAccess(address, length,
-                       PageAccessibilityConfiguration::kInaccessible);
+                       PageAccessibilityConfiguration(
+                           PageAccessibilityConfiguration::kInaccessible));
 }
 
 void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {

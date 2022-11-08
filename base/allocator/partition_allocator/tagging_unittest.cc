@@ -17,9 +17,11 @@ namespace partition_alloc::internal {
 // Check whether we can call the tagging intrinsics safely on all architectures.
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlySafe) {
   ::partition_alloc::internal::InitializeMTESupportIfNeeded();
-  uintptr_t buffer = AllocPages(
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteTagged),
+                 PageTag::kChromium);
   EXPECT_TRUE(buffer);
   void* bufferp = TagMemoryRangeRandomly(buffer, 4 * kMemTagGranuleSize, 0u);
   EXPECT_TRUE(bufferp);
@@ -32,9 +34,11 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlySafe) {
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementSafe) {
   ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
-  uintptr_t buffer = AllocPages(
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteTagged),
+                 PageTag::kChromium);
   EXPECT_TRUE(buffer);
   void* bufferp = TagMemoryRangeIncrement(buffer, 4 * kMemTagGranuleSize);
   EXPECT_TRUE(bufferp);
@@ -52,9 +56,11 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementSafe) {
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeBadSz) {
   ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
-  uintptr_t buffer = AllocPages(
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteTagged),
+                 PageTag::kChromium);
   EXPECT_TRUE(buffer);
   void* bufferp =
       TagMemoryRangeRandomly(buffer, 4 * kMemTagGranuleSize - 1, 0u);
@@ -67,9 +73,11 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeBadSz) {
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyNoSz) {
   ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
-  uintptr_t buffer = AllocPages(
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteTagged),
+                 PageTag::kChromium);
   EXPECT_TRUE(buffer);
   void* bufferp = TagMemoryRangeRandomly(buffer, 0, 0u);
   if (cpu.has_mte()) {
@@ -81,9 +89,11 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyNoSz) {
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyBadAlign) {
   ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
-  uintptr_t buffer = AllocPages(
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteTagged),
+                 PageTag::kChromium);
   EXPECT_TRUE(buffer);
   void* bufferp =
       TagMemoryRangeRandomly(buffer - 1, 4 * kMemTagGranuleSize, 0u);
@@ -96,9 +106,11 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyBadAlign) {
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadSz) {
   ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
-  uintptr_t buffer = AllocPages(
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteTagged),
+                 PageTag::kChromium);
   EXPECT_TRUE(buffer);
   void* bufferp = TagMemoryRangeIncrement(buffer, 4 * kMemTagGranuleSize - 1);
   if (cpu.has_mte()) {
@@ -110,9 +122,11 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadSz) {
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementNoSz) {
   ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
-  uintptr_t buffer = AllocPages(
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteTagged),
+                 PageTag::kChromium);
   EXPECT_TRUE(buffer);
   void* bufferp = TagMemoryRangeIncrement(buffer, 0);
   if (cpu.has_mte()) {
@@ -124,9 +138,11 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementNoSz) {
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadAlign) {
   ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
-  uintptr_t buffer = AllocPages(
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteTagged),
+                 PageTag::kChromium);
   EXPECT_TRUE(buffer);
   void* bufferp = TagMemoryRangeIncrement(buffer - 1, 4 * kMemTagGranuleSize);
   if (cpu.has_mte()) {

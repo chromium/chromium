@@ -771,7 +771,8 @@ void ReserveBackupRefPtrGuardRegionIfNeeded() {
   for (size_t i = 0; i < 4; ++i) {
     [[maybe_unused]] uintptr_t allocated_address =
         AllocPages(requested_address, alignment, alignment,
-                   PageAccessibilityConfiguration::kInaccessible,
+                   PageAccessibilityConfiguration(
+                       PageAccessibilityConfiguration::kInaccessible),
                    PageTag::kPartitionAlloc);
     requested_address += alignment;
   }

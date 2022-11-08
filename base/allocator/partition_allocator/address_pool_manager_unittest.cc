@@ -55,9 +55,11 @@ class PartitionAllocAddressPoolManagerTest : public testing::Test {
 
   void SetUp() override {
     manager_ = std::make_unique<AddressPoolManagerForTesting>();
-    base_address_ = AllocPages(kPoolSize, kSuperPageSize,
-                               PageAccessibilityConfiguration::kInaccessible,
-                               PageTag::kPartitionAlloc);
+    base_address_ =
+        AllocPages(kPoolSize, kSuperPageSize,
+                   PageAccessibilityConfiguration(
+                       PageAccessibilityConfiguration::kInaccessible),
+                   PageTag::kPartitionAlloc);
     ASSERT_TRUE(base_address_);
     manager_->Add(kRegularPoolHandle, base_address_, kPoolSize);
     pool_ = kRegularPoolHandle;
@@ -226,7 +228,8 @@ TEST_F(PartitionAllocAddressPoolManagerTest, DecommittedDataIsErased) {
       GetAddressPoolManager()->Reserve(pool_, 0, kSuperPageSize);
   ASSERT_TRUE(address);
   RecommitSystemPages(address, kSuperPageSize,
-                      PageAccessibilityConfiguration::kReadWrite,
+                      PageAccessibilityConfiguration(
+                          PageAccessibilityConfiguration::kReadWrite),
                       PageAccessibilityDisposition::kRequireUpdate);
 
   memset(reinterpret_cast<void*>(address), 42, kSuperPageSize);
@@ -236,7 +239,8 @@ TEST_F(PartitionAllocAddressPoolManagerTest, DecommittedDataIsErased) {
       GetAddressPoolManager()->Reserve(pool_, 0, kSuperPageSize);
   ASSERT_EQ(address, address2);
   RecommitSystemPages(address2, kSuperPageSize,
-                      PageAccessibilityConfiguration::kReadWrite,
+                      PageAccessibilityConfiguration(
+                          PageAccessibilityConfiguration::kReadWrite),
                       PageAccessibilityDisposition::kRequireUpdate);
 
   uint32_t sum = 0;

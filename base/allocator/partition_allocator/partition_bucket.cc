@@ -712,7 +712,8 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
 #endif
     SetSystemPagesAccess(root->next_tag_bitmap_page,
                          next_tag_bitmap_page - root->next_tag_bitmap_page,
-                         PageAccessibilityConfiguration::kReadWrite);
+                         PageAccessibilityConfiguration(
+                             PageAccessibilityConfiguration::kReadWrite));
     root->next_tag_bitmap_page = next_tag_bitmap_page;
   }
 #endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)

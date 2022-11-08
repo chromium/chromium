@@ -306,7 +306,8 @@ void DecommitSystemPagesInternal(
   // crbug.com/1153021).
   if (change_permissions) {
     SetSystemPagesAccess(address, length,
-                         PageAccessibilityConfiguration::kInaccessible);
+                         PageAccessibilityConfiguration(
+                             PageAccessibilityConfiguration::kInaccessible));
   }
 }
 

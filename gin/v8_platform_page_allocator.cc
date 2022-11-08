@@ -15,8 +15,8 @@
 namespace {
 
 // Maps the v8 page permissions into a page configuration from base.
-::partition_alloc::PageAccessibilityConfiguration GetPageConfig(
-    v8::PageAllocator::Permission permission) {
+::partition_alloc::PageAccessibilityConfiguration::Permissions
+GetPagePermissions(v8::PageAllocator::Permission permission) {
   switch (permission) {
     case v8::PageAllocator::Permission::kRead:
       return ::partition_alloc::PageAccessibilityConfiguration::kRead;
@@ -47,6 +47,12 @@ namespace {
       DCHECK_EQ(v8::PageAllocator::Permission::kNoAccess, permission);
       return ::partition_alloc::PageAccessibilityConfiguration::kInaccessible;
   }
+}
+
+::partition_alloc::PageAccessibilityConfiguration GetPageConfig(
+    v8::PageAllocator::Permission permission) {
+  return ::partition_alloc::PageAccessibilityConfiguration(
+      GetPagePermissions(permission));
 }
 
 }  // namespace

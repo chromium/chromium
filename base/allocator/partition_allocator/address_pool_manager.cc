@@ -345,9 +345,11 @@ uintptr_t AddressPoolManager::Reserve(pool_handle handle,
                                       uintptr_t requested_address,
                                       size_t length) {
   PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
-  uintptr_t address = AllocPages(requested_address, length, kSuperPageSize,
-                                 PageAccessibilityConfiguration::kInaccessible,
-                                 PageTag::kPartitionAlloc);
+  uintptr_t address =
+      AllocPages(requested_address, length, kSuperPageSize,
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
+                 PageTag::kPartitionAlloc);
   return address;
 }
 
