@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include <string.h>
+
 #include "base/check_op.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
