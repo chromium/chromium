@@ -354,8 +354,18 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
         List<WebAuthnCredentialDetails> discoverableCredentials = new ArrayList<>();
         for (WebAuthnCredentialDetails credential : credentials) {
-            if (credential.mIsDiscoverable) {
+            if (!credential.mIsDiscoverable) continue;
+
+            if (options.allowCredentials == null || options.allowCredentials.length == 0) {
                 discoverableCredentials.add(credential);
+                continue;
+            }
+
+            for (PublicKeyCredentialDescriptor descriptor : options.allowCredentials) {
+                if (Arrays.equals(credential.mCredentialId, descriptor.id)) {
+                    discoverableCredentials.add(credential);
+                    break;
+                }
             }
         }
 

@@ -56,6 +56,8 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "extensions/common/constants.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -828,6 +830,11 @@ void ChromeAuthenticatorRequestDelegate::SetConditionalRequest(
   is_conditional_ = is_conditional;
 }
 
+void ChromeAuthenticatorRequestDelegate::SetCredentialIdFilter(
+    std::vector<device::PublicKeyCredentialDescriptor> credential_list) {
+  credential_filter_ = std::move(credential_list);
+}
+
 void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
     const device::PublicKeyCredentialUserEntity& user_entity) {
   dialog_model()->set_user_entity(user_entity);
@@ -835,6 +842,21 @@ void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
 
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
+  if (is_conditional_ && !credential_filter_.empty()) {
+    std::vector<device::DiscoverableCredentialMetadata> filtered_list;
+    for (auto& platform_credential :
+         data.recognized_platform_authenticator_credentials) {
+      for (auto& filter_credential : credential_filter_) {
+        if (platform_credential.cred_id == filter_credential.id) {
+          filtered_list.push_back(platform_credential);
+          break;
+        }
+      }
+    }
+    data.recognized_platform_authenticator_credentials =
+        std::move(filtered_list);
+  }
+
   if (g_observer) {
     g_observer->OnTransportAvailabilityEnumerated(this, &data);
   }

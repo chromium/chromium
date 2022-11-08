@@ -1186,15 +1186,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     bool is_conditional_ui_request =
         RuntimeEnabledFeatures::WebAuthenticationConditionalUIEnabled() &&
         options->mediation() == "conditional";
-    if (is_conditional_ui_request &&
-        options->publicKey()->hasAllowCredentials() &&
-        !options->publicKey()->allowCredentials().empty()) {
-      // TODO(https://crbug.com/1365669): Right now this list is removed, but
-      // should be passed through when it can be applied as a filter to
-      // available passkeys.
-      options->publicKey()->setAllowCredentials(
-          HeapVector<Member<PublicKeyCredentialDescriptor>>());
-    }
 
     if (is_conditional_ui_request) {
       UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);

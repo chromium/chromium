@@ -41,7 +41,8 @@
 
 namespace {
 
-static constexpr uint8_t kCredentialID[] = {1, 2, 3, 4};
+static constexpr uint8_t kCredentialID1[] = {1, 2, 3, 4};
+static constexpr uint8_t kCredentialID2[] = {2, 3, 4, 5};
 
 static constexpr char kConditionalUIRequest[] = R"((() => {
 window.requestAbortController = new AbortController();
@@ -52,6 +53,21 @@ navigator.credentials.get({
     challenge: new Uint8Array([1,2,3,4]),
     timeout: 10000,
     allowCredentials: [],
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kConditionalUIRequestFiltered[] = R"((() => {
+  window.requestAbortController = new AbortController();
+  let cred_id = new Uint8Array([1,2,3,4]);
+  navigator.credentials.get({
+    signal: window.requestAbortController.signal,
+    mediation: 'conditional',
+    publicKey: {
+      challenge: cred_id,
+      timeout: 10000,
+      userVerification: 'discouraged',
+      allowCredentials: [{type: 'public-key', id: cred_id}],
   }}).then(c => window.domAutomationController.send('webauthn: OK'),
            e => window.domAutomationController.send('error ' + e));
 })())";
@@ -117,7 +133,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
                              "/webauthn_conditional_mediation.html")));
   }
 
-  void RunSelectAccountTest() {
+  void RunSelectAccountTest(const char* request) {
     // Make sure input events cannot close the autofill popup.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -127,7 +143,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
     // Execute the Conditional UI request.
     content::DOMMessageQueue message_queue(web_contents);
-    content::ExecuteScriptAsync(web_contents, kConditionalUIRequest);
+    content::ExecuteScriptAsync(web_contents, request);
 
     // Interact with the username field until the popup shows up. This has the
     // effect of waiting for the browser to send the renderer the password
@@ -140,16 +156,18 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
     // Find the webauthn credential on the suggestions list.
     auto suggestions = popup_controller->GetSuggestions();
-    size_t suggestion_index;
+    size_t suggestion_index = 0;
+    size_t webauthn_entry_count = 0;
     autofill::Suggestion webauthn_entry;
-    for (suggestion_index = 0; suggestion_index < suggestions.size();
-         ++suggestion_index) {
-      if (suggestions[suggestion_index].frontend_id ==
+    for (size_t i = 0; i < suggestions.size(); ++i) {
+      if (suggestions[i].frontend_id ==
           autofill::PopupItemId::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL) {
-        webauthn_entry = suggestions[suggestion_index];
-        break;
+        webauthn_entry = suggestions[i];
+        suggestion_index = i;
+        webauthn_entry_count++;
       }
     }
+    ASSERT_EQ(webauthn_entry_count, 1u);
     ASSERT_LT(suggestion_index, suggestions.size())
         << "WebAuthn entry not found";
     EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
@@ -252,7 +270,7 @@ class WebAuthnDevtoolsAutofillIntegrationTest
         device::FidoTransportProtocol::kInternal);
     virtual_device_factory_ = virtual_device_factory.get();
     virtual_device_factory->mutable_state()->InjectResidentKey(
-        kCredentialID, "www.example.com", std::vector<uint8_t>{5, 6, 7, 8},
+        kCredentialID1, "www.example.com", std::vector<uint8_t>{5, 6, 7, 8},
         "flandre", "Flandre Scarlet");
     virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
     device::VirtualCtap2Device::Config config;
@@ -266,11 +284,24 @@ class WebAuthnDevtoolsAutofillIntegrationTest
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, SelectAccount) {
-  RunSelectAccountTest();
+  RunSelectAccountTest(kConditionalUIRequest);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, Abort) {
   RunAbortTest();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
+                       SelectAccountWithAllowCredentials) {
+  RunSelectAccountTest(kConditionalUIRequestFiltered);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
+                       SelectAccountWithAllowCredentialsFiltered) {
+  virtual_device_factory_->mutable_state()->InjectResidentKey(
+      kCredentialID2, "www.example.com", std::vector<uint8_t>{6, 7, 8, 9},
+      "sakuya", "Sakuya Izayoi");
+  RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -290,7 +321,7 @@ class WebAuthnWindowsAutofillIntegrationTest
                                                "Flandre Scarlet");
     device::PublicKeyCredentialRpEntity rp("www.example.com");
     fake_webauthn_api_->InjectDiscoverableCredential(
-        kCredentialID, std::move(rp), std::move(user));
+        kCredentialID1, std::move(rp), std::move(user));
 
     // Inject the fake Windows platform authenticator.
     auto device_factory =
@@ -305,7 +336,22 @@ class WebAuthnWindowsAutofillIntegrationTest
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnWindowsAutofillIntegrationTest, SelectAccount) {
-  RunSelectAccountTest();
+  RunSelectAccountTest(kConditionalUIRequest);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnWindowsAutofillIntegrationTest,
+                       SelectAccountWithAllowCredentials) {
+  RunSelectAccountTest(kConditionalUIRequestFiltered);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnWindowsAutofillIntegrationTest,
+                       SelectAccountWithAllowCredentialsFiltered) {
+  device::PublicKeyCredentialUserEntity user({6, 7, 8, 9}, "sakuya",
+                                             "Sakuya Izayoi");
+  device::PublicKeyCredentialRpEntity rp("www.example.com");
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialID2, std::move(rp), std::move(user));
+  RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthnWindowsAutofillIntegrationTest, Abort) {

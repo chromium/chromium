@@ -980,6 +980,16 @@ void AuthenticatorCommonImpl::GetAssertion(
 
   request_delegate_->SetConditionalRequest(options->is_conditional);
 
+  if (options->is_conditional && !options->allow_credentials.empty()) {
+    // Conditional mediation requests can only be fulfilled by discoverable
+    // credentials. The provided allowCredentials list is stripped and will be
+    // used to filter returned passkeys
+    request_delegate_->SetCredentialIdFilter(
+        std::move(options->allow_credentials));
+    options->allow_credentials =
+        std::vector<device::PublicKeyCredentialDescriptor>();
+  }
+
   if (options->allow_credentials.empty()) {
     if (!GetWebAuthenticationDelegate()->SupportsResidentKeys(
             GetRenderFrameHost())) {

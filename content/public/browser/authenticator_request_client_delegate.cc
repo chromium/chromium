@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -195,6 +196,9 @@ bool AuthenticatorRequestClientDelegate::IsVirtualEnvironmentEnabled() {
 
 void AuthenticatorRequestClientDelegate::SetConditionalRequest(
     bool is_conditional) {}
+
+void AuthenticatorRequestClientDelegate::SetCredentialIdFilter(
+    std::vector<device::PublicKeyCredentialDescriptor>) {}
 
 void AuthenticatorRequestClientDelegate::SetUserEntityForMakeCredentialRequest(
     const device::PublicKeyCredentialUserEntity&) {}
