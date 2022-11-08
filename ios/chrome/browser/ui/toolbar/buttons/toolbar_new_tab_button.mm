@@ -39,6 +39,11 @@ const CGFloat kSpotlightHeight = 36.0f;
   [self updateSpotlightViewHiddenState];
 }
 
+- (void)setToolbarConfiguration:(ToolbarConfiguration*)toolbarConfiguration {
+  [super setToolbarConfiguration:toolbarConfiguration];
+  [self updateSpotlightViewHiddenState];
+}
+
 - (void)updateSpotlightViewHiddenState {
   self.spotlightView.hidden =
       self.dimmed && !self.spotlighted && !self.iphHighlighted;
