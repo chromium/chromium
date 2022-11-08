@@ -23318,7 +23318,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
@@ -23326,7 +23327,7 @@
       {
         "args": [
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter;../../testing/buildbot/filters/android.emulator.bf_cache_chrome_public_test_apk.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
@@ -23387,7 +23388,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 12
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -23465,7 +23466,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_browsertests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter"
         ],
         "merge": {
           "args": [
@@ -23525,7 +23526,7 @@
       {
         "args": [
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_shell_test_apk.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"

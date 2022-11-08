@@ -1,4 +1,0 @@
-# TODO(crbug/1367512)
--ProtectionSniffingOff_nosniff_json/CrossSiteDocumentBlockingImgElementTest.Test/0
--ProtectionSniffingOn_comment_valid_html/CrossSiteDocumentBlockingImgElementTest.Test/0
--ProtectionSniffingOn_nosniff_json_js/CrossSiteDocumentBlockingImgElementTest.Test/0
