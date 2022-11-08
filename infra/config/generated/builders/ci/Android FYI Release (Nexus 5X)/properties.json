@@ -88,5 +88,8 @@
   },
   "builder_group": "chromium.gpu.fyi",
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.gpu"
+  ]
 }

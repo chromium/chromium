@@ -61,7 +61,6 @@ ci.gpu.linux_builder(
         category = "Android",
     ),
     cq_mirrors_console_view = "mirrors",
-    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.gpu.linux_builder(

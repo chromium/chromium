@@ -64,5 +64,8 @@
     ]
   },
   "builder_group": "chromium.gpu",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.gpu"
+  ]
 }
