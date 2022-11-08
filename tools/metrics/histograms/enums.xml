@@ -15394,6 +15394,13 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1" label="TPM unavailable"/>
 </enum>
 
+<enum name="CharacterClassPresenceChange">
+  <int value="0" label="No change"/>
+  <int value="1" label="Character class was absent and is added"/>
+  <int value="2" label="All characters belonging to the class are removed"/>
+  <int value="3" label="Set of character class members changed"/>
+</enum>
+
 <enum name="CheckCRCResult">
   <int value="0" label="Stream was never read to end"/>
   <int value="1" label="CRC check not done"/>
@@ -30154,6 +30161,25 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Blue primary is broken"/>
   <int value="4" label="Cannot extract toXYZD50 matrix"/>
   <int value="5" label="Bad gamma value"/>
+</enum>
+
+<enum name="EditsInGeneratedPasswordMask">
+  <int value="0" label="No changes (not reported)"/>
+  <int value="1" label="Length"/>
+  <int value="2" label="Letters"/>
+  <int value="3" label="Letters,Length"/>
+  <int value="4" label="Numerics"/>
+  <int value="5" label="Numerics,Length"/>
+  <int value="6" label="Numerics,Letters"/>
+  <int value="7" label="Numerics,Letters,Length"/>
+  <int value="8" label="Symbols"/>
+  <int value="9" label="Symbols,Length"/>
+  <int value="10" label="Symbols,Letters"/>
+  <int value="11" label="Symbols,Letters,Length"/>
+  <int value="12" label="Symbols,Numerics"/>
+  <int value="13" label="Symbols,Numerics,Length"/>
+  <int value="14" label="Symbols,Numerics,Letters"/>
+  <int value="15" label="Symbols,Numerics,Letters,Length"/>
 </enum>
 
 <enum name="EduCoexistenceFlowResult">
@@ -47415,6 +47441,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="16385" label="FOLDER"/>
   <int value="32769" label="FILE"/>
   <int value="32770" label="PDF"/>
+</enum>
+
+<enum name="GeneratedPasswordAlteredLengthIncreased">
+  <int value="0" label="Length decreased"/>
+  <int value="1" label="Length increased"/>
 </enum>
 
 <enum name="GenerationDialogChoice">

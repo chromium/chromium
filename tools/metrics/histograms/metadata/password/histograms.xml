@@ -265,6 +265,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordGeneration.EditsInGeneratedPassword.AlteredLengthIncreased"
+    enum="GeneratedPasswordAlteredLengthIncreased" expires_after="2023-11-20">
+  <owner>kolos@chromium.org</owner>
+  <owner>shaikhitdin@google.com</owner>
+  <summary>
+    Measures difference in length between generated password and submitted
+    password. False if length decreased, true if length increased. Uploaded once
+    per modified generated password submission.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.EditsInGeneratedPassword.AttributesMask"
+    enum="EditsInGeneratedPasswordMask" expires_after="2023-11-20">
+  <owner>kolos@chromium.org</owner>
+  <owner>shaikhitdin@google.com</owner>
+  <summary>
+    Measures types of user editing of generated passwords. Mask tracks if there
+    are several types of changes simultaneously happening on generated password.
+    Uploaded once per modified generated password submission.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.EditsInGeneratedPassword.{CharacterClass}"
+    enum="CharacterClassPresenceChange" expires_after="2023-11-20">
+  <owner>kolos@chromium.org</owner>
+  <owner>shaikhitdin@google.com</owner>
+  <summary>
+    Measures difference in {CharacterClass} between generated password and
+    submitted password. Uploaded once per modified generated password
+    submission.
+  </summary>
+  <token key="CharacterClass">
+    <variant name="Letters"/>
+    <variant name="Lowercase"/>
+    <variant name="Numerics"/>
+    <variant name="Symbols"/>
+    <variant name="Uppercase"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordGeneration.Event" enum="PasswordGenerationEvent"
     expires_after="2023-04-30">
   <owner>kazinova@google.com</owner>

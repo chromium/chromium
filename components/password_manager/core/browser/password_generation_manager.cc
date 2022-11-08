@@ -5,13 +5,16 @@
 #include "components/password_manager/core/browser/password_generation_manager.h"
 
 #include <map>
+#include <unordered_set>
 #include <utility>
 
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 namespace password_manager {
@@ -194,6 +197,115 @@ const PasswordForm* FindUsernameConflict(
   }
   return nullptr;
 }
+
+// For the given |password| string, return a set of characters inside the string
+// that satisfies |belongs_to_character_class| boolean predicate.
+std::unordered_set<char16_t> FindSetOfCharacterClassInPassword(
+    const std::u16string& password,
+    const base::FunctionRef<bool(char16_t)>& belongs_to_character_class) {
+  std::unordered_set<char16_t> result;
+  base::ranges::copy_if(password, std::inserter(result, result.begin()),
+                        belongs_to_character_class);
+  return result;
+}
+
+void EmitUmaForCharacterClassChange(const std::string& uma_character_class,
+                                    CharacterClassPresenceChange change) {
+  base::UmaHistogramEnumeration(
+      "PasswordGeneration.EditsInGeneratedPassword." + uma_character_class,
+      change);
+}
+
+// For the given 2 strings calculates character class presence change, e.g if
+// numerics were deleted('abcde123' => 'abcde') or only some characters
+// belonging to the class are changed('abcde123' => 'acbde456'). Also emits UMA
+// metrics on the change. Returns true if the character class was added or
+// removed.
+bool CalculateAndEmitPresenceChangeForCharacterClass(
+    const std::u16string& suggested_password,
+    const std::u16string& submitted_password,
+    const base::FunctionRef<bool(char16_t)>& belongs_to_character_class,
+    const std::string& uma_character_class) {
+  std::unordered_set<char16_t> suggested_character_set =
+      FindSetOfCharacterClassInPassword(suggested_password,
+                                        belongs_to_character_class);
+  std::unordered_set<char16_t> submitted_character_set =
+      FindSetOfCharacterClassInPassword(submitted_password,
+                                        belongs_to_character_class);
+
+  if (suggested_character_set == submitted_character_set) {
+    EmitUmaForCharacterClassChange(uma_character_class,
+                                   CharacterClassPresenceChange::kNoChange);
+    return false;
+  }
+
+  if (suggested_character_set.empty() != submitted_character_set.empty()) {
+    EmitUmaForCharacterClassChange(uma_character_class,
+                                   submitted_character_set.empty()
+                                       ? CharacterClassPresenceChange::kDeleted
+                                       : CharacterClassPresenceChange::kAdded);
+    return true;
+  }
+
+  EmitUmaForCharacterClassChange(
+      uma_character_class,
+      CharacterClassPresenceChange::kSpecificCharactersChanged);
+  return false;
+}
+
+// Emits UMA metrics on changes (character classes, length and together as a
+// mask) between generated and submitted passwords.
+void SendUmaHistogramsOnGeneratedPasswordAttributeChanges(
+    const std::u16string& generated_password,
+    const std::u16string& submitted_password) {
+  bool letters_presence_changed =
+      CalculateAndEmitPresenceChangeForCharacterClass(
+          generated_password, submitted_password,
+          password_manager_util::IsLetter, "Letters");
+  // Also emit dedicated metrics for upper- and lowercase letters specifically
+  // just in case there are websites that treat them differently (e.g. allow
+  // only lowercase letters).
+  CalculateAndEmitPresenceChangeForCharacterClass(
+      generated_password, submitted_password,
+      password_manager_util::IsUppercaseLetter, "Uppercase");
+  CalculateAndEmitPresenceChangeForCharacterClass(
+      generated_password, submitted_password,
+      password_manager_util::IsLowercaseLetter, "Lowercase");
+  bool numerics_presence_changed =
+      CalculateAndEmitPresenceChangeForCharacterClass(
+          generated_password, submitted_password,
+          password_manager_util::IsNumeric, "Numerics");
+  bool symbols_presence_changed =
+      CalculateAndEmitPresenceChangeForCharacterClass(
+          generated_password, submitted_password,
+          password_manager_util::IsSpecialSymbol, "Symbols");
+
+  bool length_changed = generated_password.size() != submitted_password.size();
+
+  if (length_changed && !letters_presence_changed &&
+      !numerics_presence_changed && !symbols_presence_changed) {
+    // Only length changed and no character class presence is changed. If
+    // character class presence is changed, length increase/decrease will
+    // be a side effect. This metric will calculate whether our password is too
+    // long or too short, so that it would be possible to adapt length if
+    // necessary.
+    base::UmaHistogramBoolean(
+        "PasswordGeneration.EditsInGeneratedPassword.AlteredLengthIncreased",
+        generated_password.size() < submitted_password.size());
+  }
+
+  // Make sure the order of attributes coincides with the order of attributes in
+  // the metric.
+  uint8_t attributes_mask =
+      (length_changed << 0) | (letters_presence_changed << 1) |
+      (numerics_presence_changed << 2) | (symbols_presence_changed << 3);
+  if (attributes_mask != 0) {
+    base::UmaHistogramExactLinear(
+        "PasswordGeneration.EditsInGeneratedPassword.AttributesMask",
+        attributes_mask, 16 /*exclusive_max*/);
+  }
+}
+
 }  // namespace
 
 PasswordGenerationManager::PasswordGenerationManager(
@@ -250,6 +362,7 @@ void PasswordGenerationManager::PresaveGeneratedPassword(
   } else {
     form_saver->Save(generated, {} /* matches */,
                      std::u16string() /* old_password */);
+    initial_generated_password_ = generated.password_value;
   }
   presaved_ = std::move(generated);
 }
@@ -259,6 +372,7 @@ void PasswordGenerationManager::PasswordNoLongerGenerated(
   DCHECK(presaved_);
   form_saver->Remove(*presaved_);
   presaved_.reset();
+  initial_generated_password_.clear();
 }
 
 void PasswordGenerationManager::CommitGeneratedPassword(
@@ -269,6 +383,12 @@ void PasswordGenerationManager::CommitGeneratedPassword(
   DCHECK(presaved_);
   generated.date_last_used = base::Time::Now();
   generated.date_created = base::Time::Now();
+  if (initial_generated_password_ != generated.password_value) {
+    // If the generated password was edited, send UMA metrics on what kind of
+    // changes were there.
+    SendUmaHistogramsOnGeneratedPasswordAttributeChanges(
+        initial_generated_password_, generated.password_value);
+  }
   form_saver->UpdateReplace(generated, matches, old_password,
                             presaved_.value() /* old_primary_key */);
 }

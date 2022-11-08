@@ -56,9 +56,6 @@ namespace {
 // Number of distinct low-entropy hash values.
 constexpr uint32_t kNumberOfLowEntropyHashValues = 64;
 
-// Contains all special symbols considered for password-generation.
-constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-
 // Helper function that assigns |field_types[field_name]=type| and also sets
 // |field_name_collision| if |field_types[field_name]| is already set.
 // TODO(crbug/1260336): The function is needed to only detect a
@@ -167,26 +164,11 @@ bool IsAddingUsernameToExistingMatch(
          match->password_value == credentials.password_value;
 }
 
-// Helper functions for character type classification. The built-in functions
-// depend on locale, platform and other stuff. To make the output more
-// predictable, the function are re-implemented here.
-bool IsNumeric(int c) {
-  return '0' <= c && c <= '9';
-}
-bool IsLetter(int c) {
-  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
-}
-
-// Checks if a supplied character |c| is a special symbol.
-// Special symbols are defined by the string |kSpecialSymbols|.
-bool IsSpecialSymbol(int c) {
-  return base::Contains(kSpecialSymbols, c);
-}
-
 // Returns a uniformly distributed random symbol from the set of random symbols
 // defined by the string |kSpecialSymbols|.
 int GetRandomSpecialSymbol() {
-  return kSpecialSymbols[base::RandGenerator(std::size(kSpecialSymbols))];
+  return password_manager_util::kSpecialSymbols[base::RandGenerator(
+      std::size(password_manager_util::kSpecialSymbols))];
 }
 
 // Returns a random special symbol used in |password|.
@@ -194,7 +176,7 @@ int GetRandomSpecialSymbol() {
 int GetRandomSpecialSymbolFromPassword(const std::u16string& password) {
   std::vector<int> symbols;
   base::ranges::copy_if(password, std::back_inserter(symbols),
-                        &IsSpecialSymbol);
+                        &password_manager_util::IsSpecialSymbol);
   DCHECK(!symbols.empty()) << "Password must contain at least one symbol.";
   return symbols[base::RandGenerator(symbols.size())];
 }
@@ -773,7 +755,9 @@ void VotesUploader::GeneratePasswordAttributesVote(
 
   // Don't crowdsource password attributes for non-ascii passwords.
   for (const auto& e : password_value) {
-    if (!(IsLetter(e) || IsNumeric(e) || IsSpecialSymbol(e))) {
+    if (!(password_manager_util::IsLetter(e) ||
+          password_manager_util::IsNumeric(e) ||
+          password_manager_util::IsSpecialSymbol(e))) {
       return;
     }
   }
@@ -782,12 +766,12 @@ void VotesUploader::GeneratePasswordAttributesVote(
   // often (8 in 9 cases) as most issues are due to missing or wrong special
   // symbols. Upload info about letters existence otherwise.
   autofill::PasswordAttribute character_class_attribute;
-  bool (*predicate)(int c) = nullptr;
+  bool (*predicate)(char16_t c) = nullptr;
   if (base::RandGenerator(9) == 0) {
-    predicate = &IsLetter;
+    predicate = &password_manager_util::IsLetter;
     character_class_attribute = autofill::PasswordAttribute::kHasLetter;
   } else {
-    predicate = &IsSpecialSymbol;
+    predicate = &password_manager_util::IsSpecialSymbol;
     character_class_attribute = autofill::PasswordAttribute::kHasSpecialSymbol;
   }
 

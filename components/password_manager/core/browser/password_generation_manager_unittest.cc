@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
@@ -514,6 +515,106 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_CloneSurvives) {
   original.reset();
   EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(_, _));
   cloned_manager->PresaveGeneratedPassword(generated, {}, &form_saver());
+}
+
+// Check that changing a generated password emits UMA metrics. This test case
+// changes every character class.
+TEST_F(PasswordGenerationManagerTest, EditsInGeneratedPasswordMetrics) {
+  // User accepts a generated password.
+  PasswordForm generated = CreateGenerated();
+  generated.date_created = base::Time::Now();
+  generated.date_password_modified = base::Time::Now();
+  generated.date_last_used = base::Time::Now();
+  generated.password_value = u"aaa123&*";
+  EXPECT_CALL(store(), AddLogin);
+  manager().PresaveGeneratedPassword(generated, {}, &form_saver());
+
+  // User edits the generated password.
+  PasswordForm generated_after_edits = generated;
+  generated_after_edits.password_value = u"AAA#";
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(
+                           generated_after_edits,
+                           FormHasUniqueKey(generated_after_edits)));
+  manager().CommitGeneratedPassword(generated_after_edits, {} /* matches */,
+                                    std::u16string() /* old_password */,
+                                    &form_saver());
+
+  // Check emitted metrics.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Uppercase",
+      password_manager::CharacterClassPresenceChange::kAdded, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Lowercase",
+      password_manager::CharacterClassPresenceChange::kDeleted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Letters",
+      password_manager::CharacterClassPresenceChange::
+          kSpecificCharactersChanged,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Numerics",
+      password_manager::CharacterClassPresenceChange::kDeleted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Symbols",
+      password_manager::CharacterClassPresenceChange::
+          kSpecificCharactersChanged,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordGeneration.EditsInGeneratedPassword.AlteredLengthIncreased", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.AttributesMask", 5, 1);
+}
+
+// Check that changing length of the generated password emits UMA metrics only
+// if character classes presence is not changed. E.g. "abcd" => "abcd&" (symbols
+// added) should not emit a "length changed", because the wrong length is not
+// the root cause of the password edit.
+TEST_F(PasswordGenerationManagerTest,
+       EditsInGeneratedPasswordMetrics_OnlyLengthChanged) {
+  // User accepts a generated password.
+  PasswordForm generated = CreateGenerated();
+  generated.date_created = base::Time::Now();
+  generated.date_password_modified = base::Time::Now();
+  generated.date_last_used = base::Time::Now();
+  generated.password_value = u"12345";
+  EXPECT_CALL(store(), AddLogin);
+  manager().PresaveGeneratedPassword(generated, {}, &form_saver());
+
+  // User edits the generated password.
+  PasswordForm generated_after_edits = generated;
+  generated_after_edits.password_value = u"12345678";
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(
+                           generated_after_edits,
+                           FormHasUniqueKey(generated_after_edits)));
+  manager().CommitGeneratedPassword(generated_after_edits, {} /* matches */,
+                                    std::u16string() /* old_password */,
+                                    &form_saver());
+
+  // Check emitted metrics.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Uppercase",
+      password_manager::CharacterClassPresenceChange::kNoChange, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Lowercase",
+      password_manager::CharacterClassPresenceChange::kNoChange, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Letters",
+      password_manager::CharacterClassPresenceChange::kNoChange, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Numerics",
+      password_manager::CharacterClassPresenceChange::
+          kSpecificCharactersChanged,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.Symbols",
+      password_manager::CharacterClassPresenceChange::kNoChange, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.AlteredLengthIncreased", 1,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.EditsInGeneratedPassword.AttributesMask", 1, 1);
 }
 
 }  // namespace

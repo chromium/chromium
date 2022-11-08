@@ -207,6 +207,24 @@ bool IsCredentialProviderEnabledOnStartup(const PrefService* prefs);
 void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled);
 #endif
 
+// Contains all special symbols considered for password-generation.
+constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+
+// Helper functions for character type classification. The built-in functions
+// depend on locale, platform and other stuff. To make the output more
+// predictable, the function are re-implemented here.
+bool IsNumeric(char16_t c);
+
+bool IsLetter(char16_t c);
+
+bool IsLowercaseLetter(char16_t c);
+
+bool IsUppercaseLetter(char16_t c);
+
+// Checks if a supplied character |c| is a special symbol.
+// Special symbols are defined by the string |kSpecialSymbols|.
+bool IsSpecialSymbol(char16_t c);
+
 }  // namespace password_manager_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_
