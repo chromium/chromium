@@ -3391,9 +3391,11 @@ bool RunGetNativeThemeFromDestructor(Widget::InitParams params,
 
 // See description of RunGetNativeThemeFromDestructor() for details.
 TEST_F(DesktopWidgetTest, GetNativeThemeFromDestructor) {
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  if (RunGetNativeThemeFromDestructor(std::move(params), true))
-    RunGetNativeThemeFromDestructor(std::move(params), false);
+  if (RunGetNativeThemeFromDestructor(
+          CreateParams(Widget::InitParams::TYPE_POPUP), true)) {
+    RunGetNativeThemeFromDestructor(
+        CreateParams(Widget::InitParams::TYPE_POPUP), false);
+  }
 }
 
 // Used by HideCloseDestroy. Allows setting a boolean when the widget is

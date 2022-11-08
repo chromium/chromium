@@ -31,9 +31,9 @@ void PaintComboboxArrow(SkColor color,
   // slightly less than half full and come out a little lighter.
   constexpr SkScalar kEpsilon = 0.0001f;
   path.moveTo(x - kEpsilon, y);
-  path.rLineTo(/*x=*/height, /*y=*/height);
-  path.rLineTo(/*x=*/2 * kEpsilon, /*y=*/0);
-  path.rLineTo(/*x=*/height, /*y=*/-height);
+  path.rLineTo(/*dx=*/height, /*dy=*/height);
+  path.rLineTo(/*dx=*/2 * kEpsilon, /*dy=*/0);
+  path.rLineTo(/*dx=*/height, /*dy=*/-height);
   path.close();
   cc::PaintFlags flags;
   flags.setColor(color);

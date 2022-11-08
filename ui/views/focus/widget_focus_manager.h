@@ -30,6 +30,8 @@ class VIEWS_EXPORT WidgetFocusManager {
   // Returns the singleton instance.
   static WidgetFocusManager* GetInstance();
 
+  WidgetFocusManager(const WidgetFocusManager&) = delete;
+  WidgetFocusManager& operator=(const WidgetFocusManager&) = delete;
   ~WidgetFocusManager();
 
   // Adds/removes a WidgetFocusChangeListener |listener| to the set of
@@ -52,8 +54,6 @@ class VIEWS_EXPORT WidgetFocusManager {
   friend class base::NoDestructor<WidgetFocusManager>;
 
   WidgetFocusManager();
-  WidgetFocusManager(const WidgetFocusManager&) = delete;
-  WidgetFocusManager& operator=(const WidgetFocusManager&) = delete;
 
   base::ObserverList<WidgetFocusChangeListener>::Unchecked
       focus_change_listeners_;

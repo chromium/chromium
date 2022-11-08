@@ -382,7 +382,7 @@ TEST_F(BubbleDialogDelegateViewTest, NoParentWidget) {
       new TestBubbleDialogDelegateView(nullptr);
   bubble_delegate->set_has_parent(false);
   WidgetAutoclosePtr bubble_widget(
-      BubbleDialogDelegateView::CreateBubble(std::move(bubble_delegate)));
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate));
   EXPECT_EQ(bubble_delegate, bubble_widget->widget_delegate());
   EXPECT_EQ(bubble_widget.get(), bubble_delegate->GetWidget());
   EXPECT_EQ(nullptr, bubble_widget->parent());

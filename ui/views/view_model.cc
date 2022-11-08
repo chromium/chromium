@@ -12,9 +12,8 @@
 
 namespace views {
 
-ViewModelBase::~ViewModelBase() {
-  // view are owned by their parent, no need to delete them.
-}
+// views in `entries_` are owned by their parents, no need to delete them.
+ViewModelBase::~ViewModelBase() = default;
 
 void ViewModelBase::Remove(size_t index) {
   check_index(index);

@@ -109,9 +109,9 @@ std::u16string ToRTL(const char* ascii) {
   std::u16string rtl;
   for (const char* c = ascii; *c; ++c) {
     if (*c >= '0' && *c <= '6')
-      rtl += L'\x5d0' + (*c - '0');
+      rtl += static_cast<char16_t>(u'א' + (*c - '0'));
     else
-      rtl += static_cast<std::u16string::value_type>(*c);
+      rtl += static_cast<char16_t>(*c);
   }
   return rtl;
 }

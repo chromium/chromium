@@ -102,6 +102,9 @@ class VIEWS_EXPORT MenuController
   // If a menu is currently active, this returns the controller for it.
   static MenuController* GetActiveInstance();
 
+  MenuController(const MenuController&) = delete;
+  MenuController& operator=(const MenuController&) = delete;
+
   // Runs the menu at the specified location.
   void Run(Widget* parent,
            MenuButtonController* button_controller,
@@ -385,9 +388,6 @@ class VIEWS_EXPORT MenuController
 
   // Creates a MenuController. See |for_drop_| member for details on |for_drop|.
   MenuController(bool for_drop, internal::MenuControllerDelegate* delegate);
-
-  MenuController(const MenuController&) = delete;
-  MenuController& operator=(const MenuController&) = delete;
 
   ~MenuController() override;
 

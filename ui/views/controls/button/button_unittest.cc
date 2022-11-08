@@ -857,7 +857,7 @@ TEST_F(ButtonTest, ChangingHighlightStateNotifiesCallback) {
   EXPECT_FALSE(button_observer()->highlighted_changed());
   EXPECT_FALSE(InkDrop::Get(button())->GetHighlighted());
 
-  button()->SetHighlighted(/*bubble_visible=*/true);
+  button()->SetHighlighted(/*highlighted=*/true);
   EXPECT_TRUE(button_observer()->highlighted_changed());
   EXPECT_TRUE(InkDrop::Get(button())->GetHighlighted());
 
@@ -865,7 +865,7 @@ TEST_F(ButtonTest, ChangingHighlightStateNotifiesCallback) {
   EXPECT_FALSE(button_observer()->highlighted_changed());
   EXPECT_TRUE(InkDrop::Get(button())->GetHighlighted());
 
-  button()->SetHighlighted(/*bubble_visible=*/false);
+  button()->SetHighlighted(/*highlighted=*/false);
   EXPECT_TRUE(button_observer()->highlighted_changed());
   EXPECT_FALSE(InkDrop::Get(button())->GetHighlighted());
 }

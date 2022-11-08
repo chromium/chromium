@@ -25,11 +25,11 @@ class VIEWS_EXPORT FocusManagerFactory {
   // to the default factory which creates plain FocusManager.
   static void Install(FocusManagerFactory* factory);
 
- protected:
-  FocusManagerFactory();
-
   FocusManagerFactory(const FocusManagerFactory&) = delete;
   FocusManagerFactory& operator=(const FocusManagerFactory&) = delete;
+
+ protected:
+  FocusManagerFactory();
   virtual ~FocusManagerFactory();
 
   // Create a FocusManager for the given |widget|.

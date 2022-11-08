@@ -201,7 +201,7 @@ class WebViewUnitTest : public views::test::WidgetTest {
 
   std::unique_ptr<content::WebContents> CreateTestWebContents() const {
     return content::WebContentsTester::CreateTestWebContents(
-        browser_context_.get(), /*site_instnace=*/nullptr);
+        browser_context_.get(), /*instance=*/nullptr);
   }
 
   void SetAXMode(ui::AXMode mode) { web_view()->OnAXModeAdded(mode); }

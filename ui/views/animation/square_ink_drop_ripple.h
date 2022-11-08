@@ -90,7 +90,7 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
 
   // Type that contains a gfx::Tansform for each of the layers required by the
   // ink drop.
-  typedef gfx::Transform InkDropTransforms[PAINTED_SHAPE_COUNT];
+  using InkDropTransforms = gfx::Transform[PAINTED_SHAPE_COUNT];
 
   float GetCurrentOpacity() const;
 

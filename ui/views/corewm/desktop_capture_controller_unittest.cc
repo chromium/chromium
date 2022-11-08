@@ -103,12 +103,11 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
   params.bounds = gfx::Rect(50, 50, 650, 650);
   params.native_widget = test::CreatePlatformNativeWidgetImpl(
       widget1.get(), test::kStubCapture, nullptr);
+  desktop_position_client1 = std::make_unique<DesktopScreenPositionClient>(
+      params.context->GetRootWindow());
   widget1->Init(std::move(params));
   internal::RootView* root1 =
       static_cast<internal::RootView*>(widget1->GetRootView());
-
-  desktop_position_client1 = std::make_unique<DesktopScreenPositionClient>(
-      params.context->GetRootWindow());
   aura::client::SetScreenPositionClient(
       widget1->GetNativeView()->GetRootWindow(),
       desktop_position_client1.get());
@@ -125,12 +124,11 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
   params.bounds = gfx::Rect(50, 50, 650, 650);
   params.native_widget = test::CreatePlatformNativeWidgetImpl(
       widget2.get(), test::kStubCapture, nullptr);
-  widget2->Init(std::move(params));
-
-  internal::RootView* root2 =
-      static_cast<internal::RootView*>(widget2->GetRootView());
   desktop_position_client2 = std::make_unique<DesktopScreenPositionClient>(
       params.context->GetRootWindow());
+  widget2->Init(std::move(params));
+  internal::RootView* root2 =
+      static_cast<internal::RootView*>(widget2->GetRootView());
   aura::client::SetScreenPositionClient(
       widget2->GetNativeView()->GetRootWindow(),
       desktop_position_client2.get());
