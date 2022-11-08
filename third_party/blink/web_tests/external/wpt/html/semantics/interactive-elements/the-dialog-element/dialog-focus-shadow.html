@@ -214,6 +214,24 @@
   </template>
 </dialog>
 
+<dialog data-description="No autofocus, no delegatesFocus, slotted target">
+  <template class="turn-into-shadow-tree">
+    <button tabindex="-1">Focusable</button>
+    <slot></slot>
+    <button tabindex="-1">Focusable</button>
+  </template>
+  <button tabindex="-1" class="focus-me">Focusable</button>
+</dialog>
+
+<dialog data-description="Shadowroot on child, no autofocus, no delegatesFocus">
+  <div>
+    <template class="turn-into-shadow-tree">
+      <button tabindex="-1">Focusable</button>
+    </template>
+  </div>
+  <button tabindex="-1" class="focus-me">Focusable</button>
+</dialog>
+
 <script>
 for (const template of document.querySelectorAll(".turn-into-shadow-tree")) {
   const div = document.createElement("div");

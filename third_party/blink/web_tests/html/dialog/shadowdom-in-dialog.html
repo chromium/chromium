@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <script src='../../resources/testharness.js'></script>
 <script src='../../resources/testharnessreport.js'></script>
-<!-- This test is testing unspecified behavior of using Shadow DOM in <dialog>.
-See crbug/383230 and https://github.com/whatwg/html/issue/2393 . -->
 <input id="outer">
 
 <dialog id="dlg">
@@ -25,18 +23,16 @@ test(() => {
   assert_equals(document.activeElement, outer);
 
   dlg.show();
-  assert_equals(document.activeElement, host);
-  assert_equals(host.shadowRoot.activeElement, inner);
+  assert_equals(document.activeElement, btn);
   dlg.close();
 
   outer.focus();
   assert_equals(document.activeElement, outer);
 
   dlg.showModal();
-  assert_equals(document.activeElement, host);
-  assert_equals(host.shadowRoot.activeElement, inner);
+  assert_equals(document.activeElement, btn);
   dlg.close();
-}, "Dialog focusing steps should be applied to elements inside ShadowRoot.");
+}, "Dialog focusing steps should not use the flat tree.");
 
 
 host2.attachShadow({mode: 'open'}).innerHTML = '<slot></slot>';

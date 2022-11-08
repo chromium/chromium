@@ -399,6 +399,8 @@ class CORE_EXPORT ContainerNode : public Node {
   // a descendant LayoutBox.
   virtual LayoutBox* GetLayoutBoxForScrolling() const;
 
+  Element* GetAutofocusDelegate() const;
+
   void Trace(Visitor*) const override;
 
  protected:
