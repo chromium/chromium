@@ -252,9 +252,7 @@ public class ViewAndroidDelegate {
      */
     @CalledByNative
     private boolean startDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData) {
-        // Only enabled on Android O+ to mitigate known issue for drag and drop in Android system.
-        // See b/245614280.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) return false;
+        if (!DragAndDropDelegate.isDragAndDropSupportedForOs()) return false;
 
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null) return false;

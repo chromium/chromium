@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.os.Build;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Unit tests for {@link ContextMenuUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.O)
 public class ContextMenuUtilsUnitTest {
     @Rule
     public TestRule featureProcessor = new Features.JUnitProcessor();
@@ -55,6 +57,13 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
+    @Config(qualifiers = "sw600dp", sdk = Build.VERSION_CODES.N)
+    public void usePopupAllScreen_AndroidN() {
+        doTestUsePopupWhenEnabledByFlag();
+    }
+
+    @Test
     @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
     @Config(qualifiers = "sw320dp")
     public void doNotUsePopupForSmallScreen() {
@@ -67,6 +76,14 @@ public class ContextMenuUtilsUnitTest {
     @Config(qualifiers = "sw600dp")
     public void usePopupForLargeScreen() {
         assertTrue("Popup should not be used for small screen.",
+                ContextMenuUtils.usePopupContextMenuForContext(mActivity));
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
+    @Config(qualifiers = "sw600dp", sdk = Build.VERSION_CODES.N)
+    public void doNotUsePopupForAndroidN() {
+        assertFalse("Should not use popup on Android N-.",
                 ContextMenuUtils.usePopupContextMenuForContext(mActivity));
     }
 
