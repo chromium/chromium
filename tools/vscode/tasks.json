@@ -177,7 +177,7 @@
     {
       "label": "10-build_test_debug",
       "type": "shell",
-      "command": "autoninja -C ${workspaceFolder}/out/Debug unit_tests components_unittests browser_tests"
+      "command": "autoninja -C ${workspaceFolder}/out/Debug unit_tests components_unittests browser_tests extensions_unittests ash_unittests"
     },
     {
       "label": "11-generate_compile_commands",
