@@ -108,8 +108,7 @@ class V8ValueConverterImplTest : public testing::Test {
     return std::string(*utf8, utf8.length());
   }
 
-  std::string GetString(base::ListValue* value, uint32_t index) {
-    const base::Value::List& value_list = value->GetList();
+  std::string GetString(const base::Value::List& value_list, uint32_t index) {
     if (index >= value_list.size() || !value_list[index].is_string()) {
       ADD_FAILURE();
       return std::string();
