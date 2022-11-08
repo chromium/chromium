@@ -16,7 +16,9 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -25,6 +27,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/shell/browser/shell.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
@@ -57,6 +60,13 @@ constexpr char kExpectedManifestPath[] = "/fedcm.json";
 constexpr char kExpectedManifestListPath[] = "/.well-known/web-identity";
 constexpr char kTestContentType[] = "application/json";
 constexpr char kIdpForbiddenHeader[] = "Sec-FedCM-CSRF";
+
+// TODO(crbug.com/1381501): Replace these with a standardized header once
+// we collected enough metrics.
+static constexpr char kGoogleSigninHeader[] = "Google-Accounts-SignIn";
+static constexpr char kGoogleSignoutHeader[] = "Google-Accounts-SignOut";
+static constexpr char kGoogleHeaderValue[] =
+    "email=\"foo@example.com\", sessionindex=0, obfuscatedid=123";
 
 // Token value in //content/test/data/id_assertion_endpoint.json
 constexpr char kToken[] = "[not a real token]";
@@ -91,6 +101,9 @@ class IdpTestServer {
     if (request.relative_url.rfind("/test", 0) == 0)
       return nullptr;
 
+    if (request.relative_url.rfind("/header/", 0) == 0)
+      return BuildIdpHeaderResponse(request);
+
     if (request.all_headers.find(kIdpForbiddenHeader) != std::string::npos) {
       EXPECT_EQ(request.headers.at(kIdpForbiddenHeader), "?1");
     }
@@ -107,6 +120,23 @@ class IdpTestServer {
     }
 
     return nullptr;
+  }
+
+  std::unique_ptr<HttpResponse> BuildIdpHeaderResponse(
+      const HttpRequest& request) {
+    auto response = std::make_unique<BasicHttpResponse>();
+    if (request.relative_url.find("/header/gsignin") != std::string::npos) {
+      response->AddCustomHeader(kGoogleSigninHeader, kGoogleHeaderValue);
+    } else if (request.relative_url.find("/header/gsignout") !=
+               std::string::npos) {
+      response->AddCustomHeader(kGoogleSignoutHeader, kGoogleHeaderValue);
+    } else {
+      return nullptr;
+    }
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/plain");
+    response->set_content("Header sent.");
+    return response;
   }
 
   void SetManifestResponseDetails(ManifestDetails details) {
@@ -239,12 +269,29 @@ class WebIdBrowserTest : public ContentBrowserTest {
         std::move(controller));
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<IdpTestServer> idp_server_;
   std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
+};
+
+class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFedCm,
+        {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  FederatedIdentitySharingPermissionContextDelegate* sharing_context() {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    return context->GetFederatedIdentitySharingPermissionContext();
+  }
 };
 
 // Verify a standard login flow with IdP sign-in page.
@@ -294,6 +341,30 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
       "a JavaScript error: \"NetworkError: Error "
       "retrieving a token.\"\n";
   EXPECT_EQ(expected_error, EvalJs(shell(), script).error);
+}
+
+// Verify that IDP sign-in headers work.
+IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSigninToplevel) {
+  GURL url = https_server().GetURL(kRpHostName, "/header/gsignin");
+  EXPECT_FALSE(sharing_context()
+                   ->GetIdpSigninStatus(url::Origin::Create(url))
+                   .has_value());
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url));
+  auto value = sharing_context()->GetIdpSigninStatus(url::Origin::Create(url));
+  ASSERT_TRUE(value.has_value());
+  EXPECT_TRUE(*value);
+}
+
+// Verify that IDP sign-out headers work.
+IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSignoutToplevel) {
+  GURL url = https_server().GetURL(kRpHostName, "/header/gsignout");
+  EXPECT_FALSE(sharing_context()
+                   ->GetIdpSigninStatus(url::Origin::Create(url))
+                   .has_value());
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url));
+  auto value = sharing_context()->GetIdpSigninStatus(url::Origin::Create(url));
+  ASSERT_TRUE(value.has_value());
+  EXPECT_FALSE(*value);
 }
 
 }  // namespace content
