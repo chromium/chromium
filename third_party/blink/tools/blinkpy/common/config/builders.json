@@ -78,7 +78,8 @@
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "steps": {
-            "wpt_tests_suite (experimental)": {}
+            "wpt_tests_suite (with patch, experimental)": {},
+            "wpt_tests_suite_highdpi (with patch, experimental)": {}
         },
         "is_try_builder": true
     },
