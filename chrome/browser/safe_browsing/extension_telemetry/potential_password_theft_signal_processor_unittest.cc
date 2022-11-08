@@ -24,6 +24,8 @@ using PasswordReuseEventInfo =
     ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_PasswordReuseInfo;
 using RemoteHostData =
     ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_RemoteHostData;
+using RemoteHostContactedInfo =
+    ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo_RemoteHostInfo;
 
 using LoginReputationClientReusedPasswordAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
@@ -31,6 +33,8 @@ using LoginReputationClientReusedPasswordAccountType =
 constexpr const char* kExtensionId[] = {"crx-0", "crx-1"};
 const char* host_urls[] = {"http://www.google.com", "http://www.youtube.com",
                            "http://www.giggle.com", "http://www.yutube.com"};
+RemoteHostContactedInfo::ProtocolType kProtocolType =
+    RemoteHostContactedInfo::HTTP_HTTPS;
 
 class PotentialPasswordTheftSignalProcessorTest : public ::testing::Test {
  protected:
@@ -78,8 +82,8 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest,
 // signal second within one second. There will be data staged for report.
 TEST_F(PotentialPasswordTheftSignalProcessorTest, ProcessTwoSignalsInOrder) {
   auto pw_reuse_signal = PasswordReuseSignal(kExtensionId[0], pw_reuse_event_0);
-  auto remote_host_signal =
-      RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]));
+  auto remote_host_signal = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[0]), kProtocolType);
   processor_.ProcessSignal(pw_reuse_signal);
 
   EXPECT_FALSE(processor_.IsPasswordQueueEmptyForTest());
@@ -111,10 +115,10 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, ProcessTwoSignalsInOrder) {
 TEST_F(PotentialPasswordTheftSignalProcessorTest,
        ProcessTwoSignalsInReverseOrder) {
   auto pw_reuse_signal = PasswordReuseSignal(kExtensionId[0], pw_reuse_event_0);
-  auto remote_host_signal_0 =
-      RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]));
-  auto remote_host_signal_1 =
-      RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[1]));
+  auto remote_host_signal_0 = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[0]), kProtocolType);
+  auto remote_host_signal_1 = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[1]), kProtocolType);
   processor_.ProcessSignal(remote_host_signal_0);
   task_environment_.FastForwardBy(base::Milliseconds(100));
   processor_.ProcessSignal(remote_host_signal_1);
@@ -143,14 +147,14 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, VerifyProtoData) {
   auto pw_reuse_signal_2 =
       PasswordReuseSignal(kExtensionId[0], pw_reuse_event_1);
 
-  auto remote_host_signal_0 =
-      RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]));
-  auto remote_host_signal_1 =
-      RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[1]));
-  auto remote_host_signal_2 =
-      RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[2]));
-  auto remote_host_signal_3 =
-      RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[3]));
+  auto remote_host_signal_0 = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[0]), kProtocolType);
+  auto remote_host_signal_1 = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[1]), kProtocolType);
+  auto remote_host_signal_2 = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[2]), kProtocolType);
+  auto remote_host_signal_3 = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[3]), kProtocolType);
 
   processor_.ProcessSignal(pw_reuse_signal_0);
   task_environment_.FastForwardBy(base::Milliseconds(50));

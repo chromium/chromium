@@ -254,6 +254,14 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // installed to support the API.
   bool MayHaveProxies() const;
 
+  // Indicates whether or not WebRequestAPI may have one or more proxies
+  // installed to support intercepting websocket connections for extension
+  // telemetry.
+  // TODO(psarouthakis): This is here for the current implementation, but
+  // will be refactored to live somewhere else so that we don't have to
+  // create a full proxy just for telemetry.
+  bool MayHaveWebsocketProxiesForExtensionTelemetry() const;
+
   bool HasExtraHeadersListenerForTesting();
 
  private:

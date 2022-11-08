@@ -184,7 +184,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                     int tab_id) const override;
   bool IsExtensionTelemetryServiceEnabled(
       content::BrowserContext* context) const override;
-  bool IsExtensionTelemetryRemoteHostContactedSignalEnabled() const override;
   void NotifyExtensionApiTabExecuteScript(
       content::BrowserContext* context,
       const ExtensionId& extension_id,

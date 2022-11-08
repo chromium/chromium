@@ -5687,8 +5687,8 @@ bool ChromeContentBrowserClient::WillInterceptWebSocket(
   // BrowserContextKeyedAPI factories for e.g. WebRequest.
   if (!web_request_api)
     return false;
-
-  return web_request_api->MayHaveProxies();
+  return (web_request_api->MayHaveProxies() ||
+          web_request_api->MayHaveWebsocketProxiesForExtensionTelemetry());
 #else
   return false;
 #endif

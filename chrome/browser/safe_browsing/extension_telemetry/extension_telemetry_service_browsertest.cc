@@ -57,6 +57,7 @@ class ExtensionTelemetryServiceBrowserTest
   ExtensionTelemetryServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {kExtensionTelemetry, kExtensionTelemetryReportContactedHosts,
+         kExtensionTelemetryReportHostsContactedViaWebSocket,
          kExtensionTelemetryCookiesGetAllSignal,
          kExtensionTelemetryCookiesGetSignal},
         {});
@@ -155,13 +156,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
         extension_report.signals()[0];
     const RemoteHostContactedInfo& remote_host_contacted_info =
         signal.remote_host_contacted_info();
-    ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 1);
+    ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 2);
     const RemoteHostInfo& remote_host_info =
         remote_host_contacted_info.remote_host(0);
     EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(1));
     EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
     EXPECT_EQ(remote_host_info.connection_protocol(),
               RemoteHostInfo::HTTP_HTTPS);
+    const RemoteHostInfo& remote_host_contacted_info_websocket =
+        remote_host_contacted_info.remote_host(1);
+    EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(),
+              static_cast<uint32_t>(1));
+    EXPECT_EQ(remote_host_contacted_info_websocket.url(),
+              kExtensionContactedHost);
+    EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
+              RemoteHostInfo::WEBSOCKET);
   }
 }
 

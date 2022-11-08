@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -762,11 +763,10 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     if (extensions::kExtensionScheme == request_scheme &&
         ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
             browser_context) &&
-        ExtensionsBrowserClient::Get()
-            ->IsExtensionTelemetryRemoteHostContactedSignalEnabled()) {
+        base::FeatureList::IsEnabled(
+            safe_browsing::kExtensionTelemetryReportContactedHosts)) {
       skip_proxy = false;
     }
-
     if (skip_proxy)
       return false;
   }
@@ -846,7 +846,7 @@ void WebRequestAPI::ProxyWebSocket(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(MayHaveProxies());
+  DCHECK(MayHaveProxies() || MayHaveWebsocketProxiesForExtensionTelemetry());
 
   const bool has_extra_headers =
       ExtensionWebRequestEventRouter::GetInstance()->HasAnyExtraHeadersListener(
@@ -897,6 +897,16 @@ bool WebRequestAPI::MayHaveProxies() const {
   }
 
   return web_request_extension_count_ > 0;
+}
+
+bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
+  return ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
+             browser_context_) &&
+         base::FeatureList::IsEnabled(
+             safe_browsing::kExtensionTelemetryReportContactedHosts) &&
+         base::FeatureList::IsEnabled(
+             safe_browsing::
+                 kExtensionTelemetryReportHostsContactedViaWebSocket);
 }
 
 bool WebRequestAPI::HasExtraHeadersListenerForTesting() {

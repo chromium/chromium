@@ -5,6 +5,7 @@ include_rules = [
   "+components/device_event_log",
   "+components/file_access",
   "+components/permissions",
+  "+components/safe_browsing/core/common",
   "+components/ukm",
   "+services/device/public",
   "+services/metrics/public/cpp",

@@ -17,10 +17,9 @@ using RemoteHostInfo = ExtensionTelemetryReportRequest::SignalInfo::
 // A signal that is created when an extension initiates a web request.
 class RemoteHostContactedSignal : public ExtensionSignal {
  public:
-  RemoteHostContactedSignal(
-      const extensions::ExtensionId& extension_id,
-      const GURL& host_url,
-      RemoteHostInfo::ProtocolType protocol = RemoteHostInfo::HTTP_HTTPS);
+  RemoteHostContactedSignal(const extensions::ExtensionId& extension_id,
+                            const GURL& host_url,
+                            RemoteHostInfo::ProtocolType protocol);
   ~RemoteHostContactedSignal() override;
 
   // ExtensionSignal:

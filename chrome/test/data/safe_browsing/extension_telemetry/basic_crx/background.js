@@ -9,6 +9,9 @@ chrome.test.getConfig(function(config) {
     let response = await fetch(url);
     let text = await response.text();
     chrome.test.assertEq('Hello!', text);
+    var baseUrl_websocket = 'ws://example.com:' + config.testServer.port;
+    let socket = new WebSocket(baseUrl_websocket);
+    socket.close();
     chrome.test.succeed();
   }]);
 });

@@ -426,11 +426,6 @@ class ExtensionsBrowserClient {
   virtual bool IsExtensionTelemetryServiceEnabled(
       content::BrowserContext* context) const;
 
-  // Returns true if remote host contacted signal feature is enabled.
-  // TODO(zackhan): This function is for measuring the impacts in finch
-  // experiments, will remove afterwards.
-  virtual bool IsExtensionTelemetryRemoteHostContactedSignalEnabled() const;
-
   // TODO(anunoy): This is a temporary implementation of notifying the
   // extension telemetry service of the tabs.executeScript API invocation
   // while its usefulness is evaluated.

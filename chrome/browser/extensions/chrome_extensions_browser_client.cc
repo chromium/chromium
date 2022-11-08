@@ -680,29 +680,33 @@ bool ChromeExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
   return telemetry_service && telemetry_service->enabled();
 }
 
-bool ChromeExtensionsBrowserClient::
-    IsExtensionTelemetryRemoteHostContactedSignalEnabled() const {
-  return base::FeatureList::IsEnabled(
-      safe_browsing::kExtensionTelemetryReportContactedHosts);
-}
-
 void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
     const GURL& url) const {
-  if (!url.SchemeIsHTTPOrHTTPS()) {
+  safe_browsing::RemoteHostInfo::ProtocolType protocol =
+      safe_browsing::RemoteHostInfo::UNSPECIFIED;
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kExtensionTelemetryReportContactedHosts) &&
+      url.SchemeIsHTTPOrHTTPS()) {
+    protocol = safe_browsing::RemoteHostInfo::HTTP_HTTPS;
+  } else if (base::FeatureList::IsEnabled(
+                 safe_browsing::
+                     kExtensionTelemetryReportHostsContactedViaWebSocket) &&
+             url.SchemeIsWSOrWSS()) {
+    protocol = safe_browsing::RemoteHostInfo::WEBSOCKET;
+  } else {
     return;
   }
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !IsExtensionTelemetryRemoteHostContactedSignalEnabled()) {
+  if (!telemetry_service || !telemetry_service->enabled()) {
     return;
   }
   auto remote_host_signal =
       std::make_unique<safe_browsing::RemoteHostContactedSignal>(extension_id,
-                                                                 url);
+                                                                 url, protocol);
   telemetry_service->AddSignal(std::move(remote_host_signal));
 }
 

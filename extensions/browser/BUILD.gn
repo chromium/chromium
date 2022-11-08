@@ -573,6 +573,7 @@ source_set("browser_sources") {
     "//components/permissions:permissions_common",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/safe_browsing/core/common",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
     "//components/sessions",

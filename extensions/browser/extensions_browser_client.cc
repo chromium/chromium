@@ -142,11 +142,6 @@ bool ExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
   return false;
 }
 
-bool ExtensionsBrowserClient::
-    IsExtensionTelemetryRemoteHostContactedSignalEnabled() const {
-  return false;
-}
-
 void ExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
