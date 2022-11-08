@@ -281,7 +281,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1259152067760398571">La comprobación de seguridad se ejecutó ayer</translation>
 <translation id="1260451001046713751">Permitir siempre ventanas emergentes y redirecciones de <ph name="HOST" /></translation>
 <translation id="1260810365552581339">Es posible que Linux no tenga suficiente espacio en disco. Puedes aumentar el espacio en disco de Linux e intentar la restauración otra vez en <ph name="LINK_START" />Ajustes<ph name="LINK_END" />.</translation>
-<translation id="1261380933454402672">Parcial</translation>
+<translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ha habido un problema con las licencias del modo Demo del dispositivo.</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263733306853729545">Utilizar las teclas <ph name="MINUS" /> y <ph name="EQUAL" /> para mostrar la lista de caracteres disponibles</translation>
@@ -3281,7 +3281,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4075639477629295004">No se puede enviar <ph name="FILE_NAME" />.</translation>
 <translation id="4077917118009885966">Los anuncios están bloqueados en este sitio web</translation>
 <translation id="4077919383365622693">Se borrarán todos los datos y las cookies guardados por <ph name="SITE" />.</translation>
-<translation id="4078738236287221428">Dinámico</translation>
+<translation id="4078738236287221428">Forzada</translation>
 <translation id="4079140982534148664">Usar la revisión ortográfica mejorada</translation>
 <translation id="4081203444152654304">Buscar dentro de la imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">No se ha podido enviar el archivo.</translation>

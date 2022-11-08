@@ -7442,7 +7442,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="810068641062493918">Jezik <ph name="LANGUAGE" /> je odabran. Da poništite odabir, pritisnite tipku za pretraživanje i razmak.</translation>
 <translation id="8100972288595615768">Obrisati podatke web lokacije i odobrenja za <ph name="SITE_NAME" />?</translation>
 <translation id="810185532889603849">Prilagođena boja</translation>
-<translation id="8101987792947961127">Powerwash je obavezan prilikom sljedećeg pokretanja</translation>
+<translation id="8101987792947961127">Powerwash je obavezan prilikom sljedećeg ponovnog pokretanja</translation>
 <translation id="81020759409809034">Lokalna lokacija</translation>
 <translation id="8102139037507939978">Uklonite informacije koje mogu poslužiti za ličnu identifikaciju iz fajla system_logs.txt.</translation>
 <translation id="810362914482827094">Pretražite pristupne ključeve</translation>
