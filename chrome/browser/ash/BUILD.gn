@@ -3607,7 +3607,6 @@ source_set("ash") {
     "//components/country_codes",
     "//components/crash/core/app",
     "//components/crash/core/common",
-    "//components/crash/core/common:crash_key_lib",
     "//components/crx_file",
     "//components/device_event_log",
     "//components/download/public/common:public",

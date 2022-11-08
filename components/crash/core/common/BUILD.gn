@@ -74,6 +74,9 @@ target(crash_key_target_type, "crash_key_lib") {
 
   defines = []
 
+  # Consumers should depend on `:crash_key`.
+  visibility = [ ":*" ]
+
   # This target is not always a component, depending on the implementation.
   # When it is not a component, annotating functions with the standard
   # CRASH_EXPORT macro causes linking errors on Windows (clients of this target

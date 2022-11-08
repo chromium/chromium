@@ -224,7 +224,7 @@ source_set("web_internal") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/content_settings/core/browser",
-    "//components/crash/core/common:crash_key_lib",
+    "//components/crash/core/common:crash_key",
     "//components/crash/core/common:reporter_running_ios",
     "//components/dom_distiller/core",
     "//components/flags_ui",

@@ -99,7 +99,7 @@ if (is_win) {
       ":stability_common",
       "//base",
       "//base/test:test_support",
-      "//components/crash/core/common:crash_key_lib",
+      "//components/crash/core/common:crash_key",
       "//components/metrics:metrics",
       "//testing/gmock",
       "//testing/gtest",

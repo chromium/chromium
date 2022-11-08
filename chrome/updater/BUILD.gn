@@ -139,7 +139,6 @@ if (is_win || is_mac || is_linux) {
       "//build:chromeos_buildflags",
       "//chrome/updater/protos:omaha_proto",
       "//components/crash/core/common:crash_key",
-      "//components/crash/core/common:crash_key_lib",
       "//components/crx_file",
       "//components/policy/proto",
       "//components/prefs",

@@ -34,7 +34,7 @@ source_set("common") {
 
   deps = [
     "//base",
-    "//components/crash/core/common:crash_key_lib",
+    "//components/crash/core/common:crash_key",
     "//skia",
     "//third_party:freetype_harfbuzz",
     "//ui/gfx/geometry",
@@ -80,7 +80,7 @@ source_set("unit_tests") {
     ":test_utils",
     "//base",
     "//base/test:test_support",
-    "//components/crash/core/common:crash_key_lib",
+    "//components/crash/core/common:crash_key",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
