@@ -838,6 +838,8 @@ crbug.com/1361922 virtual/view-transition/wpt_internal/view-transition/old-conte
 crbug.com/1361922 virtual/view-transition/wpt_internal/view-transition/new-content-captures-different-size.html [ Slow ]
 crbug.com/1361922 virtual/view-transition/wpt_internal/view-transition/japanese-tag.html [ Slow ]
 
+crbug.com/1381545 virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Slow ]
+
 crbug.com/1293315 external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
 
 crbug.com/1372747 [ Win ] http/tests/uri/css-href.php [ Slow ]
