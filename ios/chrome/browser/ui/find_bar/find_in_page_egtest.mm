@@ -130,8 +130,9 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
                     error:&error];
     return (error == nil);
   };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(2.0, condition),
-             @"Timeout while waiting for Find Bar to close");
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"Timeout while waiting for Find Bar to close");
 
   // Open incognito page.
   [ChromeEarlGreyUI openNewIncognitoTab];
@@ -207,7 +208,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
     return (error == nil);
   };
   GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(2.0, condition),
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"Timeout waiting for correct Find in Page results string to appear");
 }
 
