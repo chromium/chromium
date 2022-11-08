@@ -663,7 +663,12 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
   std::unique_ptr<WebContents> predecessor_web_contents =
       delegate->ActivatePortalWebContents(outer_contents,
                                           std::move(successor_contents));
-  DCHECK_EQ(predecessor_web_contents.get(), outer_contents);
+
+  // Some unusual delegates cannot yet handle this. And we cannot handle them
+  // not handling it. Since this code is likely to be rewritten, this has been
+  // promoted to a CHECK to avoid any concern of bad behavior down the line.
+  // This shouldn't happen in any _supported_ configuration.
+  CHECK_EQ(predecessor_web_contents.get(), outer_contents);
 
   devtools_instrumentation::PortalActivated(*this);
 
