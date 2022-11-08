@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,8 +70,10 @@ class TestAccountReconcilor : public AccountReconcilor {
                 identity_manager,
                 client->GetInitialPrimaryAccount().has_value())) {}
 
-  void SimulateSetCookiesFinished() {
-    OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult::kSuccess);
+  void SimulateSetCookiesFinished(
+      const std::vector<CoreAccountId>& accounts_to_send) {
+    OnSetAccountsInCookieCompleted(accounts_to_send,
+                                   signin::SetAccountsInCookieResult::kSuccess);
   }
 };
 
@@ -171,8 +174,9 @@ class SigninHelperLacrosTest : public testing::Test {
       base::RunLoop().RunUntilIdle();
   }
 
-  void SimulateSetCookiesFinished() {
-    reconcilor_.SimulateSetCookiesFinished();
+  void SimulateSetCookiesFinished(
+      const std::vector<CoreAccountId>& accounts_to_send) {
+    reconcilor_.SimulateSetCookiesFinished(accounts_to_send);
   }
 
   ProfileAttributesStorage* storage() {
@@ -287,7 +291,9 @@ TEST_F(SigninHelperLacrosTest, NoAccountAvailable) {
 
   // The `AccountReconcilor` stops running, cookie is reset.
   ExpectCookieSet("Consistent");
-  SimulateSetCookiesFinished();
+  SimulateSetCookiesFinished(
+      /*accounts_to_send=*/std::vector<CoreAccountId>{
+          CoreAccountId::FromGaiaId(gaia_id)});
 
   testing::Mock::VerifyAndClearExpectations(cookie_manager());
   testing::Mock::VerifyAndClearExpectations(&helper_complete);

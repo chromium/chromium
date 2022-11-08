@@ -32,6 +32,7 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -75,6 +76,18 @@ CoreAccountId PickFirstGaiaAccount(
   }
   return parameters.accounts_to_send.empty() ? CoreAccountId()
                                              : parameters.accounts_to_send[0];
+}
+
+bool IsAnyAccountInErrorState(
+    const signin::IdentityManager* const identity_manager,
+    const std::vector<CoreAccountId>& accounts) {
+  for (const CoreAccountId& account : accounts) {
+    if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            account)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -350,14 +363,12 @@ void AccountReconcilor::PerformSetCookiesAction(
   reconcile_is_noop_ = false;
   VLOG(1) << "AccountReconcilor::PerformSetCookiesAction: "
           << base::JoinString(ToStringList(parameters.accounts_to_send), " ");
-  // TODO (https://crbug.com/890321): pass mode to GaiaCookieManagerService.
-  //
-  // Using Unretained is safe here because the CookieManagerService outlives
-  // the AccountReconcilor.
+  // Using `Unretained()` is safe here because `IdentityManager` outlives
+  // `AccountReconcilor`.
   identity_manager_->GetAccountsCookieMutator()->SetAccountsInCookie(
       parameters, delegate_->GetGaiaApiSource(),
       base::BindOnce(&AccountReconcilor::OnSetAccountsInCookieCompleted,
-                     base::Unretained(this)));
+                     base::Unretained(this), parameters.accounts_to_send));
 }
 
 void AccountReconcilor::PerformLogoutAllAccountsAction() {
@@ -719,12 +730,26 @@ bool AccountReconcilor::IsIdentityManagerReady() {
 }
 
 void AccountReconcilor::OnSetAccountsInCookieCompleted(
+    const std::vector<CoreAccountId>& accounts_to_send,
     signin::SetAccountsInCookieResult result) {
   VLOG(1) << "AccountReconcilor::OnSetAccountsInCookieCompleted: "
           << "Error was " << static_cast<int>(result);
 
   if (!set_accounts_in_progress_ || !is_reconcile_started_)
     return;
+
+  if (IsAnyAccountInErrorState(identity_manager_, accounts_to_send)) {
+    // `AccountReconcilor` is supposed to skip accounts with errors while
+    // minting cookies (see `LoadValidAccountsFromTokenService()`). If any of
+    // the accounts that we sent for cookie minting is in error, it means that
+    // its error state was quite possibly discovered by `AccountReconcilor`
+    // itself. Abort reconciliation and retry.
+    AbortReconcile();
+    chrome_accounts_changed_ = true;
+    ScheduleStartReconcileIfChromeAccountsChanged();
+    return;
+  }
+
   set_accounts_in_progress_ = false;
   switch (result) {
     case signin::SetAccountsInCookieResult::kSuccess:

@@ -56,12 +56,6 @@ class StubAccountReconcilor : public AccountReconcilor {
     OnLogOutFromCookieCompleted(GoogleServiceAuthError::AuthErrorNone());
   }
 
-  void SimulateSetCookiesFinished() {
-    EXPECT_TRUE(perform_set_cookies_called_);
-    perform_set_cookies_called_ = false;
-    OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult::kSuccess);
-  }
-
  private:
   bool perform_set_cookies_called_ = false;
   bool perform_logout_all_accounts_called_ = false;
