@@ -318,6 +318,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_docked_lacros",
   "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating_lacros",
 
+  # https://crbug.com/1361163
+  "lacros.AudioPinnedStream.play",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
