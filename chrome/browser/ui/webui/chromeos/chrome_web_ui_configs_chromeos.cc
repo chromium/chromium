@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/webui/ash/human_presence_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/ash/network_ui.h"
 #include "chrome/browser/ui/webui/ash/notification_tester/notification_tester_ui.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
@@ -83,6 +85,9 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::HumanPresenceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetConfigDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetDetailDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::MultideviceInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<
+                     ash::multidevice_setup::MultiDeviceSetupDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NetworkUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
   map.AddWebUIConfig(

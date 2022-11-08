@@ -1015,10 +1015,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
-  if (url.host_piece() == chrome::kChromeUIMultiDeviceInternalsHost)
-    return &NewWebUI<ash::MultideviceInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUIMultiDeviceSetupHost)
-    return &NewWebUI<ash::multidevice_setup::MultiDeviceSetupDialogUI>;
   if (url.host_piece() == chrome::kChromeUIOobeHost) {
     if (ash::ProfileHelper::IsSigninProfile(profile)) {
       return &NewWebUI<chromeos::OobeUI>;

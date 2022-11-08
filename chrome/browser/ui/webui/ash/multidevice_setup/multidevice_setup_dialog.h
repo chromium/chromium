@@ -10,7 +10,10 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -55,6 +58,17 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
   // List of callbacks that have registered themselves to be invoked once this
   // dialog is closed.
   std::vector<base::OnceClosure> on_close_callbacks_;
+};
+
+class MultiDeviceSetupDialogUI;
+
+// WebUIConfig for chrome://multidevice-setup
+class MultiDeviceSetupDialogUIConfig
+    : public content::DefaultWebUIConfig<MultiDeviceSetupDialogUI> {
+ public:
+  MultiDeviceSetupDialogUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIMultiDeviceSetupHost) {}
 };
 
 class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {
