@@ -3235,11 +3235,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPPrefetchSrc) {
         PrerenderFinalStatus::kNavigationRequestBlockedByCsp);
   }
 
-  // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
-  // Now a document cannot trigger prerendering twice, even if the first started
-  // one is canceled. So we have to reload the initiator page to get a new
-  // document instance.
-  ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_TRUE(ExecJs(current_frame_host(), kCSPScript));
 
   // Check what happens when prerendering isn't blocked.
@@ -3291,11 +3286,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPDefaultSrc) {
         PrerenderFinalStatus::kNavigationRequestBlockedByCsp);
   }
 
-  // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
-  // Now a document cannot trigger prerendering twice, even if the first started
-  // one is canceled. So we have to reload the initiator page to get a new
-  // document instance.
-  ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_TRUE(ExecJs(current_frame_host(), kCSPScript));
 
   // Check what happens when prerendering isn't blocked.
@@ -3516,11 +3506,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       "SpeculationRule",
       InterfaceNameHasher(mojom::PepperHost::Name_), 1);
 
-  // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
-  // Now a document cannot trigger prerendering twice, even if the first started
-  // one is canceled. So we have to reload the initiator page to get a new
-  // document instance.
-  ReloadBlockUntilNavigationsComplete(shell(), 1);
   LoadAndWaitForPrerenderDestroyed(
       web_contents(), GetUrl("/prerender/page-with-object-plugin.html"),
       prerender_helper());
