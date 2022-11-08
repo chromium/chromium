@@ -4,33 +4,28 @@
 
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
 
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
 
 namespace {
 
-// Animation
-// The animation duration for the translation of |active_button_selector_| on
+// The animation duration for the translation of `active_button_selector_` on
 // mode change.
 constexpr auto kToggleSlideDuration = base::Milliseconds(150);
 
@@ -39,12 +34,11 @@ constexpr int kTabSliderButtonFocusInsets = 4;
 
 }  // namespace
 
-//////////////////////////////////////////////////////////////////////////////
-// WindowCycleTabSlider, public:
-
 WindowCycleTabSlider::WindowCycleTabSlider()
-    : active_button_selector_(AddChildView(std::make_unique<views::View>())),
-      buttons_container_(AddChildView(std::make_unique<views::View>())),
+    : active_button_selector_(
+          AddChildView(std::make_unique<views::BoxLayoutView>())),
+      buttons_container_(
+          AddChildView(std::make_unique<views::BoxLayoutView>())),
       all_desks_tab_slider_button_(buttons_container_->AddChildView(
           std::make_unique<WindowCycleTabSliderButton>(
               base::BindRepeating(
@@ -61,14 +55,8 @@ WindowCycleTabSlider::WindowCycleTabSlider()
                   /*per_desk=*/true,
                   WindowCycleController::ModeSwitchSource::kClick),
               l10n_util::GetStringUTF16(IDS_ASH_ALT_TAB_CURRENT_DESK_MODE)))) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-
-  // Layout two buttons in button containers.
   buttons_container_->SetPaintToLayer();
   buttons_container_->layer()->SetFillsBoundsOpaquely(false);
-  buttons_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
   // All buttons should have the same width and height.
   const gfx::Size button_size = GetPreferredSizeForButtons();
@@ -81,8 +69,6 @@ WindowCycleTabSlider::WindowCycleTabSlider()
                 button_size.height() + 2 * kTabSliderButtonFocusInsets));
   active_button_selector_->SetPaintToLayer();
   active_button_selector_->layer()->SetFillsBoundsOpaquely(false);
-  active_button_selector_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
   const int active_button_selector_round_radius =
       int{active_button_selector_->GetPreferredSize().height() / 2};
 
@@ -99,10 +85,7 @@ WindowCycleTabSlider::WindowCycleTabSlider()
   // Create background for the selector to show an active button.
   auto* active_button_selector_background =
       active_button_selector_->AddChildView(std::make_unique<views::View>());
-  active_button_selector_background->SetPaintToLayer();
-  active_button_selector_background->layer()->SetFillsBoundsOpaquely(false);
-  active_button_selector_background->SetPreferredSize(
-      gfx::Size(button_size.width(), button_size.height()));
+  active_button_selector_background->SetPreferredSize(button_size);
   active_button_selector_background->SetBackground(
       views::CreateRoundedRectBackground(
           AshColorProvider::Get()->GetControlsLayerColor(
@@ -151,8 +134,7 @@ void WindowCycleTabSlider::OnModePrefsChanged() {
 
 void WindowCycleTabSlider::Layout() {
   const gfx::Size button_size = GetPreferredSizeForButtons();
-  buttons_container_->SetSize(
-      gfx::Size(2 * button_size.width(), button_size.height()));
+  buttons_container_->SetSize(gfx::ScaleToRoundedSize(button_size, 2.f, 1.f));
 
   active_button_selector_->SetBounds(
       Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk()
@@ -167,24 +149,13 @@ gfx::Size WindowCycleTabSlider::CalculatePreferredSize() const {
   return buttons_container_->GetPreferredSize();
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// WindowCycleTabSlider, private:
-
 void WindowCycleTabSlider::UpdateActiveButtonSelector(bool per_desk) {
-  auto active_button_selector_bounds = active_button_selector_->bounds();
-  if (active_button_selector_bounds.IsEmpty()) {
-    // OnModePrefsChanged() is called in the ctor so the
-    // |active_button_selector_| has not been laid out yet so exit early.
+  const gfx::Rect active_button_selector_bounds =
+      active_button_selector_->bounds();
+  // `OnModePrefsChanged()` is called in the ctor so the
+  // `active_button_selector_` has not been laid out yet.
+  if (active_button_selector_bounds.IsEmpty())
     return;
-  }
-
-  auto* active_button_selector_layer = active_button_selector_->layer();
-  ui::ScopedLayerAnimationSettings scoped_settings(
-      active_button_selector_layer->GetAnimator());
-  scoped_settings.SetTransitionDuration(kToggleSlideDuration);
-  scoped_settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN_2);
-  scoped_settings.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
   const gfx::Size button_size = GetPreferredSizeForButtons();
   const gfx::Rect new_selector_bounds =
@@ -193,12 +164,20 @@ void WindowCycleTabSlider::UpdateActiveButtonSelector(bool per_desk) {
                 -kTabSliderButtonFocusInsets,
                 button_size.width() + 2 * kTabSliderButtonFocusInsets,
                 button_size.height() + 2 * kTabSliderButtonFocusInsets);
-  active_button_selector_layer->SetTransform(
+
+  const gfx::Transform transform =
       gfx::TransformBetweenRects(gfx::RectF(active_button_selector_bounds),
-                                 gfx::RectF(new_selector_bounds)));
+                                 gfx::RectF(new_selector_bounds));
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kToggleSlideDuration)
+      .SetTransform(active_button_selector_->layer(), transform,
+                    gfx::Tween::FAST_OUT_SLOW_IN_2);
 }
 
-gfx::Size WindowCycleTabSlider::GetPreferredSizeForButtons() {
+gfx::Size WindowCycleTabSlider::GetPreferredSizeForButtons() const {
   gfx::Size preferred_size = all_desks_tab_slider_button_->GetPreferredSize();
   preferred_size.SetToMax(current_desk_tab_slider_button_->GetPreferredSize());
   return preferred_size;

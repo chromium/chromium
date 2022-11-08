@@ -14,10 +14,14 @@ namespace gfx {
 class Size;
 }
 
+namespace views {
+class BoxLayoutView;
+}
+
 namespace ash {
 
-// A WindowCycleTabSlider containing two buttons to switch between
-// all desks and current desks mode.
+// A WindowCycleTabSlider containing two buttons to switch between all desks and
+// current desks mode.
 class ASH_EXPORT WindowCycleTabSlider : public views::View {
  public:
   METADATA_HEADER(WindowCycleTabSlider);
@@ -50,12 +54,12 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
 
   // Returns an equalized button size calculated from maximum width and height
   // of the prefer size of all buttons.
-  gfx::Size GetPreferredSizeForButtons();
+  gfx::Size GetPreferredSizeForButtons() const;
 
   // The view that acts as an active button selector to show the active button
   // background and the highlight border if applicable. It is animated during
   // mode change.
-  views::View* active_button_selector_;
+  views::BoxLayoutView* active_button_selector_;
 
   // The highlight border, the focus ring, of the active button selector.
   // The border shows up when the tab slider is focused during keyboard
@@ -63,7 +67,7 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
   WmHighlightItemBorder* highlight_border_;
 
   // The view that contains the tab slider buttons.
-  views::View* buttons_container_;
+  views::BoxLayoutView* buttons_container_;
 
   WindowCycleTabSliderButton* all_desks_tab_slider_button_;
   WindowCycleTabSliderButton* current_desk_tab_slider_button_;
