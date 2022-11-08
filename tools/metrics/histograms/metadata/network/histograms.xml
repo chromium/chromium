@@ -652,6 +652,17 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks the rate of success of uninstalling a profile.</summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.RequestPendingProfiles.Latency"
+    units="ms" expires_after="2023-09-01">
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the latency of call to SMDS server. This is emitted when pending eSIM
+    profiles are requested. Call latency is calculated and emitted upon
+    completion of the platform call.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.RequestPendingProfiles.OperationResult"
     enum="NetworkCellularESimRequestPendingProfilesResult"
     expires_after="2023-01-15">

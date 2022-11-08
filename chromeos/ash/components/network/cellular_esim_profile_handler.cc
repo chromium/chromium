@@ -6,6 +6,7 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
+#include "chromeos/ash/components/network/hermes_metrics_util.h"
 
 namespace ash {
 namespace {
@@ -130,23 +131,28 @@ void CellularESimProfileHandler::RefreshProfilesWithLock(
   inhibit_lock_ = std::move(inhibit_lock);
   callback_ = std::move(callback);
 
+  base::TimeTicks start_time = base::TimeTicks::Now();
   HermesEuiccClient::Get()->RefreshInstalledProfiles(
       euicc_path, restore_slot,
       base::BindOnce(
           &CellularESimProfileHandler::OnRequestInstalledProfilesResult,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), start_time));
 }
 
 void CellularESimProfileHandler::OnRequestInstalledProfilesResult(
+    base::TimeTicks start_time,
     HermesResponseStatus status) {
   DCHECK(inhibit_lock_);
   DCHECK(callback_);
+
+  base::TimeDelta call_latency = base::TimeTicks::Now() - start_time;
 
   // If the operation failed, reset |inhibit_lock_| before it is returned to
   // the callback below to indicate failure.
   if (status != HermesResponseStatus::kSuccess) {
     inhibit_lock_.reset();
   } else {
+    hermes_metrics::LogRequestPendingProfilesLatency(call_latency);
     has_completed_successful_profile_refresh_ = true;
     OnHermesPropertiesUpdated();
   }

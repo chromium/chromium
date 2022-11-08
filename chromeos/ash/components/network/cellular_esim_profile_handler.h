@@ -135,7 +135,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       bool restore_slot,
       RefreshProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
-  void OnRequestInstalledProfilesResult(HermesResponseStatus status);
+  void OnRequestInstalledProfilesResult(base::TimeTicks start_time,
+                                        HermesResponseStatus status);
 
   CellularInhibitor* cellular_inhibitor_ = nullptr;
 

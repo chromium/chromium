@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HERMES_METRICS_UTIL_H_
 
 #include "base/component_export.h"
+#include "base/time/tick_clock.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 
 namespace ash::hermes_metrics {
@@ -27,6 +28,9 @@ void COMPONENT_EXPORT(CHROMEOS_NETWORK)
 
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogRequestPendingProfilesResult(HermesResponseStatus status);
+
+void COMPONENT_EXPORT(CHROMEOS_NETWORK)
+    LogRequestPendingProfilesLatency(base::TimeDelta call_latency);
 
 }  // namespace ash::hermes_metrics
 
