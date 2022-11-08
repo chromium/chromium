@@ -5,8 +5,9 @@
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 
-import {AppType, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -14,6 +14,7 @@ import '/app-management/types.mojom-lite.js';
 import '/app-management/app_management.mojom-lite.js';
 import '/os_apps_page/app_notification_handler.mojom-lite.js';
 
+import {TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createBoolPermissionValue, createTriStatePermissionValue, isBoolValue, isPermissionEnabled, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -74,8 +75,7 @@ export class AppNotificationRowElement extends PolymerElement {
           createBoolPermissionValue(this.checked_ ? false : true);
     } else if (isTriStateValue(permission.value)) {
       permission.value = createTriStatePermissionValue(
-          this.checked_ ? appManagement.mojom.TriState.kBlock :
-                          appManagement.mojom.TriState.kAllow);
+          this.checked_ ? TriState.kBlock : TriState.kAllow);
     }
 
     this.mojoInterfaceProvider_.setNotificationPermission(

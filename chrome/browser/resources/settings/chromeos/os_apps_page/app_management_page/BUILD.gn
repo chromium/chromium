@@ -43,7 +43,7 @@ js_library("types") {
 js_library("actions") {
   deps = [
     "//ash/webui/common/resources/store:store",
-    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -63,6 +63,7 @@ js_library("app_detail_view") {
     ":actions",
     ":dom_switch",
     ":store_client",
+    ":types",
     "../..:os_route",
     "../..:route_observer_behavior",
     "../../..:router",
@@ -80,17 +81,16 @@ js_library("app_details_item") {
     "//ash/webui/common/resources:i18n_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  externs_list = [ "./types.js" ]
 }
 
 js_library("app_item") {
   deps = [
     ":actions",
     ":store_client",
+    ":types",
     ":util",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  externs_list = [ "./types.js" ]
 }
 
 js_library("app_management_page") {
@@ -119,7 +119,7 @@ js_library("arc_detail_view") {
 js_library("browser_proxy") {
   deps = [
     ":fake_page_handler",
-    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
   ]
 }
 
@@ -144,10 +144,9 @@ js_library("dom_switch") {
 
 js_library("fake_page_handler") {
   deps = [
-    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
     "//ui/webui/resources/js:promise_resolver",
   ]
-  externs_list = [ "./types.js" ]
 }
 
 js_library("main_view") {
@@ -155,6 +154,7 @@ js_library("main_view") {
     ":app_item",
     ":browser_proxy",
     ":store_client",
+    ":types",
     ":util",
     "../..:os_route",
     "../..:route_observer_behavior",
@@ -167,6 +167,7 @@ js_library("main_view") {
 js_library("pin_to_shelf_item") {
   deps = [
     ":browser_proxy",
+    ":types",
     ":util",
     "../..:metrics_recorder",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -187,6 +188,7 @@ js_library("pwa_detail_view") {
 
 js_library("reducers") {
   deps = [
+    ":types",
     ":util",
     "//ui/webui/resources/js:cr.m",
   ]
@@ -218,24 +220,23 @@ js_library("store") {
 js_library("store_client") {
   deps = [
     ":store",
+    ":types",
     "//ash/webui/common/resources/store:store",
     "//ash/webui/common/resources/store:store_client",
-    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
-  externs_list = [ "./types.js" ]
 }
 
 js_library("supported_links_overlapping_apps_dialog") {
   deps = [
     ":store_client",
+    ":types",
     "//ash/webui/common/resources:i18n_behavior",
     "//ui/webui/resources/js:assert",
   ]
-  externs_list = [
-    "./types.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("supported_links_dialog") {
@@ -254,6 +255,7 @@ js_library("supported_links_item") {
     ":store_client",
     ":supported_links_dialog",
     ":supported_links_overlapping_apps_dialog",
+    ":types",
     ":util",
     "../..:metrics_recorder",
     "//ash/webui/common/resources:focus_without_ink_js",

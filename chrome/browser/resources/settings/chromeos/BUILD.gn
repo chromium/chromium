@@ -45,7 +45,6 @@ if (optimize_webui) {
       ":build_ts",
       "//chrome/browser/resources/nearby_share/shared:preprocess_v3",
       "//ui/webui/resources:preprocess",
-      "//ui/webui/resources/cr_components/app_management:build_ts",
     ]
     excludes = [
       "app-management/app_management.mojom-lite.js",
@@ -332,7 +331,6 @@ generate_grd("build_grd") {
     deps += [
       ":build_ts",
       "//chrome/browser/resources/nearby_share/shared:build_v3_grdp",
-      "//ui/webui/resources/cr_components/app_management:build_ts",
     ]
     grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
     manifest_files += [ "$target_gen_dir/build_ts.manifest" ]

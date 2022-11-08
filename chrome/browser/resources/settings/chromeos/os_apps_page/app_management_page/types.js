@@ -6,26 +6,13 @@
  * @fileoverview Closure typedefs for App Management.
  */
 
-/**
- * @typedef {appManagement.mojom.App}
- */
-let App;
-
-/**
- * @typedef {appManagement.mojom.ExtensionAppPermissionMessage}
- */
-let ExtensionAppPermissionMessage;
-
-/**
- * @typedef {appManagement.mojom.Permission}
- */
-let Permission;
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 /**
  * Maps app ids to Apps.
  * @typedef {!Object<string, App>}
  */
-let AppMap;
+export let AppMap;
 
 /**
  * @typedef {{
@@ -33,24 +20,14 @@ let AppMap;
  *   selectedAppId: ?string,
  * }}
  */
-let AppManagementPageState;
-
-/**
- * @typedef {appManagement.mojom.WindowMode}
- */
-let WindowMode;
-
-/**
- * @typedef {appManagement.mojom.InstallSource}
- */
-let InstallSource;
+export let AppManagementPageState;
 
 /**
  * Must be kept in sync with
  * ui/webui/resources/cr_components/app_management/constants.ts
  * @enum {number}
  */
-const AppManagementEntryPointType = {
+export const AppManagementEntryPointType = {
   APP_LIST_CONTEXT_MENU_APP_INFO_ARC: 0,
   APP_LIST_CONTEXT_MENU_APP_INFO_CHROME_APP: 1,
   APP_LIST_CONTEXT_MENU_APP_INFO_WEB_APP: 2,
@@ -71,7 +48,7 @@ const AppManagementEntryPointType = {
  * ui/webui/resources/cr_components/app_management/constants.ts
  * @enum {number}
  */
-const AppManagementUserAction = {
+export const AppManagementUserAction = {
   VIEW_OPENED: 0,
   NATIVE_SETTINGS_OPENED: 1,
   UNINSTALL_DIALOG_LAUNCHED: 2,
@@ -100,22 +77,26 @@ const AppManagementUserAction = {
 };
 
 /**
+ * TODO(crbug/1315757)
+ * When dependent code is converted to TS, this type can be imported from
+ * chrome://resources/cr_components/app_management/permission_item.js
+ *
  * @constructor
  * @extends {HTMLElement}
  */
-function AppManamentPermissionItemElement() {}
+export function AppManagementPermissionItemElement() {}
 
 /** @type {boolean} */
-AppManamentPermissionItemElement.prototype.permissionType;
+AppManagementPermissionItemElement.prototype.permissionType;
 
-AppManamentPermissionItemElement.prototype.syncPermission = function() {};
-AppManamentPermissionItemElement.prototype.resetToggle = function() {};
+AppManagementPermissionItemElement.prototype.syncPermission = function() {};
+AppManagementPermissionItemElement.prototype.resetToggle = function() {};
 
 /**
  * @constructor
  * @extends {HTMLElement}
  */
-function AppManagementToggleRowElement() {}
+export function AppManagementToggleRowElement() {}
 
 /** @return {boolean} */
 AppManagementToggleRowElement.prototype.isChecked = function() {};

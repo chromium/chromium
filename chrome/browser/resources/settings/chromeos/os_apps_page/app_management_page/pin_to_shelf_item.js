@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import 'chrome://resources/cr_components/app_management/toggle_row.js';
 
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
 import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -11,6 +12,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementToggleRowElement} from './types.js';
 
 /** @polymer */
 class AppManagementPinToShelfItemElement extends PolymerElement {

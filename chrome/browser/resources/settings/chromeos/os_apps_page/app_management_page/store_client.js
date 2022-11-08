@@ -6,6 +6,7 @@ import {Store} from 'chrome://resources/ash/common/store/store.js';
 import {StoreClient, StoreClientInterface} from 'chrome://resources/ash/common/store/store_client.js';
 
 import {AppManagementStore} from './store.js';
+import {AppManagementPageState} from './types.js';
 
 /**
  * @fileoverview Defines StoreClient, a Polymer behavior to tie a front-end

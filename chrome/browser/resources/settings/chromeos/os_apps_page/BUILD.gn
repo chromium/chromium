@@ -47,6 +47,7 @@ js_library("os_apps_page") {
     "./app_notifications_page:mojo_interface_provider",
     "//ash/webui/common/resources:i18n_behavior",
     "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [

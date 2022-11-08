@@ -11,6 +11,8 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
+import {AppManagementPageState, AppMap} from './types.js';
+
 export const AppState = {};
 
 /**

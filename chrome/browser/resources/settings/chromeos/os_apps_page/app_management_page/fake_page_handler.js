@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PermissionType, PermissionValue, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType, InstallReason, InstallSource, OptionalBool, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
+import {App, AppType, ExtensionAppPermissionMessage, OptionalBool, PageHandlerInterface, PageHandlerReceiver, PageHandlerRemote, PageRemote, Permission, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -11,12 +11,12 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {AppManagementStore} from './store.js';
 
 /**
- * @implements {appManagement.mojom.PageHandlerInterface}
+ * @implements {PageHandlerInterface}
  */
 export class FakePageHandler {
   /**
    * @param {Object=} options
-   * @return {!Object<number, appManagement.mojom.Permission>}
+   * @return {!Object<number, Permission>}
    */
   static createWebPermissions(options) {
     const permissionTypes = [
@@ -47,7 +47,7 @@ export class FakePageHandler {
 
   /**
    * @param {Array<number>=} optIds
-   * @return {!Object<number, appManagement.mojom.Permission>}
+   * @return {!Object<number, Permission>}
    */
   static createArcPermissions(optIds) {
     const permissionTypes = optIds || [
@@ -70,8 +70,8 @@ export class FakePageHandler {
   }
 
   /**
-   * @param {appManagement.mojom.AppType} appType
-   * @return {!Object<number, appManagement.mojom.Permission>}
+   * @param {AppType} appType
+   * @return {!Object<number, Permission>}
    */
   static createPermissions(appType) {
     switch (appType) {
@@ -130,11 +130,11 @@ export class FakePageHandler {
   }
 
   /**
-   * @param {appManagement.mojom.PageRemote} page
+   * @param {PageRemote} page
    */
   constructor(page) {
-    this.receiver_ = new appManagement.mojom.PageHandlerReceiver(this);
-    /** @type {appManagement.mojom.PageRemote} */
+    this.receiver_ = new PageHandlerReceiver(this);
+    /** @type {PageRemote} */
     this.page = page;
 
     /** @type {!Array<App>} */
@@ -183,7 +183,7 @@ export class FakePageHandler {
   }
 
   /**
-   * @returns {!appManagement.mojom.PageHandlerRemote}
+   * @returns {!PageHandlerRemote}
    */
   getRemote() {
     return this.receiver_.$.bindNewPipeAndPassRemote();
@@ -194,7 +194,7 @@ export class FakePageHandler {
   }
 
   /**
-   * @return {!Promise<{apps: !Array<!appManagement.mojom.App>}>}
+   * @return {!Promise<{apps: !Array<!App>}>}
    */
   async getApps() {
     return {apps: this.apps_};
@@ -202,7 +202,7 @@ export class FakePageHandler {
 
   /**
    * @param {!string} appId
-   * @return {!Promise<{app: appManagement.mojom.App}>}
+   * @return {!Promise<{app: App}>}
    */
   async getApp(appId) {
     assertNotReached();
@@ -210,8 +210,7 @@ export class FakePageHandler {
 
   /**
    * @param {!string} appId
-   * @return {!Promise<{messages:
-   *     !Array<!appManagement.mojom.ExtensionAppPermissionMessage>}>}
+   * @return {!Promise<{messages: !Array<!ExtensionAppPermissionMessage>}>}
    */
   async getExtensionAppPermissionMessages(appId) {
     return {messages: []};
@@ -226,7 +225,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {appManagement.mojom.OptionalBool} pinnedValue
+   * @param {OptionalBool} pinnedValue
    */
   setPinned(appId, pinnedValue) {
     const app = AppManagementStore.getInstance().data.apps[appId];
@@ -238,7 +237,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {appManagement.mojom.Permission} permission
+   * @param {Permission} permission
    */
   setPermission(appId, permission) {
     const app = AppManagementStore.getInstance().data.apps[appId];
@@ -305,7 +304,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {appManagement.mojom.WindowMode} windowMode
+   * @param {WindowMode} windowMode
    */
   setWindowMode(appId, windowMode) {
     assertNotReached();
@@ -313,7 +312,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {appManagement.mojom.RunOnOsLoginMode} runOnOsLoginMode
+   * @param {RunOnOsLoginMode} runOnOsLoginMode
    */
   setRunOnOsLoginMode(appId, runOnOsLoginMode) {
     assertNotReached();

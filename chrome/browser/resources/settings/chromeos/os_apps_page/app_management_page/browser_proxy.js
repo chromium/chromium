@@ -2,18 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
-import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import '/app-management/file_path.mojom-lite.js';
-import '/app-management/image.mojom-lite.js';
-import '/app-management/safe_base_name.mojom-lite.js';
-import '/app-management/types.mojom-lite.js';
-import '/app-management/app_management.mojom-lite.js';
-
-import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, PageCallbackRouter, PageHandlerRemote, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy as ComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppType, InstallReason, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
 
@@ -34,10 +23,10 @@ export class BrowserProxy {
   }
 
   constructor() {
-    /** @type {appManagement.mojom.PageCallbackRouter} */
-    this.callbackRouter = new appManagement.mojom.PageCallbackRouter();
+    /** @type {PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {appManagement.mojom.PageHandlerRemote} */
+    /** @type {PageHandlerRemote} */
     this.handler = null;
 
     const urlParams = new URLSearchParams(window.location.search);

@@ -4,11 +4,13 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {AppMap} from './types.js';
 
 /**
  * @constructor

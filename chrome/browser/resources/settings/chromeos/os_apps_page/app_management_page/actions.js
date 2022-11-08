@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Action} from 'chrome://resources/ash/common/store/store.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 /**
  * @fileoverview Module for functions which produce action objects. These are
@@ -11,6 +12,7 @@ import {Action} from 'chrome://resources/ash/common/store/store.js';
 
 /**
  * @param {App} app
+ * @return {Action}
  */
 export function addApp(app) {
   return {
@@ -21,6 +23,7 @@ export function addApp(app) {
 
 /**
  * @param {App} app
+ * @return {Action}
  */
 export function changeApp(app) {
   return {
@@ -31,6 +34,7 @@ export function changeApp(app) {
 
 /**
  * @param {string} id
+ * @return {Action}
  */
 export function removeApp(id) {
   return {
@@ -41,6 +45,7 @@ export function removeApp(id) {
 
 /**
  * @param {?string} appId
+ * @return {Action}
  */
 export function updateSelectedAppId(appId) {
   return {

@@ -9,15 +9,17 @@ import '../shared_style.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../../../router.js';
 import {routes} from '../../../os_route.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from '../store_client.js';
+import {AppManagementPermissionItemElement} from '../types.js';
 
 import {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
 
@@ -98,7 +100,7 @@ class AppManagementPluginVmDetailViewElement extends
    */
   async onPermissionChanged_(e) {
     this.pendingPermissionItem_ =
-        /** @type {AppManamentPermissionItemElement} */ (e.target);
+        /** @type {AppManagementPermissionItemElement} */ (e.target);
     switch (e.target.permissionType) {
       case 'kCamera':
         this.dialogText_ =

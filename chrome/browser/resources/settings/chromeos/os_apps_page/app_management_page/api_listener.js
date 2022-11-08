@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Action} from 'chrome://resources/ash/common/store/store.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {Action} from 'chrome://resources/ash/common/store/store.js';
 
 import {addApp, changeApp, removeApp} from './actions.js';
 import {BrowserProxy} from './browser_proxy.js';

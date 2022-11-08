@@ -10,6 +10,7 @@ import './plugin_vm_page/plugin_vm_detail_view.js';
 import './borealis_page/borealis_detail_view.js';
 import '../../../settings_shared.css.js';
 
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getSelectedApp, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -21,6 +22,7 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../../route
 
 import {updateSelectedAppId} from './actions.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {AppMap} from './types.js';
 import {openMainPage} from './util.js';
 
 /**
@@ -170,7 +172,7 @@ class AppManagementAppDetailViewElement extends
   selectedAppNotFound_() {
     const appId = /** @type {string} */ (
         Router.getInstance().getQueryParameters().get('id'));
-    return this.apps_ && !this.apps_[appId];
+    return Boolean(this.apps_) && !this.apps_[appId];
   }
 }
 
