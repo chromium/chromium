@@ -233,7 +233,6 @@
 -TabModalConfirmDialogTest.Accept
 -TabRestoreTest.RestoreTabFromClosedWindowByID
 -TabStatsTrackerBrowserTest.TabSwitch
--ToolbarAccountIconContainerViewBrowserTest.ShouldUpdateHighlightInGuestWindow
 -TranslateModelServiceBrowserTest.LanguageDetectionWithBackgroundTab
 -UsbChooserBrowserTest.InvokeUi_NoDevicesBubble
 -UsbInternalsTest.WebUIValueRenderTest

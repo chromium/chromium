@@ -54,7 +54,6 @@ class IntentChipButton;
 class MediaToolbarButtonView;
 class ReloadButton;
 class ToolbarButton;
-class ToolbarAccountIconContainerView;
 class AvatarToolbarButtonBrowserTest;
 
 namespace bookmarks {
@@ -169,9 +168,6 @@ class ToolbarView : public views::AccessiblePaneView,
   send_tab_to_self::SendTabToSelfToolbarIconView* send_tab_to_self_button()
       const {
     return send_tab_to_self_button_;
-  }
-  ToolbarAccountIconContainerView* toolbar_account_icon_container() const {
-    return toolbar_account_icon_container_;
   }
   BrowserAppMenuButton* app_menu_button() const { return app_menu_button_; }
   HomeButton* home_button() const { return home_; }
@@ -294,8 +290,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<media_router::CastToolbarButton> cast_ = nullptr;
   raw_ptr<SidePanelToolbarButton> side_panel_button_ = nullptr;
-  raw_ptr<ToolbarAccountIconContainerView> toolbar_account_icon_container_ =
-      nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
   raw_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>

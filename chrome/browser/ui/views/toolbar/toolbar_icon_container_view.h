@@ -73,8 +73,6 @@ class ToolbarIconContainerView : public views::View,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
-  friend class ToolbarAccountIconContainerViewBrowserTest;
-
   // Responsible for painting a roundrect border for the owning view.
   class RoundRectBorder : public ui::LayerDelegate {
    public:

@@ -5156,8 +5156,6 @@ static_library("ui") {
       "views/toolbar/reload_button.h",
       "views/toolbar/side_panel_toolbar_button.cc",
       "views/toolbar/side_panel_toolbar_button.h",
-      "views/toolbar/toolbar_account_icon_container_view.cc",
-      "views/toolbar/toolbar_account_icon_container_view.h",
       "views/toolbar/toolbar_action_hover_card_bubble_view.cc",
       "views/toolbar/toolbar_action_hover_card_bubble_view.h",
       "views/toolbar/toolbar_action_hover_card_controller.cc",

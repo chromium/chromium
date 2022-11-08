@@ -3510,7 +3510,6 @@ if (!is_android) {
           "../browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_required_dialog_view_browsertest.cc",
           "../browser/ui/views/toolbar/outdated_upgrade_bubble_browsertest.cc",
-          "../browser/ui/views/toolbar/toolbar_account_icon_container_browsertest.cc",
         ]
       }
       if (enable_supervised_users) {
