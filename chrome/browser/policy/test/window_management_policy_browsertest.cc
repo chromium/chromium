@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -42,16 +41,9 @@ constexpr char kCheckPermission[] = R"(
   })();
 )";
 
-class PolicyTestWindowPlacement : public PolicyTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "WindowPlacement");
-    PolicyTest::SetUpCommandLine(command_line);
-  }
-};
+class PolicyTestWindowManagement : public PolicyTest {};
 
-IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, DefaultSetting) {
+IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, DefaultSetting) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -92,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, DefaultSetting) {
   EXPECT_EQ("prompt", EvalJs(tab, kCheckPermission));
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, AllowedForUrlsSettings) {
+IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, AllowedForUrlsSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -116,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, AllowedForUrlsSettings) {
   EXPECT_EQ("granted", EvalJs(tab, kGetScreens));
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, BlockedForUrlsSettings) {
+IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, BlockedForUrlsSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

@@ -39,7 +39,7 @@
 namespace {
 
 // Tests of window placement for popup browser windows. Test fixtures are run
-// with and without multi-screen Window Management permisison.
+// with and without multi-screen Window Management permission.
 class PopupBrowserTest : public InProcessBrowserTest,
                          public ::testing::WithParamInterface<bool> {
  public:
@@ -53,11 +53,6 @@ class PopupBrowserTest : public InProcessBrowserTest,
   void SetUpCommandLine(base::CommandLine* command_line) override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         embedder_support::kDisablePopupBlocking);
-    const bool enable_window_management = GetParam();
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        enable_window_management ? switches::kEnableBlinkFeatures
-                                 : switches::kDisableBlinkFeatures,
-        "WindowPlacement");
   }
 
   display::Display GetDisplayNearestBrowser(const Browser* browser) const {

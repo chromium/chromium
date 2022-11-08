@@ -958,12 +958,12 @@ class BrowserView : public BrowserWindow,
   // Updates the visibility of the Window Controls Overlay toggle button.
   void UpdateWindowControlsOverlayToggleVisible();
 
-  // Updates the variable keeping track of the "window-placement" permission,
+  // Updates the variable keeping track of the Window Management permission,
   // which together with borderless_mode_enabled_ controls whether the title bar
   // is shown or not.
   void UpdateWindowManagementPermission(blink::mojom::PermissionStatus status);
 
-  // Sets the callback which is called when the status of the window-placement
+  // Sets the callback which is called when the status of the Window Management
   // permission changes.
   void SetWindowManagementPermissionSubscriptionForBorderlessMode(
       content::WebContents* web_contents);
