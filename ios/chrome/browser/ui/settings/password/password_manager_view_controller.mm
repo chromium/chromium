@@ -1014,7 +1014,7 @@ NSInteger kTrailingSymbolSize = 18;
   passwordItem.affiliatedGroup = affiliatedGroup;
   // TODO(crbug.com/1358978): Temporary credential object so Password Details
   // works.
-  passwordItem.credential = *affiliatedGroup.GetCredentialGroups().begin();
+  passwordItem.credential = *affiliatedGroup.GetCredentials().begin();
   passwordItem.detailText = detailText;
   // TODO(crbug.com/1355956): Fix favicon logic.
   passwordItem.URL =
@@ -1564,7 +1564,7 @@ NSInteger kTrailingSymbolSize = 18;
       if (hidden)
         continue;
 
-      int nbAccounts = affiliatedGroup.GetCredentialGroups().size();
+      int nbAccounts = affiliatedGroup.GetCredentials().size();
       NSString* detailText =
           nbAccounts > 1 ? l10n_util::GetNSStringF(
                                IDS_IOS_SETTINGS_PASSWORDS_NUMBER_ACCOUNT,
@@ -1882,7 +1882,7 @@ NSInteger kTrailingSymbolSize = 18;
                   for (const auto& affiliatedGroup :
                        strongSelf->_affiliatedGroups) {
                     for (const auto& credentialGroup :
-                         affiliatedGroup.GetCredentialGroups()) {
+                         affiliatedGroup.GetCredentials()) {
                       passwords.push_back(std::move(credentialGroup));
                     }
                   }
@@ -1942,7 +1942,7 @@ NSInteger kTrailingSymbolSize = 18;
     } else {
       removeCredential(_passwords, credential);
     }
-    
+
     credentialsToDelete.push_back(std::move(credential));
   }
 

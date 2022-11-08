@@ -158,7 +158,7 @@ std::vector<AffiliatedGroup> GetAffiliatedGroupsWithGroupingInfo(
     if (affiliated_group.GetDisplayName().empty() &&
         affiliated_group.GetIconURL().is_empty()) {
       affiliated_group.SetBrandingInfo(CreateBrandingInfoFromFacetURI(
-          *affiliated_group.GetCredentialGroups().begin()));
+          *affiliated_group.GetCredentials().begin()));
     }
     affiliated_groups.push_back(std::move(affiliated_group));
   }

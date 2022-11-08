@@ -24,8 +24,7 @@ void AffiliatedGroup::AddCredential(const CredentialUIEntry& credential) {
 }
 
 bool operator==(const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
-  if (!base::ranges::equal(lhs.GetCredentialGroups(),
-                           rhs.GetCredentialGroups())) {
+  if (!base::ranges::equal(lhs.GetCredentials(), rhs.GetCredentials())) {
     return false;
   }
   return lhs.GetDisplayName() == rhs.GetDisplayName() &&

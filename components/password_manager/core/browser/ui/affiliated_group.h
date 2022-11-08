@@ -25,7 +25,7 @@ class AffiliatedGroup {
   void AddCredential(const CredentialUIEntry& credential);
 
   // Credential Groups Getter.
-  base::span<const CredentialUIEntry> GetCredentialGroups() const {
+  base::span<const CredentialUIEntry> GetCredentials() const {
     return base::make_span(credential_groups_.begin(),
                            credential_groups_.end());
   }
