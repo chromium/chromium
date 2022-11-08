@@ -63,7 +63,6 @@ source_set("unit_tests") {
     "breadcrumb_manager_observer_unittest.cc",
     "breadcrumb_manager_unittest.cc",
     "breadcrumb_persistent_storage_manager_unittest.cc",
-    "breadcrumb_persistent_storage_util_unittest.cc",
   ]
 }
 

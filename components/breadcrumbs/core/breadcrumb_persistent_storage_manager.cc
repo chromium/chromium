@@ -147,8 +147,6 @@ BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
        // the past.
       last_written_time_(base::TimeTicks::Now() - kMinDelayBetweenWrites),
       breadcrumbs_file_path_(GetBreadcrumbPersistentStorageFilePath(directory)),
-      breadcrumbs_temp_file_path_(
-          GetBreadcrumbPersistentStorageTempFilePath(directory)),
       is_metrics_enabled_callback_(std::move(is_metrics_enabled_callback)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -201,14 +199,9 @@ void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
 
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&DoWriteEventsToFile, breadcrumbs_temp_file_path_,
+      base::BindOnce(&DoWriteEventsToFile, breadcrumbs_file_path_,
                      /*position=*/0, breadcrumbs_string, /*append=*/false,
                      write_counter_, write_counter_at_last_full_rewrite_));
-
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(IgnoreResult(&base::ReplaceFile),
-                                breadcrumbs_temp_file_path_,
-                                breadcrumbs_file_path_, /*error=*/nullptr));
 }
 
 void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
