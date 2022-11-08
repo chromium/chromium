@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -24,7 +25,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-const int kRemoveSessionStateDataDelay = 15;
+constexpr base::TimeDelta kRemoveSessionStateDataDelay = base::Seconds(15);
 
 class WebSessionStateCacheTest : public PlatformTest {
  protected:
