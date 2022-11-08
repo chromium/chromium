@@ -36,7 +36,7 @@ BASE_DECLARE_FEATURE(kSyncFilterOutInactiveDevicesForSingleClient);
 // pulse interval to mitigate possible latency after DeviceInfo commit.
 inline constexpr base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
     &kSyncFilterOutInactiveDevicesForSingleClient, "SyncActiveDeviceMargin",
-    base::Minutes(30)};
+    base::Days(7)};
 
 }  // namespace switches
 
