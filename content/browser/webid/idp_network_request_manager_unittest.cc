@@ -33,7 +33,6 @@ using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using AccountsRequestCallback =
     content::IdpNetworkRequestManager::AccountsRequestCallback;
-using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
 using LoginState = content::IdentityRequestAccount::LoginState;
 
 namespace content {

@@ -81,11 +81,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kError,
   };
 
-  enum class RevokeResponse {
-    kSuccess,
-    kError,
-  };
-
   struct CONTENT_EXPORT Endpoints {
     Endpoints();
     ~Endpoints();
@@ -94,7 +89,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::string token;
     std::string accounts;
     std::string client_metadata;
-    std::string revocation;
     std::string metrics;
   };
 
@@ -140,7 +134,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using ParseJsonCallback =
       base::OnceCallback<void(FetchStatus,
                               data_decoder::DataDecoder::ValueOrError)>;
-  using RevokeCallback = base::OnceCallback<void(RevokeResponse)>;
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, const std::string&)>;
 

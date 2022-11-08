@@ -55,7 +55,6 @@ constexpr char kProviderUrlListKey[] = "provider_urls";
 constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
-constexpr char kRevocationEndpoint[] = "revocation_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
 
 // Keys in fedcm.json 'branding' dictionary.
@@ -84,11 +83,6 @@ constexpr char kIdpBrandingIconUrl[] = "url";
 constexpr char kIdpBrandingIconSize[] = "size";
 
 constexpr char kTokenKey[] = "token";
-
-// Revoke request body keys.
-constexpr char kClientIdKey[] = "client_id";
-constexpr char kRevokeAccountKey[] = "account_id";
-constexpr char kRevokeRequestKey[] = "request";
 
 // Body content types.
 constexpr char kUrlEncodedContentType[] = "application/x-www-form-urlencoded";
@@ -388,7 +382,6 @@ void OnManifestParsed(const GURL& provider,
   endpoints.token = ExtractEndpoint(kIdAssertionEndpoint);
   endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
   endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
-  endpoints.revocation = ExtractEndpoint(kRevocationEndpoint);
   endpoints.metrics = ExtractEndpoint(kMetricsEndpoint);
 
   const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
@@ -657,31 +650,6 @@ void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
   DownloadJsonAndParse(std::move(resource_request), url_encoded_post_data,
                        IdpNetworkRequestManager::ParseJsonCallback(),
                        maxResponseSizeInKiB * 1024);
-}
-
-std::string CreateRevokeRequestBody(const std::string& client_id,
-                                    const std::string& account) {
-  // Given account and id_request creates the following JSON
-  // ```json
-  // {
-  //   "account_id": "123",
-  //   "request": {
-  //     "client_id": "client1234"
-  //   }
-  // }```
-  base::Value request_dict(base::Value::Type::DICTIONARY);
-  request_dict.SetStringKey(kClientIdKey, client_id);
-
-  base::Value request_data(base::Value::Type::DICTIONARY);
-  request_data.SetStringKey(kRevokeAccountKey, account);
-  request_data.SetKey(kRevokeRequestKey, std::move(request_dict));
-
-  std::string request_body;
-  if (!base::JSONWriter::Write(request_data, &request_body)) {
-    LOG(ERROR) << "Not able to serialize token request body.";
-    return std::string();
-  }
-  return request_body;
 }
 
 void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,

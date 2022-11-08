@@ -77,7 +77,6 @@ constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kClientMetadataEndpoint[] =
     "https://idp.example/client_metadata";
-constexpr char kRevocationEndpoint[] = "https://idp.example/revoke";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
@@ -177,7 +176,6 @@ struct MockManifest {
   const char* accounts_endpoint;
   const char* token_endpoint;
   const char* client_metadata_endpoint;
-  const char* revocation_endpoint;
 };
 
 struct MockIdpInfo {
@@ -216,7 +214,6 @@ static const MockIdpInfo kDefaultIdentityProviderInfo{
         kAccountsEndpoint,
         kTokenEndpoint,
         kClientMetadataEndpoint,
-        kRevocationEndpoint,
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -234,7 +231,6 @@ static const MockIdpInfo kProviderTwoInfo{
         "https://idp2.example/accounts",
         "https://idp2.example/token",
         "https://idp2.example/client_metadata",
-        "https://idp2.example/revoke",
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -470,8 +466,6 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         config_.idp_info[provider_key].manifest.accounts_endpoint;
     endpoints.client_metadata =
         config_.idp_info[provider_key].manifest.client_metadata_endpoint;
-    endpoints.revocation =
-        config_.idp_info[provider_key].manifest.revocation_endpoint;
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;
