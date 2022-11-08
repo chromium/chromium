@@ -311,7 +311,7 @@ UrlData::CorsMode MultiBufferDataSource::cors_mode() const {
   return url_data_->cors_mode();
 }
 
-void MultiBufferDataSource::MediaPlaybackRateChanged(double playback_rate) {
+void MultiBufferDataSource::OnMediaPlaybackRateChanged(double playback_rate) {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
   if (playback_rate < 0 || playback_rate == playback_rate_)
     return;
@@ -321,7 +321,7 @@ void MultiBufferDataSource::MediaPlaybackRateChanged(double playback_rate) {
   UpdateBufferSizes();
 }
 
-void MultiBufferDataSource::MediaIsPlaying() {
+void MultiBufferDataSource::OnMediaIsPlaying() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 
   // Always clear this since it can be set by OnBufferingHaveEnough() calls at

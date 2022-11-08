@@ -90,8 +90,8 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
 
   // Notifies changes in playback state for controlling media buffering
   // behavior.
-  void MediaPlaybackRateChanged(double playback_rate);
-  void MediaIsPlaying();
+  void OnMediaPlaybackRateChanged(double playback_rate) override;
+  void OnMediaIsPlaying() override;
   bool media_has_played() const;
 
   // Returns true if the resource is local.

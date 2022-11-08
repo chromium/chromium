@@ -898,58 +898,53 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
                                 : media::mojom::MediaURLScheme::kUnknown,
       media::mojom::MediaStreamType::kNone);
 
-  if (demuxer_override_ || load_type == kLoadTypeMediaSource) {
-    // If a demuxer override was specified or a Media Source pipeline will be
-    // used, the pipeline can start immediately.
+  // If a demuxer override was specified or a Media Source pipeline will be
+  // used, the pipeline can start immediately.
+  if (demuxer_override_ || load_type == kLoadTypeMediaSource ||
+      loaded_url_.SchemeIs(media::remoting::kRemotingScheme)) {
     StartPipeline();
-  } else {
-    // If `loaded_url_` is remoting media, starting the pipeline.
-    if (loaded_url_.SchemeIs(media::remoting::kRemotingScheme)) {
-      StartPipeline();
-      return;
-    }
-
-    // Short circuit the more complex loading path for data:// URLs. Sending
-    // them through the network based loading path just wastes memory and causes
-    // worse performance since reads become asynchronous.
-    if (loaded_url_.SchemeIs(url::kDataScheme)) {
-      std::string mime_type, charset, data;
-      if (!net::DataURL::Parse(loaded_url_, &mime_type, &charset, &data) ||
-          data.empty()) {
-        DataSourceInitialized(false);
-        return;
-      }
-
-      // Replace `loaded_url_` with an empty data:// URL since it may be large.
-      loaded_url_ = GURL("data:,");
-
-      // Mark all the data as buffered.
-      buffered_data_source_host_->SetTotalBytes(data.size());
-      buffered_data_source_host_->AddBufferedByteRange(0, data.size());
-
-      DCHECK(!mb_data_source_);
-      data_source_ = std::make_unique<media::MemoryDataSource>(std::move(data));
-      DataSourceInitialized(true);
-      return;
-    }
-
-    auto url_data = url_index_->GetByUrl(
-        url, static_cast<UrlData::CorsMode>(cors_mode),
-        is_cache_disabled ? UrlIndex::kCacheDisabled : UrlIndex::kNormal);
-    mb_data_source_ = new MultiBufferDataSource(
-        main_task_runner_, std::move(url_data), media_log_.get(),
-        buffered_data_source_host_.get(),
-        base::BindRepeating(&WebMediaPlayerImpl::NotifyDownloading,
-                            weak_this_));
-    data_source_.reset(mb_data_source_);
-    mb_data_source_->OnRedirect(base::BindRepeating(
-        &WebMediaPlayerImpl::OnDataSourceRedirected, weak_this_));
-    mb_data_source_->SetPreload(preload_);
-    mb_data_source_->SetIsClientAudioElement(client_->IsAudioElement());
-
-    mb_data_source_->Initialize(base::BindOnce(
-        &WebMediaPlayerImpl::MultiBufferDataSourceInitialized, weak_this_));
+    return;
   }
+
+  // Short circuit the more complex loading path for data:// URLs. Sending
+  // them through the network based loading path just wastes memory and causes
+  // worse performance since reads become asynchronous.
+  if (loaded_url_.SchemeIs(url::kDataScheme)) {
+    std::string mime_type, charset, data;
+    if (!net::DataURL::Parse(loaded_url_, &mime_type, &charset, &data) ||
+        data.empty()) {
+      DataSourceInitialized(false);
+      return;
+    }
+
+    // Replace `loaded_url_` with an empty data:// URL since it may be large.
+    loaded_url_ = GURL("data:,");
+
+    // Mark all the data as buffered.
+    buffered_data_source_host_->SetTotalBytes(data.size());
+    buffered_data_source_host_->AddBufferedByteRange(0, data.size());
+
+    DCHECK(!mb_data_source_);
+    data_source_ = std::make_unique<media::MemoryDataSource>(std::move(data));
+    DataSourceInitialized(true);
+    return;
+  }
+
+  auto url_data = url_index_->GetByUrl(
+      url, static_cast<UrlData::CorsMode>(cors_mode),
+      is_cache_disabled ? UrlIndex::kCacheDisabled : UrlIndex::kNormal);
+  mb_data_source_ = new MultiBufferDataSource(
+      main_task_runner_, std::move(url_data), media_log_.get(),
+      buffered_data_source_host_.get(),
+      base::BindRepeating(&WebMediaPlayerImpl::NotifyDownloading, weak_this_));
+  data_source_.reset(mb_data_source_);
+  mb_data_source_->OnRedirect(base::BindRepeating(
+      &WebMediaPlayerImpl::OnDataSourceRedirected, weak_this_));
+  mb_data_source_->SetPreload(preload_);
+  mb_data_source_->SetIsClientAudioElement(client_->IsAudioElement());
+
+  mb_data_source_->Initialize(base::BindOnce(
+      &WebMediaPlayerImpl::MultiBufferDataSourceInitialized, weak_this_));
 }
 
 void WebMediaPlayerImpl::Play() {
@@ -2783,7 +2778,6 @@ void WebMediaPlayerImpl::MultiBufferDataSourceInitialized(bool success) {
 void WebMediaPlayerImpl::OnDataSourceRedirected() {
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK(mb_data_source_);
 
   if (WouldTaintOrigin()) {
     audio_source_provider_->TaintOrigin();
@@ -4003,12 +3997,12 @@ void WebMediaPlayerImpl::MaybeUpdateBufferSizesForPlayback() {
   // Don't increase the MultiBufferDataSource buffer size until we've reached
   // kReadyStateHaveEnoughData. Otherwise we will unnecessarily slow down
   // playback startup -- it can instead be done for free after playback starts.
-  if (!mb_data_source_ || highest_ready_state_ < kReadyStateHaveEnoughData)
+  if (!data_source_ || highest_ready_state_ < kReadyStateHaveEnoughData)
     return;
 
-  mb_data_source_->MediaPlaybackRateChanged(playback_rate_);
+  data_source_->OnMediaPlaybackRateChanged(playback_rate_);
   if (!paused_)
-    mb_data_source_->MediaIsPlaying();
+    data_source_->OnMediaIsPlaying();
 }
 
 void WebMediaPlayerImpl::OnSimpleWatchTimerTick() {

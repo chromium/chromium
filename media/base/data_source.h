@@ -99,6 +99,11 @@ class MEDIA_EXPORT DataSource {
   // implementations do not need to override this, as they do not open other
   // network connections.
   virtual void OnBufferingHaveEnough(bool must_cancel_netops);
+
+  // Allows a holder to notify certain events to the data source. Most data
+  // sources won't care too much about these events though.
+  virtual void OnMediaPlaybackRateChanged(double playback_rate);
+  virtual void OnMediaIsPlaying();
 };
 
 }  // namespace media
