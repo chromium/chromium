@@ -17,6 +17,54 @@ static_assert(kNumberOfBuffersInCaptureQueue <= 16,
               "Too many CAPTURE buffers are used. The number of CAPTURE "
               "buffers is currently assumed to be no larger than 16.");
 
+H264Parser::Result H264Decoder::ProcessNextFrame(H264SliceHeader* curr_slice) {
+  H264NALU nalu;
+
+  // TODO: Update Loop Logic to end when frame ends
+  while (true) {
+    H264Parser::Result res = parser_->AdvanceToNextNALU(&nalu);
+    if (res == H264Parser::kEOStream) {
+      return H264Parser::kEOStream;
+    }
+
+    VLOG(4) << "NALU ID: " << nalu.nal_unit_type;
+
+    switch (nalu.nal_unit_type) {
+      case H264NALU::kNonIDRSlice:
+      case H264NALU::kIDRSlice: {
+        // TODO: Implement Slice Parsing and Handling logic
+        break;
+      }
+      case H264NALU::kSPS: {
+        int sps_id;
+        res = parser_->ParseSPS(&sps_id);
+        if (res != H264Parser::kOk) {
+          return H264Parser::kInvalidStream;
+        }
+        // TODO: Check for End of Frame
+        break;
+      }
+      case H264NALU::kPPS: {
+        int pps_id;
+        res = parser_->ParsePPS(&pps_id);
+        if (res != H264Parser::kOk) {
+          return H264Parser::kInvalidStream;
+        }
+        // TODO: Check for End of Frame
+        break;
+      }
+      case H264NALU::kAUD:
+      case H264NALU::kEOSeq:
+      case H264NALU::kEOStream: {
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+}
+
 // static
 std::unique_ptr<H264Decoder> H264Decoder::Create(
     const base::MemoryMappedFile& stream) {
@@ -99,12 +147,11 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                                                   std::vector<char>& v_plane,
                                                   gfx::Size& size,
                                                   const int frame_number) {
-  H264NALU nalu;
-  H264Parser::Result res = parser_->AdvanceToNextNALU(&nalu);
-  if (res != H264Parser::kOk)
+  H264SliceHeader slice;
+  if (ProcessNextFrame(&slice) == H264Parser::kInvalidStream) {
+    VLOG(4) << "Frame Processing Failed";
     return VideoDecoder::kError;
-
-  LOG(INFO) << "NALU " << nalu.nal_unit_type;
+  }
 
   return VideoDecoder::kOk;
 }
