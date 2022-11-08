@@ -35,11 +35,16 @@ template("optimize_ts") {
                              "allow_js",
                              "deps",
                              "sources",
+                             "testonly",
                            ])
   }
 
   optimize_js(target_name) {
-    forward_variables_from(invoker, [ "visibility" ])
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
 
     deps = [ ":$_compile_ts_target_name" ]
     if (defined(invoker.deps)) {

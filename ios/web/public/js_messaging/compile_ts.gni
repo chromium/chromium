@@ -51,7 +51,11 @@ template("compile_ts") {
   # directory structure to maintain path imports specified in the tsc manifest
   # file.
   ts_library(target_name) {
-    forward_variables_from(invoker, [ "deps" ])
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "testonly",
+                           ])
 
     composite = true
 
