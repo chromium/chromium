@@ -404,7 +404,8 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
   raw_ptr<AppServiceProxy> proxy_;
 };
 
-TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
+// Disabled due to flake: https://crbug.com/1382487
+TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_UpdatedOnUninstall) {
   constexpr char kTestAppId[] = "foo";
   const GURL kTestUrl = GURL("https://www.example.com/");
 
@@ -454,7 +455,8 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
   }
 }
 
-TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
+// Disabled due to flake: https://crbug.com/1382487
+TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_SetPreferredApp) {
   constexpr char kTestAppId1[] = "abc";
   constexpr char kTestAppId2[] = "def";
   const GURL kTestUrl1 = GURL("https://www.foo.com/");
@@ -514,7 +516,8 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
 
 // Using AddPreferredApp to set a supported link should enable all supported
 // links for that app.
-TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppForLink) {
+// Disabled due to flake: https://crbug.com/1382487
+TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_AddPreferredAppForLink) {
   constexpr char kTestAppId[] = "aaa";
   const GURL kTestUrl1 = GURL("https://www.foo.com/");
   const GURL kTestUrl2 = GURL("https://www.bar.com/");
@@ -537,7 +540,8 @@ TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppForLink) {
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
 }
 
-TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
+// Disabled due to flake: https://crbug.com/1382487
+TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_AddPreferredAppBrowser) {
   constexpr char kTestAppId1[] = "aaa";
   constexpr char kTestAppId2[] = "bbb";
   const GURL kTestUrl1 = GURL("https://www.foo.com/");
