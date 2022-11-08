@@ -976,7 +976,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 }
 
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1382285): Flaky on Mac.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #define MAYBE_StorageCallbackEvicts DISABLED_StorageCallbackEvicts
 #else
 #define MAYBE_StorageCallbackEvicts StorageCallbackEvicts
