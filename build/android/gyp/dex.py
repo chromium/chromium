@@ -43,6 +43,12 @@ _IGNORE_WARNINGS = (
     r'GeneratedExtensionRegistryLite.CONTAINING_TYPE_',
     # Relevant for R8 when optimizing an app that doesn't use protobuf.
     r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
+    # Ignore Unused Rule Warnings in third_party libraries.
+    r'/third_party/.*Proguard configuration rule does not match anything',
+    # Ignore Unused Rule Warnings for system classes (aapt2 generates these).
+    r'Proguard configuration rule does not match anything:.*class android\.',
+    # TODO(crbug.com/1303951): Don't ignore all such warnings.
+    r'Proguard configuration rule does not match anything:',
 )
 
 _SKIPPED_CLASS_FILE_NAMES = (
@@ -168,7 +174,7 @@ def CreateStderrFilter(show_desugar_default_interface_warnings):
     combined_pattern = '|'.join(re.escape(p) for p in patterns)
     preamble = build_utils.FilterLines(preamble, combined_pattern)
 
-    compiled_re = re.compile(combined_pattern)
+    compiled_re = re.compile(combined_pattern, re.DOTALL)
     warnings = [w for w in warnings if not compiled_re.search(w)]
 
     return preamble + ''.join(warnings)
