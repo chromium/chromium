@@ -51,6 +51,22 @@ camera_app::mojom::FileMonitorResult ToMojoFileMonitorResult(
   }
 }
 
+camera_app::mojom::StorageMonitorStatus ToMojoStorageMonitorStatus(
+    CameraAppUIDelegate::StorageMonitorStatus status) {
+  switch (status) {
+    case CameraAppUIDelegate::StorageMonitorStatus::NORMAL:
+      return camera_app::mojom::StorageMonitorStatus::NORMAL;
+    case CameraAppUIDelegate::StorageMonitorStatus::LOW:
+      return camera_app::mojom::StorageMonitorStatus::LOW;
+    case CameraAppUIDelegate::StorageMonitorStatus::CRITICALLY_LOW:
+      return camera_app::mojom::StorageMonitorStatus::CRITICALLY_LOW;
+    case CameraAppUIDelegate::StorageMonitorStatus::CANCELED:
+      return camera_app::mojom::StorageMonitorStatus::CANCELED;
+    case CameraAppUIDelegate::StorageMonitorStatus::ERROR:
+      return camera_app::mojom::StorageMonitorStatus::ERROR;
+  }
+}
+
 bool HasExternalScreen() {
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (!display.IsInternal()) {
@@ -386,6 +402,32 @@ void CameraAppHelperImpl::MaybeTriggerSurvey() {
   camera_app_ui_->delegate()->MaybeTriggerSurvey();
 }
 
+void CameraAppHelperImpl::StartStorageMonitor(
+    mojo::PendingRemote<StorageMonitor> monitor,
+    StartStorageMonitorCallback callback) {
+  // If there is an existing callback from previous call, cancel it first.
+  if (storage_monitor_.is_bound()) {
+    StopStorageMonitor();
+  }
+
+  storage_monitor_ = mojo::Remote<StorageMonitor>(std::move(monitor));
+  storage_callback_ = std::move(callback);
+
+  camera_app_ui_->delegate()->StartStorageMonitor(base::BindRepeating(
+      &CameraAppHelperImpl::OnStorageStatusUpdated, base::Unretained(this)));
+}
+
+void CameraAppHelperImpl::StopStorageMonitor() {
+  camera_app_ui_->delegate()->StopStorageMonitor();
+  if (!storage_callback_.is_null()) {
+    std::move(storage_callback_)
+        .Run(camera_app::mojom::StorageMonitorStatus::CANCELED);
+  }
+  if (storage_monitor_.is_bound()) {
+    storage_monitor_.reset();
+  }
+}
+
 void CameraAppHelperImpl::OnTabletModeStarted() {
   if (tablet_mode_monitor_.is_bound())
     tablet_mode_monitor_->Update(true);
@@ -409,6 +451,21 @@ void CameraAppHelperImpl::OnDisplayAdded(const display::Display& new_display) {
 void CameraAppHelperImpl::OnDisplayRemoved(
     const display::Display& old_display) {
   CheckExternalScreenState();
+}
+
+void CameraAppHelperImpl::OnStorageStatusUpdated(
+    CameraAppUIDelegate::StorageMonitorStatus status) {
+  auto mojo_status = ToMojoStorageMonitorStatus(status);
+  // Send initial status back, otherwise update through monitor.
+  if (!storage_callback_.is_null()) {
+    std::move(storage_callback_).Run(mojo_status);
+  } else if (storage_monitor_.is_bound()) {
+    storage_monitor_->Update(mojo_status);
+  }
+}
+
+void CameraAppHelperImpl::OpenStorageManagement() {
+  camera_app_ui_->delegate()->OpenStorageManagement();
 }
 
 }  // namespace ash

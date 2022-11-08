@@ -83,6 +83,30 @@ enum FileMonitorResult {
   ERROR = 2,
 };
 
+enum StorageMonitorStatus {
+  // There are enough storage space to operate CCA functionalities.
+  NORMAL = 0,
+
+  // Storage is getting low, display warning to users.
+  LOW = 1,
+
+  // Storage is almost full. Should stop ongoing recording and don't allow new
+  // recording.
+  CRITICALLY_LOW = 2,
+
+  // Monitoring got canceled since there is another monitor request.
+  CANCELED = 3,
+
+  // Monitoring get errors.
+  ERROR = 4,
+};
+
+// Interface to monitor storage status changes.
+interface StorageMonitor {
+  // Update when storage status is changed.
+  Update(StorageMonitorStatus status);
+};
+
 // Interface for window controlling.
 interface WindowStateController {
   // Adds |monitor| for window state changes.
@@ -226,4 +250,16 @@ interface CameraAppHelper {
   // 2. The user is chosen to take the survey
   // 3. The user hasn't done any survey recently
   MaybeTriggerSurvey();
+
+  // Register a Storage Monitor instance and return initial status. Calling
+  // Update() whenever the state changes.
+  StartStorageMonitor(pending_remote<StorageMonitor> monitor)
+      => (StorageMonitorStatus initial_status);
+
+  // Stop ongoing storage monitor, no-op if there is no current monitoring.
+  StopStorageMonitor();
+
+  // Open "Storage management" page directly. This page is inside Settings app,
+  // under "Device" section.
+  OpenStorageManagement();
 };

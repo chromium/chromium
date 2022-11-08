@@ -40,6 +40,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
   using ExternalScreenMonitor = camera_app::mojom::ExternalScreenMonitor;
   using CameraUsageOwnershipMonitor =
       camera_app::mojom::CameraUsageOwnershipMonitor;
+  using StorageMonitor = camera_app::mojom::StorageMonitor;
 
   CameraAppHelperImpl(CameraAppUI* camera_app_ui,
                       CameraResultCallback camera_result_callback,
@@ -94,6 +95,10 @@ class CameraAppHelperImpl : public TabletModeObserver,
   void ConvertToPdf(const std::vector<std::vector<uint8_t>>& jpegs_data,
                     ConvertToPdfCallback callback) override;
   void MaybeTriggerSurvey() override;
+  void StartStorageMonitor(mojo::PendingRemote<StorageMonitor> monitor,
+                           StartStorageMonitorCallback callback) override;
+  void StopStorageMonitor() override;
+  void OpenStorageManagement() override;
 
  private:
   void CheckExternalScreenState();
@@ -106,6 +111,9 @@ class CameraAppHelperImpl : public TabletModeObserver,
       ConvertToDocumentCallback callback,
       bool success,
       const std::vector<uint8_t>& processed_jpeg_data);
+
+  // callback for storage monitor status update
+  void OnStorageStatusUpdated(CameraAppUIDelegate::StorageMonitorStatus status);
 
   // TabletModeObserver overrides;
   void OnTabletModeStarted() override;
@@ -138,6 +146,8 @@ class CameraAppHelperImpl : public TabletModeObserver,
   mojo::Remote<TabletModeMonitor> tablet_mode_monitor_;
   mojo::Remote<ScreenStateMonitor> screen_state_monitor_;
   mojo::Remote<ExternalScreenMonitor> external_screen_monitor_;
+  mojo::Remote<StorageMonitor> storage_monitor_;
+  StartStorageMonitorCallback storage_callback_;
 
   mojo::Receiver<camera_app::mojom::CameraAppHelper> receiver_{this};
 

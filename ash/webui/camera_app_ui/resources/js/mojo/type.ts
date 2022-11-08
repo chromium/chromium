@@ -18,6 +18,8 @@ export {
   FileMonitorResult,
   ScreenState,
   ScreenStateMonitorCallbackRouter,
+  StorageMonitorCallbackRouter,
+  StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
   WindowStateControllerRemote,
   WindowStateMonitorCallbackRouter,

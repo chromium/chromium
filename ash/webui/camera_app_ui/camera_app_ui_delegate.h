@@ -31,6 +31,24 @@ class CameraAppUIDelegate {
     ERROR = 2,
   };
 
+  enum class StorageMonitorStatus {
+    // Storage has enough space to operate CCA functions.
+    NORMAL = 0,
+
+    // Storage is getting low, display warning to users.
+    LOW = 1,
+
+    // Storage is almost full. Should stop ongoing recording and don't allow new
+    // recording.
+    CRITICALLY_LOW = 2,
+
+    // Monitoring got canceled since there is another monitor request.
+    CANCELED = 3,
+
+    // Monitoring get errors.
+    ERROR = 4,
+  };
+
   virtual ~CameraAppUIDelegate() = default;
 
   // Sets Downloads folder as launch directory by File Handling API so that we
@@ -66,6 +84,17 @@ class CameraAppUIDelegate {
 
   // Maybe triggers HaTS survey for the camera app if all the conditions match.
   virtual void MaybeTriggerSurvey() = 0;
+
+  // Start monitor storage status, |monitor_callback| will be called at initial
+  // time and every time the status is changed.
+  virtual void StartStorageMonitor(
+      base::RepeatingCallback<void(StorageMonitorStatus)> monitor_callback) = 0;
+
+  // Stop ongoing storage monitoring, if there is one, otherwise no-ops.
+  virtual void StopStorageMonitor() = 0;
+
+  // Open "Storage management" page in system's Settings app.
+  virtual void OpenStorageManagement() = 0;
 };
 
 }  // namespace ash

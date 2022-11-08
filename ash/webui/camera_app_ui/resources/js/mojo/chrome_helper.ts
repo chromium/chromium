@@ -24,6 +24,8 @@ import {
   Rotation,
   ScreenState,
   ScreenStateMonitorCallbackRouter,
+  StorageMonitorCallbackRouter,
+  StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
 } from './type.js';
 import {wrapEndpoint} from './util.js';
@@ -381,6 +383,37 @@ export class ChromeHelper {
    */
   maybeTriggerSurvey(): void {
     this.remote.maybeTriggerSurvey();
+  }
+
+  async startMonitorStorage(onChange: (status: StorageMonitorStatus) => void):
+      Promise<StorageMonitorStatus> {
+    const storageCallbackRouter =
+        wrapEndpoint(new StorageMonitorCallbackRouter());
+    storageCallbackRouter.update.addListener(
+        (newStatus: StorageMonitorStatus) => {
+          if (newStatus === StorageMonitorStatus.ERROR) {
+            throw new Error('Error occurred while monitoring storage.');
+          } else if (newStatus !== StorageMonitorStatus.CANCELED) {
+            onChange(newStatus);
+          }
+        });
+
+    const {initialStatus} = await this.remote.startStorageMonitor(
+        storageCallbackRouter.$.bindNewPipeAndPassRemote());
+    // Should not get canceled status at initial time.
+    if (initialStatus === StorageMonitorStatus.ERROR ||
+        initialStatus === StorageMonitorStatus.CANCELED) {
+      throw new Error('Failed to start storage monitoring.');
+    }
+    return initialStatus;
+  }
+
+  stopMonitorStorage(): void {
+    this.remote.stopStorageMonitor();
+  }
+
+  openStorageManagement(): void {
+    this.remote.openStorageManagement();
   }
 
   /**
