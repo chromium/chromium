@@ -6554,6 +6554,7 @@ test("unit_tests") {
       "//components/media_router/browser:test_support",
       "//components/messages/android:test_support",
       "//components/module_installer/android:module_installer_java",
+      "//components/navigation_interception:navigation_interception",
       "//components/offline_pages/core/request_header",
       "//components/offline_pages/task",
       "//components/pref_registry",

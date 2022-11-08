@@ -122,7 +122,7 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
       url::GURLAndroid::FromNativeGURL(env, escaped_url));
 }
 
-void InterceptNavigationDelegate::HandleExternalProtocolDialog(
+void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
     const GURL& url,
     ui::PageTransition page_transition,
     bool has_user_gesture,
@@ -138,7 +138,7 @@ void InterceptNavigationDelegate::HandleExternalProtocolDialog(
 
   if (jdelegate.is_null())
     return;
-  Java_InterceptNavigationDelegate_handleExternalProtocolDialog(
+  Java_InterceptNavigationDelegate_handleSubframeExternalProtocol(
       env, jdelegate, url::GURLAndroid::FromNativeGURL(env, escaped_url),
       page_transition, has_user_gesture,
       initiating_origin ? initiating_origin->CreateJavaObject() : nullptr);

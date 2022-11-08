@@ -773,7 +773,6 @@ static_library("ui") {
       "android/device_dialog/chrome_bluetooth_scanning_prompt_android_delegate.h",
       "android/device_dialog/usb_chooser_dialog_android.cc",
       "android/device_dialog/usb_chooser_dialog_android.h",
-      "android/external_protocol_dialog_android.cc",
       "android/fast_checkout/fast_checkout_view_impl.cc",
       "android/fast_checkout/fast_checkout_view_impl.h",
       "android/fast_checkout/ui_view_android_utils.cc",

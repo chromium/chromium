@@ -26,9 +26,10 @@ public abstract class InterceptNavigationDelegate {
             NavigationHandle navigationHandle, GURL escapedUrl);
 
     /**
-     * This method is called for navigations to external protocols, which on Android are handled in
-     * the same we handle regular navigations that could result in navigations to 3rd party
-     * applications.
+     * This method is called for navigations to external protocols in subframes, which on Android
+     * are handled similarly to how we handle main frame navigations that could result in
+     * navigations to 3rd party applications. Note that for subframes only external protocols are
+     * ever allowed to leave the browser.
      *
      * @param escapedUrl The url from the NavigationHandle, properly escaped for external
      *         navigation.
@@ -37,7 +38,7 @@ public abstract class InterceptNavigationDelegate {
      * @param initiatorOrigin The Origin that initiated this navigation, if any.
      */
     @CalledByNative
-    private void handleExternalProtocolDialog(GURL escapedUrl, @PageTransition int transition,
+    private void handleSubframeExternalProtocol(GURL escapedUrl, @PageTransition int transition,
             boolean hasUserGesture, Origin initiatorOrigin) {
         // TODO(https://crbug.com/1290507): Refactor this to construct the ExternalNavigationParams
         // directly and don't create an intermediate NavigationHandle.

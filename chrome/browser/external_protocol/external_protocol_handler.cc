@@ -40,7 +40,9 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "components/navigation_interception/intercept_navigation_delegate.h"
+#else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -95,6 +97,7 @@ void AddMessageToConsole(const content::WeakDocumentPtr& document,
     rfh->AddMessageToConsole(level, message);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Functions enabling unit testing. Using a NULL delegate will use the default
 // behavior; if a delegate is provided it will be used instead.
 scoped_refptr<shell_integration::DefaultProtocolClientWorker> CreateShellWorker(
@@ -105,6 +108,7 @@ scoped_refptr<shell_integration::DefaultProtocolClientWorker> CreateShellWorker(
   return base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(
       url);
 }
+#endif
 
 ExternalProtocolHandler::BlockState GetBlockStateWithDelegate(
     const std::string& scheme,
@@ -117,6 +121,7 @@ ExternalProtocolHandler::BlockState GetBlockStateWithDelegate(
                                                 profile);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void RunExternalProtocolDialogWithDelegate(
     const GURL& url,
     content::WebContents* web_contents,
@@ -152,6 +157,7 @@ void RunExternalProtocolDialogWithDelegate(
       is_in_fenced_frame_tree, initiating_origin, std::move(initiator_document),
       program_name);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void LaunchUrlWithoutSecurityCheckWithDelegate(
     const GURL& url,
@@ -193,6 +199,7 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // When we are about to launch a URL with the default OS level application, we
 // check if the external application will be us. If it is we just ignore the
 // request.
@@ -260,6 +267,7 @@ void OnDefaultProtocolClientWorkerFinished(
   LaunchUrlWithoutSecurityCheckWithDelegate(
       escaped_url, web_contents, std::move(initiator_document), delegate);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
                                        const url::Origin* initiating_origin,
@@ -461,6 +469,21 @@ void ExternalProtocolHandler::LaunchUrl(
 
   g_accept_requests = false;
 
+  // Shell integration code below doesn't work on Android - default handler
+  // checks are instead handled through the InterceptNavigationDelegate. See
+  // ExternalNavigationHandler.java.
+  // The Origin is used for security checks, not for displaying to the user, so
+  // the precursor origin should not be used.
+  // Also, a protocol dialog isn't used on Android.
+#if BUILDFLAG(IS_ANDROID)
+  navigation_interception::InterceptNavigationDelegate* delegate =
+      navigation_interception::InterceptNavigationDelegate::Get(web_contents);
+  if (delegate) {
+    delegate->HandleSubframeExternalProtocol(
+        escaped_url, page_transition, has_user_gesture, initiating_origin);
+  }
+  return;
+#else
   absl::optional<url::Origin> initiating_origin_or_precursor;
   if (initiating_origin) {
     // Transform the initiating origin to its precursor origin if it is
@@ -490,6 +513,7 @@ void ExternalProtocolHandler::LaunchUrl(
   // OnDefaultProtocolClientWorkerFinished().
   CreateShellWorker(escaped_url, g_external_protocol_handler_delegate)
       ->StartCheckIsDefaultAndGetDefaultClientName(std::move(callback));
+#endif
 }
 
 // static

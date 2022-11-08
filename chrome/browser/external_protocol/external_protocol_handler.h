@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/shell_integration.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -145,6 +146,7 @@ class ExternalProtocolHandler {
   // Register the ExcludedSchemes preference.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Creates and runs a External Protocol dialog box.
   // |url| - The url of the request.
   // |render_process_host_id| and |routing_id| are used by
@@ -172,6 +174,7 @@ class ExternalProtocolHandler {
       const absl::optional<url::Origin>& initiating_origin,
       content::WeakDocumentPtr initiator_document,
       const std::u16string& program_name);
+#endif
 
   // Clears the external protocol handling data.
   static void ClearData(Profile* profile);

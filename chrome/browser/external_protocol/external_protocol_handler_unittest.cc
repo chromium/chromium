@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -21,7 +22,13 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "components/navigation_interception/intercept_navigation_delegate.h"
+#endif
 
 class FakeExternalProtocolHandlerWorker
     : public shell_integration::DefaultProtocolClientWorker {
@@ -153,6 +160,9 @@ class FakeExternalProtocolHandlerDelegate
 };
 
 class ExternalProtocolHandlerTest : public testing::Test {
+ public:
+  content::WebContents* GetWebContents() const { return web_contents_.get(); }
+
  protected:
   ExternalProtocolHandlerTest() : delegate_(run_loop_.QuitClosure()) {}
 
@@ -228,8 +238,6 @@ class ExternalProtocolHandlerTest : public testing::Test {
     }
   }
 
-  content::WebContents* GetWebContents() const { return web_contents_.get(); }
-
   content::BrowserTaskEnvironment task_environment_;
 
   base::RunLoop run_loop_;
@@ -260,6 +268,9 @@ TEST_F(ExternalProtocolHandlerTest,
   DoTest(ExternalProtocolHandler::BLOCK,
          shell_integration::OTHER_MODE_IS_DEFAULT, Action::BLOCK);
 }
+
+// Android doesn't use the external protocol dialog.
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ExternalProtocolHandlerTest, TestLaunchSchemeUnBlockedChromeDefault) {
   DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::IS_DEFAULT,
@@ -313,6 +324,52 @@ TEST_F(ExternalProtocolHandlerTest, TestUrlEscape) {
   EXPECT_EQ("alert:test%20message%22%20--bad%2B%20%E6%96%87%E6%9C%AC%20%22file",
             delegate_.launch_or_prompt_url());
 }
+
+#else  // if !BUILDFLAG(IS_ANDROID)
+
+class MockInterceptNavigationDelegate
+    : public navigation_interception::InterceptNavigationDelegate {
+ public:
+  MockInterceptNavigationDelegate()
+      : InterceptNavigationDelegate(base::android::AttachCurrentThread(),
+                                    nullptr) {}
+
+  MOCK_METHOD4(HandleSubframeExternalProtocol,
+               void(const GURL&,
+                    ui::PageTransition,
+                    bool,
+                    const absl::optional<url::Origin>&));
+};
+
+TEST_F(ExternalProtocolHandlerTest, TestUrlEscape_Android) {
+  GURL url("alert:test message\" --bad%2B\r\n 文本 \"file");
+  GURL escaped(
+      "alert:test%20message%22%20--bad%2B%20%E6%96%87%E6%9C%AC%20%22file");
+
+  auto delegate = std::make_unique<MockInterceptNavigationDelegate>();
+
+  url::Origin precursor_origin =
+      url::Origin::Create(GURL("https://precursor.test"));
+  url::Origin opaque_origin =
+      url::Origin::Resolve(GURL("data:text/html,hi"), precursor_origin);
+
+  EXPECT_CALL(*delegate.get(),
+              HandleSubframeExternalProtocol(testing::Eq(escaped), testing::_,
+                                             true, testing::Eq(opaque_origin)));
+
+  navigation_interception::InterceptNavigationDelegate::Associate(
+      web_contents_.get(), std::move(delegate));
+
+  ExternalProtocolHandler::LaunchUrl(
+      url,
+      base::BindRepeating(&ExternalProtocolHandlerTest::GetWebContents,
+                          base::Unretained(this)),
+      ui::PAGE_TRANSITION_LINK, /*has_user_gesture=*/true,
+      /*is_in_fenced_frame_tree=*/false, opaque_origin,
+      content::WeakDocumentPtr());
+}
+
+#endif  // if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ExternalProtocolHandlerTest, TestUrlEscapeNoChecks) {
   GURL url("alert:test message\" --bad%2B\r\n 文本 \"file");
@@ -502,6 +559,7 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockStateWithUntrustowrthyOrigin) {
                   .empty());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that an opaque initiating origin gets transformed to its precursor
 // origin when the dialog is shown.
 TEST_F(ExternalProtocolHandlerTest, TestOpaqueInitiatingOrigin) {
@@ -513,3 +571,4 @@ TEST_F(ExternalProtocolHandlerTest, TestOpaqueInitiatingOrigin) {
          Action::PROMPT, GURL("mailto:test@test.test"), opaque_origin,
          precursor_origin, u"TestApp");
 }
+#endif

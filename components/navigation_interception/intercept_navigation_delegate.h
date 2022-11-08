@@ -70,7 +70,7 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
 
   bool ShouldIgnoreNavigation(content::NavigationHandle* navigation_handle);
 
-  void HandleExternalProtocolDialog(
+  virtual void HandleSubframeExternalProtocol(
       const GURL& url,
       ui::PageTransition page_transition,
       bool has_user_gesture,
