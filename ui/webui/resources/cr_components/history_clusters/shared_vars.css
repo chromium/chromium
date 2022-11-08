@@ -27,6 +27,7 @@ html {
   --grey-fill-color: var(--google-grey-700);
   --icon-color: white;
   --url-color: var(--google-blue-300);
+  --side-panel-url-color: var(--google-grey-500);
 }
 }
 
