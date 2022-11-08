@@ -2,91 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './icons.html.js';
-import './strings.m.js';
+import './sign_in_promo.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {IntroBrowserProxy, IntroBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './dice_app.html.js';
 
 export interface IntroAppElement {
-  $: {
-    acceptSignInButton: CrButtonElement,
-    declineSignInButton: CrButtonElement,
-    safeZone: HTMLElement,
-    viewManager: CrViewManagerElement,
-  };
+  $: {viewManager: CrViewManagerElement};
 }
 
-export interface BenefitCard {
-  title: string;
-  description: string;
-  iconName: string;
-}
-
-const IntroAppElementBase = I18nMixin(PolymerElement);
-
-export class IntroAppElement extends IntroAppElementBase {
+export class IntroAppElement extends PolymerElement {
   static get is() {
     return 'intro-app';
-  }
-
-  constructor() {
-    super();
-    this.benefitCards_ = [
-      {
-        title: this.i18n('devicesCardTitle'),
-        description: this.i18n('devicesCardDescription'),
-        iconName: 'intro:devices',
-      },
-      {
-        title: this.i18n('securityCardTitle'),
-        description: this.i18n('securityCardDescription'),
-        iconName: 'cr:security',
-      },
-      {
-        title: this.i18n('backupCardTitle'),
-        description: this.i18n('backupCardDescription'),
-        iconName: 'intro:cloud-upload',
-      },
-    ];
   }
 
   static get template() {
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      benefitCards_: {
-        type: Array,
-      },
-    };
-  }
-
-  private benefitCards_: BenefitCard[];
-  private browserProxy_: IntroBrowserProxy =
-      IntroBrowserProxyImpl.getInstance();
-  private resizeObserver_: ResizeObserver|null = null;
-
   override connectedCallback() {
     super.connectedCallback();
-    this.addResizeObserver_();
     this.setupViewManager_(new URLSearchParams(window.location.search));
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.resizeObserver_!.disconnect();
   }
 
   private async setupViewManager_(queryParams: URLSearchParams) {
@@ -99,23 +39,6 @@ export class IntroAppElement extends IntroAppElementBase {
     }
 
     this.$.viewManager.switchView('signInPromo', 'fade-in', 'no-animation');
-  }
-
-  private onContinueWithAccountClick_() {
-    this.browserProxy_.continueWithAccount();
-  }
-
-  private onContinueWithoutAccountClick_() {
-    this.browserProxy_.continueWithoutAccount();
-  }
-
-  private addResizeObserver_() {
-    const safeZone = this.$.safeZone;
-    this.resizeObserver_ = new ResizeObserver(() => {
-      this.shadowRoot!.querySelector('#safeZone')!.classList.toggle(
-          'division-line', safeZone.scrollHeight > safeZone.clientHeight);
-    });
-    this.resizeObserver_.observe(safeZone);
   }
 
   async setupViewManagerForTest(queryParams: URLSearchParams) {

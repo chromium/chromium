@@ -6,7 +6,7 @@ import 'chrome://intro/dice_app.js';
 
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
 import {IntroAppElement} from 'chrome://intro/dice_app.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestIntroBrowserProxy} from './test_intro_browser_proxy.js';
@@ -34,21 +34,9 @@ suite('DiceAppTest', function() {
         'active');
   }
 
-  test('accept sign-in button callback', function() {
-    assertEquals(testBrowserProxy.getCallCount('continueWithAccount'), 0);
-    testElement.$.acceptSignInButton.click();
-    assertEquals(testBrowserProxy.getCallCount('continueWithAccount'), 1);
-  });
-
-  test('decline sign-in button callback', function() {
-    assertEquals(testBrowserProxy.getCallCount('continueWithoutAccount'), 0);
-    testElement.$.declineSignInButton.click();
-    assertEquals(testBrowserProxy.getCallCount('continueWithoutAccount'), 1);
-  });
-
   test('"splash" is the active view with the noAnimations param', function() {
     assertTrue(isSelectorActive('#splash'));
-    assertFalse(isSelectorActive('#signInPromo'));
+    assertFalse(isSelectorActive('sign-in-promo'));
   });
 
   test(
@@ -59,6 +47,6 @@ suite('DiceAppTest', function() {
         testElement.setupViewManagerForTest(searchParams);
 
         assertFalse(isSelectorActive('#splash'));
-        assertTrue(isSelectorActive('#signInPromo'));
+        assertTrue(isSelectorActive('sign-in-promo'));
       });
 });

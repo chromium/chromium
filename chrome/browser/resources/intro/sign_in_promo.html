@@ -1,0 +1,228 @@
+<style>
+  :host {
+    --btn-margin: 24px;
+    --btn-container-height: calc(2 * var(--btn-margin) + var(--cr-button-height));
+    --card-background-color: var(--google-grey-50);
+    --card-bottom-padding: 24px;
+    --card-description-color: var(--cr-secondary-text-color);
+    --card-description-font-size: 1.08em;
+    --card-height: 172px;
+    --card-horizontal-padding: 24px;
+    --card-title-font-size: 1.25em;
+    --card-top-padding: 27px;
+    --card-width: 236px;
+    --gap-between-cards: 12px;
+    --icon-color: var(--google-blue-600);
+    --left-background-image-url: url(images/left_background.svg);
+    --product-logo-size: 90px;
+    --right-background-image-url: url(images/right_background.svg);
+    --scrollbar-background: var(--google-grey-100);
+    --scrollbar-width: 4px;
+    --subtitle-font-size: 1.67em;
+    --title-font-size: 3em;
+    --title-line-height: 44px;
+    color: var(--cr-primary-text-color);
+    font-family: 'Google Sans', Roboto, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --card-background-color: var(--google-grey-800);
+      --card-description-color: white;
+      --icon-color: var(--google-blue-300);
+      --left-background-image-url: url(images/left_background_dark_mode.svg);
+      --right-background-image-url: url(images/right_background_dark_mode.svg);
+      --scrollbar-background: var(--google-grey-800);
+    }
+  }
+
+  @media screen and ((max-width: 780px) or (max-height: 600px)) {
+    :host {
+      --card-description-font-size: 1em;
+      --card-height: 164px;
+      --card-title-font-size: 1.08em;
+      --card-width: 200px;
+      --title-font-size: 2em;
+      --title-line-height: 32px;
+      --subtitle-font-size: 1.25em;
+      --product-logo-size: 60px;
+    }
+  }
+
+  @media screen and (max-width: 780px) {
+    :host {
+      --card-horizontal-padding: 8px;
+    }
+  }
+
+  @media screen and (max-height: 600px) {
+    :host {
+      --card-bottom-padding: 12px;
+      --card-top-padding: 15px;
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    font-size: var(--title-font-size);
+    font-weight: 500;
+    line-height: var(--title-line-height);
+    margin: 24px 0 16px;
+  }
+
+  h2 {
+    font-size: var(--card-title-font-size);
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0 0 4px;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--icon-color);
+    --iron-icon-height: 36px;
+    --iron-icon-width: 36px;
+    margin-bottom: 16px;
+  }
+
+  #content-area {
+    --card-horizontal-size: calc(var(--card-width) + 2 * var(--card-horizontal-padding));
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: auto 0;
+    text-align: center ;
+    width: calc(3 * var(--card-horizontal-size) + 2 * var(--gap-between-cards));
+  }
+
+  #product-logo {
+    height: var(--product-logo-size);
+    margin-top: 50px;
+    width: var(--product-logo-size);
+  }
+
+  #benefit-cards-container {
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap-between-cards);
+  }
+
+  .benefit-card {
+    align-items: center;
+    background: var(--card-background-color);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    min-height: var(--card-height);
+    padding: var(--card-top-padding) var(--card-horizontal-padding) var(--card-bottom-padding);
+    width: var(--card-width);
+  }
+
+  .benefit-card-description {
+    color: var(--card-description-color);
+    font-size: var(--card-description-font-size);
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #buttonContainer {
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    height: var(--btn-container-height);
+    justify-content: right;
+    position: fixed;
+    width: 100vw;
+  }
+
+  #buttonContainer > cr-button {
+    font-size: 1.08em;
+    margin-top: var(--btn-margin);
+    min-width: 133px;
+  }
+
+  #buttonContainer > cr-button:last-child {
+    margin-inline-end: var(--btn-margin);
+  }
+
+  #subtitle {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--subtitle-font-size);
+    font-weight: 400;
+    line-height: 24px;
+    margin: 0 0 24px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    border-radius: var(--scrollbar-width);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-background);
+    border-radius: var(--scrollbar-width);
+  }
+
+  .background-image {
+    position: fixed;
+    top: 0;
+    width: calc(100vw * 17/100);
+  }
+
+  #left-background-image {
+    content: var(--left-background-image-url);
+    left: 0;
+  }
+
+  #right-background-image {
+    content: var(--right-background-image-url);
+    right: 0;
+  }
+
+  #safeZone {
+    box-sizing: border-box;
+    display: flex;
+    height: calc(100% - var(--btn-container-height));
+    justify-content: center;
+    overflow-y: auto;
+    padding: 0 var(--gap-between-cards);
+    position: fixed;
+    width: 100%;
+  }
+
+  #buttonContainer.division-line {
+    border-top: var(--cr-separator-line);
+  }
+</style>
+
+<img class="background-image" id="left-background-image">
+<img class="background-image" id="right-background-image">
+
+<div class="custom-scrollbar" id="safeZone">
+  <div id="content-area">
+    <img id="product-logo" src="product-logo.png">
+    <h1>$i18n{pageTitle}</h1>
+    <p id="subtitle">$i18n{pageSubtitle}</p>
+    <div id="benefit-cards-container">
+      <template is="dom-repeat" items="[[benefitCards_]]">
+        <div class="benefit-card">
+          <iron-icon icon="[[item.iconName]]"></iron-icon>
+          <h2>[[item.title]]</h2>
+          <p class="benefit-card-description">[[item.description]]</p>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>
+
+<div id="buttonContainer">
+  <cr-button id="declineSignInButton" on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
+  <cr-button class="action-button" id="acceptSignInButton" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
+  </cr-button>
+</div>
