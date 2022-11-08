@@ -170,6 +170,8 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
                           base::Unretained(delegate)),
       base::BindOnce(&Delegate::PreconnectSocket, base::Unretained(delegate)),
       worklet_manager_->top_window_origin(), worklet_manager_->frame_origin(),
+      // TODO(crbug.com/1320908): Pass the real renderer process ID.
+      /*renderer_process_id=*/absl::nullopt,
       /*is_for_seller_=*/worklet_info_.type == WorkletType::kSeller,
       delegate->GetClientSecurityState(), worklet_info_.script_url,
       worklet_info_.wasm_url, worklet_info_.signals_url);

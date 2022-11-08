@@ -15,6 +15,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "content/browser/interest_group/subresource_url_authorizations.h"
+#include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,6 +29,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -52,6 +55,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     PreconnectSocketCallback preconnect_socket_callback,
     const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
+    absl::optional<int> renderer_process_id,
     bool is_for_seller,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& script_url,
@@ -63,6 +67,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
           std::move(get_trusted_url_loader_factory)),
       top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
+      renderer_process_id_(renderer_process_id),
       is_for_seller_(is_for_seller),
       client_security_state_(std::move(client_security_state)),
       isolation_info_(is_for_seller ? net::IsolationInfo::CreateTransient()
@@ -99,6 +104,10 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   bool is_request_allowed = false;
   bool is_trusted_bidding_signals_request = false;
 
+  const SubresourceUrlBuilder::BundleSubresourceInfo* maybe_subresource_info =
+      nullptr;
+  absl::optional<network::ResourceRequest::WebBundleTokenParams>
+      maybe_web_bundle_token_params;
   if (url_request.url == script_url_ &&
       accept_header == "application/javascript") {
     is_request_allowed = true;
@@ -109,6 +118,19 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
              accept_header == "application/json") {
     is_request_allowed = true;
     is_trusted_bidding_signals_request = true;
+  } else {
+    maybe_subresource_info =
+        subresource_url_authorizations_.GetAuthorizationInfo(url_request.url);
+    if (maybe_subresource_info != nullptr) {
+      DCHECK(renderer_process_id_);
+      is_request_allowed = true;
+      maybe_web_bundle_token_params =
+          network::ResourceRequest::WebBundleTokenParams(
+              /*bundle_url=*/
+              maybe_subresource_info->info_from_renderer.bundle_url,
+              /*token=*/maybe_subresource_info->info_from_renderer.token,
+              /*render_process_id=*/*renderer_process_id_);
+    }
   }
 
   if (!is_request_allowed) {
@@ -123,6 +145,8 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   // used.
   network::ResourceRequest new_request;
   new_request.url = url_request.url;
+  new_request.web_bundle_token_params =
+      std::move(maybe_web_bundle_token_params);
   new_request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                 accept_header);
   new_request.redirect_mode = network::mojom::RedirectMode::kError;
@@ -130,23 +154,35 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.request_initiator = frame_origin_;
   new_request.enable_load_timing = url_request.enable_load_timing;
 
-  // CORS is not needed.
-  //
-  // For bidder worklets, the requests are same origin to the InterestGroup's
-  // owner, which was either added by the owner itself, or by a third party
-  // explicitly allowed to do so.
-  //
-  // For seller worklets, while the publisher page provides both the script and
-  // the trusted signals URLs, both requests use safe methods (GET), and don't
-  // set any headers, so CORS is not needed. CORB would block the signal's JSON
-  // response, if made in the context of the page, but the JSON is only made
-  // available to the same-origin script, so CORB isn't needed here.
-  new_request.mode = network::mojom::RequestMode::kNoCors;
+  if (!maybe_subresource_info) {
+    // CORS is not needed.
+    //
+    // For bidder worklets, the requests are same origin to the InterestGroup's
+    // owner, which was either added by the owner itself, or by a third party
+    // explicitly allowed to do so.
+    //
+    // For seller worklets, while the publisher page provides both the script
+    // and the trusted signals URLs, both requests use safe methods (GET), and
+    // don't set any headers, so CORS is not needed. CORB would block the
+    // signal's JSON response, if made in the context of the page, but the JSON
+    // is only made available to the same-origin script, so CORB isn't needed
+    // here.
+    new_request.mode = network::mojom::RequestMode::kNoCors;
+  } else {
+    // CORS is needed.
+    //
+    // For subresource bundle requests, CORS is supported if the subresource
+    // URL's scheme is https and not uuid-in-package. However, unlike
+    // traditional network requests, the browser cannot read the response if
+    // kNoCors is used, even with CORS-safe methods and headers -- the response
+    // is blocked by CORB.
+    new_request.mode = network::mojom::RequestMode::kCors;
+  }
 
   GetUrlLoaderFactoryCallback url_loader_factory_getter =
       get_trusted_url_loader_factory_;
   if (is_for_seller_) {
-    if (!is_trusted_bidding_signals_request) {
+    if (!is_trusted_bidding_signals_request && !maybe_subresource_info) {
       // The script URL is provided in its entirety by the frame initiating the
       // auction, so just use its URLLoaderFactory for those requests.
       url_loader_factory_getter = get_frame_url_loader_factory_;
@@ -154,8 +190,21 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
       // Other URLs combine a base URL from the frame's Javascript and data from
       // bidding interest groups, so use a (single) transient IsolationInfo for
       // them, to prevent exposing data across sites.
+      //
+      // The exception is DirectFromSellerSignals -- these don't come from
+      // interest groups, and should use the page's isolation info. However,
+      // they cannot use the page's URLLoaderFactory, since `trusted_params`
+      // needs to be populated to bypass the X-FLEDGE-Auction-Only request
+      // block.
       new_request.trusted_params = network::ResourceRequest::TrustedParams();
-      new_request.trusted_params->isolation_info = isolation_info_;
+      if (maybe_subresource_info) {
+        url::Origin origin = url::Origin::Create(url_request.url);
+        new_request.trusted_params->isolation_info =
+            net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                       origin, origin, net::SiteForCookies());
+      } else {
+        new_request.trusted_params->isolation_info = isolation_info_;
+      }
       new_request.trusted_params->client_security_state =
           client_security_state_.Clone();
     }
@@ -166,7 +215,6 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // TODO(mmenke): This leaks information to the third party that made the
     // request (both the URL itself leaks information, and using the origin's
     // NIK leaks information). These leaks need to be fixed.
-    new_request.mode = network::mojom::RequestMode::kNoCors;
     new_request.trusted_params = network::ResourceRequest::TrustedParams();
     new_request.trusted_params->isolation_info = isolation_info_;
     new_request.trusted_params->client_security_state =

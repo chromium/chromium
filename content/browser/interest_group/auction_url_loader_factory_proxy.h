@@ -18,6 +18,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -80,6 +81,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       PreconnectSocketCallback preconnect_socket_callback,
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
+      absl::optional<int> renderer_process_id,
       bool is_for_seller,
       network::mojom::ClientSecurityStatePtr client_security_state,
       const GURL& script_url,
@@ -124,6 +126,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
 
   const url::Origin top_frame_origin_;
   const url::Origin frame_origin_;
+  const absl::optional<int> renderer_process_id_;
   const bool is_for_seller_;
   const network::mojom::ClientSecurityStatePtr client_security_state_;
 
