@@ -62,6 +62,8 @@ class ChromeWebAuthenticationDelegate
   bool OriginMayUseRemoteDesktopClientOverride(
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin) override;
+  bool IsSecurityLevelAcceptableForWebAuthn(
+      content::RenderFrameHost* rfh) override;
   absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin) override;

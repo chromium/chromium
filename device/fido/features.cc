@@ -7,10 +7,8 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "url/origin.h"
 
 namespace device {
 
@@ -49,5 +47,9 @@ BASE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR,
 BASE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag,
              "WebAuthenticationNonDiscoverableMakeCredentialQRFlag",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDisableWebAuthnWithBrokenCerts,
+             "DisableWebAuthnWithBrokenCerts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace device

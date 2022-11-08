@@ -1694,6 +1694,11 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
     return caller_origin == remote_desktop_client_override_origin;
   }
 
+  bool IsSecurityLevelAcceptableForWebAuthn(
+      content::RenderFrameHost* rfh) override {
+    return is_webauthn_security_level_acceptable;
+  }
+
   // If set, the return value of IsUVPAA() will be overridden with this value.
   // Platform-specific implementations will not be invoked.
   absl::optional<bool> is_uvpaa_override;
@@ -1715,6 +1720,9 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
   // The return value of the focus check issued at the end of a request.
   bool is_focused = true;
+
+  // The return value of IsSecurityLevelAcceptableForWebAuthn.
+  bool is_webauthn_security_level_acceptable = true;
 
 #if BUILDFLAG(IS_MAC)
   // Configuration data for the macOS platform authenticator.
@@ -2142,6 +2150,24 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
+
+TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialTLSError) {
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->is_webauthn_security_level_acceptable = false;
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::CERTIFICATE_ERROR);
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionTLSError) {
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->is_webauthn_security_level_acceptable = false;
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::CERTIFICATE_ERROR);
+}
 
 // Test that credentials can be created and used from an extension origin when
 // permitted by the delegate.

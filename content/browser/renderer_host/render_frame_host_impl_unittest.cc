@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
@@ -27,9 +28,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/authenticator_request_client_delegate.h"
+#endif  // BUIDLFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -706,6 +712,113 @@ TEST_F(RenderFrameHostImplTest,
             child_frame->CalculateStorageKey(
                 url::Origin::Create(no_host_permissions_url), nullptr));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
+ public:
+  MOCK_METHOD(bool,
+              IsSecurityLevelAcceptableForWebAuthn,
+              (RenderFrameHost*),
+              ());
+};
+
+class TestWebAuthnContentBrowserClientImpl : public ContentBrowserClient {
+ public:
+  explicit TestWebAuthnContentBrowserClientImpl(
+      TestWebAuthenticationDelegate* delegate)
+      : delegate_(delegate) {}
+
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return delegate_;
+  }
+
+ private:
+  TestWebAuthenticationDelegate* delegate_;
+};
+
+class RenderFrameHostImplWebAuthnTest : public RenderFrameHostImplTest {
+ public:
+  void SetUp() override {
+    RenderFrameHostImplTest::SetUp();
+    browser_client_ = std::make_unique<TestWebAuthnContentBrowserClientImpl>(
+        webauthn_delegate_.get());
+    old_browser_client_ = SetBrowserClientForTesting(browser_client_.get());
+    contents()->GetController().LoadURLWithParams(
+        NavigationController::LoadURLParams(
+            GURL("https://example.com/navigation.html")));
+  }
+
+  void TearDown() override {
+    RenderFrameHostImplTest::TearDown();
+    SetBrowserClientForTesting(old_browser_client_);
+  }
+
+ protected:
+  ContentBrowserClient* old_browser_client_;
+  std::unique_ptr<TestWebAuthnContentBrowserClientImpl> browser_client_;
+  std::unique_ptr<TestWebAuthenticationDelegate> webauthn_delegate_ =
+      std::make_unique<TestWebAuthenticationDelegate>();
+};
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformGetAssertionWebAuthSecurityChecks_TLSError) {
+  GURL url("https://doofenshmirtz.evil");
+  EXPECT_CALL(*webauthn_delegate_,
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh()))
+      .WillOnce(testing::Return(false));
+  std::pair<blink::mojom::AuthenticatorStatus, bool> result =
+      main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
+          "doofenshmirtz.evil", url::Origin::Create(url),
+          /*is_payment_credential_get_assertion=*/false,
+          /*remote_desktop_client_override=*/nullptr);
+  EXPECT_EQ(std::get<blink::mojom::AuthenticatorStatus>(result),
+            blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+}
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformMakeCredentialWebAuthSecurityChecks_TLSError) {
+  GURL url("https://doofenshmirtz.evil");
+  EXPECT_CALL(*webauthn_delegate_,
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh()))
+      .WillOnce(testing::Return(false));
+  blink::mojom::AuthenticatorStatus result =
+      main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
+          "doofenshmirtz.evil", url::Origin::Create(url),
+          /*is_payment_credential_creation=*/false,
+          /*remote_desktop_client_override=*/nullptr);
+  EXPECT_EQ(result, blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+}
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformGetAssertionWebAuthSecurityChecks_Success) {
+  GURL url("https://owca.org");
+  EXPECT_CALL(*webauthn_delegate_,
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh()))
+      .WillOnce(testing::Return(true));
+  std::pair<blink::mojom::AuthenticatorStatus, bool> result =
+      main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
+          "owca.org", url::Origin::Create(url),
+          /*is_payment_credential_get_assertion=*/false,
+          /*remote_desktop_client_override=*/nullptr);
+  EXPECT_EQ(std::get<blink::mojom::AuthenticatorStatus>(result),
+            blink::mojom::AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformMakeCredentialWebAuthSecurityChecks_Success) {
+  GURL url("https://owca.org");
+  EXPECT_CALL(*webauthn_delegate_,
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh()))
+      .WillOnce(testing::Return(true));
+  blink::mojom::AuthenticatorStatus result =
+      main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
+          "owca.org", url::Origin::Create(url),
+          /*is_payment_credential_creation=*/false,
+          /*remote_desktop_client_override=*/nullptr);
+  EXPECT_EQ(result, blink::mojom::AuthenticatorStatus::SUCCESS);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(RenderFrameHostImplTest, NoBeforeUnloadCheckForBrowserInitiated) {
   base::test::ScopedFeatureList scoped_feature_list;

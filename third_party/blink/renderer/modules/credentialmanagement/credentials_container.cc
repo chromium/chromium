@@ -494,6 +494,10 @@ DOMException* AuthenticatorStatusToDOMException(
           DOMExceptionCode::kNotAllowedError,
           "This origin is not permitted to use the "
           "'remoteDesktopClientOverride' extension.");
+    case AuthenticatorStatus::CERTIFICATE_ERROR:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "WebAuthn is not supported on sites with TLS certificate errors.");
     case AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS:
       return DOMException::Create(
           /*message=*/dom_exception_details->message,

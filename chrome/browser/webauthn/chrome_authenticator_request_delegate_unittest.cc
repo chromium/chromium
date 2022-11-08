@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/features.h"
@@ -30,6 +31,9 @@
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device_authenticator.h"
+#include "net/ssl/ssl_info.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -609,6 +613,41 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(),
       url::Origin::Create(GURL("https://other.example.com"))));
+}
+
+class DisableWebAuthnWithBrokenCertsTest
+    : public ChromeAuthenticatorRequestDelegateTest {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kDisableWebAuthnWithBrokenCerts};
+};
+
+TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelNotAcceptable) {
+  GURL url("https://doofenshmirtz.evil");
+  ChromeWebAuthenticationDelegate delegate;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_FALSE(delegate.IsSecurityLevelAcceptableForWebAuthn(main_rfh()));
+}
+
+TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelAcceptable) {
+  GURL url("https://owca.org");
+  ChromeWebAuthenticationDelegate delegate;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = 0;  // ok.
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(main_rfh()));
 }
 
 }  // namespace

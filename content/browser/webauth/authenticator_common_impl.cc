@@ -523,6 +523,12 @@ void AuthenticatorCommonImpl::MakeCredential(
   DCHECK(make_credential_response_callback_.is_null());
   make_credential_response_callback_ = std::move(callback);
 
+  if (!GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
+          GetRenderFrameHost())) {
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+    return;
+  }
   BeginRequestTimeout(options->timeout);
 
   WebAuthRequestSecurityChecker::RequestType request_type =
@@ -835,6 +841,12 @@ void AuthenticatorCommonImpl::GetAssertion(
   DCHECK(get_assertion_response_callback_.is_null());
   get_assertion_response_callback_ = std::move(callback);
 
+  if (!GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
+          GetRenderFrameHost())) {
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+    return;
+  }
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
   }

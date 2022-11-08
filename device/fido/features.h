@@ -7,13 +7,8 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-
-namespace url {
-class Origin;
-}
 
 namespace device {
 
@@ -53,6 +48,10 @@ BASE_DECLARE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR);
 // Include an indication for non-discoverable makeCredential calls in caBLE QR
 // codes.
 BASE_DECLARE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag);
+
+// Allow WebAuthn for sites with TLS errors.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kDisableWebAuthnWithBrokenCerts);
 
 }  // namespace device
 

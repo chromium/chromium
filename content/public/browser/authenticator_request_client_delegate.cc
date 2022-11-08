@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
@@ -39,6 +38,11 @@ bool WebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
     const url::Origin& caller_origin) {
   // No origin is permitted to claim RP IDs on behalf of another origin.
   return false;
+}
+
+bool WebAuthenticationDelegate::IsSecurityLevelAcceptableForWebAuthn(
+    content::RenderFrameHost* rfh) {
+  return true;
 }
 
 #if !BUILDFLAG(IS_ANDROID)
