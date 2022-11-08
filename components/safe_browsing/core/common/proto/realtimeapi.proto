@@ -106,6 +106,8 @@ message RTLookupResponse {
       UNWANTED_SOFTWARE = 4;
       // Unclear Billing threat type
       UNCLEAR_BILLING = 5;
+      // Enterprise-specific threat type for managed policy related verdicts.
+      MANAGED_POLICY = 6;
 
       reserved 2;
     }
@@ -126,6 +128,7 @@ message RTLookupResponse {
     enum VerdictType {
       VERDICT_TYPE_UNSPECIFIED = 0;
       SAFE = 1;
+      WARN = 75;
       DANGEROUS = 100;
     }
     optional VerdictType verdict_type = 4;
@@ -155,6 +158,10 @@ message RTLookupResponse {
     // “cache_expression_match_type” is not set, it means this expression is not
     // applicable for caching, and the entry should be ignored.
     optional string cache_expression_using_match_type = 6;
+
+    // Contains information about the detected enterprise rule match. This is
+    // only populated if ‘ThreatType’ is “MANAGED_POLICY”.
+    optional MatchedUrlNavigationRule matched_url_navigation_rule = 7;
   }
 
   // Each matching url can have multiple threats detected, if the response
@@ -162,4 +169,16 @@ message RTLookupResponse {
   // of severity so that the client could choose first applicable threat_info
   // as the most severe one.
   repeated ThreatInfo threat_info = 1;
+}
+
+// Contains information about a matched URL Filtering rule defined by
+// enterprise policies.
+message MatchedUrlNavigationRule {
+  // The id of the matched rule that caused this verdict.
+  optional string rule_id = 1;
+  // The name (as defined in the admin console by the admin who defined this
+  // rule) of the matched rule that caused this verdict.
+  optional string rule_name = 2;
+  // If the match was due to an URL category, it is found here.
+  optional string matched_url_category = 3;
 }

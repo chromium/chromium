@@ -155,6 +155,8 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
       return SB_THREAT_TYPE_URL_UNWANTED;
     case RTLookupResponse::ThreatInfo::UNCLEAR_BILLING:
       return SB_THREAT_TYPE_BILLING;
+    case RTLookupResponse::ThreatInfo::MANAGED_POLICY:
+      return SB_THREAT_TYPE_MANAGED_POLICY;
     case RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED:
       NOTREACHED() << "Unexpected RTLookupResponse::ThreatType encountered";
       return SB_THREAT_TYPE_SAFE;

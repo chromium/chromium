@@ -73,6 +73,7 @@ MaliciousContentStatus GetMaliciousContentStatus(
     case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
     case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
     case safe_browsing::SB_THREAT_TYPE_ACCURACY_TIPS:
+    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY:
       // These threat types are not currently associated with
       // interstitials, and thus resources with these threat types are
       // not ever whitelisted or pending whitelisting.
