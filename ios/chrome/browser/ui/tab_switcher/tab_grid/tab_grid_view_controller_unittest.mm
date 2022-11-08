@@ -23,6 +23,17 @@ class TabGridViewControllerTest : public PlatformTest {
   }
   ~TabGridViewControllerTest() override {}
 
+  // Checks that `view_controller_` can perform the `action` with the given
+  // `sender`.
+  bool CanPerform(NSString* action, id sender) {
+    return [view_controller_ canPerformAction:NSSelectorFromString(action)
+                                   withSender:sender];
+  }
+
+  // Checks that `view_controller_` can perform the `action`. The sender is set
+  // to nil when performing this check.
+  bool CanPerform(NSString* action) { return CanPerform(action, nil); }
+
   void ExpectUMA(NSString* action, const std::string& user_action) {
     ASSERT_EQ(user_action_tester_.GetActionCount(user_action), 0);
 #pragma clang diagnostic push
@@ -56,6 +67,39 @@ TEST_F(TabGridViewControllerTest, ReturnsKeyCommands_MenuDisabled) {
       /*disabled_features=*/{kKeyboardShortcutsMenu});
 
   EXPECT_GT(view_controller_.keyCommands.count, 0u);
+}
+
+// Checks whether TabGridViewController can perform the actions to open tabs.
+TEST_F(TabGridViewControllerTest, CanPerform_OpenTabsActions) {
+  NSArray<NSString*>* actions = @[
+    @"keyCommand_openNewTab",
+    @"keyCommand_openNewRegularTab",
+    @"keyCommand_openNewIncognitoTab",
+  ];
+
+  [view_controller_ setCurrentPageAndPageControl:TabGridPageIncognitoTabs
+                                        animated:NO];
+  for (NSString* action in actions) {
+    EXPECT_TRUE(CanPerform(action));
+  }
+
+  [view_controller_ setCurrentPageAndPageControl:TabGridPageRegularTabs
+                                        animated:NO];
+  for (NSString* action in actions) {
+    EXPECT_TRUE(CanPerform(action));
+  }
+
+  [view_controller_ setCurrentPageAndPageControl:TabGridPageRemoteTabs
+                                        animated:NO];
+  for (NSString* action in actions) {
+    EXPECT_FALSE(CanPerform(action));
+  }
+
+  [view_controller_ setCurrentPageAndPageControl:TabGridPageRegularTabs
+                                        animated:NO];
+  for (NSString* action in actions) {
+    EXPECT_TRUE(CanPerform(action));
+  }
 }
 
 // Checks that TabGridViewController implements the following actions.

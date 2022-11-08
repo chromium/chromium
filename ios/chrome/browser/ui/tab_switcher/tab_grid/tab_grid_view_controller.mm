@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
+#import <objc/runtime.h>
+
 #import "base/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
@@ -1869,7 +1871,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self openNewRegularTabForKeyboardCommand];
       break;
     case TabGridPageRemoteTabs:
-      // Tabs cannot be opened with ⌘-t from the remote tabs page.
+      NOTREACHED() << "It is invalid to have an active tab in remote tabs.";
       break;
   }
 }
@@ -2526,6 +2528,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       UIKeyCommand.cr_openNewRegularTab,
     ];
   }
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (sel_isEqual(action, @selector(keyCommand_openNewTab)) ||
+      sel_isEqual(action, @selector(keyCommand_openNewRegularTab)) ||
+      sel_isEqual(action, @selector(keyCommand_openNewIncognitoTab))) {
+    return self.currentPage != TabGridPageRemoteTabs;
+  }
+  return [super canPerformAction:action withSender:sender];
 }
 
 - (void)keyCommand_openNewTab {

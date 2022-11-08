@@ -62,11 +62,15 @@ class KeyCommandsProviderTest : public PlatformTest {
         0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
   }
 
+  // Checks that `view_controller_` can perform the `action` with the given
+  // `sender`.
   bool CanPerform(NSString* action, id sender) {
     return [provider_ canPerformAction:NSSelectorFromString(action)
                             withSender:sender];
   }
 
+  // Checks that `view_controller_` can perform the `action`. The sender is set
+  // to nil when performing this check.
   bool CanPerform(NSString* action) { return CanPerform(action, nil); }
 
   void ExpectUMA(NSString* action, const std::string& user_action) {
