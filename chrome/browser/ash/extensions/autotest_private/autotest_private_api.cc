@@ -551,6 +551,8 @@ std::string SetAllowedPref(Profile* profile,
              ash::prefs::kAssistantNumSessionsWhereOnboardingShown) {
     if (!value.is_int())
       return "Invalid value type.";
+  } else if (pref_name == ash::prefs::kAccessibilitySpokenFeedbackEnabled) {
+    DCHECK(value.is_bool());
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
     DCHECK(value.is_bool());
   } else if (pref_name == ash::prefs::kEnableAutoScreenLock) {
