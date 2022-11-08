@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/scoped_native_library.h"
@@ -29,6 +30,15 @@
 namespace screen_ai {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ScreenAILoadLibraryResult {
+  kAllOk = 0,
+  kVisualAnnotationFailed = 1,
+  kMainContentExtractionFailed = 2,
+  kMaxValue = kMainContentExtractionFailed,
+};
 
 std::vector<char> LoadModelFile(base::File& model_file) {
   std::vector<char> buffer;
@@ -126,15 +136,19 @@ void ScreenAIService::LoadLibraryInternal(base::File model_config,
       features::IsScreenAIVisualAnnotationsEnabled()) {
     if (!CallInitVisualAnnotationsFunction(library_path.DirName())) {
       init_ok = false;
-      // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
+      base::UmaHistogramEnumeration(
+          "Accessibility.ScreenAI.LoadLibraryResult",
+          ScreenAILoadLibraryResult::kVisualAnnotationFailed);
     }
   }
 #endif
 
   if (init_ok && features::IsReadAnythingWithScreen2xEnabled()) {
     if (!CallInitMainContentExtractionFunction(model_config, model_tflite)) {
-      // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
       init_ok = false;
+      base::UmaHistogramEnumeration(
+          "Accessibility.ScreenAI.LoadLibraryResult",
+          ScreenAILoadLibraryResult::kMainContentExtractionFailed);
     }
   }
 
@@ -142,6 +156,9 @@ void ScreenAIService::LoadLibraryInternal(base::File model_config,
     VLOG(0) << "Screen AI library initialization failed.";
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
+
+  base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
+                                ScreenAILoadLibraryResult::kAllOk);
 }
 
 NO_SANITIZE("cfi-icall")

@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
@@ -43,6 +44,9 @@ namespace ranges = base::ranges;
 namespace {
 
 ui::AXNodeID next_node_id{1};
+
+// TODO(crbug.com/1278249): Check if this max count will cover different cases.
+constexpr int kUmaMaxNodesCount = 500;
 
 // Returns the next valid ID that can be used for identifying `AXNode`s in the
 // accessibility tree.
@@ -766,9 +770,9 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
                node_data.id != ui::kInvalidAXNodeID;
       });
   update.nodes.resize(std::distance(std::begin(update.nodes), end_node_iter));
-
-  // TODO(https://crbug.com/1278249): Add UMA metrics to record the number of
-  // annotations, item types, etc.
+  base::UmaHistogramCustomCounts(
+      "Accessibility.ScreenAI.VisualAnnotator.NodesCount", nodes.size(),
+      /*min=*/1, kUmaMaxNodesCount, /*buckets=*/100);
 
   return update;
 }

@@ -1695,6 +1695,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.AnnotateScreenshotTime.{Result}"
+    units="ms" expires_after="2023-04-21">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the time taken to get a screenshot for ScreenAI visual annotator for
+    cases where the action {Result}. It's being emitted each time whenever it
+    gets or fails to get a screenshot for ScreenAI visual annotator. Refer to
+    AXScreenAIAnnotator::OnScreenshotReceived for details.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="has failed"/>
+    <variant name="Success" summary="has succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.LoadLibraryResult"
+    enum="ScreenAILoadLibraryResult" expires_after="2023-04-21">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether it loads or fails to load necessary Screen AI libraries.
+    It's being emitted when loading Screen AI libraries according to the
+    configuration. Refer to ScreenAIService::LoadLibrary for details.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.VisualAnnotator.NodesCount"
+    units="count" expires_after="2023-04-21">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of annotations produced by ScreenAI visual annotator.
+    It's being emitted whenever getting annotations from ScreenAI visual
+    annotator.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Shortcuts.CrosDockedMagnifier"
     enum="BooleanEnabled" expires_after="2021-12-12">
   <owner>amraboelkher@chromium.org</owner>

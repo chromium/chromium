@@ -31,7 +31,9 @@ class MockAXScreenAIAnnotator : public AXScreenAIAnnotator {
 
   MOCK_METHOD(void,
               OnScreenshotReceived,
-              (const ui::AXTreeID& ax_tree_id, gfx::Image snapshot),
+              (const ui::AXTreeID& ax_tree_id,
+               const base::Time& start_time,
+               gfx::Image snapshot),
               (override));
 };
 
@@ -53,13 +55,13 @@ IN_PROC_BROWSER_TEST_F(ScreenAIServiceTest, DISABLED_ScreenshotTest) {
 
   EXPECT_CALL(*annotator, BindToScreenAIService);
   EXPECT_CALL(*annotator, OnScreenshotReceived)
-      .WillOnce(
-          [&run_loop](const ui::AXTreeID& ax_tree_id, gfx::Image snapshot) {
-            EXPECT_FALSE(snapshot.IsEmpty());
-            EXPECT_GT(snapshot.Size().width(), 0);
-            EXPECT_GT(snapshot.Size().height(), 0);
-            run_loop.Quit();
-          });
+      .WillOnce([&run_loop](const ui::AXTreeID& ax_tree_id,
+                            const base::Time& start_time, gfx::Image snapshot) {
+        EXPECT_FALSE(snapshot.IsEmpty());
+        EXPECT_GT(snapshot.Size().width(), 0);
+        EXPECT_GT(snapshot.Size().height(), 0);
+        run_loop.Quit();
+      });
 
   browser()->RunScreenAIAnnotator();
   run_loop.Run();

@@ -90138,6 +90138,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Rollback: SBER2 absent so SBER1 must be cleared"/>
 </enum>
 
+<enum name="ScreenAILoadLibraryResult">
+  <int value="0" label="Succeeded to load ScreenAI libraries"/>
+  <int value="1" label="Failed to load VisualAnnotation library"/>
+  <int value="2" label="Failed to load MainContentExtraction library"/>
+</enum>
+
 <enum name="ScreenRotationAcceleratorAction">
   <int value="0" label="CancelledDialog"/>
   <int value="1" label="AcceptedDialog"/>
