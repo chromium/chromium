@@ -19,7 +19,7 @@ constexpr double kDefaultWeight = 1.0;
 TEST(ContentExtractionUtilsTest, ConsolidateTokenTest) {
   {
     const std::u16string text(
-        u"Check duplicate. Duplicate is #@$%^&@#$%#@$^@#$ bad");
+        u"Check duplicate. Duplicate is ##$%^&##$%##$^##$ bad");
     const auto tokens = ConsolidateToken(
         ExtractContent("3rd test", text, kDefaultWeight, "en"));
     EXPECT_EQ(tokens.size(), 3u);
@@ -89,7 +89,7 @@ TEST(ContentExtractionUtilsTest, ExtractContentTest) {
     EXPECT_EQ(tokens[1].positions[0].position.length, 7u);
   }
   {
-    const std::u16string text(u"@#$%@^你好!!!");
+    const std::u16string text(u"##$%#^你好!!!");
     const auto tokens = ExtractContent("2nd test", text, kDefaultWeight, "zh");
     EXPECT_EQ(tokens.size(), 1u);
 
