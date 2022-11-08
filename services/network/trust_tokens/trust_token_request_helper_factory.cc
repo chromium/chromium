@@ -88,38 +88,36 @@ TrustTokenRequestHelperFactory::TrustTokenRequestHelperFactory(
 TrustTokenRequestHelperFactory::~TrustTokenRequestHelperFactory() = default;
 
 void TrustTokenRequestHelperFactory::CreateTrustTokenHelperForRequest(
-    const net::URLRequest& request,
+    const url::Origin& top_frame_origin,
+    const net::HttpRequestHeaders& headers,
     const mojom::TrustTokenParams& params,
+    const net::NetLogWithSource& net_log,
     base::OnceCallback<void(TrustTokenStatusOrRequestHelper)> done) {
-  request.net_log().BeginEventWithIntParams(
+  net_log.BeginEventWithIntParams(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_REQUESTED,
       "Operation type (mojom.TrustTokenOperationType)",
       static_cast<int>(params.type));
 
   if (!authorizer_.Run()) {
-    LogOutcome(request.net_log(), params.type, Outcome::kRejectedByAuthorizer);
+    LogOutcome(net_log, params.type, Outcome::kRejectedByAuthorizer);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kUnavailable);
     return;
   }
 
   for (base::StringPiece header : TrustTokensRequestHeaders()) {
-    if (request.extra_request_headers().HasHeader(header)) {
+    if (headers.HasHeader(header)) {
       LogOutcome(
-          request.net_log(), params.type,
+          net_log, params.type,
           Outcome::kRequestRejectedDueToBearingAnInternalTrustTokensHeader);
       std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
       return;
     }
   }
 
-  absl::optional<SuitableTrustTokenOrigin> maybe_top_frame_origin;
-  if (request.isolation_info().top_frame_origin()) {
-    maybe_top_frame_origin = SuitableTrustTokenOrigin::Create(
-        *request.isolation_info().top_frame_origin());
-  }
+  absl::optional<SuitableTrustTokenOrigin> maybe_top_frame_origin =
+      SuitableTrustTokenOrigin::Create(top_frame_origin);
   if (!maybe_top_frame_origin) {
-    LogOutcome(request.net_log(), params.type,
-               Outcome::kUnsuitableTopFrameOrigin);
+    LogOutcome(net_log, params.type, Outcome::kUnsuitableTopFrameOrigin);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kFailedPrecondition);
     return;
   }
@@ -127,7 +125,7 @@ void TrustTokenRequestHelperFactory::CreateTrustTokenHelperForRequest(
   store_->ExecuteOrEnqueue(
       base::BindOnce(&TrustTokenRequestHelperFactory::ConstructHelperUsingStore,
                      weak_factory_.GetWeakPtr(), *maybe_top_frame_origin,
-                     params.Clone(), request.net_log(), std::move(done)));
+                     params.Clone(), net_log, std::move(done)));
 }
 
 void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(

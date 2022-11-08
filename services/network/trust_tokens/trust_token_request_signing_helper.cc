@@ -54,10 +54,10 @@ namespace {
 
 using Params = TrustTokenRequestSigningHelper::Params;
 
-void AttachRedemptionRecordHeader(net::URLRequest* request, std::string value) {
-  request->SetExtraRequestHeaderByName(
-      kTrustTokensRequestHeaderSecRedemptionRecord, value,
-      /*overwrite=*/true);
+void AttachRedemptionRecordHeader(net::HttpRequestHeaders& request_headers,
+                                  std::string value) {
+  request_headers.SetHeader(kTrustTokensRequestHeaderSecRedemptionRecord,
+                            value);
 }
 
 // Builds a Trust Tokens redemption record header, which is logically an
@@ -115,29 +115,25 @@ Params::Params(Params&&) = default;
 Params& Params::operator=(Params&&) = default;
 
 void TrustTokenRequestSigningHelper::Begin(
-    net::URLRequest* request,
-    base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) {
-  DCHECK(request);
+    const GURL& url,
+    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                            mojom::TrustTokenOperationStatus)> done) {
 #if DCHECK_IS_ON()
   // Add some postcondition checking on return.
   done = base::BindOnce(
-      [](net::URLRequest* request,
-         base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+      [](base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                                 mojom::TrustTokenOperationStatus)> done,
+         absl::optional<net::HttpRequestHeaders> request_headers,
          mojom::TrustTokenOperationStatus result) {
-        const auto& headers = request->extra_request_headers();
-
-        std::string rr_header;
-        DCHECK(headers.GetHeader(kTrustTokensRequestHeaderSecRedemptionRecord,
-                                 &rr_header));
-        std::move(done).Run(result);
+        DCHECK(request_headers->HasHeader(
+            kTrustTokensRequestHeaderSecRedemptionRecord));
+        std::move(done).Run(std::move(request_headers), result);
       },
-      request, std::move(done));
+      std::move(done));
 #endif  // DCHECK_IS_ON()
 
   // This class is responsible for adding these headers; callers should not add
   // them.
-  DCHECK(!request->extra_request_headers().HasHeader(
-      kTrustTokensRequestHeaderSecRedemptionRecord));
 
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_SIGNING);
@@ -162,41 +158,44 @@ void TrustTokenRequestSigningHelper::Begin(
     records_per_issuer[issuer] = std::move(*maybe_redemption_record);
   }
 
+  net::HttpRequestHeaders request_headers;
   if (records_per_issuer.empty()) {
-    AttachRedemptionRecordHeader(request, std::string());
+    AttachRedemptionRecordHeader(request_headers, std::string());
 
     LogOutcome(net_log_,
                "No RR for any of the given issuers, in the operation's "
                "top-level context");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
+    std::move(done).Run(std::move(request_headers),
+                        mojom::TrustTokenOperationStatus::kOk);
     return;
   }
 
   // 2. Attach the RRs in a Sec-Redemption-Record header.
   if (absl::optional<std::string> maybe_redemption_record_header =
           ConstructRedemptionRecordHeader(records_per_issuer)) {
-    AttachRedemptionRecordHeader(request,
+    AttachRedemptionRecordHeader(request_headers,
                                  std::move(*maybe_redemption_record_header));
   } else {
-    AttachRedemptionRecordHeader(request, std::string());
+    AttachRedemptionRecordHeader(request_headers, std::string());
 
     LogOutcome(net_log_,
                "Unexpected internal error serializing Sec-Redemption-Record"
                " header.");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
+    std::move(done).Run(std::move(request_headers),
+                        mojom::TrustTokenOperationStatus::kOk);
     return;
   }
 
-  request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenVersionHeader,
-                                       kTrustTokensMajorVersion,
-                                       /*overwrite=*/true);
+  request_headers.SetHeader(kTrustTokensSecTrustTokenVersionHeader,
+                            kTrustTokensMajorVersion);
 
   LogOutcome(net_log_, "Success");
-  std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
+  std::move(done).Run(std::move(request_headers),
+                      mojom::TrustTokenOperationStatus::kOk);
 }
 
 void TrustTokenRequestSigningHelper::Finalize(
-    mojom::URLResponseHead* response,
+    net::HttpResponseHeaders& response_headers,
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) {
   return std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
 }

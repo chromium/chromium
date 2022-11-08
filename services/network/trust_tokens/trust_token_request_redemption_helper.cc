@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/load_flags.h"
@@ -72,22 +73,22 @@ TrustTokenRequestRedemptionHelper::~TrustTokenRequestRedemptionHelper() =
     default;
 
 void TrustTokenRequestRedemptionHelper::Begin(
-    net::URLRequest* request,
-    base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) {
-  DCHECK(request);
-
+    const GURL& url,
+    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                            mojom::TrustTokenOperationStatus)> done) {
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_REDEMPTION);
 
   if (custom_issuer_) {
     issuer_ = SuitableTrustTokenOrigin::Create(*custom_issuer_);
   } else {
-    issuer_ = SuitableTrustTokenOrigin::Create(request->url());
+    issuer_ = SuitableTrustTokenOrigin::Create(url);
   }
 
   if (!issuer_) {
     LogOutcome(net_log_, kBegin, "Unsuitable issuer URL (request destination)");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
+    std::move(done).Run(absl::nullopt,
+                        mojom::TrustTokenOperationStatus::kInvalidArgument);
     return;
   }
 
@@ -96,16 +97,18 @@ void TrustTokenRequestRedemptionHelper::Begin(
         TrustTokenKeyCommitmentParser().Parse(*custom_key_commitment_);
     if (!keys) {
       LogOutcome(net_log_, kBegin, "Failed to parse custom keys");
-      std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
+      std::move(done).Run(absl::nullopt,
+                          mojom::TrustTokenOperationStatus::kInvalidArgument);
       return;
     }
-    OnGotKeyCommitment(request, std::move(done), std::move(keys));
+    OnGotKeyCommitment(std::move(done), std::move(keys));
     return;
   }
 
   if (!token_store_->SetAssociation(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Couldn't set issuer-toplevel association");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kResourceExhausted);
+    std::move(done).Run(absl::nullopt,
+                        mojom::TrustTokenOperationStatus::kResourceExhausted);
     return;
   }
 
@@ -113,29 +116,32 @@ void TrustTokenRequestRedemptionHelper::Begin(
       token_store_->RetrieveNonstaleRedemptionRecord(*issuer_,
                                                      top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Redemption record cache hit");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kAlreadyExists);
+    std::move(done).Run(absl::nullopt,
+                        mojom::TrustTokenOperationStatus::kAlreadyExists);
     return;
   }
 
   if (token_store_->IsRedemptionLimitHit(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Redemption limit hit.");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kResourceExhausted);
+    std::move(done).Run(absl::nullopt,
+                        mojom::TrustTokenOperationStatus::kResourceExhausted);
     return;
   }
 
   key_commitment_getter_->Get(
       *issuer_,
       base::BindOnce(&TrustTokenRequestRedemptionHelper::OnGotKeyCommitment,
-                     weak_factory_.GetWeakPtr(), request, std::move(done)));
+                     weak_factory_.GetWeakPtr(), std::move(done)));
 }
 
 void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
-    net::URLRequest* request,
-    base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                            mojom::TrustTokenOperationStatus)> done,
     mojom::TrustTokenKeyCommitmentResultPtr commitment_result) {
   if (!commitment_result) {
     LogOutcome(net_log_, kBegin, "No keys for issuer");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kFailedPrecondition);
+    std::move(done).Run(absl::nullopt,
+                        mojom::TrustTokenOperationStatus::kFailedPrecondition);
     return;
   }
 
@@ -146,7 +152,8 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
   absl::optional<TrustToken> maybe_token_to_redeem = RetrieveSingleToken();
   if (!maybe_token_to_redeem) {
     LogOutcome(net_log_, kBegin, "No tokens to redeem");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kResourceExhausted);
+    std::move(done).Run(absl::nullopt,
+                        mojom::TrustTokenOperationStatus::kResourceExhausted);
     return;
   }
 
@@ -156,7 +163,8 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
     LogOutcome(net_log_, kBegin,
                "Internal error initializing BoringSSL redemption state "
                "(possibly due to bad batch size)");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kInternalError);
+    std::move(done).Run(absl::nullopt,
+                        mojom::TrustTokenOperationStatus::kInternalError);
     return;
   }
 
@@ -166,61 +174,49 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
 
   if (!maybe_redemption_header) {
     LogOutcome(net_log_, kBegin, "Internal error beginning redemption");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kInternalError);
+    std::move(done).Run(absl::nullopt,
+                        mojom::TrustTokenOperationStatus::kInternalError);
     return;
   }
 
   base::UmaHistogramBoolean("Net.TrustTokens.RedemptionRequestEmpty",
                             maybe_redemption_header->empty());
 
-  request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenHeader,
-                                       std::move(*maybe_redemption_header),
-                                       /*overwrite=*/true);
+  net::HttpRequestHeaders request_headers;
+  request_headers.SetHeader(kTrustTokensSecTrustTokenHeader,
+                            std::move(*maybe_redemption_header));
 
   std::string protocol_string_version =
       internal::ProtocolVersionToString(commitment_result->protocol_version);
-  request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenVersionHeader,
-                                       protocol_string_version,
-                                       /*overwrite=*/true);
-
-  // We don't want cache reads, because the highest priority is to execute the
-  // protocol operation by sending the server the Trust Tokens request header
-  // and getting the corresponding response header, but we want cache writes
-  // in case subsequent requests are made to the same URL in non-trust-token
-  // settings.
-  request->SetLoadFlags(request->load_flags() | net::LOAD_BYPASS_CACHE);
+  request_headers.SetHeader(kTrustTokensSecTrustTokenVersionHeader,
+                            protocol_string_version);
 
   token_verification_key_ = *maybe_token_to_redeem->mutable_signing_key();
   token_store_->DeleteToken(*issuer_, *maybe_token_to_redeem);
 
   LogOutcome(net_log_, kBegin, "Success");
-  std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
+  std::move(done).Run(std::move(request_headers),
+                      mojom::TrustTokenOperationStatus::kOk);
 }
 
 void TrustTokenRequestRedemptionHelper::Finalize(
-    mojom::URLResponseHead* response,
+    net::HttpResponseHeaders& response_headers,
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) {
   // Numbers 1-4 below correspond to the lines of the "Process a redemption
   // response" pseudocode from the design doc.
 
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_REDEMPTION);
-  DCHECK(response);
-
-  // A response headers object should be present on all responses for
-  // HTTP requests (which Trust Tokens requests are).
-  DCHECK(response->headers);
 
   // 1. If the response has no Sec-Trust-Token header, return an error.
-
   std::string header_value;
 
   // EnumerateHeader(|iter|=nullptr) asks for the first instance of the header,
   // if any.
-  if (!response->headers->EnumerateHeader(
+  if (!response_headers.EnumerateHeader(
           /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader, &header_value)) {
     LogOutcome(net_log_, kFinalize, "Response missing Trust Tokens header");
-    response->headers->RemoveHeader(
+    response_headers.RemoveHeader(
         kTrustTokensResponseHeaderSecTrustTokenLifetime);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
@@ -228,7 +224,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
 
   // 2. Strip the Sec-Trust-Token header, from the response and pass the header,
   // base64-decoded, to BoringSSL.
-  response->headers->RemoveHeader(kTrustTokensSecTrustTokenHeader);
+  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
   absl::optional<std::string> maybe_redemption_record =
       cryptographer_->ConfirmRedemption(header_value);
@@ -239,7 +235,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
     // The response was rejected by the underlying cryptographic library as
     // malformed or otherwise invalid.
     LogOutcome(net_log_, kFinalize, "RR validation failed");
-    response->headers->RemoveHeader(
+    response_headers.RemoveHeader(
         kTrustTokensResponseHeaderSecTrustTokenLifetime);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
@@ -249,18 +245,18 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   // If there are multiple lifetime headers, the last one is used.
   bool has_lifetime = false;
   uint64_t lifetime = 0;
-  if (response->headers->HasHeader(
+  if (response_headers.HasHeader(
           kTrustTokensResponseHeaderSecTrustTokenLifetime)) {
     // GetInt64HeaderValue returns -1 in case of errors, if not -1, then
     // non-negative values ensuring non-negative values is important since we
     // cast it to unsigned
-    int64_t maybe_lifetime = response->headers->GetInt64HeaderValue(
+    int64_t maybe_lifetime = response_headers.GetInt64HeaderValue(
         kTrustTokensResponseHeaderSecTrustTokenLifetime);
     if (maybe_lifetime != -1) {
       has_lifetime = true;
       lifetime = static_cast<uint64_t>(maybe_lifetime);
     }
-    response->headers->RemoveHeader(
+    response_headers.RemoveHeader(
         kTrustTokensResponseHeaderSecTrustTokenLifetime);
   }
 

@@ -367,6 +367,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojom::TrustTokenOperationType type,
       TrustTokenStatusOrRequestHelper status_or_helper);
   void OnDoneBeginningTrustTokenOperation(
+      absl::optional<net::HttpRequestHeaders> headers,
       mojom::TrustTokenOperationStatus status);
   void OnDoneFinalizingTrustTokenOperation(
       mojom::TrustTokenOperationStatus status);

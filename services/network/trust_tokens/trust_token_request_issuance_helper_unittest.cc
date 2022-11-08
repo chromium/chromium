@@ -347,38 +347,6 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
   EXPECT_EQ(attached_version_header, "TrustTokenV3PMB");
 }
 
-// Check that the issuance helper sets the LOAD_BYPASS_CACHE flag on the
-// outgoing request.
-TEST_F(TrustTokenRequestIssuanceHelperTest, SetsLoadFlag) {
-  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
-
-  SuitableTrustTokenOrigin issuer =
-      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
-
-  // The result of providing blinded, unsigned tokens should be the exact value
-  // of the Sec-Trust-Token header attached to the request.
-  auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
-  EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
-  EXPECT_CALL(*cryptographer, BeginIssuance(_))
-      .WillOnce(
-          Return(std::string("this string contains some blinded tokens")));
-
-  TrustTokenRequestIssuanceHelper helper(
-      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
-      absl::nullopt, std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
-      base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
-
-  auto request = MakeURLRequest("https://issuer.com/");
-  request->set_initiator(issuer);
-
-  ASSERT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
-            mojom::TrustTokenOperationStatus::kOk);
-  EXPECT_TRUE(request->load_flags() & net::LOAD_BYPASS_CACHE);
-}
-
 // Check that the issuance helper rejects responses lacking the Sec-Trust-Token
 // response header.
 TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfResponseOmitsHeader) {

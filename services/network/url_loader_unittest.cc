@@ -262,6 +262,7 @@ class MultipleWritesInterceptor : public net::URLRequestInterceptor {
   // URLRequestInterceptor implementation:
   std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
       net::URLRequest* request) const override {
+    EXPECT_FALSE(request->load_flags() & net::LOAD_BYPASS_CACHE);
     return std::make_unique<URLRequestMultipleWritesJob>(
         request, std::move(packets_), net_error_, async_reads_);
   }
@@ -331,6 +332,7 @@ class EternalSyncReadsInterceptor : public net::URLRequestInterceptor {
   // URLRequestInterceptor implementation:
   std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
       net::URLRequest* request) const override {
+    EXPECT_FALSE(request->load_flags() & net::LOAD_BYPASS_CACHE);
     if (request->url() == GetSingleByteURL()) {
       return std::make_unique<URLRequestEternalSyncReadsJob>(
           request, false /* fill_entire_buffer */);
@@ -414,6 +416,7 @@ class SimulatedCacheInterceptor : public net::URLRequestInterceptor {
 
   std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
       net::URLRequest* request) const override {
+    EXPECT_FALSE(request->load_flags() & net::LOAD_BYPASS_CACHE);
     return std::make_unique<URLRequestSimulatedCacheJob>(
         request, simulated_cache_dest_, use_text_plain_);
   }
@@ -568,6 +571,7 @@ class FakeTransportInfoInterceptor : public net::URLRequestInterceptor {
   // URLRequestInterceptor implementation:
   std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
       net::URLRequest* request) const override {
+    EXPECT_FALSE(request->load_flags() & net::LOAD_BYPASS_CACHE);
     return std::make_unique<URLRequestFakeTransportInfoJob>(
         request, transport_info_, second_transport_info_,
         connected_callback_result_observer_);
@@ -3758,6 +3762,7 @@ class MockHTTPSJobURLRequestInterceptor : public net::URLRequestInterceptor {
   // net::URLRequestInterceptor:
   std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
       net::URLRequest* request) const override {
+    EXPECT_FALSE(request->load_flags() & net::LOAD_BYPASS_CACHE);
     return std::make_unique<MockHTTPSURLRequestJob>(request, std::string(),
                                                     "dummy response", true);
   }
@@ -5680,32 +5685,38 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
       delete;
 
   // TrustTokenRequestHelper:
-  void Begin(net::URLRequest* request,
-             base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done)
+  void Begin(const GURL& url,
+             base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                                     mojom::TrustTokenOperationStatus)> done)
       override {
     DCHECK(on_begin_.has_value());
 
     // Clear storage to crash if the method gets called a second time.
     mojom::TrustTokenOperationStatus result = *on_begin_;
     on_begin_.reset();
+    absl::optional<net::HttpRequestHeaders> headers;
+    if (result == mojom::TrustTokenOperationStatus::kOk)
+      headers.emplace();
 
     switch (operation_synchrony_) {
       case SyncOrAsync::kSync: {
-        OnDoneBeginning(base::BindOnce(std::move(done), result));
+        OnDoneBeginning(
+            base::BindOnce(std::move(done), std::move(headers), result));
         return;
       }
       case SyncOrAsync::kAsync: {
         base::ThreadTaskRunnerHandle::Get()->PostTask(
             FROM_HERE,
-            base::BindOnce(&MockTrustTokenRequestHelper::OnDoneBeginning,
-                           base::Unretained(this),
-                           base::BindOnce(std::move(done), result)));
+            base::BindOnce(
+                &MockTrustTokenRequestHelper::OnDoneBeginning,
+                base::Unretained(this),
+                base::BindOnce(std::move(done), std::move(headers), result)));
         return;
       }
     }
   }
 
-  void Finalize(mojom::URLResponseHead* response,
+  void Finalize(net::HttpResponseHeaders& response_headers,
                 base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done)
       override {
     DCHECK(on_finalize_.has_value());
@@ -5802,8 +5813,10 @@ class MockTrustTokenRequestHelperFactory
                                                           begin_done_flag)) {}
 
   void CreateTrustTokenHelperForRequest(
-      const net::URLRequest& request,
+      const url::Origin& top_frame_origin,
+      const net::HttpRequestHeaders& headers,
       const mojom::TrustTokenParams& params,
+      const net::NetLogWithSource& net_log,
       base::OnceCallback<void(TrustTokenStatusOrRequestHelper)> done) override {
     if (creation_failure_error_) {
       switch (sync_or_async_) {
@@ -5862,6 +5875,15 @@ class MockTrustTokenDevToolsObserver : public MockDevToolsObserver {
       trust_token_operation_status_ = absl::nullopt;
 };
 
+class ExpectBypassCacheInterceptor : public net::URLRequestInterceptor {
+ public:
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    EXPECT_TRUE(request->load_flags() & net::LOAD_BYPASS_CACHE);
+    return nullptr;
+  }
+};
+
 }  // namespace
 
 class URLLoaderSyncOrAsyncTrustTokenOperationTest
@@ -5874,12 +5896,17 @@ class URLLoaderSyncOrAsyncTrustTokenOperationTest
 
  protected:
   ResourceRequest CreateTrustTokenResourceRequest() {
-    ResourceRequest request = CreateResourceRequest(
-        "GET", test_server()->GetURL("/simple_page.html"));
+    GURL request_url = test_server()->GetURL("/simple_page.html");
+    ResourceRequest request = CreateResourceRequest("GET", request_url);
     request.trust_token_params =
         OptionalTrustTokenParams(mojom::TrustTokenParams::New());
     // Set the devtools id to trigger the OnTrustTokenOperationDone call.
     request.devtools_request_id = "TEST";
+
+    // Any Trust Token URLRequest that makes it to Start() should have the
+    // BYPASS_CACHE flag set.
+    net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+        request_url, std::make_unique<ExpectBypassCacheInterceptor>());
     return request;
   }
 

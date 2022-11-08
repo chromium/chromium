@@ -23,16 +23,8 @@
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "url/origin.h"
 
-namespace net {
-class URLRequest;
-}  // namespace net
-
 namespace network {
 class TrustTokenStore;
-
-namespace mojom {
-class URLResponseHead;
-}  // namespace mojom
 
 // Class TrustTokenRequestIssuanceHelper handles a single trust token issuance
 // operation (https://github.com/wicg/trust-token-api): it generates blinded,
@@ -158,12 +150,12 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   ~TrustTokenRequestIssuanceHelper() override;
 
   // Executes the outbound part of a Trust Tokens issuance operation,
-  // interpreting |request|'s URL's origin as the token issuer origin;
+  // interpreting |url|'s origin as the token issuer origin;
   // 1. Checks preconditions (see "Returns" below); if unsuccessful, fails
   // 2. Executes a Trust Tokens key commitment request against the issuer; if
   //    unsuccessful, fails
-  // 3. In a request header, adds a number of signed, unblinded tokens equal to
-  //    the lesser of:
+  // 3. Returns headers containing a number of signed, unblinded tokens equal
+  //    to the lesser of:
   //    * the issuer's configured batch size
   //    * a fixed limit on maximum number of tokens to send per request (see
   //      trust_token_parameterization.h).
@@ -178,26 +170,28 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // * kFailedPrecondition if preconditions fail, including receiving a
   //   malformed or otherwise invalid key commitmetment record from the issuer
   //
-  // |request|'s initiator, and its destination URL's origin, must be both (1)
-  // HTTP or HTTPS and (2) "potentially trustworthy" in the sense of
+  // The |top_level_origin_|, and its destination |url|'s origin, must be both
+  // (1) HTTP or HTTPS and (2) "potentially trustworthy" in the sense of
   // network::IsOriginPotentiallyTrustworthy. (See the justification in the
   // constructor's comment.)
   void Begin(
-      net::URLRequest* request,
-      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
+      const GURL& url,
+      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                              mojom::TrustTokenOperationStatus)> done) override;
 
   // Performs the second half of Trust Token issuance's client side,
   // corresponding to the "To process an issuance response" section in the
   // normative pseudocode:
-  // 1. Checks |response| for an issuance response header.
-  // 2. If the header is present, strips it from the response and passes its
-  // value to an underlying cryptographic library, which parses and validates
-  // the header and splits it into a number of signed, unblinded tokens.
+  // 1. Checks |response_headers| for an issuance response header.
+  // 2. If the header is present, strips it from |response_headers| and passes
+  // its value to an underlying cryptographic library, which parses and
+  // validates the header and splits it into a number of signed, unblinded
+  // tokens.
   //
   // If both of these steps are successful, stores the tokens in |token_store_|
   // and returns kOk. Otherwise, returns kBadResponse.
   void Finalize(
-      mojom::URLResponseHead* response,
+      net::HttpResponseHeaders& response_headers,
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
 
   // These internal structs are in the public namespace so that
@@ -216,8 +210,9 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // continuation; |commitment_result| is the result of the key commitment
   // fetch.
   void OnGotKeyCommitment(
-      net::URLRequest* request,
-      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+      const GURL& url,
+      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                              mojom::TrustTokenOperationStatus)> done,
       mojom::TrustTokenKeyCommitmentResultPtr commitment_result);
 
   // Continuation of |Begin| after a call to the cryptography delegate to
@@ -226,8 +221,9 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // should store the cryptographer back in |cryptographer_| to reuse during
   // |Finalize|.
   void OnDelegateBeginIssuanceCallComplete(
-      net::URLRequest* request,
-      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+      const GURL& url,
+      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                              mojom::TrustTokenOperationStatus)> done,
       CryptographerAndBlindedTokens cryptographer_and_blinded_tokens);
 
   // Continuation of |Finalize| after extracting the base64-encoded issuance
@@ -252,7 +248,8 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // |answer| contains an error) or continuing to finalize the operation (if
   // |answer| contains an issuance response).
   void DoneRequestingLocallyFulfilledIssuance(
-      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                              mojom::TrustTokenOperationStatus)> done,
       mojom::FulfillTrustTokenIssuanceAnswerPtr answer);
 
   // DoneFinalizingLocallyFulfilledIssuance determines a final response status
@@ -262,7 +259,8 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // kOperationSuccessfullyFulfilledLocally. Otherwise, calls |done| with
   // |status|.
   void DoneFinalizingLocallyFulfilledIssuance(
-      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                              mojom::TrustTokenOperationStatus)> done,
       mojom::TrustTokenOperationStatus status);
 
   // |issuer_| needs to be a nullable type because it is initialized in |Begin|,

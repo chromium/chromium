@@ -16,6 +16,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"

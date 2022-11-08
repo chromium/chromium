@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
 
@@ -45,9 +46,12 @@ TrustTokenRequestHelperTest::ExecuteBeginOperationAndWaitForResult(
     net::URLRequest* request) {
   base::RunLoop run_loop;
   mojom::TrustTokenOperationStatus status;
-  helper->Begin(request,
+  helper->Begin(request->url(),
                 base::BindLambdaForTesting(
-                    [&](mojom::TrustTokenOperationStatus returned_status) {
+                    [&](absl::optional<net::HttpRequestHeaders> headers,
+                        mojom::TrustTokenOperationStatus returned_status) {
+                      if (headers)
+                        request->SetExtraRequestHeaders(*headers);
                       status = returned_status;
                       run_loop.Quit();
                     }));
@@ -61,7 +65,7 @@ TrustTokenRequestHelperTest::ExecuteFinalizeAndWaitForResult(
     mojom::URLResponseHead* response) {
   base::RunLoop run_loop;
   mojom::TrustTokenOperationStatus status;
-  helper->Finalize(response,
+  helper->Finalize(*response->headers.get(),
                    base::BindLambdaForTesting(
                        [&](mojom::TrustTokenOperationStatus returned_status) {
                          status = returned_status;

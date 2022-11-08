@@ -348,12 +348,6 @@ TEST_F(TrustTokenBeginRedemptionPostconditionsTest, SetsHeaders) {
       kTrustTokensSecTrustTokenVersionHeader, &attached_header));
 }
 
-// Check that the redemption helper sets the LOAD_BYPASS_CACHE flag on the
-// outgoing request.
-TEST_F(TrustTokenBeginRedemptionPostconditionsTest, SetsLoadFlag) {
-  EXPECT_TRUE(request_->load_flags() & net::LOAD_BYPASS_CACHE);
-}
-
 class TrustTokenBeginRedemptionPostconditionsTestWithMetrics
     : public TrustTokenBeginRedemptionPostconditionsTest {
  protected:

@@ -864,12 +864,25 @@ void URLLoader::BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(
     return;
   }
 
+  // Trust token operations other than signing cannot be served from cache
+  // because it needs to send the server the Trust Tokens request header and
+  // get the corresponding response header. It is okay to cache the results in
+  // case subsequent requests are made to the same URL in non-trust-token
+  // settings.
+  if (request.trust_token_params->type !=
+      mojom::TrustTokenOperationType::kSigning) {
+    url_request_->SetLoadFlags(url_request_->load_flags() |
+                               net::LOAD_BYPASS_CACHE);
+  }
+
   // Since the request has trust token parameters, |trust_token_helper_factory_|
   // is guaranteed to be non-null by URLLoader's constructor's contract.
   DCHECK(trust_token_helper_factory_);
 
   trust_token_helper_factory_->CreateTrustTokenHelperForRequest(
-      *url_request_, request.trust_token_params.value(),
+      url_request_->isolation_info().top_frame_origin().value_or(url::Origin()),
+      url_request_->extra_request_headers(), request.trust_token_params.value(),
+      url_request_->net_log(),
       base::BindOnce(&URLLoader::OnDoneConstructingTrustTokenHelper,
                      weak_ptr_factory_.GetWeakPtr(),
                      request.trust_token_params->type));
@@ -901,12 +914,13 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
 
   trust_token_helper_ = status_or_helper.TakeOrCrash();
   trust_token_helper_->Begin(
-      url_request_.get(),
+      url_request_->url(),
       base::BindOnce(&URLLoader::OnDoneBeginningTrustTokenOperation,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void URLLoader::OnDoneBeginningTrustTokenOperation(
+    absl::optional<net::HttpRequestHeaders> headers,
     mojom::TrustTokenOperationStatus status) {
   trust_token_status_ = status;
 
@@ -915,10 +929,17 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
   // Otherwise the DevTools event is always emitted from
   // |OnDoneFinalizingTrustTokenOperation|.
   if (status != mojom::TrustTokenOperationStatus::kOk) {
+    DCHECK(!headers);
     MaybeSendTrustTokenOperationResultToDevTools();
   }
 
   if (status == mojom::TrustTokenOperationStatus::kOk) {
+    DCHECK(headers);
+    for (const auto& header_pair : headers->GetHeaderVector()) {
+      url_request_->SetExtraRequestHeaderByName(
+          header_pair.key, header_pair.value, /*overwrite=*/true);
+    }
+
     ScheduleStart();
   } else if (status == mojom::TrustTokenOperationStatus::kAlreadyExists ||
              status == mojom::TrustTokenOperationStatus::
@@ -1445,9 +1466,10 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
 
   // Parse and remove the Trust Tokens response headers, if any are expected,
   // potentially failing the request if an error occurs.
-  if (trust_token_helper_) {
+  if (response_ && response_->headers && trust_token_helper_) {
+    DCHECK(response_);
     trust_token_helper_->Finalize(
-        response_.get(),
+        *response_->headers.get(),
         base::BindOnce(&URLLoader::OnDoneFinalizingTrustTokenOperation,
                        weak_ptr_factory_.GetWeakPtr()));
     // |this| may have been deleted.

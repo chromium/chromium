@@ -26,11 +26,12 @@ class OperationTimingRequestHelperWrapper : public TrustTokenRequestHelper {
 
   // TrustTokenRequestHelper implementation:
   void Begin(
-      net::URLRequest* request,
-      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
+      const GURL& url,
+      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                              mojom::TrustTokenOperationStatus)> done) override;
 
   void Finalize(
-      mojom::URLResponseHead* response,
+      net::HttpResponseHeaders& response_headers,
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
 
   mojom::TrustTokenOperationResultPtr CollectOperationResultWithStatus(
@@ -39,7 +40,9 @@ class OperationTimingRequestHelperWrapper : public TrustTokenRequestHelper {
  private:
   // Records timing metrics, then calls the callback.
   void FinishBegin(
-      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                              mojom::TrustTokenOperationStatus)> done,
+      absl::optional<net::HttpRequestHeaders> request_headers,
       mojom::TrustTokenOperationStatus status);
 
   // Records timing metrics, then calls the callback.

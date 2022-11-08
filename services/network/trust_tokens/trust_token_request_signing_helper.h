@@ -76,7 +76,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   TrustTokenRequestSigningHelper& operator=(
       const TrustTokenRequestSigningHelper&) = delete;
 
-  // Attempts to attach Redemption Records (RRs) corresponding to |request|'s
+  // Attempts to attach Redemption Records (RRs) corresponding to request's
   // initiating top-level origin and the provided issuer origins.
   //
   // ATTACHING THE REDEMPTION RECORD:
@@ -96,13 +96,14 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // - On failure, the request will contain an empty
   // Sec-Redemption-Record header.
   void Begin(
-      net::URLRequest* request,
-      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
+      const GURL& url,
+      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+                              mojom::TrustTokenOperationStatus)> done) override;
 
   // Immediately returns kOk with no other effect. (Signing is an operation that
   // only needs to process requests, not their corresponding responses.)
   void Finalize(
-      mojom::URLResponseHead* response,
+      net::HttpResponseHeaders& response_headers,
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
 
   mojom::TrustTokenOperationResultPtr CollectOperationResultWithStatus(
