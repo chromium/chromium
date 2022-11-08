@@ -245,16 +245,18 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
        PrefAndSafeBrowsingCombinations) {
   using Config = QuietNotificationPermissionUiConfig;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "true"},
-       {Config::kEnableAbusiveRequestBlocking, "true"},
-       {Config::kEnableAbusiveRequestWarning, "true"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"},
-       {Config::kEnableDisruptiveBehaviorRequestBlocking, "true"},
-       {Config::kCrowdDenyHoldBackChance, "0.0"}});
+
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kQuietNotificationPrompts,
+        {{Config::kEnableAdaptiveActivation, "true"},
+         {Config::kEnableCrowdDenyTriggering, "true"},
+         {Config::kEnableAbusiveRequestBlocking, "true"},
+         {Config::kEnableAbusiveRequestWarning, "true"},
+         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"},
+         {Config::kCrowdDenyHoldBackChance, "0.0"}}},
+       {features::kDisruptiveNotificationPermissionRevocation, {}}},
+      {});
 
   LoadTestPreloadData();
 
@@ -318,7 +320,9 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
 
 TEST_F(ContextualNotificationPermissionUiSelectorTest, FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kQuietNotificationPrompts);
+  feature_list.InitWithFeatures(
+      {}, {features::kQuietNotificationPrompts,
+           features::kDisruptiveNotificationPermissionRevocation});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -334,16 +338,16 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest, FeatureDisabled) {
 TEST_F(ContextualNotificationPermissionUiSelectorTest, AllTriggersDisabled) {
   using Config = QuietNotificationPermissionUiConfig;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestBlocking, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestWarning, "false"}});
+
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kQuietNotificationPrompts,
+        {{Config::kEnableAdaptiveActivation, "true"},
+         {Config::kEnableCrowdDenyTriggering, "false"},
+         {Config::kEnableAbusiveRequestBlocking, "false"},
+         {Config::kEnableAbusiveRequestWarning, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
+      {features::kDisruptiveNotificationPermissionRevocation});
 
   SetQuietUiEnabledInPrefs(true);
   LoadTestPreloadData();
@@ -360,17 +364,17 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest, AllTriggersDisabled) {
 TEST_F(ContextualNotificationPermissionUiSelectorTest, OnlyCrowdDenyEnabled) {
   using Config = QuietNotificationPermissionUiConfig;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "true"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestBlocking, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestWarning, "false"},
-       {Config::kCrowdDenyHoldBackChance, "0.0"}});
+
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kQuietNotificationPrompts,
+        {{Config::kEnableAdaptiveActivation, "true"},
+         {Config::kEnableCrowdDenyTriggering, "true"},
+         {Config::kEnableAbusiveRequestBlocking, "false"},
+         {Config::kEnableAbusiveRequestWarning, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"},
+         {Config::kCrowdDenyHoldBackChance, "0.0"}}}},
+      {features::kDisruptiveNotificationPermissionRevocation});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -404,16 +408,16 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
        OnlyAbusiveContentBlockingEnabled) {
   using Config = QuietNotificationPermissionUiConfig;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestBlocking, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestWarning, "false"}});
+
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kQuietNotificationPrompts,
+        {{Config::kEnableAdaptiveActivation, "true"},
+         {Config::kEnableCrowdDenyTriggering, "false"},
+         {Config::kEnableAbusiveRequestBlocking, "false"},
+         {Config::kEnableAbusiveRequestWarning, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
+      {features::kDisruptiveNotificationPermissionRevocation});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -447,15 +451,15 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
        OnlyAbusiveContentWarningsEnabled) {
   using Config = QuietNotificationPermissionUiConfig;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"},
-       {Config::kEnableDisruptiveBehaviorRequestBlocking, "false"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kQuietNotificationPrompts,
+        {{Config::kEnableAdaptiveActivation, "true"},
+         {Config::kEnableCrowdDenyTriggering, "false"},
+         {Config::kEnableAbusiveRequestBlocking, "false"},
+         {Config::kEnableAbusiveRequestWarning, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"}}}},
+      {features::kDisruptiveNotificationPermissionRevocation});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -490,16 +494,15 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
        OnlyAbusivePromptBlockingEnabled) {
   using Config = QuietNotificationPermissionUiConfig;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "true"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestBlocking, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestWarning, "false"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kQuietNotificationPrompts,
+        {{Config::kEnableAdaptiveActivation, "true"},
+         {Config::kEnableCrowdDenyTriggering, "false"},
+         {Config::kEnableAbusiveRequestBlocking, "true"},
+         {Config::kEnableAbusiveRequestWarning, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
+      {features::kDisruptiveNotificationPermissionRevocation});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -535,15 +538,15 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
        OnlyAbusivePromptWarningsEnabled) {
   using Config = QuietNotificationPermissionUiConfig;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "true"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestBlocking, "false"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kQuietNotificationPrompts,
+        {{Config::kEnableAdaptiveActivation, "true"},
+         {Config::kEnableCrowdDenyTriggering, "false"},
+         {Config::kEnableAbusiveRequestBlocking, "false"},
+         {Config::kEnableAbusiveRequestWarning, "true"},
+         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
+      {features::kDisruptiveNotificationPermissionRevocation});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -578,15 +581,16 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
        OnlyDisruptiveBehaviorRequestBlockingEnabled) {
   using Config = QuietNotificationPermissionUiConfig;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"},
-       {Config::kEnableDisruptiveBehaviorRequestBlocking, "true"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kQuietNotificationPrompts,
+        {{Config::kEnableAdaptiveActivation, "true"},
+         {Config::kEnableCrowdDenyTriggering, "false"},
+         {Config::kEnableAbusiveRequestBlocking, "false"},
+         {Config::kEnableAbusiveRequestWarning, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}},
+       {features::kDisruptiveNotificationPermissionRevocation, {}}},
+      {});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -636,16 +640,17 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
 
     using Config = QuietNotificationPermissionUiConfig;
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kQuietNotificationPrompts,
-        {{Config::kEnableAdaptiveActivation, "true"},
-         {Config::kEnableAbusiveRequestBlocking, "true"},
-         {Config::kEnableAbusiveRequestWarning, "true"},
-         {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
-         {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"},
-         {Config::kEnableCrowdDenyTriggering, "true"},
-         {Config::kEnableDisruptiveBehaviorRequestBlocking, "true"},
-         {Config::kCrowdDenyHoldBackChance, test.holdback_chance}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kQuietNotificationPrompts,
+          {{Config::kEnableAdaptiveActivation, "true"},
+           {Config::kEnableAbusiveRequestBlocking, "true"},
+           {Config::kEnableAbusiveRequestWarning, "true"},
+           {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
+           {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"},
+           {Config::kEnableCrowdDenyTriggering, "true"},
+           {Config::kCrowdDenyHoldBackChance, test.holdback_chance}}},
+         {features::kDisruptiveNotificationPermissionRevocation, {}}},
+        {});
 
     base::HistogramTester histograms;
     QueryAndExpectDecisionForUrl(GURL(kTestOriginSpammy),
