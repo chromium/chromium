@@ -37,7 +37,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -69,6 +68,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
     public @Rule TestRule mProcessor = new Features.JUnitProcessor();
 
     private @Spy SuggestionProcessor mBasicSuggestionProcessor;
+    private @Spy SuggestionProcessor mEditUrlSuggestionProcessor;
     private @Spy DropdownItemProcessor mHeaderProcessor;
     private @Mock PropertyModel mModel;
     private @Mock ListObserver<Void> mListObserver;
@@ -80,6 +80,8 @@ public class DropdownItemViewInfoListManagerUnitTest {
     @Before
     public void setUp() {
         when(mBasicSuggestionProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.DEFAULT);
+        when(mEditUrlSuggestionProcessor.getViewTypeId())
+                .thenReturn(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION);
         when(mHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
         ChromeFeatureList.sOmniboxModernizeVisualUpdate.setForTesting(true);
 
@@ -453,13 +455,13 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true/"
-                    + "modernize_visual_update_small_bottom_margin/false"})
-    public void
-    suggestionsListSpacing() {
+    public void suggestionsListSpacing_NonActiveOmnibox_bigBottomMargin() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.setForTesting(false);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(false);
+
+        int suggestionListTopMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_non_active_top_big_margin);
         int groupVerticalSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_group_vertical_margin);
         int suggestionVerticalSpacing = mContext.getResources().getDimensionPixelSize(
@@ -487,7 +489,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
         verifyModelEquals(list);
 
         //
-        // ******************** <--- very first one, no margin.
+        // ******************** <--- very first one, non active Omnibox big margin.
         // * basic suggestion *
         // ******************** <--- last one in a group, group margin.
         //                      <--- no background, no margin
@@ -500,8 +502,8 @@ public class DropdownItemViewInfoListManagerUnitTest {
         // * basic suggestion *
         // ******************** <--- very last one, no margin.
         //
-        Assert.assertEquals(
-                0, mSuggestionModels.get(0).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(suggestionListTopMargin,
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.TOP_MARGIN));
         Assert.assertEquals(groupVerticalSpacing,
                 mSuggestionModels.get(0).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
         Assert.assertEquals(
@@ -520,16 +522,83 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true/"
-                    + "modernize_visual_update_small_bottom_margin/true"})
-    public void
-    suggestionsListSpacing_smallBottomMargin() {
+    public void suggestionsListSpacing_NonActiveOmnibox_smallBottomMargin() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.setForTesting(false);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
+
+        int suggestionListTopMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_non_active_top_small_margin);
         int groupTopSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_group_vertical_margin);
         int groupBottomSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_group_vertical_small_bottom_margin);
+        int suggestionVerticalSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_vertical_margin);
+
+        final int groupIdNoHeader = 1;
+        final int groupIdWithHeader = 2;
+
+        List<DropdownItemViewInfo> list = Arrays.asList(
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdNoHeader),
+                new DropdownItemViewInfo(mHeaderProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader));
+
+        // Receive suggestions list with group 1 default-collapsed.
+        mManager.setSourceViewInfoList(list,
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .build());
+        verifyModelEquals(list);
+
+        //
+        // ******************** <--- very first one, non active Omnibox small margin.
+        // * basic suggestion *
+        // ******************** <--- last one in a group, group margin.
+        //                      <--- no background, no margin
+        //  header suggestion
+        //                      <--- no background, no margin
+        // ******************** <--- first one in a group, group margin.
+        // * basic suggestion *
+        // ******************** <--- normal bottom, no margin.
+        // ******************** <--- normal top, suggestion margin.
+        // * basic suggestion *
+        // ******************** <--- very last one, no margin.
+        //
+        Assert.assertEquals(suggestionListTopMargin,
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(groupBottomSpacing,
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(groupTopSpacing,
+                mSuggestionModels.get(2).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(suggestionVerticalSpacing,
+                mSuggestionModels.get(2).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(suggestionVerticalSpacing,
+                mSuggestionModels.get(3).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(3).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+    }
+
+    @Test
+    @SmallTest
+    public void suggestionsListSpacing_activeOmnibox_bigBottomMargin() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(false);
+
+        int suggestionListTopMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_active_top_big_margin);
+        int groupVerticalSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_group_vertical_margin);
         int suggestionVerticalSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_vertical_margin);
@@ -539,6 +608,144 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
         List<DropdownItemViewInfo> list = Arrays.asList(
                 new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdNoHeader),
+                new DropdownItemViewInfo(mHeaderProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader));
+
+        // Receive suggestions list with group 1 default-collapsed.
+        mManager.setSourceViewInfoList(list,
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .build());
+        verifyModelEquals(list);
+
+        //
+        // ******************** <--- very first one, active Omnibox big margin.
+        // * basic suggestion *
+        // ******************** <--- last one in a group, group margin.
+        //                      <--- no background, no margin
+        //  header suggestion
+        //                      <--- no background, no margin
+        // ******************** <--- first one in a group, group margin.
+        // * basic suggestion *
+        // ******************** <--- normal bottom, no margin.
+        // ******************** <--- normal top, suggestion margin.
+        // * basic suggestion *
+        // ******************** <--- very last one, no margin.
+        //
+        Assert.assertEquals(suggestionListTopMargin,
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(groupVerticalSpacing,
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(groupVerticalSpacing,
+                mSuggestionModels.get(2).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(suggestionVerticalSpacing,
+                mSuggestionModels.get(2).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(suggestionVerticalSpacing,
+                mSuggestionModels.get(3).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(3).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+    }
+
+    @Test
+    @SmallTest
+    public void suggestionsListSpacing_activeOmnibox_smallBottomMargin() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
+
+        int suggestionListTopMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_active_top_small_margin);
+        int groupTopSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_group_vertical_margin);
+        int groupBottomSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_group_vertical_small_bottom_margin);
+        int suggestionVerticalSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_vertical_margin);
+
+        final int groupIdNoHeader = 1;
+        final int groupIdWithHeader = 2;
+
+        List<DropdownItemViewInfo> list = Arrays.asList(
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdNoHeader),
+                new DropdownItemViewInfo(mHeaderProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader));
+
+        // Receive suggestions list with group 1 default-collapsed.
+        mManager.setSourceViewInfoList(list,
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .build());
+        verifyModelEquals(list);
+
+        //
+        // ******************** <--- very first one, active Omnibox small margin.
+        // * basic suggestion *
+        // ******************** <--- last one in a group, group margin.
+        //                      <--- no background, no margin
+        //  header suggestion
+        //                      <--- no background, no margin
+        // ******************** <--- first one in a group, group margin.
+        // * basic suggestion *
+        // ******************** <--- normal bottom, no margin.
+        // ******************** <--- normal top, suggestion margin.
+        // * basic suggestion *
+        // ******************** <--- very last one, no margin.
+        //
+        Assert.assertEquals(suggestionListTopMargin,
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(groupBottomSpacing,
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(groupTopSpacing,
+                mSuggestionModels.get(2).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(suggestionVerticalSpacing,
+                mSuggestionModels.get(2).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(suggestionVerticalSpacing,
+                mSuggestionModels.get(3).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(3).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+    }
+
+    @Test
+    @SmallTest
+    public void suggestionsListSpacing_SRO_shouldNoTopMargin() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
+
+        int suggestionListTopMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_active_top_small_margin);
+        int groupTopSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_group_vertical_margin);
+        int groupBottomSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_group_vertical_small_bottom_margin);
+        int suggestionVerticalSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_vertical_margin);
+
+        final int groupIdNoHeader = 1;
+        final int groupIdWithHeader = 2;
+
+        List<DropdownItemViewInfo> list = Arrays.asList(
+                new DropdownItemViewInfo(mEditUrlSuggestionProcessor,
                         new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdNoHeader),
                 new DropdownItemViewInfo(mHeaderProcessor,
                         new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader),

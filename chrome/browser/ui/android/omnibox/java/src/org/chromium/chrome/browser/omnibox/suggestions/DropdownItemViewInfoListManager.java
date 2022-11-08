@@ -9,6 +9,7 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
@@ -35,6 +36,11 @@ class DropdownItemViewInfoListManager {
     private List<DropdownItemViewInfo> mSourceViewInfoList;
     private boolean mDropdownItemRoundingEnabled;
 
+    private final int mListActiveOmniboxTopSmallMargin;
+    private final int mListActiveOmniboxTopBigMargin;
+    private final int mListNonActiveOmniboxTopSmallMargin;
+    private final int mListNonActiveOmniboxTopBigMargin;
+
     DropdownItemViewInfoListManager(@NonNull ModelList managedModel, @NonNull Context context) {
         assert managedModel != null : "Must specify a non-null model.";
         mContext = context;
@@ -43,6 +49,15 @@ class DropdownItemViewInfoListManager {
         mSourceViewInfoList = Collections.emptyList();
         mGroupsCollapsedState = new SparseBooleanArray();
         mManagedModel = managedModel;
+
+        mListActiveOmniboxTopSmallMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_active_top_small_margin);
+        mListActiveOmniboxTopBigMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_active_top_big_margin);
+        mListNonActiveOmniboxTopSmallMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_non_active_top_small_margin);
+        mListNonActiveOmniboxTopBigMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_list_non_active_top_big_margin);
     }
 
     /**
@@ -168,8 +183,10 @@ class DropdownItemViewInfoListManager {
                 model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, applyRounding);
                 // Do not have margin for the first suggestion, otherwise the first suggestion will
                 // have a big gap with the Omnibox.
-                model.set(
-                        DropdownCommonProperties.TOP_MARGIN, previousItem == null ? 0 : topMargin);
+                model.set(DropdownCommonProperties.TOP_MARGIN,
+                        previousItem == null
+                                ? getSuggestionListTopMargin(item.processor.getViewTypeId())
+                                : topMargin);
 
                 if (previousItem != null) {
                     previousItem.model.set(
@@ -284,6 +301,38 @@ class DropdownItemViewInfoListManager {
             mManagedModel.addAll(
                     mSourceViewInfoList.subList(firstElementIndex, firstElementIndex + count),
                     insertPosition);
+        }
+    }
+
+    /**
+     * Return the top margin for the suggestion list in pixel size.
+     * The padding size between the Omnibox and the top suggestion is dependent on the top
+     * suggestion type and variations of the experiment:
+     * 1. If the type is EDIT_URL_SUGGESTION, being an integral part of the Search Ready Omnibox
+     * appears closer to the Omnibox.
+     * 2. Everything else is spaced farther away, keeping the same distance between the Omnibox and
+     * the Top suggestion as the distance between individual Suggestion sections.
+     *
+     * @param firstSuggestionUiType The type of the first suggestion.
+     */
+    private @Px int getSuggestionListTopMargin(@OmniboxSuggestionUiType int firstSuggestionUiType) {
+        if (!mDropdownItemRoundingEnabled
+                || firstSuggestionUiType == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION) {
+            return 0;
+        }
+
+        if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            if (OmniboxFeatures.shouldShowSmallBottomMargin()) {
+                return mListActiveOmniboxTopSmallMargin;
+            } else {
+                return mListActiveOmniboxTopBigMargin;
+            }
+        } else {
+            if (OmniboxFeatures.shouldShowSmallBottomMargin()) {
+                return mListNonActiveOmniboxTopSmallMargin;
+            } else {
+                return mListNonActiveOmniboxTopBigMargin;
+            }
         }
     }
 }
