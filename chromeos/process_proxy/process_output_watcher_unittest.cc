@@ -248,7 +248,8 @@ TEST_F(ProcessOutputWatcherTest, SplitSoleUTF8CharacterThreeWays) {
   RunTest(test_cases);
 }
 
-TEST_F(ProcessOutputWatcherTest, EndsWithThreeByteUTF8Character) {
+// TODO(crbug.com/1382252) Re-enable test
+TEST_F(ProcessOutputWatcherTest, DISABLED_EndsWithThreeByteUTF8Character) {
   std::vector<TestCase> test_cases;
   test_cases.push_back(TestCase("test\xe2\x82\xac", false, "test\xe2\x82\xac"));
 
