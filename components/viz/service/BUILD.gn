@@ -255,7 +255,6 @@ viz_component("service") {
 
   public_deps = [
     "//base",
-    "//cc",
     "//cc/debug",
     "//components/viz/common",
     "//gpu/command_buffer/service:gles2",

@@ -47,7 +47,6 @@ class ScopedBeginFrameTask {
 };
 
 void IssueImplThreadRenderingStatsEvent(const RenderingStats& stats);
-void CC_EXPORT IssueDisplayRenderingStatsEvent();
 
 }  // namespace benchmark_instrumentation
 }  // namespace cc

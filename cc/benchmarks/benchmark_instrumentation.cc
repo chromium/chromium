@@ -18,14 +18,5 @@ void IssueImplThreadRenderingStatsEvent(const RenderingStats& stats) {
       TRACE_EVENT_SCOPE_THREAD, "data", stats.AsTraceableData());
 }
 
-void IssueDisplayRenderingStatsEvent() {
-  std::unique_ptr<base::trace_event::TracedValue> record_data(
-      new base::trace_event::TracedValue());
-  record_data->SetInteger("frame_count", 1);
-  TRACE_EVENT_INSTANT1(
-      "benchmark", "BenchmarkInstrumentation::DisplayRenderingStats",
-      TRACE_EVENT_SCOPE_THREAD, "data", std::move(record_data));
-}
-
 }  // namespace benchmark_instrumentation
 }  // namespace cc

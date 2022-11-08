@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "cc/cc_export.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display_embedder/buffer_queue.h"

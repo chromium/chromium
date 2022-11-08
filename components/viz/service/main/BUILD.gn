@@ -20,7 +20,6 @@ source_set("main") {
   ]
 
   deps = [
-    "//cc",
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
     "//components/ui_devtools",

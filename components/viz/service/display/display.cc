@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -18,11 +19,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"
 #include "cc/base/simple_enclosed_region.h"
-#include "cc/benchmarks/benchmark_instrumentation.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -239,6 +240,17 @@ bool SupportsSetFrameRate(const OutputSurface* output_surface) {
 #else
   return false;
 #endif
+}
+
+void IssueDisplayRenderingStatsEvent() {
+  std::unique_ptr<base::trace_event::TracedValue> record_data =
+      std::make_unique<base::trace_event::TracedValue>();
+  record_data->SetInteger("frame_count", 1);
+  // Please don't rename this trace event as it's used by tools. The benchmarks
+  // search for events and their arguments by name.
+  TRACE_EVENT_INSTANT1(
+      "benchmark", "BenchmarkInstrumentation::DisplayRenderingStats",
+      TRACE_EVENT_SCOPE_THREAD, "data", std::move(record_data));
 }
 
 }  // namespace
@@ -872,7 +884,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         frame.latency_info,
         perfetto::protos::pbzero::ChromeLatencyInfo::STEP_DRAW_AND_SWAP);
 
-    cc::benchmark_instrumentation::IssueDisplayRenderingStatsEvent();
+    IssueDisplayRenderingStatsEvent();
     DirectRenderer::SwapFrameData swap_frame_data;
     swap_frame_data.latency_info = std::move(frame.latency_info);
     swap_frame_data.choreographer_vsync_id = params.choreographer_vsync_id;

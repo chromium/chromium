@@ -58,10 +58,7 @@ mojom("compositing") {
       ]
       traits_headers = [ "//services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.h" ]
       traits_sources = [ "//services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.cc" ]
-      traits_public_deps += [
-        "//cc",
-        "//ui/gfx/geometry/mojom",
-      ]
+      traits_public_deps += [ "//ui/gfx/geometry/mojom" ]
     },
   ]
 }
