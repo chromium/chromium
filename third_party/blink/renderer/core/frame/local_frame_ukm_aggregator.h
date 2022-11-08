@@ -311,9 +311,11 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Mark the beginning of a main frame update.
   void BeginMainFrame();
 
-  // Inform the aggregator that we have reached First Contentful Paint.
-  // The UKM event for the pre-FCP period will be recorded and UMA for
-  // aggregated contributions to FCP are reported.
+  // Inform the aggregator that some frame reached First Contentful Paint. On
+  // the next frame, this will cause the UKM event for the pre-FCP period to be
+  // recorded and UMA for aggregated contributions to FCP to be recorded.
+  // TODO(1370937): Currently we don't yet know how to handle soft navigation
+  // UKM reporting, so this may be called multiple times for a given frame.
   void DidReachFirstContentfulPaint();
 
   bool InMainFrameUpdate() { return in_main_frame_update_; }

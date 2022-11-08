@@ -783,7 +783,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCountsInChildFrame) {
     </style>
     <div id=target1 class=target></div>
     <div id=target2 class=target></div>
-    <div class=spacer></div>"
+    <div class=spacer></div>
   )HTML");
   Compositor().BeginFrame();
   ChooseNextFrameForTest();
@@ -878,6 +878,55 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidNotReachFirstContentfulPaintMetric) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Blink.LocalFrameRoot.DidReachFirstContentfulPaint"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 0)));
+}
+
+TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
+  base::HistogramTester histogram_tester;
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/frame.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete("<iframe id=frame src='frame.html'></iframe>");
+  frame_resource.Complete(R"HTML(<!doctype html>
+    <div id=target></div>
+  )HTML");
+
+  // Do a pre-FCP frame.
+  Compositor().BeginFrame();
+  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
+  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+  EXPECT_TRUE(IsBeforeFCPForTesting());
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 1);
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
+
+  // Make a change to the subframe that results in FCP for that subframe.
+  auto* subframe_document =
+      To<HTMLFrameOwnerElement>(GetDocument().getElementById("frame"))
+          ->contentDocument();
+  Element* target = subframe_document->getElementById("target");
+  target->setInnerHTML("test1");
+
+  // Do a frame that reaches FCP.
+  Compositor().BeginFrame();
+  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
+  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+  EXPECT_FALSE(IsBeforeFCPForTesting());
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
+
+  // Make a change to the subframe that causes another frame.
+  target->setInnerHTML("test2");
+
+  // Do a post-FCP frame.
+  Compositor().BeginFrame();
+  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
+  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+  EXPECT_FALSE(IsBeforeFCPForTesting());
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 1);
 }
 
 }  // namespace blink

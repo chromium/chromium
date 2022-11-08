@@ -1184,11 +1184,6 @@ class CORE_EXPORT LocalFrameView final
   Member<HeapHashSet<Member<LayoutObject>>> pending_transform_updates_;
   Member<HeapHashSet<Member<LayoutObject>>> pending_opacity_updates_;
 
-  // TODO(1370937): Currently we don't yet know how to handle soft navigation
-  // UKM reporting. This flag indicates that First Contentful Paint was reported
-  // once and should not be reported again.
-  bool was_fcp_reported_ = false;
-
 #if DCHECK_IS_ON()
   bool is_updating_descendant_dependent_flags_;
   bool is_updating_layout_;

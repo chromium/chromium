@@ -269,8 +269,8 @@ void LocalFrameUkmAggregator::SetTickClockForTesting(
 }
 
 void LocalFrameUkmAggregator::DidReachFirstContentfulPaint() {
-  DCHECK_NE(fcp_state_, kHavePassedFCP);
-  fcp_state_ = kThisFrameReachedFCP;
+  if (fcp_state_ == kBeforeFCPSignal)
+    fcp_state_ = kThisFrameReachedFCP;
 }
 
 void LocalFrameUkmAggregator::RecordTimerSample(size_t metric_index,

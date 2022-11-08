@@ -4758,13 +4758,7 @@ void LocalFrameView::OnFirstContentfulPaint() {
       FontPerformance::MarkFirstContentfulPaint();
   }
 
-  if (frame_->IsLocalRoot()) {
-    if (was_fcp_reported_) {
-      return;
-    }
-    was_fcp_reported_ = true;
-    EnsureUkmAggregator().DidReachFirstContentfulPaint();
-  }
+  EnsureUkmAggregator().DidReachFirstContentfulPaint();
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(
