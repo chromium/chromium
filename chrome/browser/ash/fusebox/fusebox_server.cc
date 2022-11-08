@@ -310,7 +310,7 @@ Server::~Server() {
   g_server_instance = nullptr;
 }
 
-fusebox::Moniker Server::CreateMoniker(storage::FileSystemURL target,
+fusebox::Moniker Server::CreateMoniker(const storage::FileSystemURL& target,
                                        bool read_only) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -385,7 +385,8 @@ base::Value Server::GetDebugJSON() {
   return base::Value(std::move(dict));
 }
 
-void Server::Close(std::string fs_url_as_string, CloseCallback callback) {
+void Server::Close(const std::string& fs_url_as_string,
+                   CloseCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
@@ -399,7 +400,7 @@ void Server::Close(std::string fs_url_as_string, CloseCallback callback) {
   std::move(callback).Run(ENOTSUP);
 }
 
-void Server::Open(std::string fs_url_as_string, OpenCallback callback) {
+void Server::Open(const std::string& fs_url_as_string, OpenCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
@@ -413,7 +414,7 @@ void Server::Open(std::string fs_url_as_string, OpenCallback callback) {
   std::move(callback).Run(ENOTSUP);
 }
 
-void Server::Read(std::string fs_url_as_string,
+void Server::Read(const std::string& fs_url_as_string,
                   int64_t offset,
                   int32_t length,
                   ReadCallback callback) {
@@ -431,7 +432,7 @@ void Server::Read(std::string fs_url_as_string,
                      static_cast<int64_t>(length), std::move(callback)));
 }
 
-void Server::ReadDir2(ReadDir2RequestProto request_proto,
+void Server::ReadDir2(const ReadDir2RequestProto& request_proto,
                       ReadDir2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -493,7 +494,7 @@ void Server::ReadDir2(ReadDir2RequestProto request_proto,
           common.fs_url, std::move(outer_callback)));
 }
 
-void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
+void Server::Stat(const std::string& fs_url_as_string, StatCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
@@ -527,7 +528,7 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
           common.fs_url, metadata_fields, std::move(outer_callback)));
 }
 
-void Server::ListStorages(ListStoragesRequestProto request,
+void Server::ListStorages(const ListStoragesRequestProto& request,
                           ListStoragesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -604,7 +605,7 @@ void Server::ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
                           underlying_file_path.AsUTF8Unsafe());
 }
 
-void Server::RemoveTempDir(std::string fusebox_file_path) {
+void Server::RemoveTempDir(const std::string& fusebox_file_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto iter = temp_subdir_map_.find(fusebox_file_path);

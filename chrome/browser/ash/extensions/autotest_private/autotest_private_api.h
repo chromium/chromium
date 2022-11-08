@@ -1701,9 +1701,9 @@ class AutotestPrivateMakeFuseboxTempDirFunction : public ExtensionFunction {
   ~AutotestPrivateMakeFuseboxTempDirFunction() override;
   ResponseAction Run() override;
 
-  void OnMakeTempDir(std::string error_message,
-                     std::string fusebox_file_path,
-                     std::string underlying_file_path);
+  void OnMakeTempDir(const std::string& error_message,
+                     const std::string& fusebox_file_path,
+                     const std::string& underlying_file_path);
 };
 
 class AutotestPrivateRemoveFuseboxTempDirFunction : public ExtensionFunction {

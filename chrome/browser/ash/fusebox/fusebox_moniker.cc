@@ -56,12 +56,12 @@ std::string MonikerMap::GetFilename(const Moniker& moniker) {
 MonikerMap::MonikerMap() = default;
 MonikerMap::~MonikerMap() = default;
 
-Moniker MonikerMap::CreateMoniker(storage::FileSystemURL target,
+Moniker MonikerMap::CreateMoniker(const storage::FileSystemURL& target,
                                   bool read_only) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Moniker moniker = base::Token::CreateRandom();
-  map_.insert({moniker, std::make_pair(std::move(target), read_only)});
+  map_.insert({moniker, std::make_pair(target, read_only)});
   return moniker;
 }
 

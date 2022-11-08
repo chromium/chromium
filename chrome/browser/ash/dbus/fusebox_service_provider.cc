@@ -74,7 +74,7 @@ void ReplyToRead(dbus::MethodCall* method_call,
 
 void ReplyToReadDir2(dbus::MethodCall* method_call,
                      dbus::ExportedObject::ResponseSender sender,
-                     fusebox::ReadDir2ResponseProto response_proto) {
+                     const fusebox::ReadDir2ResponseProto& response_proto) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
@@ -112,9 +112,10 @@ void ReplyToStat(dbus::MethodCall* method_call,
   std::move(sender).Run(std::move(response));
 }
 
-void ReplyToListStorages(dbus::MethodCall* method_call,
-                         dbus::ExportedObject::ResponseSender sender,
-                         fusebox::ListStoragesResponseProto response_proto) {
+void ReplyToListStorages(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender sender,
+    const fusebox::ListStoragesResponseProto& response_proto) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =

@@ -6205,9 +6205,9 @@ AutotestPrivateMakeFuseboxTempDirFunction::Run() {
 }
 
 void AutotestPrivateMakeFuseboxTempDirFunction::OnMakeTempDir(
-    std::string error_message,
-    std::string fusebox_file_path,
-    std::string underlying_file_path) {
+    const std::string& error_message,
+    const std::string& fusebox_file_path,
+    const std::string& underlying_file_path) {
   if (!error_message.empty()) {
     Respond(Error(error_message));
     return;

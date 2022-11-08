@@ -99,7 +99,7 @@ class MonikerMap {
   // string form) for the target. It is the caller's responsibility to call
   // DestroyMoniker when the moniker is no longer required but also to keep the
   // FileSystemURL's backing content alive until that DestroyMoniker call.
-  Moniker CreateMoniker(storage::FileSystemURL target, bool read_only);
+  Moniker CreateMoniker(const storage::FileSystemURL& target, bool read_only);
 
   // Tears down the link, so that Resolve will return invalid FileSystemURL
   // values.
