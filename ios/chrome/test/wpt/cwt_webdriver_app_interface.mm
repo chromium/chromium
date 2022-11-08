@@ -94,8 +94,8 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
 }
 
 + (NSError*)loadURL:(NSString*)URL
-               inTab:(NSString*)tabID
-    timeoutInSeconds:(NSTimeInterval)timeout {
+              inTab:(NSString*)tabID
+            timeout:(base::TimeDelta)timeout {
   __block web::WebState* webState = nullptr;
   DispatchSyncOnMainThread(^{
     webState = GetWebStateWithId(tabID);
@@ -191,7 +191,7 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
 
 + (NSString*)executeAsyncJavaScriptFunction:(NSString*)function
                                       inTab:(NSString*)tabID
-                           timeoutInSeconds:(NSTimeInterval)timeout {
+                                    timeout:(base::TimeDelta)timeout {
   const std::string kMessageResultKey("result");
 
   // Use a distinct messageID value for each invocation of this method to
@@ -290,8 +290,8 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
                            }));
   });
 
-  const NSTimeInterval kSnapshotTimeoutSeconds = 100;
-  bool success = WaitUntilConditionOrTimeout(kSnapshotTimeoutSeconds, ^bool {
+  constexpr base::TimeDelta kSnapshotTimeout = base::Seconds(100);
+  bool success = WaitUntilConditionOrTimeout(kSnapshotTimeout, ^bool {
     __block BOOL snapshotComplete = NO;
     DispatchSyncOnMainThread(^{
       if (snapshot != nil)

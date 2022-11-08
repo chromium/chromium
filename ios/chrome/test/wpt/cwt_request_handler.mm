@@ -31,8 +31,8 @@ using net::test_server::HttpResponse;
 
 namespace {
 
-const NSTimeInterval kDefaultScriptTimeout = 30;
-const NSTimeInterval kDefaultPageLoadTimeout = 300;
+constexpr base::TimeDelta kDefaultScriptTimeout = base::Seconds(30);
+constexpr base::TimeDelta kDefaultPageLoadTimeout = base::Seconds(300);
 
 // WebDriver commands.
 const char kWebDriverSessionCommand[] = "session";
@@ -322,9 +322,9 @@ base::Value CWTRequestHandler::InitializeSession() {
   capabilities.SetKey(kCapabilitiesProxyField,
                       base::Value(base::Value::Type::DICTIONARY));
   capabilities.SetIntPath(kCapabilitiesScriptTimeoutField,
-                          script_timeout_ * 1000);
+                          script_timeout_.InMilliseconds());
   capabilities.SetIntPath(kCapabilitiesPageLoadTimeoutField,
-                          page_load_timeout_ * 1000);
+                          page_load_timeout_.InMilliseconds());
   capabilities.SetIntPath(kCapabilitiesImplicitTimeoutField, 0);
   capabilities.SetKey(kCapabilitiesCanResizeWindowsField, base::Value(false));
 
@@ -349,9 +349,9 @@ base::Value CWTRequestHandler::NavigateToUrl(const base::Value* url) {
   }
 
   NSError* error = [CWTWebDriverAppInterface
-               loadURL:base::SysUTF8ToNSString(url->GetString())
-                 inTab:base::SysUTF8ToNSString(target_tab_id_)
-      timeoutInSeconds:page_load_timeout_];
+      loadURL:base::SysUTF8ToNSString(url->GetString())
+        inTab:base::SysUTF8ToNSString(target_tab_id_)
+      timeout:page_load_timeout_];
   if (!error)
     return base::Value(base::Value::Type::NONE);
 
@@ -396,9 +396,9 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
   // tab is closed. Re-launch the app if it crashes.
   @try {
     NSError* error = [CWTWebDriverAppInterface
-                 loadURL:base::SysUTF8ToNSString(url.spec())
-                   inTab:base::SysUTF8ToNSString(target_tab_id_)
-        timeoutInSeconds:page_load_timeout_];
+        loadURL:base::SysUTF8ToNSString(url.spec())
+          inTab:base::SysUTF8ToNSString(target_tab_id_)
+        timeout:page_load_timeout_];
 
     if (!error) {
       const base::Value* extra_wait = input.FindKey(kChromeCrashWaitTime);
@@ -436,22 +436,20 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
 }
 
 base::Value CWTRequestHandler::SetTimeouts(const base::Value& timeouts) {
-  for (const auto timeout : timeouts.DictItems()) {
-    if (!timeout.second.is_int() || timeout.second.GetInt() < 0) {
+  for (const auto pair : timeouts.DictItems()) {
+    if (!pair.second.is_int() || pair.second.GetInt() < 0) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
                               kWebDriverInvalidTimeoutMessage);
     }
 
-    int timeout_in_milliseconds = timeout.second.GetInt();
-    NSTimeInterval timeout_in_seconds =
-        static_cast<double>(timeout_in_milliseconds) / 1000;
+    const base::TimeDelta timeout = base::Milliseconds(pair.second.GetInt());
 
     // Only script and page load timeouts are supported in CWTChromeDriver.
     // Other values are ignored.
-    if (timeout.first == kWebDriverScriptTimeoutRequestField)
-      script_timeout_ = timeout_in_seconds;
-    else if (timeout.first == kWebDriverPageLoadTimeoutRequestField)
-      page_load_timeout_ = timeout_in_seconds;
+    if (pair.first == kWebDriverScriptTimeoutRequestField)
+      script_timeout_ = timeout;
+    else if (pair.first == kWebDriverPageLoadTimeoutRequestField)
+      page_load_timeout_ = timeout;
   }
   return base::Value(base::Value::Type::NONE);
 }
@@ -536,7 +534,7 @@ base::Value CWTRequestHandler::ExecuteScript(const base::Value* script,
   NSString* result_as_json = [CWTWebDriverAppInterface
       executeAsyncJavaScriptFunction:function_to_execute
                                inTab:base::SysUTF8ToNSString(target_tab_id_)
-                    timeoutInSeconds:script_timeout_];
+                             timeout:script_timeout_];
 
   if (!result_as_json) {
     return CreateErrorValue(kWebDriverScriptTimeoutError,

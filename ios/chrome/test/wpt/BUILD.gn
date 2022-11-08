@@ -62,6 +62,7 @@ ios_xcuitest_test("ios_cwt_chromedriver_tests_module") {
 source_set("shared_helper_headers") {
   testonly = true
   sources = [ "cwt_webdriver_app_interface.h" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("cwt_constants") {

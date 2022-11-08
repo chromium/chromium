@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/ios/block_types.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -143,8 +144,8 @@ class CWTRequestHandler {
   std::string target_tab_id_;
 
   // Timeouts used when performing browser operations.
-  NSTimeInterval script_timeout_;
-  NSTimeInterval page_load_timeout_;
+  base::TimeDelta script_timeout_;
+  base::TimeDelta page_load_timeout_;
 
   // A server for test files used in crash tests.
   net::EmbeddedTestServer test_case_server_;
