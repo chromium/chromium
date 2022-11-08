@@ -89,6 +89,12 @@ class Server {
   using CloseCallback = base::OnceCallback<void(int32_t posix_error_code)>;
   void Close(const std::string& fs_url_as_string, CloseCallback callback);
 
+  // MkDir is analogous to "/usr/bin/mkdir".
+  using MkDirCallback = base::OnceCallback<void(
+      const fusebox_staging::MkDirResponseProto& response)>;
+  void MkDir(const fusebox_staging::MkDirRequestProto& request,
+             MkDirCallback callback);
+
   // Open is a placeholder and is not implemented yet.
   //
   // TODO(crbug.com/1249754) implement MTP device writing.
@@ -116,6 +122,12 @@ class Server {
   using ReadDir2Callback =
       base::OnceCallback<void(const ReadDir2ResponseProto& response)>;
   void ReadDir2(const ReadDir2RequestProto& request, ReadDir2Callback callback);
+
+  // RmDir is analogous to "/usr/bin/rmdir".
+  using RmDirCallback = base::OnceCallback<void(
+      const fusebox_staging::RmDirResponseProto& response)>;
+  void RmDir(const fusebox_staging::RmDirRequestProto& request,
+             RmDirCallback callback);
 
   // Stat returns the file or directory's metadata.
   using StatCallback = base::OnceCallback<void(int32_t posix_error_code,

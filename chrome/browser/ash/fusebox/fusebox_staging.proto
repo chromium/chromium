@@ -19,5 +19,43 @@ option optimize_for = LITE_RUNTIME;
 
 package fusebox_staging;
 
-// There are no fusebox_staging definitions at this time. They're all in the
-// canonical fusebox.proto file.
+message DirEntryProto {
+  // Entry name.
+  optional string name = 2;
+  // POSIX style (S_IFREG | rwxr-x---) bits.
+  optional uint32 mode_bits = 3;
+  // File size in bytes.
+  optional int64 size = 4;
+  // Modification time (microseconds since the Windows epoch, like base::Time).
+  optional int64 mtime = 5;
+  // Access time (microseconds since the Windows epoch, like base::Time).
+  optional int64 atime = 6;
+  // Creation time (microseconds since the Windows epoch, like base::Time).
+  optional int64 ctime = 7;
+}
+
+// MkDir is exclusive (it fails if the name already exists) and non-recursive
+// (it's plain "mkdir", not "mkdir -p").
+//
+// There are no mode_bits in the request proto, as there's no mode_bits arg to
+// the storage::FileSystemOperationRunner::CreateDirectory method.
+
+message MkDirRequestProto {
+  optional string file_system_url = 3;
+}
+
+message MkDirResponseProto {
+  optional int32 posix_error_code = 1;
+  optional DirEntryProto stat = 3;
+}
+
+// RmDir truly deletes (it does not "move to trash", an undo-able operation)
+// and it is non-recursive (it's plain "rmdir", not "rmdir -p" or "rm -r").
+
+message RmDirRequestProto {
+  optional string file_system_url = 3;
+}
+
+message RmDirResponseProto {
+  optional int32 posix_error_code = 1;
+}
