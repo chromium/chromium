@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -217,7 +218,8 @@ class CrostiniManagerTest : public testing::Test {
     browser_part_.InitializeCrosComponentManager(component_manager_);
     ash::DlcserviceClient::InitializeFake();
 
-    scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kCrostini, ash::features::kCrostiniMultiContainer}, {});
     run_loop_ = std::make_unique<base::RunLoop>();
     profile_ = std::make_unique<TestingProfile>();
     crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
@@ -2025,44 +2027,55 @@ TEST_F(CrostiniManagerRestartTest, StopAfterLxdAvailableThenFullRestart) {
 }
 
 TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                       ->TerminalProviderRegistry();
+  auto* terminal_registry =
+      guest_os::GuestOsService::GetForProfile(profile_.get())
+          ->TerminalProviderRegistry();
+  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
+                             ->MountProviderRegistry();
   restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindLambdaForTesting([this, registry](CrostiniResult result) {
-        ASSERT_GT(registry->List().size(), 0u);
+      container_id(), base::BindLambdaForTesting([&](CrostiniResult result) {
+        ASSERT_GT(terminal_registry->List().size(), 0u);
+        ASSERT_GT(mount_registry->List().size(), 0u);
         crostini_manager()->RemoveCrostini(
             kVmName,
             base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
                            base::Unretained(this), run_loop()->QuitClosure()));
       }));
   run_loop()->Run();
-  ASSERT_EQ(registry->List().size(), 0u);
+  ASSERT_EQ(terminal_registry->List().size(), 0u);
+  ASSERT_EQ(mount_registry->List().size(), 0u);
 }
 
 TEST_F(CrostiniManagerRestartTest,
        DeleteUnregistersContainersWhenDoesNotExist) {
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                       ->TerminalProviderRegistry();
+  auto* terminal_registry =
+      guest_os::GuestOsService::GetForProfile(profile_.get())
+          ->TerminalProviderRegistry();
+  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
+                             ->MountProviderRegistry();
   vm_tools::cicerone::DeleteLxdContainerResponse response;
   response.set_status(
       vm_tools::cicerone::DeleteLxdContainerResponse::DOES_NOT_EXIST);
   fake_cicerone_client_->set_delete_lxd_container_response_(response);
   restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindLambdaForTesting([this, registry](CrostiniResult result) {
-        ASSERT_GT(registry->List().size(), 0u);
+      container_id(), base::BindLambdaForTesting([&](CrostiniResult result) {
+        ASSERT_GT(terminal_registry->List().size(), 0u);
+        ASSERT_GT(mount_registry->List().size(), 0u);
         crostini_manager()->DeleteLxdContainer(
             container_id(),
             base::BindOnce(&ExpectBool, run_loop()->QuitClosure(), true));
       }));
   run_loop()->Run();
-  ASSERT_EQ(registry->List().size(), 0u);
+  ASSERT_EQ(terminal_registry->List().size(), 0u);
+  ASSERT_EQ(mount_registry->List().size(), 0u);
 }
 
 TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                       ->TerminalProviderRegistry();
+  auto* terminal_registry =
+      guest_os::GuestOsService::GetForProfile(profile_.get())
+          ->TerminalProviderRegistry();
+  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
+                             ->MountProviderRegistry();
   vm_tools::cicerone::LxdContainerDeletedSignal signal;
   signal.set_vm_name(container_id().vm_name);
   signal.set_container_name(container_id().container_name);
@@ -2073,9 +2086,11 @@ TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
       base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
                      base::Unretained(this), run_loop()->QuitClosure()));
   run_loop()->Run();
-  ASSERT_GT(registry->List().size(), 0u);
+  ASSERT_GT(terminal_registry->List().size(), 0u);
+  ASSERT_GT(mount_registry->List().size(), 0u);
   crostini_manager()->OnLxdContainerDeleted(signal);
-  ASSERT_EQ(registry->List().size(), 0u);
+  ASSERT_EQ(terminal_registry->List().size(), 0u);
+  ASSERT_EQ(mount_registry->List().size(), 0u);
 }
 
 class CrostiniManagerEnterpriseReportingTest
