@@ -233,8 +233,8 @@ bool MigrateToVersion37(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
 
   static constexpr char kNewDedupKeyTableSql[] =
-      "CREATE TABLE IF NOT EXISTS new_dedup_keys"
-      "(source_id INTEGER NOT NULL,"
+      "CREATE TABLE new_dedup_keys("
+      "source_id INTEGER NOT NULL,"
       "report_type INTEGER NOT NULL,"
       "dedup_key INTEGER NOT NULL,"
       "PRIMARY KEY(source_id,report_type,dedup_key))WITHOUT ROWID";
