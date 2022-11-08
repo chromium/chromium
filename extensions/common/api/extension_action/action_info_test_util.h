@@ -10,9 +10,6 @@
 namespace extensions {
 class Extension;
 
-// Retrieves the manifest key for the given action |type|.
-const char* GetManifestKeyForActionType(ActionInfo::Type type);
-
 // Given an |action_type|, returns the corresponding API name to be referenced
 // from JavaScript.
 const char* GetAPINameForActionType(ActionInfo::Type action_type);

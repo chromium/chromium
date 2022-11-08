@@ -35,6 +35,7 @@
 #include "extensions/browser/extension_icon_image.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/state_store.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -365,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
 
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
@@ -423,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, TitleLocalization) {
 
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
@@ -470,7 +471,8 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam()), background_specification));
+      ActionInfo::GetManifestKeyForActionType(GetParam()),
+      background_specification));
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(kBackgroundJsTemplate,
                                         GetAPINameForActionType(GetParam())));
@@ -523,7 +525,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJs);
 
@@ -606,7 +608,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJs);
 
@@ -764,7 +766,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.js"),
                      base::StringPrintf(kSetIconBackgroundJsTemplate,
@@ -901,7 +903,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconWithJavascriptHooks) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.js"),
                      base::StringPrintf(kSetIconBackgroundJsTemplate,
@@ -971,7 +973,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconWithSelfDefined) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
 
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.js"),
@@ -1040,7 +1042,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconInTabWithInvalidPath) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
 
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(
@@ -1164,7 +1166,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
                      "// This space left blank.");
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
@@ -1207,7 +1209,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
     TestExtensionDir different_extension_dir;
     different_extension_dir.WriteManifest(base::StringPrintf(
         kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-        GetManifestKeyForActionType(GetParam())));
+        ActionInfo::GetManifestKeyForActionType(GetParam())));
     different_extension_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
                                       "// This space left blank.");
     const Extension* different_extension =
@@ -1241,7 +1243,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
   test_dir.WriteFile(FILE_PATH_LITERAL("default_popup.html"), kPopupHtml);
@@ -1462,7 +1464,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, EnableAndDisable) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(GetParam()),
-      GetManifestKeyForActionType(GetParam())));
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), "// This space left blank.");
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());

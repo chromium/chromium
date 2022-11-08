@@ -32,6 +32,7 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -1119,7 +1120,8 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(action_type),
       GetCommandKeyForActionType(action_type),
-      GetManifestKeyForActionType(action_type), background_specification));
+      ActionInfo::GetManifestKeyForActionType(action_type),
+      background_specification));
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(kBackgroundScriptTemplate,
                                         GetAPINameForActionType(action_type)));
@@ -1180,7 +1182,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
   test_dir.WriteManifest(base::StringPrintf(
       kManifestTemplate, GetManifestVersionForActionType(action_type),
       GetCommandKeyForActionType(action_type),
-      GetManifestKeyForActionType(action_type)));
+      ActionInfo::GetManifestKeyForActionType(action_type)));
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJs);
 

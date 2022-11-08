@@ -167,4 +167,22 @@ void ActionInfo::SetExtensionActionInfo(Extension* extension,
                              std::make_unique<ActionInfoData>(std::move(info)));
 }
 
+// static
+const char* ActionInfo::GetManifestKeyForActionType(ActionInfo::Type type) {
+  const char* action_key = nullptr;
+  switch (type) {
+    case ActionInfo::TYPE_BROWSER:
+      action_key = manifest_keys::kBrowserAction;
+      break;
+    case ActionInfo::TYPE_PAGE:
+      action_key = manifest_keys::kPageAction;
+      break;
+    case ActionInfo::TYPE_ACTION:
+      action_key = manifest_keys::kAction;
+      break;
+  }
+
+  return action_key;
+}
+
 }  // namespace extensions

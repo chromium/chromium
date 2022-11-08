@@ -31,6 +31,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -470,7 +471,7 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
   int manifest_version = 2;
   if (action_type) {
     action_declaration = base::StringPrintf(
-        R"("%s": {},)", GetManifestKeyForActionType(*action_type));
+        R"("%s": {},)", ActionInfo::GetManifestKeyForActionType(*action_type));
     manifest_version = GetManifestVersionForActionType(*action_type);
   }
 

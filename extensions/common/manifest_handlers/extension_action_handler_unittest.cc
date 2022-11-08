@@ -159,7 +159,8 @@ class ExtensionActionManifestTest
              "%s": %s
            })";
 
-    const char* action_key = GetManifestKeyForActionType(GetParam());
+    const char* action_key =
+        ActionInfo::GetManifestKeyForActionType(GetParam());
 
     base::Value manifest_value = base::test::ParseJson(
         base::StringPrintf(kManifestStub, action_key, action_spec));
@@ -172,7 +173,8 @@ class ExtensionActionManifestTest
       const char* popup_file_name,
       int manifest_version,
       TestExtensionDir* test_extension_dir) {
-    const char* action_key = GetManifestKeyForActionType(GetParam());
+    const char* action_key =
+        ActionInfo::GetManifestKeyForActionType(GetParam());
 
     test_extension_dir->WriteManifest(base::StringPrintf(
         R"({

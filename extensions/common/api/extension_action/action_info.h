@@ -43,9 +43,16 @@ struct ActionInfo {
                                           const base::DictionaryValue* dict,
                                           std::u16string* error);
 
+  // TODO(jlulejian): Rather than continue to grow this list of static helper
+  // methods, move them to a action_helper.h class similar to
+  // chrome/browser/extensions/settings_api_helpers.h
+
   // Returns any action associated with the extension, whether it's specified
   // under the "page_action", "browser_action", or "action" key.
   static const ActionInfo* GetExtensionActionInfo(const Extension* extension);
+
+  // Retrieves the manifest key for the given action |type|.
+  static const char* GetManifestKeyForActionType(ActionInfo::Type type);
 
   // Sets the extension's action.
   static void SetExtensionActionInfo(Extension* extension,

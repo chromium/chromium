@@ -8,23 +8,6 @@
 
 namespace extensions {
 
-const char* GetManifestKeyForActionType(ActionInfo::Type type) {
-  const char* action_key = nullptr;
-  switch (type) {
-    case ActionInfo::TYPE_BROWSER:
-      action_key = manifest_keys::kBrowserAction;
-      break;
-    case ActionInfo::TYPE_PAGE:
-      action_key = manifest_keys::kPageAction;
-      break;
-    case ActionInfo::TYPE_ACTION:
-      action_key = manifest_keys::kAction;
-      break;
-  }
-
-  return action_key;
-}
-
 const char* GetAPINameForActionType(ActionInfo::Type action_type) {
   const char* api_name = nullptr;
   switch (action_type) {
