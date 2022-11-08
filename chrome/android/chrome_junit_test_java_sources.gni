@@ -125,6 +125,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/download/DownloadSharedPreferenceEntryTest.java",
   "junit/src/org/chromium/chrome/browser/download/OfflineContentAvailabilityStatusProviderTest.java",
   "junit/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiTest.java",
+  "junit/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesBackgroundTaskUnitTest.java",
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesCategoryUnitTest.java",
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesPageStateUnitTest.java",

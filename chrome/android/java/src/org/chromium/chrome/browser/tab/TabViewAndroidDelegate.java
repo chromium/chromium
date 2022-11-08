@@ -4,21 +4,14 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
-import android.view.DragAndDropPermissions;
-import android.view.DragEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -27,16 +20,15 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragStateTracker;
-import org.chromium.ui.dragdrop.DropDataProviderImpl;
-import org.chromium.ui.dragdrop.DropDataProviderUtils;
 
 /**
  * Implementation of the abstract class {@link ViewAndroidDelegate} for Chrome.
  */
 public class TabViewAndroidDelegate extends ViewAndroidDelegate {
-    private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
-    private static final String PARAM_DROP_IN_CHROME = "DropInChrome";
     private final TabImpl mTab;
+
+    @Nullable
+    private DragAndDropBrowserDelegate mDragAndDropBrowserDelegate;
 
     /**
      * The inset for the bottom of the Visual Viewport in pixels, or 0 for no insetting.
@@ -52,19 +44,10 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         mTab = (TabImpl) tab;
         containerView.addOnDragListener(getDragStateTracker());
 
-        if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
-            int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
-                    DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
-            DropDataProviderUtils.setClearCachedDataIntervalMs(delay);
-
-            boolean supportDropInChrome = ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_DROP_IN_CHROME, false);
-            if (DragAndDropDelegate.isDragAndDropSupportedForOs()) {
-                DragAndDropBrowserDelegate browserDelegate =
-                        new DragAndDropBrowserDelegateImpl(mTab, supportDropInChrome);
-                getDragAndDropDelegate().setDragAndDropBrowserDelegate(browserDelegate);
-            }
+        if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+                && DragAndDropDelegate.isDragAndDropSupportedForOs()) {
+            mDragAndDropBrowserDelegate = new ChromeDragAndDropBrowserDelegate(tab.getContext());
+            getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }
 
         Callback<Integer> insetObserver = (inset) -> updateInsetViewportBottom();
@@ -171,46 +154,14 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         if (getContentView() != null) {
             getContentView().removeOnDragListener(getDragStateTracker());
         }
+        if (mDragAndDropBrowserDelegate != null) {
+            getDragAndDropDelegate().setDragAndDropBrowserDelegate(null);
+            mDragAndDropBrowserDelegate = null;
+        }
     }
 
-    /**
-     * Delegate for browser related functions used by Drag and Drop.
-     */
-    static class DragAndDropBrowserDelegateImpl implements DragAndDropBrowserDelegate {
-        private final TabImpl mTab;
-        private final boolean mSupportDropInChrome;
-
-        public DragAndDropBrowserDelegateImpl(TabImpl tab, boolean supportDropInChrome) {
-            mTab = tab;
-            mSupportDropInChrome = supportDropInChrome;
-        }
-
-        @Override
-        public boolean getSupportDropInChrome() {
-            return mSupportDropInChrome;
-        }
-
-        @Override
-        public DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
-            Activity activity = ContextUtils.activityFromContext(mTab.getContext());
-            if (activity == null) {
-                return null;
-            }
-            return activity.requestDragAndDropPermissions(dropEvent);
-        }
-
-        @Override
-        public Intent createLinkIntent(String urlString) {
-            Intent intent = null;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_INSTANCE_FROM_DRAGGED_LINK)
-                    && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-                intent = MultiWindowUtils.createNewWindowIntent(
-                        mTab.getContext().getApplicationContext(),
-                        MultiWindowUtils.getInstanceIdForViewIntent(), true, false);
-                intent.setData(Uri.parse(urlString));
-                intent.putExtra(IntentHandler.EXTRA_SOURCE_DRAG_DROP, true);
-            }
-            return intent;
-        }
+    @VisibleForTesting
+    DragAndDropBrowserDelegate getDragAndDropBrowserDelegateForTesting() {
+        return mDragAndDropBrowserDelegate;
     }
 }
