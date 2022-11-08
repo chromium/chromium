@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/entity_change.h"
@@ -60,6 +61,9 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
  private:
+  // Returns the `AutofillTable` associated with the `web_data_backend_`.
+  AutofillTable* GetAutofillTable();
+
   // The bridge should be used on the same sequence where it has been
   // constructed.
   THREAD_CHECKER(thread_checker_);

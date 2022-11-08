@@ -925,6 +925,7 @@ source_set("unit_tests") {
     "webdata/autofill_wallet_offer_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_usage_data_sync_bridge_unittest.cc",
+    "webdata/contact_info_sync_bridge_unittest.cc",
     "webdata/web_data_service_unittest.cc",
   ]
 

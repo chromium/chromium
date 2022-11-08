@@ -4,9 +4,12 @@
 
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
 
+#include "base/check.h"
+#include "base/guid.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/sync_metadata_store_change_list.h"
 
 namespace autofill {
 
@@ -23,6 +26,8 @@ ContactInfoSyncBridge::ContactInfoSyncBridge(
     : ModelTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(backend) {
   DCHECK(web_data_backend_);
+  DCHECK(web_data_backend_->GetDatabase());
+  DCHECK(GetAutofillTable());
   scoped_observation_.Observe(web_data_backend_.get());
 }
 
@@ -53,8 +58,11 @@ syncer::ModelTypeSyncBridge* ContactInfoSyncBridge::FromWebDataService(
 
 std::unique_ptr<syncer::MetadataChangeList>
 ContactInfoSyncBridge::CreateMetadataChangeList() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
+      GetAutofillTable(), syncer::CONTACT_INFO,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeSyncData(
@@ -82,14 +90,19 @@ void ContactInfoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
 std::string ContactInfoSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  return GetStorageKey(entity_data);
 }
 
 std::string ContactInfoSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  DCHECK(entity_data.specifics.has_contact_info());
+  const std::string& guid = entity_data.specifics.contact_info().guid();
+  // For invalid `entity_data`, `GetStorageKey()` should return an empty string.
+  return base::GUID::ParseLowercase(guid).is_valid() ? guid : "";
+}
+
+AutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
+  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
 }  // namespace autofill
