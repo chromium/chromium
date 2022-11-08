@@ -73,6 +73,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/wm/core/window_animations.h"
@@ -1797,7 +1798,15 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
   std::unique_ptr<aura::WindowTracker> closing_window_tracker =
       std::make_unique<aura::WindowTracker>(app_windows);
 
-  for (aura::Window* window : app_windows) {
+  // We create a new tracker other than `closing_window_tracker`, since we want
+  // to leave it unaffected as we will pass it later to a delayed callback to
+  // force close the windows that haven't been closed yet. The new tracker
+  // `unclosed_windows_tracker` will be empty by the end of the below
+  // while-loop.
+  aura::WindowTracker unclosed_windows_tracker(app_windows);
+
+  while (!unclosed_windows_tracker.windows().empty()) {
+    aura::Window* window = unclosed_windows_tracker.Pop();
     views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
     DCHECK(widget);
 
