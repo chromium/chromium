@@ -199,6 +199,10 @@ try_.builder(
 try_.builder(
     name = "mac-dawn-rel",
     os = os.MAC_ANY,
+    mirrors = [
+        "ci/Dawn Mac x64 Builder",
+        "ci/Dawn Mac x64 Release (Intel)",
+    ],
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -209,6 +213,10 @@ try_.builder(
     builderless = True,
     os = os.MAC_ANY,
     pool = "luci.chromium.gpu.mac.retina.amd.try",
+    mirrors = [
+        "ci/Dawn Mac x64 Builder",
+        "ci/Dawn Mac x64 Experimental Release (AMD)",
+    ],
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -219,6 +227,10 @@ try_.builder(
     builderless = True,
     os = os.MAC_ANY,
     pool = "luci.chromium.gpu.mac.mini.intel.try",
+    mirrors = [
+        "ci/Dawn Mac x64 Builder",
+        "ci/Dawn Mac x64 Experimental Release (Intel)",
+    ],
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
