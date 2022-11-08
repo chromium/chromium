@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -573,11 +574,13 @@ public class RequestDesktopUtils {
      * @param profile The current {@link Profile}.
      * @param messageDispatcher The {@link MessageDispatcher} to enqueue the message.
      * @param context The current context.
-     * @param tab The {@link Tab} where the message is shown.
+     * @param currentTabSupplier The tab {@link ObservableSupplier} that provides a reference to the
+     *         current activity tab.
      * @return Whether the opt-in message was shown.
      */
     public static boolean maybeShowGlobalSettingOptInMessage(double displaySizeInInches,
-            Profile profile, MessageDispatcher messageDispatcher, Context context, Tab tab) {
+            Profile profile, MessageDispatcher messageDispatcher, Context context,
+            ObservableSupplier<Tab> currentTabSupplier) {
         if (messageDispatcher == null) return false;
 
         if (!shouldShowGlobalSettingOptInMessage(displaySizeInInches, profile)) {
@@ -597,14 +600,7 @@ public class RequestDesktopUtils {
                                 resources.getString(R.string.yes))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    updateDesktopSiteGlobalSettingOnUserRequest(profile, true);
-                                    // TODO(crbug.com/1350274): Remove this explicit load when this
-                                    // bug is addressed.
-                                    if (tab != null) {
-                                        tab.loadIfNeeded(
-                                                LoadIfNeededCaller
-                                                        .MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE);
-                                    }
+                                    onGlobalSettingOptInMessageClicked(profile, currentTabSupplier);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
                         .build();
@@ -706,6 +702,17 @@ public class RequestDesktopUtils {
         } else if (isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
             UmaSessionStats.registerSyntheticFieldTrial(
                     syntheticFeatureName, baseGroupName + CONTROL_GROUP_SUFFIX);
+        }
+    }
+
+    @VisibleForTesting
+    static void onGlobalSettingOptInMessageClicked(
+            Profile profile, ObservableSupplier<Tab> currentTabSupplier) {
+        updateDesktopSiteGlobalSettingOnUserRequest(profile, true);
+        Tab tab = currentTabSupplier.get();
+        // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
+        if (tab != null && !tab.isDestroyed()) {
+            tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE);
         }
     }
 

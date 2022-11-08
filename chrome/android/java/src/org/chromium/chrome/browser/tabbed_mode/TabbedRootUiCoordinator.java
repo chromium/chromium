@@ -683,7 +683,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             didTriggerPromo = DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
                     && RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
                             getPrimaryDisplaySizeInInches(), Profile.getLastUsedRegularProfile(),
-                            mMessageDispatcher, mActivity, mActivityTabProvider.get());
+                            mMessageDispatcher, mActivity, mActivityTabProvider);
         }
 
         if (!didTriggerPromo) {
