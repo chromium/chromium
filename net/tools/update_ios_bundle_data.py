@@ -41,8 +41,10 @@ bundle_data\("test_support_bundle_data"\) \{
 # ------------------------------------------
 
 net_unittest_bundle_data_globs = [
+    "data/cache_tests/**",
     "data/cert_issuer_source_aia_unittest/*.pem",
     "data/cert_issuer_source_static_unittest/*.pem",
+    "data/cert_net_fetcher_impl_unittest/**",
     "data/certificate_policies_unittest/*.pem",
     "data/crl_unittest/*.pem",
     "data/embedded_test_server/*",
@@ -50,10 +52,11 @@ net_unittest_bundle_data_globs = [
     "data/name_constraints_unittest/*.pem",
     "data/ocsp_unittest/*.pem",
     "data/ov_name_constraints/*.pem",
+    "data/pac_file_fetcher_unittest/**",
     "data/path_builder_unittest/**/*.pem",
     "data/parse_certificate_unittest/**/*.pem",
-    "data/parse_certificate_unittest/*.pem",
     "data/parse_certificate_unittest/*.pk8",
+    "data/spdy_tests/**",
     "data/test.html",
     "data/trial_comparison_cert_verifier_unittest/**/*.pem",
     "data/url_request_unittest/*",
@@ -86,7 +89,10 @@ def get_net_path():
 def do_file_glob(rule):
   # Do the globbing relative to //net
   prefix = get_net_path()
-  matches = glob.glob(prefix + os.sep + rule)
+  matches = glob.glob(prefix + os.sep + rule, recursive=True)
+
+  # Filter out directories.
+  matches = [f for f in matches if os.path.isfile(f)]
 
   # Strip off the prefix.
   return [f[len(prefix) + 1:] for f in matches]

@@ -1597,6 +1597,8 @@ TEST_P(SSLClientSocketVersionTest, ConnectBadValidityIgnoreCertErrors) {
   EXPECT_TRUE(sock_->IsConnected());
 }
 
+// Client certificates are disabled on iOS.
+#if !BUILDFLAG(IS_IOS)
 // Attempt to connect to a page which requests a client certificate. It should
 // return an error code on connect.
 TEST_P(SSLClientSocketVersionTest, ConnectClientAuthCertRequested) {
@@ -1639,6 +1641,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectClientAuthSendNullCert) {
   sock_->Disconnect();
   EXPECT_FALSE(sock_->IsConnected());
 }
+#endif  // !IS_IOS
 
 // TODO(wtc): Add unit tests for IsConnectedAndIdle:
 //   - Server closes an SSL connection (with a close_notify alert message).
@@ -2742,6 +2745,8 @@ TEST_P(SSLClientSocketVersionTest, VerifyReturnChainProperlyOrdered) {
   EXPECT_FALSE(sock_->IsConnected());
 }
 
+// Client certificates are disabled on iOS.
+#if !BUILDFLAG(IS_IOS)
 INSTANTIATE_TEST_SUITE_P(TLSVersion,
                          SSLClientSocketCertRequestInfoTest,
                          ValuesIn(GetTLSVersions()));
@@ -2819,6 +2824,7 @@ TEST_P(SSLClientSocketCertRequestInfoTest, CertKeyTypes) {
     EXPECT_EQ(CLIENT_CERT_ECDSA_SIGN, request_info->cert_key_types[1]);
   }
 }
+#endif  // !IS_IOS
 
 // Tests that the Certificate Transparency (RFC 6962) TLS extension is
 // supported.
@@ -3670,6 +3676,8 @@ TEST_F(SSLClientSocketTest, AlpnClientDisabled) {
   EXPECT_EQ(kProtoUnknown, sock_->GetNegotiatedProtocol());
 }
 
+// Client certificates are disabled on iOS.
+#if !BUILDFLAG(IS_IOS)
 // Connect to a server requesting client authentication, do not send
 // any client certificates. It should refuse the connection.
 TEST_P(SSLClientSocketVersionTest, NoCert) {
@@ -3812,6 +3820,7 @@ TEST_F(SSLClientSocketTest, ClearSessionCacheOnClientCertChange) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsError(ERR_BAD_SSL_CLIENT_AUTH_CERT));
 }
+#endif  // !IS_IOS
 
 HashValueVector MakeHashValueVector(uint8_t value) {
   HashValueVector out;
@@ -4789,7 +4798,11 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTReject) {
   rv = WriteAndWait(kRequest);
   EXPECT_EQ(ERR_EARLY_DATA_REJECTED, rv);
 
-  // Retrying the connection should succeed.
+  // Run the event loop so the rejection has reached the TLS session cache.
+  base::RunLoop().RunUntilIdle();
+
+  // Now that the session cache has been updated, retrying the connection
+  // should succeed.
   socket = MakeClient(true);
   ASSERT_THAT(Connect(), IsOk());
   ASSERT_THAT(MakeHTTPRequest(ssl_socket()), IsOk());
@@ -4821,7 +4834,11 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTWrongVersion) {
   rv = WriteAndWait(kRequest);
   EXPECT_EQ(ERR_WRONG_VERSION_ON_EARLY_DATA, rv);
 
-  // Retrying the connection should succeed.
+  // Run the event loop so the rejection has reached the TLS session cache.
+  base::RunLoop().RunUntilIdle();
+
+  // Now that the session cache has been updated, retrying the connection
+  // should succeed.
   socket = MakeClient(true);
   ASSERT_THAT(Connect(), IsOk());
   ASSERT_THAT(MakeHTTPRequest(ssl_socket()), IsOk());
@@ -5597,6 +5614,8 @@ TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonNoResume) {
   int rv = ReadAndWait(buf.get(), 4096);
   EXPECT_EQ(ERR_EARLY_DATA_REJECTED, rv);
 
+  // The histogram may be record asynchronously.
+  base::RunLoop().RunUntilIdle();
   histograms.ExpectUniqueSample(kReasonHistogram,
                                 ssl_early_data_session_not_resumed, 1);
 }
