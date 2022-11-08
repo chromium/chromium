@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "cpu", "goma", "os")
+load("//lib/builders.star", "cpu", "goma", "os", "reclient")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
@@ -22,8 +22,10 @@ try_.defaults.set(
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
     expiration_timeout = 2 * time.hour,
+    goma_backend = goma.backend.RBE_PROD,
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.try",
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     subproject_list_view = "luci.chromium.try",
     task_template_canary_percentage = 5,
@@ -46,7 +48,7 @@ def gpu_android_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.android",
         builderless = True,
-        goma_backend = goma.backend.RBE_PROD,
+        reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
     )
@@ -118,7 +120,7 @@ def gpu_chromeos_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.chromiumos",
         builderless = True,
-        goma_backend = goma.backend.RBE_PROD,
+        reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
     )
@@ -166,7 +168,7 @@ def gpu_linux_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.linux",
         builderless = True,
-        goma_backend = goma.backend.RBE_PROD,
+        reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
     )
@@ -275,7 +277,6 @@ def gpu_mac_builder(*, name, **kwargs):
         builder_group = "tryserver.chromium.mac",
         builderless = True,
         cores = None,
-        goma_backend = goma.backend.RBE_PROD,
         os = os.MAC_ANY,
         ssd = None,
         **kwargs
@@ -425,8 +426,8 @@ def gpu_win_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.win",
         builderless = True,
-        goma_backend = goma.backend.RBE_PROD,
         os = os.WINDOWS_ANY,
+        reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
     )
