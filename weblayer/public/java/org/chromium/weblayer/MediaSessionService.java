@@ -13,6 +13,7 @@ import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
@@ -49,7 +50,7 @@ class MediaSessionService extends MediaPlaybackBaseService {
         };
 
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        registerReceiver(mAudioBecomingNoisyReceiver, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(this, mAudioBecomingNoisyReceiver, filter);
     }
 
     @Override

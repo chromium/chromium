@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -21,7 +22,8 @@ public class LocaleChangedBroadcastReceiver extends BroadcastReceiver {
 
     public LocaleChangedBroadcastReceiver(Context context) {
         mContext = context;
-        mContext.registerReceiver(this, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));
+        ContextUtils.registerProtectedBroadcastReceiver(
+                mContext, this, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));
     }
 
     public void destroy() {
