@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 
 namespace base {
@@ -132,6 +133,13 @@ RegisteredTaskSource PriorityQueue::PopTaskSource() {
   RegisteredTaskSource task_source =
       task_source_and_sort_key.take_task_source();
   container_.Pop();
+
+  // https://linear.app/replay/issue/RUN-753
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("PriorityQueue::PopTaskSource %d",
+                         recordreplay::PointerId(task_source.get()));
+  }
+
   return task_source;
 }
 

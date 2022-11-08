@@ -66,12 +66,17 @@ TaskSource::TaskSource(const TaskTraits& traits,
       lock_(recordreplay::AreEventsDisallowed() ? nullptr : "TaskSource.lock_"),
       task_runner_(task_runner),
       execution_mode_(execution_mode) {
+  // https://linear.app/replay/issue/RUN-753
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::RegisterPointer("TaskSource", this);
   DCHECK(task_runner_ ||
          execution_mode_ == TaskSourceExecutionMode::kParallel ||
          execution_mode_ == TaskSourceExecutionMode::kJob);
 }
 
-TaskSource::~TaskSource() = default;
+TaskSource::~TaskSource() {
+  recordreplay::UnregisterPointer(this);
+}
 
 TaskSource::Transaction TaskSource::BeginTransaction() {
   return Transaction(this);

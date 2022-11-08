@@ -126,12 +126,21 @@ RegisteredTaskSource ThreadGroupNative::GetWork() {
     priority = priority_queue_.PeekSortKey().priority();
     // Enforce the CanRunPolicy.
     if (!task_tracker_->CanRunPriority(priority)) {
+      // https://linear.app/replay/issue/RUN-753
+      if (!recordreplay::AreEventsDisallowed())
+        recordreplay::Assert("ThreadGroupNative::GetWork #1");
       return nullptr;
     }
 
     task_source = TakeRegisteredTaskSource(&workers_executor);
   }
   UpdateMinAllowedPriorityLockRequired();
+
+  // https://linear.app/replay/issue/RUN-753
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("ThreadGroupNative::GetWork Done %d",
+                         recordreplay::PointerId(task_source.get()));
+  }
 
   return task_source;
 }
