@@ -180,7 +180,7 @@ void CalendarEventListView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto color = features::IsCalendarJellyEnabled()
                    ? GetColorProvider()->GetColor(static_cast<ui::ColorId>(
-                         cros_tokens::kCrosSysSysOnBase))
+                         cros_tokens::kCrosSysSystemOnBase))
                    : AshColorProvider::Get()->GetBaseLayerColor(
                          AshColorProvider::BaseLayerType::kOpaque);
   SetBackground(views::CreateSolidBackground(color));

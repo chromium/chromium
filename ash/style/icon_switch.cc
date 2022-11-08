@@ -104,7 +104,7 @@ SkColor IconSwitch::GetBackgroundColor() const {
 
   SkColor color = GetColorProvider()->GetColor(
       features::IsJellyEnabled()
-          ? cros_tokens::kCrosSysSysOnBase
+          ? cros_tokens::kCrosSysSystemOnBase
           : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive));
   if (!GetEnabled()) {
     color = SkColorSetA(color, cros_styles::GetOpacity(

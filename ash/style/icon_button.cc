@@ -267,7 +267,7 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
       normal_background_color =
           background_color_.value_or(color_provider->GetColor(
               is_jellyroll_enabled
-                  ? cros_tokens::kCrosSysSysOnBase
+                  ? cros_tokens::kCrosSysSystemOnBase
                   : static_cast<ui::ColorId>(
                         kColorAshControlBackgroundColorInactive)));
     }
@@ -280,7 +280,7 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
       toggled_background_color =
           background_toggled_color_.value_or(color_provider->GetColor(
               is_jellyroll_enabled
-                  ? cros_tokens::kCrosSysSysPrimaryContainer
+                  ? cros_tokens::kCrosSysSystemPrimaryContainer
                   : static_cast<ui::ColorId>(
                         kColorAshControlBackgroundColorActive)));
     }
@@ -365,7 +365,7 @@ void IconButton::UpdateVectorIcon() {
   } else {
     toggled_icon_color = icon_toggled_color_.value_or(color_provider->GetColor(
         is_jellyroll_enabled
-            ? cros_tokens::kCrosSysSysOnPrimaryContainer
+            ? cros_tokens::kCrosSysSystemOnPrimaryContainer
             : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary)));
   }
 

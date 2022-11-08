@@ -45,7 +45,7 @@ void RoundedContainer::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   SkColor background_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSysOnBase);
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase);
   SetBackground(views::CreateSolidBackground(background_color));
 }
 

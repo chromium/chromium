@@ -69,13 +69,14 @@ absl::optional<ui::ColorId> GetDefaultBackgroundColorId(PillButton::Type type) {
 
   switch (type & kButtonColorVariant) {
     case PillButton::kDefault:
-      color_id = is_jellyroll_enabled
-                     ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSysOnBase)
-                     : static_cast<ui::ColorId>(
-                           ash::kColorAshControlBackgroundColorInactive);
+      color_id =
+          is_jellyroll_enabled
+              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
+              : static_cast<ui::ColorId>(
+                    ash::kColorAshControlBackgroundColorInactive);
       break;
     case PillButton::kDefaultElevated:
-      color_id = cros_tokens::kCrosSysSysBaseElevated;
+      color_id = cros_tokens::kCrosSysSystemBaseElevated;
       break;
     case PillButton::kPrimary:
       color_id = is_jellyroll_enabled

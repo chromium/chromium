@@ -44,7 +44,7 @@ constexpr ui::ColorId kActiveButtonBackgroundColorId =
 constexpr ui::ColorId kActiveButtonTextColorId = cros_tokens::kCrosSysOnPrimary;
 // The background color id of inactive component button.
 constexpr ui::ColorId kInactiveButtonBackgroundColorId =
-    cros_tokens::kCrosSysSysOnBase;
+    cros_tokens::kCrosSysSystemOnBase;
 // The text color id of inactive component button.
 constexpr ui::ColorId kInactiveButtonTextColorId =
     cros_tokens::kCrosSysOnSurface;

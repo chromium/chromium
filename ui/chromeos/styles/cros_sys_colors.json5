@@ -130,11 +130,11 @@
       generate_per_mode: true,
     },
 
-    'sys-base': {
+    'system-base': {
       light: '$cros.ref.neutralvariant90',
       dark: '$cros.ref.neutralvariant0',
     },
-    'sys-base-elevated': {
+    'system-base-elevated': {
       light: 'rgba($cros.sys.surface3.rgb, 0.9)',
       dark: 'rgba($cros.sys.surface3.rgb, 0.9)',
     },
@@ -180,15 +180,15 @@
       light: '$cros.ref.neutral95',
       dark: 'rgba($cros.ref.neutral0.rgb, 0.6)'
     },
-    'sys-on-base': {
+    'system-on-base': {
       light: '$cros.ref.neutralvariant95',
       dark: 'rgba($cros.ref.neutralvariant40.rgb, 0.4)',
     },
-    'sys-primary-container': {
+    'system-primary-container': {
       light: '$cros.ref.primary80',
       dark: '$cros.ref.primary80',
     },
-    'sys-on-primary-container': {
+    'system-on-primary-container': {
       light: '$cros.ref.primary10',
       dark: '$cros.ref.primary10',
     },
