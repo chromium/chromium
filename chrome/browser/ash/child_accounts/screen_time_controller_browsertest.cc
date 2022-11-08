@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, UnlockDailyLimitWithDuration) {
 
 // Tests the default time window limit.
 // TODO(crbug.com/1358216): Flaky on Linux
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DefaultBedtime DISABLED_DefaultBedtime
 #else
 #define MAYBE_DefaultBedtime DefaultBedtime
