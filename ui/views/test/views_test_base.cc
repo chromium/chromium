@@ -203,11 +203,6 @@ Widget::InitParams ViewsTestBase::CreateParamsForTestWidget(
   return params;
 }
 
-void ViewsTestBaseWithNativeWidgetType::SetUp() {
-  set_native_widget_type(GetParam());
-  ViewsTestBase::SetUp();
-}
-
 void ViewsTestWithDesktopNativeWidget::SetUp() {
   set_native_widget_type(NativeWidgetType::kDesktop);
   ViewsTestBase::SetUp();

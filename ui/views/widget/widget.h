@@ -1357,9 +1357,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Tracks whether native widget has been initialized.
   bool native_widget_initialized_ = false;
 
-  // Whether native widget has been destroyed.
-  bool native_widget_destroyed_ = false;
-
   // TODO(beng): Remove NativeWidgetGtk's dependence on these:
   // If true, the mouse is currently down.
   bool is_mouse_button_pressed_ = false;

@@ -178,23 +178,6 @@ class ViewsTestBase : public PlatformTest {
 #endif
 };
 
-class ViewsTestBaseWithNativeWidgetType
-    : public ViewsTestBase,
-      public testing::WithParamInterface<ViewsTestBase::NativeWidgetType> {
- public:
-  using ViewsTestBase::ViewsTestBase;
-
-  ViewsTestBaseWithNativeWidgetType(const ViewsTestBaseWithNativeWidgetType&) =
-      delete;
-  ViewsTestBaseWithNativeWidgetType& operator=(
-      const ViewsTestBaseWithNativeWidgetType&) = delete;
-
-  ~ViewsTestBaseWithNativeWidgetType() override = default;
-
-  // ViewsTestBase:
-  void SetUp() override;
-};
-
 // A helper that makes it easier to declare basic views tests that want to test
 // desktop native widgets. See |ViewsTestBase::native_widget_type_| and
 // |ViewsTestBase::CreateNativeWidgetForTest|. In short, for Aura, this will
