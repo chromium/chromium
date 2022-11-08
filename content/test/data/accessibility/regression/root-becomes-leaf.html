@@ -1,0 +1,14 @@
+<!--
+@WAIT-FOR:done
+-->
+<body>
+<div id="container"></div>
+<script>
+  function crash() {
+    document.getElementById('container').setAttribute('aria-hidden', 'true');
+    setTimeout(() => {
+      document.title = 'done';
+    }, 100);
+  }
+  setTimeout(crash, 100);
+</script>

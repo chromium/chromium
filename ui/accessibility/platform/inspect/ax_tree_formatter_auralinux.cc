@@ -229,6 +229,15 @@ void AXTreeFormatterAuraLinux::AddHypertextProperties(
       }
 
       AtkHyperlink* link = atk_hypertext_get_link(hypertext, link_index);
+      if (!link)
+        continue;  // TODO(aleventhal) Change to DCHECK(link);
+
+#if DCHECK_IS_ON()
+      AtkObject* link_obj = atk_hyperlink_get_object(link, 0);
+      DCHECK(link_obj);
+      int index_in_parent = atk_object_get_index_in_parent(link_obj);
+      DCHECK_GE(index_in_parent, 0);
+#endif
 
       int utf8_offset = atk_hyperlink_get_start_index(link);
       gchar* link_start = g_utf8_offset_to_pointer(character_text, utf8_offset);
