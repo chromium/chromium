@@ -2133,7 +2133,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2903882649406874750"><ph name="HOST" /> сайты түзмөктүн сенсорлорун эч качан колдонбосун</translation>
 <translation id="2904845070985032877">Анимацияларды тындыруу</translation>
 <translation id="2907619724991574506">URL'дерди иштетип баштоо</translation>
-<translation id="2907798539022650680">"<ph name="NAME" />" менен туташпай калды: <ph name="DETAILS" />
+<translation id="2907798539022650680">"<ph name="NAME" />" менен байланыш үзүлдү: <ph name="DETAILS" />
     Сервердин билдирүүсү: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">Медиа галереяны каталог боюнча кошуу</translation>
 <translation id="2908358077082926882">Дайындоону өчүрүү жана чыгуу үчүн "<ph name="CURRENTKEY" />" баскычын кайра басыңыз жана <ph name="RESPONSE" /></translation>
