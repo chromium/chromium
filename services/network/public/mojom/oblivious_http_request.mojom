@@ -33,6 +33,9 @@ struct ObliviousHttpRequest {
 
   // An optional HTTP request body.
   ObliviousHttpRequestBody? request_body;
+
+  // Contains trust token params for inner request.
+  network.mojom.TrustTokenParams? trust_token_params;
 };
 
 // Callback interface for Oblivious HTTP Requests.

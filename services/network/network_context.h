@@ -907,6 +907,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   std::unique_ptr<NetworkServiceMemoryCache> memory_cache_;
 
+  // The ohttp_handler_ needs to be destroyed before cookie_manager_, since it
+  // depends on it indirectly through this context.
   ObliviousHttpRequestHandler ohttp_handler_;
 
   // Whether all external consumers are expected to provide a non-empty

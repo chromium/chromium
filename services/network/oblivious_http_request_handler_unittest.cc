@@ -14,10 +14,13 @@
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/network_context.h"
+#include "services/network/network_service.h"
 #include "services/network/oblivious_http_request_handler.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -61,28 +64,6 @@ testing::Matcher<net::HttpRequestHeaders::HeaderVector> UnorderedHeadersAre(
   return testing::UnorderedElementsAreArray(ms);
 }
 
-class TestOhttpNetworkContext : public network::TestNetworkContext {
- public:
-  void CreateURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      network::mojom::URLLoaderFactoryParamsPtr params) override {
-    EXPECT_EQ(network::mojom::kBrowserProcessId, params->process_id);
-    EXPECT_FALSE(params->is_corb_enabled);
-    EXPECT_TRUE(params->is_trusted);
-
-    factory_reciever_ =
-        std::make_unique<mojo::Receiver<network::mojom::URLLoaderFactory>>(
-            &loader_factory_, std::move(receiver));
-  }
-
-  network::TestURLLoaderFactory* loader_factory() { return &loader_factory_; }
-
- private:
-  network::TestURLLoaderFactory loader_factory_;
-  std::unique_ptr<mojo::Receiver<network::mojom::URLLoaderFactory>>
-      factory_reciever_;
-};
-
 class TestOhttpClient : public network::mojom::ObliviousHttpClient {
  public:
   TestOhttpClient(absl::optional<std::string> expected_body,
@@ -117,7 +98,19 @@ class TestOhttpClient : public network::mojom::ObliviousHttpClient {
 class TestObliviousHttpRequestHandler : public testing::Test {
  public:
   TestObliviousHttpRequestHandler()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        network_service_(network::NetworkService::CreateForTesting()),
+        loader_factory_receiver_(&loader_factory_) {
+    network::mojom::NetworkContextParamsPtr context_params =
+        network::CreateNetworkContextParamsForTesting();
+    context_params->cert_verifier_params =
+        network::FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
+    network_context_ = std::make_unique<network::NetworkContext>(
+        network_service_.get(),
+        network_context_remote_.BindNewPipeAndPassReceiver(),
+        std::move(context_params),
+        network::NetworkContext::OnConnectionCloseCallback());
+
     auto key_configs = quiche::ObliviousHttpKeyConfigs::ParseConcatenatedKeys(
         CreateTestKeyConfig());
     CHECK(key_configs.ok()) << key_configs.status();
@@ -131,9 +124,15 @@ class TestObliviousHttpRequestHandler : public testing::Test {
     ohttp_gateway_ = std::move(ohttp_gateway).value();
   }
 
-  TestOhttpNetworkContext* network_context() { return &network_context_; }
-  network::TestURLLoaderFactory* loader_factory() {
-    return network_context()->loader_factory();
+  network::NetworkContext* network_context() { return network_context_.get(); }
+  network::TestURLLoaderFactory* loader_factory() { return &loader_factory_; }
+
+  std::unique_ptr<network::ObliviousHttpRequestHandler> CreateHandler() {
+    auto handler = std::make_unique<network::ObliviousHttpRequestHandler>(
+        network_context());
+    handler->SetURLLoaderFactoryForTesting(
+        loader_factory_receiver_.BindNewPipeAndPassRemote());
+    return handler;
   }
 
   std::string DecryptRequest(std::string cipher_text) {
@@ -211,26 +210,32 @@ class TestObliviousHttpRequestHandler : public testing::Test {
  private:
   absl::optional<quiche::ObliviousHttpGateway> ohttp_gateway_;
   base::test::TaskEnvironment task_environment_;
-  TestOhttpNetworkContext network_context_;
+  std::unique_ptr<network::NetworkService> network_service_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
+  std::unique_ptr<network::NetworkContext> network_context_;
+  network::TestURLLoaderFactory loader_factory_;
+  mojo::Receiver<network::mojom::URLLoaderFactory> loader_factory_receiver_;
 };
 
 TEST_F(TestObliviousHttpRequestHandler, TestDisconnect) {
-  network::ObliviousHttpRequestHandler handler(network_context());
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
   {
     TestOhttpClient client("", net::OK);
-    handler.StartRequest(CreateRequest(), client.CreatePendingRemote());
+    handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
   }
 
   {
     TestOhttpClient client("", net::OK);
-    handler.StartRequest(CreateRequest(), client.CreatePendingRemote());
+    handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
     RespondToPendingRequest("");
     client.WaitForCall();
   }
 }
 
 TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
-  network::ObliviousHttpRequestHandler handler(network_context());
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
   {
     mojo::FakeMessageDispatchContext context;
     mojo::test::BadMessageObserver obs;
@@ -238,7 +243,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
     network::mojom::ObliviousHttpRequestPtr request =
         network::mojom::ObliviousHttpRequest::New();
 
-    handler.StartRequest(std::move(request), client.CreatePendingRemote());
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
     EXPECT_EQ("Invalid OHTTP Relay URL", obs.WaitForBadMessage());
   }
   {
@@ -248,7 +253,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
     network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
     request->relay_url = GURL();
 
-    handler.StartRequest(std::move(request), client.CreatePendingRemote());
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
     EXPECT_EQ("Invalid OHTTP Relay URL", obs.WaitForBadMessage());
   }
   {
@@ -258,7 +263,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
     network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
     request->resource_url = GURL();
 
-    handler.StartRequest(std::move(request), client.CreatePendingRemote());
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
     EXPECT_EQ("Invalid OHTTP Resource URL", obs.WaitForBadMessage());
   }
   {
@@ -268,8 +273,18 @@ TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
     network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
     request->traffic_annotation = net::MutableNetworkTrafficAnnotationTag();
 
-    handler.StartRequest(std::move(request), client.CreatePendingRemote());
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
     EXPECT_EQ("Invalid OHTTP Traffic Annotation", obs.WaitForBadMessage());
+  }
+  {
+    mojo::FakeMessageDispatchContext context;
+    mojo::test::BadMessageObserver obs;
+    TestOhttpClient client(absl::nullopt, net::ERR_INVALID_ARGUMENT);
+    network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
+    request->method = std::string(17, 'A');
+
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
+    EXPECT_EQ("Invalid OHTTP Method", obs.WaitForBadMessage());
   }
   {
     mojo::FakeMessageDispatchContext context;
@@ -278,7 +293,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
     network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
     request->request_body->content = std::string(10 * 1024 + 1, ' ');
 
-    handler.StartRequest(std::move(request), client.CreatePendingRemote());
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
     EXPECT_EQ("Request body too large", obs.WaitForBadMessage());
   }
   {
@@ -288,17 +303,18 @@ TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
     network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
     request->request_body->content_type = std::string(257, ' ');
 
-    handler.StartRequest(std::move(request), client.CreatePendingRemote());
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
     EXPECT_EQ("Content-Type too large", obs.WaitForBadMessage());
   }
 }
 
 TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
-  network::ObliviousHttpRequestHandler handler(network_context());
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
   {
     TestOhttpClient client("response body", net::OK);
 
-    handler.StartRequest(CreateRequest(), client.CreatePendingRemote());
+    handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
     const network::ResourceRequest* pending_request;
     ASSERT_TRUE(loader_factory()->IsPending(kRelayURL, &pending_request));
     EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, pending_request->method);
@@ -342,29 +358,32 @@ TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
 }
 
 TEST_F(TestObliviousHttpRequestHandler, HandlesOuterHttpError) {
-  network::ObliviousHttpRequestHandler handler(network_context());
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
   {
     loader_factory()->AddResponse(kRelayURL, "", net::HTTP_NOT_FOUND);
     TestOhttpClient client(absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE);
 
-    handler.StartRequest(CreateRequest(), client.CreatePendingRemote());
+    handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
     client.WaitForCall();
   }
 }
 
 TEST_F(TestObliviousHttpRequestHandler, HandlesInnerHttpError) {
-  network::ObliviousHttpRequestHandler handler(network_context());
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
   {
     TestOhttpClient client(absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE);
 
-    handler.StartRequest(CreateRequest(), client.CreatePendingRemote());
+    handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
     RespondToPendingRequest("", GURL(kRelayURL), net::HTTP_NOT_FOUND);
     client.WaitForCall();
   }
 }
 
 TEST_F(TestObliviousHttpRequestHandler, HandlesMultipleRequests) {
-  network::ObliviousHttpRequestHandler handler(network_context());
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
   {
     TestOhttpClient client_a("Response a", net::OK);
     network::mojom::ObliviousHttpRequestPtr request_a = CreateRequest();
@@ -372,8 +391,8 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesMultipleRequests) {
     network::mojom::ObliviousHttpRequestPtr request_b = CreateRequest();
     request_b->relay_url = GURL("https://another.relay.test");
 
-    handler.StartRequest(std::move(request_a), client_a.CreatePendingRemote());
-    handler.StartRequest(std::move(request_b), client_b.CreatePendingRemote());
+    handler->StartRequest(std::move(request_a), client_a.CreatePendingRemote());
+    handler->StartRequest(std::move(request_b), client_b.CreatePendingRemote());
 
     RespondToPendingRequest("Response b", GURL("https://another.relay.test"));
     client_b.WaitForCall();

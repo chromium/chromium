@@ -6,11 +6,17 @@
 #define SERVICES_NETWORK_OBLIVIOUS_HTTP_REQUEST_HANDLER_H_
 
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+namespace net {
+class HttpRequestHeaders;
+}
+
 namespace network {
+
+class NetworkContext;
+class TrustTokenStatusOrRequestHelper;
 
 // Handles the request based on the OHTTP specification:
 // https://ietf-wg-ohai.github.io/oblivious-http/draft-ietf-ohai-ohttp.html
@@ -33,17 +39,42 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) ObliviousHttpRequestHandler {
  public:
   // The network context must outlive this object.
-  explicit ObliviousHttpRequestHandler(mojom::NetworkContext* context);
+  explicit ObliviousHttpRequestHandler(NetworkContext* context);
 
   ~ObliviousHttpRequestHandler();
 
   // Completes steps 1-4 of the request procedure above.
-  void StartRequest(
-      mojom::ObliviousHttpRequestPtr request,
-      mojo::PendingRemote<mojom::ObliviousHttpClient> unbound_client);
+  void StartRequest(mojom::ObliviousHttpRequestPtr request,
+                    mojo::PendingRemote<mojom::ObliviousHttpClient> client);
+
+  void SetURLLoaderFactoryForTesting(
+      mojo::PendingRemote<mojom::URLLoaderFactory> factory) {
+    url_loader_factory_.reset();
+    url_loader_factory_.Bind(std::move(factory));
+  }
 
  private:
   class RequestState;
+
+  // Callback from TrustTokenRequestHelperFactory during HandleRequest. Verifies
+  // trust token helper was created correctly and calls Begin() on it to start
+  // the trust token operation with headers stored in the RequestState.
+  void OnDoneConstructingTrustTokenHelper(
+      mojo::RemoteSetElementId id,
+      TrustTokenStatusOrRequestHelper status_or_helper);
+
+  // Callback from TrustTokenRequestHelper::Begin. Verifies the trust token
+  // operation started successfully and then calls ContinueHandlingRequest.
+  void OnDoneBeginningTrustTokenOperation(
+      mojo::RemoteSetElementId id,
+      absl::optional<net::HttpRequestHeaders> headers,
+      mojom::TrustTokenOperationStatus status);
+
+  // Constructs the binary HTTP request including any trust token headers in the
+  // RequestState, encrypts the request, and starts the outer request's
+  // SimpleURLLoader.
+  void ContinueHandlingRequest(absl::optional<net::HttpRequestHeaders> headers,
+                               mojo::RemoteSetElementId id);
 
   // Calls the completed event with the specified error code on the
   // corresponding client. The client with the specified id must be in the
@@ -55,13 +86,25 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ObliviousHttpRequestHandler {
   void OnRequestComplete(mojo::RemoteSetElementId id,
                          std::unique_ptr<std::string> response);
 
+  // Callback from TrustTokenRequestHelper::Finalize. Checks that the trust
+  // token operation completed successfully and calls the client with the
+  // result.
+  void OnDoneFinalizingTrustTokenOperation(
+      mojo::RemoteSetElementId id,
+      std::string body,
+      mojom::TrustTokenOperationStatus status);
+
+  // Notifies the client that the request completed successfully with the
+  // provided response body.
+  void NotifyComplete(mojo::RemoteSetElementId id, std::string body);
+
   // Handles cleaning up when an ObliviousHttpClient disconnects.
   void OnClientDisconnect(mojo::RemoteSetElementId id);
 
   mojom::URLLoaderFactory* GetURLLoaderFactory();
 
   // The NetworkContext which owns this ObliviousHttpRequestHandler.
-  raw_ptr<mojom::NetworkContext> owner_network_context_;
+  raw_ptr<NetworkContext> owner_network_context_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_;
 
   // Clients and matching state.
