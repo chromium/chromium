@@ -7,6 +7,7 @@
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -25,7 +26,7 @@ ReadingListModel* GetReadingListModel(NSError** error) {
   ReadingListModel* model =
       ReadingListModelFactory::GetInstance()->GetForBrowserState(
           chrome_test_util::GetOriginalBrowserState());
-  if (!base::test::ios::WaitUntilConditionOrTimeout(2, ^{
+  if (!base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), ^{
         return model->loaded();
       })) {
     *error = testing::NSErrorWithLocalizedDescription(
