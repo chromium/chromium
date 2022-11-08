@@ -21,4 +21,5 @@ js_library("offline_internals") {
 
 js_library("offline_internals_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }

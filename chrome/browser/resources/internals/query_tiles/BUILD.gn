@@ -23,4 +23,5 @@ js_library("query_tiles_internals") {
 
 js_library("query_tiles_internals_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
