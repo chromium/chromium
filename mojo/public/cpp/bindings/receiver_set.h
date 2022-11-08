@@ -73,7 +73,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
    public:
     Entry(ReceiverSetState& state,
           ReceiverId id,
-          std::unique_ptr<ReceiverState> receiver);
+          std::unique_ptr<ReceiverState> receiver,
+          std::unique_ptr<MessageFilter> filter);
     ~Entry();
 
     ReceiverState& receiver() { return *receiver_; }
@@ -121,7 +122,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
       RepeatingConnectionErrorWithReasonCallback handler);
 
   ReportBadMessageCallback GetBadMessageCallback();
-  ReceiverId Add(std::unique_ptr<ReceiverState> receiver);
+  ReceiverId Add(std::unique_ptr<ReceiverState> receiver,
+                 std::unique_ptr<MessageFilter> filter);
   bool Remove(ReceiverId id);
   bool RemoveWithReason(ReceiverId id,
                         uint32_t custom_reason_code,
@@ -217,7 +219,7 @@ class ReceiverSetBase {
     static_assert(!ContextTraits::SupportsContext(),
                   "Context value required for non-void context type.");
     return AddImpl(std::move(impl), std::move(receiver), false,
-                   std::move(task_runner));
+                   std::move(task_runner), /*filter=*/nullptr);
   }
 
   // Adds a new receiver associated with |context|. See above method for all
@@ -230,7 +232,21 @@ class ReceiverSetBase {
     static_assert(ContextTraits::SupportsContext(),
                   "Context value unsupported for void context type.");
     return AddImpl(std::move(impl), std::move(receiver), std::move(context),
-                   std::move(task_runner));
+                   std::move(task_runner), /*filter=*/nullptr);
+  }
+
+  // Adds a new receiver associated with |context| and which uses the
+  // MessageFilter |filter|. See above for all other details.
+  ReceiverId Add(
+      ImplPointerType impl,
+      PendingType receiver,
+      Context context,
+      std::unique_ptr<MessageFilter> filter,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+    static_assert(ContextTraits::SupportsContext(),
+                  "Context value unsupported for void context type.");
+    return AddImpl(std::move(impl), std::move(receiver), std::move(context),
+                   std::move(task_runner), std::move(filter));
   }
 
   // Removes a receiver from the set. Note that this is safe to call even if the
@@ -414,11 +430,13 @@ class ReceiverSetBase {
   ReceiverId AddImpl(ImplPointerType impl,
                      PendingType receiver,
                      Context context,
-                     scoped_refptr<base::SequencedTaskRunner> task_runner) {
+                     scoped_refptr<base::SequencedTaskRunner> task_runner,
+                     std::unique_ptr<MessageFilter> filter) {
     DCHECK(receiver.is_valid());
     return state_.Add(std::make_unique<ReceiverEntry>(
-        std::move(impl), std::move(receiver), std::move(context),
-        std::move(task_runner)));
+                          std::move(impl), std::move(receiver),
+                          std::move(context), std::move(task_runner)),
+                      std::move(filter));
   }
 
   ReceiverSetState state_;

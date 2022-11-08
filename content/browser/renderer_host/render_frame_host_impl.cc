@@ -164,6 +164,7 @@
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params_utils.h"
+#include "content/public/browser/active_url_message_filter.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -481,37 +482,6 @@ class ScopedCommitStateResetter {
   bool disabled_ = false;
 };
 
-class ActiveURLMessageFilter : public mojo::MessageFilter {
- public:
-  explicit ActiveURLMessageFilter(RenderFrameHostImpl* render_frame_host)
-      : render_frame_host_(render_frame_host) {}
-
-  ~ActiveURLMessageFilter() override {
-    if (debug_url_set_) {
-      GetContentClient()->SetActiveURL(GURL(), "");
-    }
-  }
-
-  // mojo::MessageFilter overrides.
-  bool WillDispatch(mojo::Message* message) override {
-    debug_url_set_ = true;
-    GetContentClient()->SetActiveURL(render_frame_host_->GetLastCommittedURL(),
-                                     render_frame_host_->GetMainFrame()
-                                         ->GetLastCommittedOrigin()
-                                         .GetDebugString());
-    return true;
-  }
-
-  void DidDispatchOrReject(mojo::Message* message, bool accepted) override {
-    GetContentClient()->SetActiveURL(GURL(), "");
-    debug_url_set_ = false;
-  }
-
- private:
-  raw_ptr<RenderFrameHostImpl> render_frame_host_;
-  bool debug_url_set_ = false;
-};
-
 // This class can be added as a MessageFilter to a mojo receiver to detect
 // messages received while the the associated frame is in the Back-Forward
 // Cache. Documents that are in the bfcache should not be sending mojo messages
@@ -622,11 +592,11 @@ CreateMessageFilterForAssociatedReceiverImpl(
   filter_chain->Add(std::make_unique<BackForwardCacheMessageFilter>(
       render_frame_host, interface_name, policy));
   // BackForwardCacheMessageFilter might drop messages so add
-  // ActiveURLMessageFilter at the end of the chain as we need to make sure that
+  // ActiveUrlMessageFilter at the end of the chain as we need to make sure that
   // the debug url is reset, that is, DidDispatchOrReject() is called if
   // WillDispatch().
   filter_chain->Add(
-      std::make_unique<ActiveURLMessageFilter>(render_frame_host));
+      std::make_unique<internal::ActiveUrlMessageFilter>(render_frame_host));
   return filter_chain;
 }
 
@@ -7173,7 +7143,8 @@ void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     mojo_binder_policy_applier_->DropDeferredBinders();
   }
   broker_receiver_.Bind(std::move(receiver));
-  broker_receiver_.SetFilter(std::make_unique<ActiveURLMessageFilter>(this));
+  broker_receiver_.SetFilter(
+      std::make_unique<internal::ActiveUrlMessageFilter>(this));
 }
 
 void RenderFrameHostImpl::BindAssociatedInterfaceProviderReceiver(

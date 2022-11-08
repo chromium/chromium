@@ -26,6 +26,8 @@ source_set("browser_sources") {
   # External code should depend on via ":browser" above.
   visibility = [ "//content/*" ]
   sources = [
+    "active_url_message_filter.cc",
+    "active_url_message_filter.h",
     "allow_service_worker_result.cc",
     "allow_service_worker_result.h",
     "anchor_element_preconnect_delegate.h",

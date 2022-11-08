@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/active_url_message_filter.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -39,6 +40,9 @@ class WebContents;
 // sent via these interfaces are ordered with respect to legacy Chrome IPC
 // messages on the relevant IPC::Channel (i.e. the Channel between the browser
 // and whatever render process hosts the sending frame.)
+//
+// Because this is a templated class, its complete implementation lives in the
+// header file.
 template <typename Interface>
 class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
  public:
@@ -65,8 +69,12 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
       return;
     }
 
-    mojo::ReceiverId id =
-        receivers_.Add(impl_, std::move(pending_receiver), render_frame_host);
+    // Inject the ActiveUrlMessageFilter to improve crash reporting. This filter
+    // sets the correct URL crash keys based on the target RFH that is
+    // processing a message.
+    mojo::ReceiverId id = receivers_.Add(
+        impl_, std::move(pending_receiver), render_frame_host,
+        std::make_unique<internal::ActiveUrlMessageFilter>(render_frame_host));
     frame_to_receivers_map_[render_frame_host].push_back(id);
   }
 
