@@ -455,7 +455,9 @@ GURL ConstructGURLWithScheme(const std::string& url) {
 }
 
 bool IsValidPasswordURL(const GURL& url) {
-  return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
+  return url.is_valid() &&
+         (url.SchemeIsHTTPOrHTTPS() ||
+          password_manager::IsValidAndroidFacetURI(url.spec()));
 }
 
 std::string GetSignonRealm(const GURL& url) {

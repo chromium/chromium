@@ -1227,6 +1227,41 @@ TEST_F(SavedPasswordsPresenterTest,
   presenter().RemoveObserver(&observer);
 }
 
+TEST_F(SavedPasswordsPresenterTest, AddCredentialsAcceptsOnlyValidURLs) {
+  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
+      completion_callback;
+
+  PasswordForm valid_url_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
+  PasswordForm valid_android_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
+  PasswordForm invalid_ulr_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/2);
+
+  valid_android_form.url = GURL(
+      "android://"
+      "Jzj5T2E45Hb33D-lk-"
+      "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsBzC09Gk094Z-U_hg==@"
+      "com.netflix.mediaclient");
+  valid_android_form.signon_realm = valid_android_form.url.spec();
+  invalid_ulr_form.url = GURL("http/site:80");
+  invalid_ulr_form.signon_realm = valid_android_form.url.spec();
+
+  CredentialUIEntry valid_url_cred(valid_url_form);
+  CredentialUIEntry valid_android_cred(valid_android_form);
+  CredentialUIEntry invalid_ulr_cred(invalid_ulr_form);
+  presenter().AddCredentials(
+      {valid_url_cred, valid_android_cred, invalid_ulr_cred},
+      password_manager::PasswordForm::Type::kImported,
+      completion_callback.Get());
+  EXPECT_CALL(completion_callback,
+              Run(std::vector<SavedPasswordsPresenter::AddResult>{
+                  SavedPasswordsPresenter::AddResult::kSuccess,
+                  SavedPasswordsPresenter::AddResult::kSuccess,
+                  SavedPasswordsPresenter::AddResult::kInvalid}));
+  RunUntilIdle();
+}
+
 // Tests whether passwords added via AddPassword are saved to the correct store
 // based on |in_store| value.
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,

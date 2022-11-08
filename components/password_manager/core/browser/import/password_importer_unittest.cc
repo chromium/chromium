@@ -169,6 +169,44 @@ TEST_F(PasswordImporterTest, CSVImport) {
   EXPECT_EQ(kTestPassword, stored_passwords()[0].password);
 }
 
+TEST_F(PasswordImporterTest, CSVImportAndroidCredential) {
+  constexpr char kTestAndroidSignonRealm[] =
+      "android://"
+      "Jzj5T2E45Hb33D-lk-"
+      "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsBzC09Gk094Z-U_hg==@"
+      "com.netflix.mediaclient";
+  constexpr char kTestCSVInput[] =
+      "Url,Username,Password\n"
+      "android://"
+      "Jzj5T2E45Hb33D-lk-"
+      "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsBzC09Gk094Z-U_hg==@"
+      "com.netflix.mediaclient,test@gmail.com,test1\n";
+
+  base::HistogramTester histogram_tester;
+
+  base::FilePath input_path =
+      temp_directory_.GetPath().AppendASCII(kTestFileName);
+  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
+            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.ImportResultsStatus",
+                                      ImportResults::Status::SUCCESS, 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
+
+  password_manager::ImportResults results = GetImportResults();
+
+  EXPECT_EQ(1u, results.number_imported);
+  ASSERT_EQ(1u, stored_passwords().size());
+  EXPECT_EQ(GURL(kTestAndroidSignonRealm), stored_passwords()[0].GetURL());
+  EXPECT_EQ(kTestAndroidSignonRealm,
+            stored_passwords()[0].GetFirstSignonRealm());
+  EXPECT_EQ(kTestUsername, stored_passwords()[0].username);
+  EXPECT_EQ(kTestPassword, stored_passwords()[0].password);
+}
+
 TEST_F(PasswordImporterTest, CSVImportBadHeaderReturnsBadFormat) {
   constexpr char kTestCSVInput[] =
       "Non Canonical Field,Bar - another one,FooBar - another one\n"
