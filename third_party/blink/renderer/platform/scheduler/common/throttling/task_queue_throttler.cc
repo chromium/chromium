@@ -211,9 +211,14 @@ void TaskQueueThrottler::PumpThrottledTasks() {
   for (BudgetPool* budget_pool : budget_pools_at_next_granted_run_time)
     budget_pool->OnWakeUp(lazy_now.Now());
 
+  std::vector<TaskQueue*> queues;
+  for (const TaskQueueMap::value_type& map_entry : queue_details_)
+    queues.push_back(map_entry.key);
+  std::sort(queues.begin(), queues.end(),
+            recordreplay::CompareByPointerId());
+
   // Update throttling state for all queues.
-  for (const TaskQueueMap::value_type& map_entry : queue_details_) {
-    TaskQueue* task_queue = map_entry.key;
+  for (TaskQueue* task_queue : queues) {
     UpdateQueueSchedulingLifecycleStateInternal(lazy_now.Now(), task_queue,
                                                 true);
   }
