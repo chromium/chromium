@@ -221,7 +221,7 @@ TEST_F(ProcessUtilTest, KillSlowChild) {
 #else
 #define MAYBE_GetTerminationStatusExit DISABLED_GetTerminationStatusExit
 #endif
-TEST_F(ProcessUtilTest, GetTerminationStatusExit) {
+TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusExit) {
   const std::string signal_file = GetSignalFilePath(kSignalFileSlow);
   remove(signal_file.c_str());
   Process process = SpawnChild("SlowChildProcess");
