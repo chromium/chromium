@@ -159,6 +159,11 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(
       SiteSettingsHandlerTest,
       HandleUndoIgnoreOriginsForNotificationPermissionReview);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           SendNotificationPermissionReviewList_FeatureEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      SiteSettingsHandlerTest,
+      SendNotificationPermissionReviewList_FeatureDisabled);
 
   // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
   // serviced when both models are built.
@@ -343,6 +348,9 @@ class SiteSettingsHandler
   // Permissions' module in site settings notification page. Those domains send
   // a lot of notifications, but have low site engagement.
   base::Value::List PopulateNotificationPermissionReviewData();
+
+  // Sends the list of notification permissions to review to the WebUI.
+  void SendNotificationPermissionReviewList();
 
   const raw_ptr<Profile> profile_;
 

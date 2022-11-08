@@ -1529,6 +1529,10 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile)
         ->RemoveEmbargoAndResetCounts(url, content_type);
   }
+
+  if (content_type == ContentSettingsType::NOTIFICATIONS) {
+    SendNotificationPermissionReviewList();
+  }
 }
 
 void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
@@ -1595,6 +1599,10 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
           "SoundContentSetting.UnmuteBy.PatternException"));
     }
   }
+
+  if (content_type == ContentSettingsType::NOTIFICATIONS) {
+    SendNotificationPermissionReviewList();
+  }
 }
 
 void SiteSettingsHandler::HandleResetChooserExceptionForSite(
@@ -1636,8 +1644,7 @@ void SiteSettingsHandler::HandleIgnoreOriginsForNotificationPermissionReview(
         primary_pattern, ContentSettingsPattern::Wildcard());
   }
 
-  FireWebUIListener("notification-permission-review-list-changed",
-                    PopulateNotificationPermissionReviewData());
+  SendNotificationPermissionReviewList();
 }
 
 void SiteSettingsHandler::HandleResetNotificationPermissionForOrigins(
@@ -1656,8 +1663,7 @@ void SiteSettingsHandler::HandleResetNotificationPermissionForOrigins(
         CONTENT_SETTING_DEFAULT);
   }
 
-  FireWebUIListener("notification-permission-review-list-changed",
-                    PopulateNotificationPermissionReviewData());
+  SendNotificationPermissionReviewList();
 }
 
 void SiteSettingsHandler::HandleBlockNotificationPermissionForOrigins(
@@ -1674,8 +1680,7 @@ void SiteSettingsHandler::HandleBlockNotificationPermissionForOrigins(
         CONTENT_SETTING_BLOCK);
   }
 
-  FireWebUIListener("notification-permission-review-list-changed",
-                    PopulateNotificationPermissionReviewData());
+  SendNotificationPermissionReviewList();
 }
 
 void SiteSettingsHandler::HandleAllowNotificationPermissionForOrigins(
@@ -1693,8 +1698,7 @@ void SiteSettingsHandler::HandleAllowNotificationPermissionForOrigins(
         CONTENT_SETTING_ALLOW);
   }
 
-  FireWebUIListener("notification-permission-review-list-changed",
-                    PopulateNotificationPermissionReviewData());
+  SendNotificationPermissionReviewList();
 }
 
 void SiteSettingsHandler::
@@ -1712,8 +1716,7 @@ void SiteSettingsHandler::
     service->RemovePatternFromNotificationPermissionReviewBlocklist(
         primary_pattern, ContentSettingsPattern::Wildcard());
   }
-  FireWebUIListener("notification-permission-review-list-changed",
-                    PopulateNotificationPermissionReviewData());
+  SendNotificationPermissionReviewList();
 }
 
 void SiteSettingsHandler::HandleIsOriginValid(const base::Value::List& args) {
@@ -2238,6 +2241,15 @@ SiteSettingsHandler::PopulateNotificationPermissionReviewData() {
   site_engagement::SiteEngagementService* engagement_service =
       site_engagement::SiteEngagementService::Get(profile_);
 
+  // Sort notification permissions by their priority for surfacing to the user.
+  auto notification_permission_ordering =
+      [](const permissions::NotificationPermissions& left,
+         const permissions::NotificationPermissions& right) {
+        return left.notification_count > right.notification_count;
+      };
+  std::sort(notification_permissions.begin(), notification_permissions.end(),
+            notification_permission_ordering);
+
   for (const auto& notification_permission : notification_permissions) {
     // Converting primary pattern to GURL should always be valid, since
     // Notification Permission Review list only contains single origins. Those
@@ -2265,6 +2277,21 @@ SiteSettingsHandler::PopulateNotificationPermissionReviewData() {
   }
 
   return result;
+}
+
+void SiteSettingsHandler::SendNotificationPermissionReviewList() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSafetyCheckNotificationPermissions)) {
+    return;
+  }
+  // Notify observers that the permission review list could have changed. Note
+  // that the list is not guaranteed to have changed. In places where
+  // determining whether the list has changed is cause for performance concerns,
+  // an unchanged list may be sent. This is the case for
+  // HandleResetCategoryPermissionForPattern and
+  // HandleSetCategoryPermissionForPattern.
+  FireWebUIListener("notification-permission-review-list-maybe-changed",
+                    PopulateNotificationPermissionReviewData());
 }
 
 }  // namespace settings

@@ -304,7 +304,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (description: string) => this.cookieSettingDescription_ = description);
 
     this.addWebUIListener(
-        'notification-permission-review-list-changed',
+        'notification-permission-review-list-maybe-changed',
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
 

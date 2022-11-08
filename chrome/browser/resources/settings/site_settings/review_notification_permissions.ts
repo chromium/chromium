@@ -123,7 +123,7 @@ export class SettingsReviewNotificationPermissionsElement extends
     super.connectedCallback();
     // Register for review notification permission list updates.
     this.addWebUIListener(
-        'notification-permission-review-list-changed',
+        'notification-permission-review-list-maybe-changed',
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
 
