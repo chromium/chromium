@@ -236,6 +236,8 @@ source_set("web_applications") {
       "isolated_web_apps/policy/isolated_web_app_external_install_options.h",
       "isolated_web_apps/policy/isolated_web_app_policy_constants.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_constants.h",
+      "isolated_web_apps/policy/isolated_web_app_policy_manager.cc",
+      "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
     ]
@@ -638,7 +640,10 @@ source_set("web_applications_unit_tests") {
   }
 
   if (is_chromeos) {
-    sources += [ "isolated_web_apps/policy/isolated_web_app_exteral_install_options_unittest.cc" ]
+    sources += [
+      "isolated_web_apps/policy/isolated_web_app_exteral_install_options_unittest.cc",
+      "isolated_web_apps/policy/isolated_web_app_policy_manager_unittest.cc",
+    ]
   }
 
   deps = [
