@@ -11,6 +11,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {MockController} from '../../mock_controller.js';
 import {isChildVisible, isVisible} from '../../test_util.js';
 
 import {assertElementContainsText} from './diagnostics_test_utils.js';
@@ -77,5 +78,34 @@ suite('touchpadTesterTestSuite', function() {
 
     assertEquals(null, touchpadTesterElement.touchpad);
     assertFalse(isChildVisible(touchpadTesterElement, titleSlotSelector));
+  });
+
+  test('VerifyCanvasUpdatedWhenOnTouchEventTriggered', async () => {
+    await initializeElement();
+    const touchpad = fakeTouchDevices[0];
+    touchpadTesterElement.show(touchpad);
+    const canvas = (/** @type {HTMLCanvasElement} */ (
+        touchpadTesterElement.$.testerCanvas));
+    assertTrue(!!canvas);
+
+    // Setup fake touch event data.
+    const fakeTouchPoint = {
+      positionX: 7,
+      positionY: 102,
+    };
+    const fakeTouchEvent = {
+      touchData: [fakeTouchPoint],
+    };
+    const mockController = new MockController();
+    const mockDrawTrailMark = mockController.createFunctionMock(
+        touchpadTesterElement.drawingProvider, 'drawTrailMark');
+    mockDrawTrailMark.addExpectation(
+        fakeTouchPoint.positionX, fakeTouchPoint.positionY);
+
+    // Simulate observer being notified.
+    touchpadTesterElement.onTouchEvent(fakeTouchEvent);
+
+    // Verify touch data drawn to canvas.
+    mockController.verifyMocks();
   });
 });

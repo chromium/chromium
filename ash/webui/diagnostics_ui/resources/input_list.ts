@@ -236,13 +236,10 @@ export class InputListElement extends InputListElementBase {
   /**
    * Shows touchpad-tester interface when input-card "test" button for specific
    * device is clicked.
-   * @param {CustomEvent} e triggered which provides evdev_id of device.
    */
   protected handleTouchpadTestButtonClick_(e: CustomEvent): void {
-    if (!this.touchpadTester) {
-      this.touchpadTester =
-          this.shadowRoot!.querySelector(TouchpadTesterElement.is);
-    }
+    this.touchpadTester =
+        this.shadowRoot!.querySelector(TouchpadTesterElement.is);
     assert(this.touchpadTester);
     const touchpad: TouchDeviceInfo|undefined = this.touchpads_.find(
         (touchpad: TouchDeviceInfo) => touchpad.id === e.detail.evdevId);
