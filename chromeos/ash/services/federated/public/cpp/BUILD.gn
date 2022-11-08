@@ -6,13 +6,15 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
-source_set("cpp") {
+component("cpp") {
+  output_name = "federated_public_cpp"
   sources = [
     "federated_example_util.cc",
     "federated_example_util.h",
     "service_connection.cc",
     "service_connection.h",
   ]
+  defines = [ "IS_CHROMEOS_FEDERATED_IMPL" ]
   deps = [
     "//base",
     "//chromeos/ash/components/dbus/federated",
