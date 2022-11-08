@@ -6,6 +6,10 @@
         flex: 1;
       }
 
+      .misc-column {
+        justify-content: flex-end;
+      }
+
       .list-item {
         margin-bottom: 8px;
         margin-top: 8px;
@@ -15,12 +19,11 @@
         flex: 1;
       }
 
-      #summarySublabel {
+      .sub-label {
         color: var(--cr-secondary-text-color);
       }
 
-      .payments-label {
-        color: var(--cr-secondary-text-color);
+      #paymentsLabel {
         margin-inline-start: 16px;
       }
 
@@ -47,7 +50,8 @@
             [[creditCard.metadata.summaryLabel]]
           </div>
           <div id="summarySublabel"
-            hidden$="[[!shouldShowSecondarySublabel_()]]" class="ellipses">
+            hidden$="[[!shouldShowSecondarySublabel_()]]"
+            class="ellipses sub-label">
             [[getSecondarySublabel_(creditCard.metadata)]]
           </div>
         </div>
@@ -55,7 +59,7 @@
             hidden$="[[!shouldShowVirtualCardLabel_(creditCard.metadata)]]">
           $i18n{virtualCardEnabled}
         </span>
-        <span id="paymentsLabel" class="payments-label"
+        <span id="paymentsLabel" class="sub-label"
             hidden$="[[!shouldShowPaymentsLabel_(creditCard.metadata)]]">
             [[getPaymentsLabel_(creditCard.metadata)]]
         </span>
@@ -76,7 +80,7 @@
               </picture>
             </if>
             <if expr="not _google_chrome">
-              <span class="payments-label">
+              <span class="sub-label">
                 [[getPaymentsLabel_(creditCard.metadata)]]
               </span>
             </if>
