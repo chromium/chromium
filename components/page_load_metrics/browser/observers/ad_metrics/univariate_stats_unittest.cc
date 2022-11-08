@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cmath>
+
 #include "components/page_load_metrics/browser/observers/ad_metrics/univariate_stats.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
