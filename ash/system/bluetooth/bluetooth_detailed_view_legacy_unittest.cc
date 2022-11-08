@@ -9,7 +9,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
-#include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
+#include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -99,7 +99,7 @@ class FakeDetailedViewDelegate : public DetailedViewDelegate {
 
 }  // namespace
 
-class BluetoothDetailedViewTest : public AshTestBase {
+class BluetoothDetailedViewLegacyTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -125,30 +125,32 @@ class BluetoothDetailedViewTest : public AshTestBase {
 
   ash::IconButton* FindPairNewDeviceClickableView() {
     return FindViewById<ash::IconButton*>(
-        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
+        BluetoothDetailedViewLegacy::BluetoothDetailedViewChildId::
             kPairNewDeviceClickableView);
   }
 
   views::ToggleButton* FindBluetoothToggleButton() {
     return FindViewById<views::ToggleButton*>(
-        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::kToggleButton);
+        BluetoothDetailedViewLegacy::BluetoothDetailedViewChildId::
+            kToggleButton);
   }
 
   views::Button* FindSettingsButton() {
     return FindViewById<views::Button*>(
-        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
+        BluetoothDetailedViewLegacy::BluetoothDetailedViewChildId::
             kSettingsButton);
   }
 
   views::View* FindPairNewDeviceView() {
     return FindViewById<views::View*>(
-        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
+        BluetoothDetailedViewLegacy::BluetoothDetailedViewChildId::
             kPairNewDeviceView);
   }
 
   BluetoothDisabledDetailedView* FindBluetoothDisabledView() {
     return FindViewById<BluetoothDisabledDetailedView*>(
-        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::kDisabledView);
+        BluetoothDetailedViewLegacy::BluetoothDetailedViewChildId::
+            kDisabledView);
   }
 
   BluetoothDetailedView* bluetooth_detailed_view() {
@@ -165,7 +167,7 @@ class BluetoothDetailedViewTest : public AshTestBase {
 
  private:
   template <class T>
-  T FindViewById(BluetoothDetailedViewImpl::BluetoothDetailedViewChildId id) {
+  T FindViewById(BluetoothDetailedViewLegacy::BluetoothDetailedViewChildId id) {
     return static_cast<T>(bluetooth_detailed_view_->GetAsView()->GetViewByID(
         static_cast<int>(id)));
   }
@@ -176,7 +178,7 @@ class BluetoothDetailedViewTest : public AshTestBase {
   FakeDetailedViewDelegate fake_detailed_view_delegate_;
 };
 
-TEST_F(BluetoothDetailedViewTest, PressingSettingsButtonOpensSettings) {
+TEST_F(BluetoothDetailedViewLegacyTest, PressingSettingsButtonOpensSettings) {
   views::Button* settings_button = FindSettingsButton();
 
   GetSessionControllerClient()->SetSessionState(
@@ -192,7 +194,7 @@ TEST_F(BluetoothDetailedViewTest, PressingSettingsButtonOpensSettings) {
   EXPECT_EQ(1u, fake_detailed_view_delegate()->close_bubble_call_count());
 }
 
-TEST_F(BluetoothDetailedViewTest,
+TEST_F(BluetoothDetailedViewLegacyTest,
        BluetoothEnabledStateChangesUpdateChildrenViewState) {
   views::ToggleButton* toggle_button = FindBluetoothToggleButton();
   views::View* pair_new_device_view = FindPairNewDeviceView();
@@ -215,7 +217,7 @@ TEST_F(BluetoothDetailedViewTest,
   EXPECT_TRUE(disabled_view->GetVisible());
 }
 
-TEST_F(BluetoothDetailedViewTest, PressingToggleNotifiesDelegate) {
+TEST_F(BluetoothDetailedViewLegacyTest, PressingToggleNotifiesDelegate) {
   views::ToggleButton* toggle_button = FindBluetoothToggleButton();
   EXPECT_FALSE(toggle_button->GetIsOn());
   EXPECT_FALSE(
@@ -228,7 +230,7 @@ TEST_F(BluetoothDetailedViewTest, PressingToggleNotifiesDelegate) {
       bluetooth_detailed_view_delegate()->last_bluetooth_toggle_state());
 }
 
-TEST_F(BluetoothDetailedViewTest, BluetoothToggleHasCorrectTooltipText) {
+TEST_F(BluetoothDetailedViewLegacyTest, BluetoothToggleHasCorrectTooltipText) {
   views::ToggleButton* toggle_button = FindBluetoothToggleButton();
 
   EXPECT_EQ(l10n_util::GetStringFUTF16(
@@ -245,7 +247,7 @@ TEST_F(BluetoothDetailedViewTest, BluetoothToggleHasCorrectTooltipText) {
             toggle_button->GetTooltipText());
 }
 
-TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
+TEST_F(BluetoothDetailedViewLegacyTest, PressingPairNewDeviceNotifiesDelegate) {
   IconButton* pair_new_device_button = FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
@@ -259,7 +261,7 @@ TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
                     ->on_pair_new_device_requested_call_count());
 }
 
-TEST_F(BluetoothDetailedViewTest, PairNewDeviceButtonIsCentered) {
+TEST_F(BluetoothDetailedViewLegacyTest, PairNewDeviceButtonIsCentered) {
   IconButton* pair_new_device_button = FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
@@ -284,7 +286,8 @@ TEST_F(BluetoothDetailedViewTest, PairNewDeviceButtonIsCentered) {
   EXPECT_EQ(view_center, button_center.y());
 }
 
-TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
+TEST_F(BluetoothDetailedViewLegacyTest,
+       SelectingDeviceListItemNotifiesDelegate) {
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
 
   PairedBluetoothDevicePropertiesPtr paired_properties =

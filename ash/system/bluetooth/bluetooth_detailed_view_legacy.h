@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_IMPL_H_
-#define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_IMPL_H_
+#ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_LEGACY_H_
+#define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_LEGACY_H_
 
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
@@ -24,19 +24,19 @@ class BluetoothDisabledDetailedView;
 class DetailedViewDelegate;
 class TriView;
 
-// BluetoothDetailedView implementation.
-class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
-                                             public TrayDetailedView {
+// The legacy BluetoothDetailedView implementation, pre-QsRevamp.
+class ASH_EXPORT BluetoothDetailedViewLegacy : public BluetoothDetailedView,
+                                               public TrayDetailedView {
  public:
-  BluetoothDetailedViewImpl(DetailedViewDelegate* detailed_view_delegate,
-                            BluetoothDetailedView::Delegate* delegate);
-  BluetoothDetailedViewImpl(const BluetoothDetailedViewImpl&) = delete;
-  BluetoothDetailedViewImpl& operator=(const BluetoothDetailedViewImpl&) =
+  BluetoothDetailedViewLegacy(DetailedViewDelegate* detailed_view_delegate,
+                              BluetoothDetailedView::Delegate* delegate);
+  BluetoothDetailedViewLegacy(const BluetoothDetailedViewLegacy&) = delete;
+  BluetoothDetailedViewLegacy& operator=(const BluetoothDetailedViewLegacy&) =
       delete;
-  ~BluetoothDetailedViewImpl() override;
+  ~BluetoothDetailedViewLegacy() override;
 
  private:
-  friend class BluetoothDetailedViewTest;
+  friend class BluetoothDetailedViewLegacyTest;
 
   // Used for testing. Starts at 1 because view IDs should not be 0.
   enum class BluetoothDetailedViewChildId {
@@ -83,9 +83,9 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   views::View* pair_new_device_view_ = nullptr;
   BluetoothDisabledDetailedView* disabled_view_ = nullptr;
 
-  base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};
+  base::WeakPtrFactory<BluetoothDetailedViewLegacy> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_IMPL_H_
+#endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_LEGACY_H_

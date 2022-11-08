@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
+#include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
 
 #include <memory>
 #include <utility>
@@ -36,7 +36,7 @@
 
 namespace ash {
 
-BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
+BluetoothDetailedViewLegacy::BluetoothDetailedViewLegacy(
     DetailedViewDelegate* detailed_view_delegate,
     BluetoothDetailedView::Delegate* delegate)
     : BluetoothDetailedView(delegate),
@@ -51,13 +51,13 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
       device::BluetoothUiSurface::kBluetoothQuickSettings);
 }
 
-BluetoothDetailedViewImpl::~BluetoothDetailedViewImpl() = default;
+BluetoothDetailedViewLegacy::~BluetoothDetailedViewLegacy() = default;
 
-views::View* BluetoothDetailedViewImpl::GetAsView() {
+views::View* BluetoothDetailedViewLegacy::GetAsView() {
   return this;
 }
 
-void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
+void BluetoothDetailedViewLegacy::UpdateBluetoothEnabledState(bool enabled) {
   disabled_view_->SetVisible(!enabled);
   pair_new_device_view_->SetVisible(enabled);
   scroller()->SetVisible(enabled);
@@ -78,27 +78,27 @@ void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
   Layout();
 }
 
-BluetoothDeviceListItemView* BluetoothDetailedViewImpl::AddDeviceListItem() {
+BluetoothDeviceListItemView* BluetoothDetailedViewLegacy::AddDeviceListItem() {
   return scroll_content()->AddChildView(
       new BluetoothDeviceListItemView(/*listener=*/this));
 }
 
-ash::TriView* BluetoothDetailedViewImpl::AddDeviceListSubHeader(
+ash::TriView* BluetoothDetailedViewLegacy::AddDeviceListSubHeader(
     const gfx::VectorIcon& icon,
     int text_id) {
   return AddScrollListSubHeader(scroll_content(), icon, text_id);
 }
 
-void BluetoothDetailedViewImpl::NotifyDeviceListChanged() {
+void BluetoothDetailedViewLegacy::NotifyDeviceListChanged() {
   scroll_content()->InvalidateLayout();
   Layout();
 }
 
-views::View* BluetoothDetailedViewImpl::device_list() {
+views::View* BluetoothDetailedViewLegacy::device_list() {
   return scroll_content();
 }
 
-void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
+void BluetoothDetailedViewLegacy::HandleViewClicked(views::View* view) {
   // We only handle clicks on the "pair new device" view and on the individual
   // device views. When |view| is a child of |pair_new_device_view_| we know the
   // "pair new device" button was clicked, otherwise it must have been an
@@ -111,11 +111,11 @@ void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
       static_cast<BluetoothDeviceListItemView*>(view)->device_properties());
 }
 
-const char* BluetoothDetailedViewImpl::GetClassName() const {
-  return "BluetoothDetailedViewImpl";
+const char* BluetoothDetailedViewLegacy::GetClassName() const {
+  return "BluetoothDetailedViewLegacy";
 }
 
-void BluetoothDetailedViewImpl::CreateDisabledView() {
+void BluetoothDetailedViewLegacy::CreateDisabledView() {
   DCHECK(!disabled_view_);
 
   // Check that the views::ScrollView has already been created so that we can
@@ -133,7 +133,7 @@ void BluetoothDetailedViewImpl::CreateDisabledView() {
   box_layout()->SetFlexForView(disabled_view_, 1);
 }
 
-void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
+void BluetoothDetailedViewLegacy::CreatePairNewDeviceView() {
   DCHECK(!pair_new_device_view_);
 
   // Check that the views::ScrollView has already been created so that we can
@@ -182,14 +182,14 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   pair_new_device_view_->AddChildViewAt(hover_highlight_view.release(), 0);
 }
 
-void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
+void BluetoothDetailedViewLegacy::CreateTitleRowButtons() {
   DCHECK(!settings_button_);
   DCHECK(!toggle_button_);
 
   tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
 
   std::unique_ptr<TrayToggleButton> toggle = std::make_unique<TrayToggleButton>(
-      base::BindRepeating(&BluetoothDetailedViewImpl::OnToggleClicked,
+      base::BindRepeating(&BluetoothDetailedViewLegacy::OnToggleClicked,
                           weak_factory_.GetWeakPtr()),
       IDS_ASH_STATUS_TRAY_BLUETOOTH);
   toggle->SetID(static_cast<int>(BluetoothDetailedViewChildId::kToggleButton));
@@ -198,7 +198,7 @@ void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
 
   std::unique_ptr<views::Button> settings =
       base::WrapUnique(CreateSettingsButton(
-          base::BindRepeating(&BluetoothDetailedViewImpl::OnSettingsClicked,
+          base::BindRepeating(&BluetoothDetailedViewLegacy::OnSettingsClicked,
                               weak_factory_.GetWeakPtr()),
           IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS));
   settings->SetID(
@@ -207,14 +207,14 @@ void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
       tri_view()->AddView(TriView::Container::END, std::move(settings));
 }
 
-void BluetoothDetailedViewImpl::OnSettingsClicked() {
+void BluetoothDetailedViewLegacy::OnSettingsClicked() {
   if (!TrayPopupUtils::CanOpenWebUISettings())
     return;
   CloseBubble();  // Deletes |this|.
   Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
 }
 
-void BluetoothDetailedViewImpl::OnToggleClicked() {
+void BluetoothDetailedViewLegacy::OnToggleClicked() {
   const bool toggle_state = toggle_button_->GetIsOn();
   delegate()->OnToggleClicked(toggle_state);
 
