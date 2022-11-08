@@ -330,6 +330,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"testWarningBadgeText", IDS_DIAGNOSTICS_TEST_WARNING_BADGE_TEXT},
       {"testSuccess", IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT},
       {"testSucceededBadgeText", IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT},
+      {"touchpadTesterTitleText", IDS_INPUT_DIAGNOSTICS_TOUCHPAD_TESTER_TITLE},
       {"troubleConnecting", IDS_DIAGNOSTICS_TROUBLE_CONNECTING},
       {"troubleshootingText", IDS_DIAGNOSTICS_TROUBLESHOOTING_TEXT},
       {"versionInfo", IDS_DIAGNOSTICS_VERSION_INFO_TEXT},

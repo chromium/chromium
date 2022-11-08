@@ -1212,6 +1212,12 @@ Try tapping the mic to ask me anything.
         Test your keyboard
       </message>
 
+      <!-- Diagnostics App: Touchpad Diagnostics -->
+      <!-- TODO(b/253021171): Remove translatable and update string when touchpad strings finalized. -->
+      <message name="IDS_INPUT_DIAGNOSTICS_TOUCHPAD_TESTER_TITLE" translateable="false" desc="Title for a dialog allowing the user to test their touchpad.">
+        Test your touchpad
+      </message>
+
       <!-- Ash keyboard diagram ARIA labels -->
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_LABEL_NOT_PRESSED" desc="ARIA label that describes a key that has not yet been pressed, as part of a keyboard testing UI. Key names could be single letters like Q, or a phrase like 'Down arrow'.">
         <ph name="KEY_NAME">$1<ex>Q</ex></ph> key not pressed
