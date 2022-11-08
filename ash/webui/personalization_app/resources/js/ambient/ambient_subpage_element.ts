@@ -59,10 +59,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
         computed:
             'computeLoadingSettings_(albums_, temperatureUnit_, topicSource_)',
       },
-      isAmbientSubpageUIChangeEnabled_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled'),
-      },
     };
   }
 
@@ -73,7 +69,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private animationTheme_: AnimationTheme|null = null;
   private temperatureUnit_: TemperatureUnit|null = null;
   private topicSource_: TopicSource|null = null;
-  private isAmbientSubpageUIChangeEnabled_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
   // another window, and then re-focuses personalization app.
@@ -195,6 +190,14 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   private getClassContainer_(x: number): string {
     return `ambient-text-placeholder-${x}`;
+  }
+
+  /**
+   * Determines whether ambient subpage UI restructure is enabled. Value can be
+   * mocked in tests.
+   */
+  private isAmbientSubpageUIChangeEnabled_(): boolean {
+    return loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled');
   }
 }
 

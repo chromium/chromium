@@ -46,6 +46,11 @@
     margin-top: 20px;
   }
 
+  :host([main-page]) #zeroStateTextContainer,
+  :host(:not([main-page])) #messageContainer {
+    display: none;
+  }
+
   /* TODO(b/253470553): Remove after Ambient subpage UI change is released. */
   :host(:not([main-page])) #container.pre-ui-change {
     border: none;
@@ -98,7 +103,8 @@
   }
 
   .album-info-mainpage,
-  .album-info-subpage {
+  .album-info-subpage,
+  .zero-state-info-subpage {
     display: none;
   }
 
@@ -108,7 +114,8 @@
     justify-content: center;
   }
 
-  :host(:not([main-page])) .album-info-subpage {
+  :host(:not([main-page])) .album-info-subpage,
+  :host(:not([main-page])) .zero-state-info-subpage {
     display: flex;
     grid-area: subpage-desc;
     justify-content: center;
@@ -194,6 +201,13 @@
         <div class="preview-image-border"></div>
         <img class="preview-image disabled" src="//personalization/images/slideshow.png">
       </div>
+      <h3 id="zeroStateTextContainer"
+          class="preview-text-container zero-state-info-subpage"
+          aria-label$="$i18n{ambientModeMainPageZeroStateMessage}">
+        <span class="text">
+          $i18n{ambientModeMainPageZeroStateMessage}
+        </span>
+      </h3>
       <div id="messageContainer">
         <span class="text" id="turnOnDescription">
           $i18n{ambientModeMainPageZeroStateMessage}

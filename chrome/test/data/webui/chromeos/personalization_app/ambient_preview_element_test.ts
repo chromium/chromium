@@ -57,7 +57,7 @@ suite('AmbientPreviewTest', function() {
         assertTrue(!!textSpan);
         assertEquals(
             ambientPreviewElement.i18n('ambientModeMainPageZeroStateMessage'),
-            textSpan.innerText);
+            textSpan.innerText.trim());
       });
 
   test(

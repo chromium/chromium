@@ -34,6 +34,7 @@ suite('AmbientSubpageTest', function() {
   setup(() => {
     loadTimeData.overrideValues({
       isAmbientModeAllowed: true,
+      isAmbientSubpageUIChangeEnabled: true,
     });
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
@@ -818,9 +819,9 @@ suite('AmbientSubpageTest', function() {
         ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit'),
         null);
 
-    // Zero state should be present.
-    const zeroState =
-        ambientSubpageElement.shadowRoot!.querySelector('ambient-zero-state');
-    assertTrue(!!zeroState);
+    // Zero state should not be present.
+    assertEquals(
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-zero-state'),
+        null);
   });
 });
