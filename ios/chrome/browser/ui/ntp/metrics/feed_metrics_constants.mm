@@ -14,7 +14,9 @@ const int kNonShortClickSeconds = 10;
 const int kMinutesBetweenSessions = 5;
 const int kMaxCardsInFeed = 50;
 
-NSString* const kArticleClickTimestampKey = @"ShortClickInteractionTimestamp";
+NSString* const kArticleVisitTimestampKey = @"ShortClickInteractionTimestamp";
+NSString* const kLongFeedVisitTimeAggregateKey =
+    @"LongFeedInteractionTimeDelta";
 
 #pragma mark - Histograms
 

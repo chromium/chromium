@@ -454,7 +454,6 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
         self.feedMetricsRecorder.feedControlDelegate = self;
         self.feedMetricsRecorder.followDelegate = self;
       }
-      [self.feedMetricsRecorder recordNTPBecameVisible];
     }
     if (!visible) {
       // Unfocus omnibox, to prevent it from lingering when it should be
@@ -465,7 +464,16 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
           self.browser->GetCommandDispatcher(), OmniboxCommands);
       [omniboxCommandHandler cancelOmniboxEdit];
     }
+    // Check if feed is visible before reporting NTP visibility as the feed
+    // needs to be visible in order to use for metrics.
+    // TODO(crbug.com/1373650) Move isFeedVisible check to the metrics recorder
+    if (IsGoodVisitsMetricEnabled()) {
+      if (self.started && [self isFeedVisible]) {
+        [self.feedMetricsRecorder recordNTPDidChangeVisibility:visible];
+      }
+    }
   }
+
   self.viewPresented = visible;
   [self updateVisible];
 }

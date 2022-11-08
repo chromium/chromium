@@ -37,8 +37,8 @@ class Time;
 // visible.
 - (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation;
 
-// Record when the NTP was is displayed.
-- (void)recordNTPBecameVisible;
+// Record when the NTP changes visibility.
+- (void)recordNTPDidChangeVisibility:(BOOL)visible;
 
 // Record metrics for when the user has tapped on the feed preview.
 - (void)recordDiscoverFeedPreviewTapped;
