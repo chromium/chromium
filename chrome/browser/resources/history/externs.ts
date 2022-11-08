@@ -85,7 +85,6 @@ export interface ForeignSessionWindow {
  */
 export interface ForeignSession {
   collapsed: boolean;
-  deviceType: string;
   name: string;
   modifiedTime: string;
   tag: string;

@@ -45,31 +45,6 @@ namespace {
 // Maximum number of sessions we're going to display on the NTP
 const size_t kMaxSessionsToShow = 10;
 
-// Converts the DeviceType enum value to a string. This is used
-// in the NTP handler for foreign sessions for matching session
-// types to an icon style.
-std::string DeviceTypeToString(sync_pb::SyncEnums::DeviceType device_type) {
-  switch (device_type) {
-    case sync_pb::SyncEnums::TYPE_UNSET:
-      break;
-    case sync_pb::SyncEnums::TYPE_WIN:
-      return "win";
-    case sync_pb::SyncEnums::TYPE_MAC:
-      return "macosx";
-    case sync_pb::SyncEnums::TYPE_LINUX:
-      return "linux";
-    case sync_pb::SyncEnums::TYPE_CROS:
-      return "chromeos";
-    case sync_pb::SyncEnums::TYPE_OTHER:
-      return "other";
-    case sync_pb::SyncEnums::TYPE_PHONE:
-      return "phone";
-    case sync_pb::SyncEnums::TYPE_TABLET:
-      return "tablet";
-  }
-  return std::string();
-}
-
 // Helper method to create JSON compatible objects from Session objects.
 absl::optional<base::Value::Dict> SessionTabToValue(
     const ::sessions::SessionTab& tab) {
@@ -332,7 +307,6 @@ base::Value::List ForeignSessionHandler::GetForeignSessions() {
       // remove any keys here.
       session_data.Set("tag", session_tag);
       session_data.Set("name", session->session_name);
-      session_data.Set("deviceType", DeviceTypeToString(session->device_type));
       session_data.Set("modifiedTime",
                        FormatSessionTime(session->modified_time));
       session_data.Set("timestamp", session->modified_time.ToJsTime());

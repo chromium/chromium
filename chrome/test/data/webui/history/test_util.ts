@@ -151,7 +151,6 @@ export function createSession(
     name: string, windows: ForeignSessionWindow[]): ForeignSession {
   return {
     collapsed: false,
-    deviceType: '',
     name,
     modifiedTime: '2 seconds ago',
     tag: name,
