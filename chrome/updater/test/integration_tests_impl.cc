@@ -269,7 +269,7 @@ void CopyLog(const base::FilePath& src_dir) {
     EXPECT_TRUE(base::CreateDirectory(dest_dir));
     const base::FilePath dest_file_path = [dest_dir]() {
       base::FilePath path = dest_dir.AppendASCII("updater.log");
-      for (int i = 1; i < 3 && base::PathExists(path); ++i) {
+      for (int i = 1; i < 10 && base::PathExists(path); ++i) {
         path = dest_dir.AppendASCII(base::StringPrintf("updater.%d.log", i));
       }
       return path;
