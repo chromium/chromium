@@ -43,6 +43,12 @@ export class TouchpadTesterElement extends TouchpadTesterElementBase {
     this.touchpad = null;
   }
 
+  /** Helper to check dialog open state. */
+  isOpen(): boolean {
+    assert(!!this.$.touchpadTesterDialog);
+    return this.$.touchpadTesterDialog.open;
+  }
+
   /** Setup display for requested touchpad.*/
   show(touchpad: TouchDeviceInfo): void {
     assert(!!touchpad);

@@ -16,7 +16,8 @@
         </input-card>
       </template>
       <template is="dom-if" if="[[showTouchpads_]]">
-        <input-card device-type="touchpad" devices="[[touchpads_]]">
+        <input-card device-type="touchpad" devices="[[touchpads_]]"
+            on-test-button-click="handleTouchpadTestButtonClick_">
           <div slot="title">[[i18n('inputCategoryTouchpad')]]</div>
         </input-card>
       </template>
@@ -33,3 +34,4 @@
 <touchscreen-tester
     touchscreen-id-under-testing="{{touchscreenIdUnderTesting}}">
 </touchscreen-tester>
+<touchpad-tester></touchpad-tester>

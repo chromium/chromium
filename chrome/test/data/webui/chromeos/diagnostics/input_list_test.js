@@ -203,6 +203,23 @@ suite('inputListTestSuite', function() {
     assertEquals(fakeTouchDevices[0].name, touchpadCard.devices[0].name);
   });
 
+  test('TouchpadTesterShowAndClose', async () => {
+    await initializeInputList([], [fakeTouchDevices[0]]);
+    const touchpadTester =
+        inputListElement.shadowRoot.querySelector('touchpad-tester');
+    assertTrue(!!touchpadTester);
+    assertFalse(touchpadTester.isOpen());
+
+    const testButton =
+        getCardByDeviceType('touchpad').shadowRoot.querySelector('cr-button');
+    assertTrue(!!testButton);
+    testButton.click();
+    await flushTasks();
+
+    assertTrue(touchpadTester.isOpen());
+    assertDeepEquals(fakeTouchDevices[0], touchpadTester.touchpad);
+  });
+
   test('TouchscreenAddAndRemove', async () => {
     /** @type {!TouchDeviceInfo} */
     const fakeTouchscreen = {

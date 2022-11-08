@@ -17,6 +17,7 @@ import {ConnectedDevicesObserverReceiver, ConnectionType, InputDataProviderInter
 import {getTemplate} from './input_list.html.js';
 import {KeyboardTesterElement} from './keyboard_tester.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
+import {TouchpadTesterElement} from './touchpad_tester.js';
 import {TouchscreenTesterElement} from './touchscreen_tester.js';
 
 /**
@@ -84,6 +85,7 @@ export class InputListElement extends InputListElementBase {
       InternalDisplayPowerStateObserverReceiver|null = null;
   private keyboardTester: KeyboardTesterElement|null = null;
   private touchscreenTester: TouchscreenTesterElement|null = null;
+  private touchpadTester: TouchpadTesterElement|null = null;
   private browserProxy_: DiagnosticsBrowserProxy =
       DiagnosticsBrowserProxyImpl.getInstance();
   private inputDataProvider_: InputDataProviderInterface =
@@ -229,6 +231,23 @@ export class InputListElement extends InputListElementBase {
     assert(keyboard);
     this.keyboardTester.keyboard = keyboard;
     this.keyboardTester.show();
+  }
+
+  /**
+   * Shows touchpad-tester interface when input-card "test" button for specific
+   * device is clicked.
+   * @param {CustomEvent} e triggered which provides evdev_id of device.
+   */
+  protected handleTouchpadTestButtonClick_(e: CustomEvent): void {
+    if (!this.touchpadTester) {
+      this.touchpadTester =
+          this.shadowRoot!.querySelector(TouchpadTesterElement.is);
+    }
+    assert(this.touchpadTester);
+    const touchpad: TouchDeviceInfo|undefined = this.touchpads_.find(
+        (touchpad: TouchDeviceInfo) => touchpad.id === e.detail.evdevId);
+    assert(touchpad);
+    this.touchpadTester.show(touchpad);
   }
 
   /**
