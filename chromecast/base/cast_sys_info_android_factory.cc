@@ -4,6 +4,8 @@
 
 #include "chromecast/base/cast_sys_info_android.h"
 
+#include <memory>
+
 namespace chromecast {
 
 // static

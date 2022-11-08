@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DRIVE_CHROMEOS_SEARCH_METADATA_H_
 #define COMPONENTS_DRIVE_CHROMEOS_SEARCH_METADATA_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
