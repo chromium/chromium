@@ -1254,7 +1254,7 @@ void NetworkHandler::SetRenderer(int render_process_host_id,
     browser_context_ = nullptr;
   }
   host_ = frame_host;
-  if (background_sync_restorer_ && storage_partition_)
+  if (background_sync_restorer_)
     background_sync_restorer_->SetStoragePartition(storage_partition_);
 }
 
