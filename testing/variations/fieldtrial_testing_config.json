@@ -65,31 +65,6 @@
             ]
         }
     ],
-    "AlignWakeUps": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AlignWakeUps",
-                        "ExplicitHighResolutionTimerWin"
-                    ]
-                }
-            ]
-        }
-    ],
     "AnchorElementInteractionPreloader": [
         {
             "platforms": [
@@ -2243,28 +2218,6 @@
             ]
         }
     ],
-    "CacheFeatureOverrideState": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CacheFeatureOverrideState"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheFontFamilyMatching": [
         {
             "platforms": [
@@ -3074,6 +3027,44 @@
             ]
         }
     ],
+    "CombinedPowerExperiment": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "delay": "30s"
+                    },
+                    "enable_features": [
+                        "AlignWakeUps",
+                        "AlwaysAbandonScheduledTask",
+                        "CacheFeatureOverrideState",
+                        "DelayFirstParkingOfStrings",
+                        "EarlyExitOnNoopClassOrStyleChange",
+                        "ExplicitHighResolutionTimerWin",
+                        "MessagePumpMacDelayedWorkOptimizations",
+                        "NoWakeUpsForCanceledTasks",
+                        "ReduceCpuUtilization",
+                        "RemoveCanceledTasksInTaskQueue2",
+                        "V8DelayMemoryReducer"
+                    ],
+                    "disable_features": [
+                        "FontManagerEarlyInit"
+                    ]
+                }
+            ]
+        }
+    ],
     "CommerceHintAndroid": [
         {
             "platforms": [
@@ -3638,28 +3629,6 @@
             ]
         }
     ],
-    "DelayFirstParkingOfStrings": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DelayFirstParkingOfStrings"
-                    ]
-                }
-            ]
-        }
-    ],
     "DelayFirstWorkerWake": [
         {
             "platforms": [
@@ -4113,26 +4082,6 @@
             ]
         }
     ],
-    "DisableFontManagerEarlyInitDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "FontManagerEarlyInit"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
@@ -4460,28 +4409,6 @@
                     "enable_features": [
                         "DownloadBubble",
                         "DownloadBubbleV2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EarlyExitOnNoopClassOrStyleChange": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EarlyExitOnNoopClassOrStyleChange"
                     ]
                 }
             ]
@@ -6920,21 +6847,6 @@
             ]
         }
     ],
-    "MessagePumpMacDelayedWorkOptimizations": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MessagePumpMacDelayedWorkOptimizations"
-                    ]
-                }
-            ]
-        }
-    ],
     "MessagesForAndroidOfferNotification": [
         {
             "platforms": [
@@ -7243,28 +7155,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NoCentralWebCacheLimitControl"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NoWakeUpsForCanceledTasks": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NoWakeUpsForCanceledTasks"
                     ]
                 }
             ]
@@ -9306,28 +9196,6 @@
             ]
         }
     ],
-    "ReduceCpuUtilization": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReduceCpuUtilization"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReduceOpsTaskSplitting": [
         {
             "platforms": [
@@ -9416,30 +9284,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RegionCaptureExperimentalSubtypes"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RemoveCanceledTasksInTaskQueue2": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "RemoveCanceledTasksInTaskQueue2",
-                    "enable_features": [
-                        "AlwaysAbandonScheduledTask",
-                        "RemoveCanceledTasksInTaskQueue2"
                     ]
                 }
             ]
@@ -11667,31 +11511,6 @@
                 },
                 {
                     "name": "Default"
-                }
-            ]
-        }
-    ],
-    "V8DelayMemoryReducer": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "delay": "30s"
-                    },
-                    "enable_features": [
-                        "V8DelayMemoryReducer"
-                    ]
                 }
             ]
         }
