@@ -13,6 +13,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_matchers.h"
@@ -30,12 +31,12 @@ using web::test::ExecuteJavaScript;
 namespace {
 
 // Long press duration to trigger context menu.
-const NSTimeInterval kContextMenuLongPressDuration = 1.0;
+constexpr base::TimeDelta kContextMenuLongPressDuration = base::Seconds(1);
 
 // Duration to wait for verification of JavaScript action.
 // TODO(crbug.com/670910): Reduce duration if the time required for verification
 // is reduced on devices.
-const NSTimeInterval kWaitForVerificationTimeout = 8.0;
+constexpr base::TimeDelta kWaitForVerificationTimeout = base::Seconds(8);
 
 // Generic verification injector. Injects one-time mousedown verification into
 // `web_state` that will set the boolean pointed to by `verified` to true when
@@ -232,8 +233,8 @@ id<GREYAction> WebViewLongPressElementForContextMenu(
     return WebViewElementNotFound(selector);
   }
   CGPoint point = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
-  id<GREYAction> longpress =
-      grey_longPressAtPointWithDuration(point, kContextMenuLongPressDuration);
+  id<GREYAction> longpress = grey_longPressAtPointWithDuration(
+      point, kContextMenuLongPressDuration.InSecondsF());
   if (triggers_context_menu) {
     return longpress;
   }
