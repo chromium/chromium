@@ -177,8 +177,10 @@ public class AbstractAppRestrictionsProviderTest {
         provider.startListeningForPolicyChanges();
         Assert.assertEquals(1, dummyContext.getReceiverCount());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Assert.assertEquals(ContextUtils.RECEIVER_NOT_EXPORTED,
-                    dummyContext.getLastRegisteredReceiverFlags());
+            // Ensure that neither RECEIVER_EXPORTED nor RECEIVER_NOT_EXPORTED flags are set,
+            // asserting that the receiver was only registered for protected broadcasts.
+            final int badMask = ContextUtils.RECEIVER_EXPORTED | ContextUtils.RECEIVER_NOT_EXPORTED;
+            Assert.assertEquals(0, dummyContext.getLastRegisteredReceiverFlags() & badMask);
         }
     }
 
@@ -202,8 +204,10 @@ public class AbstractAppRestrictionsProviderTest {
         provider.startListeningForPolicyChanges();
         Assert.assertEquals(1, dummyContext.getReceiverCount());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Assert.assertEquals(ContextUtils.RECEIVER_NOT_EXPORTED,
-                    dummyContext.getLastRegisteredReceiverFlags());
+            // Ensure that neither RECEIVER_EXPORTED nor RECEIVER_NOT_EXPORTED flags are set,
+            // asserting that the receiver was only registered for protected broadcasts.
+            final int badMask = ContextUtils.RECEIVER_EXPORTED | ContextUtils.RECEIVER_NOT_EXPORTED;
+            Assert.assertEquals(0, dummyContext.getLastRegisteredReceiverFlags() & badMask);
         }
         provider.stopListening();
         Assert.assertEquals(0, dummyContext.getReceiverCount());

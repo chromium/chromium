@@ -25,6 +25,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -238,7 +239,7 @@ public class BluetoothChooserDialog
                         statusIdleNoneFound, statusIdleSomeFound, positiveButton);
         mItemChooserDialog = new ItemChooserDialog(mContext, mActivity.getWindow(), this, labels);
 
-        mActivity.registerReceiver(mLocationModeBroadcastReceiver,
+        ContextUtils.registerProtectedBroadcastReceiver(mActivity, mLocationModeBroadcastReceiver,
                 new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
         mIsLocationModeChangedReceiverRegistered = true;
     }

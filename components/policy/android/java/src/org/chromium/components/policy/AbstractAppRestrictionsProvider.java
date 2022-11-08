@@ -52,7 +52,7 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
 
     /**
      * @return The intent action to listen to to be notified of restriction changes,
-     * {@code null} if it is not supported.
+     * {@code null} if it is not supported. The action will/must be a protected broadcast action.
      */
     protected abstract String getRestrictionChangeIntentAction();
 
@@ -65,7 +65,7 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         String changeIntentAction = getRestrictionChangeIntentAction();
         if (changeIntentAction == null) return;
 
-        ContextUtils.registerNonExportedBroadcastReceiver(mContext, mAppRestrictionsChangedReceiver,
+        ContextUtils.registerProtectedBroadcastReceiver(mContext, mAppRestrictionsChangedReceiver,
                 new IntentFilter(changeIntentAction), new Handler(ThreadUtils.getUiThreadLooper()));
     }
 

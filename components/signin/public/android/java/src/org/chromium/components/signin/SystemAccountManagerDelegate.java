@@ -69,7 +69,8 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         };
         IntentFilter accountsChangedIntentFilter = new IntentFilter();
         accountsChangedIntentFilter.addAction(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION);
-        context.registerReceiver(receiver, accountsChangedIntentFilter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                context, receiver, accountsChangedIntentFilter);
 
         IntentFilter gmsPackageReplacedFilter = new IntentFilter();
         gmsPackageReplacedFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
@@ -77,7 +78,8 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         gmsPackageReplacedFilter.addDataPath(
                 "com.google.android.gms", PatternMatcher.PATTERN_PREFIX);
 
-        context.registerReceiver(receiver, gmsPackageReplacedFilter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                context, receiver, gmsPackageReplacedFilter);
     }
 
     @Override

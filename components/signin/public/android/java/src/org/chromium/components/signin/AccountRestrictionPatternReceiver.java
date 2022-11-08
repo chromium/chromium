@@ -34,7 +34,7 @@ final class AccountRestrictionPatternReceiver {
                 getRestrictionPatternsAsync().then(onPatternsUpdated);
             }
         };
-        ContextUtils.getApplicationContext().registerReceiver(
+        ContextUtils.registerProtectedBroadcastReceiver(ContextUtils.getApplicationContext(),
                 receiver, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
         getRestrictionPatternsAsync().then(onPatternsUpdated);
     }

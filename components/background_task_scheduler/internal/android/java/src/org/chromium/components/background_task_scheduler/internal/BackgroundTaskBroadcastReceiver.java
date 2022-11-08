@@ -191,7 +191,8 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
         }
 
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = context.registerReceiver(null, intentFilter);
+        Intent batteryStatus =
+                ContextUtils.registerProtectedBroadcastReceiver(context, null, intentFilter);
         int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
         return status == BatteryManager.BATTERY_STATUS_CHARGING
                 || status == BatteryManager.BATTERY_STATUS_FULL;
