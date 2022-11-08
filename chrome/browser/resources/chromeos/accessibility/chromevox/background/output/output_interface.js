@@ -193,13 +193,6 @@ export class OutputInterface {
   formatTextContent_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatUrlFilename_(data, token, options) {}
-
-  /**
    * @param {string} token
    * @return {boolean}
    */

@@ -45,7 +45,7 @@ export class OutputFormatter {
     } else if (token === 'description') {
       this.formatDescription_(this.params_, token, options);
     } else if (token === 'urlFilename') {
-      this.output_.formatUrlFilename_(this.params_, token, options);
+      this.formatUrlFilename_(this.params_, token, options);
     } else if (token === 'nameFromNode') {
       this.output_.formatNameFromNode_(this.params_, token, options);
     } else if (token === 'nameOrDescendants') {
@@ -207,6 +207,32 @@ export class OutputFormatter {
     }
 
     formatLog.writeTokenWithValue(token, node.name);
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatUrlFilename_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    options.annotation.push('name');
+    const url = node.url || '';
+    let filename = '';
+    if (url.substring(0, 4) !== 'data') {
+      filename = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
+
+      // Hack to not speak the filename if it's ridiculously long.
+      if (filename.length >= 30) {
+        filename = filename.substring(0, 16) + '...';
+      }
+    }
+    this.output_.append_(buff, filename, options);
+    formatLog.writeTokenWithValue(token, filename);
   }
 
   /**

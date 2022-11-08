@@ -684,27 +684,6 @@ export class Output {
   }
 
   /** @override */
-  formatUrlFilename_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    options.annotation.push('name');
-    const url = node.url || '';
-    let filename = '';
-    if (url.substring(0, 4) !== 'data') {
-      filename = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
-
-      // Hack to not speak the filename if it's ridiculously long.
-      if (filename.length >= 30) {
-        filename = filename.substring(0, 16) + '...';
-      }
-    }
-    this.append_(buff, filename, options);
-    formatLog.writeTokenWithValue(token, filename);
-  }
-
-  /** @override */
   formatNameFromNode_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
