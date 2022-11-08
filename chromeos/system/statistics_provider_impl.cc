@@ -158,7 +158,7 @@ base::FilePath GetFilePathIgnoreFailure(int key) {
   return file_path;
 }
 
-bool HasOemPrefix(const std::string& name) {
+bool HasOemPrefix(base::StringPiece name) {
   return name.substr(0, 4) == "oem_";
 }
 
@@ -294,55 +294,58 @@ void StatisticsProviderImpl::ScheduleOnMachineStatisticsLoaded(
                                                    std::move(callback));
 }
 
-bool StatisticsProviderImpl::GetMachineStatistic(const std::string& name,
-                                                 std::string* result) {
+absl::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(
+    base::StringPiece name) {
   VLOG(1) << "Machine Statistic requested: " << name;
   if (!WaitForStatisticsLoaded()) {
     LOG(ERROR) << "GetMachineStatistic called before load started: " << name;
-    return false;
+    return absl::nullopt;
   }
 
   // Test region should override any other value.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kCrosRegion) &&
-      GetRegionalInformation(name, result)) {
-    return true;
+          ash::switches::kCrosRegion)) {
+    if (const absl::optional<base::StringPiece> region_result =
+            GetRegionalInformation(name))
+      return region_result;
   }
 
-  NameValuePairsParser::NameValueMap::iterator iter = machine_info_.find(name);
-  if (iter == machine_info_.end()) {
-    if (GetRegionalInformation(name, result))
-      return true;
-    if (result != nullptr && base::SysInfo::IsRunningOnChromeOS() &&
-        (oem_manifest_loaded_ || !HasOemPrefix(name))) {
-      VLOG(1) << "Requested statistic not found: " << name;
-    }
-    return false;
+  if (const auto iter = machine_info_.find(name); iter != machine_info_.end()) {
+    return base::StringPiece(iter->second);
   }
-  if (result != nullptr)
-    *result = iter->second;
-  return true;
+
+  if (const absl::optional<base::StringPiece> region_result =
+          GetRegionalInformation(name)) {
+    return region_result;
+  }
+
+  if (base::SysInfo::IsRunningOnChromeOS() &&
+      (oem_manifest_loaded_ || !HasOemPrefix(name))) {
+    VLOG(1) << "Requested statistic not found: " << name;
+  }
+
+  return absl::nullopt;
 }
 
-bool StatisticsProviderImpl::GetMachineFlag(const std::string& name,
-                                            bool* result) {
+StatisticsProviderImpl::FlagValue StatisticsProviderImpl::GetMachineFlag(
+    base::StringPiece name) {
   VLOG(1) << "Machine Flag requested: " << name;
   if (!WaitForStatisticsLoaded()) {
     LOG(ERROR) << "GetMachineFlag called before load started: " << name;
-    return false;
+    return FlagValue::kUnset;
   }
 
-  MachineFlags::const_iterator iter = machine_flags_.find(name);
-  if (iter == machine_flags_.end()) {
-    if (result != nullptr && base::SysInfo::IsRunningOnChromeOS() &&
-        (oem_manifest_loaded_ || !HasOemPrefix(name))) {
-      VLOG(1) << "Requested machine flag not found: " << name;
-    }
-    return false;
+  if (const auto iter = machine_flags_.find(name);
+      iter != machine_flags_.end()) {
+    return iter->second ? FlagValue::kTrue : FlagValue::kFalse;
   }
-  if (result != nullptr)
-    *result = iter->second;
-  return true;
+
+  if (base::SysInfo::IsRunningOnChromeOS() &&
+      (oem_manifest_loaded_ || !HasOemPrefix(name))) {
+    VLOG(1) << "Requested machine flag not found: " << name;
+  }
+
+  return FlagValue::kUnset;
 }
 
 void StatisticsProviderImpl::Shutdown() {
@@ -352,8 +355,7 @@ void StatisticsProviderImpl::Shutdown() {
 bool StatisticsProviderImpl::IsRunningOnVm() {
   if (!base::SysInfo::IsRunningOnChromeOS())
     return false;
-  std::string is_vm;
-  return GetMachineStatistic(kIsVmKey, &is_vm) && is_vm == kIsVmValueTrue;
+  return GetMachineStatistic(kIsVmKey) == kIsVmValueTrue;
 }
 
 StatisticsProvider::VpdStatus StatisticsProviderImpl::GetVpdStatus() const {
@@ -623,19 +625,15 @@ void StatisticsProviderImpl::LoadRegionsFile(const base::FilePath& filename,
   }
 }
 
-bool StatisticsProviderImpl::GetRegionalInformation(const std::string& name,
-                                                    std::string* result) const {
+absl::optional<base::StringPiece>
+StatisticsProviderImpl::GetRegionalInformation(base::StringPiece name) const {
   if (machine_info_.find(kRegionKey) == machine_info_.end())
-    return false;
+    return absl::nullopt;
 
-  const auto iter = region_info_.find(name);
-  if (iter == region_info_.end())
-    return false;
+  if (const auto iter = region_info_.find(name); iter != region_info_.end())
+    return base::StringPiece(iter->second);
 
-  if (result)
-    *result = iter->second;
-
-  return true;
+  return absl::nullopt;
 }
 
 }  // namespace chromeos::system

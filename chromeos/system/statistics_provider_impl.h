@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
 #define CHROMEOS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
 
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,13 +14,14 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/system/name_value_pairs_parser.h"
 #include "chromeos/system/statistics_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::system {
 
@@ -79,12 +79,14 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
   // StatisticsProvider implementation:
   void StartLoadingMachineStatistics(bool load_oem_manifest) override;
   void ScheduleOnMachineStatisticsLoaded(base::OnceClosure callback) override;
+
   // If `ash::switches::kCrosRegion` switch is set, looks for the requested
   // statistic in the region file and ignores any other sources. Otherwise
   // returns the statistic from the first matching source.
-  bool GetMachineStatistic(const std::string& name,
-                           std::string* result) override;
-  bool GetMachineFlag(const std::string& name, bool* result) override;
+  absl::optional<base::StringPiece> GetMachineStatistic(
+      base::StringPiece name) override;
+  FlagValue GetMachineFlag(base::StringPiece name) override;
+
   void Shutdown() override;
 
   // Returns true when Chrome OS is running in a VM. NOTE: if crossystem is not
@@ -94,13 +96,13 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
   VpdStatus GetVpdStatus() const override;
 
  private:
-  using MachineFlags = std::map<std::string, bool>;
+  using MachineFlags = base::flat_map<std::string, bool>;
 
   explicit StatisticsProviderImpl(StatisticsSources sources);
 
   // Called when statistics have finished loading. Unblocks pending calls to
-  // WaitForStatisticsLoaded() and schedules callbacks passed to
-  // ScheduleOnMachineStatisticsLoaded().
+  // `WaitForStatisticsLoaded()` and schedules callbacks passed to
+  // `ScheduleOnMachineStatisticsLoaded()`.
   void SignalStatisticsLoaded();
 
   // Waits up to `kTimeoutSecs` for statistics to be loaded. Returns true if
@@ -126,10 +128,9 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
   void LoadRegionsFile(const base::FilePath& filename,
                        base::StringPiece region);
 
-  // Extracts known data from regional_data_;
-  // Returns true on success;
-  bool GetRegionalInformation(const std::string& name,
-                              std::string* result) const;
+  // Extracts known data from `regional_data_`.
+  absl::optional<base::StringPiece> GetRegionalInformation(
+      base::StringPiece name) const;
 
   StatisticsSources sources_;
 

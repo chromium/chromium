@@ -26,29 +26,29 @@ void FakeStatisticsProvider::ScheduleOnMachineStatisticsLoaded(
                                                    std::move(callback));
 }
 
-bool FakeStatisticsProvider::GetMachineStatistic(const std::string& name,
-                                                 std::string* result) {
-  std::map<std::string, std::string>::const_iterator match =
-      machine_statistics_.find(name);
-  if (match != machine_statistics_.end() && result)
-    *result = match->second;
-  return match != machine_statistics_.end();
+absl::optional<base::StringPiece> FakeStatisticsProvider::GetMachineStatistic(
+    base::StringPiece name) {
+  const auto match = machine_statistics_.find(name);
+  if (match == machine_statistics_.end())
+    return absl::nullopt;
+
+  return base::StringPiece(match->second);
 }
 
-bool FakeStatisticsProvider::GetMachineFlag(const std::string& name,
-                                            bool* result) {
-  std::map<std::string, bool>::const_iterator match = machine_flags_.find(name);
-  if (match != machine_flags_.end() && result)
-    *result = match->second;
-  return match != machine_flags_.end();
+FakeStatisticsProvider::FlagValue FakeStatisticsProvider::GetMachineFlag(
+    base::StringPiece name) {
+  const auto match = machine_flags_.find(name);
+  if (match == machine_flags_.end())
+    return FlagValue::kUnset;
+
+  return match->second ? FlagValue::kTrue : FlagValue::kFalse;
 }
 
 void FakeStatisticsProvider::Shutdown() {
 }
 
 bool FakeStatisticsProvider::IsRunningOnVm() {
-  std::string is_vm;
-  return GetMachineStatistic(kIsVmKey, &is_vm) && is_vm == kIsVmValueTrue;
+  return GetMachineStatistic(kIsVmKey) == kIsVmValueTrue;
 }
 
 StatisticsProvider::VpdStatus FakeStatisticsProvider::GetVpdStatus() const {
@@ -60,7 +60,7 @@ void FakeStatisticsProvider::SetMachineStatistic(const std::string& key,
   machine_statistics_[key] = value;
 }
 
-void FakeStatisticsProvider::ClearMachineStatistic(const std::string& key) {
+void FakeStatisticsProvider::ClearMachineStatistic(base::StringPiece key) {
   machine_statistics_.erase(key);
 }
 
@@ -69,7 +69,7 @@ void FakeStatisticsProvider::SetMachineFlag(const std::string& key,
   machine_flags_[key] = value;
 }
 
-void FakeStatisticsProvider::ClearMachineFlag(const std::string& key) {
+void FakeStatisticsProvider::ClearMachineFlag(base::StringPiece key) {
   machine_flags_.erase(key);
 }
 

@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -187,35 +188,13 @@ TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromCrossystemTool) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("crossystem_key_1", &result));
-    EXPECT_EQ(result, "crossystem_value_1");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("crossystem_key_2", &result));
-    EXPECT_EQ(result, "crossystem_value_2");
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_3", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_4", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_5", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_EQ(provider->GetMachineStatistic("crossystem_key_1"),
+            "crossystem_value_1");
+  EXPECT_EQ(provider->GetMachineStatistic("crossystem_key_2"),
+            "crossystem_value_2");
+  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_3"));
+  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_4"));
+  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_5"));
 }
 
 // Tests that provider has special handling for the firmware write protect key
@@ -248,12 +227,8 @@ TEST_F(StatisticsProviderImplTest,
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kFirmwareWriteProtectCurrentKey,
-                                              &result));
-    EXPECT_EQ(result, "machine_info_value");
-  }
+  EXPECT_EQ(provider->GetMachineStatistic(kFirmwareWriteProtectCurrentKey),
+            "machine_info_value");
 }
 
 // Tests that provider has special handling for the firmware write protect key
@@ -281,17 +256,14 @@ TEST_F(
               CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
           .Build();
 
+  // Load statistics.
   auto provider = StatisticsProviderImpl::CreateProviderForTesting(
       std::move(testing_sources));
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kFirmwareWriteProtectCurrentKey,
-                                              &result));
-    EXPECT_EQ(result, "crossytem_value");
-  }
+  EXPECT_EQ(provider->GetMachineStatistic(kFirmwareWriteProtectCurrentKey),
+            "crossytem_value");
 }
 
 // Tests that StatisticsProvider skips crossystem tool in non-ChromeOS test
@@ -320,17 +292,8 @@ TEST_F(StatisticsProviderImplTest,
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_1", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_2", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_1"));
+  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_2"));
 }
 
 // Test that the provider loads statistics from machine info file if they have
@@ -363,37 +326,14 @@ TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromMachineInfoFile) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("machine_info_key_1", &result));
-    EXPECT_EQ(result, "machine_info_value_1");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("machine_info_key_2", &result));
-    EXPECT_EQ(result, "machine_info_value_2");
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic("machine_info_malformed_key_3", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic("machine_info_malformed_key_4", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("machine_info_key_5", &result));
-    EXPECT_EQ(result, "machine_info_value_5");
-  }
+  EXPECT_EQ(provider->GetMachineStatistic("machine_info_key_1"),
+            "machine_info_value_1");
+  EXPECT_EQ(provider->GetMachineStatistic("machine_info_key_2"),
+            "machine_info_value_2");
+  EXPECT_FALSE(provider->GetMachineStatistic("machine_info_malformed_key_3"));
+  EXPECT_FALSE(provider->GetMachineStatistic("machine_info_malformed_key_4"));
+  EXPECT_EQ(provider->GetMachineStatistic("machine_info_key_5"),
+            "machine_info_value_5");
 }
 
 // Tests that StatisticsProvider generates stub statistics file for machine info
@@ -418,8 +358,8 @@ TEST_F(StatisticsProviderImplTest,
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  const auto initial_machine_id = provider->GetEnterpriseMachineID();
-  EXPECT_FALSE(initial_machine_id.empty());
+  const auto initial_machine_id = provider->GetMachineID();
+  EXPECT_TRUE(initial_machine_id && !initial_machine_id->empty());
 
   // Check stub file exists.
   EXPECT_TRUE(base::PathExists(kMachineInfoFilepath));
@@ -429,7 +369,7 @@ TEST_F(StatisticsProviderImplTest,
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Expect the same statistic as initial.
-  EXPECT_EQ(provider->GetEnterpriseMachineID(), initial_machine_id);
+  EXPECT_EQ(provider->GetMachineID(), initial_machine_id);
 }
 
 // Test that the provider loads statistics from VPD echo and VPD file if they
@@ -473,55 +413,18 @@ TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromVpdFile) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("vpd_echo_key_1", &result));
-    EXPECT_EQ(result, "vpd_echo_value_1");
-  }
+  EXPECT_EQ(provider->GetMachineStatistic("vpd_echo_key_1"),
+            "vpd_echo_value_1");
+  EXPECT_EQ(provider->GetMachineStatistic("vpd_echo_key_2"),
+            "vpd_echo_value_2");
+  EXPECT_FALSE(provider->GetMachineStatistic("vpd_echo_malformed_key_3"));
+  EXPECT_FALSE(provider->GetMachineStatistic("vpd_echo_malformed_key_4"));
+  EXPECT_EQ(provider->GetMachineStatistic("vpd_echo_key_5"),
+            "vpd_echo_value_5");
 
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("vpd_echo_key_2", &result));
-    EXPECT_EQ(result, "vpd_echo_value_2");
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic("vpd_echo_malformed_key_3", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic("vpd_echo_malformed_key_4", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("vpd_echo_key_5", &result));
-    EXPECT_EQ(result, "vpd_echo_value_5");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("vpd_key_1", &result));
-    EXPECT_EQ(result, "vpd_value_1");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("vpd_key_2", &result));
-    EXPECT_EQ(result, "vpd_value_2");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("vpd_key_3", &result));
-    EXPECT_EQ(result, "vpd_value_3");
-  }
+  EXPECT_EQ(provider->GetMachineStatistic("vpd_key_1"), "vpd_value_1");
+  EXPECT_EQ(provider->GetMachineStatistic("vpd_key_2"), "vpd_value_2");
+  EXPECT_EQ(provider->GetMachineStatistic("vpd_key_3"), "vpd_value_3");
 
   // Check histogram recordings.
   histogram_tester.ExpectUniqueSample(
@@ -599,23 +502,9 @@ TEST_F(StatisticsProviderImplTest, RecordsErrorIfVpdFileIsMalformed) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("vpd_key_1", &result));
-    EXPECT_EQ(result, "vpd_value_1");
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(provider->GetMachineStatistic("vpd_malformed_key_2", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(provider->GetMachineStatistic("vpd_malformed_key_3", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_EQ(provider->GetMachineStatistic("vpd_key_1"), "vpd_value_1");
+  EXPECT_FALSE(provider->GetMachineStatistic("vpd_malformed_key_2"));
+  EXPECT_FALSE(provider->GetMachineStatistic("vpd_malformed_key_3"));
 
   // Check histogram recordings.
   histogram_tester.ExpectUniqueSample(
@@ -649,9 +538,9 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdFileIfNotRunningChromeOS) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  std::string initial_activate_date;
-  EXPECT_TRUE(
-      provider->GetMachineStatistic(kActivateDateKey, &initial_activate_date));
+  const auto initial_activate_date =
+      provider->GetMachineStatistic(kActivateDateKey);
+  EXPECT_TRUE(initial_activate_date);
 
   // Check stub file exists.
   EXPECT_TRUE(base::PathExists(kVpdFilepath));
@@ -668,12 +557,9 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdFileIfNotRunningChromeOS) {
   provider = StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
-  {
-    // Expect the same statistic as initial.
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kActivateDateKey, &result));
-    EXPECT_EQ(result, initial_activate_date);
-  }
+  // Expect the same statistic as initial.
+  EXPECT_EQ(provider->GetMachineStatistic(kActivateDateKey),
+            initial_activate_date);
 
   // The provider shall not record in non-chromeos environment.
   histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
@@ -908,66 +794,37 @@ TEST_F(StatisticsProviderImplTest, LoadsOemManifest) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic(kOemDeviceRequisitionKey, &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic("not_oem_statistic_key", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_FALSE(provider->GetMachineStatistic(kOemDeviceRequisitionKey));
+  EXPECT_FALSE(provider->GetMachineStatistic("not_oem_statistic_key"));
 
   for (const auto* oem_flag :
        {kOemIsEnterpriseManagedKey, kOemCanExitEnterpriseEnrollmentKey,
         kOemKeyboardDrivenOobeKey}) {
-    bool result = false;
-    EXPECT_FALSE(provider->GetMachineFlag(oem_flag, &result));
-    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
+    EXPECT_EQ(provider->GetMachineFlag(oem_flag),
+              StatisticsProviderImpl::FlagValue::kUnset);
   }
 
-  {
-    bool result = false;
-    EXPECT_FALSE(provider->GetMachineFlag("not_oem_flag_key", &result));
-    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_EQ(provider->GetMachineFlag("not_oem_flag_key"),
+            StatisticsProviderImpl::FlagValue::kUnset);
 
   // Load statistics with OEM flag.
   provider = StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
   LoadStatistics(provider.get(), /*load_oem_manifest=*/true);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(
-        provider->GetMachineStatistic(kOemDeviceRequisitionKey, &result));
-    EXPECT_EQ(result, "device_requisition_value");
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic("not_oem_statistic_key", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_EQ(provider->GetMachineStatistic(kOemDeviceRequisitionKey),
+            "device_requisition_value");
+  EXPECT_FALSE(provider->GetMachineStatistic("not_oem_statistic_key"));
 
   for (const auto* oem_flag :
        {kOemIsEnterpriseManagedKey, kOemCanExitEnterpriseEnrollmentKey,
         kOemKeyboardDrivenOobeKey}) {
-    bool result = false;
-    EXPECT_TRUE(provider->GetMachineFlag(oem_flag, &result));
-    EXPECT_TRUE(result);
+    EXPECT_EQ(provider->GetMachineFlag(oem_flag),
+              StatisticsProviderImpl::FlagValue::kTrue);
   }
 
-  {
-    bool result = false;
-    EXPECT_FALSE(provider->GetMachineFlag("not_oem_flag_key", &result));
-    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_EQ(provider->GetMachineFlag("not_oem_flag_key"),
+            StatisticsProviderImpl::FlagValue::kUnset);
 }
 
 // Test that the provider loads prefers OEM manifest file set by command line.
@@ -1014,33 +871,19 @@ TEST_F(StatisticsProviderImplTest, LoadsOemManifestFromCommandLine) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/true);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(
-        provider->GetMachineStatistic(kOemDeviceRequisitionKey, &result));
-    EXPECT_EQ(result, "device_requisition_command_line_value");
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic("not_oem_statistic_key", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_EQ(provider->GetMachineStatistic(kOemDeviceRequisitionKey),
+            "device_requisition_command_line_value");
+  EXPECT_FALSE(provider->GetMachineStatistic("not_oem_statistic_key"));
 
   for (const auto* oem_flag :
        {kOemIsEnterpriseManagedKey, kOemCanExitEnterpriseEnrollmentKey,
         kOemKeyboardDrivenOobeKey}) {
-    bool result = true;
-    EXPECT_TRUE(provider->GetMachineFlag(oem_flag, &result));
-    EXPECT_FALSE(result);
+    EXPECT_EQ(provider->GetMachineFlag(oem_flag),
+              StatisticsProvider::FlagValue::kFalse);
   }
 
-  {
-    bool result = false;
-    EXPECT_FALSE(provider->GetMachineFlag("not_oem_flag_key", &result));
-    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_EQ(provider->GetMachineFlag("not_oem_flag_key"),
+            StatisticsProviderImpl::FlagValue::kUnset);
 }
 
 // Tests that StatisticsProvider skips OEM manifest statistics in non-ChromeOS
@@ -1070,19 +913,13 @@ TEST_F(StatisticsProviderImplTest, DoesNotLoadOemManifestIfNotRunningChromeOS) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/true);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_FALSE(
-        provider->GetMachineStatistic(kOemDeviceRequisitionKey, &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_FALSE(provider->GetMachineStatistic(kOemDeviceRequisitionKey));
 
   for (const auto* oem_flag :
        {kOemIsEnterpriseManagedKey, kOemCanExitEnterpriseEnrollmentKey,
         kOemKeyboardDrivenOobeKey}) {
-    bool result = false;
-    EXPECT_FALSE(provider->GetMachineFlag(oem_flag, &result));
-    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
+    EXPECT_EQ(provider->GetMachineFlag(oem_flag),
+              StatisticsProviderImpl::FlagValue::kUnset);
   }
 }
 
@@ -1123,42 +960,15 @@ TEST_F(StatisticsProviderImplTest, LoadsRegionsFile) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
-    EXPECT_EQ(result, "region_value");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kInitialLocaleKey, &result));
-    EXPECT_EQ(result, "locale_1,locale_2,locale_3");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kKeyboardLayoutKey, &result));
-    EXPECT_EQ(result, "layout_1,layout_2,layout_3");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(
-        provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, &result));
-    EXPECT_EQ(result, "mechanical_layout");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kInitialTimezoneKey, &result));
-    EXPECT_EQ(result, "timezone_1");
-  }
-
-  {
-    std::string result;
-    EXPECT_FALSE(provider->GetMachineStatistic("non_region_key", &result));
-    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
-  }
+  EXPECT_EQ(provider->GetMachineStatistic(kRegionKey), "region_value");
+  EXPECT_EQ(provider->GetMachineStatistic(kInitialLocaleKey),
+            "locale_1,locale_2,locale_3");
+  EXPECT_EQ(provider->GetMachineStatistic(kKeyboardLayoutKey),
+            "layout_1,layout_2,layout_3");
+  EXPECT_EQ(provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey),
+            "mechanical_layout");
+  EXPECT_EQ(provider->GetMachineStatistic(kInitialTimezoneKey), "timezone_1");
+  EXPECT_FALSE(provider->GetMachineStatistic("non_region_key"));
 }
 
 // Test that the provider loads statistics from regions file from correct region
@@ -1209,42 +1019,16 @@ TEST_F(StatisticsProviderImplTest, SetsRegionFromCommandLine) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
-    EXPECT_EQ(result, "region_switch");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kInitialLocaleKey, &result));
-    EXPECT_EQ(result, "locale_1,locale_2,locale_3");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kKeyboardLayoutKey, &result));
-    EXPECT_EQ(result, "layout_1,layout_2,layout_3");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(
-        provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, &result));
-    EXPECT_EQ(result, "mechanical_layout");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kInitialTimezoneKey, &result));
-    EXPECT_EQ(result, "timezone_1");
-  }
-
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic("non_region_key", &result));
-    EXPECT_EQ(result, "machine_info_region_value");
-  }
+  EXPECT_EQ(provider->GetMachineStatistic(kRegionKey), "region_switch");
+  EXPECT_EQ(provider->GetMachineStatistic(kInitialLocaleKey),
+            "locale_1,locale_2,locale_3");
+  EXPECT_EQ(provider->GetMachineStatistic(kKeyboardLayoutKey),
+            "layout_1,layout_2,layout_3");
+  EXPECT_EQ(provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey),
+            "mechanical_layout");
+  EXPECT_EQ(provider->GetMachineStatistic(kInitialTimezoneKey), "timezone_1");
+  EXPECT_EQ(provider->GetMachineStatistic("non_region_key"),
+            "machine_info_region_value");
 }
 
 // Test that the provider does not load region statistics when region file does
@@ -1275,17 +1059,11 @@ TEST_F(StatisticsProviderImplTest, DoesNotLoadRegionsFileWhenFileIsMissing) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
-    EXPECT_EQ(result, "region_value");
-  }
-
-  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey, nullptr));
-  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey, nullptr));
-  EXPECT_FALSE(
-      provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, nullptr));
-  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey, nullptr));
+  EXPECT_EQ(provider->GetMachineStatistic(kRegionKey), "region_value");
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey));
 }
 
 // Test that the provider does not load region statistics when region file has
@@ -1316,17 +1094,11 @@ TEST_F(StatisticsProviderImplTest, DoesNotLoadRegionsFileWhenFileIsMalformed) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
-    EXPECT_EQ(result, "region_value");
-  }
-
-  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey, nullptr));
-  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey, nullptr));
-  EXPECT_FALSE(
-      provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, nullptr));
-  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey, nullptr));
+  EXPECT_EQ(provider->GetMachineStatistic(kRegionKey), "region_value");
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey));
 }
 
 // Test that the provider does not load region statistics when region file does
@@ -1364,17 +1136,11 @@ TEST_F(StatisticsProviderImplTest,
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  {
-    std::string result;
-    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
-    EXPECT_EQ(result, "region_value");
-  }
-
-  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey, nullptr));
-  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey, nullptr));
-  EXPECT_FALSE(
-      provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, nullptr));
-  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey, nullptr));
+  EXPECT_EQ(provider->GetMachineStatistic(kRegionKey), "region_value");
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey));
 }
 
 }  // namespace chromeos::system

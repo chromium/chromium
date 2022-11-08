@@ -5,11 +5,12 @@
 #ifndef CHROMEOS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_
 #define CHROMEOS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_
 
-#include <map>
 #include <string>
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
+#include "base/strings/string_piece.h"
 #include "chromeos/system/statistics_provider.h"
 
 namespace chromeos {
@@ -29,22 +30,26 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) FakeStatisticsProvider
   // StatisticsProvider implementation:
   void ScheduleOnMachineStatisticsLoaded(base::OnceClosure callback) override;
   void StartLoadingMachineStatistics(bool load_oem_manifest) override;
-  bool GetMachineStatistic(const std::string& name,
-                           std::string* result) override;
-  bool GetMachineFlag(const std::string& name, bool* result) override;
+  absl::optional<base::StringPiece> GetMachineStatistic(
+      base::StringPiece name) override;
+  FlagValue GetMachineFlag(base::StringPiece name) override;
   void Shutdown() override;
   bool IsRunningOnVm() override;
   VpdStatus GetVpdStatus() const override;
 
+  // TODO(b/213325251): Remove old getters once migration is completed.
+  using StatisticsProvider::GetMachineFlag;
+  using StatisticsProvider::GetMachineStatistic;
+
   void SetMachineStatistic(const std::string& key, const std::string& value);
-  void ClearMachineStatistic(const std::string& key);
+  void ClearMachineStatistic(base::StringPiece key);
   void SetMachineFlag(const std::string& key, bool value);
-  void ClearMachineFlag(const std::string& key);
+  void ClearMachineFlag(base::StringPiece key);
   void SetVpdStatus(VpdStatus new_status);
 
  private:
-  std::map<std::string, std::string> machine_statistics_;
-  std::map<std::string, bool> machine_flags_;
+  base::flat_map<std::string, std::string> machine_statistics_;
+  base::flat_map<std::string, bool> machine_flags_;
 
   VpdStatus vpd_status_{VpdStatus::kUnknown};
 };

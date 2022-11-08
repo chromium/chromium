@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_
 #define CHROMEOS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 
 namespace base {
@@ -42,7 +42,7 @@ enum class NameValuePairsFormat {
 // be accessible by tests.
 class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
  public:
-  typedef std::map<std::string, std::string> NameValueMap;
+  using NameValueMap = base::flat_map<std::string, std::string>;
 
   // The obtained info will be written into the given map.
   explicit NameValuePairsParser(NameValueMap* map);

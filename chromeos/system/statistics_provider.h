@@ -9,6 +9,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::system {
 
@@ -138,36 +140,56 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProvider {
     kInvalid = 4
   };
 
+  enum class FlagValue {
+    kUnset,
+    kTrue,
+    kFalse,
+  };
+
+  // Converts `value` to bool. Returns corresponding true or false, or
+  // `default_value` if unset.
+  static bool FlagValueToBool(FlagValue value, bool default_value);
+
   // Starts loading the machine statistics.
   virtual void StartLoadingMachineStatistics(bool load_oem_manifest) = 0;
 
-  // Schedules |callback| on the current sequence when machine statistics are
+  // Schedules `callback` on the current sequence when machine statistics are
   // loaded. That can be immediately if machine statistics are already loaded.
   virtual void ScheduleOnMachineStatisticsLoaded(
       base::OnceClosure callback) = 0;
 
-  // GetMachineStatistic(), GetMachineFlag() and GetEnterpriseMachineId() will
-  // block if called before statistics have been loaded. To avoid this, call
-  // from a callback passed to ScheduleOnMachineStatisticsLoaded(). These
-  // methods are safe to call on any sequence. StartLoadingMachineStatistics()
-  // must be called before these methods.
+  // `GetMachineStatistic`, `GetMachineFlag` and `GetMachineID` will block if
+  // called before statistics have been loaded. To avoid this, call from a
+  // callback passed to ScheduleOnMachineStatisticsLoaded(). These methods are
+  // safe to call on any sequence. `StartLoadingMachineStatistics` must be
+  // called before these methods.
 
-  // Returns true if the named machine statistic (e.g. "hardware_class") is
-  // found and stores it in |result| (if provided). Probing for the existence of
-  // a statistic by setting |result| to nullptr suppresses the usual warning in
-  // case the statistic is not found.
-  virtual bool GetMachineStatistic(const std::string& name,
-                                   std::string* result) = 0;
+  // Returns statistic value if the named machine statistic (e.g.
+  // "hardware_class") is found. Returns nullopt otherwise.
+  // Once statistics are loaded, returned base::StringPiece will never become
+  // dangling as statistics are loaded only once and `StatisticsProvider` is
+  // a singleton.
+  virtual absl::optional<base::StringPiece> GetMachineStatistic(
+      base::StringPiece name) = 0;
 
-  // Similar to GetMachineStatistic for boolean flags.
-  virtual bool GetMachineFlag(const std::string& name, bool* result) = 0;
+  // Similar to `GetMachineStatistic` for boolean flags. As optional and bool do
+  // not work safely together, returns custom tribool value.
+  virtual FlagValue GetMachineFlag(base::StringPiece name) = 0;
+
+  // Old versions of machine statistic getters. Sets output
+  // to `result` if provided. Return false if statistic is not found.
+  // TODO(b/213325251): Remove old getters once migration is completed.
+  bool GetMachineStatistic(const std::string& name, std::string* result);
+  bool GetMachineFlag(const std::string& name, bool* result);
 
   // Returns the machine serial number after examining a set of well-known
-  // keys. In case no serial is found an empty string is returned.
+  // keys. In case no serial is found nullopt is returned.
   // Caveat: On older Samsung devices, the last letter is omitted from the
   // serial number for historical reasons. This is fine.
-  // TODO(tnagel): Drop "Enterprise" from the method name and remove Samsung
-  // special casing after kevin EOL.
+  absl::optional<base::StringPiece> GetMachineID();
+  // Old version of `GetMachineID`. Returns an empty string if no serial is
+  // found. Soon to be removed.
+  // TODO(b/213325251): Remove old getters once migration is completed.
   std::string GetEnterpriseMachineID();
 
   // Cancels any pending file operations.

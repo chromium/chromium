@@ -37,7 +37,7 @@ const char* const kMachineInfoSerialNumberKeys[] = {
 };
 }  // namespace
 
-// Key values for GetMachineStatistic()/GetMachineFlag() calls.
+// Key values for `GetMachineStatistic()`/`GetMachineFlag()` calls.
 const char kActivateDateKey[] = "ActivateDate";
 const char kBlockDevModeKey[] = "block_devmode";
 const char kCheckEnrollmentKey[] = "check_enrollment";
@@ -101,14 +101,58 @@ StatisticsProviderSingleton* StatisticsProviderSingleton::GetInstance() {
       base::DefaultSingletonTraits<StatisticsProviderSingleton>>::get();
 }
 
+// static
+bool StatisticsProvider::FlagValueToBool(FlagValue value, bool default_value) {
+  switch (value) {
+    case FlagValue::kUnset:
+      return default_value;
+    case FlagValue::kTrue:
+      return true;
+    case FlagValue::kFalse:
+      return false;
+  }
+}
+
+bool StatisticsProvider::GetMachineStatistic(const std::string& name,
+                                             std::string* result) {
+  auto statistic = GetMachineStatistic(name);
+
+  if (!statistic)
+    return false;
+
+  if (result)
+    *result = std::string(statistic.value());
+  return true;
+}
+
+bool StatisticsProvider::GetMachineFlag(const std::string& name, bool* result) {
+  FlagValue flag = GetMachineFlag(name);
+
+  if (flag == FlagValue::kUnset)
+    return false;
+
+  if (result)
+    *result = flag == FlagValue::kTrue;
+
+  return true;
+}
+
 std::string StatisticsProvider::GetEnterpriseMachineID() {
-  std::string machine_id;
+  if (auto machine_id = GetMachineID()) {
+    return std::string(machine_id.value());
+  }
+
+  return "";
+}
+
+absl::optional<base::StringPiece> StatisticsProvider::GetMachineID() {
   for (const char* key : kMachineInfoSerialNumberKeys) {
-    if (GetMachineStatistic(key, &machine_id) && !machine_id.empty()) {
-      break;
+    auto machine_id = GetMachineStatistic(key);
+    if (machine_id && !machine_id->empty()) {
+      return machine_id.value();
     }
   }
-  return machine_id;
+  return absl::nullopt;
 }
 
 static StatisticsProvider* g_test_statistics_provider = nullptr;
