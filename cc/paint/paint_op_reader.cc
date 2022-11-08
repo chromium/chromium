@@ -532,6 +532,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadSimple(&ref.end_point_);
   ReadSimple(&ref.start_degrees_);
   ReadSimple(&ref.end_degrees_);
+  ReadSimple(&ref.gradient_interpolation_);
   Read(&ref.image_);
   bool has_record = false;
   ReadSimple(&has_record);

@@ -111,7 +111,8 @@
   {
     "prefix": "gpu-rasterization",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["images"],
+    "bases": ["images",
+              "external/wpt/css/css-images/gradient"],
     "args": ["--enable-gpu-rasterization"]
   },
   {
