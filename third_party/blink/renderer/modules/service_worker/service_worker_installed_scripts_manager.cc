@@ -285,6 +285,9 @@ bool ServiceWorkerInstalledScriptsManager::IsScriptInstalled(
 
 std::unique_ptr<InstalledScriptsManager::ScriptData>
 ServiceWorkerInstalledScriptsManager::GetScriptData(const KURL& script_url) {
+  // https://linear.app/replay/issue/RUN-756
+  recordreplay::Assert("ServiceWorkerInstalledScriptsManager::GetScriptData");
+
   DCHECK(!IsMainThread());
   TRACE_EVENT1("ServiceWorker",
                "ServiceWorkerInstalledScriptsManager::GetScriptData",

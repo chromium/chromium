@@ -22,6 +22,28 @@
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
 
+#include <dlfcn.h>
+
+static void* gRecordReplayAssertFn;
+
+static void RecordReplayAssert(const char* aFormat, ...) {
+  if (!gRecordReplayAssertFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAssert");
+    if (!fnptr) {
+      gRecordReplayAssertFn = reinterpret_cast<void*>(1);
+      return;
+    }
+    gRecordReplayAssertFn = fnptr;
+  }
+
+  if (gRecordReplayAssertFn != reinterpret_cast<void*>(1)) {
+    va_list ap;
+    va_start(ap, aFormat);
+    reinterpret_cast<void(*)(const char*, va_list)>(gRecordReplayAssertFn)(aFormat, ap);
+    va_end(ap);
+  }
+}
+
 namespace base {
 namespace internal {
 
@@ -281,6 +303,8 @@ UncheckedScopedBlockingCall::UncheckedScopedBlockingCall(
     const bool is_monitored_type =
         blocking_call_type == BlockingCallType::kRegular && !is_will_block_;
     if (is_monitored_type && !previous_scoped_blocking_call_) {
+      // https://linear.app/replay/issue/RUN-756
+      RecordReplayAssert("UncheckedScopedBlockingCall #1");
       monitored_call_.emplace();
     } else if (!is_monitored_type && previous_scoped_blocking_call_ &&
                previous_scoped_blocking_call_->monitored_call_) {

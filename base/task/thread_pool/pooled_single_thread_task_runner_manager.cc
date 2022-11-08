@@ -408,6 +408,10 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure closure,
                        TimeDelta delay) override {
+    // https://linear.app/replay/issue/RUN-756
+    recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask %d",
+                         recordreplay::PointerId(this));
+
     if (!g_manager_is_alive) {
       return false;
     }
