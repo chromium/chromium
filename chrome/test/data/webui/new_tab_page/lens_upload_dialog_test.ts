@@ -200,7 +200,7 @@ suite('LensUploadDialogTest', () => {
         assertEquals(url, submittedUrl);
       });
 
-  test('submit valid url by typing enter should submit ', async () => {
+  test('pressing enter in input box should submit valid url', async () => {
     // Arrange.
     const url = 'http://google.com/image.png';
     uploadDialog.openDialog();
@@ -209,6 +209,37 @@ suite('LensUploadDialogTest', () => {
     // Act.
     setInputBoxValue(url);
     getInputBox().dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+
+    // Assert.
+    assertTrue(submitUrlCalled);
+    assertEquals(url, submittedUrl);
+  });
+
+  test('pressing enter in search button should submit valid url', async () => {
+    // Arrange.
+    const url = 'http://google.com/image.png';
+    uploadDialog.openDialog();
+    await waitAfterNextRender(uploadDialog);
+
+    // Act.
+    setInputBoxValue(url);
+    getInputSubmit().dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter'}));
+
+    // Assert.
+    assertTrue(submitUrlCalled);
+    assertEquals(url, submittedUrl);
+  });
+
+  test('pressing space in search button should submit valid url', async () => {
+    // Arrange.
+    const url = 'http://google.com/image.png';
+    uploadDialog.openDialog();
+    await waitAfterNextRender(uploadDialog);
+
+    // Act.
+    setInputBoxValue(url);
+    getInputSubmit().dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
 
     // Assert.
     assertTrue(submitUrlCalled);
@@ -366,9 +397,12 @@ suite('LensUploadDialogTest', () => {
     inputBox.dispatchEvent(new InputEvent('input'));
   }
 
+  function getInputSubmit(): HTMLInputElement {
+    return uploadDialog.shadowRoot!.querySelector('#inputSubmit')!;
+  }
+
   function clickInputSubmit() {
-    const inputSubmit =
-        uploadDialog.shadowRoot!.querySelector('#inputSubmit') as HTMLElement;
+    const inputSubmit = getInputSubmit();
     inputSubmit.click();
   }
 });

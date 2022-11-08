@@ -320,7 +320,8 @@
             <span tabindex="0"
                   role="button"
                   id="uploadText"
-                  on-click="onUploadFileClick_">
+                  on-click="onUploadFileClick_"
+                  on-keydown="onUploadFileKeyDown_">
               $i18n{lensSearchUploadDialogUploadFileTitle}
             </span>
           </div>
@@ -340,7 +341,8 @@
             <div id="inputSubmit"
                  tabindex="0"
                  role="button"
-                 on-click="onSubmitUrl_">
+                 on-click="onSubmitUrl_"
+                 on-keydown="onInputSubmitKeyDown_">
               $i18n{lensSearchUploadDialogSearchButtonLabel}
             </div>
           </div>

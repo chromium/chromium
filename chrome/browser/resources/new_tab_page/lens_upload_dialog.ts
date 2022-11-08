@@ -45,6 +45,12 @@ enum LensErrorMessage {
   MULTIPLE_URLS,
 }
 
+const EventKeys = {
+  ENTER: 'Enter',
+  ESCAPE: 'Escape',
+  SPACE: ' ',
+};
+
 export interface LensUploadDialogElement {
   $: {
     dialog: HTMLDivElement,
@@ -245,7 +251,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
   };
 
   private outsideKeyHandler_ = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
+    if (event.key === EventKeys.ESCAPE) {
       this.closeDialog();
     }
   };
@@ -272,6 +278,12 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
 
   private onOfflineRetryButtonClick_() {
     this.setOnlineState_();
+  }
+
+  private onUploadFileKeyDown_(event: KeyboardEvent) {
+    if (event.key === EventKeys.ENTER || event.key === EventKeys.SPACE) {
+      this.$.lensForm.openSystemFilePicker();
+    }
   }
 
   private onUploadFileClick_() {
@@ -339,8 +351,14 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
   }
 
   private onUrlKeyDown_(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
+    if (event.key === EventKeys.ENTER) {
       event.preventDefault();
+      this.onSubmitUrl_();
+    }
+  }
+
+  private onInputSubmitKeyDown_(event: KeyboardEvent) {
+    if (event.key === EventKeys.ENTER || event.key === EventKeys.SPACE) {
       this.onSubmitUrl_();
     }
   }
