@@ -183,8 +183,13 @@ void ProjectorControllerImpl::OnTranscriptionError() {
   ProjectorUiController::ShowFailureNotification(
       IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION);
 
-  CaptureModeController::Get()->EndVideoRecording(
-      EndRecordingReason::kProjectorTranscriptionError);
+  auto* capture_mode_controller = CaptureModeController::Get();
+  if (capture_mode_controller->is_recording_in_progress()) {
+    capture_mode_controller->EndVideoRecording(
+        EndRecordingReason::kProjectorTranscriptionError);
+  } else {
+    MaybeWrapUpRecording();
+  }
 }
 
 void ProjectorControllerImpl::OnSpeechRecognitionStopped() {
