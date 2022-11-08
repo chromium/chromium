@@ -16,7 +16,7 @@ TYPED_TEST_SUITE_P(GLImageBindTest);
 
 TYPED_TEST_P(GLImageBindTest, BindTexImage) {
   if (this->delegate_.SkipTest(this->display_))
-    return;
+    GTEST_SKIP() << "Skip because GL initialization failed";
 
   const gfx::Size image_size(256, 256);
   const uint8_t* image_color = this->delegate_.GetImageColor();

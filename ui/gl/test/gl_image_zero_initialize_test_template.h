@@ -19,7 +19,7 @@ TYPED_TEST_SUITE_P(GLImageZeroInitializeTest);
 
 TYPED_TEST_P(GLImageZeroInitializeTest, ZeroInitialize) {
   if (this->delegate_.SkipTest(this->display_))
-    return;
+    GTEST_SKIP() << "Skip ZeroInitialize because GL initialization failed";
 
   const gfx::Size image_size(256, 256);
 

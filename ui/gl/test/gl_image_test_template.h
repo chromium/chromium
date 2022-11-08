@@ -100,7 +100,7 @@ TYPED_TEST_SUITE_P(GLImageTest);
 
 TYPED_TEST_P_WITH_EXPANSION(GLImageTest, MAYBE_Create) {
   if (this->delegate_.SkipTest(this->display_))
-    return;
+    GTEST_SKIP() << "Skip because GL initialization failed";
 
   // NOTE: On some drm devices (mediatek) the mininum width/height to add an fb
   // for a bo must be 64, and YVU_420 in i915 requires at least 128 length.
@@ -137,7 +137,7 @@ TYPED_TEST_SUITE_P(GLImageOddSizeTest);
 
 TYPED_TEST_P_WITH_EXPANSION(GLImageOddSizeTest, MAYBE_Create) {
   if (this->delegate_.SkipTest(this->display_))
-    return;
+    GTEST_SKIP() << "Skip because GL initialization failed";
 
   const gfx::Size odd_image_size(17, 53);
   const uint8_t* image_color = this->delegate_.GetImageColor();
@@ -163,7 +163,7 @@ TYPED_TEST_SUITE_P(GLImageCopyTest);
 
 TYPED_TEST_P(GLImageCopyTest, CopyTexImage) {
   if (this->delegate_.SkipTest(this->display_))
-    return;
+    GTEST_SKIP() << "Skip because GL initialization failed";
 
   // CopyTexImage follows different code paths depending whether the image is
   // > 1 MiB or not. This range of sizes should cover both possibilities
