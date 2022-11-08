@@ -320,8 +320,10 @@ crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip 
 crbug.com/1276999 view-transition/* [ Skip ]
 crbug.com/1316157 inspector-protocol/css/css-get-styles-for-view-transition.js [ Skip ]
 crbug.com/1276999 wpt_internal/view-transition/* [ Skip ]
+crbug.com/1276999 wpt_internal/view-transition-on-navigation/* [ Skip ]
 crbug.com/1276999 virtual/view-transition/* [ Pass ]
 crbug.com/1276999 virtual/view-transition-wide-gamut/* [ Pass ]
+crbug.com/1372584 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/* [ Pass ]
 
 crbug.com/1351556 virtual/view-transition-wide-gamut/wpt_internal/view-transition/commit-timeout-crash.html [ Failure Timeout ]
 crbug.com/1351556 virtual/view-transition/view-transition/capture-callback-exception.html [ Failure ]

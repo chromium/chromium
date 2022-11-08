@@ -2683,6 +2683,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     kIframeNestedWithinFencedFrame
   };
 
+  void SnapshotDocumentForViewTransition(
+      blink::mojom::LocalFrame::SnapshotDocumentForViewTransitionCallback
+          callback);
+
  protected:
   friend class RenderFrameHostFactory;
 

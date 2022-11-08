@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 
@@ -1420,6 +1421,12 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
 
   frame_->GetWidgetForLocalRoot()->UpdateBrowserControlsState(constraints,
                                                               current, animate);
+}
+
+void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
+    SnapshotDocumentForViewTransitionCallback callback) {
+  ViewTransitionSupplement::SnapshotDocumentForNavigation(
+      *frame_->GetDocument(), std::move(callback));
 }
 
 void LocalFrameMojoHandler::DispatchBeforeUnload(

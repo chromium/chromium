@@ -41,6 +41,7 @@ import "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mo
 import "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom";
+import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
@@ -901,6 +902,11 @@ interface LocalFrame {
   // session history entry for this frame. It is sent back to the renderer here
   // to indicate which traversal failed.
   TraverseCancelled(string navigation_api_key, TraverseCancelledReason reason);
+
+  // Requests a one-time snapshot of the document state for a ViewTransition.
+  // See https://drafts.csswg.org/css-view-transitions-1/ for details.
+  SnapshotDocumentForViewTransition() => (
+      blink.mojom.ViewTransitionState view_transition_state);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

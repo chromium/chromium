@@ -2877,10 +2877,18 @@
       status: "experimental",
     },
     {
-      // View transitions, including view transitions.
+      // View transitions.
       // See https://www.w3.org/TR/css-view-transitions-1/
       name: "ViewTransition",
       base_feature: "ViewTransition",
+      implied_by: ["ViewTransitionOnNavigation"],
+    },
+    {
+      // If enabled, ViewTransition API is supported for navigations including
+      // cross-document transitions.
+      // See https://drafts.csswg.org/css-view-transitions-1/.
+      name: "ViewTransitionOnNavigation",
+      base_feature: "ViewTransitionOnNavigation",
     },
     {
       name: "VisibilityCollapseColumn",

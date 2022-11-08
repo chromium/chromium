@@ -3930,7 +3930,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*ancestor_or_self_has_cspee=*/node->AncestorOrSelfHasCSPEE(),
           std::string() /* reduced_accept_language */,
           /*navigation_delivery_type=*/
-          network::mojom::NavigationDeliveryType::kDefault);
+          network::mojom::NavigationDeliveryType::kDefault,
+          /*view_transition_state=*/absl::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();

@@ -1052,6 +1052,7 @@ mojom("mojom_core") {
     "frame/triggering_event_info.mojom",
     "frame/user_activation_notification_type.mojom",
     "frame/user_activation_update_types.mojom",
+    "frame/view_transition_state.mojom",
     "frame/viewport_intersection_state.mojom",
     "page/display_cutout.mojom",
     "page/page.mojom",
@@ -1170,6 +1171,21 @@ mojom("mojom_core") {
     {
       types = [
         {
+          mojom = "blink.mojom.ViewTransitionState"
+          cpp = "::blink::ViewTransitionState"
+        },
+        {
+          mojom = "blink.mojom.ViewTransitionElement"
+          cpp = "::blink::ViewTransitionElement"
+        },
+      ]
+      traits_headers =
+          [ "//third_party/blink/public/common/frame/view_transition_state.h" ]
+      traits_private_headers = [ "//third_party/blink/public/common/frame/view_transition_state_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.TransferableMessage"
           cpp = "::blink::TransferableMessage"
           move_only = true
@@ -1224,6 +1240,21 @@ mojom("mojom_core") {
         "//third_party/blink/public/common",
         "//third_party/blink/renderer/platform/wtf",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.ViewTransitionState"
+          cpp = "::blink::ViewTransitionState"
+        },
+        {
+          mojom = "blink.mojom.ViewTransitionElement"
+          cpp = "::blink::ViewTransitionElement"
+        },
+      ]
+      traits_headers =
+          [ "//third_party/blink/public/common/frame/view_transition_state.h" ]
+      traits_private_headers = [ "//third_party/blink/public/common/frame/view_transition_state_mojom_traits.h" ]
     },
   ]
   blink_cpp_typemaps += shared_cpp_typemaps

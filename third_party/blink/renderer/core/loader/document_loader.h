@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -775,6 +776,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   const AtomicString reduced_accept_language_;
 
   const network::mojom::NavigationDeliveryType navigation_delivery_type_;
+
+  // Provides state from the previous Document that will be replaced by this
+  // navigation for a ViewTransition.
+  absl::optional<ViewTransitionState> view_transition_state_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

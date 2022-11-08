@@ -59,6 +59,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
@@ -1023,6 +1024,10 @@ class CONTENT_EXPORT NavigationRequest
   browser_side_origin_to_commit_with_debug_info() {
     return browser_side_origin_to_commit_with_debug_info_;
   }
+
+  // Initializes state which is passed from the old Document to the new Document
+  // for a ViewTransition.
+  void SetViewTransitionState(blink::ViewTransitionState view_transition_state);
 
  private:
   friend class NavigationRequestTest;

@@ -632,6 +632,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
  protected:
   // WidgetBaseClient overrides:
+  void WillBeginMainFrame() override;
   void ScheduleAnimation() override;
   void DidBeginMainFrame() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()

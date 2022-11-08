@@ -201,7 +201,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(Document& document)
 ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     Document& document,
     ViewTransitionState transition_state)
-    : document_(document), state_(State::kCaptured) {
+    : document_(document), state_(State::kCaptured), deserialized_(true) {
   captured_name_count_ = static_cast<int>(transition_state.elements.size());
 
   VectorOf<AtomicString> transition_names;
@@ -242,8 +242,6 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
     element_data_map_.insert(name, std::move(element_data));
   }
-
-  document_->GetStyleEngine().SetViewTransitionNames(transition_names);
 }
 
 ViewTransitionStyleTracker::~ViewTransitionStyleTracker() = default;
@@ -516,7 +514,16 @@ bool ViewTransitionStyleTracker::Start() {
 
   HeapHashMap<Member<Element>, viz::ViewTransitionElementResourceId>
       element_snapshot_ids;
+
   bool found_new_names = false;
+  // If this tracker was created from serialized state, transition tags are
+  // initialized with the style system in the start phase.
+  if (deserialized_) {
+    DCHECK(document_->GetStyleEngine().ViewTransitionTags().empty());
+    DCHECK_GT(captured_name_count_, 0);
+    found_new_names = true;
+  }
+
   int next_index =
       element_data_map_.size() + OldRootDataTagSize() + NewRootDataTagSize();
   for (wtf_size_t i = 0; i < elements.size(); ++i) {

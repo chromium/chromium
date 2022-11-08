@@ -163,6 +163,7 @@ source_set("common") {
     "frame/payment_request_token.cc",
     "frame/transient_allow_fullscreen.cc",
     "frame/user_activation_state.cc",
+    "frame/view_transition_state_mojom_traits.cc",
     "indexeddb/indexed_db_default_mojom_traits.cc",
     "indexeddb/indexeddb_key.cc",
     "indexeddb/indexeddb_key_path.cc",

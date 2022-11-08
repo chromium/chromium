@@ -18,6 +18,7 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -497,6 +498,10 @@ struct BLINK_EXPORT WebNavigationParams {
   // renderer side.
   network::mojom::NavigationDeliveryType navigation_delivery_type =
       network::mojom::NavigationDeliveryType::kDefault;
+
+  // Provides cached state from the previous Document that will be replaced by
+  // this navigation for a ViewTransition.
+  absl::optional<ViewTransitionState> view_transition_state;
 };
 
 }  // namespace blink

@@ -128,6 +128,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
@@ -1350,6 +1351,24 @@ void WebFrameWidgetImpl::DidObserveFirstScrollDelay(
     interactive_detector->DidObserveFirstScrollDelay(first_scroll_delay,
                                                      first_scroll_timestamp);
   }
+}
+
+void WebFrameWidgetImpl::WillBeginMainFrame() {
+  if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled())
+    return;
+
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(),
+      WTF::BindRepeating([](WebLocalFrameImpl* local_frame) {
+        auto* document = local_frame->GetFrame()->GetDocument();
+        if (!document)
+          return;
+
+        if (auto* transition =
+                ViewTransitionUtils::GetActiveTransition(*document)) {
+          transition->WillBeginMainFrame();
+        }
+      }));
 }
 
 std::unique_ptr<cc::LayerTreeFrameSink>

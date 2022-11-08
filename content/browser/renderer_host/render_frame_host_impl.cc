@@ -9860,6 +9860,14 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(
   RequestAXTreeSnapshot(std::move(callback), std::move(params));
 }
 
+void RenderFrameHostImpl::SnapshotDocumentForViewTransition(
+    blink::mojom::LocalFrame::SnapshotDocumentForViewTransitionCallback
+        callback) {
+  DCHECK(IsRenderFrameLive());
+  GetAssociatedLocalFrame()->SnapshotDocumentForViewTransition(
+      std::move(callback));
+}
+
 void RenderFrameHostImpl::RequestAXTreeSnapshot(
     AXTreeSnapshotCallback callback,
     mojom::SnapshotAccessibilityTreeParamsPtr params) {

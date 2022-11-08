@@ -951,6 +951,14 @@
              "--enable-gpu-rasterization"]
   },
   {
+    "prefix": "view-transition-on-navigation",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/view-transition-on-navigation"],
+    "args": ["--enable-features=ViewTransition,ViewTransitionOnNavigation",
+             "--enable-threaded-compositing",
+             "--enable-gpu-rasterization"]
+  },
+  {
     "prefix": "view-transition-wide-gamut",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/view-transition",

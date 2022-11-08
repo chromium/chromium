@@ -148,6 +148,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const std::vector<std::string>& keys) override;
   void TraverseCancelled(const std::string& navigation_api_key,
                          blink::mojom::TraverseCancelledReason reason) override;
+  void SnapshotDocumentForViewTransition(
+      SnapshotDocumentForViewTransitionCallback callback) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

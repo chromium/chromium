@@ -116,6 +116,7 @@
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -302,6 +303,7 @@ struct SameSizeAsDocumentLoader
   std::unique_ptr<ExtraData> extra_data;
   AtomicString reduced_accept_language;
   network::mojom::NavigationDeliveryType navigation_delivery_type;
+  absl::optional<ViewTransitionState> view_transition_state;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -496,7 +498,8 @@ DocumentLoader::DocumentLoader(
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
       extra_data_(std::move(extra_data)),
       reduced_accept_language_(params_->reduced_accept_language),
-      navigation_delivery_type_(params_->navigation_delivery_type) {
+      navigation_delivery_type_(params_->navigation_delivery_type),
+      view_transition_state_(std::move(params_->view_transition_state)) {
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -1922,6 +1925,12 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
   document_policy_parsing_messages_.clear();
 
   WarnIfSandboxIneffective(document->domWindow());
+
+  if (view_transition_state_) {
+    ViewTransitionSupplement::CreateFromSnapshotForNavigation(
+        *document, std::move(*view_transition_state_));
+    view_transition_state_.reset();
+  }
 }
 
 void DocumentLoader::WillCommitNavigation() {

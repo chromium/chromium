@@ -2286,11 +2286,11 @@ crbug.com/1303102 virtual/view-transition-wide-gamut/wpt_internal/view-transitio
 crbug.com/1303102 virtual/view-transition-wide-gamut/wpt_internal/view-transition/new-and-old-sizes-match.html [ Skip ]
 crbug.com/1377777 virtual/view-transition-wide-gamut/wpt_internal/view-transition/content-with-inline-child.html [ Skip ]
 
-
 # The following failures are due to a bug in object-view-box implementation specific to layoutng being disabled.
 crbug.com/1310798 virtual/view-transition/wpt_internal/view-transition/old-content-object-view-box-clip-path.html [ Failure ]
 crbug.com/1310798 virtual/view-transition/wpt_internal/view-transition/old-content-object-view-box-clip-path-reference.html [ Failure ]
 crbug.com/1310798 virtual/view-transition/wpt_internal/view-transition/old-content-object-view-box-overflow.html [ Failure ]
+crbug.com/1310798 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/root-and-nested-element-transition.html [ Failure ]
 
 crbug.com/1310798 virtual/view-transition-wide-gamut/wpt_internal/view-transition/old-content-object-view-box-clip-path.html [ Failure ]
 crbug.com/1310798 virtual/view-transition-wide-gamut/wpt_internal/view-transition/old-content-object-view-box-clip-path-reference.html [ Failure ]

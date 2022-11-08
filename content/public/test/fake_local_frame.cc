@@ -201,6 +201,9 @@ void FakeLocalFrame::TraverseCancelled(
     const std::string& navigation_api_key,
     blink::mojom::TraverseCancelledReason reason) {}
 
+void FakeLocalFrame::SnapshotDocumentForViewTransition(
+    SnapshotDocumentForViewTransitionCallback callback) {}
+
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(

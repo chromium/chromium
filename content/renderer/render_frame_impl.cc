@@ -160,6 +160,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
+#include "third_party/blink/public/mojom/frame/view_transition_state.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -2608,6 +2609,8 @@ void RenderFrameImpl::CommitNavigation(
                            navigation_params.get());
   navigation_params->policy_container =
       ToWebPolicyContainer(std::move(policy_container));
+  navigation_params->view_transition_state =
+      std::move(commit_params->view_transition_state);
 
   if (frame_->IsOutermostMainFrame() && permissions_policy) {
     navigation_params->permissions_policy_override = permissions_policy;
@@ -2979,6 +2982,9 @@ void RenderFrameImpl::CommitFailedNavigation(
 
   navigation_params->policy_container =
       ToWebPolicyContainer(std::move(policy_container));
+
+  navigation_params->view_transition_state =
+      std::move(commit_params->view_transition_state);
 
   // The error page load (not to confuse with a failed load of original page)
   // was not initiated through BeginNavigation, therefore

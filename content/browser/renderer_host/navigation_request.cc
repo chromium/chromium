@@ -1258,7 +1258,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           frame_tree_node->AncestorOrSelfHasCSPEE(),
           std::string() /* reduced_accept_language */,
           /*navigation_delivery_type=*/
-          network::mojom::NavigationDeliveryType::kDefault);
+          network::mojom::NavigationDeliveryType::kDefault,
+          /*view_transition_state=*/absl::nullopt);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1390,7 +1391,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           frame_tree_node->AncestorOrSelfHasCSPEE(),
           std::string() /* reduced_accept_language */,
           /*navigation_delivery_type=*/
-          network::mojom::NavigationDeliveryType::kDefault);
+          network::mojom::NavigationDeliveryType::kDefault,
+          /*view_transition_state=*/absl::nullopt);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -8268,5 +8270,10 @@ NavigationRequest::GetJavaNavigationHandle() {
   return navigation_handle_proxy_->java_navigation_handle();
 }
 #endif
+
+void NavigationRequest::SetViewTransitionState(
+    blink::ViewTransitionState view_transition_state) {
+  commit_params_->view_transition_state = std::move(view_transition_state);
+}
 
 }  // namespace content

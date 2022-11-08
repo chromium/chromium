@@ -1854,6 +1854,8 @@ source_set("browser") {
     "renderer_host/transient_allow_popup.h",
     "renderer_host/ui_events_helper.cc",
     "renderer_host/ui_events_helper.h",
+    "renderer_host/view_transition_commit_deferring_condition.cc",
+    "renderer_host/view_transition_commit_deferring_condition.h",
     "renderer_host/visible_time_request_trigger.cc",
     "renderer_host/visible_time_request_trigger.h",
     "resource_context_impl.cc",

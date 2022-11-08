@@ -1,0 +1,28 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
+import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
+
+struct ViewTransitionElement {
+  string tag_name;
+  gfx.mojom.SizeF border_box_size_in_css_space;
+  gfx.mojom.Transform viewport_matrix;
+  gfx.mojom.RectF overflow_rect_in_layout_space;
+  viz.mojom.ViewTransitionElementResourceId snapshot_id;
+  int32 paint_order;
+  bool is_root;
+
+  // TODO(khushalsagar): Add writing mode.
+};
+
+struct ViewTransitionState {
+  array<ViewTransitionElement> elements;
+  mojo_base.mojom.UnguessableToken navigation_id;
+  // TODO(khushalsagar): Add opaque blob from old Document.
+};

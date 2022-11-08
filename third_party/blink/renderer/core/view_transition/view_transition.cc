@@ -853,11 +853,14 @@ void ViewTransition::AtMicrotask(void callback(ScriptPromiseResolver*),
       WTF::BindOnce(callback, WrapPersistent(resolver)));
 }
 
-// TODO(khushalsagar): This needs to be called for pages exiting BFCache.
-void ViewTransition::OnRenderBlockingFinished() {
+void ViewTransition::WillBeginMainFrame() {
   if (state_ != State::kWaitForRenderBlock)
     return;
 
+  // WillBeginMainFrame() implies that rendering has started. If we were waiting
+  // for render-blocking resources to be loaded, they must have been fetched (or
+  // timed out) before rendering is started.
+  DCHECK(document_->RenderingHasBegun());
   bool process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
   DCHECK(process_next_state);
   ProcessCurrentState();

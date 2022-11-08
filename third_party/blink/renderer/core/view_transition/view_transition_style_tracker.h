@@ -252,13 +252,39 @@ class ViewTransitionStyleTracker
   void InvalidateHitTestingCache();
 
   Member<Document> document_;
+
+  // Indicates which step during the transition we're currently at.
   State state_ = State::kIdle;
+
+  // Set if this style tracker was created by deserializing captured state
+  // instead of running through the capture phase. This is done for transitions
+  // initiated by navigations where capture and animation could run in different
+  // Documents which are cross-process.
+  const bool deserialized_ = false;
+
+  // Tracks the number of names discovered during the capture phase of the
+  // transition.
   int captured_name_count_ = 0;
+
+  // Map of the CSS |view-transition-name| property to state for that tag.
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
+
+  // The device scale factor used for layout of the Document. This is kept in
+  // sync with the Document during RunPostPrePaintSteps().
   float device_pixel_ratio_ = 1.f;
+
+  // The data for the |documentElement| generate if it has a valid
+  // |view-transition-name| for the old and new DOM state.
   absl::optional<RootData> old_root_data_;
   absl::optional<RootData> new_root_data_;
+
+  // The paint property node for the |documentElement|. This is generated if the
+  // element has a valid |view-transition-name| and ensures correct generation
+  // of its snapshot.
   scoped_refptr<EffectPaintPropertyNode> root_effect_node_;
+
+  // The dynamically generated UA stylesheet for default styles on
+  // pseudo-elements.
   absl::optional<String> ua_style_sheet_;
 
   // The following state is buffered until the capture phase and populated again
