@@ -74,7 +74,7 @@ bool ClearAllWebStateBrowsingData() {
       completionHandler:^{
         callback_finished = true;
       }];
-  return WaitUntilConditionOrTimeout(20, ^{
+  return WaitUntilConditionOrTimeout(base::Seconds(20), ^{
     return callback_finished;
   });
 }
@@ -89,7 +89,7 @@ bool ClearCertificatePolicyCache(bool off_the_record) {
                                              cache->ClearCertificatePolicies();
                                              policies_cleared = YES;
                                            }));
-  return WaitUntilConditionOrTimeout(2, ^{
+  return WaitUntilConditionOrTimeout(base::Seconds(2), ^{
     return policies_cleared;
   });
 }
