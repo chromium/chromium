@@ -155,6 +155,16 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
       u"IconButton", base::BindRepeating(&CreateIconButtonInstancesGridView));
   viewer_view->AddComponent(
       u"IconSwitch", base::BindRepeating(&CreateIconSwitchInstancesGridView));
+  viewer_view->AddComponent(
+      u"Checkbox", base::BindRepeating(&CreateCheckboxInstancesGridView));
+  viewer_view->AddComponent(
+      u"CheckboxGroup",
+      base::BindRepeating(&CreateCheckboxGroupInstancesGridView));
+  viewer_view->AddComponent(
+      u"RadioButton", base::BindRepeating(&CreateRadioButtonInstancesGridView));
+  viewer_view->AddComponent(
+      u"RadioButtonGroup",
+      base::BindRepeating(&CreateRadioButtonGroupInstancesGridView));
 
   // Show PillButton on start.
   viewer_view->ShowComponentInstances(u"PillButton");
