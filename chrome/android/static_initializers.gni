@@ -37,14 +37,6 @@ if (current_toolchain == default_toolchain &&
   # From //third_party/gvr-android-sdk: _GLOBAL__sub_I_base_logging.cc
   _chrome_count += 1
 
-  if (use_static_angle && !is_official_build &&
-      (is_debug || dcheck_always_on)) {
-    # TODO(https://crbug.com/1172451): remove global variables from ANGLE:
-    #
-    # doc.cpp (initializer offset 0xcf9c6c size 0x138)
-    # SPVRemapper.cpp (initializer offset 0xcf2924 size 0x64)
-    _chrome_count += 2
-  }
   if (use_clang_coverage) {
     # InstrProfilingRuntime.cpp, Only in coverage builds, not production.
     _chrome_count += 1
