@@ -12,6 +12,8 @@ blink_modules_sources("webgpu") {
     "dawn_enum_conversions.h",
     "dawn_object.cc",
     "dawn_object.h",
+    "external_texture_helper.cc",
+    "external_texture_helper.h",
     "gpu.cc",
     "gpu.h",
     "gpu_adapter.cc",

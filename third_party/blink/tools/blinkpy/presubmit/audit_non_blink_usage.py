@@ -1449,6 +1449,7 @@ _CONFIG = [
         'allowed': [
             'gpu::webgpu::PowerPreference',
             'gpu::webgpu::WebGPUInterface',
+            'media::PIXEL_FORMAT_NV12',
         ],
     },
     {
