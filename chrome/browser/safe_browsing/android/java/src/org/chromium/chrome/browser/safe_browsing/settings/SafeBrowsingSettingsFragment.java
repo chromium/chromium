@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.UserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
@@ -31,7 +32,9 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
                    RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested,
                    Preference.OnPreferenceChangeListener {
     @VisibleForTesting
-    static final String PREF_TEXT_MANAGED = "text_managed";
+    static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
+    @VisibleForTesting
+    static final String PREF_TEXT_MANAGED_LEGACY = "text_managed_legacy";
     @VisibleForTesting
     static final String PREF_SAFE_BROWSING = "safe_browsing_radio_button_group";
     public static final String ACCESS_POINT = "SafeBrowsingSettingsFragment.AccessPoint";
@@ -86,10 +89,20 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         mSafeBrowsingPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mSafeBrowsingPreference.setOnPreferenceChangeListener(this);
 
-        TextMessagePreference textManaged = findPreference(PREF_TEXT_MANAGED);
-        textManaged.setManagedPreferenceDelegate(managedPreferenceDelegate);
-        textManaged.setVisible(managedPreferenceDelegate.isPreferenceClickDisabledByPolicy(
-                mSafeBrowsingPreference));
+        Preference managedDisclaimerText = findPreference(PREF_MANAGED_DISCLAIMER_TEXT);
+        TextMessagePreference textManagedLegacy = findPreference(PREF_TEXT_MANAGED_LEGACY);
+        boolean managedTextVisible = managedPreferenceDelegate.isPreferenceClickDisabledByPolicy(
+                mSafeBrowsingPreference);
+
+        if (SettingsFeatureList.isEnabled(
+                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
+            textManagedLegacy.setVisible(false);
+            managedDisclaimerText.setVisible(managedTextVisible);
+        } else {
+            textManagedLegacy.setManagedPreferenceDelegate(managedPreferenceDelegate);
+            textManagedLegacy.setVisible(managedTextVisible);
+            managedDisclaimerText.setVisible(false);
+        }
 
         recordUserActionHistogram(UserAction.SHOWED);
     }
@@ -121,7 +134,8 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return preference -> {
             String key = preference.getKey();
-            if (PREF_TEXT_MANAGED.equals(key) || PREF_SAFE_BROWSING.equals(key)) {
+            if (PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_TEXT_MANAGED_LEGACY.equals(key)
+                    || PREF_SAFE_BROWSING.equals(key)) {
                 return SafeBrowsingBridge.isSafeBrowsingManaged();
             } else {
                 assert false : "Should not be reached.";
