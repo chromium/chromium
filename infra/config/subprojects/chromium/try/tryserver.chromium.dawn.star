@@ -4,7 +4,7 @@
 """Definitions of builders in the tryserver.chromium.swangle builder group."""
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "goma", "os", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
@@ -16,6 +16,8 @@ try_.defaults.set(
     goma_backend = goma.backend.RBE_PROD,
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     service_account = try_.gpu.SERVICE_ACCOUNT,
 )
 
