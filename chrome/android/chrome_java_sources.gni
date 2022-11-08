@@ -490,6 +490,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorder.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreManager.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreManagerImpl.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreMessageController.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/BrandingSecurityButtonAnimationDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabBrowserControlsVisibilityDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbar.java",
