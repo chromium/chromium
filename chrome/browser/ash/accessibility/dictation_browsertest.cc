@@ -98,13 +98,15 @@ const char* kMacroSucceededMetric =
     "Accessibility.CrosDictation.MacroSucceeded";
 const char* kMacroFailedMetric = "Accessibility.CrosDictation.MacroFailed";
 const int kInputTextViewMetricValue = 1;
-constexpr char kContentEditableUrl[] =
-    "data:text/html;charset=utf-8,<div id=input contenteditable></div>";
 constexpr char kPumpkinTestFilePath[] =
     "resources/chromeos/accessibility/accessibility_common/dictation/parse/"
     "pumpkin";
+constexpr char kContentEditableUrl[] =
+    "data:text/html;charset=utf-8,<div id='input' contenteditable></div>";
+constexpr char kInputUrl[] =
+    "data:text/html;charset=utf-8,<input id='input' type='text'></input>";
 constexpr char kTextAreaUrl[] =
-    "data:text/html;charset=utf-8,<textarea id=input></textarea>";
+    "data:text/html;charset=utf-8,<textarea id='input'></textarea>";
 
 static const char* kEnglishDictationCommands[] = {
     "delete",
@@ -159,7 +161,7 @@ std::string ToString(DictationBubbleIconType icon) {
 }
 
 // The type of editable field to use in tests.
-enum class EditableType { kContentEditable, kTextArea };
+enum class EditableType { kContentEditable, kInput, kTextArea };
 
 // A class used to define the parameters of a test case.
 class TestConfig {
@@ -352,6 +354,9 @@ class DictationTestBase : public InProcessBrowserTest,
       case EditableType::kTextArea:
         url = kTextAreaUrl;
         break;
+      case EditableType::kInput:
+        url = kInputUrl;
+        break;
       case EditableType::kContentEditable:
         url = kContentEditableUrl;
         break;
@@ -451,6 +456,7 @@ class DictationTestBase : public InProcessBrowserTest,
     std::string script;
     switch (editable_type()) {
       case EditableType::kTextArea:
+      case EditableType::kInput:
         script =
             "window.domAutomationController.send("
             "document.getElementById('input').value)";
@@ -543,6 +549,12 @@ class DictationTestBase : public InProcessBrowserTest,
     return base::UTF16ToUTF8(text);
   }
 
+  bool RunOnMultilineContent() {
+    // <input> represents a one-line plain text control, so multiline test cases
+    // should be skipped.
+    return editable_type() != EditableType::kInput;
+  }
+
   speech::SpeechRecognitionType speech_recognition_type() {
     return GetParam().speech_recognition_type();
   }
@@ -577,6 +589,12 @@ INSTANTIATE_TEST_SUITE_P(
     DictationTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea)));
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkInput,
+    DictationTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput)));
 
 INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
@@ -947,6 +965,12 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea)));
 
+INSTANTIATE_TEST_SUITE_P(
+    NetworkInput,
+    DictationJaTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput)));
+
 IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartSpacingOrCapitalization) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
@@ -1082,6 +1106,12 @@ INSTANTIATE_TEST_SUITE_P(
                                  EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
+    NetworkInput,
+    DictationCommandsTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput)));
+
+INSTANTIATE_TEST_SUITE_P(
     OnDeviceTextArea,
     DictationCommandsTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
@@ -1132,6 +1162,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveByCharacter) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NewLineAndMoveByLine) {
+  if (!RunOnMultilineContent())
+    return;
+
   SendFinalResultAndWaitForEditableValue("Line 1", "Line 1");
   SendFinalResultAndWaitForEditableValue("new line", "Line 1\n");
   SendFinalResultAndWaitForEditableValue("line 2", "Line 1\nline 2");
@@ -1234,6 +1267,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordExtraSpace) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordNewLine) {
+  if (!RunOnMultilineContent())
+    return;
+
   SendFinalResultAndWaitForEditableValue("This is a test\n\n",
                                          "This is a test\n\n");
   SendFinalResultAndWaitForEditableValue("delete the previous word",
@@ -1262,6 +1298,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextSimple) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextMultiLineString) {
+  if (!RunOnMultilineContent())
+    return;
+
   std::string text = " Hello, world. \n Hello, world. \n Hello, world. \n";
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForEditableValue("delete all", "");
@@ -1280,6 +1319,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextSimple) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextMultiLineString) {
+  if (!RunOnMultilineContent())
+    return;
+
   std::string text = "Is good\n and we should go for a run.";
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
@@ -1302,6 +1344,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MAYBE_NavEndTextSimple) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavEndTextMultiLineString) {
+  if (!RunOnMultilineContent())
+    return;
+
   std::string text = "The weather outside is\n";
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
@@ -1319,6 +1364,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevWordSimple) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevWordNewLine) {
+  if (!RunOnMultilineContent())
+    return;
+
   std::string text = "The weather today is bad\n";
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWait("highlight the previous word");
@@ -1354,6 +1402,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextCharSimple) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextCharMultiLineString) {
+  if (!RunOnMultilineContent())
+    return;
+
   std::string text = "Hello, world.\n";
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
@@ -1370,6 +1421,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharSimple) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharMultiLineString) {
+  if (!RunOnMultilineContent())
+    return;
+
   std::string text = "Hello, world.\n";
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWait("highlight the previous character");
@@ -1383,6 +1437,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentWhiteSpace) {
+  if (!RunOnMultilineContent())
+    return;
+
   SendFinalResultAndWaitForEditableValue("  \nHello, world.\n  ",
                                          "  \nHello, world.\n  ");
   SendFinalResultAndWaitForEditableValue("delete the previous sentence", "");
@@ -1538,6 +1595,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionSmartInsertBefore) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartDeletePhraseLongContent) {
+  if (!RunOnMultilineContent())
+    return;
+
   std::string first_sentence_initial = R"(
     The dog (Canis familiaris or Canis lupus familiaris) is a domesticated
     descendant of the wolf.
@@ -1962,6 +2022,12 @@ INSTANTIATE_TEST_SUITE_P(
                                  EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
+    NetworkInput,
+    DictationPumpkinTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput)));
+
+INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
     DictationPumpkinTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
@@ -2004,6 +2070,9 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavByCharacter) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavByLine) {
+  if (!RunOnMultilineContent())
+    return;
+
   std::string text = "Line1\nLine2\nLine3\nLine4";
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForCaretBoundsChanged("Up two lines");
