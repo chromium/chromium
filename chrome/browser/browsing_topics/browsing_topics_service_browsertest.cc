@@ -1097,4 +1097,36 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_url));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       Fetch_InsecureInitiatorContext) {
+  GURL main_frame_url = embedded_test_server()->GetURL(
+      "a.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  GURL fetch_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  content::EvalJsResult result = EvalJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url));
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("browsingTopics: Topics operations are only "
+                                 "available in secure contexts."));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       Fetch_SecureInitiatorContext) {
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  GURL fetch_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+}
+
 }  // namespace browsing_topics

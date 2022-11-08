@@ -227,6 +227,7 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->fetch_priority_hint_ = fetch_priority_hint_;
   request->original_destination_ = original_destination_;
   request->keepalive_ = keepalive_;
+  request->browsing_topics_ = browsing_topics_;
   request->is_history_navigation_ = is_history_navigation_;
   request->window_id_ = window_id_;
   request->trust_token_params_ = trust_token_params_;

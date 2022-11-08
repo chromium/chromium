@@ -136,6 +136,10 @@ class CORE_EXPORT FetchRequestData final
 
   bool Keepalive() const { return keepalive_; }
   void SetKeepalive(bool b) { keepalive_ = b; }
+
+  bool BrowsingTopics() const { return browsing_topics_; }
+  void SetBrowsingTopics(bool b) { browsing_topics_ = b; }
+
   bool IsHistoryNavigation() const { return is_history_navigation_; }
   void SetIsHistoryNavigation(bool b) { is_history_navigation_ = b; }
 
@@ -206,6 +210,7 @@ class CORE_EXPORT FetchRequestData final
   network::mojom::RequestDestination original_destination_ =
       network::mojom::RequestDestination::kEmpty;
   bool keepalive_ = false;
+  bool browsing_topics_ = false;
   bool is_history_navigation_ = false;
   // A specific factory that should be used for this request instead of whatever
   // the system would otherwise decide to use to load this request.

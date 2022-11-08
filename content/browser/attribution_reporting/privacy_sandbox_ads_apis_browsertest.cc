@@ -54,10 +54,22 @@ class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
     url_loader_interceptor_ =
         std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
             [&](URLLoaderInterceptor::RequestParams* params) -> bool {
+              last_request_is_topics_request_ =
+                  params->url_request.browsing_topics;
+
+              last_resource_request_url_ = params->url_request.url;
+              if (resource_request_url_waiter_ &&
+                  resource_request_url_waiter_->running() &&
+                  last_resource_request_url_ ==
+                      expected_last_resource_request_url_) {
+                resource_request_url_waiter_->Quit();
+              }
+
               URLLoaderInterceptor::WriteResponse(
                   base::StrCat(
                       {kBaseDataDir, params->url_request.url.path_piece()}),
                   params->client.get());
+
               return true;
             }));
   }
@@ -72,7 +84,28 @@ class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
         .root();
   }
 
+  bool last_request_is_topics_request() const {
+    return last_request_is_topics_request_;
+  }
+
+  void WaitForResourceRequestURL(const GURL& url) {
+    DCHECK(!resource_request_url_waiter_);
+
+    if (last_resource_request_url_ == url)
+      return;
+
+    expected_last_resource_request_url_ = url;
+    resource_request_url_waiter_ = std::make_unique<base::RunLoop>();
+    resource_request_url_waiter_->Run();
+  }
+
  private:
+  bool last_request_is_topics_request_ = false;
+
+  std::unique_ptr<base::RunLoop> resource_request_url_waiter_;
+  GURL expected_last_resource_request_url_;
+  GURL last_resource_request_url_;
+
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -141,6 +174,57 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
 
   EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
   EXPECT_EQ(0U, root()->child_count());
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
+                       OriginTrialEnabled_TopicsAllowedForFetch) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace(
+                 "fetch($1, {browsingTopics: true})",
+                 GURL("https://example.test/page_without_ads_apis_ot.html"))));
+
+  EXPECT_TRUE(last_request_is_topics_request());
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
+                       OriginTrialDisabled_TopicsNotAllowedForFetch) {
+  // Navigate to a page without an OT token.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_without_ads_apis_ot.html")));
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace(
+                 "fetch($1, {browsingTopics: true})",
+                 GURL("https://example.test/page_without_ads_apis_ot.html"))));
+
+  EXPECT_FALSE(last_request_is_topics_request());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxAdsAPIsAllEnabledBrowserTest,
+    OriginTrialEnabled_TopicsNotAllowedForServiceWorkerFetch) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
+
+  EXPECT_EQ(
+      "ok",
+      EvalJs(
+          shell()->web_contents(),
+          JsReplace(
+              "setupServiceWorker($1)",
+              GURL(
+                  "https://example.test/"
+                  "fetch_topics.js?fetch_url=page_without_ads_apis_ot.html"))));
+
+  WaitForResourceRequestURL(
+      GURL("https://example.test/page_without_ads_apis_ot.html"));
+
+  EXPECT_FALSE(last_request_is_topics_request());
 }
 
 class PrivacySandboxAdsAPIsTopicsDisabledBrowserTest

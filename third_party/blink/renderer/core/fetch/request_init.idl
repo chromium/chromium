@@ -22,6 +22,7 @@ dictionary RequestInit {
     DOMString integrity;
     boolean keepalive;
     [RuntimeEnabled=PriorityHints] FetchPriority priority;
+    [RuntimeEnabled=TopicsAPI] boolean browsingTopics;
     AbortSignal? signal;
     [RuntimeEnabled=FetchUploadStreaming] RequestDuplex duplex;
     [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] IPAddressSpace targetAddressSpace;

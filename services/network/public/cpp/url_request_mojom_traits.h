@@ -251,6 +251,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool keepalive(const network::ResourceRequest& request) {
     return request.keepalive;
   }
+  static bool browsing_topics(const network::ResourceRequest& request) {
+    return request.browsing_topics;
+  }
   static bool has_user_gesture(const network::ResourceRequest& request) {
     return request.has_user_gesture;
   }

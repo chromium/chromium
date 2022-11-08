@@ -275,6 +275,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool GetKeepalive() const { return keepalive_; }
   void SetKeepalive(bool keepalive) { keepalive_ = keepalive; }
 
+  // True if the request should be considered for computing and attaching the
+  // topics headers.
+  bool GetBrowsingTopics() const { return browsing_topics_; }
+  void SetBrowsingTopics(bool browsing_topics) {
+    browsing_topics_ = browsing_topics;
+  }
+
   // True if service workers should not get events for the request.
   bool GetSkipServiceWorker() const { return skip_service_worker_; }
   void SetSkipServiceWorker(bool skip_service_worker) {
@@ -558,6 +565,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool download_to_blob_ : 1;
   bool use_stream_on_response_ : 1;
   bool keepalive_ : 1;
+  bool browsing_topics_ : 1;
   bool allow_stale_response_ : 1;
   mojom::blink::FetchCacheMode cache_mode_;
   bool skip_service_worker_ : 1;

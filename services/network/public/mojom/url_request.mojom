@@ -289,6 +289,11 @@ struct URLRequest {
   // https://fetch.spec.whatwg.org/#request-keepalive-flag
   bool keepalive;
 
+  // True if the request should try to calculate and send the
+  // `Sec-Browsing-Topics` headers.
+  // https://github.com/patcg-individual-drafts/topics
+  bool browsing_topics;
+
   // True if the request was user initiated.
   bool has_user_gesture;
 

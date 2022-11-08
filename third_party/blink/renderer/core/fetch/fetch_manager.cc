@@ -815,6 +815,8 @@ void FetchManager::Loader::PerformHTTPFetch() {
     UseCounter::Count(execution_context_, mojom::WebFeature::kFetchKeepalive);
   }
 
+  request.SetBrowsingTopics(fetch_request_data_->BrowsingTopics());
+
   request.SetOriginalDestination(fetch_request_data_->OriginalDestination());
 
   // "3. Append `Host`, ..."
