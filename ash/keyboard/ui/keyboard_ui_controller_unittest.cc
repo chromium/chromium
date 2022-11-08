@@ -40,10 +40,6 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(USE_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#endif
-
 namespace keyboard {
 namespace {
 
@@ -248,14 +244,7 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
             contents_window->IsVisible() && controller_.IsKeyboardVisible());
   }
 
-  void RunLoop(base::RunLoop* run_loop) {
-#if defined(USE_OZONE)
-    // TODO(crbug/776357): Figure out why the initializer randomly doesn't run
-    // for some tests. In the mean time, prevent flaky Ozone crash.
-    ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
-#endif
-    run_loop->Run();
-  }
+  void RunLoop(base::RunLoop* run_loop) { run_loop->Run(); }
 
   std::unique_ptr<TestFocusController> focus_controller_;
 
