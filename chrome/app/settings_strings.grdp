@@ -2407,7 +2407,10 @@
     Search engine
   </message>
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION" desc="Explanation for the search engine dropdown setting.">
-    Search engine used in the address bar
+    Search engine used in the address bar.
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL" desc="Accessibility label for a 'learn more' link which links to an article about setting a default search engine.">
+    Learn more about default search engines
   </message>
   <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES" desc="Label for the Manage Search Engines button.">
     Manage search engines

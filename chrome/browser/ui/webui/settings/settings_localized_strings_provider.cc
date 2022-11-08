@@ -2070,6 +2070,8 @@ void AddSearchStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH},
       {"searchPageTitle", IDS_SETTINGS_SEARCH},
       {"searchExplanation", IDS_SETTINGS_SEARCH_EXPLANATION},
+      {"searchExplanationLearnMoreA11yLabel",
+       IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
