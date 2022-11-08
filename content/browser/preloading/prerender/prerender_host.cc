@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/typed_macros.h"
@@ -42,7 +43,9 @@ namespace {
 
 bool AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
-    const std::string& prerender_headers_str) {
+    const std::string& prerender_headers_str,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
   net::HttpRequestHeaders prerender_headers;
   prerender_headers.AddHeadersFromString(prerender_headers_str);
 
@@ -60,8 +63,26 @@ bool AreHttpRequestHeadersCompatible(
   prerender_headers.RemoveHeader("Sec-Purpose");
   potential_activation_headers.RemoveHeader("Sec-Purpose");
 
-  return prerender_headers.ToString() ==
-         potential_activation_headers.ToString();
+  // Compare headers in serialized strings. The spec doesn't require serialized
+  // string matches, but practically Chrome generates headers in a decisive way,
+  // i.e. in the same order and cases. So we can expect serialized string
+  // comparisons just work. We ensure this assumption through the metric we
+  // handled in AnalyzePrerenderActivationHeader.
+  if (prerender_headers.ToString() == potential_activation_headers.ToString()) {
+    return true;
+  }
+
+  // The headers mismatch. Analyze the headers asynchronously.
+  // TODO(https://crbug.com/1378921): This is only used to detect if prerender
+  // fails to set headers correctly. Remove this logic after we draw the
+  // conclusion.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&AnalyzePrerenderActivationHeader,
+                     std::move(potential_activation_headers),
+                     std::move(prerender_headers), trigger_type,
+                     embedder_histogram_suffix));
+  return false;
 }
 
 PreloadingFailureReason ToPreloadingFailureReason(PrerenderFinalStatus status) {
@@ -586,7 +607,8 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   }
 
   if (!AreHttpRequestHeadersCompatible(potential_activation.headers,
-                                       begin_params_->headers)) {
+                                       begin_params_->headers, trigger_type(),
+                                       embedder_histogram_suffix())) {
     return ActivationNavigationParamsMatch::kHttpRequestHeader;
   }
 

@@ -4,8 +4,10 @@
 
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/prerender_trigger_type.h"
@@ -15,6 +17,16 @@
 namespace content {
 
 namespace {
+
+// Do not add new value.
+// These values are used to persists sparse metrics to logs.
+enum HeaderMismatchType : uint32_t {
+  kMatch = 0,
+  kMissingInPrerendering = 1,
+  kMissingInActivation = 2,
+  kValueMismatch = 3,
+  kMaxValue = kValueMismatch
+};
 
 PrerenderCancelledInterface GetCancelledInterfaceType(
     const std::string& interface_name) {
@@ -31,6 +43,17 @@ int32_t InterfaceNameHasher(const std::string& interface_name) {
   return static_cast<int32_t>(base::HashMetricNameAs32Bits(interface_name));
 }
 
+int32_t HeaderMismatchHasher(const std::string& header,
+                             HeaderMismatchType mismatch_type) {
+  // Throw two bits away to encode the mismatch type.
+  // {0---30} bits are the encoded hash number.
+  // {31, 32} bits encode the mismatch type.
+  static_assert(HeaderMismatchType::kMaxValue == 3u,
+                "HeaderMismatchType should use 2 bits at most.");
+  return static_cast<int32_t>(base::HashMetricNameAs32Bits(header) << 2 |
+                              mismatch_type);
+}
+
 std::string GenerateHistogramName(const std::string& histogram_base_name,
                                   PrerenderTriggerType trigger_type,
                                   const std::string& embedder_suffix) {
@@ -43,6 +66,16 @@ std::string GenerateHistogramName(const std::string& histogram_base_name,
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
   }
   NOTREACHED();
+}
+
+void ReportHeaderMismatch(const std::string& key,
+                          HeaderMismatchType mismatch_type,
+                          PrerenderTriggerType trigger_type,
+                          const std::string& embedder_histogram_suffix) {
+  base::UmaHistogramSparse(
+      GenerateHistogramName("Prerender.Experimental.ActivationHeadersMismatch",
+                            trigger_type, embedder_histogram_suffix),
+      HeaderMismatchHasher(base::ToLowerASCII(key), mismatch_type));
 }
 
 }  // namespace
@@ -192,6 +225,66 @@ void RecordPrerenderRedirectionDomain(
           "Prerender.Experimental.CrossOriginRedirectionDomain", trigger_type,
           embedder_histogram_suffix),
       domain_type);
+}
+
+void AnalyzePrerenderActivationHeader(
+    net::HttpRequestHeaders potential_activation_headers,
+    net::HttpRequestHeaders prerender_headers,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  using HeaderPair = net::HttpRequestHeaders::HeaderKeyValuePair;
+  auto potential_header_dict = base::MakeFlatMap<std::string, std::string>(
+      potential_activation_headers.GetHeaderVector(), /*comp=default*/ {},
+      [](HeaderPair x) {
+        return std::make_pair(base::ToLowerASCII(x.key), x.value);
+      });
+
+  // Masking code for whether the corresponding enum has been removed or not.
+  // Instead of removing an element from flat_map, we set the mask bit as the
+  // cost of removal is O(N).
+  std::vector<bool> removal_set(potential_header_dict.size(), false);
+  bool detected = false;
+  for (auto& prerender_header : prerender_headers.GetHeaderVector()) {
+    std::string key = base::ToLowerASCII(prerender_header.key);
+    auto potential_it = potential_header_dict.find(key);
+    if (potential_it == potential_header_dict.end()) {
+      // The potential activation headers does not contain it.
+      ReportHeaderMismatch(key, HeaderMismatchType::kMissingInActivation,
+                           trigger_type, embedder_histogram_suffix);
+      detected = true;
+      continue;
+    }
+    if (!base::EqualsCaseInsensitiveASCII(prerender_header.value,
+                                          potential_it->second)) {
+      ReportHeaderMismatch(key, HeaderMismatchType::kValueMismatch,
+                           trigger_type, embedder_histogram_suffix);
+      detected = true;
+    }
+
+    // Remove it, since we will report the remaining ones, i.e., the headers
+    // that are not found in prerendering.
+    removal_set.at(potential_it - potential_header_dict.begin()) = true;
+  }
+
+  // Iterate over the remaining potential prerendering headers and report it to
+  // UMA.
+  for (auto potential_it = potential_header_dict.begin();
+       potential_it != potential_header_dict.end(); potential_it++) {
+    if (removal_set.at(potential_it - potential_header_dict.begin())) {
+      continue;
+    }
+    detected = true;
+    ReportHeaderMismatch(potential_it->first,
+                         HeaderMismatchType::kMissingInPrerendering,
+                         trigger_type, embedder_histogram_suffix);
+  }
+
+  // Use the empty string for the matching case; we use this value for detecting
+  // bug, that is, comparing strings is wrong.
+  if (!detected) {
+    ReportHeaderMismatch("", HeaderMismatchType::kMatch, trigger_type,
+                         embedder_histogram_suffix);
+  }
 }
 
 }  // namespace content

@@ -8207,6 +8207,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kActivationNavigationParameterMismatch);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.ActivationHeadersMismatch.SpeculationRule",
+      -511888193, 1);
 }
 
 class PrerenderPreloaderHoldbackBrowserTest : public PrerenderBrowserTest {

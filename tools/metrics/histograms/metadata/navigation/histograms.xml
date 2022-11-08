@@ -1687,6 +1687,30 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram
+    name="Prerender.Experimental.ActivationHeadersMismatch{PrerenderTriggerType}"
+    enum="PrerenderActivationHeaderMismatchType" expires_after="2023-01-31">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Breakdown metric for
+    PrerenderActivationNavigationParamsMatch::kHttpRequestHeader. We are
+    considering whether we should loosen this restriction, so this metric is
+    added to figure out the usage of headers during prerender navigation and
+    activation navigation. See https://crbug.com/1378921 for more information.
+
+    When we are attempting to activate a prerendered page, we compare the
+    prerendered page's NavigationRequest's headers with the incoming
+    NavigationRequest's (called activation navigation). If they mismatch,
+    PrerenderHost will post a task. The task scans the two headers, and will
+    report a mismatching record if it detects any differences between them. It
+    records the hashed number of a mismatching header, together with the
+    mismatching reason: Missing in prerendering navigation, missing in
+    activation navigation, or the values mismatch.
+  </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
+<histogram
     name="Prerender.Experimental.ActivationNavigationParamsMatch{PrerenderTriggerType}"
     enum="PrerenderActivationNavigationParamsMatch" expires_after="2023-06-05">
   <owner>nhiroki@chromium.org</owner>
