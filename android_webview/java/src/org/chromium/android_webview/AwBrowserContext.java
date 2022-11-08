@@ -168,6 +168,12 @@ public class AwBrowserContext implements BrowserContextHandle {
         AwBrowserContextJni.get().setWebLayerRunningInSameProcess(mNativeAwBrowserContext);
     }
 
+    @VisibleForTesting
+    public void clearPersistentOriginTrialStorageForTesting() {
+        AwBrowserContextJni.get().clearPersistentOriginTrialStorageForTesting(
+                mNativeAwBrowserContext);
+    }
+
     @CalledByNative
     public static AwBrowserContext create(long nativeAwBrowserContext, boolean isDefault) {
         SharedPreferences sharedPreferences;
@@ -187,5 +193,6 @@ public class AwBrowserContext implements BrowserContextHandle {
         void setWebLayerRunningInSameProcess(long nativeAwBrowserContext);
         String[] updateServiceWorkerXRequestedWithAllowListOriginMatcher(
                 long nativeAwBrowserContext, String[] rules);
+        void clearPersistentOriginTrialStorageForTesting(long nativeAwBrowserContext);
     }
 }

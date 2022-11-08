@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
  * AwContentsClient subclass used for testing.
  */
@@ -636,11 +638,16 @@ public class TestAwContentsClient extends NullContentsClient {
      * Callback helper for shouldInterceptRequest.
      */
     public static class ShouldInterceptRequestHelper extends CallbackHelper {
-        private List<String> mShouldInterceptRequestUrls = new ArrayList<String>();
-        private Map<String, WebResourceResponseInfo> mReturnValuesByUrls =
-                Collections.synchronizedMap(new HashMap<String, WebResourceResponseInfo>());
-        private Map<String, AwWebResourceRequest> mRequestsByUrls =
-                Collections.synchronizedMap(new HashMap<String, AwWebResourceRequest>());
+        private final List<String> mShouldInterceptRequestUrls = new ArrayList<>();
+        private final Map<String, WebResourceResponseInfo> mReturnValuesByUrls =
+                Collections.synchronizedMap(new HashMap<>());
+        private final Map<String, AwWebResourceRequest> mRequestsByUrls =
+                Collections.synchronizedMap(new HashMap<>());
+
+        @GuardedBy("mRequestCountLock") // Needs explicit locking for get-and-increment
+        private final Map<String, Integer> mRequestCountByUrl = new HashMap<>();
+        private final Object mRequestCountLock = new Object();
+
         private Runnable mRunnableForFirstTimeCallback;
         private boolean mRaiseExceptionWhenCalled;
         // This is read on another thread, so needs to be marked volatile.
@@ -671,9 +678,20 @@ public class TestAwContentsClient extends NullContentsClient {
             assert mRequestsByUrls.containsKey(url);
             return mRequestsByUrls.get(url);
         }
+        public int getRequestCountForUrl(String url) {
+            assert getCallCount() > 0;
+            synchronized (mRequestCountLock) {
+                Integer count = mRequestCountByUrl.get(url);
+                return count != null ? count : 0;
+            }
+        }
         public void notifyCalled(AwWebResourceRequest request) {
             mShouldInterceptRequestUrls.add(request.url);
             mRequestsByUrls.put(request.url, request);
+            synchronized (mRequestCountLock) {
+                Integer count = mRequestCountByUrl.get(request.url);
+                mRequestCountByUrl.put(request.url, count == null ? 1 : count + 1);
+            }
             if (mRunnableForFirstTimeCallback != null) {
                 mRunnableForFirstTimeCallback.run();
                 mRunnableForFirstTimeCallback = null;

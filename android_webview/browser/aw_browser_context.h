@@ -121,6 +121,8 @@ class AwBrowserContext : public content::BrowserContext,
   GetReduceAcceptLanguageControllerDelegate() override;
   download::InProgressDownloadManager* RetriveInProgressDownloadManager()
       override;
+  content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
+      override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
 
@@ -139,6 +141,8 @@ class AwBrowserContext : public content::BrowserContext,
           cert_verifier_creation_params);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaBrowserContext();
+
+  void ClearPersistentOriginTrialStorageForTesting(JNIEnv* env);
 
   scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher();
 
@@ -162,6 +166,8 @@ class AwBrowserContext : public content::BrowserContext,
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<content::ClientHintsControllerDelegate>
       client_hints_controller_delegate_;
+  std::unique_ptr<content::OriginTrialsControllerDelegate>
+      origin_trials_controller_delegate_;
 
   SimpleFactoryKey simple_factory_key_;
 

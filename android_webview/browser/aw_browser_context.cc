@@ -42,6 +42,9 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/origin_trials/browser/leveldb_persistence_provider.h"
+#include "components/origin_trials/browser/origin_trials.h"
+#include "components/origin_trials/common/features.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
@@ -71,6 +74,7 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 using base::FilePath;
 using content::BrowserThread;
@@ -492,6 +496,22 @@ AwBrowserContext::RetriveInProgressDownloadManager() {
       /*wake_lock_provider_binder*/ base::NullCallback());
 }
 
+content::OriginTrialsControllerDelegate*
+AwBrowserContext::GetOriginTrialsControllerDelegate() {
+  if (!origin_trials::features::IsPersistentOriginTrialsEnabled())
+    return nullptr;
+
+  if (!origin_trials_controller_delegate_) {
+    origin_trials_controller_delegate_ =
+        std::make_unique<origin_trials::OriginTrials>(
+            std::make_unique<origin_trials::LevelDbPersistenceProvider>(
+                GetPath(),
+                GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
+            std::make_unique<blink::TrialTokenValidator>());
+  }
+  return origin_trials_controller_delegate_.get();
+}
+
 std::unique_ptr<content::ZoomLevelDelegate>
 AwBrowserContext::CreateZoomLevelDelegate(
     const base::FilePath& partition_path) {
@@ -578,6 +598,14 @@ void AwBrowserContext::ConfigureNetworkContextParams(
 base::android::ScopedJavaLocalRef<jobject> JNI_AwBrowserContext_GetDefaultJava(
     JNIEnv* env) {
   return g_browser_context->GetJavaBrowserContext();
+}
+
+void AwBrowserContext::ClearPersistentOriginTrialStorageForTesting(
+    JNIEnv* env) {
+  content::OriginTrialsControllerDelegate* delegate =
+      GetOriginTrialsControllerDelegate();
+  if (delegate)
+    delegate->ClearPersistedTokens();
 }
 
 base::android::ScopedJavaLocalRef<jobject>

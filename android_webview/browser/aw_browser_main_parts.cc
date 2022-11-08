@@ -49,6 +49,8 @@
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/android/synchronous_compositor.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -179,12 +181,28 @@ void AwBrowserMainParts::WillRunMainMessageLoop(
   NOTREACHED();
 }
 
+namespace {
+
+void LoadOriginTrialsControllerDelegateOnUiThread() {
+  // Requesting the |OriginTrialsControllerDelegate| will initialize
+  // it if the feature is enabled.
+  //
+  // This should be done as soon as possible in the start-up process, in order
+  // to load the database from disk.
+  AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
+}
+
+}  // namespace
+
 void AwBrowserMainParts::PostCreateThreads() {
   heap_profiling::Mode mode = heap_profiling::GetModeForStartup();
   if (mode != heap_profiling::Mode::kNone)
     heap_profiling::Supervisor::GetInstance()->Start(base::NullCallback());
 
   MaybeSetupSystemTracing();
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&LoadOriginTrialsControllerDelegateOnUiThread));
 }
 
 }  // namespace android_webview

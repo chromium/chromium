@@ -27,6 +27,7 @@ include_rules = [
   "+components/minidump_uploader",
   "+components/navigation_interception",
   "+components/optimization_guide/core/bloom_filter.h",
+  "+components/origin_trials",
   "+components/page_load_metrics/browser",
   "+components/permissions",
   "+components/policy/core/browser",
@@ -101,6 +102,7 @@ include_rules = [
 
   "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
   "+third_party/blink/public/common/features.h",
+  "+third_party/blink/public/common/origin_trials/trial_token_validator.h",
   "+third_party/blink/public/common/page_state/page_state.h",
   "+third_party/blink/public/common/permissions/permission_utils.h",
   "+third_party/blink/public/common/storage_key/storage_key.h",
