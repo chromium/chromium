@@ -50,7 +50,6 @@ static_library("web_package") {
 
 source_set("unit_tests") {
   testonly = true
-  data = [ "test/data/" ]
   sources = [
     "signed_web_bundles/ed25519_public_key_unittest.cc",
     "signed_web_bundles/ed25519_signature_unittest.cc",

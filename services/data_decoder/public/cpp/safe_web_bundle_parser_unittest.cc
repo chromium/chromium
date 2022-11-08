@@ -304,7 +304,7 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
 TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
   SafeWebBundleParser parser;
   base::File test_file =
-      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.wbn")));
+      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
 
   base::test::TestFuture<web_package::mojom::BundleIntegrityBlockPtr,

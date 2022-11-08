@@ -48,4 +48,16 @@ sign-bundle \
   -i simple_b2.wbn \
   -signType integrityblock \
   -privateKey signed_web_bundle_private_key.pem \
-  -o simple_b2_signed.wbn
+  -o simple_b2_signed.swbn
+
+# Rewrite "Hello Web Bundles" to "Tampered Web Bundles" so that the signature
+# should no longer be valid.
+xxd -p simple_b2_signed.swbn |
+  tr -d '\n' |
+  sed 's/48656c6c6f/54616d7065726564/' |
+  xxd -r -p > simple_b2_signed_tampered.swbn
+
+if cmp -s "simple_b2_signed.swbn" "simple_b2_signed_tampered.swbn"; then
+    echo "Error: Tampered version is equal to the untampered version."
+    exit 1
+fi
