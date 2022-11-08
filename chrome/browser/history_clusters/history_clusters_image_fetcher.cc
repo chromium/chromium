@@ -4,18 +4,19 @@
 
 #include "chrome/browser/history_clusters/history_clusters_image_fetcher.h"
 
+#include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/history_clusters/core/config.h"
-#include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/search_provider.h"
+#include "components/omnibox/browser/remote_suggestions_service.h"
+#include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/search_engines/template_url.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace history_clusters {
 
@@ -62,8 +63,7 @@ class HistoryClustersImageServiceFactory : public ProfileKeyedServiceFactory {
 // A one-time use object that uses Suggest to get an image URL corresponding
 // to `search_query` and `entity_id`. This is a hacky temporary implementation,
 // ideally this should be replaced by persisted Suggest-provided entities.
-class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher
-    : public AutocompleteProviderListener {
+class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher {
  public:
   SuggestEntityImageURLFetcher(
       Profile* profile,
@@ -71,13 +71,12 @@ class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher
       const std::u16string& search_query,
       const std::string& entity_id)
       : profile_(profile),
+        autocomplete_provider_client_(autocomplete_provider_client),
         search_query_(base::i18n::ToLower(search_query)),
-        entity_id_(entity_id),
-        // TODO(tommycli): Replace the `SearchProvider` usage with
-        // `RemoteSuggestionsService`.
-        search_provider_(
-            base::MakeRefCounted<SearchProvider>(autocomplete_provider_client,
-                                                 this)) {}
+        entity_id_(entity_id) {
+    DCHECK(profile);
+    DCHECK(autocomplete_provider_client);
+  }
   SuggestEntityImageURLFetcher(const SuggestEntityImageURLFetcher&) = delete;
 
   // `callback` is called with the result.
@@ -85,32 +84,64 @@ class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher
     DCHECK(!callback_);
     callback_ = std::move(callback);
 
-    AutocompleteInput autocomplete_input(
-        search_query_, metrics::OmniboxEventProto::OTHER,
-        ChromeAutocompleteSchemeClassifier(profile_));
-    search_provider_->Start(autocomplete_input, /*minimal_changes=*/false);
+    TemplateURLRef::SearchTermsArgs search_terms_args;
+    // TODO(tommycli): Change OTHER to a Journeys-specific page classification.
+    search_terms_args.page_classification = metrics::OmniboxEventProto::OTHER;
+    search_terms_args.search_terms = search_query_;
 
-    if (search_provider_->done())
-      ProcessMatches();
-  }
-
-  void OnProviderUpdate(bool updated_matches,
-                        const AutocompleteProvider* provider) override {
-    if (search_provider_->done())
-      ProcessMatches();
+    loader_ =
+        autocomplete_provider_client_
+            ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+            ->StartSuggestionsRequest(
+                search_terms_args,
+                autocomplete_provider_client_->GetTemplateURLService(),
+                base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
+                               weak_factory_.GetWeakPtr()));
   }
 
  private:
-  void ProcessMatches() {
-    DCHECK(search_provider_->done());
-    DCHECK(callback_);
-    for (const auto& match : search_provider_->matches()) {
+  void OnURLLoadComplete(const network::SimpleURLLoader* source,
+                         std::unique_ptr<std::string> response_body) {
+    DCHECK_EQ(loader_.get(), source);
+    const bool response_received =
+        response_body && source->NetError() == net::OK &&
+        (source->ResponseInfo() && source->ResponseInfo()->headers &&
+         source->ResponseInfo()->headers->response_code() == 200);
+    if (!response_received) {
+      return std::move(callback_).Run(GURL());
+    }
+
+    std::string response_json = SearchSuggestionParser::ExtractJsonData(
+        source, std::move(response_body));
+    if (response_json.empty()) {
+      return std::move(callback_).Run(GURL());
+    }
+
+    auto response_data =
+        SearchSuggestionParser::DeserializeJsonData(response_json);
+    if (!response_data) {
+      return std::move(callback_).Run(GURL());
+    }
+
+    // TODO(tommycli): Change OTHER to a Journeys-specific page classification.
+    AutocompleteInput input(
+        search_query_, metrics::OmniboxEventProto::OTHER,
+        autocomplete_provider_client_->GetSchemeClassifier());
+    SearchSuggestionParser::Results results;
+    if (!SearchSuggestionParser::ParseSuggestResults(
+            *response_data, input,
+            autocomplete_provider_client_->GetSchemeClassifier(),
+            /*default_result_relevance=*/100,
+            /*is_keyword_result=*/false, &results)) {
+      return std::move(callback_).Run(GURL());
+    }
+
+    for (const auto& result : results.suggest_results) {
       // TODO(tommycli): `entity_id_` is not used yet, because it's always
       // empty right now.
-      if (match.image_url.is_valid() &&
-          base::i18n::ToLower(match.contents) == search_query_) {
-        std::move(callback_).Run(match.image_url);
-        break;
+      if (result.image_url().is_valid() &&
+          base::i18n::ToLower(result.match_contents()) == search_query_) {
+        return std::move(callback_).Run(result.image_url());
       }
     }
 
@@ -120,6 +151,7 @@ class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher
   }
 
   const raw_ptr<Profile> profile_;
+  const raw_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
 
   // The search query and entity ID we are searching for.
   const std::u16string search_query_;
@@ -128,8 +160,10 @@ class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher
   // The result callback to be called once we get the answer.
   base::OnceCallback<void(const GURL&)> callback_;
 
-  // Our internally owned one-time-use search provider.
-  scoped_refptr<AutocompleteProvider> search_provider_;
+  // The URL loader used to get the suggestions.
+  std::unique_ptr<network::SimpleURLLoader> loader_;
+
+  base::WeakPtrFactory<SuggestEntityImageURLFetcher> weak_factory_{this};
 };
 
 HistoryClustersImageFetcher::HistoryClustersImageFetcher(Profile* profile)
