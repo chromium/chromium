@@ -320,6 +320,45 @@ class BaselineOptimizerTest(unittest.TestCase):
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
+    def test_virtual_test_fallback_to_same_baseline_after_optimization_1(self):
+        # Baseline optimization in this case changed the result for
+        # virtual/gpu/fast/canvas on win10. The test previously expects
+        # output '2'. After optimization it expects '1'.
+        # TODO(crbug/1375568): consider do away with the patching virtual subtree operation.
+        self._assert_optimization(
+            {
+                'platform/win/fast/canvas': '1',
+                'platform/win10/fast/canvas': '2',
+                'platform/mac/fast/canvas': '2',
+                'platform/mac/virtual/gpu/fast/canvas': '1',
+            }, {
+                'virtual/gpu/fast/canvas': '1',
+                'platform/win/fast/canvas': '1',
+                'platform/win10/fast/canvas': '2',
+                'platform/mac/fast/canvas': '2',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_virtual_test_fallback_to_same_baseline_after_optimization_2(self):
+        # Baseline optimization in this case changed the result for
+        # virtual/gpu/fast/canvas on mac11. The test previously expects
+        # output '1'. After optimization it expects '2'.
+        # TODO(crbug/1375568): consider do away with the patching virtual subtree operation.
+        self._assert_optimization(
+            {
+                'platform/mac-mac10.15/virtual/gpu/fast/canvas': '3',
+                'platform/mac-mac11/fast/canvas': '1',
+                'fast/canvas': '2',
+            }, {
+                'platform/mac-mac10.15/virtual/gpu/fast/canvas': '3',
+                'platform/mac-mac11/virtual/gpu/fast/canvas': None,
+                'platform/mac/virtual/gpu/fast/canvas': None,
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac-mac11/fast/canvas': '1',
+                'fast/canvas': '2',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
     def test_virtual_baseline_not_redundant_with_actual_root(self):
         # baseline optimization supprisingly added one baseline in this case.
         # This is because we are patching the virtual subtree first.
@@ -331,9 +370,9 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'fast/canvas': '2',
             }, {
                 'platform/mac-mac11/virtual/gpu/fast/canvas': '1',
-                'platform/mac-mac/virtual/gpu/fast/canvas': None,
-                'platform/mac-mac11/fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': None,
                 'virtual/gpu/fast/canvas': '2',
+                'platform/mac-mac11/fast/canvas': '1',
                 'fast/canvas': '2',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
