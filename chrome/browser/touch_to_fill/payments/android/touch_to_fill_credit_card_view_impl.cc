@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_impl.h"
 
+#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/touch_to_fill/payments/android/jni_headers/TouchToFillCreditCardViewBridge_jni.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_controller.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -26,7 +27,8 @@ TouchToFillCreditCardViewImpl::~TouchToFillCreditCardViewImpl() {
 }
 
 bool TouchToFillCreditCardViewImpl::Show(
-    TouchToFillCreditCardViewController* controller) {
+    TouchToFillCreditCardViewController* controller,
+    base::span<const autofill::CreditCard* const> cards_to_suggest) {
   if (java_object_)
     return false;  // Already shown.
 
@@ -48,7 +50,17 @@ bool TouchToFillCreditCardViewImpl::Show(
   if (!java_object_)
     return false;
 
-  Java_TouchToFillCreditCardViewBridge_showSheet(env, java_object_);
+  base::android::ScopedJavaLocalRef<jobjectArray> credit_cards_array =
+      Java_TouchToFillCreditCardViewBridge_createCreditCardsArray(
+          env, cards_to_suggest.size());
+  for (size_t i = 0; i < cards_to_suggest.size(); ++i) {
+    Java_TouchToFillCreditCardViewBridge_setCreditCard(
+        env, credit_cards_array, i,
+        PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
+            env, *cards_to_suggest[i]));
+  }
+  Java_TouchToFillCreditCardViewBridge_showSheet(env, java_object_,
+                                                 credit_cards_array);
   return true;
 }
 

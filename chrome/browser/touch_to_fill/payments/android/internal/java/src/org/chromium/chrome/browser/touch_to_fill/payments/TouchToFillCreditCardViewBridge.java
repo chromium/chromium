@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -42,12 +43,23 @@ class TouchToFillCreditCardViewBridge {
     }
 
     @CalledByNative
-    private void showSheet() {
+    private void showSheet(PersonalDataManager.CreditCard[] cards) {
         mComponent.showSheet();
     }
 
     @CalledByNative
     private void hideSheet() {
         mComponent.hideSheet();
+    }
+
+    @CalledByNative
+    private static PersonalDataManager.CreditCard[] createCreditCardsArray(int size) {
+        return new PersonalDataManager.CreditCard[size];
+    }
+
+    @CalledByNative
+    private static void setCreditCard(PersonalDataManager.CreditCard[] creditCards, int index,
+            PersonalDataManager.CreditCard creditCard) {
+        creditCards[index] = creditCard;
     }
 }

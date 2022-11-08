@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_VIEW_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_VIEW_H_
 
+#include "base/containers/span.h"
+
 namespace autofill {
 
 class TouchToFillCreditCardViewController;
+class CreditCard;
 
 // The UI interface which prompts the user to select a credit card to fill
 // using Touch To Fill surface.
@@ -15,7 +18,9 @@ class TouchToFillCreditCardView {
  public:
   virtual ~TouchToFillCreditCardView() = default;
 
-  virtual bool Show(TouchToFillCreditCardViewController* controller) = 0;
+  virtual bool Show(
+      TouchToFillCreditCardViewController* controller,
+      base::span<const autofill::CreditCard* const> cards_to_suggest) = 0;
   virtual void Hide() = 0;
 };
 

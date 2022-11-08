@@ -902,15 +902,16 @@ bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
 }
 
 bool ChromeAutofillClient::ShowTouchToFillCreditCard(
-    base::WeakPtr<TouchToFillDelegate> delegate) {
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::CreditCard* const> cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
   // Don't show TTF surface while Autofill Assistant's UI is shown.
   if (IsAutofillAssistantShowing())
     return false;
 
   return touch_to_fill_credit_card_controller_.Show(
-      std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()),
-      delegate);
+      std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()), delegate,
+      std::move(cards_to_suggest));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();

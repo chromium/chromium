@@ -5,7 +5,10 @@
 import("//build/config/android/rules.gni")
 
 source_set("public") {
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+  ]
 
   sources = [
     "touch_to_fill_credit_card_view.h",
@@ -27,6 +30,7 @@ source_set("android") {
     "//chrome/browser/autofill",
     "//components/autofill/core/common:features",
     "//content/public/browser:browser",
+    "//third_party/libaddressinput:util",
     "//ui/android",
   ]
 }

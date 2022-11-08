@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -13,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::ElementsAreArray;
 using testing::NiceMock;
 using testing::Ref;
 using testing::Return;
@@ -44,18 +46,20 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
-              (base::WeakPtr<autofill::TouchToFillDelegate>),
+              (base::WeakPtr<autofill::TouchToFillDelegate> delegate,
+               base::span<const autofill::CreditCard* const> cards_to_suggest),
               (override));
   MOCK_METHOD(void, HideTouchToFillCreditCard, (), (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
 
   void ExpectDelegateWeakPtrFromShowInvalidatedOnHide() {
     EXPECT_CALL(*this, ShowTouchToFillCreditCard)
-        .WillOnce(
-            [this](base::WeakPtr<autofill::TouchToFillDelegate> delegate) {
-              captured_delegate_ = delegate;
-              return true;
-            });
+        .WillOnce([this](base::WeakPtr<autofill::TouchToFillDelegate> delegate,
+                         base::span<const autofill::CreditCard* const>
+                             cards_to_suggest) {
+          captured_delegate_ = delegate;
+          return true;
+        });
     EXPECT_CALL(*this, HideTouchToFillCreditCard).WillOnce([this]() {
       EXPECT_FALSE(captured_delegate_);
     });
@@ -309,6 +313,23 @@ TEST_F(TouchToFillDelegateImplUnitTest, ResetAllowsShowingTouchToFillAgain) {
 
 TEST_F(TouchToFillDelegateImplUnitTest, SafelyHideTouchToFillInDtor) {
   autofill_client_.ExpectDelegateWeakPtrFromShowInvalidatedOnHide();
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  browser_autofill_manager_.reset();
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest, PassTheCreditCardsToTheClient) {
+  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  CreditCard credit_card1 = autofill::test::GetCreditCard();
+  CreditCard credit_card2 = autofill::test::GetCreditCard2();
+  autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card1);
+  autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card2);
+  std::vector<autofill::CreditCard*> credit_cards =
+      autofill_client_.GetPersonalDataManager()->GetCreditCardsToSuggest(false);
+
+  EXPECT_CALL(autofill_client_,
+              ShowTouchToFillCreditCard(_, ElementsAreArray(credit_cards)));
+
   TryToShowTouchToFill(/*expected_success=*/true);
 
   browser_autofill_manager_.reset();

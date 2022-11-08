@@ -55,8 +55,10 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(int query_id,
   if (!manager_->driver()->CanShowAutofillUi())
     return false;
   // Finally try showing the surface.
-  if (!manager_->client()->ShowTouchToFillCreditCard(GetWeakPtr()))
+  if (!manager_->client()->ShowTouchToFillCreditCard(
+          GetWeakPtr(), std::move(cards_to_suggest))) {
     return false;
+  }
 
   ttf_credit_card_state_ = TouchToFillState::kIsShowing;
   manager_->client()->HideAutofillPopup(

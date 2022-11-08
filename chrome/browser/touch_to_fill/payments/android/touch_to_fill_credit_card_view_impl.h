@@ -17,6 +17,7 @@ class WebContents;
 namespace autofill {
 
 class TouchToFillCreditCardViewController;
+class CreditCard;
 
 // Android implementation of the surface to select a credit card to fill.
 // Uses Java TouchToFillCreditCardComponent to present a bottom sheet.
@@ -30,7 +31,9 @@ class TouchToFillCreditCardViewImpl : public TouchToFillCreditCardView {
 
  private:
   // TouchToFillCreditCardView:
-  bool Show(TouchToFillCreditCardViewController* controller) override;
+  bool Show(
+      TouchToFillCreditCardViewController* controller,
+      base::span<const autofill::CreditCard* const> cards_to_suggest) override;
   void Hide() override;
 
   // The corresponding Java TouchToFillCreditCardViewBridge.
