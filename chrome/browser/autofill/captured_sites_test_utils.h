@@ -17,6 +17,8 @@
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test_utils.h"
@@ -170,6 +172,26 @@ class WebPageReplayServerWrapper {
   int host_http_port_;
   int host_https_port_;
   bool start_as_replay_;
+};
+
+class ProfileDataController {
+ public:
+  ProfileDataController();
+  ~ProfileDataController();
+
+  const autofill::CreditCard& credit_card() const { return card_; }
+  const autofill::AutofillProfile& profile() { return profile_; }
+
+  bool AddAutofillProfileInfo(const std::string& field_type,
+                              const std::string& field_value);
+
+ private:
+  absl::optional<autofill::ServerFieldType> StringToFieldType(
+      const std::string& str) const;
+
+  autofill::AutofillProfile profile_;
+  autofill::CreditCard card_;
+  std::map<std::string, autofill::ServerFieldType> string_to_field_type_map_;
 };
 
 // TestRecipeReplayChromeFeatureActionExecutor

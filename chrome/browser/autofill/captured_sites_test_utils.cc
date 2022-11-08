@@ -12,6 +12,7 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/path_service.h"
@@ -27,10 +28,15 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
@@ -749,6 +755,71 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
 
   web_page_replay_server_ = base::LaunchProcess(full_command, options);
   return true;
+}
+
+// ProfileDataController ------------------------------------------------------
+ProfileDataController::ProfileDataController()
+    : profile_(autofill::test::GetIncompleteProfile2()),
+      card_(autofill::CreditCard(base::GenerateGUID(),
+                                 "http://www.example.com")) {
+  for (size_t i = autofill::NO_SERVER_DATA; i < autofill::MAX_VALID_FIELD_TYPE;
+       ++i) {
+    autofill::ServerFieldType field_type =
+        static_cast<autofill::ServerFieldType>(i);
+    string_to_field_type_map_[autofill::AutofillType(field_type).ToString()] =
+        field_type;
+  }
+
+  for (size_t i = static_cast<size_t>(autofill::HtmlFieldType::kUnspecified);
+       i <= static_cast<size_t>(autofill::HtmlFieldType::kMaxValue); ++i) {
+    autofill::AutofillType field_type(static_cast<autofill::HtmlFieldType>(i),
+                                      autofill::HtmlFieldMode::kNone);
+    string_to_field_type_map_[field_type.ToString()] =
+        field_type.GetStorableType();
+  }
+
+  // Initialize the credit card with default values, in case the test recipe
+  // file does not contain pre-saved credit card info.
+  autofill::test::SetCreditCardInfo(&card_, "Buddy Holly", "5187654321098765",
+                                    "10", "2998", "1");
+}
+
+ProfileDataController::~ProfileDataController() = default;
+
+bool ProfileDataController::AddAutofillProfileInfo(
+    const std::string& field_type,
+    const std::string& field_value) {
+  absl::optional<autofill::ServerFieldType> type =
+      StringToFieldType(field_type);
+  if (!type.has_value()) {
+    ADD_FAILURE() << "Unable to recognize autofill field type '" << field_type
+                  << "'!";
+    return false;
+  }
+
+  if (base::StartsWith(field_type, "HTML_TYPE_CREDIT_CARD_",
+                       base::CompareCase::INSENSITIVE_ASCII) ||
+      base::StartsWith(field_type, "CREDIT_CARD_",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    if (type == autofill::CREDIT_CARD_NAME_FIRST ||
+        type == autofill::CREDIT_CARD_NAME_LAST) {
+      card_.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL, u"");
+    }
+    card_.SetRawInfo(type.value(), base::UTF8ToUTF16(field_value));
+  } else {
+    profile_.SetRawInfo(type.value(), base::UTF8ToUTF16(field_value));
+  }
+
+  return true;
+}
+
+absl::optional<autofill::ServerFieldType>
+ProfileDataController::StringToFieldType(const std::string& str) const {
+  auto it = string_to_field_type_map_.find(str);
+  if (it == string_to_field_type_map_.end()) {
+    return absl::nullopt;
+  }
+  return it->second;
 }
 
 // TestRecipeReplayer ---------------------------------------------------------

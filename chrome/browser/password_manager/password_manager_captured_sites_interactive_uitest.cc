@@ -97,6 +97,11 @@ class CapturedSitesPasswordManagerBrowserTest
     return true;
   }
 
+  bool AddAutofillProfileInfo(const std::string& field_type,
+                              const std::string& field_value) override {
+    return profile_controller_->AddAutofillProfileInfo(field_type, field_value);
+  }
+
   bool SavePassword() override {
     BubbleObserver bubble_observer(WebContents());
     if (bubble_observer.IsSavePromptAvailable()) {
@@ -194,6 +199,9 @@ class CapturedSitesPasswordManagerBrowserTest
                           &password_manager::BuildPasswordStoreWithFakeBackend<
                               content::BrowserContext>));
                 }));
+
+    profile_controller_ =
+        std::make_unique<captured_sites_test_utils::ProfileDataController>();
   }
 
   void SetUpOnMainThread() override {
@@ -252,6 +260,8 @@ class CapturedSitesPasswordManagerBrowserTest
   TestGenerationPopupObserver observer_;
   std::unique_ptr<captured_sites_test_utils::TestRecipeReplayer>
       recipe_replayer_;
+  std::unique_ptr<captured_sites_test_utils::ProfileDataController>
+      profile_controller_;
   base::test::ScopedFeatureList feature_list_;
   content::WebContents* web_contents_ = nullptr;
   std::unique_ptr<ServerUrlLoader> server_url_loader_;
