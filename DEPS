@@ -277,9 +277,6 @@ vars = {
   # Use the experimental version of the RTS model
   'checkout_rts_experimental_model': False,
 
-  # By default, do not check out the re-client binaries.
-  'checkout_reclient': False,
-
   # Make Dawn skip its standalone dependencies
   'dawn_standalone': False,
 
@@ -572,7 +569,6 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
-    'condition': 'checkout_reclient',
   },
   'src/third_party/ninja': {
     'packages': [
