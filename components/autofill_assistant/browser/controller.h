@@ -117,7 +117,6 @@ class Controller : public ScriptExecutorDelegate,
   const GURL& GetCurrentURL() override;
   const GURL& GetDeeplinkURL() override;
   const GURL& GetScriptURL() override;
-  Service* GetService() override;
   WebController* GetWebController() override;
   const TriggerContext* GetTriggerContext() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;

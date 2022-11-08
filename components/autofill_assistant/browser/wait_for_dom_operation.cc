@@ -234,7 +234,8 @@ void WaitForDomOperation::RunInterrupt(const std::string& path) {
       std::make_unique<TriggerContext>(std::vector<const TriggerContext*>{
           main_script_->additional_context_.get()}),
       main_script_->last_global_payload_, main_script_->initial_script_payload_,
-      /* listener= */ this, &no_interrupts_, delegate_, ui_delegate_,
+      /* listener= */ this, &no_interrupts_, delegate_, main_script_->service_,
+      ui_delegate_,
       /* is_interrupt_executor= */ true);
   delegate_->EnterState(AutofillAssistantState::RUNNING);
   ui_delegate_->SetUserActions(nullptr);

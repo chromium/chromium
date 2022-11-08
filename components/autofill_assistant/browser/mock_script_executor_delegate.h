@@ -36,7 +36,6 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
   MOCK_METHOD(const GURL&, GetCurrentURL, (), (override));
   MOCK_METHOD(const GURL&, GetDeeplinkURL, (), (override));
   MOCK_METHOD(const GURL&, GetScriptURL, (), (override));
-  MOCK_METHOD(Service*, GetService, (), (override));
   MOCK_METHOD(WebController*, GetWebController, (), (override));
   MOCK_METHOD(const TriggerContext*, GetTriggerContext, (), (override));
   MOCK_METHOD(autofill::PersonalDataManager*,

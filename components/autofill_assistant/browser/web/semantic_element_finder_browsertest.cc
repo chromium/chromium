@@ -178,8 +178,6 @@ class SemanticElementFinderBrowserTest
             }));
     ON_CALL(mock_script_executor_delegate, GetTriggerContext())
         .WillByDefault(Return(&trigger_context));
-    ON_CALL(mock_script_executor_delegate, GetService())
-        .WillByDefault(Return(&mock_service));
     GURL test_script_url("https://example.com");
     ON_CALL(mock_script_executor_delegate, GetScriptURL())
         .WillByDefault(testing::ReturnRef(test_script_url));
@@ -192,7 +190,8 @@ class SemanticElementFinderBrowserTest
         /* global_payload= */ std::string(),
         /* script_payload= */ std::string(),
         /* listener= */ nullptr, &ordered_interrupts,
-        &mock_script_executor_delegate, &fake_script_executor_ui_delegate,
+        &mock_script_executor_delegate, &mock_service,
+        &fake_script_executor_ui_delegate,
         /* is_interrupt_executor= */ false);
     base::RunLoop run_loop;
     script_executor.Run(

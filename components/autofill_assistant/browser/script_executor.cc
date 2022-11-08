@@ -75,6 +75,7 @@ ScriptExecutor::ScriptExecutor(
     ScriptExecutor::Listener* listener,
     const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
     ScriptExecutorDelegate* delegate,
+    Service* service,
     ScriptExecutorUiDelegate* ui_delegate,
     bool is_interrupt_executor)
     : script_path_(script_path),
@@ -84,12 +85,14 @@ ScriptExecutor::ScriptExecutor(
       last_script_payload_(script_payload),
       listener_(listener),
       delegate_(delegate),
+      service_(service),
       ui_delegate_(ui_delegate),
       ordered_interrupts_(ordered_interrupts),
       element_store_(
           std::make_unique<ElementStore>(delegate->GetWebContents())),
       is_interrupt_executor_(is_interrupt_executor) {
   DCHECK(delegate_);
+  DCHECK(service_);
   DCHECK(ui_delegate_);
   DCHECK(ordered_interrupts_);
 }
@@ -115,7 +118,6 @@ void ScriptExecutor::Run(const UserData* user_data,
   delegate_->AddNavigationListener(this);
 
   callback_ = std::move(callback);
-  DCHECK(delegate_->GetService());
 
 #ifdef NDEBUG
   VLOG(2) << "GetActions for (redacted)";
@@ -123,7 +125,7 @@ void ScriptExecutor::Run(const UserData* user_data,
   VLOG(2) << "GetActions for " << delegate_->GetCurrentURL().host();
 #endif
 
-  delegate_->GetService()->GetActions(
+  service_->GetActions(
       script_path_, delegate_->GetScriptURL(), GetMergedTriggerContext(),
       last_global_payload_, last_script_payload_,
       base::BindOnce(&ScriptExecutor::OnGetActions,
@@ -1026,7 +1028,7 @@ void ScriptExecutor::GetNextActions() {
   VLOG(2) << "Roundtrip time: " << roundtrip_timing_stats_.roundtrip_time_ms();
   VLOG(2) << "Client execution time: "
           << roundtrip_timing_stats_.client_time_ms();
-  delegate_->GetService()->GetNextActions(
+  service_->GetNextActions(
       GetMergedTriggerContext(), last_global_payload_, last_script_payload_,
       processed_actions_, roundtrip_timing_stats_, roundtrip_network_stats_,
       base::BindOnce(&ScriptExecutor::OnGetActions,
@@ -1148,10 +1150,8 @@ ProcessedActionStatusDetailsProto& ScriptExecutor::GetLogInfo() {
 void ScriptExecutor::RequestUserData(
     const CollectUserDataOptions& options,
     base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback) {
-  auto* service = delegate_->GetService();
-  DCHECK(service);
   delegate_->EnterState(AutofillAssistantState::RUNNING);
-  service->GetUserData(
+  service_->GetUserData(
       options, run_id_, user_data_,
       base::BindOnce(&ScriptExecutor::OnRequestUserData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -1243,9 +1243,7 @@ const std::string ScriptExecutor::GetLocale() const {
 
 void ScriptExecutor::ReportProgress(const std::string& payload,
                                     base::OnceCallback<void(bool)> callback) {
-  auto* service = delegate_->GetService();
-  DCHECK(service);
-  service->ReportProgress(
+  service_->ReportProgress(
       report_token_, payload,
       base::BindOnce(&ScriptExecutor::OnReportProgress,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

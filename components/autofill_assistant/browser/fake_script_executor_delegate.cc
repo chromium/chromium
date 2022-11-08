@@ -31,10 +31,6 @@ const GURL& FakeScriptExecutorDelegate::GetScriptURL() {
   return current_url_;
 }
 
-Service* FakeScriptExecutorDelegate::GetService() {
-  return service_;
-}
-
 WebController* FakeScriptExecutorDelegate::GetWebController() {
   return web_controller_;
 }

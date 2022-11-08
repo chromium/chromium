@@ -56,8 +56,10 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
   ScriptTrackerTest()
       : no_runnable_scripts_anymore_(0),
         runnable_scripts_changed_(0),
-        tracker_(&delegate_, &ui_delegate_, /* listener=*/this) {
-    delegate_.SetService(&mock_service_);
+        tracker_(&delegate_,
+                 &mock_service_,
+                 &ui_delegate_,
+                 /* listener=*/this) {
     delegate_.SetWebController(&mock_web_controller_);
   }
 

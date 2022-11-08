@@ -49,10 +49,15 @@ base::Value::List ToValueList(const T& v) {
 }  // namespace
 
 ScriptTracker::ScriptTracker(ScriptExecutorDelegate* delegate,
+                             Service* service,
                              ScriptExecutorUiDelegate* ui_delegate,
                              ScriptTracker::Listener* listener)
-    : delegate_(delegate), ui_delegate_(ui_delegate), listener_(listener) {
+    : delegate_(delegate),
+      service_(service),
+      ui_delegate_(ui_delegate),
+      listener_(listener) {
   DCHECK(delegate_);
+  DCHECK(service_);
   DCHECK(ui_delegate_);
   DCHECK(listener_);
 }
@@ -129,7 +134,7 @@ void ScriptTracker::ExecuteScript(const std::string& script_path,
   executor_ = std::make_unique<ScriptExecutor>(
       script_path, std::move(context), last_global_payload_,
       last_script_payload_,
-      /* listener= */ this, &interrupts_, delegate_, ui_delegate_,
+      /* listener= */ this, &interrupts_, delegate_, service_, ui_delegate_,
       /* is_interrupt_executor= */ false);
   ScriptExecutor::RunScriptCallback run_script_callback = base::BindOnce(
       &ScriptTracker::OnScriptRun, weak_ptr_factory_.GetWeakPtr(), script_path,

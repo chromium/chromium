@@ -20,6 +20,7 @@
 namespace autofill_assistant {
 class ScriptExecutorDelegate;
 class ScriptTrackerTest;
+class Service;
 
 // The script tracker keeps track of which scripts are available, which are
 // running, which have run, which are runnable whose preconditions are met.
@@ -54,6 +55,7 @@ class ScriptTracker : public ScriptExecutor::Listener {
   // |delegate| and |listener| should outlive this object and should not be
   // nullptr.
   ScriptTracker(ScriptExecutorDelegate* delegate,
+                Service* service,
                 ScriptExecutorUiDelegate* ui_delegate,
                 ScriptTracker::Listener* listener);
 
@@ -132,6 +134,7 @@ class ScriptTracker : public ScriptExecutor::Listener {
       std::vector<std::unique_ptr<Script>> scripts) override;
 
   const raw_ptr<ScriptExecutorDelegate> delegate_;
+  const raw_ptr<Service> service_;
   const raw_ptr<ScriptExecutorUiDelegate, DanglingUntriaged> ui_delegate_;
   const raw_ptr<ScriptTracker::Listener> listener_;
 

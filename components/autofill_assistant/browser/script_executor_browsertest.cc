@@ -56,7 +56,6 @@ class ScriptExecutorBrowserTest : public BaseBrowserTest {
         shell()->web_contents(), &user_data_, &log_info_, nullptr,
         /*enable_full_stack_traces= */ true);
 
-    fake_script_executor_delegate_.SetService(&mock_service_);
     fake_script_executor_delegate_.SetWebController(web_controller_.get());
     fake_script_executor_delegate_.SetCurrentURL(GURL("http://example.com/"));
     fake_script_executor_delegate_.SetWebContents(shell()->web_contents());
@@ -82,7 +81,8 @@ class ScriptExecutorBrowserTest : public BaseBrowserTest {
         /* global_payload= */ "",
         /* script_payload= */ "",
         /* listener= */ nullptr, &ordered_interrupts_,
-        &fake_script_executor_delegate_, &fake_script_executor_ui_delegate_,
+        &fake_script_executor_delegate_, &mock_service_,
+        &fake_script_executor_ui_delegate_,
         /* is_interrupt_executor= */ false);
 
     script_executor_->Run(

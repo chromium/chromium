@@ -103,11 +103,6 @@ const GURL& Controller::GetScriptURL() {
   return script_url_;
 }
 
-Service* Controller::GetService() {
-  DCHECK(service_);
-  return service_.get();
-}
-
 WebController* Controller::GetWebController() {
   if (!web_controller_) {
     web_controller_ = WebController::CreateForWebContents(
@@ -151,7 +146,7 @@ void Controller::SetJsFlowLibrary(const std::string& js_flow_library) {
   }
 
   GetJsFlowDevtoolsWrapper()->SetJsFlowLibrary(js_flow_library);
-  GetService()->UpdateJsFlowLibraryLoaded(!js_flow_library.empty());
+  service_->UpdateJsFlowLibraryLoaded(!js_flow_library.empty());
 }
 
 JsFlowDevtoolsWrapper* Controller::GetJsFlowDevtoolsWrapper() {
@@ -493,13 +488,13 @@ void Controller::OnGetAnnotateDomModelVersionForGetScripts(
     const GURL& url,
     absl::optional<int64_t> model_version) {
   if (model_version) {
-    GetService()->UpdateAnnotateDomModelContext(*model_version);
+    service_->UpdateAnnotateDomModelContext(*model_version);
   }
   GetScriptsForUrl(url);
 }
 
 void Controller::GetScriptsForUrl(const GURL& url) {
-  GetService()->GetScriptsForUrl(
+  service_->GetScriptsForUrl(
       url, *trigger_context_,
       base::BindOnce(&Controller::OnGetScripts, weak_ptr_factory_.GetWeakPtr(),
                      url));
@@ -610,7 +605,7 @@ void Controller::OnGetScripts(
     SetClientSettings(response_proto.client_settings());
   }
   if (response_proto.has_script_store_config()) {
-    GetService()->SetScriptStoreConfig(response_proto.script_store_config());
+    service_->SetScriptStoreConfig(response_proto.script_store_config());
   }
   std::vector<std::unique_ptr<Script>> scripts;
   for (const auto& script_proto : response_proto.scripts()) {
@@ -859,7 +854,7 @@ void Controller::InitFromParameters() {
 
   user_model_.SetCurrentURL(GetCurrentURL());
 
-  GetService()->SetDisableRpcSigning(
+  service_->SetDisableRpcSigning(
       trigger_context_->GetScriptParameters().GetDisableRpcSigning());
 }
 
@@ -1433,6 +1428,7 @@ ScriptTracker* Controller::script_tracker() {
     DCHECK(client_->GetScriptExecutorUiDelegate());
     script_tracker_ = std::make_unique<ScriptTracker>(
         /* delegate= */ this,
+        /* service= */ service_.get(),
         /* ui_delegate= */ client_->GetScriptExecutorUiDelegate(),
         /* listener= */ this);
   }

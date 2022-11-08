@@ -37,7 +37,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   const GURL& GetCurrentURL() override;
   const GURL& GetDeeplinkURL() override;
   const GURL& GetScriptURL() override;
-  Service* GetService() override;
   WebController* GetWebController() override;
   TriggerContext* GetTriggerContext() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
@@ -87,8 +86,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
 
   void SetCurrentURL(const GURL& url) { current_url_ = url; }
 
-  void SetService(Service* service) { service_ = service; }
-
   void SetWebController(WebController* web_controller) {
     web_controller_ = web_controller;
   }
@@ -135,7 +132,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
  private:
   ClientSettings client_settings_;
   GURL current_url_;
-  raw_ptr<Service> service_ = nullptr;
   raw_ptr<WebController> web_controller_ = nullptr;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
   std::unique_ptr<JsFlowDevtoolsWrapper> js_flow_devtools_wrapper_;

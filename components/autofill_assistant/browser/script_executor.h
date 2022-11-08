@@ -40,6 +40,7 @@
 namespace autofill_assistant {
 class ElementFinderResult;
 class ElementStore;
+class Service;
 class UserModel;
 class WaitForDomOperation;
 class WebController;
@@ -76,6 +77,7 @@ class ScriptExecutor : public ActionDelegate,
                  ScriptExecutor::Listener* listener,
                  const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
                  ScriptExecutorDelegate* delegate,
+                 Service* service,
                  ScriptExecutorUiDelegate* ui_delegate,
                  bool is_interrupt_executor);
 
@@ -405,6 +407,7 @@ class ScriptExecutor : public ActionDelegate,
   std::string last_script_payload_;
   const raw_ptr<ScriptExecutor::Listener> listener_;
   const raw_ptr<ScriptExecutorDelegate> delegate_;
+  const raw_ptr<Service> service_;
   const raw_ptr<ScriptExecutorUiDelegate, DanglingUntriaged> ui_delegate_;
   // Set of interrupts that might run during wait for dom or prompt action with
   // allow_interrupt. Sorted by priority; an interrupt that appears on the
