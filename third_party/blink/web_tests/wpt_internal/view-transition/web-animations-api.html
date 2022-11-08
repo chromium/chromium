@@ -22,10 +22,10 @@
 }
 
 /* Unset all animations since the test drives it using WA-API */
-html::page-transition-container(*),
-html::page-transition-image-wrapper(*),
-html::page-transition-incoming-image(*),
-html::page-transition-outgoing-image(*) {
+html::view-transition-group(*),
+html::view-transition-image-pair(*),
+html::view-transition-new(*),
+html::view-transition-old(*) {
   animation: unset;
 }
 </style>
@@ -33,16 +33,16 @@ html::page-transition-outgoing-image(*) {
 <div id=second></div>
 <script>
 function setAnimation() {
-  document.documentElement.animate({ transform: ['translate(100px)', 'translate(100px)'] }, { duration: 10000, pseudoElement: '::page-transition-container(first)'});
-  document.documentElement.animate({ transform: ['translate(150px)', 'translate(150px)'] }, { duration: 10000, pseudoElement: '::page-transition-container(second)'});
+  document.documentElement.animate({ transform: ['translate(100px)', 'translate(100px)'] }, { duration: 10000, pseudoElement: '::view-transition-group(first)'});
+  document.documentElement.animate({ transform: ['translate(150px)', 'translate(150px)'] }, { duration: 10000, pseudoElement: '::view-transition-group(second)'});
   requestAnimationFrame(takeScreenshot);
 }
 
 async function runTest() {
-  first.style.pageTransitionTag = "first";
+  first.style.viewTransitionName = "first";
   document.startViewTransition(() => {
-    first.style.pageTransitionTag = "";
-    second.style.pageTransitionTag = "second";
+    first.style.viewTransitionName = "";
+    second.style.viewTransitionName = "second";
     requestAnimationFrame(setAnimation);
   });
 }

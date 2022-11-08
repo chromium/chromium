@@ -8,12 +8,12 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-html { page-transition-tag: none }
+html { view-transition-name: none }
 #target {
   width: 100px;
   height: 100px;
   contain: paint;
-  page-transition-tag: shared;
+  view-transition-name: shared;
   position: relative;
   z-index: 1;
 }
@@ -35,14 +35,14 @@ html { page-transition-tag: none }
   background: blue;
 }
 
-html::page-transition-container(shared) {
+html::view-transition-group(shared) {
   animation-delay: 300s;
 }
-html::page-transition-outgoing-image(shared) {
+html::view-transition-old(shared) {
   animation: unset;
   opacity: 1;
 }
-html::page-transition-incoming-image(shared) {
+html::view-transition-new(shared) {
   display: none;
 }
 </style>

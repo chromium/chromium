@@ -13,14 +13,14 @@ div {
   height: 100px;
   background: blue;
   contain: paint;
-  page-transition-tag: shared;
+  view-transition-name: shared;
 }
 
-html::page-transition,
-html::page-transition-container(shared),
-html::page-transition-image-wrapper(shared),
-html::page-transition-outgoing-image(shared),
-html::page-transition-incoming-image(shared) {
+html::view-transition,
+html::view-transition-group(shared),
+html::view-transition-image-pair(shared),
+html::view-transition-old(shared),
+html::view-transition-new(shared) {
   background: blue;
 }
 </style>

@@ -8,7 +8,7 @@
 <script src="/common/reftest-wait.js"></script>
 <style>
 .shared {
-  page-transition-tag: shared;
+  view-transition-name: shared;
   contain: paint;
 }
 .src {
@@ -29,21 +29,21 @@
   box-sizing: border-box;
 }
 
-html::page-transition-container(shared) {
+html::view-transition-group(shared) {
   animation-delay: 500s;
 }
 
-html::page-transition-incoming-image(shared) {
+html::view-transition-new(shared) {
   animation: unset;
   opacity: 1;
 }
-html::page-transition-outgoing-image(shared) {
+html::view-transition-old(shared) {
   animation: unset;
   opacity: 0;
 }
 
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 </style>
 
 <div id=target class="shared src"><div class=inner></div></div>

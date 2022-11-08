@@ -229,16 +229,16 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::Resizer;
     case kPseudoIdInputListButton:
       return protocol::DOM::PseudoTypeEnum::InputListButton;
-    case kPseudoIdPageTransition:
-      return protocol::DOM::PseudoTypeEnum::PageTransition;
-    case kPseudoIdPageTransitionContainer:
-      return protocol::DOM::PseudoTypeEnum::PageTransitionContainer;
-    case kPseudoIdPageTransitionImageWrapper:
-      return protocol::DOM::PseudoTypeEnum::PageTransitionImageWrapper;
-    case kPseudoIdPageTransitionIncomingImage:
-      return protocol::DOM::PseudoTypeEnum::PageTransitionIncomingImage;
-    case kPseudoIdPageTransitionOutgoingImage:
-      return protocol::DOM::PseudoTypeEnum::PageTransitionOutgoingImage;
+    case kPseudoIdViewTransition:
+      return protocol::DOM::PseudoTypeEnum::ViewTransition;
+    case kPseudoIdViewTransitionGroup:
+      return protocol::DOM::PseudoTypeEnum::ViewTransitionGroup;
+    case kPseudoIdViewTransitionImagePair:
+      return protocol::DOM::PseudoTypeEnum::ViewTransitionImagePair;
+    case kPseudoIdViewTransitionNew:
+      return protocol::DOM::PseudoTypeEnum::ViewTransitionNew;
+    case kPseudoIdViewTransitionOld:
+      return protocol::DOM::PseudoTypeEnum::ViewTransitionOld;
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
       CHECK(false);
@@ -1855,7 +1855,7 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
 
     if (element->GetPseudoId()) {
       value->setPseudoType(ProtocolPseudoElementType(element->GetPseudoId()));
-      if (auto tag = To<PseudoElement>(element)->view_transition_tag())
+      if (auto tag = To<PseudoElement>(element)->view_transition_name())
         value->setPseudoIdentifier(tag);
     } else {
       if (!element->ownerDocument()->xmlVersion().empty())
@@ -2398,9 +2398,9 @@ void InspectorDOMAgent::PseudoElementDestroyed(PseudoElement* pseudo_element) {
   DCHECK(parent);
   int parent_id = BoundNodeId(parent);
   // Since the pseudo element tree created for a view transition is destroyed
-  // with in-order traversal, the parent node (::page-transition) are destroyed
+  // with in-order traversal, the parent node (::view-transition) are destroyed
   // before its children
-  // (::page-transition-container).
+  // (::view-transition-group).
   DCHECK(parent_id || IsTransitionPseudoElement(pseudo_element->GetPseudoId()));
 
   Unbind(pseudo_element);

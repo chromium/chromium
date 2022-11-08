@@ -14,9 +14,9 @@ div {
   background: blue;
   contain: paint;
 }
-.tagone { page-transition-tag: one }
-.tagtwo { page-transition-tag: two }
-.tagthree { page-transition-tag: three }
+.tagone { view-transition-name: one }
+.tagtwo { view-transition-name: two }
+.tagthree { view-transition-name: three }
 </style>
 
 <div id=first class=tagone></div>
@@ -30,13 +30,13 @@ async_test(t => {
     second.classList.toggle("tagtwo");
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::page-transition-image-wrapper(one)").isolation, "auto"));
-        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::page-transition-outgoing-image(one)").mixBlendMode, "normal"));
-        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::page-transition-image-wrapper(two)").isolation, "auto"));
-        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::page-transition-incoming-image(two)").mixBlendMode, "normal"));
-        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::page-transition-image-wrapper(three)").isolation, "isolate"));
-        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::page-transition-outgoing-image(three)").mixBlendMode, "plus-lighter"));
-        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::page-transition-incoming-image(three)").mixBlendMode, "plus-lighter"));
+        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::view-transition-image-pair(one)").isolation, "auto"));
+        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::view-transition-old(one)").mixBlendMode, "normal"));
+        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::view-transition-image-pair(two)").isolation, "auto"));
+        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::view-transition-new(two)").mixBlendMode, "normal"));
+        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::view-transition-image-pair(three)").isolation, "isolate"));
+        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::view-transition-old(three)").mixBlendMode, "plus-lighter"));
+        t.step(() => assert_equals(getComputedStyle(document.documentElement, "::view-transition-new(three)").mixBlendMode, "plus-lighter"));
         t.done();
       });
     });

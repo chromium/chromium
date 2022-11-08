@@ -598,11 +598,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Color ForcedBackgroundColor() const { return forced_background_color_; }
   Color ColorAdjustBackgroundColor() const;
 
-  void SetViewTransitionTags(const Vector<AtomicString>& tags) {
-    view_transition_tags_ = tags;
+  void SetViewTransitionNames(const Vector<AtomicString>& names) {
+    view_transition_names_ = names;
   }
   const Vector<AtomicString>& ViewTransitionTags() const {
-    return view_transition_tags_;
+    return view_transition_names_;
   }
 
   StyleFetchedImage* CacheStyleImage(FetchParameters& params,
@@ -968,9 +968,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // re-attachment after the removal.
   Member<LayoutObject> parent_for_detached_subtree_;
 
-  // The set of IDs for which ::page-transition-container pseudo elements are
+  // The set of IDs for which ::view-transition-group pseudo elements are
   // generated during a ViewTransition.
-  Vector<AtomicString> view_transition_tags_;
+  Vector<AtomicString> view_transition_names_;
 
   // Cache for sharing StyleFetchedImage between CSSValues referencing the same
   // URL.

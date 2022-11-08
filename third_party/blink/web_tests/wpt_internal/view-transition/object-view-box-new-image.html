@@ -15,7 +15,7 @@
   position: relative;
   top: 200px;
   left: 200px;
-  page-transition-tag: target;
+  view-transition-name: target;
 }
 
 .embedded {
@@ -28,18 +28,18 @@
   width: 10px;
   height: 10px;
   background: grey;
-  page-transition-tag: hidden;
+  view-transition-name: hidden;
 }
 
-html::page-transition-container(hidden) { animation-duration: 300s; }
-html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+html::view-transition-group(hidden) { animation-duration: 300s; }
+html::view-transition-image-pair(hidden) { animation: unset; opacity: 0; }
 
-html::page-transition-outgoing-image(target) {
+html::view-transition-old(target) {
   animation: unset;
   opacity: 0;
   height: 100%;
 }
-html::page-transition-incoming-image(target) {
+html::view-transition-new(target) {
   animation: unset;
   opacity: 1;
   object-view-box: inset(50px 0px 0px 0px);

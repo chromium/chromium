@@ -139,19 +139,19 @@ class ViewTransitionTest : public testing::Test,
   }
 
   void ValidatePseudoElementTree(
-      const Vector<WTF::AtomicString>& view_transition_tags,
+      const Vector<WTF::AtomicString>& view_transition_names,
       bool has_incoming_image) {
     auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
-        kPseudoIdPageTransition);
+        kPseudoIdViewTransition);
     ASSERT_TRUE(transition_pseudo);
     EXPECT_TRUE(transition_pseudo->GetComputedStyle());
     EXPECT_TRUE(transition_pseudo->GetLayoutObject());
 
     PseudoElement* previous_container = nullptr;
-    for (const auto& view_transition_tag : view_transition_tags) {
-      SCOPED_TRACE(view_transition_tag);
+    for (const auto& view_transition_name : view_transition_names) {
+      SCOPED_TRACE(view_transition_name);
       auto* container_pseudo = transition_pseudo->GetPseudoElement(
-          kPseudoIdPageTransitionContainer, view_transition_tag);
+          kPseudoIdViewTransitionGroup, view_transition_name);
       ASSERT_TRUE(container_pseudo);
       EXPECT_TRUE(container_pseudo->GetComputedStyle());
       EXPECT_TRUE(container_pseudo->GetLayoutObject());
@@ -163,16 +163,16 @@ class ViewTransitionTest : public testing::Test,
       previous_container = container_pseudo;
 
       auto* image_wrapper_pseudo = container_pseudo->GetPseudoElement(
-          kPseudoIdPageTransitionImageWrapper, view_transition_tag);
+          kPseudoIdViewTransitionImagePair, view_transition_name);
 
       auto* outgoing_image = image_wrapper_pseudo->GetPseudoElement(
-          kPseudoIdPageTransitionOutgoingImage, view_transition_tag);
+          kPseudoIdViewTransitionOld, view_transition_name);
       ASSERT_TRUE(outgoing_image);
       EXPECT_TRUE(outgoing_image->GetComputedStyle());
       EXPECT_TRUE(outgoing_image->GetLayoutObject());
 
       auto* incoming_image = image_wrapper_pseudo->GetPseudoElement(
-          kPseudoIdPageTransitionIncomingImage, view_transition_tag);
+          kPseudoIdViewTransitionNew, view_transition_name);
 
       if (!has_incoming_image) {
         ASSERT_FALSE(incoming_image);
@@ -197,7 +197,7 @@ TEST_P(ViewTransitionTest, LayoutShift) {
       .shared {
         width: 100px;
         height: 100px;
-        page-transition-tag: shared;
+        view-transition-name: shared;
         contain: layout;
         background: green;
       }
@@ -232,10 +232,10 @@ TEST_P(ViewTransitionTest, LayoutShift) {
 
   // We should have a transition pseudo
   auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
-      kPseudoIdPageTransition);
+      kPseudoIdViewTransition);
   ASSERT_TRUE(transition_pseudo);
   auto* container_pseudo = transition_pseudo->GetPseudoElement(
-      kPseudoIdPageTransitionContainer, "shared");
+      kPseudoIdViewTransitionGroup, "shared");
   ASSERT_TRUE(container_pseudo);
   auto* container_box = To<LayoutBox>(container_pseudo->GetLayoutObject());
   EXPECT_EQ(LayoutSize(100, 100), container_box->Size());
@@ -305,10 +305,10 @@ TEST_P(ViewTransitionTest, PrepareSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
-      html { page-transition-tag: root; }
+      html { view-transition-name: root; }
       div { width: 100px; height: 100px; contain: paint }
-      #e1 { page-transition-tag: e1; }
-      #e3 { page-transition-tag: e3; }
+      #e1 { view-transition-name: e1; }
+      #e3 { view-transition-name: e3; }
     </style>
 
     <div id=e1></div>
@@ -370,12 +370,12 @@ TEST_P(ViewTransitionTest, UncontainedElementsAreCleared) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
-      html { page-transition-tag: root; }
+      html { view-transition-name: root; }
       #e1 { width: 100px; height: 100px; contain: paint }
     </style>
-    <div id=e1 style="page-transition-tag: e1"></div>
-    <div id=e2 style="page-transition-tag: e2"></div>
-    <div id=e3 style="page-transition-tag: e3"></div>
+    <div id=e1 style="view-transition-name: e1"></div>
+    <div id=e2 style="view-transition-name: e2"></div>
+    <div id=e3 style="view-transition-name: e3"></div>
   )HTML");
 
   auto* e1 = GetDocument().getElementById("e1");
@@ -421,7 +421,7 @@ TEST_P(ViewTransitionTest, StartSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
-      html { page-transition-tag: root; }
+      html { view-transition-name: root; }
       div { contain: paint; width: 100px; height: 100px; background: blue; }
     </style>
     <div id=e1></div>
@@ -438,8 +438,8 @@ TEST_P(ViewTransitionTest, StartSharedElementsWantToBeComposited) {
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   // Set two of the elements to be shared.
-  e1->setAttribute(html_names::kStyleAttr, "page-transition-tag: e1");
-  e3->setAttribute(html_names::kStyleAttr, "page-transition-tag: e3");
+  e1->setAttribute(html_names::kStyleAttr, "view-transition-name: e1");
+  e3->setAttribute(html_names::kStyleAttr, "view-transition-name: e3");
 
   struct Data {
     STACK_ALLOCATED();
@@ -474,9 +474,9 @@ TEST_P(ViewTransitionTest, StartSharedElementsWantToBeComposited) {
         data->document.getElementById("e3")->setAttribute(
             html_names::kStyleAttr, "");
         data->e1->setAttribute(html_names::kStyleAttr,
-                               "page-transition-tag: e1");
+                               "view-transition-name: e1");
         data->e2->setAttribute(html_names::kStyleAttr,
-                               "page-transition-tag: e2");
+                               "view-transition-name: e2");
       };
   auto start_setup_callback =
       v8::Function::New(v8_scope.GetContext(), start_setup_lambda,
@@ -599,13 +599,13 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
-      html { page-transition-tag: root; }
+      html { view-transition-name: root; }
       div { width: 100px; height: 100px; contain: paint; background: blue }
     </style>
 
-    <div id=e1 style="page-transition-tag: e1"></div>
-    <div id=e2 style="page-transition-tag: e2"></div>
-    <div id=e3 style="page-transition-tag: e3"></div>
+    <div id=e1 style="view-transition-name: e1"></div>
+    <div id=e2 style="view-transition-name: e2"></div>
+    <div id=e3 style="view-transition-name: e3"></div>
   )HTML");
 
   V8TestingScope v8_scope;
@@ -645,21 +645,21 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   UpdateAllLifecyclePhasesForTest();
 
   // The prepare phase should generate the pseudo tree.
-  const Vector<AtomicString> view_transition_tags = {"root", "e1", "e2", "e3"};
-  ValidatePseudoElementTree(view_transition_tags, false);
+  const Vector<AtomicString> view_transition_names = {"root", "e1", "e2", "e3"};
+  ValidatePseudoElementTree(view_transition_names, false);
 
   // Finish the prepare phase, mutate the DOM and start the animation.
   UpdateAllLifecyclePhasesAndFinishDirectives();
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
-      html { page-transition-tag: root; }
+      html { view-transition-name: root; }
       div { width: 200px; height: 200px; contain: paint }
     </style>
 
-    <div id=e1 style="page-transition-tag: e1"></div>
-    <div id=e2 style="page-transition-tag: e2"></div>
-    <div id=e3 style="page-transition-tag: e3"></div>
+    <div id=e1 style="view-transition-name: e1"></div>
+    <div id=e2 style="view-transition-name: e2"></div>
+    <div id=e3 style="view-transition-name: e3"></div>
   )HTML");
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kAnimating);
@@ -667,25 +667,25 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   // The start phase should generate pseudo elements for rendering new live
   // content.
   UpdateAllLifecyclePhasesAndFinishDirectives();
-  ValidatePseudoElementTree(view_transition_tags, true);
+  ValidatePseudoElementTree(view_transition_names, true);
 
   // Finish the animations which should remove the pseudo element tree.
   FinishTransition();
   UpdateAllLifecyclePhasesAndFinishDirectives();
   EXPECT_FALSE(GetDocument().documentElement()->GetPseudoElement(
-      kPseudoIdPageTransition));
+      kPseudoIdViewTransition));
 }
 
 TEST_P(ViewTransitionTest, ViewTransitionSharedElementInvalidation) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
-      html { page-transition-tag: root; }
+      html { view-transition-name: root; }
       div {
         width: 100px;
         height: 100px;
         contain: paint;
-        page-transition-tag: shared;
+        view-transition-name: shared;
       }
     </style>
 
@@ -736,24 +736,24 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
-      html { page-transition-tag: root; }
-      ::page-transition {
+      html { view-transition-name: root; }
+      ::view-transition {
         background-color: red;
       }
-      ::page-transition-container(foo) {
+      ::view-transition-group(foo) {
         background-color: blue;
       }
-      ::page-transition-image-wrapper(foo) {
+      ::view-transition-image-pair(foo) {
         background-color: lightblue;
       }
-      ::page-transition-incoming-image(foo) {
+      ::view-transition-new(foo) {
         background-color: black;
       }
-      ::page-transition-outgoing-image(foo) {
+      ::view-transition-old(foo) {
         background-color: grey;
       }
       div {
-        page-transition-tag: foo;
+        view-transition-name: foo;
         width: 100px;
         height: 100px;
         contain: paint;
@@ -792,16 +792,16 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     String user_rule;
   };
   TestCase test_cases[] = {
-      {kPseudoIdPageTransition, false,
-       "::page-transition { background-color: red; }"},
-      {kPseudoIdPageTransitionContainer, true,
-       "::page-transition-container(foo) { background-color: blue; }"},
-      {kPseudoIdPageTransitionImageWrapper, true,
-       "::page-transition-image-wrapper(foo) { background-color: lightblue; }"},
-      {kPseudoIdPageTransitionIncomingImage, true,
-       "::page-transition-incoming-image(foo) { background-color: black; }"},
-      {kPseudoIdPageTransitionOutgoingImage, true,
-       "::page-transition-outgoing-image(foo) { background-color: grey; }"}};
+      {kPseudoIdViewTransition, false,
+       "::view-transition { background-color: red; }"},
+      {kPseudoIdViewTransitionGroup, true,
+       "::view-transition-group(foo) { background-color: blue; }"},
+      {kPseudoIdViewTransitionImagePair, true,
+       "::view-transition-image-pair(foo) { background-color: lightblue; }"},
+      {kPseudoIdViewTransitionNew, true,
+       "::view-transition-new(foo) { background-color: black; }"},
+      {kPseudoIdViewTransitionOld, true,
+       "::view-transition-old(foo) { background-color: grey; }"}};
 
   for (const auto& test_case : test_cases) {
     InspectorStyleResolver resolver(GetDocument().documentElement(),
@@ -825,7 +825,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     for (const auto& matched_rules : parent_resolver.PseudoElementRules()) {
       if (matched_rules->pseudo_id != test_case.pseudo_id)
         continue;
-      if (matched_rules->view_transition_tag == "root") {
+      if (matched_rules->view_transition_name == "root") {
         EXPECT_FALSE(found_rule_for_root);
         found_rule_for_root = true;
         continue;
@@ -839,7 +839,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     // Pseudo elements which are generated for each tag should include the root
     // by default.
     EXPECT_EQ(found_rule_for_root, test_case.uses_tags);
-    EXPECT_EQ(matched_rules_for_pseudo->view_transition_tag,
+    EXPECT_EQ(matched_rules_for_pseudo->view_transition_name,
               test_case.uses_tags ? "foo" : g_null_atom);
 
     auto pseudo_element_rules = matched_rules_for_pseudo->matched_rules;
@@ -860,7 +860,7 @@ TEST_P(ViewTransitionTest, ObjectViewBoxDuringCapture) {
         contain: layout;
         width: 100px;
         height: 100px;
-        page-transition-tag: target;
+        view-transition-name: target;
       }
 
       .embedded {
@@ -898,7 +898,7 @@ TEST_P(ViewTransitionTest, ObjectViewBoxDuringCapture) {
   const auto* object_view_box =
       GetDocument()
           .documentElement()
-          ->EnsureComputedStyle(kPseudoIdPageTransitionOutgoingImage, "target")
+          ->EnsureComputedStyle(kPseudoIdViewTransitionOld, "target")
           ->ObjectViewBox();
   ASSERT_TRUE(object_view_box);
   const auto& inset = To<BasicShapeInset>(*object_view_box);

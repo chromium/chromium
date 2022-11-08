@@ -24,16 +24,16 @@
   width: 100px;
   height: 100px;
   background: red;
-  page-transition-tag: shared;
+  view-transition-name: shared;
 }
 
 div.dst { background: lightgreen; }
 /* We're verifying what we capture, so just display the old contents for 5 minutes.  */
-html::page-transition { background: pink; }
-html::page-transition-container(shared) { animation-duration: 300s; }
-html::page-transition-image-wrapper(shared) { visibility: hidden }
-html::page-transition-outgoing-image(root) { animation: unset; opacity: 1 }
-html::page-transition-incoming-image(root) { animation: unset; opacity: 0 }
+html::view-transition { background: pink; }
+html::view-transition-group(shared) { animation-duration: 300s; }
+html::view-transition-image-pair(shared) { visibility: hidden }
+html::view-transition-old(root) { animation: unset; opacity: 1 }
+html::view-transition-new(root) { animation: unset; opacity: 0 }
 </style>
 <div id=e1 class=box></div>
 <div id=shared></div>

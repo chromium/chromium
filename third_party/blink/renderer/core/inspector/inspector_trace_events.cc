@@ -396,11 +396,11 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoGrammarError)
     DEFINE_STRING_MAPPING(PseudoHas)
     DEFINE_STRING_MAPPING(PseudoRelativeAnchor)
-    DEFINE_STRING_MAPPING(PseudoPageTransition)
-    DEFINE_STRING_MAPPING(PseudoPageTransitionContainer);
-    DEFINE_STRING_MAPPING(PseudoPageTransitionImageWrapper);
-    DEFINE_STRING_MAPPING(PseudoPageTransitionIncomingImage);
-    DEFINE_STRING_MAPPING(PseudoPageTransitionOutgoingImage);
+    DEFINE_STRING_MAPPING(PseudoViewTransition)
+    DEFINE_STRING_MAPPING(PseudoViewTransitionGroup);
+    DEFINE_STRING_MAPPING(PseudoViewTransitionImagePair);
+    DEFINE_STRING_MAPPING(PseudoViewTransitionNew);
+    DEFINE_STRING_MAPPING(PseudoViewTransitionOld);
     DEFINE_STRING_MAPPING(PseudoParent)
 #undef DEFINE_STRING_MAPPING
   }

@@ -1759,10 +1759,10 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       }
       return false;
     }
-    case CSSSelector::kPseudoPageTransitionContainer:
-    case CSSSelector::kPseudoPageTransitionImageWrapper:
-    case CSSSelector::kPseudoPageTransitionOutgoingImage:
-    case CSSSelector::kPseudoPageTransitionIncomingImage: {
+    case CSSSelector::kPseudoViewTransitionGroup:
+    case CSSSelector::kPseudoViewTransitionImagePair:
+    case CSSSelector::kPseudoViewTransitionOld:
+    case CSSSelector::kPseudoViewTransitionNew: {
       if (CSSSelector::GetPseudoId(selector.GetPseudoType()) !=
           context.pseudo_id) {
         return false;

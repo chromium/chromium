@@ -52,7 +52,7 @@ The test verifies functionality of querying style information for view-transitio
                                 value : block
                             }
                             [1] : {
-                                name : page-transition-tag
+                                name : view-transition-name
                                 value : root
                             }
                         ]
@@ -85,10 +85,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition
+                                        text : html::view-transition
                                     }
                                 ]
-                                text : html::page-transition
+                                text : html::view-transition
                             }
                             style : {
                                 cssProperties : [
@@ -133,10 +133,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition
+                                        text : html::view-transition
                                     }
                                 ]
-                                text : html::page-transition
+                                text : html::view-transition
                             }
                             style : {
                                 cssProperties : [
@@ -157,7 +157,7 @@ The test verifies functionality of querying style information for view-transitio
                         }
                     }
                 ]
-                pseudoType : page-transition
+                pseudoType : view-transition
             }
             [1] : {
                 matches : [
@@ -178,10 +178,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-container()
+                                        text : html::view-transition-group()
                                     }
                                 ]
-                                text : html::page-transition-container()
+                                text : html::view-transition-group()
                             }
                             style : {
                                 cssProperties : [
@@ -234,10 +234,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-container(root)
+                                        text : html::view-transition-group(root)
                                     }
                                 ]
-                                text : html::page-transition-container(root)
+                                text : html::view-transition-group(root)
                             }
                             style : {
                                 cssProperties : [
@@ -259,7 +259,7 @@ The test verifies functionality of querying style information for view-transitio
                     }
                 ]
                 pseudoIdentifier : root
-                pseudoType : page-transition-container
+                pseudoType : view-transition-group
             }
             [2] : {
                 matches : [
@@ -280,10 +280,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-container()
+                                        text : html::view-transition-group()
                                     }
                                 ]
-                                text : html::page-transition-container()
+                                text : html::view-transition-group()
                             }
                             style : {
                                 cssProperties : [
@@ -336,10 +336,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-container(shared)
+                                        text : html::view-transition-group(shared)
                                     }
                                 ]
-                                text : html::page-transition-container(shared)
+                                text : html::view-transition-group(shared)
                             }
                             style : {
                                 cssProperties : [
@@ -384,16 +384,16 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-container(shared)
+                                        text : html::view-transition-group(shared)
                                     }
                                 ]
-                                text : html::page-transition-container(shared)
+                                text : html::view-transition-group(shared)
                             }
                             style : {
                                 cssProperties : [
                                     [0] : {
                                         name : animation-name
-                                        value : -ua-page-transition-container-anim-shared
+                                        value : -ua-view-transition-group-anim-shared
                                     }
                                     [1] : {
                                         name : animation-duration
@@ -429,7 +429,7 @@ The test verifies functionality of querying style information for view-transitio
                     }
                 ]
                 pseudoIdentifier : shared
-                pseudoType : page-transition-container
+                pseudoType : view-transition-group
             }
             [3] : {
                 matches : [
@@ -450,10 +450,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : ::page-transition-image-wrapper()
+                                        text : ::view-transition-image-pair()
                                     }
                                 ]
-                                text : ::page-transition-image-wrapper()
+                                text : ::view-transition-image-pair()
                             }
                             style : {
                                 cssProperties : [
@@ -506,10 +506,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-image-wrapper(root)
+                                        text : html::view-transition-image-pair(root)
                                     }
                                 ]
-                                text : html::page-transition-image-wrapper(root)
+                                text : html::view-transition-image-pair(root)
                             }
                             style : {
                                 cssProperties : [
@@ -527,7 +527,7 @@ The test verifies functionality of querying style information for view-transitio
                     }
                 ]
                 pseudoIdentifier : root
-                pseudoType : page-transition-image-wrapper
+                pseudoType : view-transition-image-pair
             }
             [4] : {
                 matches : [
@@ -548,10 +548,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : ::page-transition-image-wrapper()
+                                        text : ::view-transition-image-pair()
                                     }
                                 ]
-                                text : ::page-transition-image-wrapper()
+                                text : ::view-transition-image-pair()
                             }
                             style : {
                                 cssProperties : [
@@ -604,10 +604,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-image-wrapper(shared)
+                                        text : html::view-transition-image-pair(shared)
                                     }
                                 ]
-                                text : html::page-transition-image-wrapper(shared)
+                                text : html::view-transition-image-pair(shared)
                             }
                             style : {
                                 cssProperties : [
@@ -625,7 +625,7 @@ The test verifies functionality of querying style information for view-transitio
                     }
                 ]
                 pseudoIdentifier : shared
-                pseudoType : page-transition-image-wrapper
+                pseudoType : view-transition-image-pair
             }
             [5] : {
                 matches : [
@@ -646,13 +646,13 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : ::page-transition-incoming-image()
+                                        text : ::view-transition-new()
                                     }
                                     [1] : {
-                                        text : ::page-transition-outgoing-image()
+                                        text : ::view-transition-old()
                                     }
                                 ]
-                                text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                                text : ::view-transition-new(), ::view-transition-old()
                             }
                             style : {
                                 cssProperties : [
@@ -701,10 +701,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-outgoing-image()
+                                        text : html::view-transition-old()
                                     }
                                 ]
-                                text : html::page-transition-outgoing-image()
+                                text : html::view-transition-old()
                             }
                             style : {
                                 cssProperties : [
@@ -738,7 +738,7 @@ The test verifies functionality of querying style information for view-transitio
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : -ua-blink-page-transition-fade-out
+                                        value : -ua-view-transition-fade-out
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -748,7 +748,7 @@ The test verifies functionality of querying style information for view-transitio
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-out
+                                        value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-out
                                     }
                                 ]
                             }
@@ -773,10 +773,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-outgoing-image(root)
+                                        text : html::view-transition-old(root)
                                     }
                                 ]
-                                text : html::page-transition-outgoing-image(root)
+                                text : html::view-transition-old(root)
                             }
                             style : {
                                 cssProperties : [
@@ -810,15 +810,15 @@ The test verifies functionality of querying style information for view-transitio
                                 selectors : [
                                     [0] : {
                                         range : {
-                                            endColumn : 36
+                                            endColumn : 25
                                             endLine : 0
                                             startColumn : 1
                                             startLine : 0
                                         }
-                                        text : ::page-transition-outgoing-image(*)
+                                        text : ::view-transition-old(*)
                                     }
                                 ]
-                                text : ::page-transition-outgoing-image()
+                                text : ::view-transition-old()
                             }
                             style : {
                                 cssProperties : [
@@ -869,9 +869,9 @@ The test verifies functionality of querying style information for view-transitio
                                         ]
                                         name : background
                                         range : {
-                                            endColumn : 54
+                                            endColumn : 43
                                             endLine : 0
-                                            startColumn : 38
+                                            startColumn : 27
                                             startLine : 0
                                         }
                                         text : background: red;
@@ -920,9 +920,9 @@ The test verifies functionality of querying style information for view-transitio
                                 ]
                                 cssText : background: red;
                                 range : {
-                                    endColumn : 54
+                                    endColumn : 43
                                     endLine : 0
-                                    startColumn : 38
+                                    startColumn : 27
                                     startLine : 0
                                 }
                                 shorthandEntries : [
@@ -940,7 +940,7 @@ The test verifies functionality of querying style information for view-transitio
                     }
                 ]
                 pseudoIdentifier : root
-                pseudoType : page-transition-outgoing-image
+                pseudoType : view-transition-old
             }
             [6] : {
                 matches : [
@@ -961,13 +961,13 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : ::page-transition-incoming-image()
+                                        text : ::view-transition-new()
                                     }
                                     [1] : {
-                                        text : ::page-transition-outgoing-image()
+                                        text : ::view-transition-old()
                                     }
                                 ]
-                                text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                                text : ::view-transition-new(), ::view-transition-old()
                             }
                             style : {
                                 cssProperties : [
@@ -1016,10 +1016,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-outgoing-image()
+                                        text : html::view-transition-old()
                                     }
                                 ]
-                                text : html::page-transition-outgoing-image()
+                                text : html::view-transition-old()
                             }
                             style : {
                                 cssProperties : [
@@ -1053,7 +1053,7 @@ The test verifies functionality of querying style information for view-transitio
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : -ua-blink-page-transition-fade-out
+                                        value : -ua-view-transition-fade-out
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -1063,7 +1063,7 @@ The test verifies functionality of querying style information for view-transitio
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-out
+                                        value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-out
                                     }
                                 ]
                             }
@@ -1088,10 +1088,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-outgoing-image(shared)
+                                        text : html::view-transition-old(shared)
                                     }
                                 ]
-                                text : html::page-transition-outgoing-image(shared)
+                                text : html::view-transition-old(shared)
                             }
                             style : {
                                 cssProperties : [
@@ -1125,15 +1125,15 @@ The test verifies functionality of querying style information for view-transitio
                                 selectors : [
                                     [0] : {
                                         range : {
-                                            endColumn : 36
+                                            endColumn : 25
                                             endLine : 0
                                             startColumn : 1
                                             startLine : 0
                                         }
-                                        text : ::page-transition-outgoing-image(*)
+                                        text : ::view-transition-old(*)
                                     }
                                 ]
-                                text : ::page-transition-outgoing-image()
+                                text : ::view-transition-old()
                             }
                             style : {
                                 cssProperties : [
@@ -1184,9 +1184,9 @@ The test verifies functionality of querying style information for view-transitio
                                         ]
                                         name : background
                                         range : {
-                                            endColumn : 54
+                                            endColumn : 43
                                             endLine : 0
-                                            startColumn : 38
+                                            startColumn : 27
                                             startLine : 0
                                         }
                                         text : background: red;
@@ -1235,9 +1235,9 @@ The test verifies functionality of querying style information for view-transitio
                                 ]
                                 cssText : background: red;
                                 range : {
-                                    endColumn : 54
+                                    endColumn : 43
                                     endLine : 0
-                                    startColumn : 38
+                                    startColumn : 27
                                     startLine : 0
                                 }
                                 shorthandEntries : [
@@ -1255,7 +1255,7 @@ The test verifies functionality of querying style information for view-transitio
                     }
                 ]
                 pseudoIdentifier : shared
-                pseudoType : page-transition-outgoing-image
+                pseudoType : view-transition-old
             }
             [7] : {
                 matches : [
@@ -1276,13 +1276,13 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : ::page-transition-incoming-image()
+                                        text : ::view-transition-new()
                                     }
                                     [1] : {
-                                        text : ::page-transition-outgoing-image()
+                                        text : ::view-transition-old()
                                     }
                                 ]
-                                text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                                text : ::view-transition-new(), ::view-transition-old()
                             }
                             style : {
                                 cssProperties : [
@@ -1331,10 +1331,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-incoming-image()
+                                        text : html::view-transition-new()
                                     }
                                 ]
-                                text : html::page-transition-incoming-image()
+                                text : html::view-transition-new()
                             }
                             style : {
                                 cssProperties : [
@@ -1368,7 +1368,7 @@ The test verifies functionality of querying style information for view-transitio
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : -ua-blink-page-transition-fade-in
+                                        value : -ua-view-transition-fade-in
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -1378,7 +1378,7 @@ The test verifies functionality of querying style information for view-transitio
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-in
+                                        value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-in
                                     }
                                 ]
                             }
@@ -1403,10 +1403,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-incoming-image(root)
+                                        text : html::view-transition-new(root)
                                     }
                                 ]
-                                text : html::page-transition-incoming-image(root)
+                                text : html::view-transition-new(root)
                             }
                             style : {
                                 cssProperties : [
@@ -1424,7 +1424,7 @@ The test verifies functionality of querying style information for view-transitio
                     }
                 ]
                 pseudoIdentifier : root
-                pseudoType : page-transition-incoming-image
+                pseudoType : view-transition-new
             }
             [8] : {
                 matches : [
@@ -1445,13 +1445,13 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : ::page-transition-incoming-image()
+                                        text : ::view-transition-new()
                                     }
                                     [1] : {
-                                        text : ::page-transition-outgoing-image()
+                                        text : ::view-transition-old()
                                     }
                                 ]
-                                text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                                text : ::view-transition-new(), ::view-transition-old()
                             }
                             style : {
                                 cssProperties : [
@@ -1500,10 +1500,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-incoming-image()
+                                        text : html::view-transition-new()
                                     }
                                 ]
-                                text : html::page-transition-incoming-image()
+                                text : html::view-transition-new()
                             }
                             style : {
                                 cssProperties : [
@@ -1537,7 +1537,7 @@ The test verifies functionality of querying style information for view-transitio
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : -ua-blink-page-transition-fade-in
+                                        value : -ua-view-transition-fade-in
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -1547,7 +1547,7 @@ The test verifies functionality of querying style information for view-transitio
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-in
+                                        value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-in
                                     }
                                 ]
                             }
@@ -1572,10 +1572,10 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::page-transition-incoming-image(shared)
+                                        text : html::view-transition-new(shared)
                                     }
                                 ]
-                                text : html::page-transition-incoming-image(shared)
+                                text : html::view-transition-new(shared)
                             }
                             style : {
                                 cssProperties : [
@@ -1609,15 +1609,15 @@ The test verifies functionality of querying style information for view-transitio
                                 selectors : [
                                     [0] : {
                                         range : {
-                                            endColumn : 41
+                                            endColumn : 30
                                             endLine : 0
                                             startColumn : 1
                                             startLine : 0
                                         }
-                                        text : ::page-transition-incoming-image(shared)
+                                        text : ::view-transition-new(shared)
                                     }
                                 ]
-                                text : ::page-transition-incoming-image(shared)
+                                text : ::view-transition-new(shared)
                             }
                             style : {
                                 cssProperties : [
@@ -1626,9 +1626,9 @@ The test verifies functionality of querying style information for view-transitio
                                         implicit : false
                                         name : animation-duration
                                         range : {
-                                            endColumn : 68
+                                            endColumn : 57
                                             endLine : 0
-                                            startColumn : 43
+                                            startColumn : 32
                                             startLine : 0
                                         }
                                         text : animation-duration: 300s;
@@ -1641,9 +1641,9 @@ The test verifies functionality of querying style information for view-transitio
                                 ]
                                 cssText : animation-duration: 300s;
                                 range : {
-                                    endColumn : 68
+                                    endColumn : 57
                                     endLine : 0
-                                    startColumn : 43
+                                    startColumn : 32
                                     startLine : 0
                                 }
                                 shorthandEntries : [
@@ -1657,13 +1657,13 @@ The test verifies functionality of querying style information for view-transitio
                     }
                 ]
                 pseudoIdentifier : shared
-                pseudoType : page-transition-incoming-image
+                pseudoType : view-transition-new
             }
         ]
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition with id undefined{
+Dumping styles for : ::view-transition with id undefined{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -1684,10 +1684,10 @@ Dumping styles for : ::page-transition with id undefined{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition
+                                text : html::view-transition
                             }
                         ]
-                        text : html::page-transition
+                        text : html::view-transition
                     }
                     style : {
                         cssProperties : [
@@ -1732,10 +1732,10 @@ Dumping styles for : ::page-transition with id undefined{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition
+                                text : html::view-transition
                             }
                         ]
-                        text : html::page-transition
+                        text : html::view-transition
                     }
                     style : {
                         cssProperties : [
@@ -1759,7 +1759,7 @@ Dumping styles for : ::page-transition with id undefined{
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition-container with id root{
+Dumping styles for : ::view-transition-group with id root{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -1780,10 +1780,10 @@ Dumping styles for : ::page-transition-container with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-container()
+                                text : html::view-transition-group()
                             }
                         ]
-                        text : html::page-transition-container()
+                        text : html::view-transition-group()
                     }
                     style : {
                         cssProperties : [
@@ -1836,10 +1836,10 @@ Dumping styles for : ::page-transition-container with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-container(root)
+                                text : html::view-transition-group(root)
                             }
                         ]
-                        text : html::page-transition-container(root)
+                        text : html::view-transition-group(root)
                     }
                     style : {
                         cssProperties : [
@@ -1863,7 +1863,7 @@ Dumping styles for : ::page-transition-container with id root{
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition-image-wrapper with id root{
+Dumping styles for : ::view-transition-image-pair with id root{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -1884,10 +1884,10 @@ Dumping styles for : ::page-transition-image-wrapper with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : ::page-transition-image-wrapper()
+                                text : ::view-transition-image-pair()
                             }
                         ]
-                        text : ::page-transition-image-wrapper()
+                        text : ::view-transition-image-pair()
                     }
                     style : {
                         cssProperties : [
@@ -1940,10 +1940,10 @@ Dumping styles for : ::page-transition-image-wrapper with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-image-wrapper(root)
+                                text : html::view-transition-image-pair(root)
                             }
                         ]
-                        text : html::page-transition-image-wrapper(root)
+                        text : html::view-transition-image-pair(root)
                     }
                     style : {
                         cssProperties : [
@@ -1963,7 +1963,7 @@ Dumping styles for : ::page-transition-image-wrapper with id root{
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition-outgoing-image with id root{
+Dumping styles for : ::view-transition-old with id root{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -1984,13 +1984,13 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : ::page-transition-incoming-image()
+                                text : ::view-transition-new()
                             }
                             [1] : {
-                                text : ::page-transition-outgoing-image()
+                                text : ::view-transition-old()
                             }
                         ]
-                        text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                        text : ::view-transition-new(), ::view-transition-old()
                     }
                     style : {
                         cssProperties : [
@@ -2039,10 +2039,10 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-outgoing-image()
+                                text : html::view-transition-old()
                             }
                         ]
-                        text : html::page-transition-outgoing-image()
+                        text : html::view-transition-old()
                     }
                     style : {
                         cssProperties : [
@@ -2076,7 +2076,7 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                             }
                             [7] : {
                                 name : animation-name
-                                value : -ua-blink-page-transition-fade-out
+                                value : -ua-view-transition-fade-out
                             }
                             [8] : {
                                 name : animation-timeline
@@ -2086,7 +2086,7 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-out
+                                value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-out
                             }
                         ]
                     }
@@ -2111,10 +2111,10 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-outgoing-image(root)
+                                text : html::view-transition-old(root)
                             }
                         ]
-                        text : html::page-transition-outgoing-image(root)
+                        text : html::view-transition-old(root)
                     }
                     style : {
                         cssProperties : [
@@ -2148,15 +2148,15 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                         selectors : [
                             [0] : {
                                 range : {
-                                    endColumn : 36
+                                    endColumn : 25
                                     endLine : 0
                                     startColumn : 1
                                     startLine : 0
                                 }
-                                text : ::page-transition-outgoing-image(*)
+                                text : ::view-transition-old(*)
                             }
                         ]
-                        text : ::page-transition-outgoing-image()
+                        text : ::view-transition-old()
                     }
                     style : {
                         cssProperties : [
@@ -2207,9 +2207,9 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                                 ]
                                 name : background
                                 range : {
-                                    endColumn : 54
+                                    endColumn : 43
                                     endLine : 0
-                                    startColumn : 38
+                                    startColumn : 27
                                     startLine : 0
                                 }
                                 text : background: red;
@@ -2258,9 +2258,9 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                         ]
                         cssText : background: red;
                         range : {
-                            endColumn : 54
+                            endColumn : 43
                             endLine : 0
-                            startColumn : 38
+                            startColumn : 27
                             startLine : 0
                         }
                         shorthandEntries : [
@@ -2280,7 +2280,7 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition-incoming-image with id root{
+Dumping styles for : ::view-transition-new with id root{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -2301,13 +2301,13 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : ::page-transition-incoming-image()
+                                text : ::view-transition-new()
                             }
                             [1] : {
-                                text : ::page-transition-outgoing-image()
+                                text : ::view-transition-old()
                             }
                         ]
-                        text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                        text : ::view-transition-new(), ::view-transition-old()
                     }
                     style : {
                         cssProperties : [
@@ -2356,10 +2356,10 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-incoming-image()
+                                text : html::view-transition-new()
                             }
                         ]
-                        text : html::page-transition-incoming-image()
+                        text : html::view-transition-new()
                     }
                     style : {
                         cssProperties : [
@@ -2393,7 +2393,7 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                             }
                             [7] : {
                                 name : animation-name
-                                value : -ua-blink-page-transition-fade-in
+                                value : -ua-view-transition-fade-in
                             }
                             [8] : {
                                 name : animation-timeline
@@ -2403,7 +2403,7 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-in
+                                value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-in
                             }
                         ]
                     }
@@ -2428,10 +2428,10 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-incoming-image(root)
+                                text : html::view-transition-new(root)
                             }
                         ]
-                        text : html::page-transition-incoming-image(root)
+                        text : html::view-transition-new(root)
                     }
                     style : {
                         cssProperties : [
@@ -2451,7 +2451,7 @@ Dumping styles for : ::page-transition-incoming-image with id root{
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition-container with id shared{
+Dumping styles for : ::view-transition-group with id shared{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -2472,10 +2472,10 @@ Dumping styles for : ::page-transition-container with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-container()
+                                text : html::view-transition-group()
                             }
                         ]
-                        text : html::page-transition-container()
+                        text : html::view-transition-group()
                     }
                     style : {
                         cssProperties : [
@@ -2528,10 +2528,10 @@ Dumping styles for : ::page-transition-container with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-container(shared)
+                                text : html::view-transition-group(shared)
                             }
                         ]
-                        text : html::page-transition-container(shared)
+                        text : html::view-transition-group(shared)
                     }
                     style : {
                         cssProperties : [
@@ -2576,16 +2576,16 @@ Dumping styles for : ::page-transition-container with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-container(shared)
+                                text : html::view-transition-group(shared)
                             }
                         ]
-                        text : html::page-transition-container(shared)
+                        text : html::view-transition-group(shared)
                     }
                     style : {
                         cssProperties : [
                             [0] : {
                                 name : animation-name
-                                value : -ua-page-transition-container-anim-shared
+                                value : -ua-view-transition-group-anim-shared
                             }
                             [1] : {
                                 name : animation-duration
@@ -2623,7 +2623,7 @@ Dumping styles for : ::page-transition-container with id shared{
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition-image-wrapper with id shared{
+Dumping styles for : ::view-transition-image-pair with id shared{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -2644,10 +2644,10 @@ Dumping styles for : ::page-transition-image-wrapper with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : ::page-transition-image-wrapper()
+                                text : ::view-transition-image-pair()
                             }
                         ]
-                        text : ::page-transition-image-wrapper()
+                        text : ::view-transition-image-pair()
                     }
                     style : {
                         cssProperties : [
@@ -2700,10 +2700,10 @@ Dumping styles for : ::page-transition-image-wrapper with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-image-wrapper(shared)
+                                text : html::view-transition-image-pair(shared)
                             }
                         ]
-                        text : html::page-transition-image-wrapper(shared)
+                        text : html::view-transition-image-pair(shared)
                     }
                     style : {
                         cssProperties : [
@@ -2723,7 +2723,7 @@ Dumping styles for : ::page-transition-image-wrapper with id shared{
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition-outgoing-image with id shared{
+Dumping styles for : ::view-transition-old with id shared{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -2744,13 +2744,13 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : ::page-transition-incoming-image()
+                                text : ::view-transition-new()
                             }
                             [1] : {
-                                text : ::page-transition-outgoing-image()
+                                text : ::view-transition-old()
                             }
                         ]
-                        text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                        text : ::view-transition-new(), ::view-transition-old()
                     }
                     style : {
                         cssProperties : [
@@ -2799,10 +2799,10 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-outgoing-image()
+                                text : html::view-transition-old()
                             }
                         ]
-                        text : html::page-transition-outgoing-image()
+                        text : html::view-transition-old()
                     }
                     style : {
                         cssProperties : [
@@ -2836,7 +2836,7 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                             }
                             [7] : {
                                 name : animation-name
-                                value : -ua-blink-page-transition-fade-out
+                                value : -ua-view-transition-fade-out
                             }
                             [8] : {
                                 name : animation-timeline
@@ -2846,7 +2846,7 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-out
+                                value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-out
                             }
                         ]
                     }
@@ -2871,10 +2871,10 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-outgoing-image(shared)
+                                text : html::view-transition-old(shared)
                             }
                         ]
-                        text : html::page-transition-outgoing-image(shared)
+                        text : html::view-transition-old(shared)
                     }
                     style : {
                         cssProperties : [
@@ -2908,15 +2908,15 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                         selectors : [
                             [0] : {
                                 range : {
-                                    endColumn : 36
+                                    endColumn : 25
                                     endLine : 0
                                     startColumn : 1
                                     startLine : 0
                                 }
-                                text : ::page-transition-outgoing-image(*)
+                                text : ::view-transition-old(*)
                             }
                         ]
-                        text : ::page-transition-outgoing-image()
+                        text : ::view-transition-old()
                     }
                     style : {
                         cssProperties : [
@@ -2967,9 +2967,9 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                                 ]
                                 name : background
                                 range : {
-                                    endColumn : 54
+                                    endColumn : 43
                                     endLine : 0
-                                    startColumn : 38
+                                    startColumn : 27
                                     startLine : 0
                                 }
                                 text : background: red;
@@ -3018,9 +3018,9 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                         ]
                         cssText : background: red;
                         range : {
-                            endColumn : 54
+                            endColumn : 43
                             endLine : 0
-                            startColumn : 38
+                            startColumn : 27
                             startLine : 0
                         }
                         shorthandEntries : [
@@ -3040,7 +3040,7 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
     }
     sessionId : <string>
 }
-Dumping styles for : ::page-transition-incoming-image with id shared{
+Dumping styles for : ::view-transition-new with id shared{
     id : <number>
     result : {
         matchedCSSRules : [
@@ -3061,13 +3061,13 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : ::page-transition-incoming-image()
+                                text : ::view-transition-new()
                             }
                             [1] : {
-                                text : ::page-transition-outgoing-image()
+                                text : ::view-transition-old()
                             }
                         ]
-                        text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                        text : ::view-transition-new(), ::view-transition-old()
                     }
                     style : {
                         cssProperties : [
@@ -3116,10 +3116,10 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-incoming-image()
+                                text : html::view-transition-new()
                             }
                         ]
-                        text : html::page-transition-incoming-image()
+                        text : html::view-transition-new()
                     }
                     style : {
                         cssProperties : [
@@ -3153,7 +3153,7 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                             }
                             [7] : {
                                 name : animation-name
-                                value : -ua-blink-page-transition-fade-in
+                                value : -ua-view-transition-fade-in
                             }
                             [8] : {
                                 name : animation-timeline
@@ -3163,7 +3163,7 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-in
+                                value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-in
                             }
                         ]
                     }
@@ -3188,10 +3188,10 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::page-transition-incoming-image(shared)
+                                text : html::view-transition-new(shared)
                             }
                         ]
-                        text : html::page-transition-incoming-image(shared)
+                        text : html::view-transition-new(shared)
                     }
                     style : {
                         cssProperties : [
@@ -3225,15 +3225,15 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                         selectors : [
                             [0] : {
                                 range : {
-                                    endColumn : 41
+                                    endColumn : 30
                                     endLine : 0
                                     startColumn : 1
                                     startLine : 0
                                 }
-                                text : ::page-transition-incoming-image(shared)
+                                text : ::view-transition-new(shared)
                             }
                         ]
-                        text : ::page-transition-incoming-image(shared)
+                        text : ::view-transition-new(shared)
                     }
                     style : {
                         cssProperties : [
@@ -3242,9 +3242,9 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                                 implicit : false
                                 name : animation-duration
                                 range : {
-                                    endColumn : 68
+                                    endColumn : 57
                                     endLine : 0
-                                    startColumn : 43
+                                    startColumn : 32
                                     startLine : 0
                                 }
                                 text : animation-duration: 300s;
@@ -3257,9 +3257,9 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                         ]
                         cssText : animation-duration: 300s;
                         range : {
-                            endColumn : 68
+                            endColumn : 57
                             endLine : 0
-                            startColumn : 43
+                            startColumn : 32
                             startLine : 0
                         }
                         shorthandEntries : [

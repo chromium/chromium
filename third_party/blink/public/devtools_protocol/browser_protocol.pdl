@@ -2237,11 +2237,11 @@ domain DOM
       scrollbar-corner
       resizer
       input-list-button
-      page-transition
-      page-transition-container
-      page-transition-image-wrapper
-      page-transition-outgoing-image
-      page-transition-incoming-image
+      view-transition
+      view-transition-group
+      view-transition-image-pair
+      view-transition-old
+      view-transition-new
 
   # Shadow root type.
   type ShadowRootType extends string

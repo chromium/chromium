@@ -2913,7 +2913,7 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
   // we can optimize this to only when the pseudo element tree is dirtied.
   SelectorFilterRootScope filter_scope(nullptr);
   document_->documentElement()->RecalcTransitionPseudoTreeStyle(
-      view_transition_tags_);
+      view_transition_names_);
 }
 
 void StyleEngine::RecalcStyle() {
@@ -2970,7 +2970,7 @@ void StyleEngine::RebuildLayoutTree(
         root_element.GetReattachParent());
     if (rebuild_transition_pseudo_tree == RebuildTransitionPseudoTree::kYes) {
       document_->documentElement()->RebuildTransitionPseudoLayoutTree(
-          view_transition_tags_);
+          view_transition_names_);
     }
     layout_tree_rebuild_root_.Clear();
     propagate_to_root = IsA<HTMLHtmlElement>(root_element) ||

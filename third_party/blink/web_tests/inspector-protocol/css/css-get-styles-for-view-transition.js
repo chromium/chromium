@@ -1,8 +1,8 @@
 (async function(testRunner) {
   const {page, session, dp} = await testRunner.startHTML(`
-      <style> ::page-transition-incoming-image(shared) {animation-duration: 300s;} </style>
-      <style> ::page-transition-outgoing-image(*) {background: red;} </style>
-      <div style='width:100px; height:100px; page-transition-tag: shared; contain:paint;'></div>`,
+      <style> ::view-transition-new(shared) {animation-duration: 300s;} </style>
+      <style> ::view-transition-old(*) {background: red;} </style>
+      <div style='width:100px; height:100px; view-transition-name: shared; contain:paint;'></div>`,
       'The test verifies functionality of querying style information for view-transition pseudo elements');
 
   await session.evaluateAsync(`
@@ -10,7 +10,7 @@
        // Wait for the promise below and query style to ensure all
        // pseudo-elements are generated before using the devtools API.
        await document.startViewTransition().ready;
-       window.getComputedStyle(document.documentElement, "::page-transition-incoming-image(root)").background;
+       window.getComputedStyle(document.documentElement, "::view-transition-new(root)").background;
        resolve();
      });
   `);

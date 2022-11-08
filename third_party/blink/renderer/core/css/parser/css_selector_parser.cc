@@ -1333,10 +1333,10 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       output_.push_back(std::move(selector));
       return true;
     }
-    case CSSSelector::kPseudoPageTransitionContainer:
-    case CSSSelector::kPseudoPageTransitionImageWrapper:
-    case CSSSelector::kPseudoPageTransitionOutgoingImage:
-    case CSSSelector::kPseudoPageTransitionIncomingImage: {
+    case CSSSelector::kPseudoViewTransitionGroup:
+    case CSSSelector::kPseudoViewTransitionImagePair:
+    case CSSSelector::kPseudoViewTransitionOld:
+    case CSSSelector::kPseudoViewTransitionNew: {
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (!block.AtEnd())
         return false;

@@ -1739,7 +1739,7 @@ scoped_refptr<SVGDashArray> StyleBuilderConverter::ConvertStrokeDasharray(
   return array;
 }
 
-AtomicString StyleBuilderConverter::ConvertPageTransitionTag(
+AtomicString StyleBuilderConverter::ConvertViewTransitionName(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value))

@@ -31,10 +31,10 @@ function rafAnimation() {
 async function runTest() {
   await waitForAtLeastOneFrame();
   // Prepare with a shared element
-  first.style.pageTransitionTag = "shared";
+  first.style.viewTransitionName = "shared";
   let t = document.startViewTransition(() => {
-    first.style.pageTransitionTag = "";
-    second.style.pageTransitionTag = "shared";
+    first.style.viewTransitionName = "";
+    second.style.viewTransitionName = "shared";
   });
 
   // The start() call above starts the capture. Force a hit test, which will

@@ -762,7 +762,7 @@ enum CSSSampleId {
     kFontPalette = 709,
     kBasePalette = 710,
     kOverrideColors = 711,
-    kPageTransitionTag = 712,
+    kViewTransitionName = 712,
     kObjectViewBox = 713,
     kObjectOverflow = 714,
     kToggleGroup = 715,

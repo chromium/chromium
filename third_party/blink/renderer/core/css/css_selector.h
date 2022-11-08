@@ -320,11 +320,11 @@ class CORE_EXPORT CSSSelector {
     // See
     // https://github.com/WICG/view-transitions/blob/main/explainer.md
     // for details.
-    kPseudoPageTransition,
-    kPseudoPageTransitionContainer,
-    kPseudoPageTransitionImageWrapper,
-    kPseudoPageTransitionIncomingImage,
-    kPseudoPageTransitionOutgoingImage,
+    kPseudoViewTransition,
+    kPseudoViewTransitionGroup,
+    kPseudoViewTransitionImagePair,
+    kPseudoViewTransitionNew,
+    kPseudoViewTransitionOld,
   };
 
   enum class AttributeMatchType : int {

@@ -13,27 +13,27 @@ namespace blink {
 ViewTransitionPseudoElementBase::ViewTransitionPseudoElementBase(
     Element* parent,
     PseudoId pseudo_id,
-    const AtomicString& view_transition_tag,
+    const AtomicString& view_transition_name,
     const ViewTransitionStyleTracker* style_tracker)
-    : PseudoElement(parent, pseudo_id, view_transition_tag),
+    : PseudoElement(parent, pseudo_id, view_transition_name),
       style_tracker_(style_tracker) {
   DCHECK(IsTransitionPseudoElement(pseudo_id));
-  DCHECK(pseudo_id == kPseudoIdPageTransition || view_transition_tag);
+  DCHECK(pseudo_id == kPseudoIdViewTransition || view_transition_name);
   DCHECK(style_tracker_);
 }
 
 bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
     PseudoId pseudo_id) const {
   switch (GetPseudoId()) {
-    case kPseudoIdPageTransition:
-      return pseudo_id == kPseudoIdPageTransitionContainer;
-    case kPseudoIdPageTransitionContainer:
-      return pseudo_id == kPseudoIdPageTransitionImageWrapper;
-    case kPseudoIdPageTransitionImageWrapper:
-      return pseudo_id == kPseudoIdPageTransitionOutgoingImage ||
-             pseudo_id == kPseudoIdPageTransitionIncomingImage;
-    case kPseudoIdPageTransitionOutgoingImage:
-    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdViewTransition:
+      return pseudo_id == kPseudoIdViewTransitionGroup;
+    case kPseudoIdViewTransitionGroup:
+      return pseudo_id == kPseudoIdViewTransitionImagePair;
+    case kPseudoIdViewTransitionImagePair:
+      return pseudo_id == kPseudoIdViewTransitionOld ||
+             pseudo_id == kPseudoIdViewTransitionNew;
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew:
       return false;
     default:
       NOTREACHED();
@@ -46,7 +46,7 @@ ViewTransitionPseudoElementBase::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   Element* parent = ParentOrShadowHostElement();
   auto style_request = StyleRequest(GetPseudoId(), parent->GetComputedStyle(),
-                                    view_transition_tag());
+                                    view_transition_name());
   style_request.rules_to_include = style_tracker_->StyleRulesToInclude();
   return parent->StyleForPseudoElement(style_recalc_context, style_request);
 }

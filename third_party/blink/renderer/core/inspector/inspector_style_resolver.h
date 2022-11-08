@@ -26,7 +26,7 @@ struct CORE_EXPORT InspectorCSSMatchedRules
   Member<Element> element;
   Member<RuleIndexList> matched_rules;
   PseudoId pseudo_id;
-  AtomicString view_transition_tag = g_null_atom;
+  AtomicString view_transition_name = g_null_atom;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(element);
@@ -54,7 +54,7 @@ class CORE_EXPORT InspectorStyleResolver {
  public:
   InspectorStyleResolver(Element*,
                          PseudoId,
-                         const AtomicString& view_transition_tag);
+                         const AtomicString& view_transition_name);
   RuleIndexList* MatchedRules() const;
   HeapVector<Member<InspectorCSSMatchedRules>> PseudoElementRules();
   HeapVector<Member<InspectorCSSMatchedRules>> ParentRules();
@@ -63,7 +63,7 @@ class CORE_EXPORT InspectorStyleResolver {
 
  private:
   void AddPseudoElementRules(PseudoId pseudo_id,
-                             const AtomicString& view_transition_tag);
+                             const AtomicString& view_transition_name);
 
   Element* element_;
   RuleIndexList* matched_rules_;

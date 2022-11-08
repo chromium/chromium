@@ -186,11 +186,11 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoSpellingError:
     case CSSSelector::kPseudoGrammarError:
     case CSSSelector::kPseudoHas:
-    case CSSSelector::kPseudoPageTransition:
-    case CSSSelector::kPseudoPageTransitionContainer:
-    case CSSSelector::kPseudoPageTransitionImageWrapper:
-    case CSSSelector::kPseudoPageTransitionIncomingImage:
-    case CSSSelector::kPseudoPageTransitionOutgoingImage:
+    case CSSSelector::kPseudoViewTransition:
+    case CSSSelector::kPseudoViewTransitionGroup:
+    case CSSSelector::kPseudoViewTransitionImagePair:
+    case CSSSelector::kPseudoViewTransitionNew:
+    case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoToggle:
       return true;
     case CSSSelector::kPseudoUnknown:

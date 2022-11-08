@@ -10,8 +10,8 @@
 
 <style>
 html { background: red; }
-html::page-transition { background: green; }
-html::page-transition-container(*) {
+html::view-transition { background: green; }
+html::view-transition-group(*) {
   animation-duration: 300s;
   visibility: hidden;
 }
@@ -28,7 +28,7 @@ div {
   height: 100px;
   background: green;
 }
-#e1 { page-transition-tag: e1; }
+#e1 { view-transition-name: e1; }
 </style>
 
 <div id=e1 class="square left"></div>

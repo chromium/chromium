@@ -178,7 +178,7 @@ TEST_F(AXViewTransitionTest, TransitionPseudoNotRelevant) {
       .shared {
         width: 100px;
         height: 100px;
-        page-transition-tag: shared;
+        view-transition-name: shared;
         contain: layout;
         background: green;
       }
@@ -212,19 +212,19 @@ TEST_F(AXViewTransitionTest, TransitionPseudoNotRelevant) {
 
   // We should have a transition pseudo
   auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
-      kPseudoIdPageTransition);
+      kPseudoIdViewTransition);
   ASSERT_TRUE(transition_pseudo);
   auto* container_pseudo = transition_pseudo->GetPseudoElement(
-      kPseudoIdPageTransitionContainer, "shared");
+      kPseudoIdViewTransitionGroup, "shared");
   ASSERT_TRUE(container_pseudo);
   auto* image_wrapper_pseudo = container_pseudo->GetPseudoElement(
-      kPseudoIdPageTransitionImageWrapper, "shared");
+      kPseudoIdViewTransitionImagePair, "shared");
   ASSERT_TRUE(image_wrapper_pseudo);
   auto* incoming_image_pseudo = image_wrapper_pseudo->GetPseudoElement(
-      kPseudoIdPageTransitionIncomingImage, "shared");
+      kPseudoIdViewTransitionNew, "shared");
   ASSERT_TRUE(incoming_image_pseudo);
   auto* outgoing_image_pseudo = image_wrapper_pseudo->GetPseudoElement(
-      kPseudoIdPageTransitionOutgoingImage, "shared");
+      kPseudoIdViewTransitionOld, "shared");
   ASSERT_TRUE(outgoing_image_pseudo);
 
   ASSERT_TRUE(transition_pseudo->GetLayoutObject());

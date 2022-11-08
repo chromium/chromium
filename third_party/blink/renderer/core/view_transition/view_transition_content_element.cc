@@ -11,13 +11,13 @@ namespace blink {
 ViewTransitionContentElement::ViewTransitionContentElement(
     Element* parent,
     PseudoId pseudo_id,
-    const AtomicString& view_transition_tag,
+    const AtomicString& view_transition_name,
     viz::ViewTransitionElementResourceId resource_id,
     bool is_live_content_element,
     const ViewTransitionStyleTracker* style_tracker)
     : ViewTransitionPseudoElementBase(parent,
                                       pseudo_id,
-                                      view_transition_tag,
+                                      view_transition_name,
                                       style_tracker),
       resource_id_(resource_id),
       is_live_content_element_(is_live_content_element) {

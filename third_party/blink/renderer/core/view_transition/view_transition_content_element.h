@@ -24,7 +24,7 @@ class CORE_EXPORT ViewTransitionContentElement
   explicit ViewTransitionContentElement(
       Element* parent,
       PseudoId,
-      const AtomicString& view_transition_tag,
+      const AtomicString& view_transition_name,
       viz::ViewTransitionElementResourceId,
       bool is_live_content_element,
       const ViewTransitionStyleTracker* style_tracker);

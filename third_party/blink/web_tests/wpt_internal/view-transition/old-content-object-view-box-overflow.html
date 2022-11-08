@@ -15,7 +15,7 @@
   position: relative;
   top: 50px;
   left: 50px;
-  page-transition-tag: target;
+  view-transition-name: target;
 }
 .child {
   width: 123px;
@@ -34,9 +34,9 @@
   background: green;
 }
 
-html::page-transition-container(target) { animation-duration: 300s; }
-html::page-transition-incoming-image(target) { animation: unset; opacity: 0; }
-html::page-transition-outgoing-image(target) {
+html::view-transition-group(target) { animation-duration: 300s; }
+html::view-transition-new(target) { animation: unset; opacity: 0; }
+html::view-transition-old(target) {
   animation: unset;
   opacity: 1;
   /* clip overflow, and verify inner contents only */
@@ -44,8 +44,8 @@ html::page-transition-outgoing-image(target) {
   height: 100%;
 }
 
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 </style>
 
 <div class=target>

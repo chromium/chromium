@@ -14,12 +14,12 @@
 namespace blink {
 namespace {
 
-const char* kTransitionRootName = "html::page-transition";
-const char* kContainerTagName = "html::page-transition-container";
-const char* kImageWrapperTagName = "html::page-transition-image-wrapper";
-const char* kIncomingImageTagName = "html::page-transition-incoming-image";
-const char* kOutgoingImageTagName = "html::page-transition-outgoing-image";
-const char* kKeyframeNamePrefix = "-ua-page-transition-container-anim-";
+const char* kViewTransitionTagName = "html::view-transition";
+const char* kGroupTagName = "html::view-transition-group";
+const char* kImagePairTagName = "html::view-transition-image-pair";
+const char* kNewImageTagName = "html::view-transition-new";
+const char* kOldImageTagName = "html::view-transition-old";
+const char* kKeyframeNamePrefix = "-ua-view-transition-group-anim-";
 
 }  // namespace
 
@@ -49,9 +49,9 @@ void ViewTransitionStyleBuilder::AddRules(const String& selector,
 }
 
 void ViewTransitionStyleBuilder::AddPlusLighter(const String& tag) {
-  AddRules(kImageWrapperTagName, tag, "isolation: isolate");
-  AddRules(kIncomingImageTagName, tag, "mix-blend-mode: plus-lighter");
-  AddRules(kOutgoingImageTagName, tag, "mix-blend-mode: plus-lighter");
+  AddRules(kImagePairTagName, tag, "isolation: isolate");
+  AddRules(kNewImageTagName, tag, "mix-blend-mode: plus-lighter");
+  AddRules(kOldImageTagName, tag, "mix-blend-mode: plus-lighter");
 }
 
 void ViewTransitionStyleBuilder::AddAnimationAndBlending(
@@ -68,7 +68,7 @@ void ViewTransitionStyleBuilder::AddAnimationAndBlending(
   rule_builder.Append("animation-delay: 0s;\n");
   rule_builder.Append("animation-iteration-count: 1;\n");
   rule_builder.Append("animation-direction: normal;\n");
-  AddRules(kContainerTagName, tag, rule_builder.ReleaseString());
+  AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
 
   // Add plus-lighter blending.
   AddPlusLighter(tag);
@@ -106,12 +106,12 @@ String ViewTransitionStyleBuilder::AddKeyframes(
 
 void ViewTransitionStyleBuilder::AddIncomingObjectViewBox(const String& tag,
                                                           const String& value) {
-  AddObjectViewBox(kIncomingImageTagName, tag, value);
+  AddObjectViewBox(kNewImageTagName, tag, value);
 }
 
 void ViewTransitionStyleBuilder::AddOutgoingObjectViewBox(const String& tag,
                                                           const String& value) {
-  AddObjectViewBox(kOutgoingImageTagName, tag, value);
+  AddObjectViewBox(kOldImageTagName, tag, value);
 }
 
 void ViewTransitionStyleBuilder::AddObjectViewBox(const String& selector,
@@ -124,7 +124,7 @@ void ViewTransitionStyleBuilder::AddObjectViewBox(const String& selector,
 
 void ViewTransitionStyleBuilder::AddContainerStyles(const String& tag,
                                                     const String& rules) {
-  AddRules(kContainerTagName, tag, rules);
+  AddRules(kGroupTagName, tag, rules);
 }
 
 void ViewTransitionStyleBuilder::AddContainerStyles(
@@ -156,7 +156,7 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
 
 void ViewTransitionStyleBuilder::AddRootStyles(
     const gfx::RectF& snapshot_viewport_rect_css) {
-  builder_.Append(kTransitionRootName);
+  builder_.Append(kViewTransitionTagName);
   builder_.Append("{ ");
   builder_.AppendFormat(
       R"CSS(

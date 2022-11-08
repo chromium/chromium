@@ -26,27 +26,27 @@
   width: 10px;
   height: 10px;
   background: grey;
-  page-transition-tag: hidden;
+  view-transition-name: hidden;
 }
 
 body {
   margin: 0px;
 }
 
-html::page-transition-container(hidden) { animation-duration: 300s; }
-html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+html::view-transition-group(hidden) { animation-duration: 300s; }
+html::view-transition-image-pair(hidden) { animation: unset; opacity: 0; }
 
-html::page-transition-container(target2) {
+html::view-transition-group(target2) {
   opacity: 0;
 }
 
-html::page-transition-container(root) {
+html::view-transition-group(root) {
   top: -50vh;
   bottom: 50vh;
 }
 
-html::page-transition-outgoing-image(root) { animation: unset; opacity: 0; height: 100%; }
-html::page-transition-incoming-image(root) { animation: unset; opacity: 1; height: 100%; }
+html::view-transition-old(root) { animation: unset; opacity: 0; height: 100%; }
+html::view-transition-new(root) { animation: unset; opacity: 1; height: 100%; }
 
 </style>
 
@@ -65,7 +65,7 @@ async function runTest() {
   document.startViewTransition(() => {
     // Add a shared element to ensure its bounds don't expand the root snapshot
     // size.
-    target2.style = "page-transition-tag: target2";
+    target2.style = "view-transition-name: target2";
 
     requestAnimationFrame(() => requestAnimationFrame(() => 
       requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))

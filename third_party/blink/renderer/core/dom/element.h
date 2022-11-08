@@ -854,14 +854,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
 
   // Returns the pseudo element for the given PseudoId type.
-  // |view_transition_tag| is used to uniquely identify a pseudo element
+  // |view_transition_name| is used to uniquely identify a pseudo element
   // from a set of pseudo elements which share the same |pseudo_id|. The current
   // usage of this ID is limited to pseudo elements generated for a
   // ViewTransition. See
   // third_party/blink/renderer/core/view_transition/README.md
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& view_transition_tag = g_null_atom) const;
+      const AtomicString& view_transition_name = g_null_atom) const;
   LayoutObject* PseudoElementLayoutObject(PseudoId) const;
 
   bool PseudoElementStylesDependOnFontMetrics() const;
@@ -1136,17 +1136,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   const ResizeObserverSize* LastIntrinsicSize() const;
 
   // Returns a unique pseudo element for the given |pseudo_id| and
-  // |view_transition_tag| originating from this DOM element.
+  // |view_transition_name| originating from this DOM element.
   // This pseudo element may be directly associated with this element or nested
   // inside a hierarchy of pseudo elements.
   PseudoElement* GetNestedPseudoElement(
       PseudoId pseudo_id,
-      const AtomicString& view_transition_tag) const;
+      const AtomicString& view_transition_name) const;
 
   void RecalcTransitionPseudoTreeStyle(
-      const Vector<AtomicString>& view_transition_tags);
+      const Vector<AtomicString>& view_transition_names);
   void RebuildTransitionPseudoLayoutTree(
-      const Vector<AtomicString>& view_transition_tags);
+      const Vector<AtomicString>& view_transition_names);
 
   // Returns true if the element has the 'inert' attribute, forcing itself and
   // all its subtree to be inert.
@@ -1339,7 +1339,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       PseudoId,
       const StyleRecalcChange,
       const StyleRecalcContext&,
-      const AtomicString& view_transition_tag = g_null_atom);
+      const AtomicString& view_transition_name = g_null_atom);
 
   enum class StyleUpdatePhase {
     kRecalc,
@@ -1357,7 +1357,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   inline PseudoElement* CreatePseudoElementIfNeeded(
       PseudoId,
       const StyleRecalcContext&,
-      const AtomicString& view_transition_tag = g_null_atom);
+      const AtomicString& view_transition_name = g_null_atom);
   void AttachPseudoElement(PseudoId, AttachContext&);
   void DetachPseudoElement(PseudoId, bool performing_reattach);
 

@@ -102,34 +102,34 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       [[fallthrough]];
     case kPseudoIdAfter:
       return nullptr;
-    case kPseudoIdPageTransition:
+    case kPseudoIdViewTransition:
       return nullptr;
-    case kPseudoIdPageTransitionContainer: {
+    case kPseudoIdViewTransitionGroup: {
       auto* pseudo_element = DynamicTo<PseudoElement>(node);
       DCHECK(pseudo_element);
 
       // Iterate the list of IDs until we hit the entry for |node's| ID. The
       // sibling is the next ID in the list which generates a pseudo element.
       bool found = false;
-      for (const auto& view_transition_tag : parent_element->GetDocument()
-                                                 .GetStyleEngine()
-                                                 .ViewTransitionTags()) {
+      for (const auto& view_transition_name : parent_element->GetDocument()
+                                                  .GetStyleEngine()
+                                                  .ViewTransitionTags()) {
         if (!found) {
-          if (view_transition_tag == pseudo_element->view_transition_tag())
+          if (view_transition_name == pseudo_element->view_transition_name())
             found = true;
           continue;
         }
 
         if (auto* sibling = parent_element->GetPseudoElement(
-                kPseudoIdPageTransitionContainer, view_transition_tag)) {
+                kPseudoIdViewTransitionGroup, view_transition_name)) {
           return sibling;
         }
       }
       return nullptr;
     }
-    case kPseudoIdPageTransitionImageWrapper:
-    case kPseudoIdPageTransitionOutgoingImage:
-    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew:
       return nullptr;
     default:
       NOTREACHED();

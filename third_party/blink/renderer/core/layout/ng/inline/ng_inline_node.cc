@@ -465,7 +465,7 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   if (ds_controller.AllowDeferredShaping() &&
       !GetLayoutBox()->IsInsideFlowThread() &&
       Style().IsContentVisibilityVisible() &&
-      Style().PageTransitionTag().empty()) {
+      Style().ViewTransitionName().empty()) {
     DCHECK(IsHorizontalWritingMode(Style().GetWritingMode()));
     const LayoutUnit viewport_bottom = ds_controller.CurrentViewportBottom();
     DCHECK_NE(viewport_bottom, kIndefiniteSize) << GetLayoutBox();

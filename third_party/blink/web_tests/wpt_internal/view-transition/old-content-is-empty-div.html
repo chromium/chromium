@@ -25,18 +25,18 @@ div {
   background: red;
 }
 
-html::page-transition-container(hidden) { animation-duration: 300s; }
-html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+html::view-transition-group(hidden) { animation-duration: 300s; }
+html::view-transition-image-pair(hidden) { animation: unset; opacity: 0; }
 
 /* The effect of the following should be position at the outgoing element
    but contents of the new element.
 */
-html::page-transition-container(shared) { animation-delay: 100s; }
-html::page-transition-incoming-image(shared) { animation: unset; opacity: 1; }
-html::page-transition-outgoing-image(shared) { animation: unset; opacity: 1; }
+html::view-transition-group(shared) { animation-delay: 100s; }
+html::view-transition-new(shared) { animation: unset; opacity: 1; }
+html::view-transition-old(shared) { animation: unset; opacity: 1; }
 
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 
 </style>
 
@@ -46,10 +46,10 @@ html::page-transition { background: lightpink; }
 
 <script>
 async function runTest() {
-  empty.style.pageTransitionTag = "shared";
+  empty.style.viewTransitionName = "shared";
   document.startViewTransition(() => {
-    empty.style.pageTransitionTag = "";
-    target.style.pageTransitionTag = "shared";
+    empty.style.viewTransitionName = "";
+    target.style.viewTransitionName = "shared";
 
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
   });

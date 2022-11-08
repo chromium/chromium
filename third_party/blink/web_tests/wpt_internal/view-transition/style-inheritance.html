@@ -8,21 +8,21 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-::page-transition {
+::view-transition {
   background-color: red;
 }
 
-::page-transition-container(*) {
+::view-transition-group(*) {
   background-color: inherit;
   color: blue;
 }
 
-::page-transition-image-wrapper(*) {
+::view-transition-image-pair(*) {
   color: inherit;
   overflow-x: clip;
 }
 
-::page-transition-outgoing-image(*), ::page-transition-incoming-image(*) {
+::view-transition-old(*), ::view-transition-new(*) {
   overflow-x: inherit;
 }
 </style>
@@ -32,16 +32,16 @@ promise_test(() => {
   return new Promise(async (resolve, reject) => {
     let transition = document.startViewTransition();
     transition.ready.then(() => {
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition").backgroundColor, "rgb(255, 0, 0)", ":page-transition");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition").backgroundColor, "rgb(255, 0, 0)", ":view-transition");
 
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").backgroundColor, "rgb(255, 0, 0)", "container");
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").color, "rgb(0, 0, 255)", "container");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(root)").backgroundColor, "rgb(255, 0, 0)", "group");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition-group(root)").color, "rgb(0, 0, 255)", "group");
 
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").color, "rgb(0, 0, 255)", "wrapper");
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").overflowX, "clip", "wrapper");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition-image-pair(root)").color, "rgb(0, 0, 255)", "wrapper");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition-image-pair(root)").overflowX, "clip", "wrapper");
 
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").overflowX, "clip", "outgoing");
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-incoming-image(root)").overflowX, "clip", "incoming");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition-old(root)").overflowX, "clip", "outgoing");
+      assert_equals(getComputedStyle(document.documentElement, ":view-transition-new(root)").overflowX, "clip", "incoming");
     });
     await transition.finished;
     resolve();

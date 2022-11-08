@@ -23,10 +23,10 @@ class TransitionPseudoElementData final
 
   void SetPseudoElement(PseudoId,
                         PseudoElement*,
-                        const AtomicString& view_transition_tag = g_null_atom);
+                        const AtomicString& view_transition_name = g_null_atom);
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& view_transition_tag = g_null_atom) const;
+      const AtomicString& view_transition_name = g_null_atom) const;
 
   void AddPseudoElements(HeapVector<Member<PseudoElement>, 2>* result) const;
 
@@ -55,18 +55,18 @@ inline bool TransitionPseudoElementData::HasPseudoElements() const {
 }
 
 inline void TransitionPseudoElementData::ClearPseudoElements() {
-  SetPseudoElement(kPseudoIdPageTransition, nullptr);
-  SetPseudoElement(kPseudoIdPageTransitionImageWrapper, nullptr,
+  SetPseudoElement(kPseudoIdViewTransition, nullptr);
+  SetPseudoElement(kPseudoIdViewTransitionImagePair, nullptr,
                    transition_image_wrapper_
-                       ? transition_image_wrapper_->view_transition_tag()
+                       ? transition_image_wrapper_->view_transition_name()
                        : g_null_atom);
-  SetPseudoElement(kPseudoIdPageTransitionOutgoingImage, nullptr,
+  SetPseudoElement(kPseudoIdViewTransitionOld, nullptr,
                    transition_outgoing_image_
-                       ? transition_outgoing_image_->view_transition_tag()
+                       ? transition_outgoing_image_->view_transition_name()
                        : g_null_atom);
-  SetPseudoElement(kPseudoIdPageTransitionIncomingImage, nullptr,
+  SetPseudoElement(kPseudoIdViewTransitionNew, nullptr,
                    transition_incoming_image_
-                       ? transition_incoming_image_->view_transition_tag()
+                       ? transition_incoming_image_->view_transition_name()
                        : g_null_atom);
 
   for (auto& entry : transition_containers_)
@@ -77,49 +77,52 @@ inline void TransitionPseudoElementData::ClearPseudoElements() {
 inline void TransitionPseudoElementData::SetPseudoElement(
     PseudoId pseudo_id,
     PseudoElement* element,
-    const AtomicString& view_transition_tag) {
+    const AtomicString& view_transition_name) {
   PseudoElement* previous_element = nullptr;
   switch (pseudo_id) {
-    case kPseudoIdPageTransition:
+    case kPseudoIdViewTransition:
       previous_element = transition_;
       transition_ = element;
       break;
-    case kPseudoIdPageTransitionImageWrapper:
-      DCHECK(!element || element->view_transition_tag() == view_transition_tag);
+    case kPseudoIdViewTransitionImagePair:
+      DCHECK(!element ||
+             element->view_transition_name() == view_transition_name);
       DCHECK(!transition_image_wrapper_ ||
-             transition_image_wrapper_->view_transition_tag() ==
-                 view_transition_tag);
+             transition_image_wrapper_->view_transition_name() ==
+                 view_transition_name);
 
       previous_element = transition_image_wrapper_;
       transition_image_wrapper_ = element;
       break;
-    case kPseudoIdPageTransitionOutgoingImage:
-      DCHECK(!element || element->view_transition_tag() == view_transition_tag);
+    case kPseudoIdViewTransitionOld:
+      DCHECK(!element ||
+             element->view_transition_name() == view_transition_name);
       DCHECK(!transition_outgoing_image_ ||
-             transition_outgoing_image_->view_transition_tag() ==
-                 view_transition_tag);
+             transition_outgoing_image_->view_transition_name() ==
+                 view_transition_name);
 
       previous_element = transition_outgoing_image_;
       transition_outgoing_image_ = element;
       break;
-    case kPseudoIdPageTransitionIncomingImage:
-      DCHECK(!element || element->view_transition_tag() == view_transition_tag);
+    case kPseudoIdViewTransitionNew:
+      DCHECK(!element ||
+             element->view_transition_name() == view_transition_name);
       DCHECK(!transition_incoming_image_ ||
-             transition_incoming_image_->view_transition_tag() ==
-                 view_transition_tag);
+             transition_incoming_image_->view_transition_name() ==
+                 view_transition_name);
 
       previous_element = transition_incoming_image_;
       transition_incoming_image_ = element;
       break;
-    case kPseudoIdPageTransitionContainer: {
-      DCHECK(view_transition_tag);
+    case kPseudoIdViewTransitionGroup: {
+      DCHECK(view_transition_name);
 
-      auto it = transition_containers_.find(view_transition_tag);
+      auto it = transition_containers_.find(view_transition_name);
       previous_element =
           it == transition_containers_.end() ? nullptr : it->value;
       if (element) {
-        DCHECK_EQ(element->view_transition_tag(), view_transition_tag);
-        transition_containers_.Set(element->view_transition_tag(), element);
+        DCHECK_EQ(element->view_transition_name(), view_transition_name);
+        transition_containers_.Set(element->view_transition_name(), element);
       } else {
         transition_containers_.erase(it);
       }
@@ -135,39 +138,39 @@ inline void TransitionPseudoElementData::SetPseudoElement(
 
 inline PseudoElement* TransitionPseudoElementData::GetPseudoElement(
     PseudoId pseudo_id,
-    const AtomicString& view_transition_tag) const {
-  if (kPseudoIdPageTransition == pseudo_id)
+    const AtomicString& view_transition_name) const {
+  if (kPseudoIdViewTransition == pseudo_id)
     return transition_;
-  if (kPseudoIdPageTransitionImageWrapper == pseudo_id) {
-    DCHECK(view_transition_tag);
+  if (kPseudoIdViewTransitionImagePair == pseudo_id) {
+    DCHECK(view_transition_name);
     if (transition_image_wrapper_ &&
-        transition_image_wrapper_->view_transition_tag() ==
-            view_transition_tag) {
+        transition_image_wrapper_->view_transition_name() ==
+            view_transition_name) {
       return transition_image_wrapper_;
     }
     return nullptr;
   }
-  if (kPseudoIdPageTransitionOutgoingImage == pseudo_id) {
-    DCHECK(view_transition_tag);
+  if (kPseudoIdViewTransitionOld == pseudo_id) {
+    DCHECK(view_transition_name);
     if (transition_outgoing_image_ &&
-        transition_outgoing_image_->view_transition_tag() ==
-            view_transition_tag) {
+        transition_outgoing_image_->view_transition_name() ==
+            view_transition_name) {
       return transition_outgoing_image_;
     }
     return nullptr;
   }
-  if (kPseudoIdPageTransitionIncomingImage == pseudo_id) {
-    DCHECK(view_transition_tag);
+  if (kPseudoIdViewTransitionNew == pseudo_id) {
+    DCHECK(view_transition_name);
     if (transition_incoming_image_ &&
-        transition_incoming_image_->view_transition_tag() ==
-            view_transition_tag) {
+        transition_incoming_image_->view_transition_name() ==
+            view_transition_name) {
       return transition_incoming_image_;
     }
     return nullptr;
   }
-  if (kPseudoIdPageTransitionContainer == pseudo_id) {
-    DCHECK(view_transition_tag);
-    auto it = transition_containers_.find(view_transition_tag);
+  if (kPseudoIdViewTransitionGroup == pseudo_id) {
+    DCHECK(view_transition_name);
+    auto it = transition_containers_.find(view_transition_name);
     return it == transition_containers_.end() ? nullptr : it->value;
   }
   return nullptr;

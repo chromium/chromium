@@ -20,35 +20,35 @@ class CORE_EXPORT ViewTransitionUtils {
   template <typename Functor>
   static void ForEachTransitionPseudo(Document& document, Functor& func) {
     auto* transition_pseudo =
-        document.documentElement()->GetPseudoElement(kPseudoIdPageTransition);
+        document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
     if (!transition_pseudo)
       return;
 
     func(transition_pseudo);
 
-    for (const auto& view_transition_tag :
+    for (const auto& view_transition_name :
          document.GetStyleEngine().ViewTransitionTags()) {
       auto* container_pseudo = transition_pseudo->GetPseudoElement(
-          kPseudoIdPageTransitionContainer, view_transition_tag);
+          kPseudoIdViewTransitionGroup, view_transition_name);
       if (!container_pseudo)
         continue;
 
       func(container_pseudo);
 
       auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
-          kPseudoIdPageTransitionImageWrapper, view_transition_tag);
+          kPseudoIdViewTransitionImagePair, view_transition_name);
       if (!wrapper_pseudo)
         continue;
 
       func(wrapper_pseudo);
 
       if (auto* content = wrapper_pseudo->GetPseudoElement(
-              kPseudoIdPageTransitionOutgoingImage, view_transition_tag)) {
+              kPseudoIdViewTransitionOld, view_transition_name)) {
         func(content);
       }
 
       if (auto* content = wrapper_pseudo->GetPseudoElement(
-              kPseudoIdPageTransitionIncomingImage, view_transition_tag)) {
+              kPseudoIdViewTransitionNew, view_transition_name)) {
         func(content);
       }
     }

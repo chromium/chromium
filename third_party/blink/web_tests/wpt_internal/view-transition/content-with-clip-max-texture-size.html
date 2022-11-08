@@ -31,19 +31,19 @@
   width: 10px;
   height: 10px;
   background: grey;
-  page-transition-tag: hidden;
+  view-transition-name: hidden;
 }
-#target1 { page-transition-tag: target1; }
+#target1 { view-transition-name: target1; }
 
-html::page-transition-container(hidden) { animation-duration: 300s; }
-html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+html::view-transition-group(hidden) { animation-duration: 300s; }
+html::view-transition-image-pair(hidden) { animation: unset; opacity: 0; }
 
-html::page-transition-outgoing-image(*), html::page-transition-incoming-image(*) {
+html::view-transition-old(*), html::view-transition-new(*) {
   object-fit: none;
 }
 
-html::page-transition-outgoing-image(target1) { animation: unset; opacity: 0; }
-html::page-transition-incoming-image(target1) { animation: unset; opacity: 1; }
+html::view-transition-old(target1) { animation: unset; opacity: 0; }
+html::view-transition-new(target1) { animation: unset; opacity: 1; }
 
 </style>
 

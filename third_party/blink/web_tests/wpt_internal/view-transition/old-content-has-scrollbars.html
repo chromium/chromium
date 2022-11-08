@@ -33,8 +33,8 @@
   }
 
   /* We're verifying what we capture, so just display the old contents for 5 minutes.  */
-  html::page-transition-incoming-image(root) { animation: unset; opacity: 0; }
-  html::page-transition-outgoing-image(root) {
+  html::view-transition-new(root) { animation: unset; opacity: 0; }
+  html::view-transition-old(root) {
     animation-duration: 300s;
     animation-timing-function: steps(1, end);
     opacity: 1;

@@ -14,7 +14,7 @@
   top: 0;
   left: 0;
   contain: paint;
-  page-transition-tag: 隠れた;
+  view-transition-name: 隠れた;
 }
 .tb { writing-mode: horizontal-tb; }
 .lr { writing-mode: vertical-lr; }
@@ -36,31 +36,31 @@
   height: 500px;
   contain: paint;
 }
-#one { page-transition-tag: 第一; }
-#two { page-transition-tag: 第二; }
-#three { page-transition-tag: 第三; }
+#one { view-transition-name: 第一; }
+#two { view-transition-name: 第二; }
+#three { view-transition-name: 第三; }
 
-html::page-transition-container(隠れた) { animation-duration: 300s; }
-html::page-transition-image-wrapper(隠れた) { animation: unset; opacity: 0; }
+html::view-transition-group(隠れた) { animation-duration: 300s; }
+html::view-transition-image-pair(隠れた) { animation: unset; opacity: 0; }
 
-html::page-transition-container(第一),
-html::page-transition-container(第二),
-html::page-transition-container(第三) {
+html::view-transition-group(第一),
+html::view-transition-group(第二),
+html::view-transition-group(第三) {
   animation-delay: 300s;
   animation-fill-mode: both;
 }
 
-html::page-transition-incoming-image(第一),
-html::page-transition-incoming-image(第二),
-html::page-transition-incoming-image(第三) { animation: unset; opacity: 0; }
+html::view-transition-new(第一),
+html::view-transition-new(第二),
+html::view-transition-new(第三) { animation: unset; opacity: 0; }
 
-html::page-transition-outgoing-image(第一),
-html::page-transition-outgoing-image(第二),
-html::page-transition-outgoing-image(第三) { animation: unset; opacity: 1; }
+html::view-transition-old(第一),
+html::view-transition-old(第二),
+html::view-transition-old(第三) { animation: unset; opacity: 1; }
 
 /* hide the root so we show transition background to ensure we're in a transition */
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 
 </style>
 
@@ -79,9 +79,9 @@ async function runTest() {
     two.remove();
     three.remove();
     hidden.style.left = "200px";
-    target1.style.pageTransitionTag = "第一";
-    target2.style.pageTransitionTag = "第二";
-    target3.style.pageTransitionTag = "第三";
+    target1.style.viewTransitionName = "第一";
+    target2.style.viewTransitionName = "第二";
+    target3.style.viewTransitionName = "第三";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

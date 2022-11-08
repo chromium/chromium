@@ -34,20 +34,20 @@
   background: green;
 }
 #one {
-  page-transition-tag: target-one;
+  view-transition-name: target-one;
   clip-path: inset(10px 12px 20px 28px);
 }
 #two {
-  page-transition-tag: target-two;
+  view-transition-name: target-two;
   clip-path: inset(10px -12px 20px -28px);
 }
 
-html::page-transition-container(target-one),
-html::page-transition-container(target-two) { animation-duration: 300s; }
-html::page-transition-incoming-image(target-one),
-html::page-transition-incoming-image(target-two) { animation: unset; opacity: 0; height: 100%; }
-html::page-transition-outgoing-image(target-one),
-html::page-transition-outgoing-image(target-two) {
+html::view-transition-group(target-one),
+html::view-transition-group(target-two) { animation-duration: 300s; }
+html::view-transition-new(target-one),
+html::view-transition-new(target-two) { animation: unset; opacity: 0; height: 100%; }
+html::view-transition-old(target-one),
+html::view-transition-old(target-two) {
   animation: unset;
   opacity: 1;
   /* clip overflow, and verify inner contents only */
@@ -55,8 +55,8 @@ html::page-transition-outgoing-image(target-two) {
   height: 100%;
 }
 
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 </style>
 
 <div id=one class=target>

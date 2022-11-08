@@ -15,7 +15,7 @@
   height: 100px;
   overflow-clip-margin: 500px;
   contain: paint;
-  page-transition-tag: target;
+  view-transition-name: target;
   background-color: grey;
 }
 
@@ -32,19 +32,19 @@
   left: 100px;
 }
 
-html::page-transition-incoming-image(root) {
+html::view-transition-new(root) {
   opacity: 0;
 }
-html::page-transition-outgoing-image(root) {
+html::view-transition-old(root) {
   opacity: 0;
 }
 
-html::page-transition-outgoing-image(target) {
+html::view-transition-old(target) {
   animation-duration: 3s;
   animation-timing-function: steps(1, end);
   opacity: 1;
 }
-html::page-transition-incoming-image(target) { animation: unset; opacity: 0; }
+html::view-transition-new(target) { animation: unset; opacity: 0; }
 
 </style>
 

@@ -70,7 +70,7 @@ class StyleRequest {
         pseudo_id(pseudo_id),
         pseudo_argument(pseudo_argument) {
     DCHECK(!IsTransitionPseudoElement(pseudo_id) ||
-           pseudo_id == kPseudoIdPageTransition || pseudo_argument);
+           pseudo_id == kPseudoIdViewTransition || pseudo_argument);
   }
 
   StyleRequest(PseudoId pseudo_id,

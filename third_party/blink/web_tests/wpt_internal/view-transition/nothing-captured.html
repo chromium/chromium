@@ -6,7 +6,7 @@
 <link rel="match" href="nothing-captured-ref.html">
 <script src="/common/reftest-wait.js"></script>
 <style>
-:root { page-transition-tag: none; }
+:root { view-transition-name: none; }
 .target {
   width: 100px;
   height: 100px;
@@ -24,9 +24,9 @@
 }
 
 /* None of these should apply, so make everything red if it does */
-html::page-transition-container(*) { animation-duration: 300s; }
-html::page-transition-image-wrapper(*) { visibility: hidden }
-html::page-transition { background: red; }
+html::view-transition-group(*) { animation-duration: 300s; }
+html::view-transition-image-pair(*) { visibility: hidden }
+html::view-transition { background: red; }
 </style>
 
 This text should appear unmodified, since the root isn't captured.

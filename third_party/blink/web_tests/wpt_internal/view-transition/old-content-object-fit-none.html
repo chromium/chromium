@@ -13,17 +13,17 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  page-transition-tag: target;
+  view-transition-name: target;
   background: lightblue;
 }
 #hidden {
   background: pink;
   width: 10px;
   height: 10px;
-  page-transition-tag: hidden;
+  view-transition-name: hidden;
 }
 
-html::page-transition-container(target) {
+html::view-transition-group(target) {
   animation: unset;
   transform: unset;
   position: absolute;
@@ -33,24 +33,24 @@ html::page-transition-container(target) {
   height: 50px;
 }
 
-html::page-transition-incoming-image(target) {
+html::view-transition-new(target) {
   animation: unset;
   opacity: 0;
 }
-html::page-transition-outgoing-image(target) {
+html::view-transition-old(target) {
   animation: unset;
   opacity: 1;
   object-fit: none;
   object-position: 0% 0%;
 }
 
-html::page-transition-container(hidden) {
+html::view-transition-group(hidden) {
   animation-duration: 500s;
   visibility: hidden;
 }
 
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 </style>
 
 <div id=target>This is text</div>

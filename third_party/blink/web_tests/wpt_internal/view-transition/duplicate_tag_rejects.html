@@ -22,8 +22,8 @@ div {
 <script>
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    first.style = "page-transition-tag: target";
-    second.style = "page-transition-tag: target";
+    first.style = "view-transition-name: target";
+    second.style = "view-transition-name: target";
     let transition = document.startViewTransition();
     transition.ready.then(() => {}, () => {});
     transition.domUpdated.then(() => {}, () => {});
@@ -33,10 +33,10 @@ promise_test(async t => {
 
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    first.style = "page-transition-tag: target";
+    first.style = "view-transition-name: target";
     let transition = document.startViewTransition(() => {
-      first.style = "page-transition-tag: target";
-      second.style = "page-transition-tag: target";
+      first.style = "view-transition-name: target";
+      second.style = "view-transition-name: target";
     });
     transition.ready.then(() => {}, () => {});
     transition.domUpdated.then(() => {}, () => {});

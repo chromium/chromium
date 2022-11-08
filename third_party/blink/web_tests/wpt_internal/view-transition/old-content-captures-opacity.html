@@ -17,17 +17,17 @@
   position: absolute;
   font-size: 30pt;
 }
-#e1 { opacity: 0.75; top: 20px; left: 20px; page-transition-tag: e1; }
-#e2 { opacity: 0.5; top: 160px; left: 20px; page-transition-tag: e2; }
-#e3 { opacity: 0.25; top: 300px; left: 20px; page-transition-tag: e3; }
+#e1 { opacity: 0.75; top: 20px; left: 20px; view-transition-name: e1; }
+#e2 { opacity: 0.5; top: 160px; left: 20px; view-transition-name: e2; }
+#e3 { opacity: 0.25; top: 300px; left: 20px; view-transition-name: e3; }
 div.dst { background: lightgreen; }
 /* We're verifying what we capture, so just display the old contents for 5 minutes.  */
-html::page-transition-container(*) { animation-duration: 300s; }
-html::page-transition-incoming-image(*) { animation: unset; opacity: 0; }
-html::page-transition-outgoing-image(*) { animation: unset; opacity: 1; }
+html::view-transition-group(*) { animation-duration: 300s; }
+html::view-transition-new(*) { animation: unset; opacity: 0; }
+html::view-transition-old(*) { animation: unset; opacity: 1; }
 /* hide the root so we show transition background to ensure we're in a transition */
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 </style>
 <div id=e1 class=box>one</div>
 <div id=e2 class=box>two</div>

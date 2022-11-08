@@ -36,16 +36,16 @@
     width: 100px;
     background-color: deepskyblue;
     contain: paint;
-    page-transition-tag: sharedelement;
+    view-transition-name: sharedelement;
   }
 
   /* We're verifying what we capture, so just display the old contents for 5 minutes.  */
-  html::page-transition-incoming-image(*) { animation: unset; opacity: 0; }
-  html::page-transition-outgoing-image(*) {
+  html::view-transition-new(*) { animation: unset; opacity: 0; }
+  html::view-transition-old(*) {
     animation-duration: 300s;
     animation-timing-function: steps(1, end);
   }
-  html::page-transition-container(*) {
+  html::view-transition-group(*) {
     animation-duration: 300s;
     animation-timing-function: steps(1, end);
   }

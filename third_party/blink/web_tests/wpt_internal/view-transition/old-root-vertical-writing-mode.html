@@ -15,7 +15,7 @@ html { writing-mode: vertical-lr; }
   top: 0;
   left: 0;
   contain: paint;
-  page-transition-tag: hidden;
+  view-transition-name: hidden;
 }
 .shared {
   margin: 2px;
@@ -33,21 +33,21 @@ html { writing-mode: vertical-lr; }
   height: 500px;
   contain: paint;
 }
-#one { page-transition-tag: s1; }
+#one { view-transition-name: s1; }
 #two {
   background: lightblue;
   will-change: transform;
 }
 
-html::page-transition-container(hidden) { animation-duration: 300s; }
-html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+html::view-transition-group(hidden) { animation-duration: 300s; }
+html::view-transition-image-pair(hidden) { animation: unset; opacity: 0; }
 
-html::page-transition-container(s1) { animation-delay: 100s; animation-fill-mode: both; }
-html::page-transition-incoming-image(s1) { animation: unset; opacity: 0; }
-html::page-transition-outgoing-image(s1) { animation: unset; opacity: 1; }
+html::view-transition-group(s1) { animation-delay: 100s; animation-fill-mode: both; }
+html::view-transition-new(s1) { animation: unset; opacity: 0; }
+html::view-transition-old(s1) { animation: unset; opacity: 1; }
 
-html::page-transition-incoming-image(root) { animation: unset; opacity: 0; }
-html::page-transition-outgoing-image(root) { animation: unset; opacity: 1; }
+html::view-transition-new(root) { animation: unset; opacity: 0; }
+html::view-transition-old(root) { animation: unset; opacity: 1; }
 
 </style>
 
@@ -61,7 +61,7 @@ async function runTest() {
   document.startViewTransition(() => {
     one.remove();
     target.style = "";
-    target.style.pageTransitionTag = "s1";
+    target.style.viewTransitionName = "s1";
     hidden.style.left = "200px";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });

@@ -763,16 +763,16 @@ bool ViewTransition::NeedsUpToDateTags() const {
 PseudoElement* ViewTransition::CreatePseudoElement(
     Element* parent,
     PseudoId pseudo_id,
-    const AtomicString& view_transition_tag) {
+    const AtomicString& view_transition_name) {
   DCHECK(style_tracker_);
 
   return style_tracker_->CreatePseudoElement(parent, pseudo_id,
-                                             view_transition_tag);
+                                             view_transition_name);
 }
 
 String ViewTransition::UAStyleSheet() const {
   // TODO(vmpstr): We can still request getComputedStyle(html,
-  // "::page-transition-pseudo") outside of a page transition. What should we
+  // "::view-transition-pseudo") outside of a page transition. What should we
   // return in that case?
   if (!style_tracker_)
     return "";

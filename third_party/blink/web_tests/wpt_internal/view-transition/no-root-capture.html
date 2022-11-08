@@ -6,14 +6,14 @@
 <link rel="match" href="no-root-capture-ref.html">
 <script src="/common/reftest-wait.js"></script>
 <style>
-:root { page-transition-tag: none; }
+:root { view-transition-name: none; }
 .target {
   width: 100px;
   height: 100px;
   contain: paint;
   background: blue;
   overflow-clip-margin: 50px;
-  page-transition-tag: target;
+  view-transition-name: target;
 }
 .child {
   width: 200px;
@@ -24,16 +24,16 @@
   background: green;
 }
 
-html::page-transition-container(target) { animation-duration: 300s; }
-html::page-transition-incoming-image(target) { animation: unset; opacity: 0; }
-html::page-transition-outgoing-image(target) {
+html::view-transition-group(target) { animation-duration: 300s; }
+html::view-transition-new(target) { animation: unset; opacity: 0; }
+html::view-transition-old(target) {
   animation: unset;
   opacity: 1;
 }
 
 /* None of these should apply, so make everything red if it does */
-html::page-transition-container(root) { animation: unset; opacity: 1; background: red; }
-html::page-transition-image-wrapper(root) { visibility: hidden }
+html::view-transition-group(root) { animation: unset; opacity: 1; background: red; }
+html::view-transition-image-pair(root) { visibility: hidden }
 </style>
 
 This text should appear unmodified, since the root isn't captured.

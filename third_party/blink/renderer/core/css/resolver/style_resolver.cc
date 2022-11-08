@@ -774,9 +774,8 @@ void StyleResolver::MatchUARules(const Element& element,
   };
   ForEachUARulesForElement(element, &collector, func);
 
-  if (!match_request.IsEmpty()) {
+  if (!match_request.IsEmpty())
     MatchRuleSets(collector, match_request);
-  }
 
   collector.FinishAddingUARules();
   collector.SetMatchingUARules(false);
@@ -1665,7 +1664,7 @@ Element* StyleResolver::FindContainerForElement(
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
     Element* element,
     PseudoId pseudo_id,
-    const AtomicString& view_transition_tag,
+    const AtomicString& view_transition_name,
     unsigned rules_to_include) {
   DCHECK(element);
   StyleResolverState state(GetDocument(), *element);
@@ -1679,7 +1678,7 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
   // TODO(obrufau): support collecting rules for nested ::marker
   if (!element->IsPseudoElement()) {
     CollectPseudoRulesForElement(*element, collector, pseudo_id,
-                                 view_transition_tag, rules_to_include);
+                                 view_transition_name, rules_to_include);
   }
 
   if (tracker_)
@@ -1697,10 +1696,10 @@ void StyleResolver::CollectPseudoRulesForElement(
     const Element& element,
     ElementRuleCollector& collector,
     PseudoId pseudo_id,
-    const AtomicString& view_transition_tag,
+    const AtomicString& view_transition_name,
     unsigned rules_to_include) {
   collector.SetPseudoElementStyleRequest(
-      StyleRequest(pseudo_id, nullptr, view_transition_tag));
+      StyleRequest(pseudo_id, nullptr, view_transition_name));
 
   if (rules_to_include & kUACSSRules)
     MatchUARules(element, collector);

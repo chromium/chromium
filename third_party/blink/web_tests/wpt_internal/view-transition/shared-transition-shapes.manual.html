@@ -60,11 +60,11 @@ div {
 let classes = ["left", "right"]
 let i = 0;
 async function runAnimation() {
-  e1.style.pageTransitionTag = "e1";
-  e2.style.pageTransitionTag = "e2";
-  e3.style.pageTransitionTag = "e3";
-  e4.style.pageTransitionTag = "e4";
-  e5.style.pageTransitionTag = "e5";
+  e1.style.viewTransitionName = "e1";
+  e2.style.viewTransitionName = "e2";
+  e3.style.viewTransitionName = "e3";
+  e4.style.viewTransitionName = "e4";
+  e5.style.viewTransitionName = "e5";
   let t = document.startViewTransition(() => {
     container.classList.remove(classes[i]);
     i = (i + 1) % classes.length;

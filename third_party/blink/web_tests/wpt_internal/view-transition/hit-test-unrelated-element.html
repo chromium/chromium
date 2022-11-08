@@ -11,13 +11,13 @@
 <script src="/common/reftest-wait.js"></script>
 
 <style>
-html { page-transition-tag: none }
+html { view-transition-name: none }
 #target {
   width: 100px;
   height: 100px;
   contain: paint;
   background: blue;
-  page-transition-tag: shared;
+  view-transition-name: shared;
 }
 #target.before {
   position: relative;
@@ -36,14 +36,14 @@ html { page-transition-tag: none }
   background: green;
 }
 
-html::page-transition-container(shared) {
+html::view-transition-group(shared) {
   animation-delay: 300s;
 }
-html::page-transition-outgoing-image(shared) {
+html::view-transition-old(shared) {
   animation: unset;
   opacity: 0;
 }
-html::page-transition-incoming-image(shared) {
+html::view-transition-new(shared) {
   animation: unset;
   opacity: 1;
 }

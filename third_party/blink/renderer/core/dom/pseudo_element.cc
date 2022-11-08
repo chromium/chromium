@@ -50,7 +50,7 @@ namespace blink {
 
 PseudoElement* PseudoElement::Create(Element* parent,
                                      PseudoId pseudo_id,
-                                     const AtomicString& view_transition_tag) {
+                                     const AtomicString& view_transition_name) {
   if (pseudo_id == kPseudoIdFirstLetter) {
     return MakeGarbageCollected<FirstLetterPseudoElement>(parent);
   } else if (IsTransitionPseudoElement(pseudo_id)) {
@@ -58,12 +58,12 @@ PseudoElement* PseudoElement::Create(Element* parent,
         ViewTransitionUtils::GetActiveTransition(parent->GetDocument());
     DCHECK(transition);
     return transition->CreatePseudoElement(parent, pseudo_id,
-                                           view_transition_tag);
+                                           view_transition_name);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
-                                             view_transition_tag);
+                                             view_transition_name);
 }
 
 const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
@@ -93,35 +93,33 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (g_null_atom, "::marker", g_null_atom));
       return marker;
     }
-    case kPseudoIdPageTransition: {
+    case kPseudoIdViewTransition: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition,
-                          (g_null_atom, "::page-transition", g_null_atom));
+                          (g_null_atom, "::view-transition", g_null_atom));
       return transition;
     }
-    case kPseudoIdPageTransitionContainer: {
+    case kPseudoIdViewTransitionGroup: {
       // TODO(khushalsagar) : Update these tag names to include the additional
       // ID.
       DEFINE_STATIC_LOCAL(
           QualifiedName, transition_container,
-          (g_null_atom, "::page-transition-container", g_null_atom));
+          (g_null_atom, "::view-transition-group", g_null_atom));
       return transition_container;
     }
-    case kPseudoIdPageTransitionImageWrapper: {
+    case kPseudoIdViewTransitionImagePair: {
       DEFINE_STATIC_LOCAL(
           QualifiedName, transition_image_wrapper,
-          (g_null_atom, "::page-transition-image-wrapper", g_null_atom));
+          (g_null_atom, "::view-transition-image-pair", g_null_atom));
       return transition_image_wrapper;
     }
-    case kPseudoIdPageTransitionIncomingImage: {
-      DEFINE_STATIC_LOCAL(
-          QualifiedName, transition_incoming_image,
-          (g_null_atom, "::page-transition-incoming-image", g_null_atom));
+    case kPseudoIdViewTransitionNew: {
+      DEFINE_STATIC_LOCAL(QualifiedName, transition_incoming_image,
+                          (g_null_atom, "::view-transition-new", g_null_atom));
       return transition_incoming_image;
     }
-    case kPseudoIdPageTransitionOutgoingImage: {
-      DEFINE_STATIC_LOCAL(
-          QualifiedName, transition_outgoing_image,
-          (g_null_atom, "::page-transition-outgoing-image", g_null_atom));
+    case kPseudoIdViewTransitionOld: {
+      DEFINE_STATIC_LOCAL(QualifiedName, transition_outgoing_image,
+                          (g_null_atom, "::view-transition-old", g_null_atom));
       return transition_outgoing_image;
     }
     default:
@@ -138,16 +136,16 @@ AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
   switch (pseudo_id) {
     case kPseudoIdNone:
       return g_null_atom;
-    case kPseudoIdPageTransitionContainer:
-    case kPseudoIdPageTransitionImageWrapper:
-    case kPseudoIdPageTransitionIncomingImage:
-    case kPseudoIdPageTransitionOutgoingImage: {
+    case kPseudoIdViewTransitionGroup:
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionNew:
+    case kPseudoIdViewTransitionOld: {
       auto* pseudo = To<PseudoElement>(element);
       DCHECK(pseudo);
       StringBuilder builder;
       builder.Append(PseudoElementTagName(pseudo_id).LocalName());
       builder.Append("(");
-      builder.Append(pseudo->view_transition_tag());
+      builder.Append(pseudo->view_transition_name());
       builder.Append(")");
       return AtomicString(builder.ReleaseString());
     }
@@ -170,12 +168,12 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
 
 PseudoElement::PseudoElement(Element* parent,
                              PseudoId pseudo_id,
-                             const AtomicString& view_transition_tag)
+                             const AtomicString& view_transition_name)
     : Element(PseudoElementTagName(pseudo_id),
               &parent->GetDocument(),
               kCreateElement),
       pseudo_id_(pseudo_id),
-      view_transition_tag_(view_transition_tag) {
+      view_transition_name_(view_transition_name) {
   DCHECK_NE(pseudo_id, kPseudoIdNone);
   parent->GetTreeScope().AdoptIfNeeded(*this);
   SetParentOrShadowHostNode(parent);
@@ -203,7 +201,7 @@ scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
   Element* parent = ParentOrShadowHostElement();
   return parent->StyleForPseudoElement(
       style_recalc_context, StyleRequest(pseudo_id_, parent->GetComputedStyle(),
-                                         view_transition_tag_));
+                                         view_transition_name_));
 }
 
 scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
@@ -356,11 +354,11 @@ bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
   switch (pseudo_style->StyleType()) {
     case kPseudoIdFirstLetter:
     case kPseudoIdBackdrop:
-    case kPseudoIdPageTransition:
-    case kPseudoIdPageTransitionContainer:
-    case kPseudoIdPageTransitionImageWrapper:
-    case kPseudoIdPageTransitionIncomingImage:
-    case kPseudoIdPageTransitionOutgoingImage:
+    case kPseudoIdViewTransition:
+    case kPseudoIdViewTransitionGroup:
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionNew:
+    case kPseudoIdViewTransitionOld:
       return true;
     case kPseudoIdBefore:
     case kPseudoIdAfter:

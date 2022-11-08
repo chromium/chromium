@@ -25,33 +25,33 @@ div { contain: paint; }
   left: 250px;
 }
 .left-tag {
-  page-transition-tag: left-element;
+  view-transition-name: left-element;
 }
 .right-tag {
-  page-transition-tag: right-element;
+  view-transition-name: right-element;
 }
 
 .hidden {
   background: pink;
   width: 10px;
   height: 10px;
-  page-transition-tag: hidden;
+  view-transition-name: hidden;
 }
 
-html::page-transition-container(hidden) { animation-duration: 300s; }
-html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+html::view-transition-group(hidden) { animation-duration: 300s; }
+html::view-transition-image-pair(hidden) { animation: unset; opacity: 0; }
 
-html::page-transition-container(left-element),
-html::page-transition-container(right-element) { animation-duration: 0s; }
+html::view-transition-group(left-element),
+html::view-transition-group(right-element) { animation-duration: 0s; }
 
-html::page-transition-incoming-image(left-element),
-html::page-transition-incoming-image(right-element) { animation: unset; opacity: 0; }
+html::view-transition-new(left-element),
+html::view-transition-new(right-element) { animation: unset; opacity: 0; }
 
-html::page-transition-outgoing-image(left-element),
-html::page-transition-outgoing-image(right-element) { animation: unset; opacity: 1; }
+html::view-transition-old(left-element),
+html::view-transition-old(right-element) { animation: unset; opacity: 1; }
 
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 
 </style>
 

@@ -23,7 +23,7 @@ namespace blink {
 InspectorStyleResolver::InspectorStyleResolver(
     Element* element,
     PseudoId element_pseudo_id,
-    const AtomicString& view_transition_tag)
+    const AtomicString& view_transition_name)
     : element_(element) {
   DCHECK(element_);
 
@@ -39,7 +39,7 @@ InspectorStyleResolver::InspectorStyleResolver(
   DCHECK(!IsTransitionPseudoElement(element_pseudo_id) ||
          element_->IsDocumentElement());
   matched_rules_ = style_resolver.PseudoCSSRulesForElement(
-      element_, element_pseudo_id, view_transition_tag,
+      element_, element_pseudo_id, view_transition_name,
       StyleResolver::kAllCSSRules);
 
   if (element_pseudo_id)
@@ -54,16 +54,16 @@ InspectorStyleResolver::InspectorStyleResolver(
     if (!PseudoElement::IsWebExposed(pseudo_id, element_))
       continue;
 
-    // The ::page-transition* pseudo elements are only generated for the root
+    // The ::view-transition* pseudo elements are only generated for the root
     // element.
     if (IsTransitionPseudoElement(pseudo_id) && !has_active_view_transition) {
       continue;
     }
 
-    const bool has_view_transition_tags =
+    const bool has_view_transition_names =
         IsTransitionPseudoElement(pseudo_id) &&
         PseudoElementHasArguments(pseudo_id);
-    if (!has_view_transition_tags) {
+    if (!has_view_transition_names) {
       AddPseudoElementRules(pseudo_id, g_null_atom);
       continue;
     }
@@ -119,23 +119,23 @@ InspectorStyleResolver::InspectorStyleResolver(
 
 void InspectorStyleResolver::AddPseudoElementRules(
     PseudoId pseudo_id,
-    const AtomicString& view_transition_tag) {
+    const AtomicString& view_transition_name) {
   StyleResolver& style_resolver = element_->GetDocument().GetStyleResolver();
   // If the pseudo-element doesn't exist, exclude UA rules to avoid cluttering
   // all elements.
   unsigned rules_to_include =
-      element_->GetNestedPseudoElement(pseudo_id, view_transition_tag)
+      element_->GetNestedPseudoElement(pseudo_id, view_transition_name)
           ? StyleResolver::kAllCSSRules
           : StyleResolver::kAllButUACSSRules;
   RuleIndexList* matched_rules = style_resolver.PseudoCSSRulesForElement(
-      element_, pseudo_id, view_transition_tag, rules_to_include);
+      element_, pseudo_id, view_transition_name, rules_to_include);
   if (matched_rules && matched_rules->size()) {
     InspectorCSSMatchedRules* match =
         MakeGarbageCollected<InspectorCSSMatchedRules>();
     match->element = element_;
     match->matched_rules = matched_rules;
     match->pseudo_id = pseudo_id;
-    match->view_transition_tag = view_transition_tag;
+    match->view_transition_name = view_transition_name;
     pseudo_element_rules_.push_back(match);
   }
 }

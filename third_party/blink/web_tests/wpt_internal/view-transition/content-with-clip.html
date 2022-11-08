@@ -26,7 +26,7 @@
   width: 10px;
   height: 10px;
   background: grey;
-  page-transition-tag: hidden;
+  view-transition-name: hidden;
 }
 
 /* Makes sure the viewport height is consistent for scrollbars to align */
@@ -34,19 +34,19 @@ body {
   height: 150vh;
 }
 
-html::page-transition-container(hidden) { animation-duration: 300s; }
-html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+html::view-transition-group(hidden) { animation-duration: 300s; }
+html::view-transition-image-pair(hidden) { animation: unset; opacity: 0; }
 
-html::page-transition-container(target1), html::page-transition-container(target2) {
+html::view-transition-group(target1), html::view-transition-group(target2) {
   position: absolute;
   top: -50vh;
 }
-html::page-transition-outgoing-image(target1) { animation: unset; opacity: 1; }
-html::page-transition-incoming-image(target2) { animation: unset; opacity: 1; }
+html::view-transition-old(target1) { animation: unset; opacity: 1; }
+html::view-transition-new(target2) { animation: unset; opacity: 1; }
 
 </style>
 
-<div id="target1" class="target" style="page-transition-tag: target1">
+<div id="target1" class="target" style="view-transition-name: target1">
   <div class="embedded" style="background: green;"></div>
   <div class="embedded" style="background: blue"></div>
 </div>
@@ -60,7 +60,7 @@ html::page-transition-incoming-image(target2) { animation: unset; opacity: 1; }
 async function runTest() {
   document.startViewTransition(() => {
     target1.style = "";
-    target2.style = "page-transition-tag: target2";
+    target2.style = "view-transition-name: target2";
     requestAnimationFrame(() => requestAnimationFrame(() => 
       requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
     ));

@@ -28,21 +28,21 @@ div {
   left: 350px;
 }
 
-html::page-transition-container(hidden) { animation-duration: 300s; }
-html::page-transition-image-wrapper(hidden) { opacity: 0; }
+html::view-transition-group(hidden) { animation-duration: 300s; }
+html::view-transition-image-pair(hidden) { opacity: 0; }
 
-html::page-transition-container(before) { animation-duration: 0s; }
-html::page-transition-image-wrapper(before) { filter: invert(1); }
-html::page-transition-incoming-image(before) { animation-duration: 0s; }
-html::page-transition-outgoing-image(*) { animation-duration: 0s; }
+html::view-transition-group(before) { animation-duration: 0s; }
+html::view-transition-image-pair(before) { filter: invert(1); }
+html::view-transition-new(before) { animation-duration: 0s; }
+html::view-transition-old(*) { animation-duration: 0s; }
 
-html::page-transition-container(after) { animation-duration: 0s; }
-html::page-transition-image-wrapper(after) { filter: invert(1); }
-html::page-transition-incoming-image(after) { animation-duration: 0s; }
-html::page-transition-outgoing-image(after) { animation-duration: 0s; }
+html::view-transition-group(after) { animation-duration: 0s; }
+html::view-transition-image-pair(after) { filter: invert(1); }
+html::view-transition-new(after) { animation-duration: 0s; }
+html::view-transition-old(after) { animation-duration: 0s; }
 
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::view-transition-group(root) { animation: unset; opacity: 0; }
+html::view-transition { background: lightpink; }
 
 </style>
 
@@ -53,12 +53,12 @@ html::page-transition { background: lightpink; }
 
 <script>
 async function runTest() {
-  hidden.style.pageTransitionTag = "hidden";
-  before.style.pageTransitionTag = "before";
+  hidden.style.viewTransitionName = "hidden";
+  before.style.viewTransitionName = "before";
   document.startViewTransition(() => {
     before.remove();
-    hidden.style.pageTransitionTag = "";
-    after.style.pageTransitionTag = "after";
+    hidden.style.viewTransitionName = "";
+    after.style.viewTransitionName = "after";
 
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
   });

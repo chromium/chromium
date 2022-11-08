@@ -167,10 +167,10 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
         case kPseudoSlotted:
           DCHECK(SelectorList()->HasOneSelector());
           return kClassLikeSpecificity + SelectorList()->First()->Specificity();
-        case kPseudoPageTransitionContainer:
-        case kPseudoPageTransitionImageWrapper:
-        case kPseudoPageTransitionOutgoingImage:
-        case kPseudoPageTransitionIncomingImage:
+        case kPseudoViewTransitionGroup:
+        case kPseudoViewTransitionImagePair:
+        case kPseudoViewTransitionOld:
+        case kPseudoViewTransitionNew:
           return Argument().IsNull() ? 0 : kClassLikeSpecificity;
         default:
           break;
@@ -264,16 +264,16 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdSpellingError;
     case kPseudoGrammarError:
       return kPseudoIdGrammarError;
-    case kPseudoPageTransition:
-      return kPseudoIdPageTransition;
-    case kPseudoPageTransitionContainer:
-      return kPseudoIdPageTransitionContainer;
-    case kPseudoPageTransitionImageWrapper:
-      return kPseudoIdPageTransitionImageWrapper;
-    case kPseudoPageTransitionOutgoingImage:
-      return kPseudoIdPageTransitionOutgoingImage;
-    case kPseudoPageTransitionIncomingImage:
-      return kPseudoIdPageTransitionIncomingImage;
+    case kPseudoViewTransition:
+      return kPseudoIdViewTransition;
+    case kPseudoViewTransitionGroup:
+      return kPseudoIdViewTransitionGroup;
+    case kPseudoViewTransitionImagePair:
+      return kPseudoIdViewTransitionImagePair;
+    case kPseudoViewTransitionOld:
+      return kPseudoIdViewTransitionOld;
+    case kPseudoViewTransitionNew:
+      return kPseudoIdViewTransitionNew;
     case kPseudoActive:
     case kPseudoAny:
     case kPseudoAnyLink:
@@ -390,7 +390,7 @@ struct NameToPseudoStruct {
   unsigned type : 8;
 };
 
-// These tables should be kept sorted.
+// These tables must be kept sorted.
 const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-autofill-previewed", CSSSelector::kPseudoAutofillPreviewed},
     {"-internal-autofill-selected", CSSSelector::kPseudoAutofillSelected},
@@ -474,7 +474,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"open", CSSSelector::kPseudoOpen},
     {"optional", CSSSelector::kPseudoOptional},
     {"out-of-range", CSSSelector::kPseudoOutOfRange},
-    {"page-transition", CSSSelector::kPseudoPageTransition},
     {"past", CSSSelector::kPseudoPastCue},
     {"paused", CSSSelector::kPseudoPaused},
     {"picture-in-picture", CSSSelector::kPseudoPictureInPicture},
@@ -495,6 +494,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"target-text", CSSSelector::kPseudoTargetText},
     {"valid", CSSSelector::kPseudoValid},
     {"vertical", CSSSelector::kPseudoVertical},
+    {"view-transition", CSSSelector::kPseudoViewTransition},
     {"visited", CSSSelector::kPseudoVisited},
     {"window-inactive", CSSSelector::kPseudoWindowInactive},
     {"xr-overlay", CSSSelector::kPseudoXrOverlay},
@@ -515,16 +515,13 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-last-child", CSSSelector::kPseudoNthLastChild},
     {"nth-last-of-type", CSSSelector::kPseudoNthLastOfType},
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
-    {"page-transition-container", CSSSelector::kPseudoPageTransitionContainer},
-    {"page-transition-image-wrapper",
-     CSSSelector::kPseudoPageTransitionImageWrapper},
-    {"page-transition-incoming-image",
-     CSSSelector::kPseudoPageTransitionIncomingImage},
-    {"page-transition-outgoing-image",
-     CSSSelector::kPseudoPageTransitionOutgoingImage},
     {"part", CSSSelector::kPseudoPart},
     {"slotted", CSSSelector::kPseudoSlotted},
     {"toggle", CSSSelector::kPseudoToggle},
+    {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
+    {"view-transition-image-pair", CSSSelector::kPseudoViewTransitionImagePair},
+    {"view-transition-new", CSSSelector::kPseudoViewTransitionNew},
+    {"view-transition-old", CSSSelector::kPseudoViewTransitionOld},
     {"where", CSSSelector::kPseudoWhere},
 };
 
@@ -708,11 +705,11 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
-    case kPseudoPageTransition:
-    case kPseudoPageTransitionContainer:
-    case kPseudoPageTransitionImageWrapper:
-    case kPseudoPageTransitionOutgoingImage:
-    case kPseudoPageTransitionIncomingImage:
+    case kPseudoViewTransition:
+    case kPseudoViewTransitionGroup:
+    case kPseudoViewTransitionImagePair:
+    case kPseudoViewTransitionOld:
+    case kPseudoViewTransitionNew:
       if (match_ != kPseudoElement)
         pseudo_type_ = kPseudoUnknown;
       break;
@@ -956,10 +953,10 @@ const CSSSelector* CSSSelector::SerializeCompound(
           break;
         }
         case kPseudoHighlight:
-        case kPseudoPageTransitionContainer:
-        case kPseudoPageTransitionImageWrapper:
-        case kPseudoPageTransitionIncomingImage:
-        case kPseudoPageTransitionOutgoingImage: {
+        case kPseudoViewTransitionGroup:
+        case kPseudoViewTransitionImagePair:
+        case kPseudoViewTransitionNew:
+        case kPseudoViewTransitionOld: {
           builder.Append('(');
           builder.Append(simple_selector->Argument());
           builder.Append(')');

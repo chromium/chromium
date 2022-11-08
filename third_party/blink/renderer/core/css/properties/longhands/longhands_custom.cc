@@ -5757,7 +5757,7 @@ const CSSValue* Page::CSSValueFromComputedStyleInternal(
   return MakeGarbageCollected<CSSCustomIdentValue>(style.Page());
 }
 
-const CSSValue* PageTransitionTag::ParseSingleValue(
+const CSSValue* ViewTransitionName::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -5766,13 +5766,13 @@ const CSSValue* PageTransitionTag::ParseSingleValue(
   return css_parsing_utils::ConsumeCustomIdent(range, context);
 }
 
-const CSSValue* PageTransitionTag::CSSValueFromComputedStyleInternal(
+const CSSValue* ViewTransitionName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.PageTransitionTag().IsNull())
+  if (style.ViewTransitionName().IsNull())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
-  return MakeGarbageCollected<CSSCustomIdentValue>(style.PageTransitionTag());
+  return MakeGarbageCollected<CSSCustomIdentValue>(style.ViewTransitionName());
 }
 
 const CSSValue* PaintOrder::ParseSingleValue(

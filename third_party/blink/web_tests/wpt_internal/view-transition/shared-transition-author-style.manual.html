@@ -49,24 +49,24 @@ let classes = ["top", "bottom"]
 let i = 0;
 
 let transitionStyle =
-  `html::page-transition {
+  `html::view-transition {
     top: 50px;
   }
 
-  html::page-transition-container(root) {
+  html::view-transition-group(root) {
     background-color: grey;
   }
 
-  html::page-transition-container(target) {
+  html::view-transition-group(target) {
     left: 50px;
   }
 
-  html::page-transition-outgoing-image(target) {
+  html::view-transition-old(target) {
     opacity: 0.5;
     animation-name: none;
   }
 
-  html::page-transition-incoming-image(target) {
+  html::view-transition-new(target) {
     opacity: 0.5;
   }
   `
@@ -75,7 +75,7 @@ let pseudoStyle = document.createElement('style');
 pseudoStyle.appendChild(document.createTextNode(transitionStyle));
 
 async function runAnimation() {
-  target.style.pageTransitionTag = "target";
+  target.style.viewTransitionName = "target";
   let t = document.startViewTransition(() => {
     target.classList.remove(classes[i]);
     i = (i + 1) % classes.length;

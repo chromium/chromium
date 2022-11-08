@@ -75,11 +75,11 @@ enum PseudoId : uint8_t {
   kPseudoIdSpellingError,
   kPseudoIdGrammarError,
   // The following IDs are public but not tracked.
-  kPseudoIdPageTransition,
-  kPseudoIdPageTransitionContainer,
-  kPseudoIdPageTransitionImageWrapper,
-  kPseudoIdPageTransitionOutgoingImage,
-  kPseudoIdPageTransitionIncomingImage,
+  kPseudoIdViewTransition,
+  kPseudoIdViewTransitionGroup,
+  kPseudoIdViewTransitionImagePair,
+  kPseudoIdViewTransitionOld,
+  kPseudoIdViewTransitionNew,
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
   kPseudoIdScrollbarThumb,
@@ -122,11 +122,11 @@ inline bool UsesHighlightPseudoInheritance(PseudoId pseudo_id) {
 
 inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {
   switch (pseudo_id) {
-    case kPseudoIdPageTransition:
-    case kPseudoIdPageTransitionContainer:
-    case kPseudoIdPageTransitionImageWrapper:
-    case kPseudoIdPageTransitionOutgoingImage:
-    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdViewTransition:
+    case kPseudoIdViewTransitionGroup:
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew:
       return true;
     default:
       return false;
@@ -136,10 +136,10 @@ inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {
 inline bool PseudoElementHasArguments(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdHighlight:
-    case kPseudoIdPageTransitionContainer:
-    case kPseudoIdPageTransitionImageWrapper:
-    case kPseudoIdPageTransitionIncomingImage:
-    case kPseudoIdPageTransitionOutgoingImage:
+    case kPseudoIdViewTransitionGroup:
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionNew:
+    case kPseudoIdViewTransitionOld:
       return true;
     default:
       return false;

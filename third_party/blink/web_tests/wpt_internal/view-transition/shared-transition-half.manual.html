@@ -44,7 +44,7 @@ Other than green and pink background no other colors should appear.
 let classes = ["top", "bottom"]
 let i = 0;
 async function runAnimation() {
-  target.style.pageTransitionTag = "target";
+  target.style.viewTransitionName = "target";
   let t = document.startViewTransition(() => {
     target.classList.remove(classes[i]);
     i = (i + 1) % classes.length;
