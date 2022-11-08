@@ -59,7 +59,7 @@ class ZeroStateFileProviderTest : public testing::Test {
 
     auto provider = std::make_unique<ZeroStateFileProvider>(profile_);
     provider_ = provider.get();
-    search_controller_.AddProvider(0, std::move(provider));
+    search_controller_.AddProvider(std::move(provider));
 
     downloads_folder_ =
         file_manager::util::GetDownloadsFolderForProfile(profile_);

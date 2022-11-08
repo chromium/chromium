@@ -78,7 +78,7 @@ class ZeroStateDriveProviderTest : public testing::Test {
         drive::DriveIntegrationServiceFactory::GetForProfile(profile_),
         session_manager_.get());
     provider_ = provider.get();
-    search_controller_.AddProvider(0, std::move(provider));
+    search_controller_.AddProvider(std::move(provider));
   }
 
   void FastForwardByMinutes(int minutes) {

@@ -85,12 +85,8 @@ class SearchController {
   // providers.
   virtual AppSearchDataSource* GetAppSearchDataSource() = 0;
 
-  // Adds a new mixer group. See Mixer::AddGroup.
-  virtual size_t AddGroup(size_t max_results) = 0;
-
-  // Takes ownership of |provider| and associates it with given mixer group.
-  virtual void AddProvider(size_t group_id,
-                           std::unique_ptr<SearchProvider> provider) = 0;
+  // Takes ownership of |provider|.
+  virtual void AddProvider(std::unique_ptr<SearchProvider> provider) = 0;
 
   // Removes, and deletes registered search providers that provide results for
   // `result_type` and adds a new "test" provider.

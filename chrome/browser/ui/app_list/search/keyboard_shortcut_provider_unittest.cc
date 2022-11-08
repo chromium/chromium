@@ -33,7 +33,7 @@ class KeyboardShortcutProviderTest : public testing::Test {
     search_controller_ = std::make_unique<TestSearchController>();
     auto provider = std::make_unique<KeyboardShortcutProvider>(profile_.get());
     provider_ = provider.get();
-    search_controller_->AddProvider(0, std::move(provider));
+    search_controller_->AddProvider(std::move(provider));
 
     Wait();
   }

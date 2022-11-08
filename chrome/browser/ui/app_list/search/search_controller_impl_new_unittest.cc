@@ -606,7 +606,7 @@ TEST_F(SearchControllerImplNewTest, FirstSearchResultsNotShownInSecondSearch) {
   auto provider = std::make_unique<TestSearchProvider>(Result::kInstalledApp,
                                                        base::Seconds(1));
   auto* provider_ptr = provider.get();
-  search_controller_->AddProvider(0, std::move(provider));
+  search_controller_->AddProvider(std::move(provider));
 
   // Start the first search.
   provider_ptr->SetNextResults(
@@ -644,7 +644,7 @@ TEST_F(SearchControllerImplNewTest, ZeroStateResultsNotOverridingBurnIn) {
       Result::kZeroStateApp, base::Milliseconds(20));
   zero_state_provider->SetNextResults(MakeResults(
       {"zero"}, {DisplayType::kRecentApps}, {Category::kApps}, {-1}, {0.5}));
-  search_controller_->AddProvider(0, std::move(zero_state_provider));
+  search_controller_->AddProvider(std::move(zero_state_provider));
 
   // Simluate zero state search.
   search_controller_->StartZeroState(base::DoNothing(), base::Milliseconds(50));
@@ -700,11 +700,11 @@ TEST_F(SearchControllerImplNewTest, ZeroStateResultsAreBlocked) {
       MakeResults({"e", "f"}, {DisplayType::kContinue, DisplayType::kContinue},
                   {Category::kApps, Category::kApps}, {-1, -1}, {0.6, 0.5}));
 
-  search_controller_->AddProvider(0, std::move(provider_a));
-  search_controller_->AddProvider(0, std::move(provider_b));
-  search_controller_->AddProvider(0, std::move(provider_c));
-  search_controller_->AddProvider(0, std::move(provider_d));
-  search_controller_->AddProvider(0, std::move(provider_e));
+  search_controller_->AddProvider(std::move(provider_a));
+  search_controller_->AddProvider(std::move(provider_b));
+  search_controller_->AddProvider(std::move(provider_c));
+  search_controller_->AddProvider(std::move(provider_d));
+  search_controller_->AddProvider(std::move(provider_e));
 
   // Start search so non zero state test providers run.
   search_controller_->StartSearch(u"xyz");
@@ -758,8 +758,8 @@ TEST_F(SearchControllerImplNewTest, ZeroStateResultsGetTimedOut) {
   provider_b->SetNextResults(
       MakeListResults({"b"}, {Category::kFiles}, {-1}, {0.2}));
 
-  search_controller_->AddProvider(0, std::move(provider_a));
-  search_controller_->AddProvider(0, std::move(provider_b));
+  search_controller_->AddProvider(std::move(provider_a));
+  search_controller_->AddProvider(std::move(provider_b));
 
   search_controller_->StartZeroState(
       base::BindLambdaForTesting([&]() { ExpectIdOrder({"a"}); }),
@@ -795,8 +795,8 @@ TEST_F(SearchControllerImplNewTest, ContinueRanksDriveAboveLocal) {
       {"local_a", "local_b"}, {Category::kUnknown, Category::kUnknown},
       {-1, -1}, {0.5, 0.4}));
 
-  search_controller_->AddProvider(0, std::move(local_provider));
-  search_controller_->AddProvider(0, std::move(drive_provider));
+  search_controller_->AddProvider(std::move(local_provider));
+  search_controller_->AddProvider(std::move(drive_provider));
 
   search_controller_->StartZeroState(base::DoNothing(), base::Seconds(1));
 
