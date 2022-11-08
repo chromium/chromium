@@ -83,7 +83,7 @@ if (enable_rust) {
         read_file("//third_party/rust-toolchain/VERSION", "trim string")
   } else if (rustc_version == "") {
     # Android toolchain version.
-    rustc_version = "rustc 1.62.0-dev"
+    rustc_version = "rustc 1.64.0-dev (Android Rust Toolchain version 9099361)"
   }
 }
 
