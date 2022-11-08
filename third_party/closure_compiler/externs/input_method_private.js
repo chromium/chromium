@@ -220,13 +220,6 @@ chrome.inputMethodPrivate.fetchAllDictionaryWords = function(callback) {};
 chrome.inputMethodPrivate.addWordToDictionary = function(word, callback) {};
 
 /**
- * Gets whether the encrypt sync is enabled.
- * @param {function(boolean): void=} callback Callback which is called to
- *     provide the result.
- */
-chrome.inputMethodPrivate.getEncryptSyncEnabled = function(callback) {};
-
-/**
  * Sets the XKB layout for the given input method.
  * @param {string} xkb_name The XKB layout name.
  * @param {function(): void=} callback Callback which is called when the layout
@@ -243,18 +236,6 @@ chrome.inputMethodPrivate.setXkbLayout = function(xkb_name, callback) {};
  * @param {function(): void=} callback Called when the operation completes.
  */
 chrome.inputMethodPrivate.finishComposingText = function(parameters, callback) {};
-
-/**
- * Sets the selection range
- * @param {{
- *   contextID: number,
- *   selectionStart: (number|undefined),
- *   selectionEnd: (number|undefined)
- * }} parameters
- * @param {function(boolean): void=} callback Called when the operation
- *     completes with a boolean indicating if the text was accepted or not.
- */
-chrome.inputMethodPrivate.setSelectionRange = function(parameters, callback) {};
 
 /**
  * Fires the input.ime.onMenuItemActivated event.
@@ -349,24 +330,6 @@ chrome.inputMethodPrivate.setSettings = function(engineID, settings, callback) {
  *     failure, $(ref:runtime.lastError) is set.
  */
 chrome.inputMethodPrivate.setCompositionRange = function(parameters, callback) {};
-
-/**
- * Sets the composing range. If this extension does not own the active IME, this
- * fails.
- * @param {{
- *   contextID: number,
- *   start: number,
- *   end: number,
- *   segments: (!Array<{
- *     start: number,
- *     end: number,
- *     style: !chrome.inputMethodPrivate.UnderlineStyle
- *   }>|undefined)
- * }} parameters
- * @param {function(): void=} callback Called when the operation is complete. On
- *     failure, $(ref:runtime.lastError) is set.
- */
-chrome.inputMethodPrivate.setComposingRange = function(parameters, callback) {};
 
 /**
  * Get the autocorrected word's bounds. Returns an empty range if there is no

@@ -273,25 +273,6 @@
           }
         ]
       }, {
-        "name": "getEncryptSyncEnabled",
-        "type": "function",
-        "description": "Gets whether the encrypt sync is enabled.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Callback which is called to provide the result.",
-            "parameters": [
-              {
-                "name": "enabled",
-                "type": "boolean",
-                "description": "The result of whether enabled."
-              }
-            ]
-          }
-        ]
-      }, {
         "name": "setXkbLayout",
         "type": "function",
         "description": "Sets the XKB layout for the given input method.",
@@ -330,44 +311,6 @@
             "optional": true,
             "description": "Called when the operation completes.",
             "parameters": []
-          }
-        ]
-      }, {
-        "name": "setSelectionRange",
-        "type": "function",
-        "description": "Sets the selection range",
-        "parameters": [
-          {
-            "name": "parameters",
-            "type": "object",
-            "properties": {
-              "contextID": {
-                "description": "ID of the context where we want to set the selection.",
-                "type": "integer"
-              },
-              "selectionStart": {
-                "description": "Selection start position. Must be a valid uint32 value (Positive and less than 0xFFFFFFFF).",
-                "optional": true,
-                "type": "integer"
-              },
-              "selectionEnd": {
-                "description": "Selection end position. Must be a valid uint32 value (Positive and less than 0xFFFFFFFF).",
-                "optional": true,
-                "type": "integer"
-              }
-            }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the operation completes with a boolean indicating if the text was accepted or not.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean"
-              }
-            ]
           }
         ]
       }, {
@@ -410,17 +353,6 @@
             "optional": true,
             "description": "Called when the operation completes.",
             "parameters": []
-          }
-        ]
-      }, {
-        "name": "openOptionsPage",
-        "type": "function",
-        "description": "Opens the options page for the input method extension. If the input method does not have options, this function will do nothing.",
-        "parameters": [
-          {
-            "name": "inputMethodId",
-            "type": "string",
-            "description": "ID of the input method to open options for."
           }
         ]
       }, {
@@ -586,58 +518,6 @@
                 "type": "boolean"
               }
             ]
-          }
-        ]
-      }, {
-        "name": "setComposingRange",
-        "type": "function",
-        "description": "Sets the composing range. If this extension does not own the active IME, this fails.",
-        "parameters": [
-          {
-            "name": "parameters",
-            "type": "object",
-            "properties": {
-              "contextID": {
-                "description": "ID of the context where the composition text will be set",
-                "type": "integer"
-              },
-              "start": {
-                "description": "The starting index of the composing range, in bytes.",
-                "type": "integer"
-              },
-              "end": {
-                "description": "The ending index of the composing range, in bytes. The order of the start and end index does not matter.",
-                "type": "integer"
-              },
-              "segments": {
-                "description": "List of segments and their associated types.",
-                "type": "array",
-                "optional": true,
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "start": {
-                      "description": "Index of the character to start this segment at",
-                      "type": "integer"
-                    },
-                    "end": {
-                      "description": "Index of the character to end this segment after.",
-                      "type": "integer"
-                    },
-                    "style": {
-                      "$ref": "UnderlineStyle",
-                      "description": "The type of the underline to modify this segment."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the operation is complete. On failure, $(ref:runtime.lastError) is set."
           }
         ]
       }, {

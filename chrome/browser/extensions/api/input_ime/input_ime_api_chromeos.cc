@@ -59,8 +59,6 @@ namespace NotifyImeMenuItemActivated =
     extensions::api::input_method_private::NotifyImeMenuItemActivated;
 namespace OnScreenProjectionChanged =
     extensions::api::input_method_private::OnScreenProjectionChanged;
-namespace SetSelectionRange =
-    extensions::api::input_method_private::SetSelectionRange;
 namespace FinishComposingText =
     extensions::api::input_method_private::FinishComposingText;
 

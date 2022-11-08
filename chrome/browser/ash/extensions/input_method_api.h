@@ -165,27 +165,6 @@ class InputMethodPrivateAddWordToDictionaryFunction : public ExtensionFunction {
                              INPUTMETHODPRIVATE_ADDWORDTODICTIONARY)
 };
 
-// Implements the inputMethodPrivate.getEncryptSyncEnabled method.
-class InputMethodPrivateGetEncryptSyncEnabledFunction
-    : public ExtensionFunction {
- public:
-  InputMethodPrivateGetEncryptSyncEnabledFunction() {}
-
-  InputMethodPrivateGetEncryptSyncEnabledFunction(
-      const InputMethodPrivateGetEncryptSyncEnabledFunction&) = delete;
-  InputMethodPrivateGetEncryptSyncEnabledFunction& operator=(
-      const InputMethodPrivateGetEncryptSyncEnabledFunction&) = delete;
-
- protected:
-  ~InputMethodPrivateGetEncryptSyncEnabledFunction() override {}
-
-  ResponseAction Run() override;
-
- private:
-  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.getEncryptSyncEnabled",
-                             INPUTMETHODPRIVATE_GETENCRYPTSYNCENABLED)
-};
-
 // Implements the inputMethodPrivate.setXkbLayout method.
 class InputMethodPrivateSetXkbLayoutFunction : public ExtensionFunction {
  public:
@@ -243,26 +222,6 @@ class InputMethodPrivateHideInputViewFunction : public ExtensionFunction {
  private:
   DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.hideInputView",
                              INPUTMETHODPRIVATE_HIDEINPUTVIEW)
-};
-
-// Implements the inputMethodPrivate.openOptionsPage method.
-class InputMethodPrivateOpenOptionsPageFunction : public ExtensionFunction {
- public:
-  InputMethodPrivateOpenOptionsPageFunction() {}
-
-  InputMethodPrivateOpenOptionsPageFunction(
-      const InputMethodPrivateOpenOptionsPageFunction&) = delete;
-  InputMethodPrivateOpenOptionsPageFunction& operator=(
-      const InputMethodPrivateOpenOptionsPageFunction&) = delete;
-
- protected:
-  ~InputMethodPrivateOpenOptionsPageFunction() override {}
-
-  ResponseAction Run() override;
-
- private:
-  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.openOptionsPage",
-                             INPUTMETHODPRIVATE_OPENOPTIONSPAGE)
 };
 
 class InputMethodPrivateGetSurroundingTextFunction : public ExtensionFunction {
@@ -334,36 +293,6 @@ class InputMethodPrivateSetCompositionRangeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-};
-
-class InputMethodPrivateSetComposingRangeFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.setComposingRange",
-                             INPUTMETHODPRIVATE_SETCOMPOSINGRANGE)
-
- protected:
-  ~InputMethodPrivateSetComposingRangeFunction() override {}
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-};
-
-class InputMethodPrivateSetSelectionRangeFunction : public ExtensionFunction {
- public:
-  InputMethodPrivateSetSelectionRangeFunction(
-      const InputMethodPrivateSetSelectionRangeFunction&) = delete;
-  InputMethodPrivateSetSelectionRangeFunction& operator=(
-      const InputMethodPrivateSetSelectionRangeFunction&) = delete;
-  InputMethodPrivateSetSelectionRangeFunction() = default;
-
- protected:
-  ~InputMethodPrivateSetSelectionRangeFunction() override = default;
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
- private:
-  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.setSelectionRange",
-                             INPUTMETHODPRIVATE_SETSELECTIONRANGE)
 };
 
 class InputMethodPrivateGetAutocorrectRangeFunction : public ExtensionFunction {

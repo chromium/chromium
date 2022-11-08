@@ -26,16 +26,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/api/input_method_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -55,8 +50,6 @@ namespace SetCurrentInputMethod =
 namespace SwitchToLastUsedInputMethod =
     extensions::api::input_method_private::SwitchToLastUsedInputMethod;
 namespace SetXkbLayout = extensions::api::input_method_private::SetXkbLayout;
-namespace OpenOptionsPage =
-    extensions::api::input_method_private::OpenOptionsPage;
 namespace OnChanged = extensions::api::input_method_private::OnChanged;
 namespace OnDictionaryChanged =
     extensions::api::input_method_private::OnDictionaryChanged;
@@ -74,16 +67,12 @@ namespace GetSettings = extensions::api::input_method_private::GetSettings;
 namespace SetSettings = extensions::api::input_method_private::SetSettings;
 namespace SetCompositionRange =
     extensions::api::input_method_private::SetCompositionRange;
-namespace SetComposingRange =
-    extensions::api::input_method_private::SetComposingRange;
 namespace GetAutocorrectRange =
     extensions::api::input_method_private::GetAutocorrectRange;
 namespace GetAutocorrectCharacterBounds =
     extensions::api::input_method_private::GetAutocorrectCharacterBounds;
 namespace SetAutocorrectRange =
     extensions::api::input_method_private::SetAutocorrectRange;
-namespace SetSelectionRange =
-    extensions::api::input_method_private::SetSelectionRange;
 namespace OnInputMethodOptionsChanged =
     extensions::api::input_method_private::OnInputMethodOptionsChanged;
 namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
@@ -105,8 +94,6 @@ const char kErrorSpellCheckNotAvailable[] =
 const char kErrorCustomDictionaryNotLoaded[] =
     "Custom dictionary is not loaded yet.";
 const char kErrorInvalidWord[] = "Unable to add invalid word to dictionary.";
-const char kErrorSyncServiceNotReady[] =
-    "Sync service is not ready for current profile.";
 const char kErrorInputContextHandlerNotAvailable[] =
     "Input context handler is not available.";
 const char kErrorInvalidParametersForGetSurroundingText[] =
@@ -251,17 +238,6 @@ InputMethodPrivateAddWordToDictionaryFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-InputMethodPrivateGetEncryptSyncEnabledFunction::Run() {
-  syncer::SyncService* sync_service = SyncServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context()));
-  if (!sync_service)
-    return RespondNow(Error(
-        InformativeError(kErrorSyncServiceNotReady, static_function_name())));
-  return RespondNow(WithArguments(
-      sync_service->GetUserSettings()->IsEncryptEverythingEnabled()));
-}
-
-ExtensionFunction::ResponseAction
 InputMethodPrivateSetXkbLayoutFunction::Run() {
   std::unique_ptr<SetXkbLayout::Params> params(
       SetXkbLayout::Params::Create(args()));
@@ -291,35 +267,6 @@ InputMethodPrivateHideInputViewFunction::Run() {
   }
 
   keyboard_client->HideKeyboard(ash::HideReason::kUser);
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-InputMethodPrivateOpenOptionsPageFunction::Run() {
-  std::unique_ptr<OpenOptionsPage::Params> params(
-      OpenOptionsPage::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
-  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
-      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
-  const ash::input_method::InputMethodDescriptor* ime =
-      ime_state->GetInputMethodFromId(params->input_method_id);
-  if (!ime)
-    return RespondNow(Error(InformativeError(
-        base::StringPrintf("%s Input Method: %s", kErrorInvalidInputMethod,
-                           params->input_method_id.c_str()),
-        static_function_name())));
-
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (web_contents) {
-    const GURL& options_page_url = ime->options_page_url();
-    if (!options_page_url.is_empty()) {
-      Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-      content::OpenURLParams url_params(options_page_url, content::Referrer(),
-                                        WindowOpenDisposition::SINGLETON_TAB,
-                                        ui::PAGE_TRANSITION_LINK, false);
-      browser->OpenURL(url_params);
-    }
-  }
   return RespondNow(NoArguments());
 }
 
@@ -459,48 +406,6 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-InputMethodPrivateSetComposingRangeFunction::Run() {
-  std::string error;
-  InputMethodEngine* engine =
-      GetEngineIfActive(browser_context(), extension_id(), &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  const auto parent_params = SetComposingRange::Params::Create(args());
-  const auto& params = parent_params->parameters;
-  std::vector<InputMethodEngine::SegmentInfo> segments;
-  if (params.segments) {
-    for (const auto& segments_arg : *params.segments) {
-      InputMethodEngine::SegmentInfo segment_info;
-      segment_info.start = segments_arg.start;
-      segment_info.end = segments_arg.end;
-      switch (segments_arg.style) {
-        case input_method_private::UNDERLINE_STYLE_UNDERLINE:
-          segment_info.style = InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
-          break;
-        case input_method_private::UNDERLINE_STYLE_DOUBLEUNDERLINE:
-          segment_info.style =
-              InputMethodEngine::SEGMENT_STYLE_DOUBLE_UNDERLINE;
-          break;
-        case input_method_private::UNDERLINE_STYLE_NOUNDERLINE:
-          segment_info.style = InputMethodEngine::SEGMENT_STYLE_NO_UNDERLINE;
-          break;
-        case input_method_private::UNDERLINE_STYLE_NONE:
-          EXTENSION_FUNCTION_VALIDATE(false);
-          break;
-      }
-      segments.push_back(segment_info);
-    }
-  }
-
-  if (!engine->InputMethodEngine::SetComposingRange(
-          params.context_id, params.start, params.end, segments, &error)) {
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-  }
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
 InputMethodPrivateGetAutocorrectRangeFunction::Run() {
   std::string error;
   InputMethodEngine* engine =
@@ -584,30 +489,6 @@ InputMethodPrivateSetAutocorrectRangeFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-ExtensionFunction::ResponseAction
-InputMethodPrivateSetSelectionRangeFunction::Run() {
-  std::string error;
-  InputMethodEngine* engine =
-      GetEngineIfActive(browser_context(), extension_id(), &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  std::unique_ptr<SetSelectionRange::Params> parent_params(
-      SetSelectionRange::Params::Create(args()));
-  const SetSelectionRange::Params::Parameters& params =
-      parent_params->parameters;
-
-  if (!engine->InputMethodEngine::SetSelectionRange(
-          params.context_id, *params.selection_start, *params.selection_end,
-          &error)) {
-    base::Value::List results;
-    results.Append(false);
-    return RespondNow(ErrorWithArguments(
-        std::move(results), InformativeError(error, static_function_name())));
-  }
-  return RespondNow(WithArguments(true));
-}
-
 ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
   std::string error;
   InputMethodEngine* engine =
@@ -676,10 +557,8 @@ InputMethodAPI::InputMethodAPI(content::BrowserContext* context)
   registry
       .RegisterFunction<InputMethodPrivateFetchAllDictionaryWordsFunction>();
   registry.RegisterFunction<InputMethodPrivateAddWordToDictionaryFunction>();
-  registry.RegisterFunction<InputMethodPrivateGetEncryptSyncEnabledFunction>();
   registry
       .RegisterFunction<InputMethodPrivateNotifyImeMenuItemActivatedFunction>();
-  registry.RegisterFunction<InputMethodPrivateOpenOptionsPageFunction>();
 }
 
 InputMethodAPI::~InputMethodAPI() = default;
