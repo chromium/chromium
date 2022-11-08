@@ -461,6 +461,8 @@ void WorkerThread::ChildThreadTerminatedOnWorkerThread(WorkerThread* child) {
 
 WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy)
     : WorkerThread(worker_reporting_proxy, Thread::Current()->GetTaskRunner()) {
+  // Pointer registration is needed for sorting in CallOnAllWorkerThreads.
+  recordreplay::RegisterPointer("WorkerThread", this);
 }
 
 WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy,
@@ -473,7 +475,9 @@ WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy,
       parent_thread_default_task_runner_(
           std::move(parent_thread_default_task_runner)),
       shutdown_event_(RefCountedWaitableEvent::Create()) {
+  // Pointer registration is needed for sorting in CallOnAllWorkerThreads.
   recordreplay::RegisterPointer("WorkerThread", this);
+
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   MutexLocker lock(ThreadSetMutex());
   InitializingWorkerThreads().insert(this);

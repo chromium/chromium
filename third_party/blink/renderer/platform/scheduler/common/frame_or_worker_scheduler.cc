@@ -6,6 +6,16 @@
 
 namespace blink {
 
+FrameOrWorkerScheduler::Observer::Observer() {
+  // Pointer registration is needed for sorting in
+  // FrameOrWorkerScheduler::NotifyLifecycleObservers.
+  recordreplay::RegisterPointer("FrameOrWorkerScheduler::Observer", this);
+}
+
+FrameOrWorkerScheduler::Observer::~Observer() {
+  recordreplay::UnregisterPointer(this);
+}
+
 FrameOrWorkerScheduler::LifecycleObserverHandle::LifecycleObserverHandle(
     FrameOrWorkerScheduler* scheduler,
     Observer* observer)
@@ -84,7 +94,13 @@ void FrameOrWorkerScheduler::RemoveLifecycleObserver(Observer* observer) {
 }
 
 void FrameOrWorkerScheduler::NotifyLifecycleObservers() {
-  for (const auto& observer : lifecycle_observers_) {
+  std::vector<Observer*> observers;
+  for (const auto& observer : lifecycle_observers_)
+    observers.push_back(observer);
+  std::sort(observers.begin(), observers.end(),
+            recordreplay::CompareByPointerId());
+
+  for (const auto& observer : observers) {
     observer.key->OnLifecycleStateChanged(
         CalculateLifecycleState(observer.value));
   }

@@ -85,6 +85,7 @@ bool TaskRunner::PostTaskAndReply(const Location& from_here,
 }
 
 TaskRunner::TaskRunner() {
+  // Pointer registration is needed for sorting in various places.
   if (RecordReplayRegisterPointer("TaskRunner", this)) {
     // Leak task runners when recording/replaying, as they can be destroyed at
     // non-deterministic points and this is simpler than ordering uses of their

@@ -27,7 +27,8 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   // Observer interface to receive scheduling policy change events.
   class Observer {
    public:
-    virtual ~Observer() = default;
+    Observer();
+    virtual ~Observer();
 
     // Notified when throttling state is changed. May be called consecutively
     // with the same value.

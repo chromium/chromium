@@ -279,8 +279,14 @@ void NetworkStateNotifier::NotifyObservers(ObserverListMap& map,
                                            const NetworkState& state) {
   DCHECK(IsMainThread());
   MutexLocker locker(mutex_);
-  for (const auto& entry : map) {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner = entry.key;
+
+  std::vector<scoped_refptr<base::SingleThreadTaskRunner>> observers;
+  for (const auto& entry : map)
+    observers.push_back(entry.key);
+  std::sort(observers.begin(), observers.end(),
+            recordreplay::CompareRefptrByPointerId<scoped_refptr<base::SingleThreadTaskRunner>>());
+
+  for (const auto& task_runner : observers) {
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
         CrossThreadBindOnce(&NetworkStateNotifier::NotifyObserversOnTaskRunner,
