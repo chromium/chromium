@@ -548,7 +548,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!isNativeInitialized()) return;
         try {
             IntentFilter filter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
-            ContextUtils.getApplicationContext().registerReceiver(mBroadcastReceiver, filter);
+            ContextUtils.registerProtectedBroadcastReceiver(
+                    ContextUtils.getApplicationContext(), mBroadcastReceiver, filter);
         } catch (ReceiverCallNotAllowedException e) {
             // WebView may be running inside a BroadcastReceiver, in which case registerReceiver is
             // not allowed.
