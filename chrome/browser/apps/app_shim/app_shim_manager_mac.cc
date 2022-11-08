@@ -57,6 +57,7 @@
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
+#include "net/base/filename_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -498,10 +499,15 @@ void AppShimManager::LoadAndLaunchApp(
     const base::FilePath& profile_path,
     const LoadAndLaunchAppParams& params,
     LoadAndLaunchAppCallback launch_callback) {
+  // Before anything else, if this launch includes files or urls we need to
+  // determine which profiles are capable of handling those files or urls.
+  std::map<base::FilePath, int> profiles_with_handlers =
+      GetProfilesWithMatchingHandlers(params);
+
   // Check to see if the app is already running for a profile compatible with
   // |profile_path|. If so, early-out.
-  if (LoadAndLaunchApp_TryExistingProfileStates(profile_path, params,
-                                                &launch_callback)) {
+  if (LoadAndLaunchApp_TryExistingProfileStates(
+          profile_path, params, profiles_with_handlers, &launch_callback)) {
     // If we used an existing profile, |launch_callback| should have been run.
     DCHECK(!launch_callback);
     return;
@@ -517,12 +523,29 @@ void AppShimManager::LoadAndLaunchApp(
         AppShimRegistry::Get()->GetInstalledProfilesForApp(params.app_id);
   }
 
-  // Construct |profile_paths_to_launch| to be the list of all profiles to
-  // attempt to launch, starting with the profile specified in |bootstrap|,
-  // at the front of the list.
-  std::vector<base::FilePath> profile_paths_to_launch = {profile_path};
-  for (const auto& last_active_profile_path : last_active_profile_paths)
-    profile_paths_to_launch.push_back(last_active_profile_path);
+  // If a non-empty `profile_path` was specified, use that as first preferred
+  // profile. If this is a file or protocol handler launch subsequently use the
+  // best match from `profiles_with_handlers`. Otherwise append all profiles
+  // from `last_active_profile_paths` to the list of profiles to launch.
+  std::vector<base::FilePath> profile_paths_to_launch;
+  if (!profile_path.empty())
+    profile_paths_to_launch.push_back(profile_path);
+  if (!profiles_with_handlers.empty()) {
+    int best_score = 0;
+    base::FilePath best_path;
+    for (const auto& [profile, score] : profiles_with_handlers) {
+      if (score > best_score) {
+        best_score = score;
+        best_path = profile;
+      }
+    }
+    DCHECK(!best_path.empty());
+    profile_paths_to_launch.push_back(best_path);
+  } else {
+    profile_paths_to_launch.insert(profile_paths_to_launch.end(),
+                                   last_active_profile_paths.begin(),
+                                   last_active_profile_paths.end());
+  }
 
   // Attempt load all of the profiles in |profile_paths_to_launch|, and once
   // they're loaded (or have failed to load), call
@@ -555,6 +578,7 @@ void AppShimManager::LoadAndLaunchApp(
 bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
     const base::FilePath& profile_path,
     const LoadAndLaunchAppParams& params,
+    const std::map<base::FilePath, int>& profiles_with_handlers,
     LoadAndLaunchAppCallback* launch_callback) {
   auto found_app = apps_.find(params.app_id);
   if (found_app == apps_.end())
@@ -573,13 +597,33 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
       return false;
     profile_state = found_profile->second.get();
   } else {
-    // If no profile was specified, select the first open profile encountered.
-    // TODO(https://crbug.com/829689): This should select the most-recently-used
-    // profile, not the first profile encountered.
-    auto it = app_state->profiles.begin();
-    if (it != app_state->profiles.end()) {
-      profile = it->first;
-      profile_state = it->second.get();
+    // If no profile was specified, select the best option from the open
+    // profiles in `profiles_with_handlers`. If there are profiles with handlers
+    // yet none of them are currently open don't use an existing profile.
+    if (!profiles_with_handlers.empty()) {
+      int best_score = 0;
+      for (const auto& [it_profile, it_profile_state] : app_state->profiles) {
+        auto it = profiles_with_handlers.find(it_profile->GetPath());
+        if (it != profiles_with_handlers.end()) {
+          int score = it->second;
+          if (score > best_score) {
+            best_score = score;
+            profile = it_profile;
+            profile_state = it_profile_state.get();
+          }
+        }
+      }
+    } else {
+      // If `profiles_with_handlers` is empty, either because `params` does not
+      // contains files or urls, or because there are no profiles that can
+      // handle the files or urls, select the first open profile encountered.
+      // TODO(https://crbug.com/829689): This should select the
+      // most-recently-used profile, not the first profile encountered.
+      auto it = app_state->profiles.begin();
+      if (it != app_state->profiles.end()) {
+        profile = it->first;
+        profile_state = it->second.get();
+      }
     }
   }
   if (!profile_state)
@@ -1307,6 +1351,57 @@ AppShimManager::ProfileState* AppShimManager::GetOrCreateProfileState(
     profile_observation_.AddObservation(profile);
 
   return found_profile->second.get();
+}
+
+std::map<base::FilePath, int> AppShimManager::GetProfilesWithMatchingHandlers(
+    const LoadAndLaunchAppParams& params) {
+  if (!params.HasFilesOrURLs())
+    return {};
+  std::map<base::FilePath, int> result;
+
+  // Files can be passed both as files or as file:// URLs, so gather all
+  // the files from both.
+  std::vector<base::FilePath> files = params.files;
+  GURL protocol_handler_url;
+  for (const GURL& url : params.urls) {
+    // Ignore invalid URLs.
+    if (!url.is_valid() || !url.has_scheme())
+      continue;
+
+    if (url.SchemeIsFile()) {
+      base::FilePath file_path;
+      if (net::FileURLToFilePath(url, &file_path))
+        files.push_back(file_path);
+      continue;
+    }
+
+    protocol_handler_url = url;
+  }
+
+  // For each profile with available handlers, count how many paths and/or
+  // URLs those profiles can handle.
+  std::map<base::FilePath, AppShimRegistry::HandlerInfo> handlers =
+      AppShimRegistry::Get()->GetHandlersForApp(params.app_id);
+  for (const auto& [profile, handler_info] : handlers) {
+    int count = base::ranges::count_if(
+        files, [&handler_info](const base::FilePath& file_path) {
+          std::string file_extension =
+              base::FilePath(file_path.Extension()).AsUTF8Unsafe();
+          return file_extension.length() > 1 &&
+                 base::Contains(handler_info.file_handler_extensions,
+                                file_extension);
+        });
+
+    if (protocol_handler_url.is_valid() &&
+        base::Contains(handler_info.protocol_handlers,
+                       protocol_handler_url.scheme())) {
+      count++;
+    }
+
+    if (count > 0)
+      result[profile] = count;
+  }
+  return result;
 }
 
 AppShimManager::LoadAndLaunchAppParams::LoadAndLaunchAppParams() = default;
