@@ -751,7 +751,6 @@ ci.builder(
         short_name = "bfc",
     ),
     execution_timeout = 4 * time.hour,
-    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
