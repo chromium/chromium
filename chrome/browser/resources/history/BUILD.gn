@@ -71,7 +71,7 @@ build_webui("build") {
       "lazy_load.js",
     ]
     optimize_webui_excludes = [
-      "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/cr.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
     ]
     optimize_webui_resource_paths_rewrites = [

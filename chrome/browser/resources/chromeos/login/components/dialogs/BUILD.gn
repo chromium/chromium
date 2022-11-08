@@ -68,8 +68,10 @@ js_library("oobe_modal_dialog.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+  externs_list = [
+    "$externs_path/chrome_send.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
   extra_deps = [ ":oobe_modal_dialog_module" ]
 }
 

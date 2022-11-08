@@ -68,7 +68,7 @@ if (optimize_webui) {
     ]
     excludes = [
       "browser_api.js",
-      "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/cr.js",
     ]
     if (enable_ink) {
       excludes += [
@@ -95,7 +95,7 @@ optimize_webui("build_internal_plugin") {
   ]
   excludes = [
     "browser_api.js",
-    "chrome://resources/js/cr.m.js",
+    "chrome://resources/js/cr.js",
   ]
 }
 

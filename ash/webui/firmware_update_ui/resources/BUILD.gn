@@ -83,6 +83,7 @@ js_library("fake_update_controller") {
     ":firmware_update_types",
     "//ash/webui/common/resources:fake_observables",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:promise_resolver",
   ]
 }
 

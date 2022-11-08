@@ -150,7 +150,7 @@ if (optimize_webui) {
     ]
     excludes = [
                  "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
-                 "chrome://resources/js/cr.m.js",
+                 "chrome://resources/js/cr.js",
                  "chrome://resources/mojo/mojo/public/js/bindings.js",
                  "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
                  "chrome://resources/js/browser_command/browser_command.mojom-webui.js",

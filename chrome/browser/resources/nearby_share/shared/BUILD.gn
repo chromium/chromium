@@ -218,6 +218,7 @@ js_library("nearby_visibility_page") {
 
 js_library("nearby_metrics_logger") {
   deps = []
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("types") {

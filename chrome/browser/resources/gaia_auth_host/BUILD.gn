@@ -154,6 +154,7 @@ js_library("authenticator") {
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
+    "$externs_path/chrome_send.js",
     "$externs_path/webview_tag.js",
   ]
 }

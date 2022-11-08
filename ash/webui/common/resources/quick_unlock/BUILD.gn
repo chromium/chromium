@@ -20,6 +20,7 @@ js_library("lock_screen_constants") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
   ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("pin_keyboard") {

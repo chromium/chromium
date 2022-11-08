@@ -63,6 +63,7 @@ js_library("multidevice_setup") {
 
 js_library("multidevice_setup_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("multidevice_setup_delegate") {

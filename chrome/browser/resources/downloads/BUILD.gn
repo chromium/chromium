@@ -51,7 +51,7 @@ build_webui("build") {
     optimize_webui_out_files = [ "downloads.rollup.js" ]
     optimize_webui_in_files = [ "downloads.js" ]
     optimize_webui_excludes = [
-      "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/cr.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
     ]
     optimize_webui_resource_paths_rewrites =

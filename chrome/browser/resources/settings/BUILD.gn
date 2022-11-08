@@ -480,7 +480,7 @@ build_webui("build") {
       "shared.rollup.js",
     ]
     optimize_webui_excludes = [
-      "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/cr.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
       "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
     ]

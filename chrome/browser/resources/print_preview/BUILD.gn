@@ -137,7 +137,7 @@ build_webui("build") {
     optimize_webui_out_files = [ "print_preview.rollup.js" ]
     optimize_webui_in_files = [ "print_preview.js" ]
     optimize_webui_excludes = [
-      "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/cr.js",
       "pdf/pdf_scripting_api.js",
     ]
     optimize_webui_resource_paths_rewrites =
