@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1376,6 +1377,7 @@ void AutofillMetrics::LogDeveloperEngagementMetric(
                             NUM_DEVELOPER_ENGAGEMENT_METRICS);
 }
 
+// static
 void AutofillMetrics::LogHeuristicPredictionQualityMetrics(
     FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
@@ -1388,6 +1390,7 @@ void AutofillMetrics::LogHeuristicPredictionQualityMetrics(
       false /*log_rationalization_metrics*/);
 }
 
+// static
 void AutofillMetrics::LogServerPredictionQualityMetrics(
     FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
@@ -1400,6 +1403,7 @@ void AutofillMetrics::LogServerPredictionQualityMetrics(
       false /*log_rationalization_metrics*/);
 }
 
+// static
 void AutofillMetrics::LogOverallPredictionQualityMetrics(
     FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
@@ -1411,6 +1415,7 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
       true /*log_rationalization_metrics*/);
 }
 
+// static
 void AutofillMetrics::LogEditedAutofilledFieldAtSubmissionDeprecated(
     FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
@@ -1968,6 +1973,72 @@ void AutofillMetrics::LogNumberOfEditedAutofilledFields(
         "Autofill.NumberOfEditedAutofilledFieldsAtSubmission.NoSubmission",
         num_edited_autofilled_fields);
   }
+}
+
+// static
+void AutofillMetrics::LogFieldFillingStats(
+    FormType form_type,
+    const FormGroupFillingStats& filling_stats) {
+  std::string histogram_prefix = base::StrCat(
+      {"Autofill.FieldFillingStats.", FormTypeToStringPiece(form_type), "."});
+
+  // Do not acquire metrics if autofill was not used in this form group.
+  if (filling_stats.TotalFilled() == 0)
+    return;
+
+  // Counts into those histograms are mutually exclusive.
+  base::UmaHistogramCounts100(base::StrCat({histogram_prefix, "Accepted"}),
+                              filling_stats.num_accepted);
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "CorrectedToSameType"}),
+      filling_stats.num_corrected_to_same_type);
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "CorrectedToDifferentType"}),
+      filling_stats.num_corrected_to_different_type);
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "CorrectedToUnknownType"}),
+      filling_stats.num_corrected_to_unknown_type);
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "CorrectedToEmpty"}),
+      filling_stats.num_corrected_to_empty);
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "ManuallyFilledToSameType"}),
+      filling_stats.num_manually_filled_to_same_type);
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "ManuallyFilledToDifferentType"}),
+      filling_stats.num_manually_filled_to_differt_type);
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "ManuallyFilledToUnknownType"}),
+      filling_stats.num_manually_filled_to_unknown_type);
+
+  base::UmaHistogramCounts100(base::StrCat({histogram_prefix, "LeftEmpty"}),
+                              filling_stats.num_left_empty);
+
+  // Counts into those histograms are not mutually exclusive and a single field
+  // can contribute to multiple of those.
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "TotalCorrected"}),
+      filling_stats.TotalCorrected());
+
+  base::UmaHistogramCounts100(base::StrCat({histogram_prefix, "TotalFilled"}),
+                              filling_stats.TotalFilled());
+
+  base::UmaHistogramCounts100(base::StrCat({histogram_prefix, "TotalUnfilled"}),
+                              filling_stats.TotalUnfilled());
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, "TotalManuallyFilled"}),
+      filling_stats.TotalManuallyFilled());
+
+  base::UmaHistogramCounts100(base::StrCat({histogram_prefix, "Total"}),
+                              filling_stats.Total());
 }
 
 // static

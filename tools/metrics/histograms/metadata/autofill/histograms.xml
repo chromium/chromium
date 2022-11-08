@@ -1384,6 +1384,64 @@ chromium-metrics-reviews@google.com.
   <summary>Number of fields in a form that Autofill encounters.</summary>
 </histogram>
 
+<histogram name="Autofill.FieldFillingStats{AutofillFormType}.{FillingStatus}"
+    units="fields" expires_after="M112">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For {AutofillFormType} logs an histogram of the number of fields with the
+    {FillingStatus} at submission time. The non-aggregated FillingStatuses are
+    mutually exclusive and each field can only contribute to one of
+    corresponding histograms. However, the combined histograms that are prefixed
+    with Total are not mutually exclusive and a single field can contribute to
+    multiple of those.
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+  <token key="FillingStatus">
+    <variant name="Accepted"
+        summary="The field was autofilled without subsequent corrections."/>
+    <variant name="CorrectedToDifferentType"
+        summary="The field was autofilled but the value was edited into
+                 another non-empty value that was detected to be of different
+                 type."/>
+    <variant name="CorrectedToEmpty"
+        summary="The field was autofilled but the value was corrected into
+                 the empty type."/>
+    <variant name="CorrectedToSameType"
+        summary="The field was autofilled but the value was edited into
+                 another non-empty value that was detected to have the same
+                 type."/>
+    <variant name="CorrectedToUnknownType"
+        summary="The field was autofilled but the value was edited into
+                 another non-empty value with an unknown type."/>
+    <variant name="LeftEmpty" summary="The field was not filled at all."/>
+    <variant name="ManuallyFilledToDifferentType"
+        summary="The field was not autofilled but the user manually entered a
+                 value that was detected to have a different type than the
+                 type the field was predicted to have."/>
+    <variant name="ManuallyFilledToSameType"
+        summary="The field was not autofilled but the user manually entered a
+                 value that was detected to have the same type than the field
+                 was predicted to."/>
+    <variant name="ManuallyFilledToUnknownType"
+        summary="The field was not autofilled but the user manually entered a
+                 value that was detected to have no known type."/>
+    <variant name="Total" summary="The total number of fields."/>
+    <variant name="TotalCorrected"
+        summary="The field was autofilled and subsequently corrected by the
+                 user."/>
+    <variant name="TotalFilled"
+        summary="The field was autofilled and either accepted or subsequently
+                 corrected by the user."/>
+    <variant name="TotalManuallyFilled"
+        summary="The field was not autofilled and manually filled by the
+                 user."/>
+    <variant name="TotalUnfilled"
+        summary="The field was not autofilled and either manually filled by
+                 the user or left empty."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.FieldPrediction.PhoneNumberGrammarUsage"
     units="Index" expires_after="2023-03-01">
   <owner>fleimgruber@google.com</owner>

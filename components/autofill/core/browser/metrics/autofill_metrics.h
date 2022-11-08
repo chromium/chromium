@@ -46,6 +46,8 @@ class AutofillField;
 class CreditCard;
 class FormEventLoggerBase;
 
+struct FormGroupFillingStats;
+
 // A given maximum is enforced to minimize the number of buckets generated.
 extern const int kMaxBucketsCount;
 
@@ -872,6 +874,33 @@ class AutofillMetrics {
     kMaxValue = kOtpMismatchError,
   };
 
+  // The filling status of an autofilled field.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FieldFillingStatus {
+    // The field was filled and accepted.
+    kAccepted = 0,
+    // The field was filled and corrected to a value of the same type.
+    kCorrectedToSameType = 1,
+    // The field was filled and corrected to a value of a different type.
+    kCorrectedToDifferentType = 2,
+    // The field was filled and corrected to a value of an unknown type.
+    kCorrectedToUnknownType = 3,
+    // The field was filled and the value was cleared afterwards.
+    kCorrectedToEmpty = 4,
+    // The field was manually filled to a value of the same type as the
+    // field was predicted to.
+    kManuallyFilledToSameType = 5,
+    // The field was manually filled to a value of a different type as the field
+    // was predicted to.
+    kManuallyFilledToDifferentType = 6,
+    // The field was manually filled to a value of an unknown type.
+    kManuallyFilledToUnknownType = 7,
+    // The field was left empty.
+    kLeftEmpty = 8,
+    kMaxValue = kLeftEmpty
+  };
+
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {
    public:
@@ -1396,6 +1425,12 @@ class AutofillMetrics {
   static void LogNumberOfEditedAutofilledFields(
       size_t num_edited_autofilled_fields,
       bool observed_submission);
+
+  // Logs the `filling_stats` of the fields within a `form_type`. The filling
+  // status consistent of the number of accepted, corrected or and unfilled
+  // fields.
+  static void LogFieldFillingStats(FormType form_type,
+                                   const FormGroupFillingStats& filling_stats);
 
   // This should be called each time a server response is parsed for a form.
   static void LogServerResponseHasDataForForm(bool has_data);

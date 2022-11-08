@@ -30,4 +30,8 @@ bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field) {
   return true;
 }
 
+bool TypeOfFieldIsPossibleType(const AutofillField& field) {
+  return field.possible_types().contains(field.Type().GetStorableType());
+}
+
 }  // namespace autofill

@@ -979,6 +979,11 @@ void FormStructure::LogQualityMetrics(
   size_t num_of_accepted_autofilled_fields = 0;
   size_t num_of_corrected_autofilled_fields = 0;
 
+  // Tracks how many fields are filled, unfilled or corrected for the address
+  // and credit card forms.
+  FormGroupFillingStats address_field_stats;
+  FormGroupFillingStats cc_field_stats;
+
   // Count the number of filled (and corrected) fields which used to not get a
   // type prediction due to autocomplete=unrecognized. Note that credit card
   // related fields are excluded from this since an unrecognized autocomplete
@@ -1007,12 +1012,15 @@ void FormStructure::LogQualityMetrics(
                           : AutofillMetrics::TYPE_NO_SUBMISSION;
 
   for (auto& field : *this) {
+    DCHECK(field);
+
     AutofillType type = field->Type();
+    const FieldTypeGroup group = type.group();
 
     if (IsUPIVirtualPaymentAddress(field->value)) {
       has_upi_vpa_field = true;
       AutofillMetrics::LogUserHappinessMetric(
-          AutofillMetrics::USER_DID_ENTER_UPI_VPA, type.group(),
+          AutofillMetrics::USER_DID_ENTER_UPI_VPA, group,
           security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
           data_util::DetermineGroups(*this));
     }
@@ -1048,6 +1056,26 @@ void FormStructure::LogQualityMetrics(
       if (field->is_autofilled || field->previously_autofilled()) {
         AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
             form_interactions_ukm_logger, *this, *field);
+      }
+
+      // For any field that belongs to either an address or a credit card form,
+      // collect the type-unspecific field filling statistics.
+      // Those are only emitted when autofill was used on at least one field of
+      // the form.
+      const FormType form_type_of_field = FieldTypeGroupToFormType(group);
+      const bool is_address_form_field =
+          form_type_of_field == FormType::kAddressForm;
+      const bool credit_card_form_field =
+          form_type_of_field == FormType::kCreditCardForm;
+
+      if (is_address_form_field || credit_card_form_field) {
+        // Address and credit cards fields are mutually exclusive.
+        FormGroupFillingStats& group_stats =
+            is_address_form_field ? address_field_stats : cc_field_stats;
+
+        // Get the filling status of this field and add it to the form group
+        // counter.
+        group_stats.AddFieldFillingStatus(GetFieldFillingStatus(*field));
       }
     }
 
@@ -1094,6 +1122,10 @@ void FormStructure::LogQualityMetrics(
     ++num_detected_field_types;
 
     // Count the number of autofilled and corrected fields.
+    // TODO(crbug.com/1368096): This metric is defective because it is falsely
+    // conditioned on having a detected field type. The metric is replaced by a
+    // new one and the old one should be removed once the new one is fully
+    // launched.
     if (field->is_autofilled) {
       ++num_of_accepted_autofilled_fields;
       if (field->ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute()) {
@@ -1116,7 +1148,7 @@ void FormStructure::LogQualityMetrics(
 
     // Keep track of the frames of detected and autofilled (credit card) fields.
     frames_of_detected_fields.insert(field->host_frame);
-    if (type.group() == FieldTypeGroup::kCreditCard) {
+    if (group == FieldTypeGroup::kCreditCard) {
       frames_of_detected_credit_card_fields.insert(field->host_frame);
       if (field->is_autofilled)
         frames_of_autofilled_credit_card_fields.insert(field->host_frame);
@@ -1249,6 +1281,14 @@ void FormStructure::LogQualityMetrics(
                                                    perfect_filling);
       }
     }
+
+    // Log the field filling statistics if autofill was used.
+    // The metrics are only emitted if there was at least one field in the
+    // corresponding form group that is or was filled by autofill.
+    AutofillMetrics::LogFieldFillingStats(FormType::kAddressForm,
+                                          address_field_stats);
+    AutofillMetrics::LogFieldFillingStats(FormType::kCreditCardForm,
+                                          cc_field_stats);
 
     AutofillMetrics::LogNumberOfFramesWithDetectedFields(
         frames_of_detected_fields.size());
