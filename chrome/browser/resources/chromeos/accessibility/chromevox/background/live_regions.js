@@ -24,18 +24,8 @@ const TreeChangeType = chrome.automation.TreeChangeType;
  * ChromeVox live region handler.
  */
 export class LiveRegions {
-  /**
-   * @param {!ChromeVoxState} chromeVoxState The ChromeVox state object,
-   *     keeping track of the current mode and current range.
-   * @private
-   */
-  constructor(chromeVoxState) {
-    /**
-     * @type {!ChromeVoxState}
-     * @private
-     */
-    this.chromeVoxState_ = chromeVoxState;
-
+  /** @private */
+  constructor() {
     /**
      * The time the last live region event was output.
      * @type {!Date}
@@ -62,15 +52,11 @@ export class LiveRegions {
         this.onTreeChange.bind(this));
   }
 
-  /**
-   * @param {!ChromeVoxState} chromeVoxState The ChromeVox state object,
-   *     keeping track of the current mode and current range.
-   */
-  static init(chromeVoxState) {
+  static init() {
     if (LiveRegions.instance) {
       throw 'Error: Trying to create two instances of singleton LiveRegions';
     }
-    LiveRegions.instance = new LiveRegions(chromeVoxState);
+    LiveRegions.instance = new LiveRegions();
   }
 
   /**
@@ -175,7 +161,7 @@ export class LiveRegions {
     // Queue live regions coming from background tabs.
     let hostView = AutomationUtil.getTopLevelRoot(node);
     hostView = hostView ? hostView.parent : null;
-    const currentRange = this.chromeVoxState_.currentRange;
+    const currentRange = ChromeVoxState.instance.currentRange;
     const forceQueue = !hostView || !hostView.state.focused ||
         (currentRange && currentRange.start.node.root !== node.root) ||
         node.containerLiveStatus === 'polite';
@@ -234,7 +220,7 @@ export class LiveRegions {
       return false;
     }
 
-    const currentRange = this.chromeVoxState_.currentRange;
+    const currentRange = ChromeVoxState.instance.currentRange;
     if (currentRange && currentRange.start.node.root === node.root) {
       return false;
     }

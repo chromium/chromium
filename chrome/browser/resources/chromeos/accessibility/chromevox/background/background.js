@@ -80,10 +80,12 @@ export class Background extends ChromeVoxState {
 
     /** @private {boolean} */
     this.talkBackEnabled_ = false;
+
+    this.init_();
   }
 
-  /** @override */
-  init() {
+  /** @private */
+  init_() {
     // Initialize TTS and legacy background page first.
     TtsBackground.init();
     ChromeVoxBackground.init();
@@ -98,12 +100,31 @@ export class Background extends ChromeVoxState {
       get: () => this.earcons_,
     });
 
+    chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(
+        announceText => {
+          ChromeVox.tts.speak(announceText.join(' '), QueueMode.FLUSH);
+        });
+    chrome.accessibilityPrivate.onCustomSpokenFeedbackToggled.addListener(
+        enabled => this.talkBackEnabled_ = enabled);
+    chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
+        () => this.onIntroduceChromeVox_());
+    chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
+      (new PanelCommand(PanelCommandType.TUTORIAL)).send();
+    });
+
     chrome.clipboard.onClipboardDataChanged.addListener(() => {
       this.onClipboardDataChanged_();
     });
     document.addEventListener('copy', event => {
       this.onClipboardCopyEvent_(event);
     });
+  }
+
+  static init() {
+    ChromeVoxState.instance = new Background();
+
+    // Initialize legacy background page first.
+    ChromeVoxBackground.init();
 
     AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
@@ -113,23 +134,13 @@ export class Background extends ChromeVoxState {
     FindHandler.init();
     FocusAutomationHandler.init();
     JaPhoneticData.init(JaPhoneticMap.MAP);
-    LiveRegions.init(this);
+    LiveRegions.init();
     LocaleOutputHelper.init();
     LogStore.init();
     MediaAutomationHandler.init();
     PageLoadSoundHandler.init();
     PanelBackground.init();
     RangeAutomationHandler.init();
-
-    chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(
-        announceText => {
-          ChromeVox.tts.speak(announceText.join(' '), QueueMode.FLUSH);
-        });
-    chrome.accessibilityPrivate.onCustomSpokenFeedbackToggled.addListener(
-        enabled => this.talkBackEnabled_ = enabled);
-    chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
-      (new PanelCommand(PanelCommandType.TUTORIAL)).send();
-    });
 
     // Set the darkScreen state to false, since the display will be on whenever
     // ChromeVox starts.
@@ -502,5 +513,4 @@ export class Background extends ChromeVoxState {
 }
 
 InstanceChecker.closeExtraInstances();
-ChromeVoxState.instance = new Background();
-ChromeVoxState.instance.init();
+Background.init();
