@@ -18,10 +18,4 @@ GURL GetBoardSpecificMessagesLearnMoreUrl();
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::multidevice_setup {
-using ::ash::multidevice_setup::GetBoardSpecificBetterTogetherSuiteLearnMoreUrl;
-using ::ash::multidevice_setup::GetBoardSpecificMessagesLearnMoreUrl;
-}  // namespace chromeos::multidevice_setup
-
 #endif  // CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_URL_PROVIDER_H_

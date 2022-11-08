@@ -45,9 +45,4 @@ class AndroidSmsPairingStateTracker {
 }  // namespace multidevice_setup
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::multidevice_setup {
-using ::ash::multidevice_setup::AndroidSmsPairingStateTracker;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_ANDROID_SMS_PAIRING_STATE_TRACKER_H_

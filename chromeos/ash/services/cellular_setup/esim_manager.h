@@ -135,9 +135,4 @@ class ESimManager : public mojom::ESimManager,
 }  // namespace cellular_setup
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::cellular_setup {
-using ::ash::cellular_setup::ESimManager;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_ESIM_MANAGER_H_

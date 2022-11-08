@@ -32,8 +32,7 @@ class SmartLockFeatureUsageMetricsTest : public ::testing::Test {
     EXPECT_EQ(expected_enabled_value, feature_usage_metrics_->IsEnabled());
   }
 
-  chromeos::multidevice_setup::FakeMultiDeviceSetupClient
-      fake_multidevice_setup_client_;
+  multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   std::unique_ptr<feature_usage::FeatureUsageMetrics::Delegate>
       feature_usage_metrics_;
   base::test::TaskEnvironment task_environment_;
