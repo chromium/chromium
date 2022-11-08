@@ -244,6 +244,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kForceDarkForegroundLightnessThresholdParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kForceDarkBackgroundLightnessThresholdParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkImageClassifier>
+    kForceDarkImageClassifierParam;
 
 // Returns true when PlzDedicatedWorker is enabled.
 BLINK_COMMON_EXPORT bool IsPlzDedicatedWorkerEnabled();
