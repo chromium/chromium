@@ -251,10 +251,29 @@ bool InterfaceEndpointClient::AcceptWithResponder(
                                   std::move(responder));
 }
 
+// Check that IPC messages are the same size when replaying, but if they
+// aren't resize the message to its size when recording so that we are
+// more likely to be able to continue replaying.
+static void RecordReplayEnsureConsistentMessageSize(Message* message) {
+  recordreplay::Assert("EnsureConsistentMessageSize %zu",
+                       message->data_num_bytes());
+
+  size_t recorded_bytes =
+    recordreplay::RecordReplayValue("EnsureConsistentMessageSize",
+                                    message->data_num_bytes());
+
+  if (recorded_bytes != message->data_num_bytes()) {
+    char* new_payload = new char[recorded_bytes];
+    memset(new_payload, 0, recorded_bytes);
+    memcpy(new_payload, message->data(),
+           std::min<size_t>(recorded_bytes, message->data_num_bytes()));
+    *message->payload_buffer() = internal::Buffer(new_payload, recorded_bytes, recorded_bytes);
+  }
+}
+
 bool InterfaceEndpointClient::SendMessage(Message* message,
                                           bool is_control_message) {
-  // Make sure that IPC messages are the same size when replaying.
-  recordreplay::Assert("SendMessage %zu", message->data_num_bytes());
+  RecordReplayEnsureConsistentMessageSize(message);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!message->has_flag(Message::kFlagExpectsResponse));
@@ -291,8 +310,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
     Message* message,
     bool is_control_message,
     std::unique_ptr<MessageReceiver> responder) {
-  // Make sure that IPC messages are the same size when replaying.
-  recordreplay::Assert("SendMessageWithResponder %zu", message->data_num_bytes());
+  RecordReplayEnsureConsistentMessageSize(message);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(message->has_flag(Message::kFlagExpectsResponse));

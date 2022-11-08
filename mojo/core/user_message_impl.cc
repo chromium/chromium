@@ -460,9 +460,6 @@ MojoResult UserMessageImpl::SetContext(
 MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
                                        const MojoHandle* handles,
                                        uint32_t num_handles) {
-  // https://linear.app/replay/issue/RUN-591
-  recordreplay::Assert("UserMessageImpl::AppendData %lu", additional_payload_size);
-
   if (HasContext())
     return MOJO_RESULT_FAILED_PRECONDITION;
 
