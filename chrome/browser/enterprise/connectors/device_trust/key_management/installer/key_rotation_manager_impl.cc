@@ -39,6 +39,10 @@ BPKUR::KeyType AlgorithmToType(
   }
 }
 
+bool IsValidKey(const SigningKeyPair* key_pair) {
+  return key_pair && !key_pair->is_empty();
+}
+
 }  // namespace
 
 KeyRotationManagerImpl::KeyRotationManagerImpl(
@@ -48,8 +52,6 @@ KeyRotationManagerImpl::KeyRotationManagerImpl(
       persistence_delegate_(std::move(persistence_delegate)) {
   DCHECK(network_delegate_);
   DCHECK(persistence_delegate_);
-
-  key_pair_ = persistence_delegate_->LoadKeyPair();
 }
 
 KeyRotationManagerImpl::~KeyRotationManagerImpl() = default;
@@ -65,16 +67,30 @@ void KeyRotationManagerImpl::Rotate(
     return;
   }
 
+  // If an old key exists, then the `nonce` becomes a required parameter as
+  // we're effectively going through a key rotation flow instead of key
+  // creation.
+  auto old_key_pair = persistence_delegate_->LoadKeyPair();
+  const bool is_rotation = IsValidKey(old_key_pair.get());
+  if (is_rotation && nonce.empty()) {
+    RecordRotationStatus(/*is_rotation=*/true,
+                         RotationStatus::FAILURE_INVALID_ROTATION_PARAMS);
+    SYSLOG(ERROR) << "Device trust key rotation failed. Missing a nonce.";
+    std::move(result_callback).Run(Result::FAILED);
+    return;
+  }
+
   if (!persistence_delegate_->CheckRotationPermissions()) {
-    RecordRotationStatus(nonce,
+    RecordRotationStatus(is_rotation,
                          RotationStatus::FAILURE_INCORRECT_FILE_PERMISSIONS);
+    SYSLOG(ERROR) << "Device trust key rotation failed. Incorrect permissions.";
     std::move(result_callback).Run(Result::FAILED);
     return;
   }
 
   auto new_key_pair = persistence_delegate_->CreateKeyPair();
-  if (!new_key_pair || new_key_pair->is_empty()) {
-    RecordRotationStatus(nonce,
+  if (!IsValidKey(new_key_pair.get())) {
+    RecordRotationStatus(is_rotation,
                          RotationStatus::FAILURE_CANNOT_GENERATE_NEW_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not generate a "
                      "new signing key.";
@@ -84,7 +100,7 @@ void KeyRotationManagerImpl::Rotate(
 
   if (!persistence_delegate_->StoreKeyPair(
           new_key_pair->trust_level(), new_key_pair->key()->GetWrappedKey())) {
-    RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_STORE_KEY);
+    RecordRotationStatus(is_rotation, RotationStatus::FAILURE_CANNOT_STORE_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not write to "
                      "signing key storage.";
     std::move(result_callback).Run(Result::FAILED);
@@ -93,9 +109,12 @@ void KeyRotationManagerImpl::Rotate(
 
   enterprise_management::DeviceManagementRequest request;
   if (!BuildUploadPublicKeyRequest(
-          *new_key_pair, nonce,
+          *new_key_pair, old_key_pair.get(), nonce,
           request.mutable_browser_public_key_upload_request())) {
-    RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
+    // TODO(b:254072094): We should rollback the storage when failing after
+    // changing the storage.
+    RecordRotationStatus(is_rotation,
+                         RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not build the "
                      "upload key request.";
     std::move(result_callback).Run(Result::FAILED);
@@ -109,13 +128,14 @@ void KeyRotationManagerImpl::Rotate(
   // being returned by the server.
   auto upload_key_callback = base::BindOnce(
       &KeyRotationManagerImpl::OnDmServerResponse, weak_factory_.GetWeakPtr(),
-      nonce, std::move(new_key_pair), std::move(result_callback));
+      std::move(old_key_pair), std::move(result_callback));
   network_delegate_->SendPublicKeyToDmServer(
       dm_server_url, dm_token, request_str, std::move(upload_key_callback));
 }
 
 bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
     const SigningKeyPair& new_key_pair,
+    const SigningKeyPair* old_key_pair,
     const std::string& nonce,
     enterprise_management::BrowserPublicKeyUploadRequest* request) {
   std::vector<uint8_t> pubkey = new_key_pair.key()->GetSubjectPublicKeyInfo();
@@ -133,9 +153,8 @@ bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
   // an empty nonce to signal this is the first public key being uploaded to
   // DM server.  DM server expects the public key to be self signed.
   absl::optional<std::vector<uint8_t>> signature =
-      key_pair_ && key_pair_->key() && !nonce.empty()
-          ? key_pair_->key()->SignSlowly(buffer)
-          : new_key_pair.key()->SignSlowly(buffer);
+      IsValidKey(old_key_pair) ? old_key_pair->key()->SignSlowly(buffer)
+                               : new_key_pair.key()->SignSlowly(buffer);
   if (!signature.has_value())
     return false;
 
@@ -148,18 +167,18 @@ bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
 }
 
 void KeyRotationManagerImpl::OnDmServerResponse(
-    const std::string& nonce,
-    std::unique_ptr<SigningKeyPair> new_key_pair,
+    std::unique_ptr<SigningKeyPair> old_key_pair,
     base::OnceCallback<void(Result)> result_callback,
     KeyNetworkDelegate::HttpResponseCode response_code) {
-  RecordUploadCode(nonce, response_code);
+  const bool is_rotation = IsValidKey(old_key_pair.get());
+  RecordUploadCode(is_rotation, response_code);
   auto upload_key_status = ParseUploadKeyStatus(response_code);
   if (upload_key_status != UploadKeyStatus::kSucceeded) {
     // Unable to send to DM server, so restore the old key if there was one.
     bool able_to_restore = true;
-    if (key_pair_ && key_pair_->key()) {
+    if (is_rotation) {
       able_to_restore = persistence_delegate_->StoreKeyPair(
-          key_pair_->trust_level(), key_pair_->key()->GetWrappedKey());
+          old_key_pair->trust_level(), old_key_pair->key()->GetWrappedKey());
     } else {
       // If there was no old key we clear the registry.
       able_to_restore = persistence_delegate_->StoreKeyPair(
@@ -175,7 +194,7 @@ void KeyRotationManagerImpl::OnDmServerResponse(
                    ? RotationStatus::
                          FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED
                    : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED);
-    RecordRotationStatus(nonce, status);
+    RecordRotationStatus(is_rotation, status);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not send public "
                      "key to DM server.";
     if (upload_key_status == UploadKeyStatus::kFailedKeyConflict) {
@@ -184,12 +203,13 @@ void KeyRotationManagerImpl::OnDmServerResponse(
       return;
     }
 
+    // TODO(b:254072094): We should call CleanupTemporaryKeyData when failing
+    // with a successful restore.
     std::move(result_callback).Run(KeyRotationManager::Result::FAILED);
     return;
   }
   persistence_delegate_->CleanupTemporaryKeyData();
-  key_pair_ = std::move(new_key_pair);
-  RecordRotationStatus(nonce, RotationStatus::SUCCESS);
+  RecordRotationStatus(is_rotation, RotationStatus::SUCCESS);
   std::move(result_callback).Run(KeyRotationManager::Result::SUCCEEDED);
 }
 

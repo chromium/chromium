@@ -37,26 +37,28 @@ class KeyRotationManagerImpl : public KeyRotationManager {
 
  private:
   // Builds the protobuf message needed to tell DM server about the new public
-  // for this device. `nonce` is an opaque binary blob and should not be
-  // treated as an ASCII or UTF-8 string.
+  // key for this device. `new_key_pair` is a required parameter representing
+  // the new key pair whose public key should be uploaded. `old_key_pair`
+  // represents the previous trusted key and is only required when doing a key
+  // rotation. `nonce` is a string that represents a key rotation remote command
+  // and is only required in key rotation flows. It is an opaque binary blob and
+  // should not be treated as an ASCII or UTF-8 string.
   bool BuildUploadPublicKeyRequest(
       const SigningKeyPair& new_key_pair,
+      const SigningKeyPair* old_key_pair,
       const std::string& nonce,
       enterprise_management::BrowserPublicKeyUploadRequest* request);
 
   // Gets the `response_code` from the upload key request and continues
-  // the key rotation process. `rotate_callback` returns the rotation result.
-  // The `nonce` is an opaque binary blob and should not be treated as an
-  // ASCII or UTF-8 string. The `new_key_pair` refers to the key pair that is
-  // created during the rotation process.
-  void OnDmServerResponse(const std::string& nonce,
-                          std::unique_ptr<SigningKeyPair> new_key_pair,
+  // the key rotation process. `result_callback` returns the rotation result.
+  // The `old_key_pair` is only required in key rotation flows and will be used
+  // to restore local storage if upload failed.
+  void OnDmServerResponse(std::unique_ptr<SigningKeyPair> old_key_pair,
                           base::OnceCallback<void(Result)> result_callback,
                           KeyNetworkDelegate::HttpResponseCode response_code);
 
   std::unique_ptr<KeyNetworkDelegate> network_delegate_;
   std::unique_ptr<KeyPersistenceDelegate> persistence_delegate_;
-  std::unique_ptr<SigningKeyPair> key_pair_;
   base::WeakPtrFactory<KeyRotationManagerImpl> weak_factory_{this};
 };
 

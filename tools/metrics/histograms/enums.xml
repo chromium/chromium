@@ -25873,6 +25873,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="8"
       label="Unable to store the signing key due to signing key file
              permissions failure."/>
+  <int value="9" label="Invalid key rotation params"/>
 </enum>
 
 <enum name="DevToolsAction">
