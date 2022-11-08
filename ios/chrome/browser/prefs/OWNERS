@@ -1,0 +1,2 @@
+# For simple pref migration/deprecation.
+per-file browser_prefs.*=file://components/prefs/OWNERS

@@ -1,4 +1,3 @@
-battre@chromium.org
-gab@chromium.org
+file://components/prefs/OWNERS
 
 per-file pref_service_incognito_allowlist.cc=rhalavati@chromium.org
