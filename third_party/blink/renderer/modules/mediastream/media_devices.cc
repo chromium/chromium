@@ -18,12 +18,15 @@
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_display_media_stream_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_supported_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_mediatrackconstraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_user_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -87,7 +90,9 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
       // Only getDisplayMedia() calls set |on_success_follow_up_|.
       // Successful invocations of getDisplayMedia() always have exactly
       // one video track.
-      DCHECK_EQ(UserMediaRequestType::kDisplayMedia, media_type_);
+      //
+      // Extension API calls that are followed by a getUserMedia() call with
+      // chromeMediaSourceId are treated liked getDisplayMedia() calls.
       MediaStreamTrackVector video_tracks = stream->getVideoTracks();
       DCHECK_EQ(video_tracks.size(), 1u);
       if (capture_controller) {
@@ -176,6 +181,48 @@ void RecordEnumerateDevicesLatency(base::TimeTicks start_time) {
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   base::UmaHistogramTimes("WebRTC.EnumerateDevices.Latency", elapsed);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Killswitch for remotely shutting off new functionality in case
+// anything goes wrong.
+// TODO(crbug.com/1382329): Remove this flag.
+BASE_FEATURE(kAllowCaptureControllerForGetUserMediaScreenCapture,
+             "AllowCaptureControllerForGetUserMediaScreenCapture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsExtensionScreenSharingFunctionCall(const MediaStreamConstraints* options,
+                                          ExceptionState& exception_state) {
+  DCHECK(!exception_state.HadException());
+
+  if (!base::FeatureList::IsEnabled(
+          kAllowCaptureControllerForGetUserMediaScreenCapture)) {
+    return false;
+  }
+
+  if (!options) {
+    return false;
+  }
+
+  const V8UnionBooleanOrMediaTrackConstraints* const video = options->video();
+  if (!video || video->GetContentType() !=
+                    V8UnionBooleanOrMediaTrackConstraints::ContentType::
+                        kMediaTrackConstraints) {
+    return false;
+  }
+
+  const MediaTrackConstraints* const constraints =
+      video->GetAsMediaTrackConstraints();
+  if (!constraints || !constraints->hasMandatory()) {
+    return false;
+  }
+
+  const HashMap<String, String> map =
+      blink::Dictionary(constraints->mandatory())
+          .GetOwnPropertiesAsStringHashMap(exception_state);
+
+  return !exception_state.HadException() && map.Contains("chromeMediaSourceId");
+}
+#endif
 
 MediaStreamConstraints* ToMediaStreamConstraints(
     const UserMediaStreamConstraints* source) {
@@ -274,6 +321,8 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
     UserMediaRequestType media_type,
     const MediaStreamConstraints* options,
     ExceptionState& exception_state) {
+  DCHECK(!exception_state.HadException());
+
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "No media device client available; "
@@ -286,7 +335,8 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   base::OnceCallback<void(const String&, CaptureController*)>
       on_success_follow_up;
 #if !BUILDFLAG(IS_ANDROID)
-  if (media_type == UserMediaRequestType::kDisplayMedia) {
+  if (media_type == UserMediaRequestType::kDisplayMedia ||
+      IsExtensionScreenSharingFunctionCall(options, exception_state)) {
     if (options->hasController()) {
       on_success_follow_up = WTF::BindOnce(
           &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
@@ -298,6 +348,10 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
           WTF::BindOnce(&MediaDevices::CloseFocusWindowOfOpportunity,
                         WrapWeakPersistent(this));
     }
+  }
+
+  if (exception_state.HadException()) {
+    return ScriptPromise();
   }
 #endif
 
