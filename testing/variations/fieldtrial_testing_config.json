@@ -2437,6 +2437,21 @@
             ]
         }
     ],
+    "ChannelIndicator": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "ChannelIndicator",
+                    "enable_features": [
+                        "ReleaseTrackUi"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeAppsDeprecationWinMacLinux": [
         {
             "platforms": [
