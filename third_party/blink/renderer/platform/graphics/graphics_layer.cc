@@ -317,6 +317,9 @@ void GraphicsLayer::PaintForTesting(const IntRect& interest_rect) {
 void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                           PaintBenchmarkMode benchmark_mode,
                           const IntRect* interest_rect) {
+  // https://linear.app/replay/issue/RUN-758
+  recordreplay::Assert("GraphicsLayer::Paint Start");
+
   repainted_ = false;
 
   DCHECK(!client_.ShouldSkipPaintingSubtree());
@@ -362,6 +365,10 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                 // caching when unifying PaintController.
                 paint_controller.ClientCacheIsValid(*this) &&
                 previous_interest_rect_ == new_interest_rect;
+
+  // https://linear.app/replay/issue/RUN-758
+  recordreplay::Assert("GraphicsLayer::Paint #5 %d", cached);
+
   if (!cached) {
     GraphicsContext context(paint_controller);
     DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
