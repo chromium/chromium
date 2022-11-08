@@ -105,7 +105,8 @@ class MODULES_EXPORT MediaStreamTrack
 
   virtual void applyConstraints(ScriptPromiseResolver*,
                                 const MediaTrackConstraints*) = 0;
-  virtual void SetConstraints(const MediaConstraints&) = 0;
+  virtual void SetInitialConstraints(const MediaConstraints& constraints) = 0;
+  virtual void SetConstraints(const MediaConstraints& constraints) = 0;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(mute, kMute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unmute, kUnmute)

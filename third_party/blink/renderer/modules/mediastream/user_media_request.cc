@@ -771,11 +771,11 @@ void UserMediaRequest::OnMediaStreamsInitialized(MediaStreamVector streams) {
   for (const Member<MediaStream>& stream : streams) {
     MediaStreamTrackVector audio_tracks = stream->getAudioTracks();
     for (const auto& audio_track : audio_tracks)
-      audio_track->SetConstraints(audio_);
+      audio_track->SetInitialConstraints(audio_);
 
     MediaStreamTrackVector video_tracks = stream->getVideoTracks();
     for (const auto& video_track : video_tracks)
-      video_track->SetConstraints(video_);
+      video_track->SetInitialConstraints(video_);
 
     RecordIdentifiabilityMetric(
         surface_, GetExecutionContext(),

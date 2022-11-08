@@ -208,6 +208,7 @@ promise_test(async t => {
       assert_equals(settings.displaySurface, displaySurface);
       assert_any(assert_equals, settings.logicalSurface, [true, false]);
       assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
+      assert_false("suppressLocalAudioPlayback" in settings);
     }, `getDisplayMedia({"video":{"displaySurface":"${displaySurface}"}}) with getSettings`);
   })
 }
@@ -258,5 +259,32 @@ test(() => {
     navigator.mediaDevices.getSupportedConstraints();
   assert_true(supportedConstraints.suppressLocalAudioPlayback);
 }, "suppressLocalAudioPlayback is supported");
+
+{
+  const suppressLocalAudioPlaybacks = [true, false];
+  suppressLocalAudioPlaybacks.forEach((suppressLocalAudioPlayback) => {
+    promise_test(async (t) => {
+      const stream = await getDisplayMedia({
+        audio: { suppressLocalAudioPlayback },
+      });
+      t.add_cleanup(() => stopTracks(stream));
+      const [videoTrack] = stream.getVideoTracks();
+      assert_false("suppressLocalAudioPlayback" in videoTrack.getSettings());
+      const [audioTrack] = stream.getAudioTracks();
+      const audioTrackSettings = audioTrack.getSettings();
+      assert_true("suppressLocalAudioPlayback" in audioTrackSettings);
+      assert_equals(
+        audioTrackSettings.suppressLocalAudioPlayback,
+        suppressLocalAudioPlayback
+      );
+      await audioTrack.applyConstraints();
+      assert_true("suppressLocalAudioPlayback" in audioTrackSettings);
+      assert_equals(
+        audioTrackSettings.suppressLocalAudioPlayback,
+        suppressLocalAudioPlayback
+      );
+    }, `getDisplayMedia({"audio":{"suppressLocalAudioPlayback":${suppressLocalAudioPlayback}}}) with getSettings`);
+  });
+}
 
 </script>

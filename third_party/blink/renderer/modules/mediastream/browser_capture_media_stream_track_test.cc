@@ -214,7 +214,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CloningPreservesConstraints) {
   MediaTrackConstraintSetPlatform basic;
   basic.width.SetMax(240);
   constraints.Initialize(basic, Vector<MediaTrackConstraintSetPlatform>());
-  track->SetConstraints(constraints);
+  track->SetInitialConstraints(constraints);
 
   MediaStreamTrack* clone = track->clone(v8_scope.GetExecutionContext());
   MediaTrackConstraints* clone_constraints = clone->getConstraints();

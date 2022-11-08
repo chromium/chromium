@@ -250,6 +250,15 @@ void TransferredMediaStreamTrack::SetComponentImplementation(
   transferred_component_->SetImplementation(component);
 }
 
+void TransferredMediaStreamTrack::SetInitialConstraints(
+    const MediaConstraints& constraints) {
+  if (track_) {
+    track_->SetInitialConstraints(constraints);
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
+}
+
 void TransferredMediaStreamTrack::SetConstraints(
     const MediaConstraints& constraints) {
   if (track_) {

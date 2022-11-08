@@ -47,8 +47,9 @@ dictionary MediaTrackSettings {
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur;
 
     // Screen Capture API
-    // https://w3c.github.io/mediacapture-screen-share
+    // https://w3c.github.io/mediacapture-screen-share/#extensions-to-mediatracksettings
     [RuntimeEnabled=GetDisplayMedia] DOMString displaySurface;
     [RuntimeEnabled=GetDisplayMedia] boolean logicalSurface;
     [RuntimeEnabled=GetDisplayMedia] DOMString cursor;
+    [RuntimeEnabled=GetDisplayMedia] boolean suppressLocalAudioPlayback;
 };

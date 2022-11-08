@@ -92,11 +92,13 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   ScriptPromise applyConstraints(ScriptState*,
                                  const MediaTrackConstraints*) override;
 
-  // This function is called when constrains have been successfully applied.
+  // These two functions are called when constraints have been successfully
+  // applied.
   // Called from UserMediaRequest when it succeeds. It is not IDL-exposed.
-  void SetConstraints(const MediaConstraints& constraints) override {
-    constraints_ = constraints;
-  }
+  // SetInitialConstraints() is expected to be called once when capture starts.
+  // SetConstraints() is called later, when changing the set of constraints.
+  void SetInitialConstraints(const MediaConstraints& constraints) override;
+  void SetConstraints(const MediaConstraints& constraints) override;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(mute, kMute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unmute, kUnmute)
@@ -165,6 +167,9 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   // Ensures that |feature_handle_for_scheduler_| is initialized.
   void EnsureFeatureHandleForScheduler();
 
+  void SetConstraintsInternal(const MediaConstraints& constraints,
+                              bool initial_values);
+
   void setReadyState(MediaStreamSource::ReadyState ready_state);
 
   // This handle notifies the scheduler about a live media stream track
@@ -182,6 +187,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
   bool muted_ = false;
   MediaConstraints constraints_;
+  absl::optional<bool> suppress_local_audio_playback_setting_;
 };
 
 }  // namespace blink

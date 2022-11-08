@@ -108,6 +108,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
                ScriptPromise(ScriptState*, const MediaTrackConstraints*));
   MOCK_METHOD2(applyConstraintsResolver,
                void(ScriptPromiseResolver*, const MediaTrackConstraints*));
+  MOCK_METHOD1(SetInitialConstraints, void(const MediaConstraints&));
   MOCK_METHOD1(SetConstraints, void(const MediaConstraints&));
   MOCK_METHOD1(RegisterMediaStream, void(MediaStream*));
   MOCK_METHOD1(UnregisterMediaStream, void(MediaStream*));

@@ -57,6 +57,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     absl::optional<media::mojom::DisplayCaptureSurfaceType> display_surface;
     absl::optional<bool> logical_surface;
     absl::optional<media::mojom::CursorCaptureType> cursor;
+    absl::optional<bool> suppress_local_audio_playback;
   };
 
   struct CaptureHandle {

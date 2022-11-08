@@ -64,6 +64,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   void SetImplementation(MediaStreamTrack* track);
   void SetComponentImplementation(MediaStreamComponent* component);
 
+  void SetInitialConstraints(const MediaConstraints&) override;
   void SetConstraints(const MediaConstraints&) override;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(mute, kMute)

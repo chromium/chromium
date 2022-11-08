@@ -93,7 +93,7 @@ bool ConstraintSetHasImageCapture(
 
 bool ConstraintSetHasNonImageCapture(
     const MediaTrackConstraintSet* constraint_set) {
-  // TODO(crbug.com/1378667): Add hasSuppressLocalAudioPlayback() to this list
+  // TODO(crbug.com/1381959): Add hasSuppressLocalAudioPlayback() to this list
   // and complete support for toggling suppressLocalAudioPlayback using
   // the applyConstraints() API.
   return constraint_set->hasAspectRatio() ||
@@ -662,6 +662,11 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
     settings->setCursor(value);
   }
 
+  if (suppress_local_audio_playback_setting_.has_value()) {
+    settings->setSuppressLocalAudioPlayback(
+        suppress_local_audio_playback_setting_.value());
+  }
+
   return settings;
 }
 
@@ -692,6 +697,32 @@ ScriptPromise MediaStreamTrackImpl::applyConstraints(
   ScriptPromise promise = resolver->Promise();
   applyConstraints(resolver, constraints);
   return promise;
+}
+
+void MediaStreamTrackImpl::SetInitialConstraints(
+    const MediaConstraints& constraints) {
+  SetConstraintsInternal(constraints, /*initial_values=*/true);
+}
+
+void MediaStreamTrackImpl::SetConstraints(const MediaConstraints& constraints) {
+  SetConstraintsInternal(constraints, /*initial_values=*/false);
+}
+
+// TODO(crbug.com/1381959): Remove this helper.
+void MediaStreamTrackImpl::SetConstraintsInternal(
+    const MediaConstraints& constraints,
+    bool initial_values) {
+  constraints_ = constraints;
+
+  if (!initial_values)
+    return;
+
+  DCHECK(!suppress_local_audio_playback_setting_.has_value());
+  if (!constraints_.IsNull() &&
+      constraints_.Basic().suppress_local_audio_playback.HasIdeal()) {
+    suppress_local_audio_playback_setting_ =
+        constraints_.Basic().suppress_local_audio_playback.Ideal();
+  }
 }
 
 void MediaStreamTrackImpl::applyConstraints(
@@ -923,7 +954,7 @@ void MediaStreamTrackImpl::CloneInternal(MediaStreamTrackImpl* cloned_track) {
 
   DidCloneMediaStreamTrack(cloned_track->Component());
 
-  cloned_track->SetConstraints(constraints_);
+  cloned_track->SetInitialConstraints(constraints_);
 
   if (image_capture_) {
     cloned_track->image_capture_ = image_capture_->Clone();
