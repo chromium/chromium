@@ -84,31 +84,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Android FYI Release (Nexus 5)",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "main_builder_rel_mb",
-        ),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|L32",
-        short_name = "N5",
-    ),
-    triggered_by = ["GPU FYI Android arm Builder"],
-)
-
-ci.thin_tester(
     name = "Android FYI Release (Nexus 5X)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

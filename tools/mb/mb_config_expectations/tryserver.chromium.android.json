@@ -1140,20 +1140,6 @@
       "use_goma": true
     }
   },
-  "gpu-fyi-try-android-l-nexus-5-32": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
   "gpu-fyi-try-android-m-nexus-5x-64": {
     "gn_args": {
       "dcheck_always_on": true,

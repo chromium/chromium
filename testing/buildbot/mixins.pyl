@@ -540,15 +540,6 @@
       ],
     },
   },
-  'hammerhead': {
-    # Nexus 5
-    'swarming': {
-      'dimensions': {
-        'device_type': 'hammerhead',
-        'os': 'Android',
-      },
-    },
-  },
   # Use of this mixin signals to the recipe that the test uploads its results
   # to result-sink and doesn't need to be wrapped by result_adapter.
   'has_native_resultdb_integration': {
@@ -1023,13 +1014,6 @@
           'path': '.android_emulator/generic_android23',
         },
       ]
-    },
-  },
-  'marshmallow_generic': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'M',
-      },
     },
   },
   'mdarcy': {

@@ -54,15 +54,6 @@ def gpu_android_builder(*, name, **kwargs):
     )
 
 gpu_android_builder(
-    name = "gpu-fyi-try-android-l-nexus-5-32",
-    pool = "luci.chromium.gpu.android.nexus5.try",
-    mirrors = [
-        "ci/GPU FYI Android arm Builder",
-        "ci/Android FYI Release (Nexus 5)",
-    ],
-)
-
-gpu_android_builder(
     name = "gpu-fyi-try-android-m-nexus-5x-64",
     pool = "luci.chromium.gpu.android.nexus5x.try",
     mirrors = [
