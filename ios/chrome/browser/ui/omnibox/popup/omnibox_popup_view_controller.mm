@@ -593,8 +593,8 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
       !base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     return FLT_MIN;
   }
-  return self.currentResult[section].title ? UITableViewAutomaticDimension
-                                           : FLT_MIN;
+  BOOL hasTitle = self.currentResult[section].title.length > 0;
+  return hasTitle ? UITableViewAutomaticDimension : FLT_MIN;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -602,6 +602,8 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   if (!IsOmniboxActionsEnabled()) {
     return FLT_MIN;
   }
+  // Don't show the footer on the last section, to not increase the size of the
+  // popup on iPad.
   if (section == (tableView.numberOfSections - 1)) {
     return FLT_MIN;
   }
