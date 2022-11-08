@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/test_root_certs.h"

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/ssl/ssl_private_key.h"

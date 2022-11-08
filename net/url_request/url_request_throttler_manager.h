@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/net_export.h"

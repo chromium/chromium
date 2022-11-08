@@ -25,7 +25,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"

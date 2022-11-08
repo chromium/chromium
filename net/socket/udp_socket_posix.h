@@ -13,7 +13,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"

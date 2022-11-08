@@ -5,7 +5,7 @@
 #ifndef NET_CERT_CERT_VERIFY_RESULT_H_
 #define NET_CERT_CERT_VERIFY_RESULT_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/filter/source_stream.h"
 

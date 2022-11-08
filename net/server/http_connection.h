@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 
 namespace net {

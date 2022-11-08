@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/hash_value.h"

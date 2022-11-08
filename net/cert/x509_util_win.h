@@ -10,7 +10,7 @@
 
 #include <windows.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/hash_value.h"

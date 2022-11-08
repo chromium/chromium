@@ -12,7 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/log/net_log_with_source.h"

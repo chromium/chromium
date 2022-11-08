@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/upload_data_stream.h"

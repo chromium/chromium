@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
 #include "net/ssl/ssl_private_key.h"

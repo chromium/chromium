@@ -12,7 +12,7 @@
 #include <memory>
 
 #include "base/containers/linked_list.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/net_export.h"

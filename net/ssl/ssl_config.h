@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"

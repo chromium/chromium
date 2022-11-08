@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_traits.h"
 #include "net/network_error_logging/network_error_logging_service.h"

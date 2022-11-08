@@ -15,7 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/disk_format_base.h"

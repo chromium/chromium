@@ -5,7 +5,7 @@
 #ifndef NET_SSL_SSL_PLATFORM_KEY_NSS_H_
 #define NET_SSL_SSL_PLATFORM_KEY_NSS_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 
 typedef struct CERTCertificateStr CERTCertificate;

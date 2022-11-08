@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"

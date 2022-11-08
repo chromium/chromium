@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

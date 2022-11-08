@@ -9,7 +9,7 @@
 #include <Security/Security.h>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"

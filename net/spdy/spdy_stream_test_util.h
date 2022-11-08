@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_timing_info.h"

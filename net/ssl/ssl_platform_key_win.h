@@ -10,7 +10,7 @@
 // Must be after windows.h.
 #include <NCrypt.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"

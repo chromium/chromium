@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "net/dns/mock_host_resolver.h"

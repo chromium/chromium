@@ -6,7 +6,7 @@
 #define NET_CERT_CERT_DATABASE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 

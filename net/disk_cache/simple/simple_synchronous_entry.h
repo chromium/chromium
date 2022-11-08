@@ -19,7 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "net/base/cache_type.h"

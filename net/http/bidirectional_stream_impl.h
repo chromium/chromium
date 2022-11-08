@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/socket/next_proto.h"

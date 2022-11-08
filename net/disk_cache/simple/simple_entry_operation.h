@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"

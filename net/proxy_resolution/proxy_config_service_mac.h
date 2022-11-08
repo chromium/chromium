@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "net/base/network_config_watcher_mac.h"
 #include "net/proxy_resolution/proxy_config_service.h"
