@@ -154,7 +154,6 @@ dev_list="\
   devscripts
   fakeroot
   flex
-  fuse
   git-core
   gperf
   libasound2-dev
@@ -316,7 +315,6 @@ lib32_list="linux-libc-dev:i386 libpci3:i386"
 
 # 32-bit libraries needed for a 32-bit build
 lib32_list="$lib32_list
-  fuse:i386
   libasound2:i386
   libatk-bridge2.0-0:i386
   libatk1.0-0:i386
