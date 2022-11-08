@@ -42,6 +42,18 @@ namespace {
 
 class ExtensionBrowsingDataTest : public InProcessBrowserTest {};
 
+class ExtensionBrowsingDataTestWithStoragePartitioning
+    : public ExtensionBrowsingDataTest {
+ public:
+  ExtensionBrowsingDataTestWithStoragePartitioning() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kThirdPartyStoragePartitioning);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // TODO(http://crbug.com/1266606): appcache is a noop and should be removed.
 const char kRemoveEverythingArguments[] =
     R"([{"since": 1000}, {
@@ -267,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageOrigin) {
   EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key1));
   EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
 
-  // Clear the data for everything.
+  // Clear the data only for example.com.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   const char removeArgs[] =
       R"([{
@@ -282,4 +294,86 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageOrigin) {
   EXPECT_EQ(1U, usage_infos.size());
   EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key1));
   EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
+                       DeleteLocalStoragePartitioned) {
+  ASSERT_TRUE(blink::StorageKey::IsThirdPartyStoragePartitioningEnabled());
+  const auto kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const auto kDifferentOrigin = url::Origin::Create(GURL("https://other.com"));
+  const auto kDifferentSubdomain =
+      url::Origin::Create(GURL("https://maps.example.com"));
+  const auto kAnotherOrigin =
+      url::Origin::Create(GURL("https://something.com"));
+
+  // First-party key for the origin being deleted.
+  auto key1 = blink::StorageKey::CreateWithOptionalNonce(
+      kOrigin, net::SchemefulSite(kOrigin), nullptr,
+      blink::mojom::AncestorChainBit::kSameSite);
+  // Third-party embedded on the origin being deleted.
+  auto key2 = blink::StorageKey::CreateWithOptionalNonce(
+      kDifferentOrigin, net::SchemefulSite(kOrigin), nullptr,
+      blink::mojom::AncestorChainBit::kCrossSite);
+  // Cross-site same origin embedded on the origin being deleted.
+  auto key3 = blink::StorageKey::CreateWithOptionalNonce(
+      kOrigin, net::SchemefulSite(kOrigin), nullptr,
+      blink::mojom::AncestorChainBit::kCrossSite);
+  // Third-party same origin embedded on a different site.
+  auto key4 = blink::StorageKey::CreateWithOptionalNonce(
+      kOrigin, net::SchemefulSite(kDifferentOrigin), nullptr,
+      blink::mojom::AncestorChainBit::kCrossSite);
+  // First-party key for an origin not being deleted.
+  auto key5 = blink::StorageKey::CreateWithOptionalNonce(
+      kDifferentOrigin, net::SchemefulSite(kDifferentOrigin), nullptr,
+      blink::mojom::AncestorChainBit::kSameSite);
+  // First-party key for a different subdomain for the origin being deleted.
+  auto key6 = blink::StorageKey::CreateWithOptionalNonce(
+      kDifferentSubdomain, net::SchemefulSite(kDifferentSubdomain), nullptr,
+      blink::mojom::AncestorChainBit::kSameSite);
+  // Third-party key with a top-level-site equal to a different subdomain for
+  // the origin being deleted.
+  auto key7 = blink::StorageKey::CreateWithOptionalNonce(
+      kAnotherOrigin, net::SchemefulSite(kDifferentSubdomain), nullptr,
+      blink::mojom::AncestorChainBit::kCrossSite);
+  // Cross-site different subdomain origin embedded with itself as the top-level
+  // site.
+  auto key8 = blink::StorageKey::CreateWithOptionalNonce(
+      kDifferentSubdomain, net::SchemefulSite(kDifferentSubdomain), nullptr,
+      blink::mojom::AncestorChainBit::kCrossSite);
+
+  std::vector<blink::StorageKey> keys = {key1, key2, key3, key4,
+                                         key5, key6, key7, key8};
+  // Create some local storage for each of the keys.
+  for (const auto& key : keys) {
+    CreateLocalStorageForKey(browser()->profile(), key);
+  }
+
+  // Verify that the data is actually stored.
+  auto usage_infos = GetLocalStorage(browser()->profile());
+  EXPECT_EQ(keys.size(), usage_infos.size());
+  for (const auto& key : keys) {
+    EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key));
+  }
+
+  // Clear the data for example.com.
+  auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
+  const char removeArgs[] =
+      R"([{
+    "origins": ["https://example.com"]
+    }, {
+    "localStorage": true
+    }])";
+  EXPECT_EQ(nullptr, RunFunctionAndReturnSingleResult(function.get(),
+                                                      removeArgs, browser()));
+
+  usage_infos = GetLocalStorage(browser()->profile());
+  EXPECT_EQ(3U, usage_infos.size());
+  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key2));
+  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key3));
+  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key4));
+  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key5));
+  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key6));
+  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key7));
+  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key8));
 }

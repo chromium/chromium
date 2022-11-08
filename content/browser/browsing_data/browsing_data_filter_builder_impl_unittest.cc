@@ -130,6 +130,26 @@ void RunTestCase(
       << (test_case.should_match ? "" : "NOT ") << "be matched by the filter.";
 }
 
+struct StorageKeyTestCase {
+  std::string origin;
+  std::string top_level_site;
+  blink::mojom::AncestorChainBit ancestor_chain_bit;
+  bool should_match;
+};
+
+void RunTestCase(
+    StorageKeyTestCase test_case,
+    const content::StoragePartition::StorageKeyMatcherFunction& filter) {
+  auto origin = url::Origin::Create(GURL(test_case.origin));
+  auto top_level_site =
+      net::SchemefulSite(url::Origin::Create(GURL(test_case.top_level_site)));
+  auto key = blink::StorageKey::CreateWithOptionalNonce(
+      origin, top_level_site, nullptr, test_case.ancestor_chain_bit);
+  EXPECT_EQ(test_case.should_match, filter.Run(key))
+      << key.GetDebugString() << " should "
+      << (test_case.should_match ? "" : "NOT ") << "be matched by the filter.";
+}
+
 }  // namespace
 
 TEST(BrowsingDataFilterBuilderImplTest, Noop) {
@@ -459,6 +479,8 @@ TEST(BrowsingDataFilterBuilderImplTest, StorageKey) {
   base::test::ScopedFeatureList scope_feature_list;
   scope_feature_list.InitAndEnableFeature(
       net::features::kThirdPartyStoragePartitioning);
+  auto origin1 = url::Origin::Create(GURL("https://foo.com"));
+  auto origin2 = url::Origin::Create(GURL("https://bar.com"));
   absl::optional<blink::StorageKey> keys[] = {
       // No storage key provided.
       absl::nullopt,
@@ -466,23 +488,19 @@ TEST(BrowsingDataFilterBuilderImplTest, StorageKey) {
       blink::StorageKey::CreateFromStringForTesting("https://foo.com"),
       // Foo -> Bar.
       blink::StorageKey::CreateWithOptionalNonce(
-          url::Origin::Create(GURL("https://foo.com")),
-          net::SchemefulSite(url::Origin::Create(GURL("https://bar.com"))),
-          nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+          origin1, net::SchemefulSite(origin2), nullptr,
+          blink::mojom::AncestorChainBit::kCrossSite),
       // Foo -> Bar -> Foo.
       blink::StorageKey::CreateWithOptionalNonce(
-          url::Origin::Create(GURL("https://foo.com")),
-          net::SchemefulSite(url::Origin::Create(GURL("https://foo.com"))),
-          nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+          origin1, net::SchemefulSite(origin1), nullptr,
+          blink::mojom::AncestorChainBit::kCrossSite),
   };
   for (size_t i = 0; i < std::size(keys); ++i) {
     const auto& storage_key = keys[i];
     BrowsingDataFilterBuilderImpl builder(
         BrowsingDataFilterBuilderImpl::Mode::kDelete);
-    if (storage_key.has_value())
-      builder.AddOrigin(storage_key.value().origin());
-    else
-      builder.AddOrigin(url::Origin::Create(GURL("https://foo.com")));
+    builder.AddOrigin((storage_key.has_value()) ? storage_key.value().origin()
+                                                : origin1);
     builder.SetStorageKey(storage_key);
     EXPECT_EQ(storage_key.has_value(), builder.HasStorageKey());
     // Start from 1 to ignore the nullopt key.
@@ -490,8 +508,13 @@ TEST(BrowsingDataFilterBuilderImplTest, StorageKey) {
       const auto& key_to_compare = keys[j];
       auto matcher_function = builder.BuildStorageKeyFilter();
       // Only matches either when the keys are exactly the same, or when there
-      // is no stored key.
-      bool expected = ((i == j) || (!storage_key.has_value()));
+      // is no stored key and the origin matching is performed.
+      bool same_key = (i == j);
+      bool origin_match =
+          (!storage_key.has_value() && key_to_compare.has_value() &&
+           key_to_compare.value().MatchesOriginForTrustedStorageDeletion(
+               origin1));
+      bool expected = same_key || origin_match;
       EXPECT_EQ(expected,
                 std::move(matcher_function).Run(key_to_compare.value()));
     }
@@ -711,6 +734,72 @@ TEST(BrowsingDataFilterBuilderImplTest, CombinedPreserveList) {
   };
 
   for (TestCase test_case : test_cases)
+    RunTestCase(test_case, filter);
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, PartitionedDeleteList) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  const std::string origin1 = "https://www.google.com";
+  const std::string origin2 = "https://example.com";
+  const std::string origin3 = "https://maps.google.com";
+
+  ASSERT_TRUE(blink::StorageKey::IsThirdPartyStoragePartitioningEnabled());
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+  builder.AddOrigin(url::Origin::Create(GURL(origin1)));
+  auto filter = builder.BuildStorageKeyFilter();
+
+  StorageKeyTestCase test_cases[] = {
+      // Top-level sites with origin1.
+      {origin1, origin1, blink::mojom::AncestorChainBit::kSameSite, true},
+      {origin2, origin1, blink::mojom::AncestorChainBit::kCrossSite, true},
+      {origin1, origin1, blink::mojom::AncestorChainBit::kCrossSite, true},
+      // Top-level sites with origin2.
+      {origin2, origin2, blink::mojom::AncestorChainBit::kSameSite, false},
+      {origin1, origin2, blink::mojom::AncestorChainBit::kCrossSite, false},
+      // Same top-level domain as origin1.
+      {origin3, origin3, blink::mojom::AncestorChainBit::kSameSite, false},
+      {origin2, origin3, blink::mojom::AncestorChainBit::kCrossSite, true},
+      {origin3, origin3, blink::mojom::AncestorChainBit::kCrossSite, true},
+  };
+
+  for (auto test_case : test_cases)
+    RunTestCase(test_case, filter);
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, PartitionedPreserveList) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  const std::string origin1 = "https://www.google.com";
+  const std::string origin2 = "https://example.com";
+  const std::string origin3 = "https://maps.google.com";
+
+  ASSERT_TRUE(blink::StorageKey::IsThirdPartyStoragePartitioningEnabled());
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kPreserve);
+  builder.AddOrigin(url::Origin::Create(GURL(origin1)));
+  auto filter = builder.BuildStorageKeyFilter();
+
+  StorageKeyTestCase test_cases[] = {
+      // Top-level sites with origin1.
+      {origin1, origin1, blink::mojom::AncestorChainBit::kSameSite, false},
+      {origin2, origin1, blink::mojom::AncestorChainBit::kCrossSite, false},
+      {origin1, origin1, blink::mojom::AncestorChainBit::kCrossSite, false},
+      // Top-level sites with origin2.
+      {origin2, origin2, blink::mojom::AncestorChainBit::kSameSite, true},
+      {origin1, origin2, blink::mojom::AncestorChainBit::kCrossSite, true},
+      // Same top-level domain as origin1.
+      {origin3, origin3, blink::mojom::AncestorChainBit::kSameSite, true},
+      {origin2, origin3, blink::mojom::AncestorChainBit::kCrossSite, false},
+      {origin3, origin3, blink::mojom::AncestorChainBit::kCrossSite, false},
+  };
+
+  for (auto test_case : test_cases)
     RunTestCase(test_case, filter);
 }
 

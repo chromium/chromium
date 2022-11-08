@@ -42,9 +42,11 @@ bool MatchesStorageKey(const std::set<url::Origin>& origins,
                        BrowsingDataFilterBuilder::Mode mode,
                        const blink::StorageKey& storage_key) {
   bool is_delete_list = mode == BrowsingDataFilterBuilder::Mode::kDelete;
-  bool found_origin = base::Contains(origins, storage_key.origin());
-  if (found_origin)
-    return is_delete_list;
+  for (const auto& origin : origins) {
+    if (storage_key.MatchesOriginForTrustedStorageDeletion(origin)) {
+      return is_delete_list;
+    }
+  }
 
   bool found_domain = false;
   if (!registerable_domains.empty()) {

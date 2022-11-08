@@ -440,6 +440,17 @@ const absl::optional<net::CookiePartitionKey> StorageKey::ToCookiePartitionKey()
                                                            nonce_);
 }
 
+bool StorageKey::MatchesOriginForTrustedStorageDeletion(
+    const url::Origin& origin) const {
+  if (!IsThirdPartyStoragePartitioningEnabled())
+    return origin_ == origin;
+  // TODO(crbug.com/1382138): Address wss:// and https:// resulting in different
+  // SchemefulSites.
+  return (ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kSameSite)
+             ? (origin_ == origin)
+             : (top_level_site_ == net::SchemefulSite(origin));
+}
+
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
   return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
                   lhs.ancestor_chain_bit_) ==

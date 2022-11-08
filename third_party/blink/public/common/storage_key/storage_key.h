@@ -183,6 +183,18 @@ class BLINK_COMMON_EXPORT StorageKey {
   // enabled, then it will always return nullopt.
   const absl::optional<net::CookiePartitionKey> ToCookiePartitionKey() const;
 
+  // Checks whether this StorageKey matches a given origin for the purposes of
+  // clearing site data. This method should only be used in trusted contexts,
+  // such as extensions browsingData API or settings UIs, as opposed to the
+  // untrusted ones, such as the Clear-Site-Data header (where the entire
+  // storage key should be matched exactly).
+  // For first-party contexts, this matches on the `origin`; for third-party,
+  // this matches on the `top_level_site`. This is done to prevent clearing
+  // first-party data for a.example.com when only b.example.com needs to be
+  // cleared. The 3P partitioned data for the entire example.com will be cleared
+  // in contrast to that.
+  bool MatchesOriginForTrustedStorageDeletion(const url::Origin& origin) const;
+
  private:
   // This enum represents the different type of encodable partitioning
   // attributes.
