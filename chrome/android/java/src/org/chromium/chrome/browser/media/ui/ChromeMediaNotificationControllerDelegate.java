@@ -147,7 +147,8 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
         public void onCreate() {
             super.onCreate();
             IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-            getService().registerReceiver(mAudioBecomingNoisyReceiver, filter);
+            ContextUtils.registerProtectedBroadcastReceiver(
+                    getService(), mAudioBecomingNoisyReceiver, filter);
         }
 
         @Override

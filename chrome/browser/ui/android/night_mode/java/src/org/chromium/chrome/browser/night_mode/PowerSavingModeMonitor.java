@@ -81,7 +81,8 @@ public class PowerSavingModeMonitor {
                     updatePowerSaveMode();
                 }
             };
-            ContextUtils.getApplicationContext().registerReceiver(mPowerModeReceiver,
+            ContextUtils.registerProtectedBroadcastReceiver(ContextUtils.getApplicationContext(),
+                    mPowerModeReceiver,
                     new IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED));
         }
         updatePowerSaveMode();

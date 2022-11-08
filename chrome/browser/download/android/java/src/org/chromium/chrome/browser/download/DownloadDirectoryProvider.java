@@ -349,7 +349,8 @@ public class DownloadDirectoryProvider {
         filter.addAction(Intent.ACTION_MEDIA_EJECT);
         filter.addDataScheme("file");
         mExternalSDCardReceiver = new ExternalSDCardReceiver();
-        ContextUtils.getApplicationContext().registerReceiver(mExternalSDCardReceiver, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mExternalSDCardReceiver, filter);
     }
 
     private void recordDirectoryType(@DirectoryOption.DownloadLocationDirectoryType int type) {

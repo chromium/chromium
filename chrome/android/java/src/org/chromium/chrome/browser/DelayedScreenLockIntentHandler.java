@@ -83,7 +83,8 @@ public class DelayedScreenLockIntentHandler extends BroadcastReceiver {
         mEnabled = value;
         Context applicationContext = ContextUtils.getApplicationContext();
         if (value) {
-            applicationContext.registerReceiver(this, new IntentFilter(Intent.ACTION_USER_PRESENT));
+            ContextUtils.registerProtectedBroadcastReceiver(
+                    applicationContext, this, new IntentFilter(Intent.ACTION_USER_PRESENT));
         } else {
             applicationContext.unregisterReceiver(this);
         }

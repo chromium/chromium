@@ -124,7 +124,7 @@ public class GSAAccountChangeListener {
         };
         IntentFilter filter = new IntentFilter(Intent.ACTION_PACKAGE_REPLACED);
         filter.addDataScheme("package");
-        context.registerReceiver(gsaUpdatedReceiver, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(context, gsaUpdatedReceiver, filter);
     }
 
     private void createGsaClientAndConnect(final Context context, GSAHelper gsaHelper) {

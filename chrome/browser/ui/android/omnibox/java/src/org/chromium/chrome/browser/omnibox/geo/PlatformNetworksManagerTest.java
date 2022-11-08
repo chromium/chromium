@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -262,7 +263,10 @@ public class PlatformNetworksManagerTest {
                         Arrays.asList(mCellInfoLte, mCellInfoWcdma, mCellInfoGsm, mCellInfoCdma));
         allPermissionsGranted();
 
-        when(mContext.registerReceiver(eq(null), any(IntentFilter.class)))
+        when(mContext.registerReceiver(eq(null), any(IntentFilter.class), isNull(), isNull()))
+                .thenReturn(mNetworkStateChangedIntent);
+        when(mContext.registerReceiver(
+                     eq(null), any(IntentFilter.class), isNull(), isNull(), eq(0)))
                 .thenReturn(mNetworkStateChangedIntent);
         when(mNetworkStateChangedIntent.getParcelableExtra(eq(WifiManager.EXTRA_WIFI_INFO)))
                 .thenReturn(mWifiInfo);
@@ -512,11 +516,18 @@ public class PlatformNetworksManagerTest {
     }
 
     private void verifyNetworkStateAction() {
-        verify(mContext).registerReceiver(eq(null), argThat(new ArgumentMatcher<IntentFilter>() {
+        ArgumentMatcher<IntentFilter> argumentMatcher = new ArgumentMatcher<IntentFilter>() {
             @Override
             public boolean matches(IntentFilter intentFilter) {
                 return intentFilter.hasAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
             }
-        }));
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            verify(mContext).registerReceiver(
+                    eq(null), argThat(argumentMatcher), isNull(), isNull(), eq(0));
+        } else {
+            verify(mContext).registerReceiver(
+                    eq(null), argThat(argumentMatcher), isNull(), isNull());
+        }
     }
 }

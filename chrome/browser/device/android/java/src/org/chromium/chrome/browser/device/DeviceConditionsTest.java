@@ -88,7 +88,12 @@ public class DeviceConditionsTest {
         mBatteryStatus.putExtra(BatteryManager.EXTRA_SCALE, 100);
         mBatteryStatus.putExtra(BatteryManager.EXTRA_LEVEL, 50);
         setBatteryStatus(BatteryManager.BATTERY_STATUS_UNKNOWN);
-        doReturn(mBatteryStatus).when(mContext).registerReceiver(isNull(), any());
+        doReturn(mBatteryStatus)
+                .when(mContext)
+                .registerReceiver(isNull(), any(), isNull(), isNull());
+        doReturn(mBatteryStatus)
+                .when(mContext)
+                .registerReceiver(isNull(), any(), isNull(), isNull(), eq(0));
 
         // Set up connectivity manager.
         doReturn(null).when(mConnectivityManager).getActiveNetworkInfo();
@@ -183,7 +188,8 @@ public class DeviceConditionsTest {
 
     @Test
     public void testNoNpeOnNullBatteryStatus() {
-        doReturn(null).when(mContext).registerReceiver(isNull(), any());
+        doReturn(null).when(mContext).registerReceiver(isNull(), any(), isNull(), isNull());
+        doReturn(null).when(mContext).registerReceiver(isNull(), any(), isNull(), isNull(), eq(0));
 
         DeviceConditions deviceConditions = DeviceConditions.getCurrent(mContext);
 
@@ -210,7 +216,9 @@ public class DeviceConditionsTest {
         Intent intent = new Intent();
         intent.putExtra(BatteryManager.EXTRA_SCALE, 0);
         intent.putExtra(BatteryManager.EXTRA_LEVEL, 50);
-        doReturn(intent).when(mContext).registerReceiver(isNull(), any());
+        doReturn(intent).when(mContext).registerReceiver(isNull(), any(), isNull(), isNull());
+        doReturn(intent).when(mContext).registerReceiver(
+                isNull(), any(), isNull(), isNull(), eq(0));
 
         deviceConditions = DeviceConditions.getCurrent(mContext);
         assertNotNull(deviceConditions);

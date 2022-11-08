@@ -35,6 +35,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
@@ -115,8 +116,9 @@ class PlatformNetworksManager {
     }
 
     static VisibleWifi getConnectedWifiPreMarshmallow(Context context) {
-        Intent intent = context.getApplicationContext().registerReceiver(
-                null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+        Intent intent =
+                ContextUtils.registerProtectedBroadcastReceiver(context.getApplicationContext(),
+                        null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
         if (intent != null) {
             WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
             return connectedWifiInfoToVisibleWifi(wifiInfo);
