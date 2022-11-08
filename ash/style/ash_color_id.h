@@ -76,6 +76,8 @@ namespace ash {
   E_CPONLY(kColorAshAppStateIndicatorColorInactive) \
   /* Color for the shelf drag handle in tablet mode. */ \
   E_CPONLY(kColorAshShelfHandleColor) \
+  E_CPONLY(kColorAshShelfTooltipBackgroundColor) \
+  E_CPONLY(kColorAshShelfTooltipForegroundColor) \
   E_CPONLY(kColorAshSliderColorActive) \
   E_CPONLY(kColorAshSliderColorInactive) \
   E_CPONLY(kColorAshRadioColorActive) \

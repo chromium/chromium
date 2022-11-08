@@ -5,10 +5,10 @@
 #include "ash/shelf/shelf_tooltip_bubble.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_constants.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/aura/window.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -39,27 +39,29 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   set_accept_events(false);
   set_shadow(views::BubbleBorder::NO_SHADOW);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  views::Label* label = new views::Label(text);
+  auto label = std::make_unique<views::Label>(text);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  const auto* color_provider = AshColorProvider::Get();
-  const bool is_dark_light_mode_enabled = features::IsDarkLightModeEnabled();
-  const SkColor tooltip_background = color_provider->GetBaseLayerColor(
-      is_dark_light_mode_enabled
-          ? AshColorProvider::BaseLayerType::kInvertedTransparent80
-          : AshColorProvider::BaseLayerType::kTransparent80);
-  const SkColor tooltip_text = color_provider->GetContentLayerColor(
-      is_dark_light_mode_enabled
-          ? AshColorProvider::ContentLayerType::kInvertedTextColorPrimary
-          : AshColorProvider::ContentLayerType::kTextColorPrimary);
 
-  set_color(tooltip_background);
-  label->SetEnabledColor(tooltip_text);
-  label->SetBackgroundColor(tooltip_background);
-  AddChildView(label);
-
+  // Initialize color ids
+  label->SetEnabledColorId(kColorAshShelfTooltipForegroundColor);
+  label->SetBackgroundColorId(kColorAshShelfTooltipBackgroundColor);
+  AddChildView(std::move(label));
   CreateBubble();
+
   CollisionDetectionUtils::IgnoreWindowForCollisionDetection(
       GetWidget()->GetNativeWindow());
+}
+
+void ShelfTooltipBubble::OnThemeChanged() {
+  ShelfBubble::OnThemeChanged();
+
+  const auto* color_provider = GetColorProvider();
+
+  // TODO(crbug.com/1377484): Update this function to use color id instead.
+  set_color(color_provider->GetColor(kColorAshShelfTooltipBackgroundColor));
+
+  // Updates the background color in the bubble frame view.
+  GetBubbleFrameView()->SetBackgroundColor(color());
 }
 
 gfx::Size ShelfTooltipBubble::CalculatePreferredSize() const {
