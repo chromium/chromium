@@ -189,7 +189,6 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController, B
                         maybeActivateConditionalTabStrip(ReasonToShow.TAB_SWITCHED);
                     }
                 }
-                if (type == TabSelectionType.FROM_CLOSE) return;
                 if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
                         && getTabsToShowForId(lastId).contains(tab)) {
                     return;

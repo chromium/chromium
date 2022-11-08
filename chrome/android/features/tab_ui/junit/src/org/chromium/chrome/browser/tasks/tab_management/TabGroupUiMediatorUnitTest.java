@@ -545,8 +545,8 @@ public class TabGroupUiMediatorUnitTest {
         mTabModelObserverArgumentCaptor.getValue().didSelectTab(
                 mTab2, TabSelectionType.FROM_CLOSE, TAB1_ID);
 
-        // Strip should never be reset since currently tab group UI is invisible.
-        verifyNeverReset();
+        // Strip should be reset since we are switching to a different group.
+        verifyResetStrip(true, mTabGroup2);
     }
 
     // TODO(988199): Ignore this test until we have a conclusion from the attached bug.

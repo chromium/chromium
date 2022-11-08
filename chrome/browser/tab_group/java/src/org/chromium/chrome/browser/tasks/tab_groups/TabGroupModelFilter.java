@@ -604,7 +604,13 @@ public class TabGroupModelFilter extends TabModelFilter {
     private List<Tab> getRelatedTabList(List<Integer> ids) {
         List<Tab> tabs = new ArrayList<>();
         for (Integer id : ids) {
-            tabs.add(TabModelUtils.getTabById(getTabModel(), id));
+            Tab tab = TabModelUtils.getTabById(getTabModel(), id);
+            // TODO(crbug/1382463): If this is called during a TabModelObserver observer iterator
+            // it is possible a sequencing issue can occur where the tab is gone from the TabModel,
+            // but still exists in the TabGroup. Avoid returning null by skipping the tab if it
+            // doesn't exist in the TabModel.
+            if (tab == null) continue;
+            tabs.add(tab);
         }
         return Collections.unmodifiableList(tabs);
     }
