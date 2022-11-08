@@ -2942,7 +2942,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221031",
+                    "name": "Enabled_20221108",
                     "params": {
                         "compile-in-parallel": "true",
                         "compile-strategy": "eager",
@@ -2979,7 +2979,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221031",
+                    "name": "Enabled_20221108",
                     "params": {
                         "compile-in-parallel": "true",
                         "compile-strategy": "eager",
@@ -2996,6 +2996,7 @@
                         "prewarm_standard": "false"
                     },
                     "enable_features": [
+                        "AvoidEarlyExtensionScriptContextCreation",
                         "DecodeScriptSourceOffThread",
                         "OptimizeDataUrls",
                         "PrecompileInlineScripts",
@@ -3016,7 +3017,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221031",
+                    "name": "Enabled_20221108",
                     "params": {
                         "compile-in-parallel": "true",
                         "compile-strategy": "eager",
