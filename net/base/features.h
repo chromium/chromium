@@ -370,6 +370,12 @@ NET_EXPORT
 extern const base::FeatureParam<int> kOptimizeNetworkBuffersBytesReadLimit;
 
 NET_EXPORT extern const base::FeatureParam<int>
+    kOptimizeNetworkBuffersMinInputStreamAvailableValueToIgnore;
+
+NET_EXPORT extern const base::FeatureParam<int>
+    kOptimizeNetworkBuffersMinInputStreamReadSize;
+
+NET_EXPORT extern const base::FeatureParam<int>
     kOptimizeNetworkBuffersMaxInputStreamBytesToReadWhenAvailableUnknown;
 
 NET_EXPORT extern const base::FeatureParam<int>

@@ -319,6 +319,19 @@ BASE_FEATURE(kOptimizeNetworkBuffers,
 const base::FeatureParam<int> kOptimizeNetworkBuffersBytesReadLimit{
     &kOptimizeNetworkBuffers, "bytes_read_limit", 64 * 1024};
 
+// If InputStream.available() returns less than this,
+// kOptimizeNetworkBuffersMinInputStreamReadSize will be used instead.
+const base::FeatureParam<int>
+    kOptimizeNetworkBuffersMinInputStreamAvailableValueToIgnore{
+        &kOptimizeNetworkBuffers, "min_input_stream_available_value_to_ignore",
+        16};
+
+// The smallest amount we'll try to read at a time if InputStream.available()
+// returned less than
+// kOptimizeNetworkBuffersMinInputStreamAvailableValueToIgnore.
+const base::FeatureParam<int> kOptimizeNetworkBuffersMinInputStreamReadSize{
+    &kOptimizeNetworkBuffers, "min_input_stream_read_size", 1024};
+
 const base::FeatureParam<int>
     kOptimizeNetworkBuffersMaxInputStreamBytesToReadWhenAvailableUnknown{
         &kOptimizeNetworkBuffers, "max_input_stream_bytes_available_unknown",
