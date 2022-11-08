@@ -317,7 +317,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   std::unique_ptr<FrameTaskQueueController> frame_task_queue_controller_;
 
   MainThreadSchedulerImpl* const main_thread_scheduler_;  // NOT OWNED
-  WeakPersistent<PageSchedulerImpl> parent_page_scheduler_;
+  PageSchedulerImpl* parent_page_scheduler_;              // NOT OWNED
   FrameScheduler::Delegate* delegate_;                    // NOT OWNED
   SchedulingLifecycleState throttling_state_;
   TraceableState<bool, TracingCategory::kInfo> frame_visible_;

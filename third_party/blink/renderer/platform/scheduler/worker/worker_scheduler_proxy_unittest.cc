@@ -138,7 +138,7 @@ class WorkerSchedulerProxyTest : public testing::Test {
 
   ~WorkerSchedulerProxyTest() override {
     frame_scheduler_.reset();
-    page_scheduler_->Shutdown();
+    page_scheduler_.reset();
     main_thread_scheduler_->Shutdown();
   }
 
@@ -146,7 +146,7 @@ class WorkerSchedulerProxyTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
-  Persistent<PageScheduler> page_scheduler_;
+  std::unique_ptr<PageScheduler> page_scheduler_;
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 };
 

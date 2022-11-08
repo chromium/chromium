@@ -73,7 +73,9 @@ class DummyFrameScheduler : public FrameScheduler {
     return base::ThreadTaskRunnerHandle::Get();
   }
 
-  PageScheduler* GetPageScheduler() const override { return page_scheduler_; }
+  PageScheduler* GetPageScheduler() const override {
+    return page_scheduler_.get();
+  }
   AgentGroupScheduler* GetAgentGroupScheduler() override {
     return &page_scheduler_->GetAgentGroupScheduler();
   }
@@ -151,7 +153,7 @@ class DummyFrameScheduler : public FrameScheduler {
   }
 
  private:
-  Persistent<PageScheduler> page_scheduler_;
+  std::unique_ptr<PageScheduler> page_scheduler_;
   base::WeakPtrFactory<FrameScheduler> weak_ptr_factory_{this};
 };
 
@@ -192,14 +194,9 @@ class DummyPageScheduler : public PageScheduler {
   scoped_refptr<WidgetScheduler> CreateWidgetScheduler() override {
     return base::MakeRefCounted<DummyWidgetScheduler>();
   }
-  void Trace(Visitor* visitor) const override {
-    PageScheduler::Trace(visitor);
-    visitor->Trace(agent_group_scheduler_);
-  }
-  void Shutdown() override {}
 
  private:
-  Member<AgentGroupScheduler> agent_group_scheduler_;
+  Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };
 
 // TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
@@ -320,7 +317,8 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
   DummyAgentGroupScheduler& operator=(const DummyAgentGroupScheduler&) = delete;
 
-  PageScheduler* CreatePageScheduler(PageScheduler::Delegate*) override {
+  std::unique_ptr<PageScheduler> CreatePageScheduler(
+      PageScheduler::Delegate*) override {
     return CreateDummyPageScheduler();
   }
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
@@ -356,8 +354,8 @@ std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler() {
   return std::make_unique<DummyFrameScheduler>();
 }
 
-PageScheduler* CreateDummyPageScheduler() {
-  return MakeGarbageCollected<DummyPageScheduler>();
+std::unique_ptr<PageScheduler> CreateDummyPageScheduler() {
+  return std::make_unique<DummyPageScheduler>();
 }
 
 AgentGroupScheduler* CreateDummyAgentGroupScheduler() {

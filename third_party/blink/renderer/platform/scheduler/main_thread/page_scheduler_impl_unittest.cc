@@ -47,12 +47,15 @@ void IncrementCounter(int* counter) {
 
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
 // returns the PageScheduler as a PageSchedulerImpl.
-PageSchedulerImpl* CreatePageScheduler(
+std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
     PageScheduler::Delegate* page_scheduler_delegate,
     MainThreadSchedulerImpl* scheduler,
     AgentGroupScheduler& agent_group_scheduler) {
-  return static_cast<PageSchedulerImpl*>(
-      agent_group_scheduler.CreatePageScheduler(page_scheduler_delegate));
+  std::unique_ptr<PageScheduler> page_scheduler =
+      agent_group_scheduler.CreatePageScheduler(page_scheduler_delegate);
+  std::unique_ptr<PageSchedulerImpl> page_scheduler_impl(
+      static_cast<PageSchedulerImpl*>(page_scheduler.release()));
+  return page_scheduler_impl;
 }
 
 // This is a wrapper around PageSchedulerImpl::CreateFrameScheduler, that
@@ -112,16 +115,14 @@ class PageSchedulerImplTest : public testing::Test {
         CreatePageScheduler(page_scheduler_delegate_.get(), scheduler_.get(),
                             *agent_group_scheduler_);
     frame_scheduler_ =
-        CreateFrameScheduler(page_scheduler_, nullptr,
+        CreateFrameScheduler(page_scheduler_.get(), nullptr,
                              /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kSubframe);
   }
 
   void TearDown() override {
     frame_scheduler_.reset();
-    if (page_scheduler_)
-      page_scheduler_->Shutdown();
-    page_scheduler_ = nullptr;
+    page_scheduler_.reset();
     agent_group_scheduler_ = nullptr;
     scheduler_->Shutdown();
     scheduler_.reset();
@@ -256,7 +257,7 @@ class PageSchedulerImplTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
-  Persistent<PageSchedulerImpl> page_scheduler_;
+  std::unique_ptr<PageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_;
   std::unique_ptr<MockPageSchedulerDelegate> page_scheduler_delegate_;
 
@@ -284,8 +285,7 @@ TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersAfter) {
       page_scheduler_->CreateFrameScheduler(
           nullptr, /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
-  page_scheduler_->Shutdown();
-  page_scheduler_ = nullptr;
+  page_scheduler_.reset();
 }
 
 namespace {
@@ -368,10 +368,10 @@ TEST_F(PageSchedulerImplTest, RepeatingLoadingTask_PageInBackground) {
 }
 
 TEST_F(PageSchedulerImplTest, RepeatingTimers_OneBackgroundOneForeground) {
-  PageSchedulerImpl* page_scheduler2 =
+  std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
-      CreateFrameScheduler(page_scheduler2, nullptr,
+      CreateFrameScheduler(page_scheduler2.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
@@ -405,10 +405,10 @@ TEST_F(PageSchedulerImplTest, IsLoadingTest) {
   // 1st Page is loaded.
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
-  PageSchedulerImpl* page_scheduler2 =
+  std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
-      CreateFrameScheduler(page_scheduler2, nullptr,
+      CreateFrameScheduler(page_scheduler2.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kMainFrame);
 
@@ -685,7 +685,7 @@ TEST_F(PageSchedulerImplTest, VirtualTimeSettings_NewFrameScheduler) {
   vtc->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
@@ -717,7 +717,7 @@ base::OnceClosure MakeDeletionTask(T* obj) {
 TEST_F(PageSchedulerImplTest, DeleteFrameSchedulers_InTask) {
   for (int i = 0; i < 10; i++) {
     FrameSchedulerImpl* frame_scheduler =
-        CreateFrameScheduler(page_scheduler_, nullptr,
+        CreateFrameScheduler(page_scheduler_.get(), nullptr,
                              /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kSubframe)
             .release();
@@ -729,13 +729,9 @@ TEST_F(PageSchedulerImplTest, DeleteFrameSchedulers_InTask) {
   test_task_runner_->FastForwardUntilNoTasksRemain();
 }
 
-TEST_F(PageSchedulerImplTest, ShutdownPageScheduler_InTask) {
+TEST_F(PageSchedulerImplTest, DeletePageScheduler_InTask) {
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(
-          [](PageSchedulerImpl* page_scheduler) { page_scheduler->Shutdown(); },
-          page_scheduler_));
-  page_scheduler_ = nullptr;
+      FROM_HERE, MakeDeletionTask(page_scheduler_.release()));
   test_task_runner_->FastForwardUntilNoTasksRemain();
 }
 
@@ -743,7 +739,7 @@ TEST_F(PageSchedulerImplTest, DeleteThrottledQueue_InTask) {
   page_scheduler_->SetPageVisible(false);
 
   FrameSchedulerImpl* frame_scheduler =
-      CreateFrameScheduler(page_scheduler_, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe)
           .release();
@@ -798,7 +794,7 @@ TEST_F(PageSchedulerImplTest,
   vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
@@ -865,7 +861,7 @@ TEST_F(PageSchedulerImplTest,
   base::TimeTicks time_second_task;
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
@@ -900,7 +896,7 @@ TEST_F(PageSchedulerImplTest,
   vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
@@ -949,7 +945,7 @@ TEST_F(PageSchedulerImplTest, PauseTimersWhileVirtualTimeIsPaused) {
   Vector<int> run_order;
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
@@ -1169,7 +1165,7 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
   base::TimeTicks start_time = test_task_runner_->NowTicks();
 
   Vector<base::TimeTicks> run_times;
-  frame_scheduler_ = CreateFrameScheduler(page_scheduler_, nullptr,
+  frame_scheduler_ = CreateFrameScheduler(page_scheduler_.get(), nullptr,
                                           /*is_in_embedded_frame_tree=*/false,
                                           FrameScheduler::FrameType::kSubframe);
   page_scheduler_->SetPageVisible(true);
@@ -1222,18 +1218,18 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
 
 TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
   InitializeTrialParams();
-  PageSchedulerImpl* page_scheduler =
+  std::unique_ptr<PageSchedulerImpl> page_scheduler =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   base::TimeTicks start_time = test_task_runner_->NowTicks();
 
   Vector<base::TimeTicks> run_times;
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler1 =
-      CreateFrameScheduler(page_scheduler, nullptr,
+      CreateFrameScheduler(page_scheduler.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
-      CreateFrameScheduler(page_scheduler, nullptr,
+      CreateFrameScheduler(page_scheduler.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
@@ -1365,8 +1361,7 @@ TEST_F(PageSchedulerImplTest, PageSchedulerDestroyedWhileAudioChangePending) {
   EXPECT_TRUE(page_scheduler_->IsAudioPlaying());
   page_scheduler_->AudioStateChanged(false);
 
-  page_scheduler_->Shutdown();
-  page_scheduler_ = nullptr;
+  page_scheduler_.reset();
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 }

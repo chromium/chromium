@@ -955,7 +955,6 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(next_related_page_);
   visitor->Trace(prev_related_page_);
   visitor->Trace(agent_group_scheduler_);
-  visitor->Trace(page_scheduler_);
   Supplementable<Page>::Trace(visitor);
 }
 
@@ -1014,7 +1013,7 @@ void Page::WillBeDestroyed() {
       });
   page_visibility_observer_set_.Clear();
 
-  page_scheduler_->Shutdown();
+  page_scheduler_ = nullptr;
 }
 
 void Page::RegisterPluginsChangedObserver(PluginsChangedObserver* observer) {
@@ -1036,7 +1035,7 @@ AgentGroupScheduler& Page::GetAgentGroupScheduler() const {
 
 PageScheduler* Page::GetPageScheduler() const {
   DCHECK(page_scheduler_);
-  return page_scheduler_;
+  return page_scheduler_.get();
 }
 
 bool Page::IsOrdinary() const {

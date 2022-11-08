@@ -72,12 +72,15 @@ constexpr base::TimeDelta kDelayForHighPriorityRendering =
 
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
 // returns the PageScheduler as a PageSchedulerImpl.
-PageSchedulerImpl* CreatePageScheduler(
+std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
     PageScheduler::Delegate* page_scheduler_delegate,
     ThreadSchedulerBase* scheduler,
     AgentGroupScheduler& agent_group_scheduler) {
-  return static_cast<PageSchedulerImpl*>(
-      agent_group_scheduler.CreatePageScheduler(page_scheduler_delegate));
+  std::unique_ptr<PageScheduler> page_scheduler =
+      agent_group_scheduler.CreatePageScheduler(page_scheduler_delegate);
+  std::unique_ptr<PageSchedulerImpl> page_scheduler_impl(
+      static_cast<PageSchedulerImpl*>(page_scheduler.release()));
+  return page_scheduler_impl;
 }
 
 // This is a wrapper around PageSchedulerImpl::CreateFrameScheduler, that
@@ -463,10 +466,10 @@ class MainThreadSchedulerImplTest : public testing::Test {
       compositor_task_runner_ = agent_group_scheduler_->CompositorTaskQueue()
                                     ->GetTaskRunnerWithDefaultTaskType();
     }
-    page_scheduler_ = MakeGarbageCollected<NiceMock<MockPageSchedulerImpl>>(
+    page_scheduler_ = std::make_unique<NiceMock<MockPageSchedulerImpl>>(
         scheduler_.get(), *agent_group_scheduler_);
     main_frame_scheduler_ =
-        CreateFrameScheduler(page_scheduler_, nullptr,
+        CreateFrameScheduler(page_scheduler_.get(), nullptr,
                              /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kMainFrame);
 
@@ -530,9 +533,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   void TearDown() override {
     widget_scheduler_.reset();
     main_frame_scheduler_.reset();
-    if (page_scheduler_)
-      page_scheduler_->Shutdown();
-    page_scheduler_ = nullptr;
+    page_scheduler_.reset();
     agent_group_scheduler_ = nullptr;
     scheduler_->Shutdown();
     base::RunLoop().RunUntilIdle();
@@ -1009,7 +1010,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
 
   std::unique_ptr<MainThreadSchedulerImplForTest> scheduler_;
   Persistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
-  Persistent<MockPageSchedulerImpl> page_scheduler_;
+  std::unique_ptr<MockPageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler_;
   scoped_refptr<WidgetScheduler> widget_scheduler_;
 
@@ -2567,8 +2568,7 @@ TEST_F(MainThreadSchedulerImplTest, BeginMainFrameOnCriticalPath) {
 
 TEST_F(MainThreadSchedulerImplTest, ShutdownPreventsPostingOfNewTasks) {
   main_frame_scheduler_.reset();
-  page_scheduler_->Shutdown();
-  page_scheduler_ = nullptr;
+  page_scheduler_.reset();
   scheduler_->Shutdown();
   Vector<String> run_order;
   PostTestTasks(&run_order, "D1 C1");
@@ -3182,18 +3182,18 @@ TEST_F(MainThreadSchedulerImplTest, Tracing) {
   // (by posting tasks, creating child schedulers, etc) and converts it into a
   // traced value. This test checks that no internal checks fire during this.
 
-  PageSchedulerImpl* page_scheduler1 =
+  std::unique_ptr<PageSchedulerImpl> page_scheduler1 =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
-  scheduler_->AddPageScheduler(page_scheduler1);
+  scheduler_->AddPageScheduler(page_scheduler1.get());
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler1, nullptr,
+      CreateFrameScheduler(page_scheduler1.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
-  PageSchedulerImpl* page_scheduler2 =
+  std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
-  scheduler_->AddPageScheduler(page_scheduler2);
+  scheduler_->AddPageScheduler(page_scheduler2.get());
 
   std::unique_ptr<CPUTimeBudgetPool> time_budget_pool =
       scheduler_->CreateCPUTimeBudgetPoolForTesting("test");
@@ -3223,7 +3223,7 @@ TEST_F(MainThreadSchedulerImplTest,
 
   // Store documents inside the back-forward cache. IPCs are only tracked IFF
   // all pages are in the back-forward cache.
-  PageSchedulerImpl* page_scheduler = page_scheduler_;
+  PageSchedulerImpl* page_scheduler = page_scheduler_.get();
   page_scheduler->SetPageBackForwardCached(true);
   base::RunLoop().RunUntilIdle();
   {
@@ -3234,9 +3234,9 @@ TEST_F(MainThreadSchedulerImplTest,
 
   // Adding a new page scheduler results in IPCs not being logged, as this
   // page scheduler is not in the cache.
-  PageSchedulerImpl* page_scheduler1 =
+  std::unique_ptr<PageSchedulerImpl> page_scheduler1 =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
-  scheduler_->AddPageScheduler(page_scheduler1);
+  scheduler_->AddPageScheduler(page_scheduler1.get());
   base::RunLoop().RunUntilIdle();
   {
     base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(2);
@@ -3246,8 +3246,7 @@ TEST_F(MainThreadSchedulerImplTest,
 
   // Removing an un-cached page scheduler results in IPCs being logged, as all
   // page schedulers are now in the cache.
-  page_scheduler1->Shutdown();
-  page_scheduler1 = nullptr;
+  page_scheduler1.reset();
   base::RunLoop().RunUntilIdle();
   {
     base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(3);
@@ -3295,7 +3294,7 @@ TEST_F(MainThreadSchedulerImplTest, RequestBeginMainFrameNotExpected) {
       .WillRepeatedly(testing::Return(true));
   base::RunLoop().RunUntilIdle();
 
-  Mock::VerifyAndClearExpectations(page_scheduler_);
+  Mock::VerifyAndClearExpectations(page_scheduler_.get());
 
   scheduler_->OnPendingTasksChanged(false);
   EXPECT_CALL(*page_scheduler_, RequestBeginMainFrameNotExpected(false))
@@ -3303,7 +3302,7 @@ TEST_F(MainThreadSchedulerImplTest, RequestBeginMainFrameNotExpected) {
       .WillRepeatedly(testing::Return(true));
   base::RunLoop().RunUntilIdle();
 
-  Mock::VerifyAndClearExpectations(page_scheduler_);
+  Mock::VerifyAndClearExpectations(page_scheduler_.get());
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -3316,7 +3315,7 @@ TEST_F(MainThreadSchedulerImplTest,
       .WillRepeatedly(testing::Return(true));
   base::RunLoop().RunUntilIdle();
 
-  Mock::VerifyAndClearExpectations(page_scheduler_);
+  Mock::VerifyAndClearExpectations(page_scheduler_.get());
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -3338,12 +3337,13 @@ TEST_F(MainThreadSchedulerImplTest, PauseTimersForAndroidWebView) {
 
 TEST_F(MainThreadSchedulerImplTest, FreezesCompositorQueueWhenAllPagesFrozen) {
   main_frame_scheduler_.reset();
-  page_scheduler_->Shutdown();
-  page_scheduler_ = nullptr;
+  page_scheduler_.reset();
 
-  PageScheduler* sched_1 = agent_group_scheduler_->CreatePageScheduler(nullptr);
+  std::unique_ptr<PageScheduler> sched_1 =
+      agent_group_scheduler_->CreatePageScheduler(nullptr);
   sched_1->SetPageVisible(false);
-  PageScheduler* sched_2 = agent_group_scheduler_->CreatePageScheduler(nullptr);
+  std::unique_ptr<PageScheduler> sched_2 =
+      agent_group_scheduler_->CreatePageScheduler(nullptr);
   sched_2->SetPageVisible(false);
 
   Vector<String> run_order;
@@ -3361,23 +3361,21 @@ TEST_F(MainThreadSchedulerImplTest, FreezesCompositorQueueWhenAllPagesFrozen) {
   EXPECT_THAT(run_order, testing::ElementsAre("D2"));
 
   run_order.clear();
-  PageScheduler* sched_3 = agent_group_scheduler_->CreatePageScheduler(nullptr);
+  std::unique_ptr<PageScheduler> sched_3 =
+      agent_group_scheduler_->CreatePageScheduler(nullptr);
   sched_3->SetPageVisible(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("C2"));
 
   run_order.clear();
   PostTestTasks(&run_order, "D3 C3");
-  sched_3->Shutdown();
-  sched_3 = nullptr;
+  sched_3.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("D3"));
 
   run_order.clear();
-  sched_1->Shutdown();
-  sched_1 = nullptr;
-  sched_2->Shutdown();
-  sched_2 = nullptr;
+  sched_1.reset();
+  sched_2.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("C3"));
 }

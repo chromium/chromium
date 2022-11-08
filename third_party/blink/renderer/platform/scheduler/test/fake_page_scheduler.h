@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_PAGE_SCHEDULER_H_
 
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 
@@ -38,9 +37,9 @@ class FakePageScheduler : public PageScheduler {
       return *this;
     }
 
-    FakePageScheduler* Build() {
-      return MakeGarbageCollected<FakePageScheduler>(is_audio_playing_,
-                                                     is_throttling_exempt_);
+    std::unique_ptr<FakePageScheduler> Build() {
+      return std::make_unique<FakePageScheduler>(is_audio_playing_,
+                                                 is_throttling_exempt_);
     }
 
    private:
@@ -85,17 +84,10 @@ class FakePageScheduler : public PageScheduler {
     return nullptr;
   }
 
-  void Shutdown() override {}
-
-  void Trace(Visitor* visitor) const override {
-    PageScheduler::Trace(visitor);
-    visitor->Trace(agent_group_scheduler_);
-  }
-
  private:
   bool is_audio_playing_;
   bool is_throttling_exempt_;
-  Member<AgentGroupScheduler> agent_group_scheduler_;
+  Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };
 
 }  // namespace scheduler

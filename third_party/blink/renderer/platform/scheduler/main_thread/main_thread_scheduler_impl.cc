@@ -603,9 +603,7 @@ void MainThreadSchedulerImpl::ShutdownAllQueues() {
 
 bool MainThreadSchedulerImpl::
     IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint() const {
-  if (!main_thread_only().page_schedulers)
-    return false;
-  for (const PageSchedulerImpl* ps : *main_thread_only().page_schedulers) {
+  for (const PageSchedulerImpl* ps : main_thread_only().page_schedulers) {
     if (ps->IsOrdinary() && ps->IsWaitingForMainFrameMeaningfulPaint())
       return true;
   }
@@ -614,9 +612,7 @@ bool MainThreadSchedulerImpl::
 
 bool MainThreadSchedulerImpl::
     IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint() const {
-  if (!main_thread_only().page_schedulers)
-    return false;
-  for (const PageSchedulerImpl* ps : *main_thread_only().page_schedulers) {
+  for (const PageSchedulerImpl* ps : main_thread_only().page_schedulers) {
     if (ps->IsOrdinary() && ps->IsWaitingForMainFrameContentfulPaint())
       return true;
   }
@@ -734,9 +730,7 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
 }
 
 bool MainThreadSchedulerImpl::IsIpcTrackingEnabledForAllPages() {
-  if (!main_thread_only().page_schedulers)
-    return true;
-  for (PageSchedulerImpl* scheduler : *main_thread_only().page_schedulers) {
+  for (auto* scheduler : main_thread_only().page_schedulers) {
     if (!(scheduler->IsInBackForwardCache() &&
           scheduler->has_ipc_detection_enabled())) {
       return false;
@@ -1062,11 +1056,8 @@ void MainThreadSchedulerImpl::ResumeTimersForAndroidWebView() {
 
 void MainThreadSchedulerImpl::OnAudioStateChanged() {
   bool is_audio_playing = false;
-  if (main_thread_only().page_schedulers) {
-    for (PageSchedulerImpl* page_scheduler :
-         *main_thread_only().page_schedulers) {
-      is_audio_playing = is_audio_playing || page_scheduler->IsAudioPlaying();
-    }
+  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    is_audio_playing = is_audio_playing || page_scheduler->IsAudioPlaying();
   }
 
   if (is_audio_playing == main_thread_only().is_audio_playing)
@@ -1796,11 +1787,8 @@ void MainThreadSchedulerImpl::OnVirtualTimeEnabled() {
 
   ForceUpdatePolicy();
 
-  if (main_thread_only().page_schedulers) {
-    for (PageSchedulerImpl* page_scheduler :
-         *main_thread_only().page_schedulers) {
-      page_scheduler->OnVirtualTimeEnabled();
-    }
+  for (auto* page_scheduler : main_thread_only().page_schedulers) {
+    page_scheduler->OnVirtualTimeEnabled();
   }
 }
 
@@ -1906,11 +1894,8 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
   dict.Add("default_gesture_prevented", any_thread().default_gesture_prevented);
   dict.Add("is_audio_playing", main_thread_only().is_audio_playing);
   dict.Add("page_schedulers", [&](perfetto::TracedValue context) {
-    if (!main_thread_only().page_schedulers)
-      return;
     auto array = std::move(context).WriteArray();
-    for (PageSchedulerImpl* page_scheduler :
-         *main_thread_only().page_schedulers) {
+    for (const auto* page_scheduler : main_thread_only().page_schedulers) {
       page_scheduler->WriteIntoTrace(array.AppendItem(), optional_now);
     }
   });
@@ -1998,11 +1983,8 @@ void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
       "MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected",
       "has_tasks", has_tasks);
   bool success = false;
-  if (main_thread_only().page_schedulers) {
-    for (PageSchedulerImpl* page_scheduler :
-         *main_thread_only().page_schedulers) {
-      success |= page_scheduler->RequestBeginMainFrameNotExpected(has_tasks);
-    }
+  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    success |= page_scheduler->RequestBeginMainFrameNotExpected(has_tasks);
   }
   main_thread_only().compositor_will_send_main_frame_not_expected =
       success && has_tasks;
@@ -2299,12 +2281,7 @@ void MainThreadSchedulerImpl::AddAgentGroupScheduler(
 
 void MainThreadSchedulerImpl::AddPageScheduler(
     PageSchedulerImpl* page_scheduler) {
-  if (!main_thread_only().page_schedulers) {
-    main_thread_only().page_schedulers =
-        MakeGarbageCollected<HeapHashSet<WeakMember<PageSchedulerImpl>>>();
-  }
-
-  main_thread_only().page_schedulers->insert(page_scheduler);
+  main_thread_only().page_schedulers.insert(page_scheduler);
   DetachOnIPCTaskPostedWhileInBackForwardCacheHandler();
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageCreated(
@@ -2321,10 +2298,9 @@ void MainThreadSchedulerImpl::AddPageScheduler(
 
 void MainThreadSchedulerImpl::RemovePageScheduler(
     PageSchedulerImpl* page_scheduler) {
-  DCHECK(main_thread_only().page_schedulers);
-  DCHECK(main_thread_only().page_schedulers->find(page_scheduler) !=
-         main_thread_only().page_schedulers->end());
-  main_thread_only().page_schedulers->erase(page_scheduler);
+  DCHECK(main_thread_only().page_schedulers.find(page_scheduler) !=
+         main_thread_only().page_schedulers.end());
+  main_thread_only().page_schedulers.erase(page_scheduler);
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageDestroyed(
         page_scheduler->GetPageLifecycleState());
@@ -2359,9 +2335,7 @@ void MainThreadSchedulerImpl::OnPageResumed() {
 
 void MainThreadSchedulerImpl::BroadcastIntervention(const String& message) {
   helper_.CheckOnValidThread();
-  if (!main_thread_only().page_schedulers)
-    return;
-  for (PageSchedulerImpl* page_scheduler : *main_thread_only().page_schedulers)
+  for (auto* page_scheduler : main_thread_only().page_schedulers)
     page_scheduler->ReportIntervention(message);
 }
 
@@ -2454,16 +2428,13 @@ void MainThreadSchedulerImpl::RecordTaskUkm(
     return;
   }
 
-  if (main_thread_only().page_schedulers) {
-    for (PageSchedulerImpl* page_scheduler :
-         *main_thread_only().page_schedulers) {
-      auto status = RecordTaskUkmImpl(
-          queue, task, task_timing,
-          page_scheduler->SelectFrameForUkmAttribution(), false);
-      UMA_HISTOGRAM_ENUMERATION(
-          "Scheduler.Experimental.Renderer.UkmRecordingStatus", status,
-          UkmRecordingStatus::kCount);
-    }
+  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    auto status = RecordTaskUkmImpl(
+        queue, task, task_timing,
+        page_scheduler->SelectFrameForUkmAttribution(), false);
+    UMA_HISTOGRAM_ENUMERATION(
+        "Scheduler.Experimental.Renderer.UkmRecordingStatus", status,
+        UkmRecordingStatus::kCount);
   }
 }
 
@@ -2488,9 +2459,7 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
       frame_scheduler->GetUkmSourceId());
 
   builder.SetVersion(kUkmMetricVersion);
-  builder.SetPageSchedulers(main_thread_only().page_schedulers
-                                ? main_thread_only().page_schedulers->size()
-                                : 0u);
+  builder.SetPageSchedulers(main_thread_only().page_schedulers.size());
 
   builder.SetRendererBackgrounded(
       main_thread_only().renderer_backgrounded.get());
@@ -2579,11 +2548,8 @@ MainThreadSchedulerImpl::CreateCPUTimeBudgetPoolForTesting(const char* name) {
 void MainThreadSchedulerImpl::OnTraceLogEnabled() {
   CreateTraceEventObjectSnapshot();
   tracing_controller_.OnTraceLogEnabled();
-  if (main_thread_only().page_schedulers) {
-    for (PageSchedulerImpl* page_scheduler :
-         *main_thread_only().page_schedulers) {
-      page_scheduler->OnTraceLogEnabled();
-    }
+  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    page_scheduler->OnTraceLogEnabled();
   }
 }
 
@@ -2779,12 +2745,9 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
 }
 
 bool MainThreadSchedulerImpl::AllPagesFrozen() const {
-  if (!main_thread_only().page_schedulers ||
-      main_thread_only().page_schedulers->empty()) {
+  if (main_thread_only().page_schedulers.empty())
     return false;
-  }
-  for (const PageSchedulerImpl* scheduler :
-       *main_thread_only().page_schedulers) {
+  for (const auto* scheduler : main_thread_only().page_schedulers) {
     if (!scheduler->IsFrozen())
       return false;
   }

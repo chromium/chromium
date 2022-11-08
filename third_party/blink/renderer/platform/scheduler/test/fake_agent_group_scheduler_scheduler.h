@@ -27,7 +27,8 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
     return GetSingleThreadTaskRunnerForTesting();
   }
 
-  PageScheduler* CreatePageScheduler(PageScheduler::Delegate*) override {
+  std::unique_ptr<PageScheduler> CreatePageScheduler(
+      PageScheduler::Delegate*) override {
     return nullptr;
   }
 

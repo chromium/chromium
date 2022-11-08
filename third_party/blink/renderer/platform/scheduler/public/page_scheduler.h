@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
@@ -24,7 +23,7 @@ namespace scheduler {
 class WidgetScheduler;
 }  // namespace scheduler
 
-class PLATFORM_EXPORT PageScheduler : public GarbageCollected<PageScheduler> {
+class PLATFORM_EXPORT PageScheduler {
  public:
   class PLATFORM_EXPORT Delegate {
    public:
@@ -89,10 +88,6 @@ class PLATFORM_EXPORT PageScheduler : public GarbageCollected<PageScheduler> {
 
   // Creates a WebWidgetScheduler implementation.
   virtual scoped_refptr<scheduler::WidgetScheduler> CreateWidgetScheduler() = 0;
-
-  virtual void Shutdown() = 0;
-
-  virtual void Trace(Visitor*) const {}
 };
 
 }  // namespace blink

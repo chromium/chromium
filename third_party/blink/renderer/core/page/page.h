@@ -512,7 +512,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // pages or not.
   FrameScheduler::SchedulingAffectingFeatureHandle has_related_pages_;
 
-  Member<PageScheduler> page_scheduler_;
+  std::unique_ptr<PageScheduler> page_scheduler_;
 
   // Overrides for various media features, set from DevTools.
   std::unique_ptr<MediaFeatureOverrides> media_feature_overrides_;
