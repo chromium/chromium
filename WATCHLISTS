@@ -13,10 +13,6 @@
     'about_flags': {
       'filepath': 'chrome/browser/about_flags\.cc'
     },
-    'accelerator_table': {
-      'filepath': 'ash/accelerators/accelerator_table\.cc' \
-                  '|chrome/browser/ui/views/accelerator_table\.cc',
-    },
     'accelerators': {
       'filepath': 'ash/accelerators/|'\
                   'ash/public/cpp/accelerator.*',
@@ -2222,7 +2218,6 @@
   'WATCHLISTS': {
     'about_flags': ['asvitkine+watch@chromium.org',
                     'jmedley+watch@chromium.org'],
-    'accelerator_table': ['yusukes+watch@chromium.org'],
     'accelerators': ['zentaro+watch-accelerators@chromium.org',
                      'jimmyxgong+watch-accelerators@chromium.org',
                      'cambickel+watch-accelerators@google.com',
@@ -2293,7 +2288,6 @@
                            'mxcai+watch-intent-helper@chromium.org'],
     'arc': ['elijahtaylor+arcwatch@chromium.org',
             'hidehiko+watch@chromium.org',
-            'yusukes+watch@chromium.org',
             'arc-reviews+chromium@google.com'],
     'arc_auth': ['khmel+watch@chromium.org'],
     'arc_ime': ['yhanada+watch@chromium.org'],
@@ -2886,8 +2880,7 @@
     'pepper_api': ['binji+watch@chromium.org',
                    'bradnelson+warch@chromium.org',
                    'ihf+watch@chromium.org',
-                   'teravest+watch@chromium.org',
-                   'yusukes+watch@chromium.org'],
+                   'teravest+watch@chromium.org'],
     'permissions': ['dominickn+watch-permissions@chromium.org',
                     'permissions-reviews@chromium.org'],
     'phonehub': ['crisrael+watch-phonehub@google.com',
@@ -3029,14 +3022,12 @@
                   'shuchen+watch@chromium.org',
                   'suzhe@chromium.org',
                   'tranbaoduy+watch@chromium.org',
-                  'yhanada+watch@chromium.org',
-                  'yusukes+watch@chromium.org'],
+                  'yhanada+watch@chromium.org'],
     'textinput_chromeos': ['keithlee+watch@chromium.org',
                            'nona+watch@chromium.org',
                            'shuchen+watch@chromium.org',
                            'tranbaoduy+watch@chromium.org',
-                           'yhanada+watch@chromium.org',
-                           'yusukes+watch@chromium.org'],
+                           'yhanada+watch@chromium.org'],
     'third_party_conflicts': ['pmonette+watch@chromium.org'],
     'timers': [],
     'tools_win_chromeexts': ['robliao+watch@chromium.org'],
@@ -3111,8 +3102,7 @@
                          'msramek+watch@chromium.org'],
     'windows_sandboxing': ['wfh+watch@chromium.org'],
     'wpt_tools': ['lpz+watch@chromium.org'],
-    'x11': ['sadrul@chromium.org',
-            'yusukes+watch@chromium.org'],
+    'x11': ['sadrul@chromium.org'],
     'zlib': ['cblume+zlib@chromium.org'],
     'zoom': ['wjmaclean@chromium.org'],
   },
