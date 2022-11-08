@@ -1532,7 +1532,7 @@
       },
       'android-nougat-x86-rel': {
         'swarming': {
-          'shards': 2,
+          'shards': 4,
         },
       },
     },
@@ -1842,6 +1842,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter',
         ],
         'swarming': {
+          'shards': 6,
           'dimension_sets': [
             {
               'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
