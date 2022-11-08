@@ -535,10 +535,9 @@ bool WindowEventDispatcher::ShouldReportEventLatency(
   // reflect it.
   if (details.target_destroyed)
     return true;
-  const aura::Window* target_window = static_cast<aura::Window*>(target);
-  if (!target_window) {
+  if (details.dispatcher_destroyed || !target)
     return false;
-  }
+  const aura::Window* target_window = static_cast<aura::Window*>(target);
   const std::string& name = target_window->GetName();
   // We shouldn't report the latency in ui::Compositor for exo windows and aura
   // windows backing web contents.
