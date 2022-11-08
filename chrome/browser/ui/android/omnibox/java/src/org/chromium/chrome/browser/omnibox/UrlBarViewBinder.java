@@ -7,9 +7,6 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.text.Editable;
-import android.text.Selection;
-import android.text.TextUtils;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
@@ -104,7 +101,7 @@ class UrlBarViewBinder {
                 view.getContext(), brandedColorScheme);
 
         view.setTextColor(textColor);
-        setHintTextColor(view, hintColor);
+        view.setHintTextColor(hintColor);
     }
 
     private static void updateHighlightColor(UrlBar view, boolean useIncognitoColors) {
@@ -160,33 +157,6 @@ class UrlBarViewBinder {
                 throw e;
             }
         }
-    }
-
-    private static void setHintTextColor(UrlBar view, @ColorInt int textColor) {
-        // Note: Setting the hint text color only takes effect if there is no text in the URL bar.
-        //       To get around this, set the URL to empty before setting the hint color and revert
-        //       back to the previous text after.
-        Editable text = view.getText();
-        if (TextUtils.isEmpty(text)) {
-            view.setHintTextColor(textColor);
-            return;
-        }
-
-        int selectionStart = view.getSelectionStart();
-        int selectionEnd = view.getSelectionEnd();
-
-        // Make sure the setText in this block does not affect the suggestions.
-        view.setIgnoreTextChangesForAutocomplete(true);
-        view.setText("");
-        view.setHintTextColor(textColor);
-        view.setText(text);
-
-        // Restore the previous selection, if there was one.
-        if (selectionStart >= 0 && selectionEnd >= 0 && view.hasFocus()) {
-            Selection.setSelection(view.getText(), selectionStart, selectionEnd);
-        }
-
-        view.setIgnoreTextChangesForAutocomplete(false);
     }
 
     private UrlBarViewBinder() {}
