@@ -772,6 +772,17 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
                           base::Value::FromUniquePtrValue(std::move(value)));
   }
 
+  void SetPrefList(const std::string& extension_id,
+                   const std::string& pref_path,
+                   base::Value::List& value,
+                   const std::string& msg) {
+    ScopedDictPrefUpdate update(profile()->GetPrefs(), pref_names::kExtensions);
+    base::Value::Dict& dict = update.Get();
+    base::Value::Dict* pref = dict.FindDict(extension_id);
+    ASSERT_TRUE(pref) << msg;
+    pref->SetByDottedPath(pref_path, std::move(value));
+  }
+
   void SetPrefInteg(const std::string& extension_id,
                     const std::string& pref_path,
                     int value) {
@@ -814,11 +825,11 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     std::string msg = " while setting: ";
     msg += extension_id + " " + pref_path;
 
-    auto list_value = std::make_unique<base::ListValue>();
+    base::Value::List list_value;
     for (auto iter = value.begin(); iter != value.end(); ++iter)
-      list_value->Append(*iter);
+      list_value.Append(*iter);
 
-    SetPref(extension_id, pref_path, std::move(list_value), msg);
+    SetPrefList(extension_id, pref_path, list_value, msg);
   }
 
   void InitPluginService() {
@@ -2065,8 +2076,9 @@ TEST_F(ExtensionServiceTest, GrantedAPIAndHostPermissions) {
   // Test that the extension is disabled when an API permission is missing from
   // the extension's granted api permissions preference. (This simulates
   // updating the browser to a version which recognizes a new API permission).
-  SetPref(extension_id, "granted_permissions.api",
-          std::make_unique<base::ListValue>(), "granted_permissions.api");
+  base::Value::List empty_list;
+  SetPrefList(extension_id, "granted_permissions.api", empty_list,
+              "granted_permissions.api");
   service()->ReloadExtensionsForTest();
 
   EXPECT_EQ(1u, registry()->disabled_extensions().size());
@@ -2101,10 +2113,10 @@ TEST_F(ExtensionServiceTest, GrantedAPIAndHostPermissions) {
   host_permissions.insert("https://*.google.com/*");
   host_permissions.insert("http://*.google.com.hk/*");
 
-  auto api_permissions = std::make_unique<base::ListValue>();
-  api_permissions->Append("tabs");
-  SetPref(extension_id, "granted_permissions.api", std::move(api_permissions),
-          "granted_permissions.api");
+  base::Value::List api_permissions;
+  api_permissions.Append("tabs");
+  SetPrefList(extension_id, "granted_permissions.api", api_permissions,
+              "granted_permissions.api");
   SetPrefStringSet(
       extension_id, "granted_permissions.scriptable_host", host_permissions);
 
