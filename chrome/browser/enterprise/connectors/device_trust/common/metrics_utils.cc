@@ -4,8 +4,10 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -50,12 +52,19 @@ void LogAttestationFunnelStep(DTAttestationFunnelStep step) {
   static constexpr char kFunnelStepHistogram[] =
       "Enterprise.DeviceTrust.Attestation.Funnel";
   base::UmaHistogramEnumeration(kFunnelStepHistogram, step);
+  VLOG(1) << "Device Trust attestation step: " << static_cast<int>(step);
 }
 
 void LogAttestationResult(DTAttestationResult result) {
   static constexpr char kAttestationResultHistogram[] =
       "Enterprise.DeviceTrust.Attestation.Result";
   base::UmaHistogramEnumeration(kAttestationResultHistogram, result);
+  if (result == DTAttestationResult::kSuccess) {
+    VLOG(1) << "Device Trust attestation was successful";
+  } else {
+    LOG(ERROR) << "Device Trust attestation error: "
+               << AttestationResultToString(result);
+  }
 }
 
 void LogDeviceTrustResponse(const DeviceTrustResponse& response,

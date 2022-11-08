@@ -81,6 +81,8 @@ void AshAttestationService::ReturnResult(
   if (result.IsSuccess()) {
     encoded_response =
         ProtobufChallengeToJsonChallenge(result.challenge_response);
+  } else {
+    LOG(ERROR) << "Device Trust TPM error: " << result.GetErrorMessage();
   }
   std::move(callback).Run(
       {encoded_response, encoded_response.empty()
