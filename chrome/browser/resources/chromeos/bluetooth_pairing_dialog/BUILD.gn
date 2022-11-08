@@ -29,7 +29,7 @@ if (optimize_webui) {
     ]
 
     excludes = [
-      "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/cr.js",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
@@ -79,6 +79,7 @@ js_library("bluetooth_pairing_dialog") {
   externs_list = chrome_extension_public_externs + [
                    "$externs_path/bluetooth.js",
                    "$externs_path/bluetooth_private.js",
+                   "$externs_path/chrome_send.js",
                  ]
   extra_sources = [
     "$interfaces_path/bluetooth_interface.js",

@@ -114,6 +114,7 @@ js_library("lock_screen_network") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
+    "$externs_path/chrome_send.js",
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
   ]

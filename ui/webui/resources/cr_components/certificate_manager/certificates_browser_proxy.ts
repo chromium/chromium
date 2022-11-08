@@ -7,7 +7,7 @@
  * to interact with the browser.
  */
 
-import {sendWithPromise} from '../../js/cr.m.js';
+import {sendWithPromise} from '../../js/cr.js';
 
 /**
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc

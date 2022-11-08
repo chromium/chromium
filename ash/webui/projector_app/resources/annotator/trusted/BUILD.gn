@@ -23,7 +23,10 @@ js_library("trusted_annotator_library") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
   ]
-  externs_list = [ "../../common/projector_app.externs.js" ]
+  externs_list = [
+    "$externs_path/chrome_send.js",
+    "../../common/projector_app.externs.js",
+  ]
 }
 
 generate_grd("build_trusted_grd") {
