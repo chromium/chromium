@@ -1124,6 +1124,45 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(type = UiDisableIf.TABLET)
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void testStripDialog_TabSelectionEditorV2CloseAll() throws Exception {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        // Create a tab group with 2 tabs.
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Enter tab switcher and select first tab.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        clickFirstTabInDialog(cta);
+        waitForDialogHidingAnimation(cta);
+
+        // Make sure tab strip is showing.
+        CriteriaHelper.pollUiThread(()
+                                            -> mActivityTestRule.getActivity()
+                                                       .getBrowserControlsManager()
+                                                       .getBottomControlOffset()
+                        == 0);
+        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+
+        // Test opening dialog from strip and from tab switcher.
+        openDialogFromStripAndVerify(cta, 2, null);
+        openSelectionEditorV2AndVerify(cta, 2);
+
+        // Close two tabs.
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Close tabs");
+
+        CriteriaHelper.pollUiThread(() -> cta.isDestroyed());
+    }
+
+    @Test
+    @MediumTest
+    @DisableIf.Device(type = UiDisableIf.TABLET)
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.
     Add({"force-fieldtrials=Study/Group", START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})

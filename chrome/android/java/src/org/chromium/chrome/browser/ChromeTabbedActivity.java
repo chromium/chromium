@@ -603,6 +603,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
 
                 @Override
+                public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                    closeIfNoTabsAndHomepageEnabled(true);
+                    openTabletTabSwitcherIfNoTabs();
+                }
+
+                @Override
                 public void tabRemoved(Tab tab) {
                     closeIfNoTabsAndHomepageEnabled(false);
                     openTabletTabSwitcherIfNoTabs();
@@ -655,13 +661,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                      Toast.LENGTH_SHORT)
                                 .show();
                     }
-                }
-
-                @Override
-                public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
-                    if (!isAllTabs) return;
-                    NewTabPageUma.recordNTPImpression(NewTabPageUma.NTP_IMPESSION_POTENTIAL_NOTAB);
-                    openTabletTabSwitcherIfNoTabs();
                 }
             };
         } finally {
