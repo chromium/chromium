@@ -141,10 +141,7 @@ group("closure_compile") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
-checked_in_dts_files = [
-  "js/cr.m.d.ts",
-  "js/promise_resolver.d.ts",
-]
+checked_in_dts_files = [ "js/promise_resolver.d.ts" ]
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.
@@ -157,6 +154,7 @@ copy("copy_checked_in_dts_files") {
 generate_definitions_js_files = [
   "js/assert.js",
   "js/cr/event_target.js",
+  "js/cr.m.js",
   "js/load_time_data.m.js",
   "js/util.js",
 ]
@@ -176,7 +174,6 @@ ts_library("library") {
                "js/action_link.ts",
                "js/assert_ts.ts",
                "js/color_utils.ts",
-               "js/cr.ts",
                "js/custom_element.ts",
                "js/drag_wrapper.ts",
                "js/event_tracker.ts",

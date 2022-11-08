@@ -188,7 +188,6 @@ js_library("scanning_browser_proxy") {
     "//ash/webui/common/resources:cr_deprecated",
     "//ui/webui/resources/js:cr.m",
   ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("mojo_interface_provider") {

@@ -119,7 +119,6 @@ js_library("network_config") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
-    "$externs_path/chrome_send.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
     "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",

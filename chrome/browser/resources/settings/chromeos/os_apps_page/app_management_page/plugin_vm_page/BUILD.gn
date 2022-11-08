@@ -17,7 +17,6 @@ js_type_check("closure_compile_module") {
 
 js_library("plugin_vm_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("plugin_vm_detail_view") {

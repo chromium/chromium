@@ -42,7 +42,6 @@ preprocess_if_expr("preprocess_src_ts") {
     "action_link.ts",
     "assert_ts.ts",
     "color_utils.ts",
-    "cr.ts",
     "custom_element.ts",
     "drag_wrapper.ts",
     "event_tracker.ts",
@@ -149,6 +148,11 @@ js_library("assert") {
 }
 
 js_library("cr.m") {
+  deps = [
+    ":assert",
+    ":promise_resolver",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("load_time_data.m") {

@@ -9,7 +9,7 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {addWebUiListener, removeWebUiListener, WebUiListener} from '../js/cr.js';
+import {addWebUIListener, removeWebUIListener, WebUIListener} from '../js/cr.m.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -22,7 +22,7 @@ export const WebUiListenerMixin = dedupingMixin(
          * Holds WebUI listeners that need to be removed when this element is
          * destroyed.
          */
-        private webUiListeners_: WebUiListener[] = [];
+        private webUIListeners_: WebUIListener[] = [];
 
         /**
          * Adds a WebUI listener and registers it for automatic removal when
@@ -34,13 +34,13 @@ export const WebUiListenerMixin = dedupingMixin(
          * @param callback The callback run when the event is fired.
          */
         addWebUIListener(eventName: string, callback: Function) {
-          this.webUiListeners_.push(addWebUiListener(eventName, callback));
+          this.webUIListeners_.push(addWebUIListener(eventName, callback));
         }
 
         override disconnectedCallback() {
           super.disconnectedCallback();
-          while (this.webUiListeners_.length > 0) {
-            removeWebUiListener(this.webUiListeners_.pop()!);
+          while (this.webUIListeners_.length > 0) {
+            removeWebUIListener(this.webUIListeners_.pop()!);
           }
         }
       }

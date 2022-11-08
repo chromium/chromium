@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-import {sendWithPromise} from './cr.js';
+import {sendWithPromise} from './cr.m.js';
 // clang-format on
 
 export interface PluralStringProxy {

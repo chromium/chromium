@@ -127,7 +127,6 @@ js_library("multidevice_phonehub_browser_proxy") {
     ":types",
     "//ash/webui/common/resources:cr_deprecated",
   ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("logging_tab") {
