@@ -33,21 +33,27 @@ enum class WindowPredictorLaunchType {
 // Pre-defined screen size for ARC. See ArcLaunchParamsModifier.java in ARC
 // codebase.
 
-// Screen size of Nexus 5x
+// Screen size of Nexus 5x. The default bounds in default scale in Android.
 constexpr gfx::Size kDefaultPortraitPhoneSize(412, 732);
 constexpr gfx::Size kDefaultLandscapeTabletSize(1064, 600);
 
-// In ARC R and above, the uniform scale factor is applied on ARC window render
-// process.
-// TODO(sstan): Replace by calculating from real display scale factor.
+// TODO(sstan): User may apply zoom on per-display. The final DP value of the
+// Android bounds should be FinalBounds = AndroidDpSize * AndroidDensityRound(
+// kArcUniformScaleFactor * kChromeDpToAndroidDp * ChromeOSDisplayZoomFactor).
+// Here AndroidDensityRound is a function to round density into one of a set
+// of allowed density according to Android CDD. Here just ignore it. Also leave
+// zoom facter as TODO here.
 constexpr float kArcUniformScaleFactor = 1.2;
+constexpr float kChromeDpToAndroidDp = 0.75;
 
 gfx::Size GetPhoneSize() {
-  return ScaleToCeiledSize(kDefaultPortraitPhoneSize, kArcUniformScaleFactor);
+  return ScaleToCeiledSize(kDefaultPortraitPhoneSize,
+                           kArcUniformScaleFactor * kChromeDpToAndroidDp);
 }
 
 gfx::Size GetTabletSize() {
-  return ScaleToCeiledSize(kDefaultLandscapeTabletSize, kArcUniformScaleFactor);
+  return ScaleToCeiledSize(kDefaultLandscapeTabletSize,
+                           kArcUniformScaleFactor * kChromeDpToAndroidDp);
 }
 
 // Get window bounds in the middle of a display in global coordinate.
