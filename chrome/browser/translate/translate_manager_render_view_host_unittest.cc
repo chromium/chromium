@@ -872,7 +872,6 @@ TEST_F(TranslateManagerRenderViewHostTest, ReloadFromLocationBar) {
 
   // Create a pending navigation and simulate a page load.  That should be the
   // equivalent of typing the URL again in the location bar.
-  NavEntryCommittedObserver nav_observer(web_contents());
   web_contents()->GetController().LoadURL(
       url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
   int pending_id =
@@ -880,13 +879,6 @@ TEST_F(TranslateManagerRenderViewHostTest, ReloadFromLocationBar) {
   content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
       ->SendNavigateWithTransition(pending_id, false, url,
                                    ui::PAGE_TRANSITION_TYPED);
-
-  // Test that we are really getting a converted reload / existing entry
-  // navigation. The test would be useless if it was not the case.
-  const content::LoadCommittedDetails& nav_details =
-      nav_observer.load_committed_details();
-  EXPECT_TRUE(nav_details.entry != NULL);  // There was a navigation.
-  EXPECT_EQ(content::NAVIGATION_TYPE_EXISTING_ENTRY, nav_details.type);
 
   // The TranslateManager class processes the navigation entry committed
   // notification in a posted task; process that task.
