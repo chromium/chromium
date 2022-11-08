@@ -437,7 +437,7 @@ PASS Property color value 'color(dIspLaY-P3 0.6 0.7 0.8)' [Different case for Di
 PASS Property color value 'color(srgb -0.25 0.5 0.75)' [sRGB color with negative component should not clamp to 0]
 PASS Property color value 'color(srgb 0.25 1.5 0.75)' [sRGB color with component > 1 should not clamp]
 PASS Property color value 'color(display-p3 0.5 -199 0.75)' [Display P3 color with negative component should not clamp to 0]
-FAIL Property color value 'color(display-p3 184 1.00001 2347329746587)' [Display P3 color with component > 1 should not clamp] assert_equals: expected "color(display-p3 184 1.00001 2347329700000)" but got "color(display-p3 184 1.00001 2.34733e+12)"
+FAIL Property color value 'color(display-p3 184 1.00001 2347329746587)' [Display P3 color with component > 1 should not clamp] assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 2347329700000 +/- 0.0001, expected 2347329700000 but got 2347330000000
 PASS Property color value 'color(srgb 0.1 0.2 0.3 / 1.9)' [Alpha > 1 should clamp]
 PASS Property color value 'color(srgb 1 1 1 / -0.2)' [Negative alpha should clamp]
 Harness: the test ran to completion.

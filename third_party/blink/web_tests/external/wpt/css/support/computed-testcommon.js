@@ -25,7 +25,10 @@ function test_computed_value(property, specified, computed, titleExtra) {
     if (Array.isArray(computed)) {
       assert_in_array(readValue, computed);
     } else {
-      assert_equals(readValue, computed);
+      if (property == "color")
+        colorValuesAlmostEqual(readValue, computed, 0.0001);
+      else
+        assert_equals(readValue, computed);
     }
     if (readValue !== specified) {
       target.style[property] = '';
@@ -34,6 +37,31 @@ function test_computed_value(property, specified, computed, titleExtra) {
                     'computed value should round-trip');
     }
   }, `Property ${property} value '${specified}'${titleExtra ? ' ' + titleExtra : ''}`);
+}
+
+function colorValuesAlmostEqual(color1, color2, epsilon) {
+  // Colors can be split by spaces, commas or the '(' character.
+  const colorElementDividers = /( |\(|,)/;
+  // Return the string stripped of numbers.
+  function getNonNumbers(color) {
+    return color.replace(/[0-9]/g, '');
+  }
+  // Return an array of all numbers in the color.
+  function getNumbers(color) {
+    const result = [];
+    // const entries = color.split(colorElementDividers);
+    color.split(colorElementDividers).forEach(element => {
+      const numberElement = parseFloat(element);
+      if (!isNaN(numberElement)) {
+        result.push(numberElement);
+      }
+    });
+    return result;
+  }
+
+  assert_array_approx_equals(getNumbers(color1), getNumbers(color2), epsilon, "Numeric parameters are approximately equal.");
+  // Assert that the text of the two colors are equal. i.e. colorSpace, colorFunction and format.
+  assert_equals(getNonNumbers(color1), getNonNumbers(color2), "Color format is correct.");
 }
 
 function testComputedValueGreaterOrLowerThan(property, specified, expected, titleExtra) {

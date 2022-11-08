@@ -946,20 +946,20 @@ FAIL Property color value 'color(from color(xyz-d65 none none none) xyz-d65 x y 
 FAIL Property color value 'color(from color(xyz-d65 none none none / none) xyz-d65 x y z / alpha)' assert_true: 'color(from color(xyz-d65 none none none / none) xyz-d65 x y z / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'color(from color(xyz-d65 7 none 100) xyz-d65 x y z)' assert_true: 'color(from color(xyz-d65 7 none 100) xyz-d65 x y z)' is a supported value for color. expected true got false
 FAIL Property color value 'color(from color(xyz-d65 7 -20.5 100 / none) xyz-d65 x y z / alpha)' assert_true: 'color(from color(xyz-d65 7 -20.5 100 / none) xyz-d65 x y z / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'rgb(from var(--bg-color) r g b / 80%)' assert_equals: expected "rgba(0, 0, 255, 0.8)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'lch(from var(--color) calc(l / 2) c h)' assert_equals: expected "lch(23.138971 67.989716 134.39125)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))' assert_equals: expected "rgb(76, 76, 76)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'lch(from var(--color) l 0 h)' assert_equals: expected "lch(46.277943 0 134.39125)" but got "rgb(0, 0, 0)"
+FAIL Property color value 'rgb(from var(--bg-color) r g b / 80%)' assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
+FAIL Property color value 'lch(from var(--color) calc(l / 2) c h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 23.138971 +/- 0.0001, expected 23.138971 but got 0
+FAIL Property color value 'rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 76 +/- 0.0001, expected 76 but got 0
+FAIL Property color value 'lch(from var(--color) l 0 h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 46.277943 +/- 0.0001, expected 46.277943 but got 0
 FAIL Property color value 'rgb(from indianred 255 g b)' assert_true: 'rgb(from indianred 255 g b)' is a supported value for color. expected true got false
-FAIL Property color value 'hsl(from var(--accent) calc(h + 180deg) s l)' assert_equals: expected "rgb(178, 32, 40)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'lab(from var(--mycolor) l a b / 100%)' assert_equals: expected "lab(62.751923 52.45802 -34.117283)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'lab(from var(--mycolor) l a b / calc(alpha * 0.8))' assert_equals: expected "lab(62.751923 52.45802 -34.117283 / 0.8)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'lab(from var(--mycolor) l a b / calc(alpha - 20%))' assert_equals: expected "lab(62.751923 52.45802 -34.117283 / 0.8)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'lab(from var(--mycolor) l 0 0)' assert_equals: expected "lab(62.751923 0 0)" but got "rgb(0, 0, 0)"
+FAIL Property color value 'hsl(from var(--accent) calc(h + 180deg) s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 178 +/- 0.0001, expected 178 but got 0
+FAIL Property color value 'lab(from var(--mycolor) l a b / 100%)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 0
+FAIL Property color value 'lab(from var(--mycolor) l a b / calc(alpha * 0.8))' assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
+FAIL Property color value 'lab(from var(--mycolor) l a b / calc(alpha - 20%))' assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
+FAIL Property color value 'lab(from var(--mycolor) l 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 0
 FAIL Property color value 'lch(from peru calc(l * 0.8) c h)' assert_true: 'lch(from peru calc(l * 0.8) c h)' is a supported value for color. expected true got false
-FAIL Property color value 'LCH(from var(--accent) l c calc(h + 180deg))' assert_equals: expected "lch(65.49473 39.446903 10.114471)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'lch(from var(--mycolor) l 0 h)' assert_equals: expected "lch(62.751923 0 326.96112)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'var(--mygray)' assert_equals: expected "lch(62.751923 0 326.96112)" but got "rgb(0, 0, 0)"
-FAIL Property color value 'lch(from var(--mygray) l 30 h)' assert_equals: expected "lch(62.751923 30 326.96112)" but got "rgb(0, 0, 0)"
+FAIL Property color value 'LCH(from var(--accent) l c calc(h + 180deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 65.49473 +/- 0.0001, expected 65.49473 but got 0
+FAIL Property color value 'lch(from var(--mycolor) l 0 h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 0
+FAIL Property color value 'var(--mygray)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 0
+FAIL Property color value 'lch(from var(--mygray) l 30 h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 0
 Harness: the test ran to completion.
 
