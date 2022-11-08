@@ -278,7 +278,7 @@ gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree&);
 gfx::RectF ComputeTextRectF(const EphemeralRange&);
 
 // |FirstRectForRange| requires up-to-date layout.
-gfx::Rect FirstRectForRange(const EphemeralRange&);
+CORE_EXPORT gfx::Rect FirstRectForRange(const EphemeralRange&);
 
 CORE_EXPORT PositionWithAffinity
 AdjustForwardPositionToAvoidCrossingEditingBoundaries(

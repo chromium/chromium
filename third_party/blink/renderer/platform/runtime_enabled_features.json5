@@ -1306,6 +1306,11 @@
       name: "FirstPartySets",
     },
     {
+      name: "FirstRectForRangeVertical",
+      status: "stable",
+      base_feature: "FirstRectForRangeVertical",
+    },
+    {
       name: "FixedElementsDontOverscroll",
       status: "stable",
       base_feature: "FixedElementsDontOverscroll",

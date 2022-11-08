@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
@@ -937,6 +938,52 @@ TEST_F(VisibleUnitsTest, SnapForwardWithZeroWidthSpace) {
             TestSnapForward("<p>ab|<wbr><wbr>cd</p>"));
   EXPECT_EQ("<p>ab|\u200B\u200Bcd</p>",
             TestSnapForward("<p>ab|\u200B\u200Bcd</p>"));
+}
+
+TEST_F(VisibleUnitsTest, FirstRectForRangeHorizontal) {
+  LoadAhem();
+  InsertStyleElement("div { font:20px/20px Ahem;}");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>^abcdef|</div>");
+  gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
+  constexpr int kFontSize = 20;
+  EXPECT_GT(rect.width(), kFontSize * 5);
+  EXPECT_EQ(kFontSize, rect.height());
+}
+
+TEST_F(VisibleUnitsTest, FirstRectForRangeHorizontalWrap) {
+  LoadAhem();
+  InsertStyleElement("div { font:20px/20px Ahem; inline-size:60px;}");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>^abc def|</div>");
+  gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
+  constexpr int kFontSize = 20;
+  EXPECT_LT(rect.width(), kFontSize * 5);
+  EXPECT_EQ(kFontSize, rect.height());
+}
+
+TEST_F(VisibleUnitsTest, FirstRectForRangeVertical) {
+  LoadAhem();
+  InsertStyleElement("div { writing-mode:vertical-rl; font:20px/20px Ahem;}");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>^abcdef|</div>");
+  gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
+  constexpr int kFontSize = 20;
+  EXPECT_GT(rect.height(), kFontSize * 5);
+  EXPECT_EQ(kFontSize, rect.width());
+}
+
+TEST_F(VisibleUnitsTest, FirstRectForRangeVerticalWrap) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { writing-mode:vertical-rl; font:20px/20px Ahem; "
+      "inline-size:60px;}");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>^abc def|</div>");
+  gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
+  constexpr int kFontSize = 20;
+  EXPECT_LT(rect.height(), kFontSize * 5);
+  EXPECT_EQ(kFontSize, rect.width());
 }
 
 }  // namespace visible_units_test
