@@ -4,9 +4,11 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_writer.h"
 
+#include "chrome/browser/profiles/profile.h"
+
 namespace apps {
 
-AppIconWriter::AppIconWriter() = default;
+AppIconWriter::AppIconWriter(Profile* profile) : profile_(profile) {}
 
 AppIconWriter::~AppIconWriter() = default;
 

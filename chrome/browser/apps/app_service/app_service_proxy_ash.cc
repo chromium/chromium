@@ -54,7 +54,7 @@ policy::DlpFilesController* GetDlpFilesController() {
 }  // namespace
 
 AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
-    : AppServiceProxyBase(profile) {
+    : AppServiceProxyBase(profile), icon_reader(profile), icon_writer(profile) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
     browser_app_instance_tracker_ =
         std::make_unique<apps::BrowserAppInstanceTracker>(profile_,

@@ -14,6 +14,8 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_reader.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_writer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
@@ -245,6 +247,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   SubscriberCrosapi* crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
+
+  AppIconReader icon_reader;
+  AppIconWriter icon_writer;
 
   bool arc_is_registered_ = false;
 

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_UTIL_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_UTIL_H_
 
+#include "base/files/file_path.h"
+
+class Profile;
+
 namespace apps {
 
 // A bitwise-or of icon post-processing effects.
@@ -56,6 +60,11 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
   a = a & b;
   return a;
 }
+
+// Constructs path to app icon for specific scale factor.
+base::FilePath GetIconPath(Profile* profile,
+                           const std::string& app_id,
+                           int32_t size_hint_in_dip);
 
 }  // namespace apps
 

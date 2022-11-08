@@ -7,8 +7,11 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+
+class Profile;
 
 namespace apps {
 
@@ -18,7 +21,7 @@ namespace apps {
 // TODO(crbug.com/1380608): Implement the icon reading function.
 class AppIconReader {
  public:
-  AppIconReader();
+  explicit AppIconReader(Profile* profile);
   AppIconReader(const AppIconReader&) = delete;
   AppIconReader& operator=(const AppIconReader&) = delete;
   ~AppIconReader();
@@ -28,7 +31,15 @@ class AppIconReader {
   void ReadIcons(const std::string& app_id,
                  int32_t size_hint_in_dip,
                  IconEffects icon_effects,
+                 IconType icon_type,
                  LoadIconCallback callback);
+
+ private:
+  void OnIconRead(IconType icon_type, std::vector<uint8_t> icon_data);
+
+  const raw_ptr<Profile> profile_;
+
+  base::WeakPtrFactory<AppIconReader> weak_ptr_factory_{this};
 };
 
 }  // namespace apps
