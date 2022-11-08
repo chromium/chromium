@@ -5,6 +5,8 @@
 import * as AcceleratorTypes from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 
 import * as AcceleratorInfoTypes from '../mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js';
+import {AcceleratorConfigurationProviderInterface, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+
 
 /**
  * @fileoverview
@@ -24,6 +26,12 @@ export enum Modifier {
   ALT = 1 << 3,
   COMMAND = 1 << 4,
 }
+
+/**
+ * A string of the form `{source}-{action_id}`.
+ * This concatenation uniquely identifies one {@link Accelerator}.
+ */
+export type AcceleratorId = string;
 
 /**
  * In TypeScript, an enum is both a value and type,
@@ -63,6 +71,8 @@ export enum AcceleratorConfigResult {
 export type Accelerator =
     Pick<AcceleratorTypes.Accelerator, 'keyCode'|'modifiers'>;
 
+export type MojoAccelerator = AcceleratorTypes.Accelerator;
+
 /**
  * Type alias for AcceleratorInfo.
  *
@@ -75,13 +85,29 @@ export type AcceleratorInfo =
     {accelerator: Accelerator, keyDisplay: string};
 
 /**
- * Type alias for AcceleratorConfig. This is a two level map, with the top
- * level identifying the source of the shortcuts, and second level the integer
- * id for the action with the leaf value being a list of Accelerator Info.
+ * Type alias for the Mojo version of AcceleratorInfo.
  */
-export type AcceleratorConfig = {
-  [source in AcceleratorSource]?: {[actionId: number]: AcceleratorInfo[]}
+export type MojoAcceleratorInfo = AcceleratorInfoTypes.AcceleratorInfo;
+
+/**
+ * This generic AcceleratorConfig is used to represent both the raw
+ * MojoAcceleratorConfig (which comes from the backend) and the sanitized
+ * AcceleratorConfig (which is used throughout the app).
+ *
+ * This is a two level map, with the top level identifying the source of the
+ * shortcuts, and second level the integer id for the action with the leaf value
+ * being a list of AcceleratorInfo.
+ */
+export type GenericAcceleratorConfig<AccelInfoType> = {
+  [source in AcceleratorSource]?: {[actionId: number]: AccelInfoType[]}
 };
+
+/** Type alias for AcceleratorConfig. */
+export type AcceleratorConfig = GenericAcceleratorConfig<AcceleratorInfo>;
+
+/** Type alias for MojoAcceleratorConfig. */
+export type MojoAcceleratorConfig =
+    GenericAcceleratorConfig<MojoAcceleratorInfo>;
 
 /** Enumeration of accelerator subcategory. */
 export type AcceleratorSubcategory =
@@ -126,8 +152,9 @@ export type LayoutInfoList = LayoutInfo[];
  * Type alias for the ShortcutProviderInterface.
  * TODO(zentaro): Replace with a real mojo type when implemented.
  */
-export interface ShortcutProviderInterface {
-  getAccelerators(): Promise<{config: AcceleratorConfig}>;
+export interface ShortcutProviderInterface extends
+    AcceleratorConfigurationProviderInterface {
+  getAccelerators(): Promise<{config: MojoAcceleratorConfig}>;
   getLayoutInfo(): Promise<LayoutInfoList>;
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}>;
   removeAccelerator(
@@ -139,4 +166,5 @@ export interface ShortcutProviderInterface {
   addUserAccelerator(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<AcceleratorConfigResult>;
+  addObserver(observer: AcceleratorsUpdatedObserverRemote): void;
 }

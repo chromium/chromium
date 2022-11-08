@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Accelerator, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, Modifier, MojoAccelerator} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {areAcceleratorsEqual, isCustomizationDisabled} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -48,5 +48,22 @@ suite('shortcutUtilsTest', function() {
 
     // Compare accelerators with different key and keyDisplay.
     assertFalse(areAcceleratorsEqual(accelShiftC, accelShiftD));
+  });
+
+  test('AreAcceleratorsEqualMojo', async () => {
+    const accelShiftC: Accelerator = {
+      modifiers: Modifier.SHIFT,
+      keyCode: 67,  // c
+    };
+    const accelShiftCMojo: MojoAccelerator = {
+      modifiers: Modifier.SHIFT,
+      keyCode: 67,  // c
+      keyState: 0,
+      timeStamp: {internalValue: BigInt(0)},
+    };
+
+    // Accelerators and MojoAccelerators are comparable,
+    // and shouldn't throw an error.
+    assertTrue(areAcceleratorsEqual(accelShiftC, accelShiftCMojo));
   });
 });

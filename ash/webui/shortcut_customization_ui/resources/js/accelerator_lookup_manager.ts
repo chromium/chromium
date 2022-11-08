@@ -4,7 +4,8 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorConfig, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
+import {mojoString16ToString} from './mojo_utils.js';
+import {Accelerator, AcceleratorCategory, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutInfoList, MojoAcceleratorConfig, MojoAcceleratorInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual} from './shortcut_utils.js';
 
 /**
@@ -116,7 +117,7 @@ export class AcceleratorLookupManager {
         this.getKeyForLookup(accelerator));
   }
 
-  setAcceleratorLookup(acceleratorConfig: AcceleratorConfig) {
+  setAcceleratorLookup(acceleratorConfig: MojoAcceleratorConfig) {
     for (const [source, accelInfoMap] of Object.entries(acceleratorConfig)) {
       // When calling Object.entries on an object with optional enum keys,
       // TypeScript considers the values to be possibly undefined.
@@ -129,9 +130,23 @@ export class AcceleratorLookupManager {
         if (!this.acceleratorLookup_.has(id)) {
           this.acceleratorLookup_.set(id, []);
         }
-        accelInfos.forEach((info: AcceleratorInfo) => {
+        accelInfos.forEach((info: MojoAcceleratorInfo) => {
+          // Convert from Mojo types to the app types.
+          const sanitizedAccelerator: Accelerator = {
+            keyCode: info.accelerator.keyCode,
+            modifiers: info.accelerator.modifiers,
+          };
+          const sanitizedAccelInfo: AcceleratorInfo = {
+            accelerator: sanitizedAccelerator,
+            hasKeyEvent: info.hasKeyEvent,
+            keyDisplay: mojoString16ToString(info.keyDisplay),
+            locked: info.locked,
+            state: info.state,
+            type: info.type,
+          };
+
           this.getAcceleratorInfos(source, actionId)
-              .push(Object.assign({}, info));
+              .push(Object.assign({}, sanitizedAccelInfo));
           this.reverseAcceleratorLookup_.set(
               this.getKeyForLookup(info.accelerator), id);
         });

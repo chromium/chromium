@@ -21,7 +21,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
-import {AcceleratorConfig, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, MojoAcceleratorConfig, ShortcutProviderInterface} from './shortcut_types.js';
 import {isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface ShortcutCustomizationAppElement {
@@ -121,7 +121,7 @@ export class ShortcutCustomizationAppElement extends
         ({config}) => this.onAcceleratorConfigFetched_(config));
   }
 
-  private onAcceleratorConfigFetched_(config: AcceleratorConfig) {
+  private onAcceleratorConfigFetched_(config: MojoAcceleratorConfig) {
     this.acceleratorLookupManager_.setAcceleratorLookup(config);
     // After fetching the config infos, fetch the layout infos next.
     this.shortcutProvider_.getLayoutInfo().then(

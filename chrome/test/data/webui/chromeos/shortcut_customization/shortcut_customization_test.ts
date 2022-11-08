@@ -15,8 +15,9 @@ import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelera
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
 import {fakeSubCategories} from 'chrome://shortcut-customization/js/fake_data.js';
+import {setShortcutProviderForTesting, setupFakeShortcutProvider} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import {LayoutInfoList, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {LayoutInfoList, Modifier, ShortcutProviderInterface} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -36,8 +37,12 @@ suite('shortcutCustomizationAppTest', function() {
 
   let manager: AcceleratorLookupManager|null = null;
 
+  let provider: ShortcutProviderInterface;
+
   setup(() => {
     manager = AcceleratorLookupManager.getInstance();
+    provider = setupFakeShortcutProvider();
+    setShortcutProviderForTesting(provider);
   });
 
   teardown(() => {

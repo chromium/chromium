@@ -7,9 +7,9 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {Accelerator, AcceleratorInfo, AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorInfo, AcceleratorSource, AcceleratorState, Modifier, MojoAccelerator, MojoAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {areAcceleratorsEqual, createEmptyAccelInfoFromAccel} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('acceleratorLookupManagerTest', function() {
   let provider: FakeShortcutProvider|null = null;
@@ -82,9 +82,32 @@ suite('acceleratorLookupManagerTest', function() {
         if (!accelMap) {
           continue;
         }
-        for (const [action, accelInfos] of Object.entries(accelMap)) {
-          const actualAccels = getManager().getAcceleratorInfos(source, action);
-          assertDeepEquals(accelInfos, actualAccels);
+        for (const [action, configAccelInfoArr] of Object.entries(accelMap)) {
+          const managerAccelInfoArr =
+              getManager().getAcceleratorInfos(source, action);
+          // The AcceleratorLookupManager processes the MojoAcceleratorConfig
+          // into an AcceleratorConfig. Since the Mojo types (MojoAccelerator,
+          // MojoAcceleratorInfo) have different properties from the non-Mojo
+          // types, we only expect the properties in common to be equal.
+          for (let i = 0; i < configAccelInfoArr.length; i++) {
+            const managerAccel = managerAccelInfoArr[i] as AcceleratorInfo;
+            const configAccel: MojoAcceleratorInfo =
+                configAccelInfoArr[i] as MojoAcceleratorInfo;
+            assertEquals(managerAccel.type, configAccel.type);
+            assertEquals(managerAccel.locked, configAccel.locked);
+            assertEquals(managerAccel.state, configAccel.state);
+            assertNotEquals(managerAccel.keyDisplay, configAccel.keyDisplay);
+            assertEquals(
+                managerAccel.accelerator.keyCode,
+                configAccel.accelerator.keyCode);
+            assertEquals(
+                managerAccel.accelerator.modifiers,
+                configAccel.accelerator.modifiers);
+            assertFalse(Object.hasOwn(managerAccel.accelerator, 'keyState'));
+            assertTrue(Object.hasOwn(configAccel.accelerator, 'keyState'));
+            assertFalse(Object.hasOwn(managerAccel.accelerator, 'timeStamp'));
+            assertTrue(Object.hasOwn(configAccel.accelerator, 'timeStamp'));
+          }
         }
       }
     });
@@ -253,9 +276,10 @@ suite('acceleratorLookupManagerTest', function() {
       const snapWindowRightAction = 1;
       const ashMap = fakeAcceleratorConfig[AcceleratorSource.kAsh];
       const snapWindowRightAccels =
-          ashMap![snapWindowRightAction] as AcceleratorInfo[];
+          ashMap![snapWindowRightAction] as MojoAcceleratorInfo[];
       // Modifier.Alt + key::221 (']')
-      const overridenAccel = snapWindowRightAccels[0]!.accelerator;
+      const overridenAccel =
+          snapWindowRightAccels[0]!.accelerator as MojoAccelerator;
 
       // Replace New Desk shortcut with Alt+']'.
       const newDeskAction = 2;

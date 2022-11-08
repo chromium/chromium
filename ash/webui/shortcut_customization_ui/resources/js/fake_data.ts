@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorConfig, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfoList, LayoutStyle, Modifier} from './shortcut_types.js';
+import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+
+import {stringToMojoString16} from './mojo_utils.js';
+import {AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfoList, LayoutStyle, Modifier, MojoAcceleratorConfig} from './shortcut_types.js';
 
 export const fakeSubCategories: Map<AcceleratorSubcategory, string> = new Map([
   [0, 'Window Management'],
@@ -10,18 +13,24 @@ export const fakeSubCategories: Map<AcceleratorSubcategory, string> = new Map([
   [2, 'Tabs'],
 ]);
 
-export const fakeAcceleratorConfig: AcceleratorConfig = {
+const fakeTimestamp: TimeTicks = {
+  internalValue: BigInt(0),
+};
+
+export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
   [AcceleratorSource.kAsh]: {
     // Snap Window Left
     [0]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: true,
-      keyDisplay: '[',
       hasKeyEvent: true,
+      keyDisplay: stringToMojoString16('['),
       accelerator: {
         modifiers: Modifier.ALT,
         keyCode: 219,
+        keyState: 0,
+        timeStamp: fakeTimestamp,
       },
     }],
     // Snap Window Right
@@ -29,11 +38,13 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      keyDisplay: ']',
       hasKeyEvent: true,
+      keyDisplay: stringToMojoString16(']'),
       accelerator: {
         modifiers: Modifier.ALT,
         keyCode: 221,
+        keyState: 0,
+        timeStamp: fakeTimestamp,
       },
     }],
     // New Desk
@@ -41,11 +52,13 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      keyDisplay: '+',
       hasKeyEvent: true,
+      keyDisplay: stringToMojoString16('+'),
       accelerator: {
         modifiers: Modifier.COMMAND | Modifier.SHIFT,
         keyCode: 187,
+        keyState: 0,
+        timeStamp: fakeTimestamp,
       },
     }],
     // Remove Desk
@@ -53,11 +66,13 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      keyDisplay: '-',
       hasKeyEvent: true,
+      keyDisplay: stringToMojoString16('-'),
       accelerator: {
         modifiers: Modifier.COMMAND | Modifier.SHIFT,
         keyCode: 189,
+        keyState: 0,
+        timeStamp: fakeTimestamp,
       },
     }],
   },
@@ -67,11 +82,13 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: true,
-      keyDisplay: 't',
       hasKeyEvent: true,
+      keyDisplay: stringToMojoString16('t'),
       accelerator: {
         modifiers: Modifier.CONTROL,
         keyCode: 84,
+        keyState: 0,
+        timeStamp: fakeTimestamp,
       },
     }],
   },
