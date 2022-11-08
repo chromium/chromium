@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
 
@@ -147,10 +148,7 @@ void AutofillClient::DismissOfferNotification() {
 }
 
 void AutofillClient::OnVirtualCardDataAvailable(
-    const std::u16string& masked_card_identifier_string,
-    const CreditCard* credit_card,
-    const std::u16string& cvc,
-    const gfx::Image& card_image) {
+    const VirtualCardManualFallbackBubbleOptions& options) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }

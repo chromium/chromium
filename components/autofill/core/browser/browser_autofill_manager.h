@@ -426,6 +426,10 @@ class BrowserAutofillManager : public AutofillManager,
       const base::TimeTicks& submission_time,
       bool observed_submission);
 
+  // Returns the card image for `credit_card`. If the `credit_card` has a card
+  // art image linked, prefer it. Otherwise fall back to the network icon.
+  virtual const gfx::Image& GetCardImage(const CreditCard& credit_card) const;
+
   // AutofillManager:
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,

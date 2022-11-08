@@ -87,6 +87,7 @@ class StrikeDatabase;
 struct Suggestion;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
+struct VirtualCardManualFallbackBubbleOptions;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
 
@@ -695,17 +696,10 @@ class AutofillClient : public RiskDataLoader {
   // Dismiss any visible offer notification on the current tab.
   virtual void DismissOfferNotification();
 
-  // Called when the virtual card has been fetched successfully.
-  // |masked_card_identifier_string| is the network + last four digits of
-  // the card number of the corresponding masked server card.
-  // |credit_card| and |cvc| include the information that allow the user to
-  // manually fill payment form. |card_image| is used for manual fallback
-  // bubble.
+  // Called when the virtual card has been fetched successfully. Uses the
+  // necessary information in `options` to show the manual fallback bubble.
   virtual void OnVirtualCardDataAvailable(
-      const std::u16string& masked_card_identifier_string,
-      const CreditCard* credit_card,
-      const std::u16string& cvc,
-      const gfx::Image& card_image = gfx::Image());
+      const VirtualCardManualFallbackBubbleOptions& options);
 
   // Called when some virtual card retrieval errors happened. Will show the
   // error dialog with virtual card related messages. The type of error dialog

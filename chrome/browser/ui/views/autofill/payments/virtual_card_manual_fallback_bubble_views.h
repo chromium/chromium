@@ -48,7 +48,7 @@ class VirtualCardManualFallbackBubbleViews
 
   // LocationBarBubbleDelegateView:
   void Init() override;
-  ui::ImageModel GetWindowIcon() override;
+  void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -57,6 +57,14 @@ class VirtualCardManualFallbackBubbleViews
   // will be copied to the clipboard.
   std::unique_ptr<views::MdTextButton> CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField field);
+
+  // Adds a container view to show the card art image, card name, card
+  // number last four and "Virtual card" indicator label.
+  void AddCardDescriptionView(views::View* parent);
+
+  // Adds a list of pairs of label and button to show the virtual card details
+  // and to allow user to copy the details to clipboard.
+  void AddCardDetailButtons(views::View* parent);
 
   // Invoked when a button with card information is clicked.
   void OnFieldClicked(VirtualCardManualFallbackBubbleField field);

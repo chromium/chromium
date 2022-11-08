@@ -46,6 +46,7 @@ struct AutofillErrorDialogContext;
 class AutofillPopupControllerImpl;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
+struct VirtualCardManualFallbackBubbleOptions;
 
 // Chrome implementation of AutofillClient.
 // ChromeAutofillClient is instantiated once per WebContents, and usages of
@@ -203,10 +204,7 @@ class ChromeAutofillClient
                                bool notification_has_been_shown) override;
   void DismissOfferNotification() override;
   void OnVirtualCardDataAvailable(
-      const std::u16string& masked_card_identifier_string,
-      const CreditCard* credit_card,
-      const std::u16string& cvc,
-      const gfx::Image& card_image) override;
+      const VirtualCardManualFallbackBubbleOptions& options) override;
   void ShowVirtualCardErrorDialog(
       const AutofillErrorDialogContext& context) override;
   void ShowAutofillProgressDialog(

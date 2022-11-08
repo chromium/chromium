@@ -129,6 +129,11 @@ void TestBrowserAutofillManager::UploadFormData(
     BrowserAutofillManager::UploadFormData(submitted_form, observed_submission);
 }
 
+const gfx::Image& TestBrowserAutofillManager::GetCardImage(
+    const CreditCard& credit_card) const {
+  return card_image_;
+}
+
 void TestBrowserAutofillManager::ScheduleRefill(const FormData& form) {
   TriggerRefillForTest(form);
 }

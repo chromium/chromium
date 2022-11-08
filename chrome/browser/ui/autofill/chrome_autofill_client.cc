@@ -62,6 +62,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1076,14 +1077,9 @@ void ChromeAutofillClient::DismissOfferNotification() {
 }
 
 void ChromeAutofillClient::OnVirtualCardDataAvailable(
-    const std::u16string& masked_card_identifier_string,
-    const CreditCard* credit_card,
-    const std::u16string& cvc,
-    const gfx::Image& card_image) {
-  DCHECK(credit_card);
-  DCHECK(!cvc.empty());
-
-  GetFormDataImporter()->CacheFetchedVirtualCard(credit_card->LastFourDigits());
+    const VirtualCardManualFallbackBubbleOptions& options) {
+  GetFormDataImporter()->CacheFetchedVirtualCard(
+      options.virtual_card.LastFourDigits());
 #if BUILDFLAG(IS_ANDROID)
   // Show the virtual card snackbar only if the ManualFillingComponent component
   // is enabled for credit cards.
@@ -1098,8 +1094,7 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
   VirtualCardManualFallbackBubbleControllerImpl* controller =
       VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
           web_contents());
-  controller->ShowBubble(masked_card_identifier_string, credit_card, cvc,
-                         card_image);
+  controller->ShowBubble(options);
 #endif
 }
 

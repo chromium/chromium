@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
@@ -70,6 +71,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   bool IsAutofillCreditCardEnabled() const override;
   void UploadFormData(const FormStructure& submitted_form,
                       bool observed_submission) override;
+  const gfx::Image& GetCardImage(const CreditCard& credit_card) const override;
   bool MaybeStartVoteUploadProcess(
       std::unique_ptr<FormStructure> form_structure,
       bool observed_submission) override;
@@ -147,6 +149,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   bool autofill_credit_card_enabled_ = true;
   bool call_parent_upload_form_data_ = false;
   absl::optional<bool> expected_observed_submission_;
+  const gfx::Image card_image_ = gfx::test::CreateImage(32, 20);
 
   std::unique_ptr<base::RunLoop> run_loop_;
 

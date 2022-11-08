@@ -76,6 +76,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/suggestions_context.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -102,6 +103,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -1774,11 +1776,16 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
   // If synced down card is a virtual card, let the client know so that it can
   // show the UI to help user to manually fill the form, if needed.
   if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
-    gfx::Image* card_art_image = personal_data_->GetCreditCardArtImageForUrl(
-        credit_card->card_art_url());
-    client()->OnVirtualCardDataAvailable(
-        credit_card_.CardIdentifierStringForAutofillDisplay(), credit_card, cvc,
-        card_art_image ? *card_art_image : gfx::Image());
+    DCHECK(!cvc.empty());
+
+    VirtualCardManualFallbackBubbleOptions options;
+    options.masked_card_name = credit_card_.CardNameForAutofillDisplay();
+    options.masked_card_number_last_four =
+        credit_card_.ObfuscatedLastFourDigits();
+    options.virtual_card = *credit_card;
+    options.virtual_card_cvc = cvc;
+    options.card_image = GetCardImage(*credit_card);
+    client()->OnVirtualCardDataAvailable(options);
   }
 
   // After a server card is fetched, save its instrument id.
@@ -1829,6 +1836,29 @@ void BrowserAutofillManager::OnSuggestionsReturned(
                                             autoselect_first_suggestion);
 }
 
+void BrowserAutofillManager::UploadFormData(const FormStructure& submitted_form,
+                                            bool observed_submission) {
+  if (!download_manager())
+    return;
+
+  // Check if the form is among the forms that were recently auto-filled.
+  bool was_autofilled = base::Contains(autofilled_form_signatures_,
+                                       submitted_form.FormSignatureAsStr());
+
+  ServerFieldTypeSet non_empty_types;
+  personal_data_->GetNonEmptyTypes(&non_empty_types);
+  // As CVC is not stored, treat it separately.
+  if (!last_unlocked_credit_card_cvc_.empty() ||
+      non_empty_types.contains(CREDIT_CARD_NUMBER)) {
+    non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
+  }
+
+  download_manager()->StartUploadRequest(
+      submitted_form, was_autofilled, non_empty_types,
+      /*login_form_signature=*/std::string(), observed_submission,
+      client()->GetPrefs());
+}
+
 // Note that |submitted_form| is passed as a pointer rather than as a reference
 // so that we can get memory management right across threads.  Note also that we
 // explicitly pass in all the time stamps of interest, as the cached ones might
@@ -1862,27 +1892,14 @@ void BrowserAutofillManager::UploadFormDataAsyncCallback(
     UploadFormData(*submitted_form, observed_submission);
 }
 
-void BrowserAutofillManager::UploadFormData(const FormStructure& submitted_form,
-                                            bool observed_submission) {
-  if (!download_manager())
-    return;
-
-  // Check if the form is among the forms that were recently auto-filled.
-  bool was_autofilled = base::Contains(autofilled_form_signatures_,
-                                       submitted_form.FormSignatureAsStr());
-
-  ServerFieldTypeSet non_empty_types;
-  personal_data_->GetNonEmptyTypes(&non_empty_types);
-  // AS CVC is not stored, treat it separately.
-  if (!last_unlocked_credit_card_cvc_.empty() ||
-      non_empty_types.contains(CREDIT_CARD_NUMBER)) {
-    non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
-  }
-
-  download_manager()->StartUploadRequest(
-      submitted_form, was_autofilled, non_empty_types,
-      /*login_form_signature=*/std::string(), observed_submission,
-      client()->GetPrefs());
+const gfx::Image& BrowserAutofillManager::GetCardImage(
+    const CreditCard& credit_card) const {
+  gfx::Image* card_art_image =
+      personal_data_->GetCreditCardArtImageForUrl(credit_card.card_art_url());
+  return card_art_image
+             ? *card_art_image
+             : ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                   CreditCard::IconResourceId(credit_card.network()));
 }
 
 void BrowserAutofillManager::Reset() {

@@ -14,7 +14,7 @@
 namespace autofill {
 
 class AutofillBubbleBase;
-class CreditCard;
+struct VirtualCardManualFallbackBubbleOptions;
 
 // The fields inside of the virtual card manual fallback bubble.
 enum class VirtualCardManualFallbackBubbleField {
@@ -55,11 +55,16 @@ class VirtualCardManualFallbackBubbleController {
   // Returns a reference to the bubble view.
   virtual AutofillBubbleBase* GetBubble() const = 0;
 
-  // Returns the title icon of the bubble.
-  virtual const gfx::Image& GetBubbleTitleIcon() const = 0;
-
   // Returns the title text of the bubble.
   virtual std::u16string GetBubbleTitleText() const = 0;
+
+  // Returns the bubble popup options.
+  virtual const VirtualCardManualFallbackBubbleOptions& GetBubbleOptions()
+      const = 0;
+
+  // Returns the text used to show that the card entity in the bubble is a
+  // virtual card.
+  virtual std::u16string GetVirtualCardIndicatorLabel() const = 0;
 
   // Returns the text used in the learn more link.
   virtual std::u16string GetLearnMoreLinkText() const = 0;
@@ -83,12 +88,9 @@ class VirtualCardManualFallbackBubbleController {
   virtual std::u16string GetValueForField(
       VirtualCardManualFallbackBubbleField field) const = 0;
 
-  // Return the tooltip of the button.
+  // Returns the tooltip of the button.
   virtual std::u16string GetFieldButtonTooltip(
       VirtualCardManualFallbackBubbleField field) const = 0;
-
-  // Returns the related virtual card.
-  virtual const CreditCard* GetVirtualCard() const = 0;
 
   // Returns whether the omnibox icon for the bubble should be visible.
   virtual bool ShouldIconBeVisible() const = 0;
@@ -97,7 +99,7 @@ class VirtualCardManualFallbackBubbleController {
   // why the bubble was closed.
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
 
-  // Handles the event on the learn more link being clicked
+  // Handles the event on the learn more link being clicked.
   virtual void OnLinkClicked(const GURL& url) = 0;
 
   // Handles the event of clicking the |field|'s button.

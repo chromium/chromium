@@ -49,19 +49,14 @@ VirtualCardManualFallbackBubbleControllerImpl::
     ~VirtualCardManualFallbackBubbleControllerImpl() = default;
 
 void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
-    const std::u16string& masked_card_identifier_string,
-    const CreditCard* virtual_card,
-    const std::u16string& virtual_card_cvc,
-    const gfx::Image& virtual_card_image) {
+    const VirtualCardManualFallbackBubbleOptions& options) {
   // If another bubble is visible, dismiss it and show a new one since the card
   // information can be different.
   if (bubble_view())
     HideBubble();
 
-  masked_card_identifier_string_ = masked_card_identifier_string;
-  virtual_card_ = *virtual_card;
-  virtual_card_cvc_ = virtual_card_cvc;
-  virtual_card_image_ = virtual_card_image;
+  DCHECK(options.IsValid());
+  options_ = options;
   is_user_gesture_ = false;
   should_icon_be_visible_ = true;
 
@@ -89,16 +84,22 @@ AutofillBubbleBase* VirtualCardManualFallbackBubbleControllerImpl::GetBubble()
   return bubble_view();
 }
 
-const gfx::Image&
-VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleIcon() const {
-  return virtual_card_image_;
+const VirtualCardManualFallbackBubbleOptions&
+VirtualCardManualFallbackBubbleControllerImpl::GetBubbleOptions() const {
+  return options_;
+}
+
+std::u16string
+VirtualCardManualFallbackBubbleControllerImpl::GetVirtualCardIndicatorLabel()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIRTUAL_CARD_LABEL);
 }
 
 std::u16string
 VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleText() const {
-  return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE,
-      masked_card_identifier_string_);
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE);
 }
 
 std::u16string
@@ -145,15 +146,15 @@ std::u16string VirtualCardManualFallbackBubbleControllerImpl::GetValueForField(
     VirtualCardManualFallbackBubbleField field) const {
   switch (field) {
     case VirtualCardManualFallbackBubbleField::kCardNumber:
-      return virtual_card_.FullDigitsForDisplay();
+      return options_.virtual_card.FullDigitsForDisplay();
     case VirtualCardManualFallbackBubbleField::kExpirationMonth:
-      return virtual_card_.Expiration2DigitMonthAsString();
+      return options_.virtual_card.Expiration2DigitMonthAsString();
     case VirtualCardManualFallbackBubbleField::kExpirationYear:
-      return virtual_card_.Expiration4DigitYearAsString();
+      return options_.virtual_card.Expiration4DigitYearAsString();
     case VirtualCardManualFallbackBubbleField::kCardholderName:
-      return virtual_card_.GetRawInfo(CREDIT_CARD_NAME_FULL);
+      return options_.virtual_card.GetRawInfo(CREDIT_CARD_NAME_FULL);
     case VirtualCardManualFallbackBubbleField::kCvc:
-      return virtual_card_cvc_;
+      return options_.virtual_card_cvc;
   }
 }
 
@@ -164,11 +165,6 @@ VirtualCardManualFallbackBubbleControllerImpl::GetFieldButtonTooltip(
       clicked_field_ == field
           ? IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_CLICKED
           : IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_NORMAL);
-}
-
-const CreditCard*
-VirtualCardManualFallbackBubbleControllerImpl::GetVirtualCard() const {
-  return &virtual_card_;
 }
 
 bool VirtualCardManualFallbackBubbleControllerImpl::ShouldIconBeVisible()

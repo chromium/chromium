@@ -29,6 +29,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
@@ -108,11 +109,15 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
   void ShowBubble(const CreditCard* virtual_card,
                   const std::u16string& virtual_card_cvc) {
     ResetEventWaiterForSequence({BubbleEvent::BUBBLE_SHOWN});
-    // Passing in empty image will fall back to use card network icon.
-    GetController()->ShowBubble(
-        /*masked_card_identifier_string=*/std::u16string(), virtual_card,
-        virtual_card_cvc,
-        /*virtual_card_image=*/gfx::Image());
+    VirtualCardManualFallbackBubbleOptions options;
+    options.masked_card_name =
+        CreditCard::NetworkForDisplay(virtual_card->network());
+    options.masked_card_number_last_four =
+        virtual_card->ObfuscatedLastFourDigits();
+    options.virtual_card = *virtual_card;
+    options.virtual_card_cvc = virtual_card_cvc;
+    options.card_image = gfx::test::CreateImage(32, 20);
+    GetController()->ShowBubble(options);
     event_waiter_->Wait();
   }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_manual_fallback_bubble_metrics.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -35,18 +36,17 @@ class VirtualCardManualFallbackBubbleControllerImpl
       const VirtualCardManualFallbackBubbleControllerImpl&) = delete;
 
   // Show the bubble view.
-  void ShowBubble(const std::u16string& masked_card_identifier_string,
-                  const CreditCard* virtual_card,
-                  const std::u16string& virtual_card_cvc,
-                  const gfx::Image& virtual_card_image);
+  void ShowBubble(const VirtualCardManualFallbackBubbleOptions& options);
 
   // Invoked when the omnibox icon is clicked.
   void ReshowBubble();
 
   // VirtualCardManualFallbackBubbleController:
   AutofillBubbleBase* GetBubble() const override;
-  const gfx::Image& GetBubbleTitleIcon() const override;
   std::u16string GetBubbleTitleText() const override;
+  const VirtualCardManualFallbackBubbleOptions& GetBubbleOptions()
+      const override;
+  std::u16string GetVirtualCardIndicatorLabel() const override;
   std::u16string GetLearnMoreLinkText() const override;
   std::u16string GetEducationalBodyLabel() const override;
   std::u16string GetVirtualCardNumberFieldLabel() const override;
@@ -57,7 +57,6 @@ class VirtualCardManualFallbackBubbleControllerImpl
       VirtualCardManualFallbackBubbleField field) const override;
   std::u16string GetFieldButtonTooltip(
       VirtualCardManualFallbackBubbleField field) const override;
-  const CreditCard* GetVirtualCard() const override;
   bool ShouldIconBeVisible() const override;
   void OnLinkClicked(const GURL& url) override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
@@ -91,18 +90,8 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
   void SetEventObserverForTesting(ObserverForTest* observer_for_test);
 
-  // The network + last four digits of card number for the related masked server
-  // card.
-  std::u16string masked_card_identifier_string_;
-
-  // The cvc of the virtual card.
-  std::u16string virtual_card_cvc_;
-
-  // The virtual card to be displayed to the user in the bubble.
-  CreditCard virtual_card_;
-
-  // The virtual card image to be displayed as the title icon of the bubble.
-  gfx::Image virtual_card_image_;
+  // Options containing information to show in the bubble.
+  VirtualCardManualFallbackBubbleOptions options_;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
