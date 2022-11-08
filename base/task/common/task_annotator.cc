@@ -309,14 +309,13 @@ void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
     perfetto::EventContext& ctx) {
   if (!ipc_interface_name_ || !ipc_hash_ || !ipc_method_info_)
     return;
-
+#if BUILDFLAG(ENABLE_BASE_TRACING) && !BUILDFLAG(IS_NACL)
   // Emit all of the IPC hash information if this task
   // comes from a mojo interface.
   auto* info = ctx.event()->set_chrome_mojo_event_info();
   info->set_mojo_interface_tag(ipc_interface_name_);
   info->set_ipc_hash(ipc_hash_);
 
-#if !BUILDFLAG(IS_NACL)
   // The Native client will not build as the relevant implementation of
   // base::ModuleCache::CreateModuleForAddress is not implemented for it.
   // Thus the below code must be included on a conditional basis.
