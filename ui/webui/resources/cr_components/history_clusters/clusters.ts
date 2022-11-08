@@ -169,6 +169,10 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     this.onQueryChangedByUserListenerId_ =
         this.callbackRouter_.onQueryChangedByUser.addListener(
             this.onQueryChangedByUser_.bind(this));
+
+    if (this.inSidePanel_) {
+      this.pageHandler_.showSidePanelUI();
+    }
   }
 
   override disconnectedCallback() {
@@ -339,15 +343,11 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // Do this on browser idle to avoid jank and to give the DOM a chance to be
     // updated with the results we just got.
     this.onBrowserIdle_().then(() => {
-      if (this.scrollHeight <= this.clientHeight) {
+      if (this.scrollHeight <= this.clientHeight && this.result_.canLoadMore) {
         this.onLoadMoreButtonClick_();
       }
     });
     this.showSpinner_ = false;
-
-    if (this.inSidePanel_) {
-      this.pageHandler_.showSidePanelUI();
-    }
   }
 
   /**
