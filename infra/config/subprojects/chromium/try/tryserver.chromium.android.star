@@ -268,6 +268,9 @@ try_.orchestrator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -285,9 +288,6 @@ try_.orchestrator_builder(
     ),
     check_for_flakiness = True,
     compilator = "android-nougat-x86-rel-compilator",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
     experiments = {
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
