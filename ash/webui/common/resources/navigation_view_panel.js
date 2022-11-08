@@ -303,6 +303,14 @@ export class NavigationViewPanelElement extends PolymerElement {
       this.shadowRoot.querySelector('page-toolbar').setAttribute('shadow', '');
     }
   }
+
+  /**
+   * @param {string} selectorId The ID of the section to search for.
+   * @return {boolean}
+   */
+  pageExists(selectorId) {
+    return !!this.selectorItems_.find(({id}) => id === selectorId);
+  }
 }
 
 customElements.define(NavigationViewPanelElement.is,

@@ -30,6 +30,7 @@ interface NavigationViewPanelElement extends LegacyElementMixin, HTMLElement {
   showPage_(pageComponent: HTMLElement): void;
   onMenuButtonTap_(): void;
   onScroll_(): void;
+  pageExists(selectorId: string): boolean;
 
   $: {
     drawer: CrDrawerElement,
