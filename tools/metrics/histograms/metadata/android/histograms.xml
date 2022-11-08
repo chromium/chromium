@@ -3611,9 +3611,22 @@ chromium-metrics-reviews@google.com.
     enum="TabSelectionEditorShareActionState" expires_after="2023-10-14">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
   <summary>
     The result of the share action taken from the TabSelectionEditor. Record
     once per user attempt to share tabs in the Tab Selection Editor.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabMultiSelectV2.TimeSinceLastShown" units="ms"
+    expires_after="2023-10-14">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Measures the time between opening the TabSelectionEditor in milliseconds
+    within a given browser activity lifespan. This is recorded when the
+    TabSelectionEditor is shown with the exception of the first time it is shown
+    within an activity lifespan.
   </summary>
 </histogram>
 

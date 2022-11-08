@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -62,6 +63,12 @@ class TabSelectionEditorMediator
     private PropertyListModel<PropertyModel, PropertyKey> mActionListModel;
     private ListModelChangeProcessor mActionChangeProcessor;
     private TabSelectionEditorMenu mTabSelectionEditorMenu;
+
+    /**
+     * The last time the Tab Selection Editor was shown across all instances, null if never shown
+     * before within an activity lifespan.
+     */
+    private static Long sLastShownTimestampMillis;
 
     private final View.OnClickListener mNavigationClickListener = new View.OnClickListener() {
         @Override
@@ -193,6 +200,8 @@ class TabSelectionEditorMediator
 
     @Override
     public void show(List<Tab> tabs, int preSelectedTabCount) {
+        recordTimeSinceLastShown();
+
         // We don't call TabListCoordinator#prepareTabSwitcherView, since not all the logic (e.g.
         // requiring one tab to be selected) is applicable here.
         mTabListCoordinator.prepareTabGridView();
@@ -346,5 +355,18 @@ class TabSelectionEditorMediator
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         }
+    }
+
+    /**
+     * Records to a historgam the time since an instance of TabSelectionEditor was last opened
+     * within an activity lifespan.
+     */
+    private void recordTimeSinceLastShown() {
+        long timestampMillis = System.currentTimeMillis();
+        if (sLastShownTimestampMillis != null) {
+            RecordHistogram.recordTimesHistogram("Android.TabMultiSelectV2.TimeSinceLastShown",
+                    timestampMillis - sLastShownTimestampMillis);
+        }
+        sLastShownTimestampMillis = timestampMillis;
     }
 }
