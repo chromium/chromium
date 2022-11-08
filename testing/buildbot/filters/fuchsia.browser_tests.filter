@@ -61,10 +61,12 @@
 #     Which is: "[FAILED] Expected: ''Abbf'', but was ''''"
 -DevToolsTest.TestDispatchKeyEventShowsAutoFill
 
-# TODO(crbug.com/1326663): Unsupported keySystem
+# TODO(crbug.com/1265618): Unsupported keySystem
 -EncryptedMediaSupportedTypesExternalClearKeyTest.EncryptionScheme
 -EncryptedMediaSupportedTypesExternalClearKeyTest.Robustness
 -EncryptedMediaSupportedTypesExternalClearKeyTest.SessionType
+-EncryptedMediaSupportedTypesExternalClearKeyTest.Video_MP4
+-EncryptedMediaSupportedTypesExternalClearKeyTest.Video_WebM
 
 # TODO(crbug.com/1326667): WebGL blocked when it should be allowed
 -ExtensionWebstoreGetWebGLStatusTest.Allowed
@@ -296,22 +298,10 @@
 -CommerceHintAddToCartPatternTest.AddToCartByURL
 -CommerceHintAgentFencedFrameTest.VisitCartInFencedFrame
 -CommerceHintAgentPortalBrowserTest.VisitCartInPortal
--CommerceHintAgentTest.AddToCartByForm
--CommerceHintAgentTest.AddToCartByForm_WithLink
--CommerceHintAgentTest.AddToCartByForm_WithWrongLink
--CommerceHintAgentTest.AddToCartByURL
--CommerceHintAgentTest.AddToCartByURL_XHR
--CommerceHintAgentTest.ExtractCart_ProductIDFromComponent
--CommerceHintAgentTest.ExtractCart_ScriptFromComponent
--CommerceHintAgentTest.ExtractCart_ScriptFromResource
--CommerceHintAgentTest.PurchaseByForm
--CommerceHintAgentTest.PurchaseByURL
--CommerceHintAgentTest.VisitCart
--CommerceHintAgentTest.VisitCart_GeneralPattern_FromComponent
--CommerceHintAgentTest.VisitCart_PerDomain_FromComponent
--CommerceHintAgentTest.VisitCheckout
+-CommerceHintAgentTest.*
 -CommerceHintCacaoTest.Passed
 -CommerceHintCheckoutPatternTest.VisitCheckout
+-CommerceHintDOMBasedHeuristics*
 -CommerceHintMaxCountTest.ExtractCart
 -CommerceHintOptimizeRendererDisabledTest.Rejected
 -CommerceHintOptimizeRendererTest.CartExtractionSkipped
@@ -330,6 +320,7 @@
 -CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedTextResource_SubdomainPermissions
 -CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_SameOrigin
 -CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_UnloadedExtension
+-HistogramsInternalsUIBrowserTest.DownloadHistograms
 -PrivateNetworkAccessWithFeatureEnabledBrowserTest.DoesNotRecordAddressSpaceFeatureForBlockedRequests
 -ProcessMemoryMetricsEmitterTest.FetchAndEmitMetrics
 -ProcessMemoryMetricsEmitterTest.FetchAndEmitMetricsWithExtensions
@@ -531,16 +522,11 @@
 -ClientHintsBrowserTest.SwitchOriginNotSecure
 -ContentVerifierTest.UnreadableContentScriptFailsContentVerification
 -ContextMenuBrowserTest.OpenProfileNoneReferrer
--DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile/0
--DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile/1
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteAllProfiles/0
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteAllProfiles/1
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteInactiveProfile/0
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteInactiveProfile/1
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.EphemeralProfile/0
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.EphemeralProfile/1
+-DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile*
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.*
 -DiceWebSigninInterceptionBubbleBrowserTest.ProfileKeepAlive
 -ExtensionDialogTest.TextInputViaKeyEvent
+-HighEfficiencyHelpPromoTest.*
 -IsolateOriginsPrintBrowserTest.PrintIsolatedSubframe
 -MediaEngagementPreloadBrowserTest.EnsureSingletonListIsLoaded
 -NetworkingPrivateServiceClientApiTest.OnNetworkListChangedEvent
@@ -551,11 +537,11 @@
 -PortalOutOfMemoryReporterBrowserTest.ReportForActivatedPortal
 -ProxySettingsApiTest.ProxyEventsParseError
 -ServiceWorkerTest.MimeHandlerView
+-SitePerProcessHitTestBrowserTest.TouchpadPinchOverOOPIF
 -StartupMetricsTest.ReportsValues
--WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsDisabled
--WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsEnabled
--WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsDisabled
--WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsEnabled
+-WebViewTests/WebViewAccessibilityTest.FocusAccessibility/SiteIsolationForGuestsDisabled
+-WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuests*
+-WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuests*
 
 # TODO(crbug.com/1326982): Crashed with no info
 -InProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
@@ -569,15 +555,27 @@
 # yet identified.
 -CrSettingsPrivacyPageTest.PrivacyPageTests
 
+# tab_helper
+-All/PriceTrackingEntryPointFeatureFlagTest.ShoppingListUiTabHelperCreation/ShoppingListEnabled
+-BookmarkBubbleViewBrowserTest.InvokeUi_bookmark_details*
+-BookmarkBubbleViewTest.SyncPromo*
+
+# media license issues
+-All/BrowsingDataRemoverBrowserTestP.MediaLicenseDeletion*
+-BrowsingDataRemoverBrowserTest.MediaLicense*
+-IncognitoBrowsingDataBrowserTest.MediaLicenseDeletion
+
 # TODO(crbug.com/1271639): Undiagnosed failures
--All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/0
--All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/1
+-All/DumpAccessibilityTreeTest.AccessibilityCanvasFallback/fuchsia
+-All/PageSpecificSiteDataDialogBrowserTest.ChangeAndCloseTab/1
+-All/PageSpecificSiteDataDialogBrowserTest.ClearOnExitMenuItem/1
+-All/PasswordManagerPorterStoreTest.Import*
+-All/SystemAccessProcessPrintBrowserTest.*
 -All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/2
--All/SystemAccessProcessServicePrintBrowserTest.StartPrinting/0
--All/SystemAccessProcessServicePrintBrowserTest.StartPrinting/1
--All/SystemAccessProcessServicePrintBrowserTest.StartPrintingSpoolingSharedMemoryError/0
--All/SystemAccessProcessServicePrintBrowserTest.StartPrintingSpoolingSharedMemoryError/1
+-All/SystemAccessProcessServicePrintBrowserTest.*
+-AppServiceProxyPreferredAppsTest.*
 -BackForwardCachePrintBrowserTest.DisableCaching
+-ChromeURLDataManagerWebUITrustedTypesTest.NoTrustedTypesViolation/chrome___connectors_internals
 -Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/0
 -Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/1
 -Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/2
@@ -593,6 +591,12 @@
 -CollectedCookiesViewsMetricsTest.RemoveButton
 -DesktopCaptureApiTest.ChooseDesktopMedia
 -DesktopCaptureApiTest.Delegation
+-ExtensionActionAPITest.SetIconInWorkerWithInvalidPath
+-FileSystemApiTest.FileSystemApiRetainEntry
+-FindInPageControllerTest.SingleOccurrence
+-GalleryWatchManagerTest.AddAndRemove*
+-IsClipboardPasteContentAllowedTest.AllFiles*
+-PasswordCheckDelegateTest.LastTimePasswordCheckCompletedIsSet
 -PDFExtensionSubmitFormTest.SubmitForm
 -PDFExtensionTest.Metrics
 -PDFExtensionTest.SelectAllShortcut
@@ -612,10 +616,13 @@
 -PrintBrowserTest.SelectionContainsIframe
 -PrintBrowserTest.WindowDotPrint
 -PrintExtensionBrowserTest.PrintOptionPage
+-PrintPreviewBrowserTest.PrintCommands
 -PrintPreviewDialogControllerBrowserTest.PdfPluginDisabled
 -PrintPreviewDialogControllerBrowserTest.PrintPreviewPdfAccessibility
+-ProfileKeyedServiceBrowserTest.GuestProfileParent_NeededServices
 -ReduceUserAgentPlatformBrowserTest.NavigatorPlatform
 -ServiceWorker/ExtensionWebRequestApiTestWithContextType.WebRequestPacRequestProtection/0
+-SigninInterceptFirstRunExperienceDialogBrowserTest.PromotionalTabsDisabled
 -SitePerProcessPrintBrowserTest.BasicPrint
 -SitePerProcessPrintBrowserTest.MultipagePrint
 -SitePerProcessPrintBrowserTest.PrintNup
@@ -626,3 +633,5 @@
 -SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingDocumentDoneAccessDenied
 -SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingRenderDocumentAccessDenied
 -SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingRepeatedAccessDenied
+-ThemeServiceBrowserTest.GetColorForToolbarButton
+-UserNoteUICoordinatorTest.CleanScrollViewOnSidePanelCloseWithNotes
