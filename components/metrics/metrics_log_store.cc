@@ -75,17 +75,22 @@ void MetricsLogStore::StoreLog(const std::string& log_data,
 
   MetricsLogsEventManager::ScopedNotifyLogType scoped_log_type(
       logs_event_manager_, log_type);
-  switch (log_type) {
-    case MetricsLog::INITIAL_STABILITY_LOG:
-      initial_log_queue_.StoreLog(log_data, log_metadata);
-      break;
-    case MetricsLog::ONGOING_LOG:
-    case MetricsLog::INDEPENDENT_LOG:
-      has_alternate_ongoing_log_store()
-          ? alternate_ongoing_log_queue_->StoreLog(log_data, log_metadata)
-          : ongoing_log_queue_.StoreLog(log_data, log_metadata);
-      break;
-  }
+  GetLogStoreForLogType(log_type)->StoreLog(log_data, log_metadata);
+}
+
+void MetricsLogStore::StoreLogInfo(
+    std::unique_ptr<UnsentLogStore::LogInfo> log_info,
+    size_t uncompressed_log_size,
+    MetricsLog::LogType log_type) {
+  MetricsLogsEventManager::ScopedNotifyLogType scoped_log_type(
+      logs_event_manager_, log_type);
+  GetLogStoreForLogType(log_type)->StoreLogInfo(std::move(log_info),
+                                                uncompressed_log_size);
+}
+
+const std::string& MetricsLogStore::GetSigningKeyForLogType(
+    MetricsLog::LogType log_type) {
+  return GetLogStoreForLogType(log_type)->signing_key();
 }
 
 void MetricsLogStore::SetAlternateOngoingLogStore(
@@ -165,6 +170,19 @@ bool MetricsLogStore::alternate_ongoing_log_store_has_unsent_logs() const {
 bool MetricsLogStore::alternate_ongoing_log_store_has_staged_log() const {
   return has_alternate_ongoing_log_store() &&
          alternate_ongoing_log_queue_->has_staged_log();
+}
+
+UnsentLogStore* MetricsLogStore::GetLogStoreForLogType(
+    MetricsLog::LogType log_type) {
+  switch (log_type) {
+    case MetricsLog::INITIAL_STABILITY_LOG:
+      return &initial_log_queue_;
+    case MetricsLog::ONGOING_LOG:
+    case MetricsLog::INDEPENDENT_LOG:
+      return has_alternate_ongoing_log_store()
+                 ? alternate_ongoing_log_queue_.get()
+                 : &ongoing_log_queue_;
+  }
 }
 
 void MetricsLogStore::StageNextLog() {

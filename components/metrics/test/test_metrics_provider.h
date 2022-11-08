@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_TEST_TEST_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_TEST_TEST_METRICS_PROVIDER_H_
 
+#include "base/metrics/histogram_snapshot_manager.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {
@@ -28,6 +29,10 @@ class TestMetricsProvider : public MetricsProvider {
       ChromeUserMetricsExtension* uma_proto) override;
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
+  void RecordInitialHistogramSnapshots(
+      base::HistogramSnapshotManager* snapshot_manager) override;
+  void RecordHistogramSnapshots(
+      base::HistogramSnapshotManager* snapshot_manager) override;
 
   bool init_called() { return init_called_; }
   bool on_recording_disabled_called() { return on_recording_disabled_called_; }
@@ -46,6 +51,15 @@ class TestMetricsProvider : public MetricsProvider {
   bool provide_system_profile_metrics_called() const {
     return provide_system_profile_metrics_called_;
   }
+  bool record_initial_histogram_snapshots_called() const {
+    return record_initial_histogram_snapshots_called_;
+  }
+  bool record_histogram_snapshots_called() const {
+    return record_histogram_snapshots_called_;
+  }
+  void set_record_histogram_snapshots_called(bool val) {
+    record_histogram_snapshots_called_ = val;
+  }
 
  private:
   bool init_called_ = false;
@@ -55,6 +69,8 @@ class TestMetricsProvider : public MetricsProvider {
   bool provide_initial_stability_metrics_called_ = false;
   bool provide_stability_metrics_called_ = false;
   bool provide_system_profile_metrics_called_ = false;
+  bool record_initial_histogram_snapshots_called_ = false;
+  bool record_histogram_snapshots_called_ = false;
 };
 
 }  // namespace metrics

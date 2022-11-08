@@ -46,7 +46,6 @@ FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
 
 namespace base {
-class HistogramSamples;
 class PrefService;
 }  // namespace base
 
@@ -61,7 +60,7 @@ class MetricsServiceClient;
 class MetricsStateManager;
 
 // See metrics_service.cc for a detailed description.
-class MetricsService : public base::HistogramFlattener {
+class MetricsService {
  public:
   // Creates the MetricsService with the given |state_manager|, |client|, and
   // |local_state|.  Does not take ownership of the paramaters; instead stores
@@ -74,7 +73,7 @@ class MetricsService : public base::HistogramFlattener {
   MetricsService(const MetricsService&) = delete;
   MetricsService& operator=(const MetricsService&) = delete;
 
-  ~MetricsService() override;
+  virtual ~MetricsService();
 
   // Initializes metrics recording state. Updates various bookkeeping values in
   // prefs and sets up the scheduler. This is a separate function rather than
@@ -127,10 +126,6 @@ class MetricsService : public base::HistogramFlattener {
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // HistogramFlattener:
-  void RecordDelta(const base::HistogramBase& histogram,
-                   const base::HistogramSamples& snapshot) override;
 
   // This should be called when the application is not idle, i.e. the user seems
   // to be interacting with the application.
@@ -247,6 +242,8 @@ class MetricsService : public base::HistogramFlattener {
   // Test hook to safely stage the current log in the log store.
   bool StageCurrentLogForTest();
 
+  MetricsLog* GetCurrentLogForTest() { return log_manager_.current_log(); }
+
   DelegatingProvider* GetDelegatingProviderForTesting() {
     return &delegating_provider_;
   }
@@ -304,6 +301,88 @@ class MetricsService : public base::HistogramFlattener {
     UNSET,
   };
 
+  // The result of a call to FinalizeLog().
+  struct FinalizedLog {
+    FinalizedLog();
+    ~FinalizedLog();
+
+    // This type is move only.
+    FinalizedLog(FinalizedLog&& other);
+
+    // The size of the uncompressed log data. This is only used for calculating
+    // some metrics.
+    size_t uncompressed_log_size;
+
+    // A LogInfo object representing the log, which contains its compressed
+    // data, hash, signature, timestamp, and some metadata.
+    std::unique_ptr<UnsentLogStore::LogInfo> log_info;
+  };
+
+  // Writes snapshots of histograms owned by the StatisticsRecorder to a log.
+  // Does not take ownership of the log.
+  class MetricsLogHistogramWriter {
+   public:
+    explicit MetricsLogHistogramWriter(MetricsLog* log);
+
+    MetricsLogHistogramWriter(MetricsLog* log,
+                              base::HistogramBase::Flags required_flags);
+
+    MetricsLogHistogramWriter(const MetricsLogHistogramWriter&) = delete;
+    MetricsLogHistogramWriter& operator=(const MetricsLogHistogramWriter&) =
+        delete;
+
+    ~MetricsLogHistogramWriter();
+
+    // Snapshots histograms known by the StatisticsRecorder and writes them to
+    // |log_|'s proto.
+    void SnapshotStatisticsRecorderHistograms();
+
+    base::HistogramSnapshotManager* histogram_snapshot_manager() {
+      return histogram_snapshot_manager_.get();
+    }
+
+   private:
+    // Used to select which histograms to record when calling
+    // SnapshotStatisticsRecorderHistograms().
+    const base::HistogramBase::Flags required_flags_;
+
+    // Used to write histograms to |log_|.
+    std::unique_ptr<base::HistogramFlattener> flattener_;
+
+    // Used to snapshot histograms.
+    std::unique_ptr<base::HistogramSnapshotManager> histogram_snapshot_manager_;
+  };
+
+  // Loads "independent" metrics from a metrics provider and executes a
+  // callback when complete, which could be immediate or after some
+  // execution on a background thread.
+  class IndependentMetricsLoader {
+   public:
+    explicit IndependentMetricsLoader(std::unique_ptr<MetricsLog> log);
+
+    IndependentMetricsLoader(const IndependentMetricsLoader&) = delete;
+    IndependentMetricsLoader& operator=(const IndependentMetricsLoader&) =
+        delete;
+
+    ~IndependentMetricsLoader();
+
+    // Call ProvideIndependentMetrics (which may execute on a background thread)
+    // for the |metrics_provider| and execute the |done_callback| when complete
+    // with the result (true if successful). Though this can be called multiple
+    // times to include data from multiple providers, later calls will override
+    // system profile information set by earlier calls.
+    void Run(base::OnceCallback<void(bool)> done_callback,
+             MetricsProvider* metrics_provider);
+
+    // Extract the filled log. No more Run() operations can be done after this.
+    std::unique_ptr<MetricsLog> ReleaseLog();
+
+   private:
+    std::unique_ptr<MetricsLog> log_;
+    std::unique_ptr<base::HistogramFlattener> flattener_;
+    std::unique_ptr<base::HistogramSnapshotManager> snapshot_manager_;
+  };
+
   // Gets the LogStore for UMA logs.
   MetricsLogStore* log_store() {
     return reporting_service_.metrics_log_store();
@@ -349,6 +428,11 @@ class MetricsService : public base::HistogramFlattener {
   // Closes out the current log after adding any last information.
   void CloseCurrentLog();
 
+  // Stores the |finalized_log| in |log_store()|.
+  void StoreFinalizedLog(MetricsLog::LogType log_type,
+                         base::OnceClosure done_callback,
+                         FinalizedLog finalized_log);
+
   // Pushes the text of the current and staged logs into persistent storage.
   // Called when Chrome shuts down.
   void PushPendingLogsToPersistentStorage();
@@ -383,18 +467,10 @@ class MetricsService : public base::HistogramFlattener {
   // the results in prefs and GlobalPersistentSystemProfile.
   void RecordCurrentEnvironment(MetricsLog* log, bool complete);
 
-  // Record complete list of histograms into the current log.
-  // Called when we close a log.
-  void RecordCurrentHistograms();
-
-  // Record complete list of stability histograms into the current log,
-  // i.e., histograms with the |kUmaStabilityHistogramFlag| flag set.
-  void RecordCurrentStabilityHistograms();
-
   // Handle completion of PrepareProviderMetricsLog which is run as a
   // background task.
   void PrepareProviderMetricsLogDone(
-      std::unique_ptr<MetricsLog::IndependentMetricsLoader> loader,
+      std::unique_ptr<IndependentMetricsLoader> loader,
       bool success);
 
   // Record a single independent profile and associated histogram from
@@ -409,14 +485,28 @@ class MetricsService : public base::HistogramFlattener {
   // Updates the "last live" browser timestamp and schedules the next update.
   void UpdateLastLiveTimestampTask();
 
+  // Snapshots histograms using the passed |log_histogram_writer| and then
+  // finalizes |log| by calling FinalizeLog(). |log|, |current_app_version| and
+  // |signing_key| are used to finalize the log (see FinalizeLog()).
+  static FinalizedLog SnapshotHistogramsAndFinalizeLog(
+      std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
+      std::unique_ptr<MetricsLog> log,
+      bool truncate_events,
+      std::string current_app_version,
+      std::string signing_key);
+
+  // Finalizes |log| (see MetricsLog::FinalizeLog()). The |signing_key| is used
+  // to compute a signature for the log.
+  static FinalizedLog FinalizeLog(std::unique_ptr<MetricsLog> log,
+                                  bool truncate_events,
+                                  std::string current_app_version,
+                                  std::string signing_key);
+
   // Sub-service for uploading logs.
   MetricsReportingService reporting_service_;
 
   // Manager for the various in-flight logs.
   MetricsLogManager log_manager_;
-
-  // |histogram_snapshot_manager_| prepares histogram deltas for transmission.
-  base::HistogramSnapshotManager histogram_snapshot_manager_;
 
   // Used to manage various metrics reporting state prefs, such as client id,
   // low entropy source and whether metrics reporting is enabled. Weak pointer.

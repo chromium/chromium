@@ -39,9 +39,12 @@ class MetricsLogBrowserTest : public PlatformBrowserTest {
 IN_PROC_BROWSER_TEST_F(MetricsLogBrowserTest, CommandLineKeyHash) {
   TestMetricsServiceClient client;
   MetricsLog log("id", 0, MetricsLog::INITIAL_STABILITY_LOG, &client);
-  log.CloseLog();
-  ChromeUserMetricsExtension* uma_proto = log.UmaProtoForTest();
-  const auto hashes = uma_proto->system_profile().command_line_key_hash();
+  std::string encoded;
+  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+                  &encoded);
+  ChromeUserMetricsExtension uma_proto;
+  uma_proto.ParseFromString(encoded);
+  const auto hashes = uma_proto.system_profile().command_line_key_hash();
 
   bool found_startup_window_cmd = false;
   for (const auto hash : hashes) {

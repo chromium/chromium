@@ -137,12 +137,9 @@ bool GetString(const base::Value::Dict& dict,
 }  // namespace
 
 UnsentLogStore::LogInfo::LogInfo() = default;
-UnsentLogStore::LogInfo::LogInfo(const UnsentLogStore::LogInfo& other) =
-    default;
 UnsentLogStore::LogInfo::~LogInfo() = default;
 
-void UnsentLogStore::LogInfo::Init(UnsentLogStoreMetrics* metrics,
-                                   const std::string& log_data,
+void UnsentLogStore::LogInfo::Init(const std::string& log_data,
                                    const std::string& log_timestamp,
                                    const std::string& signing_key,
                                    const LogMetadata& optional_log_metadata) {
@@ -153,8 +150,6 @@ void UnsentLogStore::LogInfo::Init(UnsentLogStoreMetrics* metrics,
     return;
   }
 
-  metrics->RecordCompressionRatio(compressed_log_data.size(), log_data.size());
-
   hash = base::SHA1HashString(log_data);
 
   if (!ComputeHMACForLog(log_data, signing_key, &signature)) {
@@ -163,6 +158,13 @@ void UnsentLogStore::LogInfo::Init(UnsentLogStoreMetrics* metrics,
 
   timestamp = log_timestamp;
   this->log_metadata = optional_log_metadata;
+}
+
+void UnsentLogStore::LogInfo::Init(const std::string& log_data,
+                                   const std::string& signing_key,
+                                   const LogMetadata& optional_log_metadata) {
+  Init(log_data, base::NumberToString(base::Time::Now().ToTimeT()), signing_key,
+       optional_log_metadata);
 }
 
 UnsentLogStore::UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
@@ -189,7 +191,7 @@ UnsentLogStore::UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
   DCHECK(min_log_count_ > 0 || min_log_bytes_ > 0);
 }
 
-UnsentLogStore::~UnsentLogStore() {}
+UnsentLogStore::~UnsentLogStore() = default;
 
 bool UnsentLogStore::has_unsent_logs() const {
   return !!size();
@@ -360,12 +362,18 @@ void UnsentLogStore::LoadPersistedUnsentLogs() {
 
 void UnsentLogStore::StoreLog(const std::string& log_data,
                               const LogMetadata& log_metadata) {
-  LogInfo info;
-  info.Init(metrics_.get(), log_data,
-            base::NumberToString(base::Time::Now().ToTimeT()), signing_key_,
-            log_metadata);
-  list_.emplace_back(std::make_unique<LogInfo>(info));
-  NotifyLogCreated(info);
+  std::unique_ptr<LogInfo> info = std::make_unique<LogInfo>();
+  info->Init(log_data, signing_key_, log_metadata);
+  StoreLogInfo(std::move(info), log_data.size());
+}
+
+void UnsentLogStore::StoreLogInfo(std::unique_ptr<LogInfo> log_info,
+                                  size_t uncompressed_log_size) {
+  DCHECK(log_info);
+  metrics_->RecordCompressionRatio(log_info->compressed_log_data.size(),
+                                   uncompressed_log_size);
+  NotifyLogCreated(*log_info);
+  list_.emplace_back(std::move(log_info));
 }
 
 const std::string& UnsentLogStore::GetLogAtIndex(size_t index) {
@@ -388,15 +396,16 @@ std::string UnsentLogStore::ReplaceLogAtIndex(size_t index,
   std::string old_hash;
   old_hash.swap(list_[index]->hash);
 
-  // TODO(rkaplow): Would be a bit simpler if we had a method that would
-  // just return a pointer to the logInfo so we could combine the next 3 lines.
-  LogInfo info;
-  info.Init(metrics_.get(), new_log_data, old_timestamp, signing_key_,
-            log_metadata);
+  std::unique_ptr<LogInfo> info = std::make_unique<LogInfo>();
+  info->Init(new_log_data, old_timestamp, signing_key_, log_metadata);
+  // Note that both the compression ratio of the new log and the log that is
+  // being replaced are recorded.
+  metrics_->RecordCompressionRatio(info->compressed_log_data.size(),
+                                   new_log_data.size());
 
-  list_[index] = std::make_unique<LogInfo>(info);
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded, old_hash);
-  NotifyLogCreated(info);
+  NotifyLogCreated(*info);
+  list_[index] = std::move(info);
   return old_log_data;
 }
 
@@ -437,11 +446,11 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
 
   for (size_t i = 0; i < log_count; ++i) {
     const base::Value::Dict* dict = list_value[i].GetIfDict();
-    LogInfo info;
-    if (!dict || !GetString(*dict, kLogDataKey, info.compressed_log_data) ||
-        !GetString(*dict, kLogHashKey, info.hash) ||
-        !GetString(*dict, kLogTimestampKey, info.timestamp) ||
-        !GetString(*dict, kLogSignatureKey, info.signature)) {
+    std::unique_ptr<LogInfo> info = std::make_unique<LogInfo>();
+    if (!dict || !GetString(*dict, kLogDataKey, info->compressed_log_data) ||
+        !GetString(*dict, kLogHashKey, info->hash) ||
+        !GetString(*dict, kLogTimestampKey, info->timestamp) ||
+        !GetString(*dict, kLogSignatureKey, info->signature)) {
       // Something is wrong, so we don't try to get any persisted logs.
       list_.clear();
       metrics_->RecordLogReadStatus(
@@ -449,9 +458,9 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
       return;
     }
 
-    info.compressed_log_data = DecodeFromBase64(info.compressed_log_data);
-    info.hash = DecodeFromBase64(info.hash);
-    info.signature = DecodeFromBase64(info.signature);
+    info->compressed_log_data = DecodeFromBase64(info->compressed_log_data);
+    info->hash = DecodeFromBase64(info->hash);
+    info->signature = DecodeFromBase64(info->signature);
     // timestamp doesn't need to be decoded.
 
     // Extract user id of the log if it exists.
@@ -461,10 +470,10 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
 
       // Only initialize the metadata if conversion was successful.
       if (base::StringToUint64(DecodeFromBase64(*user_id_str), &user_id))
-        info.log_metadata.user_id = user_id;
+        info->log_metadata.user_id = user_id;
     }
 
-    list_[i] = std::make_unique<LogInfo>(info);
+    list_[i] = std::move(info);
   }
 
   // Only notify log observers after loading all logs from pref instead of

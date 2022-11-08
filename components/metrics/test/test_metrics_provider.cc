@@ -39,4 +39,14 @@ void TestMetricsProvider::ProvideSystemProfileMetrics(
   provide_system_profile_metrics_called_ = true;
 }
 
+void TestMetricsProvider::RecordInitialHistogramSnapshots(
+    base::HistogramSnapshotManager* snapshot_manager) {
+  record_initial_histogram_snapshots_called_ = true;
+}
+
+void TestMetricsProvider::RecordHistogramSnapshots(
+    base::HistogramSnapshotManager* snapshot_manager) {
+  record_histogram_snapshots_called_ = true;
+}
+
 }  // namespace metrics

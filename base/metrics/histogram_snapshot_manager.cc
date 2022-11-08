@@ -11,35 +11,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_samples.h"
-#include "base/metrics/statistics_recorder.h"
 
 namespace base {
-
-namespace {
-
-// A simple object to set an "active" flag and clear it upon destruction. It is
-// an error if the flag is already set.
-class MakeActive {
- public:
-  explicit MakeActive(std::atomic<bool>* is_active) : is_active_(is_active) {
-    bool was_active = is_active_->exchange(true, std::memory_order_relaxed);
-    CHECK(!was_active);
-  }
-  MakeActive(const MakeActive&) = delete;
-  MakeActive& operator=(const MakeActive&) = delete;
-  ~MakeActive() { is_active_->store(false, std::memory_order_relaxed); }
-
- private:
-  raw_ptr<std::atomic<bool>> is_active_;
-};
-
-}  // namespace
 
 HistogramSnapshotManager::HistogramSnapshotManager(
     HistogramFlattener* histogram_flattener)
     : histogram_flattener_(histogram_flattener) {
   DCHECK(histogram_flattener_);
-  is_active_.store(false, std::memory_order_relaxed);
 }
 
 HistogramSnapshotManager::~HistogramSnapshotManager() = default;
@@ -68,15 +46,6 @@ void HistogramSnapshotManager::PrepareSamples(
     const HistogramBase* histogram,
     std::unique_ptr<HistogramSamples> samples) {
   DCHECK(histogram_flattener_);
-
-  // Ensure that there is no concurrent access going on while accessing the
-  // set of known histograms. The flag will be reset when this object goes
-  // out of scope.
-  MakeActive make_active(&is_active_);
-
-  // Get information known about this histogram. If it did not previously
-  // exist, one will be created and initialized.
-  SampleInfo* sample_info = &known_histograms_[histogram->name_hash()];
 
   // Crash if we detect that our histograms have been overwritten.  This may be
   // a fair distance from the memory smasher, but we hope to correlate these
@@ -108,10 +77,6 @@ void HistogramSnapshotManager::PrepareSamples(
     DLOG(ERROR) << "Histogram: \"" << histogram->histogram_name()
                 << "\" has data corruption: " << corruption;
     // Don't record corrupt data to metrics services.
-    const uint32_t old_corruption = sample_info->inconsistencies;
-    if (old_corruption == (corruption | old_corruption))
-      return;  // We've already seen this corruption for this histogram.
-    sample_info->inconsistencies |= corruption;
     return;
   }
 

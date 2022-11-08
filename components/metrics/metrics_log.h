@@ -28,9 +28,7 @@ class PrefService;
 
 namespace base {
 class Clock;
-class HistogramFlattener;
 class HistogramSamples;
-class HistogramSnapshotManager;
 }  // namespace base
 
 namespace network_time {
@@ -58,7 +56,6 @@ struct LogMetadata {
   absl::optional<uint64_t> user_id;
 };
 
-class MetricsProvider;
 class MetricsServiceClient;
 class DelegatingProvider;
 
@@ -77,36 +74,6 @@ class MetricsLog {
     INITIAL_STABILITY_LOG,  // The initial log containing stability stats.
     ONGOING_LOG,            // Subsequent logs in a session.
     INDEPENDENT_LOG,        // An independent log from a previous session.
-  };
-
-  // Loads "independent" metrics from a metrics provider and executes a
-  // callback when complete, which could be immediate or after some
-  // execution on a background thread.
-  class IndependentMetricsLoader {
-   public:
-    explicit IndependentMetricsLoader(std::unique_ptr<MetricsLog> log);
-
-    IndependentMetricsLoader(const IndependentMetricsLoader&) = delete;
-    IndependentMetricsLoader& operator=(const IndependentMetricsLoader&) =
-        delete;
-
-    ~IndependentMetricsLoader();
-
-    // Call ProvideIndependentMetrics (which may execute on a background thread)
-    // for the |metrics_provider| and execute the |done_callback| when complete
-    // with the result (true if successful). Though this can be called multiple
-    // times to include data from multiple providers, later calls will override
-    // system profile information set by earlier calls.
-    void Run(base::OnceCallback<void(bool)> done_callback,
-             MetricsProvider* metrics_provider);
-
-    // Extract the filled log. No more Run() operations can be done after this.
-    std::unique_ptr<MetricsLog> ReleaseLog();
-
-   private:
-    std::unique_ptr<MetricsLog> log_;
-    std::unique_ptr<base::HistogramFlattener> flattener_;
-    std::unique_ptr<base::HistogramSnapshotManager> snapshot_manager_;
   };
 
   // Creates a new metrics log of the specified type.
@@ -186,10 +153,6 @@ class MetricsLog {
   // saved environment in prefs or it could not be decoded), returns false.
   bool LoadSavedEnvironmentFromPrefs(PrefService* local_state);
 
-  // Records the log_written_by_app_version system_profile field if the client's
-  // version is different from the system_profile's app_version.
-  void RecordLogWrittenByAppVersionIfNeeded();
-
   // Populates the log with data about the previous session.
   // |delegating_provider| forwards the call to provide data to registered
   // MetricsProviders. |local_state| is used to schedule a write because a side
@@ -207,17 +170,15 @@ class MetricsLog {
                                 DelegatingProvider* delegating_provider,
                                 PrefService* local_state);
 
-  // Stop writing to this record and generate the encoded representation.
-  // None of the Record* methods can be called after this is called.
-  void CloseLog();
-
-  // Truncate some of the fields within the log that we want to restrict in
-  // size due to bandwidth concerns.
-  void TruncateEvents();
-
-  // Fills |encoded_log| with the serialized protobuf representation of the
-  // record.  Must only be called after CloseLog() has been called.
-  void GetEncodedLog(std::string* encoded_log);
+  // Finalizes the log. Calling this function will make a call to CloseLog().
+  // |truncate_events| determines whether user action and omnibox data within
+  // the log should be trimmed/truncated (for bandwidth concerns).
+  // |current_app_version| is the current version of the application, and is
+  // used to determine whether the log data was obtained in a previous version.
+  // The serialized proto of the finalized log will be written to |encoded_log|.
+  void FinalizeLog(bool truncate_events,
+                   const std::string& current_app_version,
+                   std::string* encoded_log);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Assigns a user ID to the log. This should be called immediately after
@@ -229,19 +190,23 @@ class MetricsLog {
 
   const LogMetadata& log_metadata() const { return log_metadata_; }
 
-  // Exposed for the sake of mocking/accessing in test code.
-  ChromeUserMetricsExtension* UmaProtoForTest() { return &uma_proto_; }
-
- protected:
-  // Exposed for the sake of mocking/accessing in test code.
-  // TODO(1034679): migrate to public UmaProtoForTest() method.
   ChromeUserMetricsExtension* uma_proto() { return &uma_proto_; }
 
-  // Exposed to allow subclass to access to export the uma_proto. Can be used
-  // by external components to export logs to Chrome.
   const ChromeUserMetricsExtension* uma_proto() const { return &uma_proto_; }
 
  private:
+  // Stop writing to this record. None of the Record* methods can be called
+  // after this is called.
+  void CloseLog();
+
+  // Records the log_written_by_app_version system_profile field if the
+  // |current_version| is different from the system_profile's app_version.
+  void RecordLogWrittenByAppVersionIfNeeded(const std::string& current_version);
+
+  // Truncate some of the fields within the log that we want to restrict in
+  // size due to bandwidth concerns.
+  void TruncateEvents();
+
   // Write the default state of the enable metrics checkbox.
   void WriteMetricsEnableDefault(EnableMetricsDefault metrics_default,
                                  SystemProfileProto* system_profile);

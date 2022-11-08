@@ -13,10 +13,9 @@
 
 namespace metrics {
 
-class MetricsLogStore;
-
-// Manages all the log objects used by a MetricsService implementation. Keeps
-// track of an in-progress log and a paused log.
+// Manages all the log objects used by a MetricsService implementation.
+// TODO(crbug/1052796): Remove this class, and replace uses of this class with
+// just a unique_ptr<MetricsLog>.
 class MetricsLogManager {
  public:
   MetricsLogManager();
@@ -33,30 +32,12 @@ class MetricsLogManager {
   // Returns the in-progress log.
   MetricsLog* current_log() { return current_log_.get(); }
 
-  // Closes |current_log_|, compresses it, and stores it in the |log_store| for
-  // later, leaving |current_log_| nullptr.
-  void FinishCurrentLog(MetricsLogStore* log_store);
-
-  // Closes and discards |current_log|.
-  void DiscardCurrentLog();
-
-  // Sets current_log to nullptr, but saves the current log for future use with
-  // ResumePausedLog(). Only one log may be paused at a time.
-  // TODO(stuartmorgan): Pause/resume support is really a workaround for a
-  // design issue in initial log writing; that should be fixed, and pause/resume
-  // removed.
-  void PauseCurrentLog();
-
-  // Restores the previously paused log (if any) to current_log().
-  // This should only be called if there is not a current log.
-  void ResumePausedLog();
+  // Releases |current_log_| and transfers ownership to the caller.
+  std::unique_ptr<MetricsLog> ReleaseCurrentLog();
 
  private:
   // The log that we are still appending to.
   std::unique_ptr<MetricsLog> current_log_;
-
-  // A paused, previously-current log.
-  std::unique_ptr<MetricsLog> paused_log_;
 };
 
 }  // namespace metrics

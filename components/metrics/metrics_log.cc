@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
@@ -81,26 +80,6 @@ void LogMetadata::AddSampleCount(base::HistogramBase::Count sample_count) {
 }
 
 namespace {
-
-// A simple class to write histogram data to a log.
-class IndependentFlattener : public base::HistogramFlattener {
- public:
-  explicit IndependentFlattener(MetricsLog* log) : log_(log) {}
-
-  IndependentFlattener(const IndependentFlattener&) = delete;
-  IndependentFlattener& operator=(const IndependentFlattener&) = delete;
-
-  ~IndependentFlattener() override {}
-
-  // base::HistogramFlattener:
-  void RecordDelta(const base::HistogramBase& histogram,
-                   const base::HistogramSamples& snapshot) override {
-    log_->RecordHistogramDelta(histogram.histogram_name(), snapshot);
-  }
-
- private:
-  const raw_ptr<MetricsLog, DanglingUntriaged> log_;
-};
 
 // Convenience function to return the given time at a resolution in seconds.
 static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
@@ -214,25 +193,6 @@ SystemProfileProto::InstallerPackage ToInstallerPackage(
 }
 
 }  // namespace internal
-
-MetricsLog::IndependentMetricsLoader::IndependentMetricsLoader(
-    std::unique_ptr<MetricsLog> log)
-    : log_(std::move(log)),
-      flattener_(new IndependentFlattener(log_.get())),
-      snapshot_manager_(new base::HistogramSnapshotManager(flattener_.get())) {}
-
-MetricsLog::IndependentMetricsLoader::~IndependentMetricsLoader() = default;
-
-void MetricsLog::IndependentMetricsLoader::Run(
-    base::OnceCallback<void(bool)> done_callback,
-    MetricsProvider* metrics_provider) {
-  metrics_provider->ProvideIndependentMetrics(
-      std::move(done_callback), log_->uma_proto(), snapshot_manager_.get());
-}
-
-std::unique_ptr<MetricsLog> MetricsLog::IndependentMetricsLoader::ReleaseLog() {
-  return std::move(log_);
-}
 
 MetricsLog::MetricsLog(const std::string& client_id,
                        int session_id,
@@ -559,12 +519,15 @@ bool MetricsLog::LoadSavedEnvironmentFromPrefs(PrefService* local_state) {
   return recorder.LoadEnvironmentFromPrefs(system_profile);
 }
 
-void MetricsLog::RecordLogWrittenByAppVersionIfNeeded() {
-  DCHECK(!closed_);
-  std::string current_version = client_->GetVersionString();
-  if (uma_proto()->system_profile().app_version() != current_version)
-    uma_proto()->mutable_system_profile()->set_log_written_by_app_version(
-        current_version);
+void MetricsLog::FinalizeLog(bool truncate_events,
+                             const std::string& current_app_version,
+                             std::string* encoded_log) {
+  if (truncate_events)
+    TruncateEvents();
+  RecordLogWrittenByAppVersionIfNeeded(current_app_version);
+  CloseLog();
+
+  uma_proto_.SerializeToString(encoded_log);
 }
 
 void MetricsLog::CloseLog() {
@@ -575,6 +538,15 @@ void MetricsLog::CloseLog() {
                       uma_proto_.mutable_time_log_closed());
   }
   closed_ = true;
+}
+
+void MetricsLog::RecordLogWrittenByAppVersionIfNeeded(
+    const std::string& current_version) {
+  DCHECK(!closed_);
+  if (uma_proto()->system_profile().app_version() != current_version) {
+    uma_proto()->mutable_system_profile()->set_log_written_by_app_version(
+        current_version);
+  }
 }
 
 void MetricsLog::TruncateEvents() {
@@ -606,11 +578,6 @@ void MetricsLog::TruncateEvents() {
         internal::kOmniboxEventLimit,
         uma_proto_.omnibox_event_size() - internal::kOmniboxEventLimit);
   }
-}
-
-void MetricsLog::GetEncodedLog(std::string* encoded_log) {
-  DCHECK(closed_);
-  uma_proto_.SerializeToString(encoded_log);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

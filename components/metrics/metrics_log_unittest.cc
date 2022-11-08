@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/sample_vector.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -182,10 +183,10 @@ TEST_F(MetricsLogTest, BasicRecord) {
 #endif
 
   MetricsLog log(kOtherClientId, 137, MetricsLog::ONGOING_LOG, &client);
-  log.CloseLog();
 
   std::string encoded;
-  log.GetEncodedLog(&encoded);
+  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+                  &encoded);
 
   // A couple of fields are hard to mock, so these will be copied over directly
   // for the expected output.
@@ -268,6 +269,68 @@ TEST_F(MetricsLogTest, BasicRecord) {
   EXPECT_EQ(expected.SerializeAsString(), encoded);
 }
 
+TEST_F(MetricsLogTest, FinalizeLog) {
+  static const char kVersionString[] = "1";
+  static const char kNewVersionString[] = "2";
+
+  TestMetricsServiceClient client;
+  client.set_version_string(kVersionString);
+
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  TestMetricsLog log2(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+
+  // Fill logs with user actions and omnibox events. We put more than the limit
+  // to verify that when calling FinalizeLog(), we may optionally truncate
+  // those events.
+  const int kUserActionCount = internal::kUserActionEventLimit * 2;
+  for (int i = 0; i < kUserActionCount; ++i) {
+    log.RecordUserAction("BasicAction", base::TimeTicks::Now());
+    log2.RecordUserAction("BasicAction", base::TimeTicks::Now());
+  }
+  const int kOmniboxEventCount = internal::kOmniboxEventLimit * 2;
+  for (int i = 0; i < kOmniboxEventCount; ++i) {
+    // Add an empty omnibox event. Not fully realistic since these are normally
+    // supplied by a metrics provider.
+    log.mutable_uma_proto()->add_omnibox_event();
+    log2.mutable_uma_proto()->add_omnibox_event();
+  }
+
+  // Finalize |log|. We truncate events, and we pass the same version string as
+  // the one that was used when the log was created.
+  std::string encoded;
+  log.FinalizeLog(/*truncate_events=*/true, client.GetVersionString(),
+                  &encoded);
+
+  // Finalize |log2|. We do not truncate events, and we pass a different version
+  // string than the one that was used when the log was created.
+  client.set_version_string(kNewVersionString);
+  std::string encoded2;
+  log2.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+                   &encoded2);
+
+  ChromeUserMetricsExtension parsed;
+  parsed.ParseFromString(encoded);
+  ChromeUserMetricsExtension parsed2;
+  parsed2.ParseFromString(encoded2);
+
+  // The user actions and omnibox events in |parsed| should have been truncated
+  // to the limits, while |parsed2| should be untouched.
+  EXPECT_EQ(parsed.user_action_event_size(), internal::kUserActionEventLimit);
+  EXPECT_EQ(parsed.omnibox_event_size(), internal::kOmniboxEventLimit);
+  EXPECT_EQ(parsed2.user_action_event_size(), kUserActionCount);
+  EXPECT_EQ(parsed2.omnibox_event_size(), kOmniboxEventCount);
+
+  // |kNewVersionString| (the version string when |log2| was closed) should
+  // have been written to |parsed2| since it differs from |kVersionString|
+  // (the version string when |log2| was created). |parsed| should not have it
+  // since the version strings were the same.
+  EXPECT_EQ(parsed2.system_profile().app_version(), kVersionString);
+  EXPECT_EQ(parsed2.system_profile().log_written_by_app_version(),
+            kNewVersionString);
+  EXPECT_EQ(parsed.system_profile().app_version(), kVersionString);
+  EXPECT_FALSE(parsed.system_profile().has_log_written_by_app_version());
+}
+
 TEST_F(MetricsLogTest, Timestamps_InitialStabilityLog) {
   TestMetricsServiceClient client;
   std::unique_ptr<base::SimpleTestClock> clock =
@@ -278,9 +341,9 @@ TEST_F(MetricsLogTest, Timestamps_InitialStabilityLog) {
   MetricsLog log("id", 0, MetricsLog::INITIAL_STABILITY_LOG, clock.get(),
                  nullptr, &client);
   clock->SetNow(base::Time::FromTimeT(2));
-  log.CloseLog();
   std::string encoded;
-  log.GetEncodedLog(&encoded);
+  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+                  &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -297,9 +360,9 @@ TEST_F(MetricsLogTest, Timestamps_IndependentLog) {
   MetricsLog log("id", 0, MetricsLog::INDEPENDENT_LOG, clock.get(), nullptr,
                  &client);
   clock->SetNow(base::Time::FromTimeT(2));
-  log.CloseLog();
   std::string encoded;
-  log.GetEncodedLog(&encoded);
+  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+                  &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -316,9 +379,9 @@ TEST_F(MetricsLogTest, Timestamps_OngoingLog) {
   MetricsLog log("id", 0, MetricsLog::ONGOING_LOG, clock.get(), nullptr,
                  &client);
   clock->SetNow(base::Time::FromTimeT(2));
-  log.CloseLog();
   std::string encoded;
-  log.GetEncodedLog(&encoded);
+  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+                  &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_TRUE(parsed.has_time_log_created());
@@ -552,28 +615,6 @@ TEST_F(MetricsLogTest, ProductSetIfNotDefault) {
   // Check that the product is set to |kTestProduct|.
   EXPECT_TRUE(log.uma_proto().has_product());
   EXPECT_EQ(kTestProduct, log.uma_proto().product());
-}
-
-TEST_F(MetricsLogTest, TruncateEvents) {
-  TestMetricsServiceClient client;
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
-
-  for (int i = 0; i < internal::kUserActionEventLimit * 2; ++i) {
-    log.RecordUserAction("BasicAction", base::TimeTicks::Now());
-    EXPECT_EQ(i + 1, log.uma_proto().user_action_event_size());
-  }
-  for (int i = 0; i < internal::kOmniboxEventLimit * 2; ++i) {
-    // Add an empty omnibox event. Not fully realistic since these are normally
-    // supplied by a metrics provider.
-    log.mutable_uma_proto()->add_omnibox_event();
-    EXPECT_EQ(i + 1, log.uma_proto().omnibox_event_size());
-  }
-
-  // Truncate, and check that the current size is the limit.
-  log.TruncateEvents();
-  EXPECT_EQ(internal::kUserActionEventLimit,
-            log.uma_proto().user_action_event_size());
-  EXPECT_EQ(internal::kOmniboxEventLimit, log.uma_proto().omnibox_event_size());
 }
 
 TEST_F(MetricsLogTest, ToInstallerPackage) {
