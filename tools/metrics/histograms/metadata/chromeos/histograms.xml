@@ -1754,7 +1754,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     posture happens.
 
     Writable+executable mount events are checked every thirty seconds, but each
-    anomalous event is reported only once per boot.
+    anomalous event is reported only once per boot. Memfd anomaly events are
+    checked and reported every 30 seconds, but memfd_create events are capped at
+    10 per boot.
   </summary>
 </histogram>
 

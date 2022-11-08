@@ -90723,6 +90723,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2"
       label="Writable+executable mount found in the init mount namespace, not
              on, nor under, /usr/local"/>
+  <int value="3"
+      label="Successful create_memfd syscall detected in the audit log file.
+             (Baseline for memfd execution attempt)."/>
+  <int value="4"
+      label="Memfd execution attempt detected in the audit log file."/>
 </enum>
 
 <enum name="SecurityFilteredTouchResult">
