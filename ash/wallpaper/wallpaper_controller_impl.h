@@ -352,6 +352,8 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
+  void OnOverviewModeStarting() override;
+  void OnOverviewModeEnded() override;
 
   // CompositorLockClient:
   void CompositorLockTimedOut() override;

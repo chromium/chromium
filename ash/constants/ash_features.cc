@@ -414,9 +414,6 @@ BASE_FEATURE(kConsumerAutoUpdateToggleAllowed,
              "ConsumerAutoUpdateToggleAllowed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable or disable the changes of WMP features for CrosNext project.
-BASE_FEATURE(kCrosNextWMP, "CrosNextWMP", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Privacy Hub for ChromeOS.
 BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
@@ -2391,10 +2388,6 @@ bool IsCrosPrivacyHubV2Enabled() {
 bool IsCrosPrivacyHubV1Enabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHub) ||
          IsCrosPrivacyHubV2Enabled();
-}
-
-bool IsCrosNextWMPEnabled() {
-  return base::FeatureList::IsEnabled(kCrosNextWMP);
 }
 
 bool IsCryptohomeRecoveryFlowEnabled() {

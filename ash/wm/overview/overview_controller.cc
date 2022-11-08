@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/window_properties.h"
@@ -94,9 +95,15 @@ OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
 
 OverviewController::OverviewController()
     : occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
-      overview_wallpaper_controller_(
-          std::make_unique<OverviewWallpaperController>()),
       delayed_animation_task_delay_(kTransition) {
+  // If the feature `kJellyroll` is enabled, there's no wallpaper blur in
+  // overview mode, thus we don't need to create `OverviewWallpaperController`
+  // which takes care the the wallpaper blur for overview mode.
+  if (!features::IsJellyrollEnabled()) {
+    overview_wallpaper_controller_ =
+        std::make_unique<OverviewWallpaperController>();
+  }
+
   Shell::Get()->activation_client()->AddObserver(this);
 }
 
@@ -436,9 +443,12 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // When fading in from home, start animating blur immediately (if animation
     // is required) - with this transition the item widgets are positioned in
     // the overview immediately, so delaying blur start until start animations
-    // finish looks janky.
-    overview_wallpaper_controller_->Blur(
-        /*animate=*/new_type == OverviewEnterExitType::kFadeInEnter);
+    // finish looks janky. If the feature `kJellyroll` is enabled, no need to
+    // set the wallpaper blur.
+    if (!features::IsJellyrollEnabled()) {
+      overview_wallpaper_controller_->Blur(
+          /*animate=*/new_type == OverviewEnterExitType::kFadeInEnter);
+    }
 
     // For app dragging, there are no start animations so add a delay to delay
     // animations observing when the start animation ends, such as the shelf,
@@ -522,8 +532,9 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
 
   // For kFadeInEnter, wallpaper blur is initiated on transition start,
   // so it doesn't have to be requested again on starting animation end.
-  if (!canceled && overview_session_->enter_exit_overview_type() !=
-                       OverviewEnterExitType::kFadeInEnter) {
+  if (!features::IsJellyrollEnabled() && !canceled &&
+      overview_session_->enter_exit_overview_type() !=
+          OverviewEnterExitType::kFadeInEnter) {
     overview_wallpaper_controller_->Blur(/*animate=*/true);
   }
 
@@ -547,8 +558,10 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
 
   // Unblur when animation is completed (or right away if there was no
   // delayed animation) unless it's canceled, in which case, we should keep
-  // the blur. Also resume the activation frame state.
-  if (!canceled) {
+  // the blur. Also resume the activation frame state. No need to unblur the
+  // wallpaper if the feature `kJellyroll` is enabled, since it's not blurred
+  // on overview started.
+  if (!canceled && !features::IsJellyrollEnabled()) {
     overview_wallpaper_controller_->Unblur();
     paint_as_active_lock_.reset();
   }

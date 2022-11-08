@@ -5,6 +5,7 @@
 #include "ash/shelf/drag_window_from_shelf_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -368,10 +369,14 @@ void DragWindowFromShelfController::OnDragStarted(
   // Hide the home launcher until it's eligible to show it.
   Shell::Get()->app_list_controller()->OnWindowDragStarted();
 
-  // Use the same dim and blur as in overview during dragging.
-  RootWindowController::ForWindow(window_->GetRootWindow())
-      ->wallpaper_widget_controller()
-      ->SetWallpaperBlur(wallpaper_constants::kOverviewBlur);
+  // Use the same dim and blur as in overview during dragging. If the feature
+  // `kJellyroll` is enabled, there's no wallpaper blur in overview mode, thus
+  // we don't need to set it here neither.
+  if (!features::IsJellyrollEnabled()) {
+    RootWindowController::ForWindow(window_->GetRootWindow())
+        ->wallpaper_widget_controller()
+        ->SetWallpaperBlur(wallpaper_constants::kOverviewBlur);
+  }
 
   // If the dragged window is one of the snapped window in splitview, it needs
   // to be detached from splitview before start dragging.
@@ -428,7 +433,10 @@ void DragWindowFromShelfController::OnDragEnded(
 
   // Clear the wallpaper dim and blur if not in overview after drag ends.
   // If in overview, the dim and blur will be cleared after overview ends.
-  if (!overview_controller->InOverviewSession()) {
+  // If the feature `kJellyroll` is enabled, no need to clear the wallpaper
+  // dim and blur since the background is set to clear in overview mode.
+  if (!features::IsJellyrollEnabled() &&
+      !overview_controller->InOverviewSession()) {
     RootWindowController::ForWindow(window_->GetRootWindow())
         ->wallpaper_widget_controller()
         ->SetWallpaperBlur(wallpaper_constants::kClear);

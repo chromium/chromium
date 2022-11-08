@@ -95,11 +95,7 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
 
   OverviewSession* overview_session() { return overview_session_.get(); }
 
-  OverviewWallpaperController* overview_wallpaper_controller() {
-    return overview_wallpaper_controller_.get();
-  }
-
-  bool disable_app_id_check_for_saved_desks() {
+  bool disable_app_id_check_for_saved_desks() const {
     return disable_app_id_check_for_saved_desks_;
   }
 
