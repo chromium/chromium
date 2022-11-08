@@ -19,17 +19,19 @@
 
 @end
 
-// Fetches the variations seed before Chrome components are initialized.
-//
-// Note: the caller is responsible for making sure that a seed fetcher object is
-// only be initiated when there is no valid variations seed available in local
-// storage.
+// An object that allows its owner to fetch variations seed before Chrome
+// components are initialized.
 @interface IOSChromeVariationsSeedFetcher : NSObject
 
 // Delegate object that observes the status of seed fetching.
 @property(nonatomic, weak) id<IOSChromeVariationsSeedFetcherDelegate> delegate;
 
 // Starts fetching the initial seed from the variations server.
+//
+// Note: the caller is responsible for making sure that a seed fetcher object is
+// only be initiated when there is no valid variations seed available in local
+// storage. In cases when this method is invoked when a variations seed is
+// available, the downloaded seed would be disregarded.
 - (void)startSeedFetch;
 
 @end
