@@ -1199,6 +1199,11 @@
           '--strip-chrome',
         ],
       },
+      'chromeos-betty-pi-arc-chrome': {
+        'swarming': {
+          'shards': 15,
+        },
+      },
       'chromeos-eve-chrome': {
         'swarming': {
           # Increased timeout to 2 hours due to shard timeout.
