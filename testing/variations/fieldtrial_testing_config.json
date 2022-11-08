@@ -2147,6 +2147,28 @@
             ]
         }
     ],
+    "CPSS-OnDeviceGeolocationPredictions": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221102",
+                    "params": {
+                        "holdback_chance": "0.3"
+                    },
+                    "enable_features": [
+                        "PermissionOnDeviceGeolocationPredictions"
+                    ]
+                }
+            ]
+        }
+    ],
     "CSSOverflowForReplacedElements": [
         {
             "platforms": [
