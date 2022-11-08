@@ -154,4 +154,36 @@ TEST_F(AshAcceleratorConfigurationTest, DeprecatedAccelerators) {
   EXPECT_FALSE(config_->IsDeprecated(active_accelerator));
 }
 
+TEST_F(AshAcceleratorConfigurationTest, GetAcceleratorsFromActionId) {
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN,
+       SWAP_PRIMARY_DISPLAY},
+      {/*trigger_on_press=*/true, ui::VKEY_MEDIA_LAUNCH_APP1,
+       ui::EF_CONTROL_DOWN, TAKE_SCREENSHOT},
+      {/*trigger_on_press=*/true, ui::VKEY_KBD_BRIGHTNESS_UP, ui::EF_NONE,
+       KEYBOARD_BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP, ui::EF_ALT_DOWN,
+       KEYBOARD_BRIGHTNESS_UP},
+  };
+  config_->Initialize(test_data);
+
+  // Create expected id_to_accelerator_data map.
+  std::map<AcceleratorActionId, std::vector<AcceleratorData>>
+      id_to_accelerator_data;
+  for (const auto& data : test_data) {
+    id_to_accelerator_data[static_cast<uint32_t>(data.action)].push_back(data);
+  }
+
+  // Verify that expected and actual are equal.
+  for (const auto& data : test_data) {
+    std::vector<AcceleratorData> expected =
+        id_to_accelerator_data.at(data.action);
+    std::vector<ui::Accelerator> actual =
+        config_->GetAcceleratorsForAction(data.action);
+    ExpectAllAcceleratorsEqual(expected, actual);
+  }
+}
+
 }  // namespace ash
