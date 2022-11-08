@@ -8,7 +8,7 @@
  * only.
  */
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
  * Information for a Chrome OS Kerberos account.

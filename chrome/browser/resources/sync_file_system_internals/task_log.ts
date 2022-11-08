@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 
 import {createElementFromText} from './utils.js';
 
@@ -51,7 +51,7 @@ function onTaskLogRecorded(taskLog: {
  * Get initial sync service values and set listeners to get updated values.
  */
 function main() {
-  addWebUIListener('task-log-recorded', onTaskLogRecorded);
+  addWebUiListener('task-log-recorded', onTaskLogRecorded);
   chrome.send('observeTaskLog');
 }
 

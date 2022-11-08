@@ -18,7 +18,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -76,7 +76,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       this.set('searchEngines_', searchEngines.defaults);
     };
     this.browserProxy_.getSearchEnginesList().then(updateSearchEngines);
-    addWebUIListener('search-engines-changed', updateSearchEngines);
+    addWebUiListener('search-engines-changed', updateSearchEngines);
 
     this.focusConfig_ = new Map();
     if (routes.SEARCH_ENGINES) {

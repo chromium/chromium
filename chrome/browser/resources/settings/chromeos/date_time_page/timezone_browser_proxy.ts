@@ -4,7 +4,7 @@
 
 /** @fileoverview A helper object used by the time zone subpage page. */
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface TimeZoneBrowserProxy {
   /** Notifies C++ code to show parent access code verification view. */

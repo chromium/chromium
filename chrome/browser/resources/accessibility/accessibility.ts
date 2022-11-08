@@ -5,7 +5,7 @@
 import 'chrome://resources/js/action_link.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 // Note: keep these values in sync with the values in
@@ -277,9 +277,9 @@ function initialize() {
       allowEmpty ? allowEmpty : '';
   ($('filter-deny') as HTMLInputElement).value = deny ? deny : '';
 
-  addWebUIListener('copyTree', copyTree);
-  addWebUIListener('showOrRefreshTree', showOrRefreshTree);
-  addWebUIListener('startOrStopEvents', startOrStopEvents);
+  addWebUiListener('copyTree', copyTree);
+  addWebUiListener('showOrRefreshTree', showOrRefreshTree);
+  addWebUiListener('startOrStopEvents', startOrStopEvents);
 }
 
 function bindCheckbox(name: string, value: EnabledStatus) {

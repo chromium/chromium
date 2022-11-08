@@ -7,7 +7,7 @@
  * to interact with the browser.
  */
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
  * @see chrome/browser/ui/webui/settings/search_engine_manager_handler.cc

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // <if expr="not chromeos_ash">
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // </if>
 
 export interface LifetimeBrowserProxy {

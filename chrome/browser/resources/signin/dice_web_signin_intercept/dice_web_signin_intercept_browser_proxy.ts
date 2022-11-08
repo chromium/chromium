@@ -6,7 +6,7 @@
  * @fileoverview A helper object used by the dice web signin intercept bubble to
  * interact with the browser.
  */
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /** Account information sent from C++. */
 export interface AccountInfo {

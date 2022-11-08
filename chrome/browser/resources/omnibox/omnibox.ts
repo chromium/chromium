@@ -7,7 +7,7 @@ import './omnibox_input.js';
 import './omnibox_output.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote, OmniboxResponse} from './omnibox.mojom-webui.js';

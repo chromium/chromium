@@ -8,7 +8,7 @@
  */
 
 // <if expr="is_win">
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // </if>
 
 export interface LanguagesBrowserProxy {

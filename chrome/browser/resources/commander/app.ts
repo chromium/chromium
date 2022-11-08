@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {Debouncer, DomRepeatEvent, enqueueDebouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -60,8 +60,8 @@ export class CommanderAppElement extends PolymerElement {
 
   override ready() {
     super.ready();
-    addWebUIListener('view-model-updated', this.onViewModelUpdated_.bind(this));
-    addWebUIListener('initialize', this.initialize_.bind(this));
+    addWebUiListener('view-model-updated', this.onViewModelUpdated_.bind(this));
+    addWebUiListener('initialize', this.initialize_.bind(this));
     this.initialize_();
   }
 

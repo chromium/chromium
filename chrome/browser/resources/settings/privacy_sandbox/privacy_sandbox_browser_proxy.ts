@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // clang-format on
 
 /**

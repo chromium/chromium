@@ -5,7 +5,7 @@
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {$} from 'chrome://resources/js/util.js';
@@ -185,6 +185,6 @@ function handleCheckUpdate(node: HTMLElement) {
 
 // Get data and have it displayed upon loading.
 document.addEventListener('DOMContentLoaded', function() {
-  addWebUIListener('component-event', onComponentEvent);
+  addWebUiListener('component-event', onComponentEvent);
   requestComponentsData();
 });

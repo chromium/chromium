@@ -5,7 +5,7 @@
 import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {appendParam} from 'chrome://resources/js/util.js';
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 type Process = [number, string, boolean];
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('refresh').onclick = requestProcessList;
   $('save').onclick = saveDump;
 
-  addWebUIListener('save-dump-progress', (progress: string) => {
+  addWebUiListener('save-dump-progress', (progress: string) => {
     $('save-dump-text').innerText = progress;
   });
 

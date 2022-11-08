@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {DefaultBrowserInfo} from '../shared/nux_types.js';
 
 const NUX_SET_AS_DEFAULT_INTERACTION_METRIC_NAME =

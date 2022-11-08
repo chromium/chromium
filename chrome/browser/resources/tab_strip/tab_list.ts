@@ -8,7 +8,7 @@ import './tab_group.js';
 
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -144,7 +144,7 @@ export class TabListElement extends CustomElement implements
   private pinnedTabsElement_: Element;
   private tabsApi_: TabsApiProxy;
   private unpinnedTabsElement_: Element;
-  private webUIListeners_: WebUIListener[];
+  private webUIListeners_: WebUiListener[];
   private windowBlurListener_: () => void;
   private scrollingTimeoutId_: number;
   private scrollListener_: (e: Event) => void;
@@ -283,8 +283,8 @@ export class TabListElement extends CustomElement implements
     this.animationPromises = this.animationPromises.then(() => promise);
   }
 
-  private addWebUIListener_(eventName: string, callback: Function) {
-    this.webUIListeners_.push(addWebUIListener(eventName, callback));
+  private addWebUiListener_(eventName: string, callback: Function) {
+    this.webUIListeners_.push(addWebUiListener(eventName, callback));
   }
 
   private animateScrollPosition_(scrollBy: number) {
@@ -376,7 +376,7 @@ export class TabListElement extends CustomElement implements
   }
 
   disconnectedCallback() {
-    this.webUIListeners_.forEach(removeWebUIListener);
+    this.webUIListeners_.forEach(removeWebUiListener);
     this.eventTracker_.removeAll();
   }
 

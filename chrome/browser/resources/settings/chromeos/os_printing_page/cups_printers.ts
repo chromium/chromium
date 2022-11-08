@@ -37,7 +37,7 @@ import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -199,8 +199,8 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
   private nearbyPrinterCount_: number;
   private nearbyPrintersAriaLabel_: string;
   private networkConfig_: CrosNetworkConfigRemote;
-  private onEnterprisePrintersChangedListener_: WebUIListener;
-  private onPrintersChangedListener_: WebUIListener|null;
+  private onEnterprisePrintersChangedListener_: WebUiListener;
+  private onPrintersChangedListener_: WebUiListener|null;
   private savedPrinterCount_: number;
   private savedPrintersAriaLabel_: string;
   private savedPrinters_: PrinterListEntry[];
@@ -288,17 +288,17 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
   override currentRouteChanged(route: Route): void {
     if (route !== routes.CUPS_PRINTERS) {
       if (this.onPrintersChangedListener_) {
-        removeWebUIListener(this.onPrintersChangedListener_);
+        removeWebUiListener(this.onPrintersChangedListener_);
         this.onPrintersChangedListener_ = null;
       }
-      this.entryManager_.removeWebUIListeners();
+      this.entryManager_.removeWebUiListeners();
       return;
     }
 
-    this.entryManager_.addWebUIListeners();
-    this.onPrintersChangedListener_ = addWebUIListener(
+    this.entryManager_.addWebUiListeners();
+    this.onPrintersChangedListener_ = addWebUiListener(
         'on-saved-printers-changed', this.onSavedPrintersChanged_.bind(this));
-    this.onEnterprisePrintersChangedListener_ = addWebUIListener(
+    this.onEnterprisePrintersChangedListener_ = addWebUiListener(
         'on-enterprise-printers-changed',
         this.onEnterprisePrintersChanged_.bind(this));
     this.updateCupsPrintersList_();

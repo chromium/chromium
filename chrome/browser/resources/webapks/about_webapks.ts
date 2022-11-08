@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 
 interface WebApkInfo {
   name: string;
@@ -140,6 +140,6 @@ function addWebApk(webApkInfo: WebApkInfo) {
 document.addEventListener('DOMContentLoaded', function() {
   // Add a WebUI listener for the 'web-apk-info' event emitted from the
   // backend. This will be triggered once per WebAPK.
-  addWebUIListener('web-apk-info', addWebApk);
+  addWebUiListener('web-apk-info', addWebApk);
   chrome.send('requestWebApksInfo');
 });

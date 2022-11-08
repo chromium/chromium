@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {AuthCompletedCredentials} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface InlineLoginBrowserProxy {
   /** Send 'initialize' message to prepare for starting auth. */

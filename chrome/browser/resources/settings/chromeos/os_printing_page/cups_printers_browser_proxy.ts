@@ -7,7 +7,7 @@
  * interact with the browser. Used only on Chrome OS.
  */
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
  * Note: |printerPPDPath| refers to a PPD retrieved from the user at the

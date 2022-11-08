@@ -7,7 +7,7 @@
  * to interact with the browser.
  */
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 // Enterprise profile info sent from C++.
 export interface EnterpriseProfileInfo {

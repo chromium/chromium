@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
 
 import {findDifference} from './cups_printer_dialog_util.js';
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
@@ -46,9 +46,9 @@ export class CupsPrintersEntryManager {
 
   private enterprisePrinters_: PrinterListEntry[];
   private nearbyPrinters_: PrinterListEntry[];
-  private onEnterprisePrintersChangedListener_: WebUIListener|null;
+  private onEnterprisePrintersChangedListener_: WebUiListener|null;
   private onEnterprisePrintersChangedListeners_: PrintersListCallback[];
-  private onNearbyPrintersChangedListener_: WebUIListener|null;
+  private onNearbyPrintersChangedListener_: WebUiListener|null;
   private onNearbyPrintersChangedListeners_: PrintersListCallback[];
   private onSavedPrintersChangedListeners_: PrintersListWithDeltasCallback[];
   private savedPrinters_: PrinterListEntry[];
@@ -65,26 +65,26 @@ export class CupsPrintersEntryManager {
     this.onEnterprisePrintersChangedListener_ = null;
   }
 
-  addWebUIListeners(): void {
+  addWebUiListeners(): void {
     // TODO(1005905): Add on-saved-printers-changed listener here once legacy
     // code is removed.
-    this.onNearbyPrintersChangedListener_ = addWebUIListener(
+    this.onNearbyPrintersChangedListener_ = addWebUiListener(
         'on-nearby-printers-changed', this.setNearbyPrintersList.bind(this));
 
-    this.onEnterprisePrintersChangedListener_ = addWebUIListener(
+    this.onEnterprisePrintersChangedListener_ = addWebUiListener(
         'on-enterprise-printers-changed',
         this.setEnterprisePrintersList.bind(this));
 
     CupsPrintersBrowserProxyImpl.getInstance().startDiscoveringPrinters();
   }
 
-  removeWebUIListeners(): void {
+  removeWebUiListeners(): void {
     if (this.onNearbyPrintersChangedListener_) {
-      removeWebUIListener(this.onNearbyPrintersChangedListener_);
+      removeWebUiListener(this.onNearbyPrintersChangedListener_);
       this.onNearbyPrintersChangedListener_ = null;
     }
     if (this.onEnterprisePrintersChangedListener_) {
-      removeWebUIListener(this.onEnterprisePrintersChangedListener_);
+      removeWebUiListener(this.onEnterprisePrintersChangedListener_);
       this.onEnterprisePrintersChangedListener_ = null;
     }
   }
