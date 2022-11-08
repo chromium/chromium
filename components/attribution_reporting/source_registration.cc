@@ -135,4 +135,37 @@ SourceRegistration::Parse(base::Value::Dict registration,
   return result;
 }
 
+// static
+absl::optional<SourceRegistration> SourceRegistration::Create(
+    uint64_t source_event_id,
+    url::Origin destination,
+    url::Origin reporting_origin,
+    absl::optional<base::TimeDelta> expiry,
+    absl::optional<base::TimeDelta> event_report_window,
+    absl::optional<base::TimeDelta> aggregatable_report_window,
+    int64_t priority,
+    FilterData filter_data,
+    absl::optional<uint64_t> debug_key,
+    AggregationKeys aggregation_keys,
+    bool debug_reporting) {
+  if (!network::IsOriginPotentiallyTrustworthy(destination) ||
+      !network::IsOriginPotentiallyTrustworthy(reporting_origin)) {
+    return absl::nullopt;
+  }
+
+  SourceRegistration result;
+  result.source_event_id_ = source_event_id;
+  result.destination_ = std::move(destination);
+  result.reporting_origin_ = std::move(reporting_origin);
+  result.expiry_ = expiry;
+  result.event_report_window_ = event_report_window;
+  result.aggregatable_report_window_ = aggregatable_report_window;
+  result.priority_ = priority;
+  result.filter_data_ = std::move(filter_data);
+  result.debug_key_ = debug_key;
+  result.aggregation_keys_ = std::move(aggregation_keys);
+  result.debug_reporting_ = debug_reporting;
+  return result;
+}
+
 }  // namespace attribution_reporting

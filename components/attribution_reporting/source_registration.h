@@ -28,6 +28,19 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
   Parse(base::Value::Dict, url::Origin reporting_origin);
 
+  static absl::optional<SourceRegistration> Create(
+      uint64_t source_event_id,
+      url::Origin destination,
+      url::Origin reporting_origin,
+      absl::optional<base::TimeDelta> expiry,
+      absl::optional<base::TimeDelta> event_report_window,
+      absl::optional<base::TimeDelta> aggregatable_report_window,
+      int64_t priority,
+      FilterData filter_data,
+      absl::optional<uint64_t> debug_key,
+      AggregationKeys aggregation_keys,
+      bool debug_reporting);
+
   ~SourceRegistration();
 
   SourceRegistration(const SourceRegistration&);
@@ -35,6 +48,32 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   SourceRegistration(SourceRegistration&&);
   SourceRegistration& operator=(SourceRegistration&&);
+
+  uint64_t source_event_id() const { return source_event_id_; }
+
+  const url::Origin& destination() const { return destination_; }
+
+  const url::Origin& reporting_origin() const { return reporting_origin_; }
+
+  absl::optional<base::TimeDelta> expiry() const { return expiry_; }
+
+  absl::optional<base::TimeDelta> event_report_window() const {
+    return event_report_window_;
+  }
+
+  absl::optional<base::TimeDelta> aggregatable_report_window() const {
+    return aggregatable_report_window_;
+  }
+
+  int64_t priority() const { return priority_; }
+
+  const FilterData& filter_data() const { return filter_data_; }
+
+  absl::optional<uint64_t> debug_key() const { return debug_key_; }
+
+  const AggregationKeys& aggregation_keys() const { return aggregation_keys_; }
+
+  bool debug_reporting() const { return debug_reporting_; }
 
  private:
   // Allow efficient moves out of this type's fields without defining extractor

@@ -41,12 +41,17 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "aggregation_keys_unittest.cc",
     "filters_unittest.cc",
     "parse_unittest.cc",
+    "source_registration_unittest.cc",
   ]
 
   deps = [
     ":attribution_reporting",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }
