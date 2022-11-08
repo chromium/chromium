@@ -455,7 +455,7 @@ BASE_FEATURE(kBlurWithEscape,
 // scopes to Site Search/Keyword Mode.
 BASE_FEATURE(kSiteSearchStarterPack,
              "OmniboxSiteSearchStarterPack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Experiment to introduce new security indicators for HTTPS.
 BASE_FEATURE(kUpdatedConnectionSecurityIndicators,
