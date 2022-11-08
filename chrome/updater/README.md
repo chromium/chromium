@@ -2,7 +2,7 @@ An updater for desktop client software using Chromium code and tools.
 
 *   The code lives in //chrome/updater.
 *   The documentation lives in //docs/updater.
-    *   Commentable Design Doc: https://bit.ly/chromium-updater
+    *   Deprecated Design Doc: https://bit.ly/chromium-updater
 *   Please join chrome-updates-dev@chromium.org or
 https://chromium.slack.com#updater for topics related to the project.
 
