@@ -15,8 +15,10 @@
 namespace arc::input_overlay {
 
 // Create ARC window without exo support.
-std::unique_ptr<views::Widget> CreateArcWindow(aura::Window* root_window,
-                                               const gfx::Rect& bounds);
+std::unique_ptr<views::Widget> CreateArcWindow(
+    aura::Window* root_window,
+    const gfx::Rect& bounds = gfx::Rect(10, 10, 100, 100),
+    const std::string& package_name = std::string("arc.packagename"));
 
 }  // namespace arc::input_overlay
 

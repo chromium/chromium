@@ -87,6 +87,7 @@ class ArcInputOverlayManager : public KeyedService,
 
  private:
   friend class ArcInputOverlayManagerTest;
+  friend class TestArcInputOverlayManager;
 
   class InputMethodObserver;
 
@@ -144,8 +145,9 @@ class ArcInputOverlayManager : public KeyedService,
   void RegisterWindow(aura::Window* window);
   void UnRegisterWindow(aura::Window* window);
   void RegisterFocusedWindow();
-  // Add display overlay controller related to |touch_injector|.
-  void AddDisplayOverlayController(
+  // Add display overlay controller related to |touch_injector|. Virtual for
+  // test.
+  virtual void AddDisplayOverlayController(
       input_overlay::TouchInjector* touch_injector);
   void RemoveDisplayOverlayController();
   // Reset for removing pending |touch_injector| because of no GIO data or

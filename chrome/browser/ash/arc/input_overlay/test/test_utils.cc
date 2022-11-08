@@ -12,8 +12,10 @@
 
 namespace arc::input_overlay {
 
-std::unique_ptr<views::Widget> CreateArcWindow(aura::Window* root_window,
-                                               const gfx::Rect& bounds) {
+std::unique_ptr<views::Widget> CreateArcWindow(
+    aura::Window* root_window,
+    const gfx::Rect& bounds,
+    const std::string& package_name) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = bounds;
   params.context = root_window;
@@ -25,8 +27,7 @@ std::unique_ptr<views::Widget> CreateArcWindow(aura::Window* root_window,
   widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, std::string("app_id"));
   widget->GetNativeWindow()->SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
-  widget->GetNativeWindow()->SetProperty(ash::kArcPackageNameKey,
-                                         std::string("arc.packagename"));
+  widget->GetNativeWindow()->SetProperty(ash::kArcPackageNameKey, package_name);
   widget->Show();
   widget->Activate();
 
