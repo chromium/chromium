@@ -131,7 +131,7 @@ export class CommandHandler extends CommandHandlerInterface {
         break;
       case Command.DUMP_TREE:
         chrome.automation.getDesktop(
-            root => LogStore.getInstance().writeTreeLog(new TreeDumper(root)));
+            root => LogStore.instance.writeTreeLog(new TreeDumper(root)));
         break;
       case Command.DECREASE_TTS_RATE:
         this.increaseOrDecreaseSpeechProperty_(AbstractTts.RATE, false);

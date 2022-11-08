@@ -57,7 +57,7 @@ export class Earcons extends AbstractEarcons {
       return;
     }
     if (localStorage['enableEarconLogging'] === 'true') {
-      LogStore.getInstance().writeTextLog(earcon, LogType.EARCON);
+      LogStore.instance.writeTextLog(earcon, LogType.EARCON);
       console.log('Earcon ' + earcon);
     }
     if (ChromeVoxState.instance.currentRange &&

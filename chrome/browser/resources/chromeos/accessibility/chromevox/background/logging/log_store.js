@@ -130,15 +130,16 @@ export class LogStore {
   }
 
   static init() {
-    LogStore.getInstance();
-  }
+    LogStore.instance = new LogStore();
 
-  /** @return {!LogStore} */
-  static getInstance() {
-    if (!LogStore.instance) {
-      LogStore.instance = new LogStore();
-    }
-    return LogStore.instance;
+    BridgeHelper.registerHandler(
+        BridgeConstants.LogStore.TARGET,
+        BridgeConstants.LogStore.Action.CLEAR_LOG,
+        () => LogStore.instance.clearLog());
+    BridgeHelper.registerHandler(
+        BridgeConstants.LogStore.TARGET,
+        BridgeConstants.LogStore.Action.GET_LOGS,
+        () => LogStore.instance.getLogs().map(log => log.serialize()));
   }
 }
 
@@ -148,15 +149,5 @@ export class LogStore {
  */
 LogStore.LOG_LIMIT = 3000;
 
-/**
- * Global instance.
- * @type {LogStore}
- */
+/** @type {LogStore} */
 LogStore.instance;
-
-BridgeHelper.registerHandler(
-    BridgeConstants.LogStore.TARGET, BridgeConstants.LogStore.Action.CLEAR_LOG,
-    () => LogStore.instance.clearLog());
-BridgeHelper.registerHandler(
-    BridgeConstants.LogStore.TARGET, BridgeConstants.LogStore.Action.GET_LOGS,
-    () => LogStore.instance.getLogs().map(log => log.serialize()));

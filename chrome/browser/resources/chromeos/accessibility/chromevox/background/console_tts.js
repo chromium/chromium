@@ -37,7 +37,7 @@ export class ConsoleTts {
       }
 
       const speechLog = new SpeechLog(textString, queueMode, category);
-      LogStore.getInstance().writeLog(speechLog);
+      LogStore.instance.writeLog(speechLog);
       console.log(speechLog.toString());
     }
     return this;

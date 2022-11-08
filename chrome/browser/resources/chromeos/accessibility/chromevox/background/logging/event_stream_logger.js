@@ -49,7 +49,7 @@ export class EventStreamLogger {
    */
   eventStreamLogging(evt) {
     const eventLog = new EventLog(evt);
-    LogStore.getInstance().writeLog(eventLog);
+    LogStore.instance.writeLog(eventLog);
     console.log(eventLog.toString());
   }
 
