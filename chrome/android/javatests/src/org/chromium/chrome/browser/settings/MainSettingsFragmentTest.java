@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.settings;
-
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -633,8 +635,17 @@ public class MainSettingsFragmentTest {
                                 mMainSettings.getString(R.string.password_settings_title_gpm),
                                 new SpanInfo("<new>", "</new>"))
                         .trim();
-        onViewWaiting(allOf(withText(R.string.managed_by_your_organization),
-                hasSibling(withText(prefTitleWithoutNewLabel)), isDisplayed()));
+        if (SettingsFeatureList.isEnabled(
+                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
+            onData(withKey(MainSettings.PREF_PASSWORDS))
+                    .inAdapterView(allOf(isDisplayed(),
+                            hasDescendant(withText(prefTitleWithoutNewLabel)),
+                            hasDescendant(allOf(withText(R.string.managed_by_your_organization),
+                                    isDisplayed()))));
+        } else {
+            onViewWaiting(allOf(withText(R.string.managed_by_your_organization),
+                    hasSibling(withText(prefTitleWithoutNewLabel)), isDisplayed()));
+        }
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
     }
 
@@ -674,10 +685,19 @@ public class MainSettingsFragmentTest {
                                 mMainSettings.getString(R.string.password_settings_title_gpm),
                                 new SpanInfo("<new>", "</new>"))
                         .trim();
-        onViewWaiting(allOf(withText(prefTitleWithoutNewLabel),
-                not(hasSibling(
-                        allOf(withText(R.string.managed_by_your_organization), isDisplayed()))),
-                isDisplayed()));
+        if (SettingsFeatureList.isEnabled(
+                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
+            onData(withKey(MainSettings.PREF_PASSWORDS))
+                    .inAdapterView(allOf(isDisplayed(),
+                            hasDescendant(withText(prefTitleWithoutNewLabel)),
+                            hasDescendant(allOf(withText(R.string.managed_by_your_organization),
+                                    not(isDisplayed())))));
+        } else {
+            onViewWaiting(allOf(withText(prefTitleWithoutNewLabel),
+                    not(hasSibling(
+                            allOf(withText(R.string.managed_by_your_organization), isDisplayed()))),
+                    isDisplayed()));
+        }
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
     }
 
@@ -713,10 +733,19 @@ public class MainSettingsFragmentTest {
 
     public void passwordsItemEnabledWhenManagedWithoutUPM() {
         launchSettingsActivity();
-        onViewWaiting(allOf(withText(R.string.password_settings_title),
-                not(hasSibling(
-                        allOf(withText(R.string.managed_by_your_organization), isDisplayed()))),
-                isDisplayed()));
+        if (SettingsFeatureList.isEnabled(
+                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
+            onData(withKey(MainSettings.PREF_PASSWORDS))
+                    .inAdapterView(allOf(isDisplayed(),
+                            hasDescendant(withText(R.string.password_settings_title)),
+                            hasDescendant(allOf(withText(R.string.managed_by_your_organization),
+                                    not(isDisplayed())))));
+        } else {
+            onViewWaiting(allOf(withText(R.string.password_settings_title),
+                    not(hasSibling(
+                            allOf(withText(R.string.managed_by_your_organization), isDisplayed()))),
+                    isDisplayed()));
+        }
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
     }
 

@@ -13,74 +13,81 @@ found in the LICENSE file.
     android:background="?android:attr/activatedBackgroundIndicator"
     android:baselineAligned="false"
     android:focusable="true"
-    android:gravity="center_vertical"
+    android:gravity="start"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    android:orientation="horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart">
+    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+    android:paddingTop="16dp" >
 
     <LinearLayout
-        android:id="@app:id/icon_frame"
-        android:layout_width="56dp"
-        android:layout_height="32dp"
-        android:gravity="center_vertical|start"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
 
-        <ImageView
-            android:id="@android:id/icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            app:maxHeight="48dp"
-            app:maxWidth="48dp"
-            tools:ignore="ContentDescription" />
+      <LinearLayout
+          android:id="@app:id/icon_frame"
+          android:layout_width="56dp"
+          android:layout_height="32dp"
+          android:gravity="center_vertical|start"
+          android:orientation="horizontal">
+
+          <ImageView
+              android:id="@android:id/icon"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:adjustViewBounds="true"
+              android:scaleType="fitCenter"
+              app:maxHeight="48dp"
+              app:maxWidth="48dp"
+              tools:ignore="ContentDescription" />
+
+      </LinearLayout>
+
+      <RelativeLayout
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="0dp"
+          android:layout_marginEnd="0dp"
+          android:layout_marginStart="0dp"
+          android:layout_marginTop="0dp"
+          android:layout_weight="1" >
+
+          <TextView
+              android:id="@android:id/title"
+              style="@style/PreferenceTitle"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content" />
+
+          <TextView
+              android:id="@android:id/summary"
+              style="@style/PreferenceSummary"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignStart="@android:id/title"
+              android:layout_below="@android:id/title" />
+
+      </RelativeLayout>
+
+      <LinearLayout android:id="@android:id/widget_frame"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:minWidth="64dp"
+          android:gravity="center_vertical|end"
+          android:orientation="vertical" />
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/managed_disclaimer_text"
+        style="@style/ManagedDisclaimerView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:layout_weight="1"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp">
-
-        <TextView
-            android:id="@android:id/title"
-            style="@style/PreferenceTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@android:id/summary"
-            style="@style/PreferenceSummary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@android:id/title"
-            android:layout_below="@android:id/title" />
-
-        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-            android:id="@+id/managed_disclaimer_text"
-            style="@style/ManagedDisclaimerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@android:id/summary"
-            android:layout_below="@android:id/summary"
-            android:drawablePadding="8dp"
-            android:paddingTop="8dp"
-            android:visibility="gone" />
-
-    </RelativeLayout>
-
-    <LinearLayout android:id="@android:id/widget_frame"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:minWidth="64dp"
-        android:gravity="center_vertical|end"
-        android:orientation="vertical" />
+        android:drawablePadding="8dp"
+        android:paddingTop="8dp"
+        android:visibility="gone" />
 
 </LinearLayout>
