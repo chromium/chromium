@@ -51,7 +51,27 @@ Buffer& Buffer::operator=(Buffer&& other) {
   return *this;
 }
 
+// Buffer allocations are frequent while constructing messages, so asserts are
+// only added in certain places when tracking down the reason for different
+// message sizes.
+static bool gRecordReplayAssertAllocations = false;
+
+extern "C" bool V8IsMainThread();
+
+void RecordReplayAssertBufferAllocationsBegin() {
+  if (V8IsMainThread())
+    gRecordReplayAssertAllocations = true;
+}
+
+void RecordReplayAssertBufferAllocationsEnd() {
+  if (V8IsMainThread())
+    gRecordReplayAssertAllocations = false;
+}
+
 size_t Buffer::Allocate(size_t num_bytes) {
+  if (gRecordReplayAssertAllocations && V8IsMainThread())
+    recordreplay::Assert("Buffer::Allocate %zu", num_bytes);
+
   const size_t aligned_num_bytes = Align(num_bytes);
   const size_t new_cursor = cursor_ + aligned_num_bytes;
   if (new_cursor < cursor_ || (new_cursor > size_ && !message_.is_valid())) {

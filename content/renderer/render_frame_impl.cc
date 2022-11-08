@@ -290,6 +290,13 @@ using blink::WebView;
 using blink::mojom::SelectionMenuBehavior;
 using network::mojom::ReferrerPolicy;
 
+namespace mojo {
+  namespace internal {
+    extern void RecordReplayAssertBufferAllocationsBegin();
+    extern void RecordReplayAssertBufferAllocationsEnd();
+  }
+}
+
 namespace content {
 
 namespace {
@@ -5878,6 +5885,9 @@ void RenderFrameImpl::BeginNavigationInternal(
       initiator_policy_container_keep_alive_handle =
           std::move(info->initiator_policy_container_keep_alive_handle);
 
+  // https://linear.app/replay/issue/RUN-771
+  mojo::internal::RecordReplayAssertBufferAllocationsBegin();
+
   GetFrameHost()->BeginNavigation(
       MakeCommonNavigationParams(frame_->GetSecurityOrigin(), std::move(info),
                                  load_flags, has_download_sandbox_flag, from_ad,
@@ -5885,6 +5895,9 @@ void RenderFrameImpl::BeginNavigationInternal(
       std::move(begin_navigation_params), std::move(blob_url_token),
       std::move(navigation_client_remote),
       std::move(initiator_policy_container_keep_alive_handle));
+
+  // https://linear.app/replay/issue/RUN-771
+  mojo::internal::RecordReplayAssertBufferAllocationsEnd();
 }
 
 void RenderFrameImpl::DecodeDataURL(
