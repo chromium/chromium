@@ -24,15 +24,23 @@ using dictionary_helper::NumDictionaryEntriesChecker;
 using dictionary_helper::RemoveWord;
 using spellcheck::kMaxSyncableDictionaryWords;
 
-class TwoClientDictionarySyncTest : public SyncTest {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1296569): Re-enable when spell check dictionary issues are
+// addressed.
+#define MAYBE_TwoClientDictionarySyncTest DISABLED_TwoClientDictionarySyncTest
+#else
+#define MAYBE_TwoClientDictionarySyncTest TwoClientDictionarySyncTest
+#endif
+
+class MAYBE_TwoClientDictionarySyncTest : public SyncTest {
  public:
-  TwoClientDictionarySyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientDictionarySyncTest() override = default;
+  MAYBE_TwoClientDictionarySyncTest() : SyncTest(TWO_CLIENT) {}
+  ~MAYBE_TwoClientDictionarySyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
+IN_PROC_BROWSER_TEST_F(MAYBE_TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   LoadDictionaries();
@@ -57,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
   EXPECT_TRUE(DictionaryChecker(words).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousAdd)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -71,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
   EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{word}).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousRemove)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -90,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
   EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_TwoClientDictionarySyncTest,
                        E2E_ENABLED(RemoveOnAAddOnB)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -111,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
 
 // Tests the case where a client has more words added than the
 // kMaxSyncableDictionaryWords limit.
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
+IN_PROC_BROWSER_TEST_F(MAYBE_TwoClientDictionarySyncTest, Limit) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   LoadDictionaries();
   ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());

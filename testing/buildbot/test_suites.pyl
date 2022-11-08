@@ -2154,6 +2154,7 @@
           'shards': 8,
         },
       },
+      'sync_integration_tests': {},
       'unit_tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',

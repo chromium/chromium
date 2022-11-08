@@ -10432,7 +10432,7 @@ if (!is_android) {
       "//third_party/mesa_headers",
     ]
 
-    if (is_linux || is_chromeos || is_win) {
+    if (is_linux || is_chromeos || is_win || is_fuchsia) {
       data_deps += [ "//chrome:packed_resources" ]
     }
 
@@ -10479,6 +10479,16 @@ if (!is_android) {
         "//chromeos/printing",
         "//chromeos/services/network_config/public/cpp",
         "//components/desks_storage",
+      ]
+    }
+    if (is_fuchsia) {
+      use_test_server = true
+
+      test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+      additional_manifest_fragments = [
+        "//build/config/fuchsia/test/fonts.shard.test-cml",
+        "//build/config/fuchsia/test/network.shard.test-cml",
+        "//build/config/fuchsia/test/present_view.shard.test-cml",
       ]
     }
 
