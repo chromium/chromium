@@ -364,12 +364,16 @@ TEST_F(StatisticsProviderImplTest,
   // Check stub file exists.
   EXPECT_TRUE(base::PathExists(kMachineInfoFilepath));
 
+  // Current provider is going to be destroyed, copy it's machine id.
+  const std::string initial_machine_id_string =
+      std::string(initial_machine_id.value_or(""));
+
   // Check fresh provider.
   provider = StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Expect the same statistic as initial.
-  EXPECT_EQ(provider->GetMachineID(), initial_machine_id);
+  EXPECT_EQ(provider->GetMachineID(), initial_machine_id_string);
 }
 
 // Test that the provider loads statistics from VPD echo and VPD file if they
@@ -553,13 +557,17 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdFileIfNotRunningChromeOS) {
   // keys.
   EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
 
+  // Current provider is going to be destroyed, copy it's activate date.
+  const std::string initial_activate_date_string =
+      std::string(initial_activate_date.value_or(""));
+
   // Check fresh provider.
   provider = StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Expect the same statistic as initial.
   EXPECT_EQ(provider->GetMachineStatistic(kActivateDateKey),
-            initial_activate_date);
+            initial_activate_date_string);
 
   // The provider shall not record in non-chromeos environment.
   histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
