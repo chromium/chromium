@@ -150,45 +150,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, MultiProfileFileHandling) {
   helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 }
 
-// TODO(https://crbug.com/1382214): Migrate this to a CUJ.
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, MultiProfileFileLaunch) {
-  // Install file handling PWA in two profiles.
-  helper_.InstallMenuOption(InstallableSite::kFileHandler);
-  helper_.ClosePwa();
-
-  helper_.SwitchActiveProfile(ProfileName::kProfile2);
-  helper_.InstallMenuOption(InstallableSite::kFileHandler);
-  helper_.ClosePwa();
-  helper_.DisableFileHandling(Site::kFileHandler);
-
-  // File handling is disabled in second profile, launching should open
-  // in first profile.
-  helper_.SwitchActiveProfile(ProfileName::kDefault);
-  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
-                                 AllowDenyOptions::kAllow,
-                                 AskAgainOptions::kAskAgain);
-  helper_.CheckWindowCreated();
-}
-
-// TODO(https://crbug.com/1382214): Migrate this to a CUJ.
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, MultiProfileFileLaunchWhileOpen) {
-  // Install file handling PWA in two profiles.
-  helper_.InstallMenuOption(InstallableSite::kFileHandler);
-  helper_.ClosePwa();
-
-  helper_.SwitchActiveProfile(ProfileName::kProfile2);
-  helper_.InstallMenuOption(InstallableSite::kFileHandler);
-  helper_.DisableFileHandling(Site::kFileHandler);
-
-  // File handling is disabled in second profile, launching should open
-  // in first profile, even if it wasn't closed.
-  helper_.SwitchActiveProfile(ProfileName::kDefault);
-  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
-                                 AllowDenyOptions::kAllow,
-                                 AskAgainOptions::kAskAgain);
-  helper_.CheckWindowCreated();
-}
-
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

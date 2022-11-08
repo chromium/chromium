@@ -441,7 +441,6 @@ class AppShimManagerTest : public testing::Test {
   void TearDown() override {
     host_aa_unique_.reset();
     host_ab_unique_.reset();
-    host_ba_unique_.reset();
     host_bb_unique_.reset();
     host_aa_duplicate_unique_.reset();
     manager_->SetHostForCreate(nullptr);
@@ -544,7 +543,7 @@ class AppShimManagerTest : public testing::Test {
       bootstrap_aa_thethird_result_;
 
   // Unique ptr to the TestsHosts used by the tests. These are passed by
-  // std::move during tests. To access them after they have been passed, use
+  // std::move durnig tests. To access them after they have been passed, use
   // the WeakPtr versions.
   std::unique_ptr<TestHost> host_aa_unique_;
   std::unique_ptr<TestHost> host_ab_unique_;
@@ -1465,125 +1464,6 @@ TEST_F(AppShimManagerTest, FindProfileFromNoProfile) {
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
             *bootstrap_xa_result_);
   EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
-}
-
-TEST_F(AppShimManagerTest, FindProfileFromFilePaths) {
-  // Set this app to be install for profile A, B and C.
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_a_);
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_b_);
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_c_);
-
-  // Configure different file handlers in each of the three profiles.
-  AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_a_, {".md"}, {});
-  AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_b_, {".txt", ".csv"}, {});
-  AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_c_, {".txt"}, {});
-
-  // Launch the shim passing in several files.
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_a_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(0);
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_b_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(1);
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_c_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(0);
-  DoShimLaunch(bootstrap_xa_, std::move(host_ba_unique_),
-               chrome::mojom::AppShimLaunchType::kNormal,
-               {base::FilePath("/foo/bar/test.txt"),
-                base::FilePath("/home/test/data.csv"),
-                base::FilePath("/data/README.md")},
-               {}, chrome::mojom::AppShimLoginItemRestoreState::kNone);
-  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
-            *bootstrap_xa_result_);
-  EXPECT_EQ(host_ba_.get(), manager_->FindHost(&profile_b_, kTestAppIdA));
-}
-
-TEST_F(AppShimManagerTest, FindProfileFromFileURL) {
-  // Set this app to be install for profile A, B and C.
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_a_);
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_b_);
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_c_);
-
-  // Configure different file handlers in each of the three profiles.
-  AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_a_, {".md"}, {});
-  AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_b_, {".txt", ".csv"}, {});
-  AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_c_, {".txt"}, {});
-
-  // Launch the shim passing in a file URL.
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_a_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(1);
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_b_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(0);
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_c_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(0);
-  DoShimLaunch(bootstrap_xa_, std::move(host_aa_unique_),
-               chrome::mojom::AppShimLaunchType::kNormal, {},
-               {GURL("file:///data/README.md")},
-               chrome::mojom::AppShimLoginItemRestoreState::kNone);
-  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
-            *bootstrap_xa_result_);
-  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
-}
-
-TEST_F(AppShimManagerTest, FindProfileFromURL) {
-  // Set this app to be install for profile A, B and C.
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_a_);
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_b_);
-  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
-                                                   profile_path_c_);
-
-  // Configure different protocol handlers in each of the three profiles.
-  AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_a_, {"web+music"});
-  AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_b_, {"web+jngl"});
-  AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
-      kTestAppIdA, profile_path_c_, {"mailto"});
-
-  // Launch the shim passing in a URL to be handled in profile B.
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_a_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(0);
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_b_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(1);
-  EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_c_, kTestAppIdA, _, _, _,
-                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
-      .Times(0);
-  DoShimLaunch(bootstrap_xa_, std::move(host_ba_unique_),
-               chrome::mojom::AppShimLaunchType::kNormal, {},
-               {GURL("web+jngl://foo/bar")},
-               chrome::mojom::AppShimLoginItemRestoreState::kNone);
-  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
-            *bootstrap_xa_result_);
-  EXPECT_EQ(host_ba_.get(), manager_->FindHost(&profile_b_, kTestAppIdA));
 }
 
 TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
