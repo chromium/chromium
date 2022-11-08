@@ -67,10 +67,8 @@ public class TabCountProvider {
         addObserver(observer);
 
         if (mTabModelSelector != null && mTabModelSelector.isTabStateInitialized()) {
-            observer.onTabCountChanged(mTabModelSelector.getTabModelFilterProvider()
-                                               .getCurrentTabModelFilter()
-                                               .getCount(),
-                    mTabModelSelector.isIncognitoSelected());
+            observer.onTabCountChanged(
+                    getCurrentTotalTabCount(), mTabModelSelector.isIncognitoSelected());
         }
     }
 
@@ -164,9 +162,7 @@ public class TabCountProvider {
     private void updateTabCount() {
         if (!mTabModelSelector.isTabStateInitialized()) return;
 
-        final int tabCount = mTabModelSelector.getTabModelFilterProvider()
-                                     .getCurrentTabModelFilter()
-                                     .getTotalTabCount();
+        final int tabCount = getCurrentTotalTabCount();
         final boolean isIncognito = mTabModelSelector.isIncognitoSelected();
 
         if (mTabCount == tabCount && mIsIncognito == isIncognito) return;
@@ -177,5 +173,11 @@ public class TabCountProvider {
         for (TabCountObserver observer : mTabCountObservers) {
             observer.onTabCountChanged(tabCount, isIncognito);
         }
+    }
+
+    private int getCurrentTotalTabCount() {
+        return mTabModelSelector.getTabModelFilterProvider()
+                .getCurrentTabModelFilter()
+                .getTotalTabCount();
     }
 }
