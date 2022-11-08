@@ -122,7 +122,25 @@ namespace downloads {
   //     <dd>The user has accepted the dangerous download.</dd>
   // </dl>
   enum DangerType {
-    file, url, content, uncommon, host, unwanted, safe, accepted
+    file,
+    url,
+    content,
+    uncommon,
+    host,
+    unwanted,
+    safe,
+    accepted,
+    allowlistedByPolicy,
+    asyncScanning,
+    passwordProtected,
+    blockedTooLarge,
+    sensitiveContentWarning,
+    sensitiveContentBlock,
+    unsupportedFileType,
+    deepScannedSafe,
+    deepScannedOpenedDangerous,
+    promptForScaning,
+    accountCompromise
   };
 
   // <dl><dt>in_progress</dt>

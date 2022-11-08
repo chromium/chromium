@@ -135,50 +135,24 @@ namespace downloads = api::downloads;
 const int kDefaultIconSize = 32;
 
 // Parameter keys
-const char kByExtensionIdKey[] = "byExtensionId";
-const char kByExtensionNameKey[] = "byExtensionName";
 const char kBytesReceivedKey[] = "bytesReceived";
 const char kCanResumeKey[] = "canResume";
-const char kDangerAccepted[] = "accepted";
-const char kDangerContent[] = "content";
-const char kDangerFile[] = "file";
-const char kDangerHost[] = "host";
 const char kDangerKey[] = "danger";
-const char kDangerSafe[] = "safe";
-const char kDangerUncommon[] = "uncommon";
-const char kDangerUnwanted[] = "unwanted";
-const char kDangerAllowlistedByPolicy[] = "allowlistedByPolicy";
-const char kDangerAsyncScanning[] = "asyncScanning";
-const char kDangerPasswordProtected[] = "passwordProtected";
-const char kDangerTooLarge[] = "blockedTooLarge";
-const char kDangerSensitiveContentWarning[] = "sensitiveContentWarning";
-const char kDangerSensitiveContentBlock[] = "sensitiveContentBlock";
-const char kDangerUnsupportedFileType[] = "unsupportedFileType";
-const char kDangerDeepScannedSafe[] = "deepScannedSafe";
-const char kDangerDeepScannedOpenedDangerous[] = "deepScannedOpenedDangerous";
-const char kDangerPromptForScanning[] = "promptForScanning";
-const char kDangerUrl[] = "url";
 const char kEndTimeKey[] = "endTime";
 const char kEndedAfterKey[] = "endedAfter";
 const char kEndedBeforeKey[] = "endedBefore";
 const char kErrorKey[] = "error";
-const char kEstimatedEndTimeKey[] = "estimatedEndTime";
 const char kExistsKey[] = "exists";
 const char kFileSizeKey[] = "fileSize";
 const char kFilenameKey[] = "filename";
 const char kFilenameRegexKey[] = "filenameRegex";
 const char kIdKey[] = "id";
-const char kDownloadsApiIncognitoKey[] = "incognito";
 const char kMimeKey[] = "mime";
 const char kPausedKey[] = "paused";
 const char kQueryKey[] = "query";
-const char kReferrerUrlKey[] = "referrer";
 const char kStartTimeKey[] = "startTime";
 const char kStartedAfterKey[] = "startedAfter";
 const char kStartedBeforeKey[] = "startedBefore";
-const char kStateComplete[] = "complete";
-const char kStateInProgress[] = "in_progress";
-const char kStateInterrupted[] = "interrupted";
 const char kStateKey[] = "state";
 const char kTotalBytesGreaterKey[] = "totalBytesGreater";
 const char kTotalBytesKey[] = "totalBytes";
@@ -187,120 +161,207 @@ const char kUrlKey[] = "url";
 const char kUrlRegexKey[] = "urlRegex";
 const char kFinalUrlKey[] = "finalUrl";
 const char kFinalUrlRegexKey[] = "finalUrlRegex";
-const char kDangerousAccountCompromise[] = "accountCompromise";
 
-const char* const kDangerStrings[] = {kDangerSafe,
-                                      kDangerFile,
-                                      kDangerUrl,
-                                      kDangerContent,
-                                      kDangerSafe,
-                                      kDangerUncommon,
-                                      kDangerAccepted,
-                                      kDangerHost,
-                                      kDangerUnwanted,
-                                      kDangerAllowlistedByPolicy,
-                                      kDangerAsyncScanning,
-                                      kDangerPasswordProtected,
-                                      kDangerTooLarge,
-                                      kDangerSensitiveContentWarning,
-                                      kDangerSensitiveContentBlock,
-                                      kDangerDeepScannedSafe,
-                                      kDangerDeepScannedOpenedDangerous,
-                                      kDangerPromptForScanning,
-                                      kDangerUnsupportedFileType,
-                                      kDangerousAccountCompromise};
-static_assert(std::size(kDangerStrings) == download::DOWNLOAD_DANGER_TYPE_MAX,
-              "kDangerStrings should have DOWNLOAD_DANGER_TYPE_MAX elements");
-
-const char* const kStateStrings[] = {
-    kStateInProgress,
-    kStateComplete,
-    kStateInterrupted,
-    kStateInterrupted,
-};
-static_assert(std::size(kStateStrings) ==
-                  download::DownloadItem::MAX_DOWNLOAD_STATE,
-              "kStateStrings should have MAX_DOWNLOAD_STATE elements");
-
-const char* DangerString(download::DownloadDangerType danger) {
-  DCHECK(danger >= 0);
-  DCHECK(danger <
-         static_cast<download::DownloadDangerType>(std::size(kDangerStrings)));
-  if (danger < 0 || danger >= static_cast<download::DownloadDangerType>(
-                                  std::size(kDangerStrings)))
-    return "";
-  return kDangerStrings[danger];
+extensions::api::downloads::DangerType ConvertDangerType(
+    download::DownloadDangerType danger) {
+  switch (danger) {
+    case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
+      return extensions::api::downloads::DANGER_TYPE_SAFE;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+      return extensions::api::downloads::DANGER_TYPE_FILE;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+      return extensions::api::downloads::DANGER_TYPE_URL;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+      return extensions::api::downloads::DANGER_TYPE_CONTENT;
+    case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
+      return extensions::api::downloads::DANGER_TYPE_SAFE;
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+      return extensions::api::downloads::DANGER_TYPE_UNCOMMON;
+    case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
+      return extensions::api::downloads::DANGER_TYPE_ACCEPTED;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+      return extensions::api::downloads::DANGER_TYPE_HOST;
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+      return extensions::api::downloads::DANGER_TYPE_UNWANTED;
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+      return extensions::api::downloads::DANGER_TYPE_ALLOWLISTEDBYPOLICY;
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+      return extensions::api::downloads::DANGER_TYPE_ASYNCSCANNING;
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+      return extensions::api::downloads::DANGER_TYPE_PASSWORDPROTECTED;
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+      return extensions::api::downloads::DANGER_TYPE_BLOCKEDTOOLARGE;
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+      return extensions::api::downloads::DANGER_TYPE_SENSITIVECONTENTWARNING;
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+      return extensions::api::downloads::DANGER_TYPE_SENSITIVECONTENTBLOCK;
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+      return extensions::api::downloads::DANGER_TYPE_DEEPSCANNEDSAFE;
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+      return extensions::api::downloads::DANGER_TYPE_DEEPSCANNEDOPENEDDANGEROUS;
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+      return extensions::api::downloads::DANGER_TYPE_PROMPTFORSCANING;
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+      return extensions::api::downloads::DANGER_TYPE_UNSUPPORTEDFILETYPE;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return extensions::api::downloads::DANGER_TYPE_ACCOUNTCOMPROMISE;
+    case download::DOWNLOAD_DANGER_TYPE_MAX:
+      NOTREACHED();
+      return extensions::api::downloads::DANGER_TYPE_LAST;
+  }
 }
 
 download::DownloadDangerType DangerEnumFromString(const std::string& danger) {
-  for (size_t i = 0; i < std::size(kDangerStrings); ++i) {
-    if (danger == kDangerStrings[i])
+  extensions::api::downloads::DangerType danger_type =
+      api::downloads::ParseDangerType(danger);
+  for (size_t i = 0; i < download::DOWNLOAD_DANGER_TYPE_MAX; i++) {
+    if (ConvertDangerType(static_cast<download::DownloadDangerType>(i)) ==
+        danger_type) {
       return static_cast<download::DownloadDangerType>(i);
+    }
   }
   return download::DOWNLOAD_DANGER_TYPE_MAX;
 }
 
-const char* StateString(download::DownloadItem::DownloadState state) {
-  DCHECK(state >= 0);
-  DCHECK(state < static_cast<download::DownloadItem::DownloadState>(
-                     std::size(kStateStrings)));
-  if (state < 0 || state >= static_cast<download::DownloadItem::DownloadState>(
-                                std::size(kStateStrings)))
-    return "";
-  return kStateStrings[state];
+extensions::api::downloads::State ConvertState(
+    download::DownloadItem::DownloadState state) {
+  switch (state) {
+    case download::DownloadItem::IN_PROGRESS:
+      return extensions::api::downloads::STATE_IN_PROGRESS;
+    case download::DownloadItem::COMPLETE:
+      return extensions::api::downloads::STATE_COMPLETE;
+    case download::DownloadItem::CANCELLED:
+      return extensions::api::downloads::STATE_INTERRUPTED;
+    case download::DownloadItem::INTERRUPTED:
+      return extensions::api::downloads::STATE_INTERRUPTED;
+    case download::DownloadItem::MAX_DOWNLOAD_STATE:
+      return extensions::api::downloads::STATE_LAST;
+  }
 }
 
 download::DownloadItem::DownloadState StateEnumFromString(
     const std::string& state) {
-  for (size_t i = 0; i < std::size(kStateStrings); ++i) {
-    if ((kStateStrings[i] != nullptr) && (state == kStateStrings[i]))
-      return static_cast<DownloadItem::DownloadState>(i);
+  extensions::api::downloads::State extension_state =
+      extensions::api::downloads::ParseState(state);
+  for (size_t i = 0; i < download::DownloadItem::MAX_DOWNLOAD_STATE; i++) {
+    if (ConvertState(static_cast<download::DownloadItem::DownloadState>(i)) ==
+        extension_state) {
+      return static_cast<download::DownloadItem::DownloadState>(i);
+    }
   }
-  return DownloadItem::MAX_DOWNLOAD_STATE;
+
+  return download::DownloadItem::MAX_DOWNLOAD_STATE;
+}
+
+extensions::api::downloads::InterruptReason ConvertInterruptReason(
+    download::DownloadInterruptReason reason) {
+  switch (reason) {
+    case download::DOWNLOAD_INTERRUPT_REASON_NONE:
+      return extensions::api::downloads::INTERRUPT_REASON_NONE;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_FAILED;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_ACCESS_DENIED;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_NO_SPACE;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_NAME_TOO_LONG;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_TOO_LARGE;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_VIRUS_INFECTED;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_TRANSIENT_ERROR;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_BLOCKED;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED:
+      return extensions::api::downloads::
+          INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_TOO_SHORT;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_HASH_MISMATCH;
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE:
+      return extensions::api::downloads::INTERRUPT_REASON_FILE_SAME_AS_SOURCE;
+    case download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED:
+      return extensions::api::downloads::INTERRUPT_REASON_NETWORK_FAILED;
+    case download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT:
+      return extensions::api::downloads::INTERRUPT_REASON_NETWORK_TIMEOUT;
+    case download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED:
+      return extensions::api::downloads::INTERRUPT_REASON_NETWORK_DISCONNECTED;
+    case download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN:
+      return extensions::api::downloads::INTERRUPT_REASON_NETWORK_SERVER_DOWN;
+    case download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST:
+      return extensions::api::downloads::
+          INTERRUPT_REASON_NETWORK_INVALID_REQUEST;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED:
+      return extensions::api::downloads::INTERRUPT_REASON_SERVER_FAILED;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE:
+      return extensions::api::downloads::INTERRUPT_REASON_SERVER_NO_RANGE;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT:
+      return extensions::api::downloads::INTERRUPT_REASON_SERVER_BAD_CONTENT;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED:
+      return extensions::api::downloads::INTERRUPT_REASON_SERVER_UNAUTHORIZED;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM:
+      return extensions::api::downloads::INTERRUPT_REASON_SERVER_CERT_PROBLEM;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN:
+      return extensions::api::downloads::INTERRUPT_REASON_SERVER_FORBIDDEN;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE:
+      return extensions::api::downloads::INTERRUPT_REASON_SERVER_UNREACHABLE;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH:
+      return extensions::api::downloads::
+          INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH;
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT:
+      return extensions::api::downloads::
+          INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT;
+    case download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED:
+      return extensions::api::downloads::INTERRUPT_REASON_USER_CANCELED;
+    case download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN:
+      return extensions::api::downloads::INTERRUPT_REASON_USER_SHUTDOWN;
+    case download::DOWNLOAD_INTERRUPT_REASON_CRASH:
+      return extensions::api::downloads::INTERRUPT_REASON_CRASH;
+  }
 }
 
 base::Value::Dict DownloadItemToJSON(DownloadItem* download_item,
                                      content::BrowserContext* browser_context) {
-  base::Value::Dict json;
-  json.Set(kExistsKey, !download_item->GetFileExternallyRemoved());
-  json.Set(kIdKey, static_cast<int>(download_item->GetId()));
+  extensions::api::downloads::DownloadItem item;
+  item.exists = !download_item->GetFileExternallyRemoved();
+  item.id = static_cast<int>(download_item->GetId());
   const GURL& url = download_item->GetOriginalUrl();
-  json.Set(kUrlKey, (url.is_valid() ? url.spec() : std::string()));
+  item.url = url.is_valid() ? url.spec() : std::string();
   const GURL& finalUrl = download_item->GetURL();
-  json.Set(kFinalUrlKey,
-           (finalUrl.is_valid() ? finalUrl.spec() : std::string()));
+  item.final_url = finalUrl.is_valid() ? finalUrl.spec() : std::string();
   const GURL& referrer = download_item->GetReferrerUrl();
-  json.Set(kReferrerUrlKey,
-           (referrer.is_valid() ? referrer.spec() : std::string()));
-  json.Set(kFilenameKey, download_item->GetTargetFilePath().LossyDisplayName());
-  json.Set(kDangerKey, DangerString(download_item->GetDangerType()));
-  json.Set(kStateKey, StateString(download_item->GetState()));
-  json.Set(kCanResumeKey, download_item->CanResume());
-  json.Set(kPausedKey, download_item->IsPaused());
-  json.Set(kMimeKey, download_item->GetMimeType());
-  json.Set(kStartTimeKey, base::TimeToISO8601(download_item->GetStartTime()));
-  json.Set(kBytesReceivedKey,
-           static_cast<double>(download_item->GetReceivedBytes()));
-  json.Set(kTotalBytesKey, static_cast<double>(download_item->GetTotalBytes()));
-  json.Set(kDownloadsApiIncognitoKey, browser_context->IsOffTheRecord());
+  item.referrer = referrer.is_valid() ? referrer.spec() : std::string();
+  item.filename =
+      base::UTF16ToUTF8(download_item->GetTargetFilePath().LossyDisplayName());
+  item.danger = ConvertDangerType(download_item->GetDangerType());
+  item.state = ConvertState(download_item->GetState());
+  item.can_resume = download_item->CanResume();
+  item.paused = download_item->IsPaused();
+  item.mime = download_item->GetMimeType();
+  item.start_time = base::TimeToISO8601(download_item->GetStartTime());
+  item.bytes_received = static_cast<double>(download_item->GetReceivedBytes());
+  item.total_bytes = static_cast<double>(download_item->GetTotalBytes());
+  item.incognito = browser_context->IsOffTheRecord();
   if (download_item->GetState() == DownloadItem::INTERRUPTED) {
-    json.Set(kErrorKey, download::DownloadInterruptReasonToString(
-                            download_item->GetLastReason()));
+    item.error = ConvertInterruptReason(download_item->GetLastReason());
   } else if (download_item->GetState() == DownloadItem::CANCELLED) {
-    json.Set(kErrorKey, download::DownloadInterruptReasonToString(
-                            download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED));
+    item.error = ConvertInterruptReason(
+        download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
   }
   if (!download_item->GetEndTime().is_null())
-    json.Set(kEndTimeKey, base::TimeToISO8601(download_item->GetEndTime()));
+    item.end_time = base::TimeToISO8601(download_item->GetEndTime());
   base::TimeDelta time_remaining;
   if (download_item->TimeRemaining(&time_remaining)) {
     base::Time now = base::Time::Now();
-    json.Set(kEstimatedEndTimeKey, base::TimeToISO8601(now + time_remaining));
+    item.estimated_end_time = base::TimeToISO8601(now + time_remaining);
   }
   DownloadedByExtension* by_ext = DownloadedByExtension::Get(download_item);
   if (by_ext) {
-    json.Set(kByExtensionIdKey, by_ext->id());
-    json.Set(kByExtensionNameKey, by_ext->name());
+    item.by_extension_id = by_ext->id();
+    item.by_extension_name = by_ext->name();
     // Lookup the extension's current name() in case the user changed their
     // language. This won't work if the extension was uninstalled, so the name
     // might be the wrong language.
@@ -308,11 +369,11 @@ base::Value::Dict DownloadItemToJSON(DownloadItem* download_item,
         ExtensionRegistry::Get(browser_context)
             ->GetExtensionById(by_ext->id(), ExtensionRegistry::EVERYTHING);
     if (extension)
-      json.Set(kByExtensionNameKey, extension->name());
+      item.by_extension_name = extension->name();
   }
   // TODO(benjhayden): Implement fileSize.
-  json.Set(kFileSizeKey, static_cast<double>(download_item->GetTotalBytes()));
-  return json;
+  item.file_size = static_cast<double>(download_item->GetTotalBytes());
+  return item.ToValue();
 }
 
 class DownloadFileIconExtractorImpl : public DownloadFileIconExtractor {
