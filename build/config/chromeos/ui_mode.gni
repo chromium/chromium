@@ -5,7 +5,7 @@
 import("//build/config/chromeos/args.gni")
 
 declare_args() {
-  # Deprecated, use is_lacros.
+  # Deprecated, use is_chromeos_lacros.
   #
   # This controls UI configuration for Chrome.
   # If this flag is set, we assume Chrome runs on Chrome OS devices, using
@@ -14,8 +14,8 @@ declare_args() {
   # TODO(crbug.com/1052397):
   # Define chromeos_product instead, which takes either "browser" or "ash".
   # Re-define the following variables as:
-  # is_lacros = chromeos_product == "browser"
-  # is_ash = chromeos_product == "ash"
+  # is_chromeos_lacros = chromeos_product == "browser"
+  # is_chromeos_ash = chromeos_product == "ash"
   chromeos_is_browser_only = false
 
   # Setting this to true when building linux Lacros-chrome will cause it to
