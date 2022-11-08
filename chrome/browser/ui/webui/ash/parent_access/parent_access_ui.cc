@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -85,8 +88,10 @@ void ParentAccessUI::BindInterface(
           ? test_identity_manager_
           : IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
 
+  // The dialog instance could be null if the webui's url is entered in the
+  // browser address bar.  The handler should handle that scenario.
   mojo_api_handler_ = std::make_unique<ParentAccessUIHandlerImpl>(
-      std::move(receiver), web_ui(), identity_manager);
+      std::move(receiver), identity_manager, ParentAccessDialog::GetInstance());
 }
 
 const GURL ParentAccessUI::GetWebContentURLForTesting() {

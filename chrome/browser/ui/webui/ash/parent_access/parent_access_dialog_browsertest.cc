@@ -59,18 +59,18 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   // Verify it is showing.
   ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
   ASSERT_NE(ParentAccessDialog::GetInstance(), nullptr);
+  const ParentAccessDialog* dialog = ParentAccessDialog::GetInstance();
   parent_access_ui::mojom::ParentAccessParams* params =
-      ParentAccessDialog::GetInstance()->GetParentAccessParamsForTest();
+      dialog->GetParentAccessParamsForTest();
   EXPECT_EQ(
       params->flow_type,
       parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess);
 
   // Verify that it is correctly configured.
-  EXPECT_EQ(ParentAccessDialog::GetInstance()->GetDialogContentURL().spec(),
+  EXPECT_EQ(dialog->GetDialogContentURL().spec(),
             chrome::kChromeUIParentAccessURL);
-  EXPECT_TRUE(ParentAccessDialog::GetInstance()->ShouldShowCloseButton());
-  EXPECT_EQ(ParentAccessDialog::GetInstance()->GetDialogModalType(),
-            ui::ModalType::MODAL_TYPE_SYSTEM);
+  EXPECT_TRUE(dialog->ShouldShowCloseButton());
+  EXPECT_EQ(dialog->GetDialogModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
 
   // Send ESCAPE keypress.  EventGenerator requires the root window, which has
   // to be fetched from the Ash shell.
@@ -83,24 +83,20 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   run_loop.Run();
 }
 
-// Verify that the dialog is shown and correctly configured.
-IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetResultAndClose) {
+// Verify that the dialog is closed on Approve.
+IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetApproved) {
   base::RunLoop run_loop;
 
-  auto expected_result = std::make_unique<ParentAccessDialog::Result>();
-  expected_result->status = ParentAccessDialog::Result::Status::kApproved;
-  expected_result->parent_access_token = "TEST_TOKEN";
-  expected_result->parent_access_token_expire_timestamp =
+  ParentAccessDialog::Result expected_result;
+  expected_result.status = ParentAccessDialog::Result::Status::kApproved;
+  expected_result.parent_access_token = "TEST_TOKEN";
+  expected_result.parent_access_token_expire_timestamp =
       base::Time::FromDoubleT(123456L);
-
-  // Make a copy for use during verification since we std::move() it below.
-  auto expected_result_copy =
-      std::make_unique<ParentAccessDialog::Result>(*expected_result);
 
   // Create the callback.
   ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
       [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
-        EXPECT_TRUE(DialogResultsEqual(*result, *expected_result_copy));
+        EXPECT_TRUE(DialogResultsEqual(*result, expected_result));
         run_loop.Quit();
       });
 
@@ -114,8 +110,138 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetResultAndClose) {
       std::move(callback));
 
   // Set the result.
-  ParentAccessDialog::GetInstance()->SetResultAndClose(
-      std::move(expected_result));
+  ParentAccessDialog::GetInstance()->SetApproved(
+      expected_result.parent_access_token,
+      expected_result.parent_access_token_expire_timestamp);
+
+  run_loop.Run();
+
+  // The dialog instance should be gone after SetResult() is called.
+  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
+}
+
+// Verify that the dialog is closed on Decline.
+IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetDeclined) {
+  base::RunLoop run_loop;
+
+  ParentAccessDialog::Result expected_result;
+  expected_result.status = ParentAccessDialog::Result::Status::kDeclined;
+
+  // Create the callback.
+  ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+        EXPECT_TRUE(DialogResultsEqual(*result, expected_result));
+        run_loop.Quit();
+      });
+
+  // Show the dialog.
+  ParentAccessDialogProvider provider;
+  provider.Show(
+      parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())),
+      std::move(callback));
+
+  // Set the result.
+  ParentAccessDialog::GetInstance()->SetDeclined();
+
+  run_loop.Run();
+
+  // The dialog instance should be gone after SetResult() is called.
+  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
+}
+
+// Verify that the dialog is closed on Cancel.
+IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetCanceled) {
+  base::RunLoop run_loop;
+
+  ParentAccessDialog::Result expected_result;
+  expected_result.status = ParentAccessDialog::Result::Status::kCancelled;
+
+  // Create the callback.
+  ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+        EXPECT_TRUE(DialogResultsEqual(*result, expected_result));
+        run_loop.Quit();
+      });
+
+  // Show the dialog.
+  ParentAccessDialogProvider provider;
+  provider.Show(
+      parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())),
+      std::move(callback));
+
+  // Set the result.
+  ParentAccessDialog::GetInstance()->SetCanceled();
+
+  run_loop.Run();
+
+  // The dialog instance should be gone after SetResult() is called.
+  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
+}
+
+// Verify that the dialog is closed on Cancel.
+IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetError) {
+  base::RunLoop run_loop;
+
+  ParentAccessDialog::Result expected_result;
+  expected_result.status = ParentAccessDialog::Result::Status::kError;
+
+  // Create the callback.
+  ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+        EXPECT_TRUE(DialogResultsEqual(*result, expected_result));
+        run_loop.Quit();
+      });
+
+  // Show the dialog.
+  ParentAccessDialogProvider provider;
+  provider.Show(
+      parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())),
+      std::move(callback));
+
+  // Set the result.
+  ParentAccessDialog::GetInstance()->SetError();
+
+  run_loop.Run();
+
+  // The dialog instance should be gone after SetResult() is called.
+  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
+}
+
+// Verify that if dialog is destroyed without a Result,  it reports being
+// canceled.
+IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, DestroyedWithoutResult) {
+  base::RunLoop run_loop;
+
+  ParentAccessDialog::Result expected_result;
+  expected_result.status = ParentAccessDialog::Result::Status::kCancelled;
+
+  // Create the callback.
+  ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+        EXPECT_TRUE(DialogResultsEqual(*result, expected_result));
+        run_loop.Quit();
+      });
+
+  // Show the dialog.
+  ParentAccessDialogProvider provider;
+  provider.Show(
+      parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())),
+      std::move(callback));
+
+  // Set the result.
+  ParentAccessDialog::GetInstance()->Close();
 
   run_loop.Run();
 

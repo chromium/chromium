@@ -2886,6 +2886,7 @@ static_library("ui") {
       "webui/ash/parent_access/parent_access_dialog.h",
       "webui/ash/parent_access/parent_access_ui.cc",
       "webui/ash/parent_access/parent_access_ui.h",
+      "webui/ash/parent_access/parent_access_ui_handler_delegate.h",
       "webui/ash/parent_access/parent_access_ui_handler_impl.cc",
       "webui/ash/parent_access/parent_access_ui_handler_impl.h",
       "webui/ash/power_ui.cc",

@@ -11,15 +11,16 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
 namespace ash {
 
-// Dialog which embeds the Parent Access UI, which verifies a parent during
-// a child session.
-class ParentAccessDialog : public SystemWebDialogDelegate {
+// Dialog which embeds the Parent Access UI, which verifies a
+// parent during a child session.
+class ParentAccessDialog : public ParentAccessUIHandlerDelegate,
+                           public SystemWebDialogDelegate {
  public:
-  // The result of the parent access request, passed back to the caller.
   struct Result {
     // The status of the result.
     enum class Status {
@@ -50,16 +51,17 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   bool ShouldCloseDialogOnEscape() const override;
 
-  // Makes a copy of the ParentAccessParams. The ParentAccessDialog should
-  // maintain one copy of the parent_access_params_ object, which is why a clone
-  // is made, instead of transferring ownership to the caller.
-  parent_access_ui::mojom::ParentAccessParamsPtr CloneParentAccessParams();
+  // ParentAccessUIHandlerDelegate:
+  parent_access_ui::mojom::ParentAccessParamsPtr CloneParentAccessParams()
+      override;
+  void SetApproved(const std::string& parent_access_token,
+                   const base::Time& expire_timestamp) override;
+  void SetDeclined() override;
+  void SetCanceled() override;
+  void SetError() override;
 
-  // Used by the ParentAccessUI to set the result of the Parent Access
-  // request and close the dialog.
-  void SetResultAndClose(std::unique_ptr<ParentAccessDialog::Result> result);
-
-  parent_access_ui::mojom::ParentAccessParams* GetParentAccessParamsForTest();
+  parent_access_ui::mojom::ParentAccessParams* GetParentAccessParamsForTest()
+      const;
 
   explicit ParentAccessDialog(
       parent_access_ui::mojom::ParentAccessParamsPtr params,
@@ -69,15 +71,18 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
   ~ParentAccessDialog() override;
 
  private:
+  void CloseWithResult(std::unique_ptr<Result> result);
+
   parent_access_ui::mojom::ParentAccessParamsPtr parent_access_params_;
   Callback callback_;
 
-  // The Parent Access result.  Set by the ParentAccessUI
+  // The Parent Access Dialog result passed back to the caller when the dialog
+  // completes.
   std::unique_ptr<Result> result_;
 };
 
-// Interface that provides the ParentAccessDialog. The provider
-// should be used to show the dialog.  The default implementation
+// Interface that provides the ParentAccessDialog to external clients.
+// The provider should be used to show the dialog.  The default implementation
 // is can be overridden by tests to provide a fake implementation like this:
 //
 // class FakeParentAccessDialogProvider
@@ -86,6 +91,7 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
 //  ParentAccessDialogProvider::ShowError Show(
 //      parent_access_ui::mojom::ParentAccessParamsPtr params,
 //      ash::ParentAccessDialog::Callback callback) override {}
+// }
 class ParentAccessDialogProvider {
  public:
   // Error state returned by the Show() function.

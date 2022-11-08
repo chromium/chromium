@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -33,8 +34,8 @@ class ParentAccessUIHandlerImpl
   ParentAccessUIHandlerImpl(
       mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
           receiver,
-      content::WebUI* web_ui,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      ParentAccessUIHandlerDelegate* delegate);
   ParentAccessUIHandlerImpl(const ParentAccessUIHandlerImpl&) = delete;
   ParentAccessUIHandlerImpl& operator=(const ParentAccessUIHandlerImpl&) =
       delete;
@@ -65,7 +66,9 @@ class ParentAccessUIHandlerImpl
   // Used to fetch OAuth2 access tokens.
   signin::IdentityManager* identity_manager_ = nullptr;
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
-
+  // Not owned by this class, and provided by the class's creator.  Can be null
+  // if the handler is created without a dialog.
+  ParentAccessUIHandlerDelegate* delegate_ = nullptr;
   mojo::Receiver<parent_access_ui::mojom::ParentAccessUIHandler> receiver_;
 
   // The Parent Access Token.  Only set if the parent was verified.

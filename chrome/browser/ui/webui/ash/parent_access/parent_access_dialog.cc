@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 
+#include <memory>
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
@@ -36,7 +37,7 @@ ParentAccessDialogProvider::ShowError ParentAccessDialogProvider::Show(
   }
 
   DCHECK(ParentAccessDialog::GetInstance() == nullptr);
-  // Note:  |dialog_|'s memory is freed when
+  // Note:  |dialog|'s memory is freed when
   // SystemWebDialogDelegate::OnDialogClosed() is called.
   ParentAccessDialog* dialog =
       new ParentAccessDialog(std::move(params), std::move(callback));
@@ -68,17 +69,35 @@ ParentAccessDialog::CloneParentAccessParams() {
   return parent_access_params_->Clone();
 }
 
-void ParentAccessDialog::SetResultAndClose(
-    std::unique_ptr<ParentAccessDialog::Result> result) {
-  DCHECK(!result_);
-  result_ = std::move(result);
-  // This will trigger dialog destruction, which will in turn result in the
-  // callback being called.
-  Close();
+void ParentAccessDialog::SetApproved(const std::string& parent_access_token,
+                                     const base::Time& expire_timestamp) {
+  auto result = std::make_unique<ParentAccessDialog::Result>();
+  result->status = ParentAccessDialog::Result::Status::kApproved;
+  result->parent_access_token = parent_access_token;
+  result->parent_access_token_expire_timestamp = expire_timestamp;
+  CloseWithResult(std::move(result));
+}
+
+void ParentAccessDialog::SetDeclined() {
+  auto result = std::make_unique<ParentAccessDialog::Result>();
+  result->status = ParentAccessDialog::Result::Status::kDeclined;
+  CloseWithResult(std::move(result));
+}
+
+void ParentAccessDialog::SetCanceled() {
+  auto result = std::make_unique<ParentAccessDialog::Result>();
+  result->status = ParentAccessDialog::Result::Status::kCancelled;
+  CloseWithResult(std::move(result));
+}
+
+void ParentAccessDialog::SetError() {
+  auto result = std::make_unique<ParentAccessDialog::Result>();
+  result->status = ParentAccessDialog::Result::Status::kError;
+  CloseWithResult(std::move(result));
 }
 
 parent_access_ui::mojom::ParentAccessParams*
-ParentAccessDialog::GetParentAccessParamsForTest() {
+ParentAccessDialog::GetParentAccessParamsForTest() const {
   return parent_access_params_.get();
 }
 
@@ -95,6 +114,14 @@ ParentAccessDialog::~ParentAccessDialog() {
       result_ ? std::move(result_)
               /* default status is kCancelled */
               : std::make_unique<ParentAccessDialog::Result>());
+}
+
+void ParentAccessDialog::CloseWithResult(
+    std::unique_ptr<ParentAccessDialog::Result> result) {
+  result_ = std::move(result);
+  // This will trigger dialog destruction, which will in turn result in the
+  // callback being called.
+  Close();
 }
 
 }  // namespace ash

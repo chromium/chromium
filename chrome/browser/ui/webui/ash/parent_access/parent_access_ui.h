@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom-forward.h"
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/webui_config.h"
@@ -20,6 +19,7 @@
 namespace ash {
 
 class ParentAccessUI;
+class ParentAccessUIHandler;
 
 // WebUIConfig for chrome://parent-access
 class ParentAccessUIConfig

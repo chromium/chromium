@@ -4108,8 +4108,6 @@ if (!is_android) {
         "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.cc",
         "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h",
         "../browser/ui/webui/ash/parent_access/parent_access_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/parent_access/parent_access_ui_browsertest.cc",
-        "../browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl_browsertest.cc",
         "../browser/ui/webui/ash/smb_shares/smb_credentials_dialog_browsertest.cc",
         "../browser/ui/webui/ash/system_web_dialog_browsertest.cc",
         "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
@@ -8244,6 +8242,7 @@ test("unit_tests") {
         "../browser/media_galleries/chromeos/mtp_device_object_enumerator_unittest.cc",
         "../browser/policy/restricted_mgs_policy_provider_ash_unittest.cc",
         "../browser/ui/webui/about_ui_unittest.cc",
+        "../browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl_unittest.cc",
         "../common/chromeos/extensions/chromeos_system_extension_info_unittest.cc",
         "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
         "../renderer/extensions/api/accessibility_private_hooks_delegate_unittest.cc",
@@ -8251,6 +8250,7 @@ test("unit_tests") {
 
       deps += [
         "//chrome/browser/ash/system_web_apps:unit_tests",
+        "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
         "//chrome/common/chromeos/extensions",
         "//chromeos/ash/components/dbus/image_burner",
         "//content/public/browser",

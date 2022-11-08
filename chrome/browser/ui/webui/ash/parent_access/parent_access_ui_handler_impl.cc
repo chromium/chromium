@@ -27,9 +27,10 @@ namespace ash {
 ParentAccessUIHandlerImpl::ParentAccessUIHandlerImpl(
     mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
         receiver,
-    content::WebUI* web_ui,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    ParentAccessUIHandlerDelegate* delegate)
     : identity_manager_(identity_manager),
+      delegate_(delegate),
       receiver_(this, std::move(receiver)) {}
 
 ParentAccessUIHandlerImpl::~ParentAccessUIHandlerImpl() = default;
@@ -76,39 +77,43 @@ void ParentAccessUIHandlerImpl::OnAccessTokenFetchComplete(
 
 void ParentAccessUIHandlerImpl::GetParentAccessParams(
     GetParentAccessParamsCallback callback) {
-  std::move(callback).Run(
-      ParentAccessDialog::GetInstance()->CloneParentAccessParams());
+  if (!delegate_) {
+    LOG(ERROR) << "Delegate not available in ParentAccessUIHandler - WebUI was "
+                  "probably created without a dialog";
+    return;
+  }
+  std::move(callback).Run(delegate_->CloneParentAccessParams());
   return;
 }
 
 void ParentAccessUIHandlerImpl::OnParentAccessDone(
     parent_access_ui::mojom::ParentAccessResult result,
     OnParentAccessDoneCallback callback) {
-  auto dialog_result = std::make_unique<ParentAccessDialog::Result>();
-
+  if (!delegate_) {
+    LOG(ERROR) << "Delegate not available in ParentAccessUIHandler - WebUI was "
+                  "probably created without a dialog";
+    return;
+  }
   switch (result) {
     case parent_access_ui::mojom::ParentAccessResult::kApproved:
       DCHECK(parent_access_token_);
-      dialog_result->status = ParentAccessDialog::Result::Status::kApproved;
-      dialog_result->parent_access_token = parent_access_token_->token();
-      // Only keep the seconds, not the nanoseconds.
-      dialog_result->parent_access_token_expire_timestamp =
+      delegate_->SetApproved(
+          parent_access_token_->token(),
+          // Only keep the seconds, not the nanoseconds.
           base::Time::FromDoubleT(
-              parent_access_token_->expire_time().seconds());
+              parent_access_token_->expire_time().seconds()));
       break;
     case parent_access_ui::mojom::ParentAccessResult::kDeclined:
-      dialog_result->status = ParentAccessDialog::Result::Status::kDeclined;
+      delegate_->SetDeclined();
       break;
     case parent_access_ui::mojom::ParentAccessResult::kCancelled:
-      dialog_result->status = ParentAccessDialog::Result::Status::kCancelled;
+      delegate_->SetCanceled();
       break;
     case parent_access_ui::mojom::ParentAccessResult::kError:
-      dialog_result->status = ParentAccessDialog::Result::Status::kError;
+      delegate_->SetError();
       break;
   }
 
-  ParentAccessDialog::GetInstance()->SetResultAndClose(
-      std::move(dialog_result));
   std::move(callback).Run();
 }
 
