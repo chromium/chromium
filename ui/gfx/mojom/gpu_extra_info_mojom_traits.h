@@ -6,11 +6,12 @@
 #define UI_GFX_MOJOM_GPU_EXTRA_INFO_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/gpu_extra_info.mojom-shared.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 #define USE_OZONE_PLATFORM_X11

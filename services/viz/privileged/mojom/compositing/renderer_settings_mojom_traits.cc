@@ -54,7 +54,7 @@ bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
     return false;
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   if (!data.ReadOverlayStrategies(&out->overlay_strategies))
     return false;
 #endif

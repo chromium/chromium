@@ -24,7 +24,7 @@ enum ClipboardBuffer {
   // Used on platforms like the X Window System that treat selection
   // as a type of clipboard.
   // TODO(crbug.com/676224): When preprocessing of mojom is available only
-  // define this value for USE_OZONE.
+  // define this value for EnableIf=use_ozone.
   kSelection,
 };
 

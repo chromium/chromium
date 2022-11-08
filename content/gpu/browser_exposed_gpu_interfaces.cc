@@ -4,11 +4,12 @@
 
 #include "content/gpu/browser_exposed_gpu_interfaces.h"
 
+#include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/gpu/content_gpu_client.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -23,7 +24,7 @@ void ExposeGpuInterfacesToBrowser(
         gpu_preferences, gpu_workarounds, binders);
   }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()->AddInterfaces(binders);
 #endif
 }

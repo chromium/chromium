@@ -12,7 +12,7 @@
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "components/viz/common/display/overlay_strategy.h"
 #endif
 
@@ -107,7 +107,7 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
   }
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   static std::vector<viz::OverlayStrategy> overlay_strategies(
       const viz::RendererSettings& input) {
     return input.overlay_strategies;

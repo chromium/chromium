@@ -15,7 +15,7 @@
 #include "gpu/ipc/common/gpu_preferences.mojom-shared.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "base/message_loop/message_pump_type.h"
 #include "mojo/public/cpp/base/message_pump_type_mojom_traits.h"
 #endif
@@ -253,7 +253,7 @@ struct GPU_EXPORT
         prefs.enable_gpu_blocked_time_metric();
     out->enable_perf_data_collection = prefs.enable_perf_data_collection();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     if (!prefs.ReadMessagePumpType(&out->message_pump_type))
       return false;
 #endif
@@ -445,7 +445,7 @@ struct GPU_EXPORT
   static bool enable_perf_data_collection(const gpu::GpuPreferences& prefs) {
     return prefs.enable_perf_data_collection;
   }
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   static base::MessagePumpType message_pump_type(
       const gpu::GpuPreferences& prefs) {
     return prefs.message_pump_type;

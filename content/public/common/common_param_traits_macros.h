@@ -144,7 +144,7 @@ IPC_STRUCT_TRAITS_BEGIN(blink::RendererPreferences)
   IPC_STRUCT_TRAITS_MEMBER(arrow_bitmap_height_vertical_scroll_bar_in_dips)
   IPC_STRUCT_TRAITS_MEMBER(arrow_bitmap_width_horizontal_scroll_bar_in_dips)
 #endif
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   IPC_STRUCT_TRAITS_MEMBER(selection_clipboard_buffer_available)
 #endif
 IPC_STRUCT_TRAITS_END()

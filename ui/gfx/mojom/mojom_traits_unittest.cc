@@ -29,7 +29,7 @@ namespace gfx {
 namespace {
 
 gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
-#if defined(USE_OZONE) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE)
   return static_cast<gfx::AcceleratedWidget>(i);
 #else
   return reinterpret_cast<gfx::AcceleratedWidget>(i);
@@ -174,7 +174,7 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   base::UnsafeSharedMemoryRegion output_memory = std::move(output.region);
   EXPECT_TRUE(output_memory.Map().IsValid());
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
   gfx::GpuMemoryBufferHandle handle2;
   const uint64_t kSize = kOffset + kStride;
   handle2.type = gfx::NATIVE_PIXMAP;

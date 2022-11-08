@@ -99,7 +99,7 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   out->arrow_bitmap_width_horizontal_scroll_bar_in_dips =
       data.arrow_bitmap_width_horizontal_scroll_bar_in_dips();
 #endif
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   out->selection_clipboard_buffer_available =
       data.selection_clipboard_buffer_available();
 #endif

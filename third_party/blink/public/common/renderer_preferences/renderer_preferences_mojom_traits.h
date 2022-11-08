@@ -164,7 +164,7 @@ struct BLINK_COMMON_EXPORT
   }
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   static const bool& selection_clipboard_buffer_available(
       const ::blink::RendererPreferences& data) {
     return data.selection_clipboard_buffer_available;
