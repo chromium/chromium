@@ -279,8 +279,17 @@ DOMMatrix* DOMMatrix::perspectiveSelf(double p) {
 }
 
 DOMMatrix* DOMMatrix::invertSelf() {
-  if (matrix_.GetInverse(&matrix_))
+  // TODO(crbug.com/1359528): Let gfx::Transform::GetInverse() preserve
+  // 2d status and avoid the following block.
+  if (is2d_) {
+    AffineTransform affine_transform = matrix_.ToAffineTransform();
+    if (affine_transform.IsInvertible()) {
+      matrix_ = TransformationMatrix(affine_transform.Inverse());
+      return this;
+    }
+  } else if (matrix_.GetInverse(&matrix_)) {
     return this;
+  }
 
   SetNAN();
   SetIs2D(false);
