@@ -647,7 +647,10 @@ instrumented_library("libsecret") {
 
 instrumented_library("libssl1.1") {
   build_method = "debian"
-  patches = [ "patches/libssl1.1.diff" ]
+  patches = [
+    "patches/libssl1.1.diff",
+    "patches/libssl1.1-2.diff",
+  ]
 }
 
 instrumented_library("libtasn1-3") {
