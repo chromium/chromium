@@ -106,6 +106,7 @@ source_set("password_ui") {
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings:settings_root_categories",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",

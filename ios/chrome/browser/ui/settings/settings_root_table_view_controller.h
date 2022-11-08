@@ -22,11 +22,16 @@
 // Delete button for the toolbar.
 @property(nonatomic, strong, readonly) UIBarButtonItem* deleteButton;
 
-// Add button for the toolbar.
-@property(nonatomic, strong, readonly) UIBarButtonItem* addButtonInToolbar;
+// Custom left button for the toolbar.
+// Return a non nil value to provide a custom button displayed on the left
+// side of the toolbar. Default is nil.
+@property(nonatomic, strong, readonly) UIBarButtonItem* customLeftToolbarButton;
 
-// Settings button for the toolbar.
-@property(nonatomic, strong, readonly) UIBarButtonItem* settingsButtonInToolbar;
+// Custom right button for the toolbar.
+// Return a non nil value to provide a custom button displayed on the right
+// side of the toolbar. Default is nil.
+@property(nonatomic, strong, readonly)
+    UIBarButtonItem* customRightToolbarButton;
 
 // Whether this table view controller should hide the "Done" button (the right
 // navigation bar button). Default is NO.
@@ -35,16 +40,6 @@
 // Whether this table view controller should hide the "Done" button (the right
 // navigation bar button) on edit. Default is NO.
 @property(nonatomic, assign) BOOL shouldDisableDoneButtonOnEdit;
-
-// Whether this table view controller should show the "Add" button in the
-// toolbar(bottom left). Cannot be set to YES if
-// `shouldShowSettingsButtonInToolbar` is already enabled. Default is NO.
-@property(nonatomic, assign) BOOL shouldShowAddButtonInToolbar;
-
-// Whether this table view controller should show the "Settings" button in the
-// toolbar(bottom left). Cannot be set to YES if `shouldShowAddButtonInToolbar`
-// is already enabled. Default is NO.
-@property(nonatomic, assign) BOOL shouldShowSettingsButtonInToolbar;
 
 // Whether this table view controller should show the "Delete" button in the
 // toolbar(bottom left) in edit mode. Default is YES. Set in `viewDidLoad`.
@@ -57,10 +52,12 @@
 // setEditing:animated: method instead of being manually triggered.
 - (void)updateUIForEditState;
 
-// Updates the edit or done button to reflect editing state in the toolbar.
-// Shows Add button in the left end if `shouldShowAddButtonInToolbar` is YES. In
-// edit state, the left end shows the Delete button and the right end shows
-// Done.
+// Updates the buttons in the toolbar to reflect its editing state.
+// If `customLeftToolbarButton` or `customRightToolbarButton` are non nil, they
+// are displayed on the toolbar. In the absence of custom buttons and in edit
+// state, the left end shows the Delete button and the right end shows Done. In
+// no edit state and no custom buttons, the edit button is displayed on the
+// right end.
 - (void)updatedToolbarForEditState;
 
 // Reloads the table view model with `loadModel` and then reloads the
@@ -120,10 +117,6 @@
 // Called when the add button in the toolbar is pressed. Subclasses must
 // override this method if `shouldShowAddButtonInToolbar` is set to YES.
 - (void)addButtonCallback;
-
-// Called when the add button in the toolbar is pressed. Subclasses must
-// override this method if `shouldShowSettingsButtonInToolbar` is set to YES.
-- (void)settingsButtonCallback;
 
 @end
 

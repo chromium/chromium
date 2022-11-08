@@ -43,6 +43,23 @@ source_set("settings_root_constants") {
   deps = [ "//base" ]
 }
 
+source_set("settings_root_categories") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "settings_root_table_view_controller+toolbar_add.h",
+    "settings_root_table_view_controller+toolbar_add.mm",
+    "settings_root_table_view_controller+toolbar_settings.h",
+    "settings_root_table_view_controller+toolbar_settings.mm",
+  ]
+  deps = [
+    ":settings_root",
+    ":settings_root_constants",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("settings") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

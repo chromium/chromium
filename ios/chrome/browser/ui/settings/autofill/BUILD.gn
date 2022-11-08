@@ -52,6 +52,7 @@ source_set("autofill") {
     "//ios/chrome/browser/ui/qr_scanner",
     "//ios/chrome/browser/ui/scanner",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings:settings_root_categories",
     "//ios/chrome/browser/ui/settings/autofill/cells",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",

@@ -303,6 +303,12 @@ id<GREYMatcher> AddPasswordButton() {
   return grey_accessibilityID(kAddPasswordButtonId);
 }
 
+// Returns matcher for the "Add Password" toolbar button located at the bottom
+// of the screen.
+id<GREYMatcher> AddPasswordToolbarButton() {
+  return grey_accessibilityID(kSettingsToolbarAddButtonId);
+}
+
 // Returns matcher for the "Save" button in the "Add Password" view.
 id<GREYMatcher> AddPasswordSaveButton() {
   return grey_accessibilityID(kPasswordsAddPasswordSaveButtonId);
@@ -699,11 +705,11 @@ id<GREYMatcher> EditDoneButton() {
   [GetInteractionForPasswordEntry(@"example.com, concrete username")
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
-  // Finally, verify that the Edit button is visible and disabled, because there
+  // Finally, verify that the Add button is visible and enabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
-                                   grey_sufficientlyVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -760,11 +766,11 @@ id<GREYMatcher> EditDoneButton() {
   [GetInteractionForPasswordEntry(@"example.com, concrete username")
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
-  // Finally, verify that the Edit button is visible and disabled, because there
+  // Finally, verify that the Add button is visible and enabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
-                                   grey_sufficientlyVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -809,11 +815,11 @@ id<GREYMatcher> EditDoneButton() {
   [GetInteractionForPasswordEntry(@"secret.com")
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
-  // Finally, verify that the Edit button is visible and disabled, because there
+  // Finally, verify that the Add button is visible and enabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
-                                   grey_sufficientlyVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -1323,7 +1329,7 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
 }
 
-// Checks that if all passwords are deleted in the list view, the disabled Edit
+// Checks that if all passwords are deleted in the list view, the enabled Add
 // button replaces the Done button.
 - (void)testEditButtonUpdateOnDeletion {
   // Save a password to be deleted later.
@@ -1340,10 +1346,10 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
       performAction:grey_tap()];
 
-  // Verify that the Edit button is visible and disabled.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
-                                   grey_sufficientlyVisible(), nil)];
+  // Verify that the Add button is visible and enabled.
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -1811,11 +1817,11 @@ id<GREYMatcher> EditDoneButton() {
   GREYAssertEqual(0, [PasswordSettingsAppInterface passwordStoreResultsCount],
                   @"Stored password was not removed from PasswordStore.");
 
-  // Finally, verify that the Edit button is visible and disabled, because there
+  // Finally, verify that the Add button is visible and enabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
-                                   grey_sufficientlyVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -1849,6 +1855,50 @@ id<GREYMatcher> EditDoneButton() {
 
   // Press "Add".
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Fill form.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailWebsite()]
+      performAction:grey_replaceText(@"https://www.example.com")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_replaceText(@"new username")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"new password")];
+
+  // The "Add" button is enabled after site and password have been entered.
+  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+      assertWithMatcher:grey_enabled()];
+
+  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+      performAction:grey_tap()];
+
+  [GetInteractionForPasswordEntry(@"example.com, new username")
+      performAction:grey_tap()];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  TapEdit();
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(@"new password")];
+}
+
+// Tests the add password flow from the toolbar button.
+- (void)testAddNewPasswordCredential {
+  OpenPasswordManager();
+
+  // Press "Add".
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
@@ -2055,16 +2105,14 @@ id<GREYMatcher> EditDoneButton() {
 
 // Tests that the error message is shown when the top-level domain is missing
 // when adding a new credential.
-// TODO(crbug.com/1335156): Enable once the Add button is added to the
-// Pasword Manager Empty state.
-- (void)DISABLED_testTLDMissingMessage {
+- (void)testTLDMissingMessage {
   OpenPasswordManager();
   [PasswordSettingsAppInterface setUpMockReauthenticationModuleForExport];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   // Press "Add".
-  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
       performAction:grey_tap()];
 
   // Fill form.

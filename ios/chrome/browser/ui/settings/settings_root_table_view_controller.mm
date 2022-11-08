@@ -48,12 +48,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 // Delete button for the toolbar.
 @property(nonatomic, strong) UIBarButtonItem* deleteButton;
 
-// Add button for the toolbar.
-@property(nonatomic, strong) UIBarButtonItem* addButtonInToolbar;
-
-// Settings button for the toolbar.
-@property(nonatomic, strong) UIBarButtonItem* settingsButtonInToolbar;
-
 // Item displayed before the user interactions are prevented. This is used to
 // store the item while the interaction is prevented.
 @property(nonatomic, strong) UIBarButtonItem* savedBarButtonItem;
@@ -106,32 +100,30 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     return;
   }
 
-  // `shouldShowAddButtonInToolbar` and `shouldShowSettingsButtonInToolbar`
-  // should not both be YES at the same time, as they conflict with each other
-  // (both occupy the same space in the toolbar).
-  DCHECK(!(self.shouldShowAddButtonInToolbar &&
-           self.shouldShowSettingsButtonInToolbar));
-
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
                            action:nil];
 
   UIBarButtonItem* toolbarLeftButton = flexibleSpace;
-  if (self.tableView.editing && self.shouldShowDeleteButtonInToolbar) {
+  if (self.customLeftToolbarButton) {
+    toolbarLeftButton = self.customLeftToolbarButton;
+  } else if (self.tableView.editing && self.shouldShowDeleteButtonInToolbar) {
     toolbarLeftButton = self.deleteButton;
-  } else if (self.shouldShowAddButtonInToolbar) {
-    toolbarLeftButton = self.addButtonInToolbar;
-  } else if (self.shouldShowSettingsButtonInToolbar) {
-    toolbarLeftButton = self.settingsButtonInToolbar;
   }
 
-  UIBarButtonItem* editOrDoneButton =
-      self.tableView.editing ? [self createEditModeDoneButtonForToolbar:YES]
-                             : [self createEditButtonForToolbar:YES];
+  UIBarButtonItem* toolbarRightButton = flexibleSpace;
+  if (self.customRightToolbarButton) {
+    toolbarRightButton = self.customRightToolbarButton;
+  } else if (self.tableView.editing) {
+    toolbarRightButton = [self createEditModeDoneButtonForToolbar:YES];
+  } else {
+    toolbarRightButton = [self createEditButtonForToolbar:YES];
+  }
 
-  [self setToolbarItems:@[ toolbarLeftButton, flexibleSpace, editOrDoneButton ]
-               animated:YES];
+  [self
+      setToolbarItems:@[ toolbarLeftButton, flexibleSpace, toolbarRightButton ]
+             animated:YES];
 
   if (self.tableView.editing) {
     self.deleteButton.enabled = NO;
@@ -156,32 +148,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     _deleteButton.tintColor = [UIColor colorNamed:kRedColor];
   }
   return _deleteButton;
-}
-
-- (UIBarButtonItem*)addButtonInToolbar {
-  if (!_addButtonInToolbar) {
-    _addButtonInToolbar = [[UIBarButtonItem alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_TOOLBAR_ADD)
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(addButtonCallback)];
-    _addButtonInToolbar.accessibilityIdentifier = kSettingsToolbarAddButtonId;
-  }
-  return _addButtonInToolbar;
-}
-
-- (UIBarButtonItem*)settingsButtonInToolbar {
-  if (!_settingsButtonInToolbar) {
-    _settingsButtonInToolbar = [[UIBarButtonItem alloc]
-        initWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_TOOLBAR_SETTINGS_SUBMENU)
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(settingsButtonCallback)];
-    _settingsButtonInToolbar.accessibilityIdentifier =
-        kSettingsToolbarSettingsButtonId;
-  }
-  return _settingsButtonInToolbar;
 }
 
 #pragma mark - UIViewController
@@ -454,16 +420,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   }
   self.savedBarButtonItem = nil;
   self.savedBarButtonItemPosition = kUndefinedBarButtonItemPosition;
-}
-
-- (void)addButtonCallback {
-  // Subclasses should implement.
-  NOTREACHED();
-}
-
-- (void)settingsButtonCallback {
-  // Subclasses should implement.
-  NOTREACHED();
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

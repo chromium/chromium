@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_card_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -86,6 +87,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong)
     AutofillAddCreditCardCoordinator* addCreditCardCoordinator;
 
+// Add button for the toolbar.
+@property(nonatomic, strong) UIBarButtonItem* addButtonInToolbar;
+
 @end
 
 @implementation AutofillCreditCardTableViewController
@@ -121,8 +125,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.tableView.accessibilityIdentifier = kAutofillCreditCardTableViewId;
   self.navigationController.toolbar.accessibilityIdentifier =
       kAutofillPaymentMethodsToolbarId;
-  self.shouldShowAddButtonInToolbar = YES;
-  self.addButtonInToolbar.enabled = [self isAutofillCreditCardEnabled];
   [self updateUIForEditState];
   [self loadModel];
 }
@@ -285,8 +287,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updatedToolbarForEditState];
 }
 
-- (void)addButtonCallback {
-  [self handleAddPayment];
+- (UIBarButtonItem*)customLeftToolbarButton {
+  if (self.tableView.isEditing) {
+    return nil;
+  }
+
+  return self.addButtonInToolbar;
 }
 
 #pragma mark - Actions
@@ -546,6 +552,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)didTapLinkURL:(NSURL*)URL {
   [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
+}
+
+#pragma mark - Private
+
+// Returns a toolbar button for starting the "Add Credit Card" flow.
+- (UIBarButtonItem*)addButtonInToolbar {
+  if (!_addButtonInToolbar) {
+    _addButtonInToolbar =
+        [self addButtonWithAction:@selector(addButtonCallback)];
+    _addButtonInToolbar.enabled = [self isAutofillCreditCardEnabled];
+  }
+  return _addButtonInToolbar;
+}
+
+- (void)addButtonCallback {
+  [self handleAddPayment];
 }
 
 @end
