@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DriveCommon.Lifecycle.Mount" enum="DriveMountStatus"
-    expires_after="M112">
+    expires_after="2023-05-07">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Records outcomes of attempts to mount Google Drive.</summary>
@@ -961,7 +961,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="FileBrowser.ZipTask.Time" units="ms" expires_after="M112">
+<histogram name="FileBrowser.ZipTask.Time" units="ms"
+    expires_after="2023-05-07">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

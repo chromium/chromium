@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.Browser.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2023-03-05">
+    units="microseconds" expires_after="2023-05-07">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu@google.com</owner>
   <summary>
@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState" enum="GpuImageUsageState"
-    expires_after="2023-03-05">
+    expires_after="2023-05-07">
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.CachePeakUsagePercent"
-    units="units" expires_after="2023-03-05">
+    units="units" expires_after="2023-05-07">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2023-03-05">
+    enum="BooleanWasted" expires_after="2023-05-07">
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState" enum="GpuImageUsageState"
-    expires_after="2023-03-05">
+    expires_after="2023-05-07">
   <owner>khushalsagar@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
