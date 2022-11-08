@@ -42,6 +42,20 @@ struct ThreadCacheStats {
 #endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
 };
 
+// Per-thread allocation statistics. Only covers allocations made through the
+// partition linked to the thread cache. As the allocator doesn't record
+// requested sizes in most cases, the data there will be an overestimate of the
+// actually requested sizes. It is also not expected to sum up to anything
+// meaningful across threads, due to the lack of synchronization. Figures there
+// are cumulative, not net. Since the data below is per-thread, note a thread
+// can deallocate more than it allocated.
+struct ThreadAllocStats {
+  uint64_t alloc_count;
+  uint64_t alloc_total_size;
+  uint64_t dealloc_count;
+  uint64_t dealloc_total_size;
+};
+
 // Struct used to retrieve total memory usage of a partition. Used by
 // PartitionStatsDumper implementation.
 struct PartitionMemoryStats {
@@ -58,8 +72,8 @@ struct PartitionMemoryStats {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   size_t
       total_brp_quarantined_bytes;  // Total bytes that are quarantined by BRP.
-  size_t total_brp_quarantined_count;  // Total number of slots that are
-                                       // quarantined by BRP.
+  size_t total_brp_quarantined_count;       // Total number of slots that are
+                                            // quarantined by BRP.
   size_t cumulative_brp_quarantined_bytes;  // Cumulative bytes that are
                                             // quarantined by BRP.
   size_t cumulative_brp_quarantined_count;  // Cumulative number of slots that
@@ -86,16 +100,16 @@ struct PartitionBucketMemoryStats {
   uint32_t allocated_slot_span_size;  // Total size the slot span allocated
                                       // from the system (committed pages).
   uint32_t active_bytes;              // Total active bytes used in the bucket.
-  uint32_t active_count;  // Total active objects allocated in the bucket.
-  uint32_t resident_bytes;            // Total bytes provisioned in the bucket.
-  uint32_t decommittable_bytes;       // Total bytes that could be decommitted.
-  uint32_t discardable_bytes;         // Total bytes that could be discarded.
-  uint32_t num_full_slot_spans;       // Number of slot spans with all slots
-                                      // allocated.
-  uint32_t num_active_slot_spans;     // Number of slot spans that have at least
-                                      // one provisioned slot.
-  uint32_t num_empty_slot_spans;      // Number of slot spans that are empty
-                                      // but not decommitted.
+  uint32_t active_count;    // Total active objects allocated in the bucket.
+  uint32_t resident_bytes;  // Total bytes provisioned in the bucket.
+  uint32_t decommittable_bytes;    // Total bytes that could be decommitted.
+  uint32_t discardable_bytes;      // Total bytes that could be discarded.
+  uint32_t num_full_slot_spans;    // Number of slot spans with all slots
+                                   // allocated.
+  uint32_t num_active_slot_spans;  // Number of slot spans that have at least
+                                   // one provisioned slot.
+  uint32_t num_empty_slot_spans;   // Number of slot spans that are empty
+                                   // but not decommitted.
   uint32_t num_decommitted_slot_spans;  // Number of slot spans that are empty
                                         // and decommitted.
 };

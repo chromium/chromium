@@ -1307,6 +1307,149 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
   }
 }
 
+TEST_P(PartitionAllocThreadCacheTest, AllocationRecording) {
+  // There is a cache.
+  auto* tcache = root_->thread_cache_for_testing();
+  EXPECT_TRUE(tcache);
+  tcache->ResetPerThreadAllocationStatsForTesting();
+
+  constexpr size_t kBucketedNotCached = 1 << 12;
+  constexpr size_t kDirectMapped = 4 * (1 << 20);
+  // Not a "nice" size on purpose, to check that the raw size accounting works.
+  const size_t kSingleSlot = internal::PartitionPageSize() + 1;
+
+  size_t expected_total_size = 0;
+  void* ptr = root_->Alloc(kSmallSize, "");
+  ASSERT_TRUE(ptr);
+  expected_total_size += root_->GetUsableSize(ptr);
+  void* ptr2 = root_->Alloc(kBucketedNotCached, "");
+  ASSERT_TRUE(ptr2);
+  expected_total_size += root_->GetUsableSize(ptr2);
+  void* ptr3 = root_->Alloc(kDirectMapped, "");
+  ASSERT_TRUE(ptr3);
+  expected_total_size += root_->GetUsableSize(ptr3);
+  void* ptr4 = root_->Alloc(kSingleSlot, "");
+  ASSERT_TRUE(ptr4);
+  expected_total_size += root_->GetUsableSize(ptr4);
+
+  EXPECT_EQ(4u, tcache->thread_alloc_stats().alloc_count);
+  EXPECT_EQ(expected_total_size, tcache->thread_alloc_stats().alloc_total_size);
+
+  root_->Free(ptr);
+  root_->Free(ptr2);
+  root_->Free(ptr3);
+  root_->Free(ptr4);
+
+  EXPECT_EQ(4u, tcache->thread_alloc_stats().alloc_count);
+  EXPECT_EQ(expected_total_size, tcache->thread_alloc_stats().alloc_total_size);
+  EXPECT_EQ(4u, tcache->thread_alloc_stats().dealloc_count);
+  EXPECT_EQ(expected_total_size,
+            tcache->thread_alloc_stats().dealloc_total_size);
+
+  auto stats = internal::GetAllocStatsForCurrentThread();
+  EXPECT_EQ(4u, stats.alloc_count);
+  EXPECT_EQ(expected_total_size, stats.alloc_total_size);
+  EXPECT_EQ(4u, stats.dealloc_count);
+  EXPECT_EQ(expected_total_size, stats.dealloc_total_size);
+}
+
+TEST_P(PartitionAllocThreadCacheTest, AllocationRecordingAligned) {
+  // There is a cache.
+  auto* tcache = root_->thread_cache_for_testing();
+  EXPECT_TRUE(tcache);
+  tcache->ResetPerThreadAllocationStatsForTesting();
+
+  // Aligned allocations take different paths depending on whether they are (in
+  // the same order as the test cases below):
+  // - Not really aligned (since alignment is always good-enough)
+  // - Already satisfied by PA's alignment guarantees
+  // - Requiring extra padding
+  // - Already satisfied by PA's alignment guarantees
+  // - In need of a special slot span (very large alignment)
+  // - Direct-mapped with large alignment
+  size_t alloc_count = 0;
+  size_t total_size = 0;
+  size_t size_alignments[][2] = {{128, 4},
+                                 {128, 128},
+                                 {1024, 128},
+                                 {128, 1024},
+                                 {128, 2 * internal::PartitionPageSize()},
+                                 {(4 << 20) + 1, 1 << 19}};
+  for (auto [requested_size, alignment] : size_alignments) {
+    void* ptr = root_->AlignedAllocWithFlags(0, alignment, requested_size);
+    ASSERT_TRUE(ptr);
+    alloc_count++;
+    total_size += root_->GetUsableSize(ptr);
+    EXPECT_EQ(alloc_count, tcache->thread_alloc_stats().alloc_count);
+    EXPECT_EQ(total_size, tcache->thread_alloc_stats().alloc_total_size);
+    root_->Free(ptr);
+    EXPECT_EQ(alloc_count, tcache->thread_alloc_stats().dealloc_count);
+    EXPECT_EQ(total_size, tcache->thread_alloc_stats().dealloc_total_size);
+  }
+
+  EXPECT_EQ(tcache->thread_alloc_stats().alloc_total_size,
+            tcache->thread_alloc_stats().dealloc_total_size);
+
+  auto stats = internal::GetAllocStatsForCurrentThread();
+  EXPECT_EQ(alloc_count, stats.alloc_count);
+  EXPECT_EQ(total_size, stats.alloc_total_size);
+  EXPECT_EQ(alloc_count, stats.dealloc_count);
+  EXPECT_EQ(total_size, stats.dealloc_total_size);
+}
+
+TEST_P(PartitionAllocThreadCacheTest, AllocationRecordingRealloc) {
+  // There is a cache.
+  auto* tcache = root_->thread_cache_for_testing();
+  EXPECT_TRUE(tcache);
+  tcache->ResetPerThreadAllocationStatsForTesting();
+
+  size_t alloc_count = 0;
+  size_t dealloc_count = 0;
+  size_t total_alloc_size = 0;
+  size_t total_dealloc_size = 0;
+  size_t size_new_sizes[][2] = {
+      {16, 15},
+      {16, 64},
+      {16, internal::PartitionPageSize() + 1},
+      {4 << 20, 8 << 20},
+      {8 << 20, 4 << 20},
+      {(8 << 20) - internal::SystemPageSize(), 8 << 20}};
+  for (auto [size, new_size] : size_new_sizes) {
+    void* ptr = root_->Alloc(size, "");
+    ASSERT_TRUE(ptr);
+    alloc_count++;
+    size_t usable_size = root_->GetUsableSize(ptr);
+    total_alloc_size += usable_size;
+
+    ptr = root_->Realloc(ptr, new_size, "");
+    ASSERT_TRUE(ptr);
+    total_dealloc_size += usable_size;
+    dealloc_count++;
+    usable_size = root_->GetUsableSize(ptr);
+    total_alloc_size += usable_size;
+    alloc_count++;
+
+    EXPECT_EQ(alloc_count, tcache->thread_alloc_stats().alloc_count);
+    EXPECT_EQ(total_alloc_size, tcache->thread_alloc_stats().alloc_total_size);
+    EXPECT_EQ(dealloc_count, tcache->thread_alloc_stats().dealloc_count);
+    EXPECT_EQ(total_dealloc_size,
+              tcache->thread_alloc_stats().dealloc_total_size)
+        << new_size;
+
+    root_->Free(ptr);
+    dealloc_count++;
+    total_dealloc_size += usable_size;
+
+    EXPECT_EQ(alloc_count, tcache->thread_alloc_stats().alloc_count);
+    EXPECT_EQ(total_alloc_size, tcache->thread_alloc_stats().alloc_total_size);
+    EXPECT_EQ(dealloc_count, tcache->thread_alloc_stats().dealloc_count);
+    EXPECT_EQ(total_dealloc_size,
+              tcache->thread_alloc_stats().dealloc_total_size);
+  }
+  EXPECT_EQ(tcache->thread_alloc_stats().alloc_total_size,
+            tcache->thread_alloc_stats().dealloc_total_size);
+}
+
 // This test makes sure it's safe to switch to the alternate bucket distribution
 // at runtime. This is intended to happen once, near the start of Chrome,
 // once we have enabled features.

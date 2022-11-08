@@ -910,8 +910,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   void DecommitEmptySlotSpans() PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   PA_ALWAYS_INLINE void RawFreeLocked(uintptr_t slot_start)
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  uintptr_t MaybeInitThreadCacheAndAlloc(uint16_t bucket_index,
-                                         size_t* slot_size);
+  ThreadCache* MaybeInitThreadCache();
+
+  // May return an invalid thread cache.
+  PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
 
 #if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
   static internal::Lock& GetEnumeratorLock();
@@ -1121,8 +1123,8 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
   if (PA_LIKELY(slot_span_alignment <= internal::PartitionPageSize() &&
                 slot_start)) {
     *is_already_zeroed = false;
-    // This is a fast path, so avoid calling GetUsableSize() on Release builds
-    // as it is more costly. Copy its small bucket path instead.
+    // This is a fast path, avoid calling GetUsableSize() in Release builds
+    // as it is costlier. Copy its small bucket path instead.
     *usable_size = AdjustSizeForExtrasSubtract(bucket->slot_size);
     PA_DCHECK(*usable_size == slot_span->GetUsableSize(this));
 
@@ -1511,21 +1513,35 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
     uintptr_t slot_start,
     SlotSpan* slot_span) {
-  // TLS access can be expensive, do a cheap local check first.
-  //
   // PA_LIKELY: performance-sensitive partitions have a thread cache,
   // direct-mapped allocations are uncommon.
-  if (PA_LIKELY(flags.with_thread_cache &&
+  ThreadCache* thread_cache = GetOrCreateThreadCache();
+  if (PA_LIKELY(ThreadCache::IsValid(thread_cache) &&
                 !IsDirectMappedBucket(slot_span->bucket))) {
     size_t bucket_index =
         static_cast<size_t>(slot_span->bucket - this->buckets);
-    auto* thread_cache = ThreadCache::Get();
-    if (PA_LIKELY(ThreadCache::IsValid(thread_cache) &&
-                  thread_cache->MaybePutInCache(slot_start, bucket_index))) {
+    size_t slot_size;
+    if (PA_LIKELY(thread_cache->MaybePutInCache(slot_start, bucket_index,
+                                                &slot_size))) {
+      // This is a fast path, avoid calling GetUsableSize() in Release builds
+      // as it is costlier. Copy its small bucket path instead.
+      PA_DCHECK(!slot_span->CanStoreRawSize());
+      size_t usable_size = AdjustSizeForExtrasSubtract(slot_size);
+      PA_DCHECK(usable_size == slot_span->GetUsableSize(this));
+      thread_cache->RecordDeallocation(usable_size);
       return;
     }
   }
 
+  if (PA_LIKELY(ThreadCache::IsValid(thread_cache))) {
+    // Accounting must be done outside `RawFree()`, as it's also called from the
+    // thread cache. We would double-count otherwise.
+    //
+    // GetUsableSize() will always give the correct result, and we are in a slow
+    // path here (since the thread cache case returned earlier).
+    size_t usable_size = slot_span->GetUsableSize(this);
+    thread_cache->RecordDeallocation(usable_size);
+  }
   RawFree(slot_start, slot_span);
 }
 
@@ -1898,20 +1914,18 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   }
 #endif  // BUILDFLAG(STARSCAN)
 
+  auto* thread_cache = GetOrCreateThreadCache();
+
   // Don't use thread cache if higher order alignment is requested, because the
   // thread cache will not be able to satisfy it.
   //
   // PA_LIKELY: performance-sensitive partitions use the thread cache.
-  if (PA_LIKELY(this->flags.with_thread_cache &&
+  if (PA_LIKELY(ThreadCache::IsValid(thread_cache) &&
                 slot_span_alignment <= internal::PartitionPageSize())) {
-    auto* tcache = ThreadCache::Get();
-    // PA_LIKELY: Typically always true, except for the very first allocation of
-    // this thread.
-    if (PA_LIKELY(ThreadCache::IsValid(tcache))) {
-      slot_start = tcache->GetFromCache(bucket_index, &slot_size);
-    } else {
-      slot_start = MaybeInitThreadCacheAndAlloc(bucket_index, &slot_size);
-    }
+    // Note: getting slot_size from the thread cache rather than by
+    // `buckets[bucket_index].slot_size` to avoid touching `buckets` on the fast
+    // path.
+    slot_start = thread_cache->GetFromCache(bucket_index, &slot_size);
 
     // PA_LIKELY: median hit rate in the thread cache is 95%, from metrics.
     if (PA_LIKELY(slot_start)) {
@@ -1946,6 +1960,9 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
 
   if (PA_UNLIKELY(!slot_start))
     return nullptr;
+
+  if (PA_LIKELY(ThreadCache::IsValid(thread_cache)))
+    thread_cache->RecordAllocation(usable_size);
 
   // Layout inside the slot:
   //   |[refcnt]|...object...|[empty]|[cookie]|[unused]|
@@ -2204,6 +2221,18 @@ PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
   size = AdjustSizeForExtrasSubtract(size);
   return size;
 #endif
+}
+
+template <bool thread_safe>
+ThreadCache* PartitionRoot<thread_safe>::GetOrCreateThreadCache() {
+  ThreadCache* thread_cache = nullptr;
+  if (PA_LIKELY(flags.with_thread_cache)) {
+    thread_cache = ThreadCache::Get();
+    if (PA_UNLIKELY(!ThreadCache::IsValid(thread_cache))) {
+      thread_cache = MaybeInitThreadCache();
+    }
+  }
+  return thread_cache;
 }
 
 using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;

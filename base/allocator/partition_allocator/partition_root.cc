@@ -1034,6 +1034,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 
   // bucket->slot_size is the currently committed size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
+  size_t current_usable_size = slot_span->GetUsableSize(this);
   uintptr_t slot_start = SlotSpan::ToSlotSpanStart(slot_span);
   // This is the available part of the reservation up to which the new
   // allocation can grow.
@@ -1087,6 +1088,16 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   IncreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
                                     slot_span->bucket->slot_size, raw_size);
 
+  // Always record in-place realloc() as free()+malloc() pair.
+  //
+  // The early returns above (`return false`) will fall back to free()+malloc(),
+  // so this is consistent.
+  auto* thread_cache = GetOrCreateThreadCache();
+  if (ThreadCache::IsValid(thread_cache)) {
+    thread_cache->RecordDeallocation(current_usable_size);
+    thread_cache->RecordAllocation(slot_span->GetUsableSize(this));
+  }
+
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // Write a new trailing cookie.
   if (flags.allow_cookie) {
@@ -1111,8 +1122,10 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
   // new size is a significant percentage smaller. We could do the same if we
   // determine it is a win.
   if (AllocationCapacityFromRequestedSize(new_size) !=
-      AllocationCapacityFromSlotStart(slot_start))
+      AllocationCapacityFromSlotStart(slot_start)) {
     return false;
+  }
+  size_t current_usable_size = slot_span->GetUsableSize(this);
 
   // Trying to allocate |new_size| would use the same amount of underlying
   // memory as we're already using, so re-use the allocation after updating
@@ -1144,6 +1157,16 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
     }
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   }
+
+  // Always record a realloc() as a free() + malloc(), even if it's in
+  // place. When we cannot do it in place (`return false` above), the allocator
+  // falls back to free()+malloc(), so this is consistent.
+  ThreadCache* thread_cache = GetOrCreateThreadCache();
+  if (PA_LIKELY(ThreadCache::IsValid(thread_cache))) {
+    thread_cache->RecordDeallocation(current_usable_size);
+    thread_cache->RecordAllocation(slot_span->GetUsableSize(this));
+  }
+
   return object;
 }
 
@@ -1443,9 +1466,7 @@ void PartitionRoot<thread_safe>::ResetBookkeepingForTesting() {
 }
 
 template <>
-uintptr_t PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
-    uint16_t bucket_index,
-    size_t* slot_size) {
+ThreadCache* PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCache() {
   auto* tcache = ThreadCache::Get();
   // See comment in `EnableThreadCacheIfSupport()` for why this is an acquire
   // load.
@@ -1458,7 +1479,7 @@ uintptr_t PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
     //    be us, in which case we are re-entering and should not create a thread
     //    cache. If it is not us, then this merely delays thread cache
     //    construction a bit, which is not an issue.
-    return 0;
+    return nullptr;
   }
 
   // There is no per-thread ThreadCache allocated here yet, and this partition
@@ -1481,10 +1502,7 @@ uintptr_t PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
   tcache = ThreadCache::Create(this);
   thread_caches_being_constructed_.fetch_sub(1, std::memory_order_relaxed);
 
-  // Cache is created empty, but at least this will trigger batch fill, which
-  // may be useful, and we are already in a slow path anyway (first small
-  // allocation of this thread).
-  return tcache->GetFromCache(bucket_index, slot_size);
+  return tcache;
 }
 
 template <>

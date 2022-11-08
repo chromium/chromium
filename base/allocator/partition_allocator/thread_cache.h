@@ -286,7 +286,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // can happen either because the cache is full or the allocation was too
   // large.
   PA_ALWAYS_INLINE bool MaybePutInCache(uintptr_t slot_start,
-                                        size_t bucket_index);
+                                        size_t bucket_index,
+                                        size_t* slot_size);
 
   // Tries to allocate a memory slot from the cache.
   // Returns 0 on failure.
@@ -314,6 +315,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Purge the thread cache of the current thread, if one exists.
   static void PurgeCurrentThread();
 
+  const ThreadAllocStats& thread_alloc_stats() const {
+    return thread_alloc_stats_;
+  }
   size_t bucket_count_for_testing(size_t index) const {
     return buckets_[index].count;
   }
@@ -324,6 +328,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // cache. This applies to all threads. However, the maximum size is bounded by
   // |kLargeSizeThreshold|.
   static void SetLargestCachedSize(size_t size);
+
+  // Cumulative stats about *all* allocations made on the `root_` partition on
+  // this thread, that is not only the allocations serviced by the thread cache,
+  // but all allocations, including large and direct-mapped ones. This should in
+  // theory be split into a separate PerThread data structure, but the thread
+  // cache is the only per-thread data we have as of now.
+  //
+  // TODO(lizeb): Investigate adding a proper per-thread data structure.
+  PA_ALWAYS_INLINE void RecordAllocation(size_t size);
+  PA_ALWAYS_INLINE void RecordDeallocation(size_t size);
+  void ResetPerThreadAllocationStatsForTesting();
 
   // Fill 1 / kBatchFillRatio * bucket.limit slots at a time.
   static constexpr uint16_t kBatchFillRatio = 8;
@@ -420,6 +435,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   uint32_t cached_memory_ = 0;
   std::atomic<bool> should_purge_;
   ThreadCacheStats stats_;
+  ThreadAllocStats thread_alloc_stats_;
 
   // Buckets are quite big, though each is only 2 pointers.
   Bucket buckets_[kBucketCount];
@@ -466,7 +482,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 };
 
 PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
-                                                   size_t bucket_index) {
+                                                   size_t bucket_index,
+                                                   size_t* slot_size) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.cache_fill_count);
 
@@ -496,6 +513,7 @@ PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
   if (PA_UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
     PurgeInternal();
 
+  *slot_size = bucket.slot_size;
   return true;
 }
 
@@ -546,6 +564,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 
   PA_DCHECK(cached_memory_ >= bucket.slot_size);
   cached_memory_ -= bucket.slot_size;
+
   return internal::SlotStartPtr2Addr(entry);
 }
 
@@ -610,6 +629,16 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
       slot_start, bucket.freelist_head);
   bucket.freelist_head = entry;
   bucket.count++;
+}
+
+void ThreadCache::RecordAllocation(size_t size) {
+  thread_alloc_stats_.alloc_count++;
+  thread_alloc_stats_.alloc_total_size += size;
+}
+
+void ThreadCache::RecordDeallocation(size_t size) {
+  thread_alloc_stats_.dealloc_count++;
+  thread_alloc_stats_.dealloc_total_size += size;
 }
 
 }  // namespace partition_alloc
