@@ -1,5 +1,14 @@
 'use strict';
 
+function processQueryParams() {
+  const queryParams = new URL(window.location).searchParams;
+  return {
+    expectAccessAllowed: queryParams.get("allowed") != "false",
+    topLevelDocument: queryParams.get("rootdocument") != "false",
+    testPrefix: queryParams.get("testCase") || "top-level-context",
+  };
+}
+
 function RunTestsInIFrame(sourceURL) {
   let frame = document.createElement('iframe');
   frame.src = sourceURL;

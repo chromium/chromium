@@ -6,12 +6,12 @@ const {expectAccessAllowed, testPrefix, topLevelDocument} = processQueryParams()
 // Common tests to run in all frames.
 test(() => {
   assert_not_equals(document.hasStorageAccess, undefined);
-}, "[" + testPrefix + "] document.hasStorageAccess() should be supported on the document interface");
+}, "[" + testPrefix + "] document.hasStorageAccess() should exist on the document interface");
 
 promise_test(async () => {
   const hasAccess = await document.hasStorageAccess();
-  assert_false(hasAccess, "Access should be disallowed in insecure contexts");
-}, "[" + testPrefix + "] document.hasStorageAccess() should be disallowed in insecure contexts");
+  assert_equals(hasAccess, expectAccessAllowed, "Access should be granted by default: " + expectAccessAllowed);
+}, "[" + testPrefix + "] document.hasStorageAccess() should be allowed by default: " + expectAccessAllowed);
 
 promise_test(async () => {
   const createdDocument = document.implementation.createDocument("", null);
@@ -27,16 +27,16 @@ if (topLevelDocument) {
   // of various iFrames
 
   // Create a test with a single-child same-origin iframe.
-  RunTestsInIFrame("resources/hasStorageAccess-iframe.html?testCase=same-origin-frame&rootdocument=false");
+  RunTestsInIFrame("resources/hasStorageAccess-iframe.https.html?testCase=same-origin-frame&rootdocument=false");
 
   // Create a test with a single-child cross-origin iframe.
-  RunTestsInIFrame("http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/hasStorageAccess-iframe.html?testCase=cross-origin-frame&rootdocument=false");
+  RunTestsInIFrame("https://{{domains[www]}}:{{ports[https][0]}}/storage-access-api/resources/hasStorageAccess-iframe.https.html?testCase=cross-origin-frame&rootdocument=false");
 
   // Validate the nested-iframe scenario where the same-origin frame containing
   // the tests is not the first child.
-  RunTestsInNestedIFrame("resources/hasStorageAccess-iframe.html?testCase=nested-same-origin-frame&rootdocument=false");
+  RunTestsInNestedIFrame("resources/hasStorageAccess-iframe.https.html?testCase=nested-same-origin-frame&rootdocument=false");
 
   // Validate the nested-iframe scenario where the cross-origin frame containing
   //  the tests is not the first child.
-  RunTestsInNestedIFrame("http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/hasStorageAccess-iframe.html?testCase=nested-cross-origin-frame&rootdocument=false");
+  RunTestsInNestedIFrame("https://{{domains[www]}}:{{ports[https][0]}}/storage-access-api/resources/hasStorageAccess-iframe.https.html?testCase=nested-cross-origin-frame&rootdocument=false");
 }

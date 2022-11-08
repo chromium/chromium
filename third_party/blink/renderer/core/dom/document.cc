@@ -379,7 +379,8 @@ enum class RequestStorageResult {
   REJECTED_SANDBOXED = 6,
   REJECTED_GRANT_DENIED = 7,
   REJECTED_INCORRECT_FRAME = 8,
-  kMaxValue = REJECTED_INCORRECT_FRAME,
+  REJECTED_INSECURE_CONTEXT = 9,
+  kMaxValue = REJECTED_INSECURE_CONTEXT,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess",
@@ -6117,7 +6118,7 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
   const bool has_access =
       TopFrameOrigin() && GetExecutionContext() &&
       !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
-      CookiesEnabled();
+      dom_window_->isSecureContext() && CookiesEnabled();
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
@@ -6282,6 +6283,20 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
   ScriptPromise promise = resolver->Promise();
+
+  if (!dom_window_->isSecureContext()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccess: May not be used in an insecure context."));
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::REJECTED_INSECURE_CONTEXT);
+
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
+    return promise;
+  }
 
   const bool has_user_gesture =
       LocalFrame::HasTransientUserActivation(GetFrame());
