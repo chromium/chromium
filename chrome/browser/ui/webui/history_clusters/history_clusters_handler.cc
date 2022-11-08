@@ -19,7 +19,7 @@
 #include "base/time/time_to_iso8601.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/history_clusters/history_clusters_image_fetcher.h"
+#include "chrome/browser/history_clusters/entity_image_service.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -509,7 +509,7 @@ void HistoryClustersHandler::OnGotClustersBatch(
     const std::vector<history::Cluster> clusters_batch,
     bool can_load_more,
     bool is_continuation) {
-  auto* image_fetcher = HistoryClustersImageFetcher::Get(GetProfile());
+  auto* entity_image_service = EntityImageService::Get(GetProfile());
   // Kick off a bunch of image fetch requests if this feature is enabled.
   for (size_t i = 0; i < clusters_batch.size(); ++i) {
     auto& cluster = clusters_batch[i];
@@ -524,7 +524,7 @@ void HistoryClustersHandler::OnGotClustersBatch(
     std::string entity_id;
     size_t cluster_index =
         query_clusters_state_->number_clusters_sent_to_page() + i;
-    image_fetcher->FetchImageFor(
+    entity_image_service->FetchImageFor(
         *cluster.raw_label, entity_id,
         base::BindOnce(&HistoryClustersHandler::OnImageFetchedForCluster,
                        weak_ptr_factory_.GetWeakPtr(), cluster_index));

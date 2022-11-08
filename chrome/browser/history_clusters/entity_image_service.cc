@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/history_clusters/history_clusters_image_fetcher.h"
+#include "chrome/browser/history_clusters/entity_image_service.h"
 
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
@@ -23,38 +23,36 @@ namespace history_clusters {
 namespace {
 
 // Anonymous namespace factory based on LookalikeUrlServiceFactory.
-class HistoryClustersImageServiceFactory : public ProfileKeyedServiceFactory {
+class EntityImageServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static HistoryClustersImageFetcher* GetForProfile(Profile* profile) {
-    return static_cast<HistoryClustersImageFetcher*>(
+  static EntityImageService* GetForProfile(Profile* profile) {
+    return static_cast<EntityImageService*>(
         GetInstance()->GetServiceForBrowserContext(profile,
                                                    /*create=*/true));
   }
-  static HistoryClustersImageServiceFactory* GetInstance() {
-    return base::Singleton<HistoryClustersImageServiceFactory>::get();
+  static EntityImageServiceFactory* GetInstance() {
+    return base::Singleton<EntityImageServiceFactory>::get();
   }
 
-  HistoryClustersImageServiceFactory(
-      const HistoryClustersImageServiceFactory&) = delete;
-  HistoryClustersImageServiceFactory& operator=(
-      const HistoryClustersImageServiceFactory&) = delete;
+  EntityImageServiceFactory(const EntityImageServiceFactory&) = delete;
+  EntityImageServiceFactory& operator=(const EntityImageServiceFactory&) =
+      delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      HistoryClustersImageServiceFactory>;
+  friend struct base::DefaultSingletonTraits<EntityImageServiceFactory>;
 
-  // HistoryClustersImageServiceFactory:
-  HistoryClustersImageServiceFactory()
-      : ProfileKeyedServiceFactory("HistoryClustersImageServiceFactory") {
+  // EntityImageServiceFactory:
+  EntityImageServiceFactory()
+      : ProfileKeyedServiceFactory("EntityImageServiceFactory") {
     DependsOn(SyncServiceFactory::GetInstance());
   }
 
-  ~HistoryClustersImageServiceFactory() override = default;
+  ~EntityImageServiceFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override {
-    return new HistoryClustersImageFetcher(static_cast<Profile*>(profile));
+    return new EntityImageService(static_cast<Profile*>(profile));
   }
 };
 
@@ -63,7 +61,7 @@ class HistoryClustersImageServiceFactory : public ProfileKeyedServiceFactory {
 // A one-time use object that uses Suggest to get an image URL corresponding
 // to `search_query` and `entity_id`. This is a hacky temporary implementation,
 // ideally this should be replaced by persisted Suggest-provided entities.
-class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher {
+class EntityImageService::SuggestEntityImageURLFetcher {
  public:
   SuggestEntityImageURLFetcher(
       Profile* profile,
@@ -166,7 +164,7 @@ class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher {
   base::WeakPtrFactory<SuggestEntityImageURLFetcher> weak_factory_{this};
 };
 
-HistoryClustersImageFetcher::HistoryClustersImageFetcher(Profile* profile)
+EntityImageService::EntityImageService(Profile* profile)
     : profile_(profile),
       autocomplete_provider_client_(profile),
       url_consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
@@ -174,18 +172,16 @@ HistoryClustersImageFetcher::HistoryClustersImageFetcher(Profile* profile)
                                   SyncServiceFactory::GetForProfile(profile))) {
 }
 
-HistoryClustersImageFetcher::~HistoryClustersImageFetcher() = default;
+EntityImageService::~EntityImageService() = default;
 
 // static
-HistoryClustersImageFetcher* HistoryClustersImageFetcher::Get(
-    Profile* profile) {
-  return HistoryClustersImageServiceFactory::GetForProfile(profile);
+EntityImageService* EntityImageService::Get(Profile* profile) {
+  return EntityImageServiceFactory::GetForProfile(profile);
 }
 
-bool HistoryClustersImageFetcher::FetchImageFor(
-    const std::u16string& search_query,
-    const std::string& entity_id,
-    ResultCallback callback) {
+bool EntityImageService::FetchImageFor(const std::u16string& search_query,
+                                       const std::string& entity_id,
+                                       ResultCallback callback) {
   if (!GetConfig().images)
     return false;
 
@@ -199,12 +195,12 @@ bool HistoryClustersImageFetcher::FetchImageFor(
   // the callback and have a well defined SuggestEntityImageURLFetcher lifetime.
   auto* fetcher_raw_ptr = fetcher.get();
   fetcher_raw_ptr->Start(base::BindOnce(
-      &HistoryClustersImageFetcher::OnImageFetched, weak_factory_.GetWeakPtr(),
+      &EntityImageService::OnImageFetched, weak_factory_.GetWeakPtr(),
       std::move(fetcher), std::move(callback)));
   return true;
 }
 
-void HistoryClustersImageFetcher::OnImageFetched(
+void EntityImageService::OnImageFetched(
     std::unique_ptr<SuggestEntityImageURLFetcher> fetcher,
     ResultCallback callback,
     const GURL& image_url) {

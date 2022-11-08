@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_IMAGE_FETCHER_H_
-#define CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_IMAGE_FETCHER_H_
+#ifndef CHROME_BROWSER_HISTORY_CLUSTERS_ENTITY_IMAGE_SERVICE_H_
+#define CHROME_BROWSER_HISTORY_CLUSTERS_ENTITY_IMAGE_SERVICE_H_
 
 #include <string>
 
@@ -17,22 +17,20 @@ namespace history_clusters {
 
 // Used to get the image URL associated with a cluster. It doesn't actually
 // fetch the image, that's up to the UI to do.
-// TODO(tommycli): Since it's a service now, rename to `EntityImageService`.
-class HistoryClustersImageFetcher : public KeyedService {
+class EntityImageService : public KeyedService {
  public:
   using ResultCallback = base::OnceCallback<void(const GURL& image_url)>;
 
   // This should only be called by the internal factory. Most callers should use
   // the `Get()` method instead.
-  explicit HistoryClustersImageFetcher(Profile* profile);
-  HistoryClustersImageFetcher(const HistoryClustersImageFetcher&) = delete;
-  HistoryClustersImageFetcher& operator=(const HistoryClustersImageFetcher&) =
-      delete;
+  explicit EntityImageService(Profile* profile);
+  EntityImageService(const EntityImageService&) = delete;
+  EntityImageService& operator=(const EntityImageService&) = delete;
 
-  ~HistoryClustersImageFetcher() override;
+  ~EntityImageService() override;
 
   // Gets the fetcher associated with `profile`. Always succeeds.
-  static HistoryClustersImageFetcher* Get(Profile* profile);
+  static EntityImageService* Get(Profile* profile);
 
   // Fetches an image appropriate for `search_query` and `entity_id`, returning
   // the result asynchronously to `callback`. Returns false if we can't do it
@@ -55,9 +53,9 @@ class HistoryClustersImageFetcher : public KeyedService {
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
 
-  base::WeakPtrFactory<HistoryClustersImageFetcher> weak_factory_{this};
+  base::WeakPtrFactory<EntityImageService> weak_factory_{this};
 };
 
 }  // namespace history_clusters
 
-#endif  // CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_IMAGE_FETCHER_H_
+#endif  // CHROME_BROWSER_HISTORY_CLUSTERS_ENTITY_IMAGE_SERVICE_H_
