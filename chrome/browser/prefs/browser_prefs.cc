@@ -1763,12 +1763,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
 
-  // Added 10/2021.
-  // TODO(crbug.com/1303963): Remove once number of clients migrating is
-  // negligible.
-  translate::TranslatePrefs::MigrateObsoleteProfilePrefs(profile_prefs);
-  translate::TranslatePrefs::ClearObsoleteProfilePrefs(profile_prefs);
-
   // Added 11/2021.
   syncer::ClearObsoleteKeystoreBootstrapTokenPref(profile_prefs);
   profile_prefs->ClearPref(kWasPreviouslySetUpPrefName);
