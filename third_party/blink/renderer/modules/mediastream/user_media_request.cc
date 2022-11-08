@@ -804,8 +804,10 @@ void UserMediaRequest::FailConstraint(const String& constraint_name,
   }
   // After this call, the execution context may be invalid.
   callbacks_->OnError(
-      nullptr, MakeGarbageCollected<V8MediaStreamError>(
-                   OverconstrainedError::Create(constraint_name, message)));
+      nullptr,
+      MakeGarbageCollected<V8MediaStreamError>(
+          OverconstrainedError::Create(constraint_name, message)),
+      capture_controller_);
   is_resolved_ = true;
 }
 
@@ -854,9 +856,11 @@ void UserMediaRequest::Fail(Error name, const String& message) {
   }
 
   // After this call, the execution context may be invalid.
-  callbacks_->OnError(nullptr, MakeGarbageCollected<V8MediaStreamError>(
-                                   MakeGarbageCollected<DOMException>(
-                                       exception_code, message)));
+  callbacks_->OnError(
+      nullptr,
+      MakeGarbageCollected<V8MediaStreamError>(
+          MakeGarbageCollected<DOMException>(exception_code, message)),
+      capture_controller_);
   is_resolved_ = true;
 }
 
@@ -871,10 +875,12 @@ void UserMediaRequest::ContextDestroyed() {
           "audio constraints=%s, video constraints=%s",
           AudioConstraints().ToString().Utf8().c_str(),
           VideoConstraints().ToString().Utf8().c_str()));
-      callbacks_->OnError(nullptr, MakeGarbageCollected<V8MediaStreamError>(
-                                       MakeGarbageCollected<DOMException>(
-                                           DOMExceptionCode::kAbortError,
-                                           "Context destroyed")));
+      callbacks_->OnError(
+          nullptr,
+          MakeGarbageCollected<V8MediaStreamError>(
+              MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                                 "Context destroyed")),
+          capture_controller_);
     }
     client_ = nullptr;
   }

@@ -23,7 +23,8 @@ class GetOpenDeviceRequestCallbacks final : public UserMediaRequest::Callbacks {
   void OnSuccess(const MediaStreamVector& streams,
                  CaptureController* capture_controller) override {}
   void OnError(ScriptWrappable* callback_this_value,
-               const V8MediaStreamError* error) override {}
+               const V8MediaStreamError* error,
+               CaptureController* capture_controller) override {}
 };
 
 }  // namespace

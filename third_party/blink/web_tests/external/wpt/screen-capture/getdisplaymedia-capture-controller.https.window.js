@@ -95,6 +95,23 @@ validDisplaySurfaces.forEach((displaySurface) => {
           async (t) => {
             const controller = new CaptureController();
             await test_driver.bless('getDisplayMedia()');
+            const p = navigator.mediaDevices.getDisplayMedia(
+                {controller, video: {displaySurface}});
+            controller.setFocusBehavior(focusBehavior);
+            const stream = await p;
+            t.add_cleanup(() => stopTracks(stream));
+          },
+          `setFocusBehavior("${
+              focusBehavior}") must succeed when getDisplayMedia promise is pending if capturing a ${
+              displaySurface}`));
+});
+
+validDisplaySurfaces.forEach((displaySurface) => {
+  validFocusBehaviors.forEach(
+      (focusBehavior) => promise_test(
+          async (t) => {
+            const controller = new CaptureController();
+            await test_driver.bless('getDisplayMedia()');
             const stream = await navigator.mediaDevices.getDisplayMedia(
                 {controller, video: {displaySurface}});
             stopTracks(stream);
@@ -159,3 +176,26 @@ validDisplaySurfaces.forEach((displaySurface) => {
               focusBehavior}") must throw InvalidStateError the second time if capturing a ${
               displaySurface}`));
 });
+
+validFocusBehaviors.forEach(
+    (focusBehavior) => promise_test(
+        async (t) => {
+          const controller = new CaptureController();
+          const options = {
+            controller: controller,
+            video: {width: {max: 0}},
+          }
+          try {
+            await test_driver.bless('getDisplayMedia()');
+            stopTracks(await navigator.mediaDevices.getDisplayMedia(options));
+          } catch (err) {
+            assert_equals(err.name, 'OverconstrainedError', err.message);
+            assert_throws_dom(
+                'InvalidStateError',
+                () => controller.setFocusBehavior(focusBehavior));
+            return;
+          }
+          assert_unreached('getDisplayMedia should have failed');
+        },
+        `setFocusBehavior("${
+            focusBehavior}") must throw InvalidStateError if getDisplayMedia fails`));

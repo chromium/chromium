@@ -65,7 +65,8 @@ class V8Callbacks final : public blink::UserMediaRequest::Callbacks {
   }
 
   void OnError(ScriptWrappable* callback_this_value,
-               const V8MediaStreamError* error) override {
+               const V8MediaStreamError* error,
+               CaptureController* capture_controller) override {
     error_callback_->InvokeAndReportException(callback_this_value, error);
   }
 

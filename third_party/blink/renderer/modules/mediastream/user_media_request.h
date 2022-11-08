@@ -81,7 +81,8 @@ class MODULES_EXPORT UserMediaRequest final
     virtual void OnSuccess(const MediaStreamVector&,
                            CaptureController* capture_controller) = 0;
     virtual void OnError(ScriptWrappable* callback_this_value,
-                         const V8MediaStreamError* error) = 0;
+                         const V8MediaStreamError* error,
+                         CaptureController* capture_controller) = 0;
 
     virtual void Trace(Visitor*) const {}
 

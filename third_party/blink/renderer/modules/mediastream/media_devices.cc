@@ -105,7 +105,11 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
   }
 
   void OnError(ScriptWrappable* callback_this_value,
-               const V8MediaStreamError* error) override {
+               const V8MediaStreamError* error,
+               CaptureController* capture_controller) override {
+    if (capture_controller) {
+      capture_controller->FinalizeFocusDecision();
+    }
     resolver_->Reject(error);
   }
 

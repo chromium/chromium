@@ -47,6 +47,13 @@ void CaptureController::setFocusBehavior(
     return;
   }
 
+  if (focus_decision_finalized_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The window of opportunity for focus-decision is closed.");
+    return;
+  }
+
   if (!video_track_) {
     focus_behavior_ = focus_behavior;
     return;
@@ -62,13 +69,6 @@ void CaptureController::setFocusBehavior(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The captured display surface must be either a tab or a window.");
-    return;
-  }
-
-  if (focus_decision_finalized_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The window of opportunity for focus-decision is closed.");
     return;
   }
 
@@ -97,7 +97,7 @@ void CaptureController::FinalizeFocusDecision() {
 
   focus_decision_finalized_ = true;
 
-  if (!IsTabOrWindowCapture(video_track_)) {
+  if (!video_track_ || !IsTabOrWindowCapture(video_track_)) {
     return;
   }
 
