@@ -62,8 +62,6 @@ extern const char kManagedAutoSelectCertificateForUrls[];
 extern const char kManagedWebUsbAllowDevicesForUrls[];
 extern const char kManagedWebUsbAskForUrls[];
 extern const char kManagedWebUsbBlockedForUrls[];
-extern const char kManagedFileHandlingAllowedForUrls[];
-extern const char kManagedFileHandlingBlockedForUrls[];
 extern const char kManagedFileSystemReadAskForUrls[];
 extern const char kManagedFileSystemReadBlockedForUrls[];
 extern const char kManagedFileSystemWriteAskForUrls[];
