@@ -124,13 +124,13 @@ void ImeService::InitializeConnectionFactory(
   ResetAllBackendConnections();
 
   switch (connection_target) {
-    case mojom::ConnectionTarget::kImeService: {
+    case mojom::ConnectionTarget::kRulebasedEngine: {
       connection_factory_ =
           std::make_unique<ConnectionFactory>(std::move(connection_factory));
       std::move(callback).Run(/*success=*/true);
       break;
     }
-    case mojom::ConnectionTarget::kDecoder: {
+    case mojom::ConnectionTarget::kImeServiceLib: {
       system_engine_ = std::make_unique<SystemEngine>(
           this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
       bool bound =

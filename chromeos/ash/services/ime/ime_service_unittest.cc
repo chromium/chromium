@@ -304,7 +304,7 @@ TEST_F(ImeServiceTest,
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kDecoder,
+      mojom::ConnectionTarget::kImeServiceLib,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_->ConnectToImeEngine(
       kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
@@ -328,7 +328,7 @@ TEST_F(ImeServiceTest,
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kDecoder,
+      mojom::ConnectionTarget::kImeServiceLib,
       base::BindOnce(&ConnectCallback, &success1));
   connection_factory.reset();
   remote_manager_->ConnectToImeEngine(
@@ -358,11 +358,11 @@ TEST_F(ImeServiceTest, InitializeConnectionFactoryCanOverrideAnyConnection) {
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_->InitializeConnectionFactory(
       connection_factory1.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kDecoder,
+      mojom::ConnectionTarget::kImeServiceLib,
       base::BindOnce(&ConnectCallback, &success2));
   remote_manager_->InitializeConnectionFactory(
       connection_factory2.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kDecoder,
+      mojom::ConnectionTarget::kImeServiceLib,
       base::BindOnce(&ConnectCallback, &success3));
   remote_manager_.FlushForTesting();
 
@@ -384,7 +384,7 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kImeService,
+      mojom::ConnectionTarget::kRulebasedEngine,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success1);
@@ -429,7 +429,7 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kImeService,
+      mojom::ConnectionTarget::kRulebasedEngine,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success1);
@@ -475,7 +475,7 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kImeService,
+      mojom::ConnectionTarget::kRulebasedEngine,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success1);
@@ -522,7 +522,7 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kImeService,
+      mojom::ConnectionTarget::kRulebasedEngine,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success1);
@@ -571,7 +571,7 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kImeService,
+      mojom::ConnectionTarget::kRulebasedEngine,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success1);
@@ -652,7 +652,7 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kImeService,
+      mojom::ConnectionTarget::kRulebasedEngine,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success1);
@@ -732,7 +732,7 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kImeService,
+      mojom::ConnectionTarget::kRulebasedEngine,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success1);
@@ -797,7 +797,7 @@ TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
-      mojom::ConnectionTarget::kImeService,
+      mojom::ConnectionTarget::kRulebasedEngine,
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success1);

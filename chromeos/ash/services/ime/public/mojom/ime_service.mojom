@@ -24,8 +24,8 @@ import "sandbox/policy/mojom/sandbox.mojom";
 
 // Specifies where a ConnectionFactory should initialize connections.
 enum ConnectionTarget {
-  kDecoder = 0,
-  kImeService = 1,
+  kImeServiceLib= 0,
+  kRulebasedEngine = 1,
 };
 
 // Manages access to a set of IMEs, implemented by the IME service
