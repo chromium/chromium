@@ -391,3 +391,21 @@ fyi_reclient_test_builder(
         "GLOG_vmodule": "bridge*=2",
     },
 )
+
+ci.builder(
+    name = "Comparison Linux (reclient vs reclient remote links)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_reclient_comparison",
+    execution_timeout = 6 * time.hour,
+    reclient_cache_silo = "Comparison Linux remote links - cache siloed",
+    os = os.LINUX_DEFAULT,
+    reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
+        "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
+    },
+)

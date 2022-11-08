@@ -1,4 +1,27 @@
 {
+  "Comparison Linux (reclient vs reclient remote links)": {
+    "build1": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "use_remoteexec": true
+      }
+    },
+    "build2": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "use_remoteexec": true,
+        "use_remoteexec_links": true
+      }
+    }
+  },
   "Linux Builder reclient staging": {
     "gn_args": {
       "dcheck_always_on": false,

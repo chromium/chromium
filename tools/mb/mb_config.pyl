@@ -675,6 +675,10 @@
     },
 
     'chromium.reclient.fyi': {
+      'Comparison Linux (reclient vs reclient remote links)': {
+        'build1': 'gpu_tests_release_bot_reclient',
+        'build2': 'gpu_tests_release_bot_remote_links_reclient',
+      },
       'Linux Builder reclient staging': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient staging untrusted': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient test': 'gpu_tests_release_bot_reclient',
@@ -2781,6 +2785,10 @@
       'gpu_tests', 'release_bot_reclient',
     ],
 
+    'gpu_tests_release_bot_remote_links_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links',
+    ],
+
     'gpu_tests_release_bot_x86_minimal_symbols': [
       'gpu_tests', 'release_bot', 'x86', 'minimal_symbols',
     ],
@@ -4728,6 +4736,10 @@
 
     'use_javascript_coverage': {
       'gn_args': 'use_javascript_coverage=true',
+    },
+
+    'use_remoteexec_links': {
+      'gn_args': 'use_remoteexec_links=true',
     },
 
     'v8_enable_debugging_features': {
