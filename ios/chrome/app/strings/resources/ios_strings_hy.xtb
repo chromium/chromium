@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">Արգելափակված քուքիներ</translation>
 <translation id="165877110639533037">Բաց ներդիրներ չկան</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ից <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Պահանջել կայքի բջջային տարբերակը</translation>
 <translation id="168715261339224929">Ձեր ներդիրները ձեր բոլոր սարքերում օգտագործելու համար միացրեք համաժամացումը</translation>
 <translation id="1687475363370981210">Բոլորը նշել որպես կարդացված</translation>
 <translation id="1689333818294560261">Կեղծանուն</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">Փակել ներդիրը</translation>
 <translation id="2890171748217283516">Կայքերը, որոնց հետևում եք, պահվում են ձեր Google հաշվում։ Դրանք կարող եք կառավարել «Բացահայտեք» ներդիրի կարգավորումներում:</translation>
 <translation id="2898963176829412617">Նոր պանակ…</translation>
+<translation id="2902684821701498619">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="2916171785467530738">Որոնման հարցումների և URL-ների ինքնալրացում</translation>
 <translation id="291754862089661335">Դիրքավորեք QR-կոդը կամ գծակոդը այս շրջանակի մեջ</translation>
 <translation id="2920866371965792875">Հետևեք կայքին՝ դրա նորությունների մասին տեղեկանալու համար։</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">Ժամկետի սպառման ամիսը</translation>
 <translation id="3482959374254649722">Ներդիրների համաժամացում...</translation>
 <translation id="3484946776651937681">Բացել Ներբեռնումներում</translation>
+<translation id="3485558910355485767">Նոր ինկոգնիտո պատուհան</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> առաջարկվող բովանդակության վերաբերյալ</translation>
 <translation id="3494788280727468875">Հաստատել այցելությունների պատմության ջնջումը</translation>
 <translation id="35083190962747987">Անցնել ${url}</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">Հետ</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3861486700625780712">Չհետևել</translation>
+<translation id="3863769054730344136">Ուղարկել սեփական սարքերին</translation>
 <translation id="387280738075653372">Ներբեռնեք Chrome-ն այստեղ։</translation>
 <translation id="3892144330757387737">Պատմությունը կգտնեք այստեղ</translation>
 <translation id="3897092660631435901">Ընտրացանկ</translation>
@@ -589,6 +593,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5659593005791499971">Էլփոստ</translation>
 <translation id="5669335982068190158">Ձեր iPhone-ը վերակայելիս դուք դուրս եք գրվել հաշվից։ Հաշիվ մտնելու համար ներքևում հպեք «Շարունակել»։</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Ստեղծել QR կոդ</translation>
 <translation id="567881659373499783">Տարբերակ <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Այժմ ցուցադրվում է Chrome-ի 1 պատուհան}one{Այժմ ցուցադրվում է Chrome-ի {count} պատուհան}other{Այժմ ցուցադրվում է Chrome-ի {count} պատուհան}}</translation>
 <translation id="5701270923492462699">Տեսախցիկի օգտագործումը թույլատրված է</translation>
@@ -673,6 +678,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6219550825416862075">Բարի վերադարձ</translation>
 <translation id="6219688215832490856">Երբեք չթարգմանել</translation>
 <translation id="6223816392543092032">Համաժամացնել էջանիշները, պատմությունը, գաղտնաբառերն ու այլ կարգավորումները ձեր բոլոր սարքերում</translation>
+<translation id="6229318421047648685">Պահանջել կայքի համակարգչային տարբերակը</translation>
 <translation id="6231782223312638214">Առաջարկվում է</translation>
 <translation id="6232329973559504466">Որոնել ինկոգնիտո ռեժիմում</translation>
 <translation id="6232736989810857397">Սա թույլ է տալիս հեշտությամբ ստեղծել օրացույցի միջոցառումներ Google Տեսապակու օգնությամբ։</translation>

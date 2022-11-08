@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Немає з’єднання з мережею</translation>
 <translation id="2107914222138020205">Ваш кабель USB-C не підтримує Thunderbolt. Продуктивність пристрою може бути обмежено.</translation>
 <translation id="2108303511227308752">Комбінацію клавіш Alt + Backspace змінено. Щоб скористатися клавішею Delete, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">УВІМКНУТИ МІКРОФОН</translation>
 <translation id="2126242104232412123">Новий робочий стіл</translation>
 <translation id="2132302418721800944">Записувати весь екран</translation>
 <translation id="2135456203358955318">Закріплена лупа</translation>
@@ -484,6 +483,7 @@
 <translation id="3633097874324966332">Відкрийте налаштування Bluetooth, щоб створити пару з пристроєм</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Оновлення прострочено</translation>
+<translation id="3659444876902283058">(день <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Залишилося приблизно <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Підключіть пристрій до джерела живлення.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
@@ -734,7 +734,6 @@
 <translation id="5042305953558921026">Клавіша режиму огляду</translation>
 <translation id="504465286040788597">Попередній абзац</translation>
 <translation id="5045550434625856497">Неправильний пароль</translation>
-<translation id="5071064518267176975">Додаток хоче використовувати мікрофон</translation>
 <translation id="5078796286268621944">Неправильний PIN-код</translation>
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
 <translation id="509790653408515442">Тут з’являтимуться додатки, які ви транслюєте з телефона</translation>
@@ -1007,7 +1006,6 @@
 <translation id="6614169507485700968">Екран конфіденційності ввімкнено</translation>
 <translation id="6625718907317144388">Сповіщення з додатків <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> та інших приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136">Додаток <ph name="APP_NAME" /> хоче використовувати мікрофон</translation>
 <translation id="6637729079642709226">Змінення часу</translation>
 <translation id="6641720045729354415">Перемкнути живі субтитри. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Скасувати сортування за назвою</translation>
@@ -1208,7 +1206,6 @@
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7745560842763881396">Показати додатки на полиці</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
-<translation id="7749640678855296659">Мікрофон наразі вимкнено</translation>
 <translation id="776344839111254542">Натисніть, щоб переглянути деталі оновлення</translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
 <translation id="7780094051999721182">комбінації клавіш</translation>
@@ -1268,9 +1265,11 @@
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
 <translation id="8054466585765276473">Обчислення часу роботи акумулятора.</translation>
 <translation id="8083540854303889870">Збережено на потім</translation>
+<translation id="8091153018031979607">Початок о <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автоматичні оновлення</translation>
 <translation id="8098591350844501178">Зупинити трансляцію екрана на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Увімкнено всі</translation>
+<translation id="8113515504791187892">Кнопка "Читання з екрана"</translation>
 <translation id="8120151603115102514">На телефоні немає екрана блокування. Щоб розблокувати Chromebook, введіть пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
@@ -1380,6 +1379,7 @@
 <translation id="8703634754197148428">Почніть запис. Коли запис почнеться, натисніть Alt + Shift + L, щоб перейти на полицю, де розташована кнопка зупинки запису</translation>
 <translation id="8721053961083920564">Увімкнути або вимкнути гучність. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Зйомка всього екрана</translation>
+<translation id="8731487213223706745">Завершується о <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Можливо, це спроба викрасти введенні символи.</translation>
 <translation id="8735678380411481005">Колір підсвічування клавіатури</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

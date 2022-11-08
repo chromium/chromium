@@ -1411,6 +1411,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4606870351894164739">Hatásos</translation>
 <translation id="4607603470419975064">Chrome-tippek megjelenítése gomb, nyomja meg az Enter billentyűt a Chrome funkcióival kapcsolatos további információkért</translation>
 <translation id="4607608436550361748">Chrome-tippek megjelenítése</translation>
+<translation id="4610279718074907952">Ez a webhely egy olyan, a(z) <ph name="SET_OWNER" /> által meghatározott csoportban található, amely láthatja az Ön tevékenységeit</translation>
 <translation id="4617273035598175554">Grafikai és animációs szoftverek</translation>
 <translation id="4622292761762557753">Átvitel mégis</translation>
 <translation id="4627675673814409125">Ez az irányelv nem állítható be a Chrome-profil szintjén, ezért figyelmen kívül hagyja a rendszer.</translation>
@@ -2386,6 +2387,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7130775116821607281">Feltöltés letiltva</translation>
 <translation id="7132939140423847331">A rendszergazda nem engedélyezi az adatok másolását.</translation>
 <translation id="7135130955892390533">Állapot megjelenítése</translation>
+<translation id="7136009930065337683">További információ az inkognitó módról.</translation>
 <translation id="7138472120740807366">Kézbesítési mód</translation>
 <translation id="7139892792842608322">Elsődleges tálca</translation>
 <translation id="714064300541049402">2. oldali kép X-eltolása</translation>

@@ -102,6 +102,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1657641691196698092">Cookies bloqués</translation>
 <translation id="165877110639533037">Aucun onglet ouvert</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> à <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Demander le site mobile</translation>
 <translation id="168715261339224929">Activez la synchronisation pour accéder à vos favoris sur tous vos appareils.</translation>
 <translation id="1687475363370981210">Tout marquer comme lu</translation>
 <translation id="1689333818294560261">Pseudo</translation>
@@ -243,6 +244,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="288655811176831528">Fermer l'onglet</translation>
 <translation id="2890171748217283516">Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres Discover.</translation>
 <translation id="2898963176829412617">Nouveau dossier…</translation>
+<translation id="2902684821701498619">Ajouter à la liste de lecture</translation>
 <translation id="2916171785467530738">Saisir semi-automatiquement les recherches et les URL</translation>
 <translation id="291754862089661335">Positionnez le code QR ou le code-barres dans ce cadre</translation>
 <translation id="2920866371965792875">Appuyez ici pour suivre l'actualité de ce site.</translation>
@@ -320,6 +322,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3478058380795961209">Mois d'expiration</translation>
 <translation id="3482959374254649722">Synchronisation de vos onglets en cours…</translation>
 <translation id="3484946776651937681">Ouvrir dans le dossier "Téléchargements"</translation>
+<translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3494788280727468875">Confirmer la suppression des données de navigation</translation>
 <translation id="35083190962747987">Ouvrir ${url}</translation>
@@ -366,6 +369,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="385051799172605136">Retour</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861486700625780712">Se désabonner</translation>
+<translation id="3863769054730344136">Envoyer à vos appareils</translation>
 <translation id="387280738075653372">Téléchargez Chrome ici.</translation>
 <translation id="3892144330757387737">Votre historique s'affichera ici</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -589,6 +593,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5669335982068190158">Vous avez été déconnecté lors de la réinitialisation de votre iPhone. Appuyez sur "Continuer" ci-dessous pour vous connecter.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Créer un code QR</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{1 fenêtre Chrome actuellement affichée}one{{count} fenêtre Chrome actuellement affichée}other{{count} fenêtres Chrome actuellement affichées}}</translation>
 <translation id="5701270923492462699">Accès à la caméra autorisé</translation>
@@ -673,6 +678,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6219550825416862075">Bon retour parmi nous</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
 <translation id="6223816392543092032">Accédez à vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils.</translation>
+<translation id="6229318421047648685">Demander le site pour ordinateur</translation>
 <translation id="6231782223312638214">Suggestions</translation>
 <translation id="6232329973559504466">Recherche en navigation privée</translation>
 <translation id="6232736989810857397">Cela vous permet de créer facilement des événements d'agenda avec Google Lens.</translation>

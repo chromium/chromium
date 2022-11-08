@@ -97,7 +97,7 @@
 <translation id="1420408895951708260">'ညအလင်းရောင်' အဖွင့်အပိတ် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">သင့်ဖုန်း၏ မကြာသေးမီက ဓာတ်ပုံနှင့် မီဒီယာများကို သင့် <ph name="DEVICE_TYPE" /> တွင် ကြည့်နိုင်သည်</translation>
 <translation id="1426410128494586442">Yes</translation>
-<translation id="1447641497144572814">ဖန်သားပြင်နားချိန် စတင်ပြီ</translation>
+<translation id="1447641497144572814">စကရင်နားချိန် စတင်ပြီ</translation>
 <translation id="1455242230282523554">ဘာသာစကားဆက်တင်များကို ပြရန်</translation>
 <translation id="1460620680449458626">အသံ တိတ်ထားသည်။</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
@@ -219,7 +219,6 @@
 <translation id="209965399369889474">ကွန်ရက်ချိတ်ဆက်မထားပါ</translation>
 <translation id="2107914222138020205">သင့် USB-C ကေဘယ်သည် Thunderbolt ကို မပံ့ပိုးပါ။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
 <translation id="2108303511227308752">‘Alt + နောက်ပြန်ခလုတ်’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ဖျက်ရန်’ ကီး သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + နောက်ပြန်ခလုတ် နှိပ်ပါ။</translation>
-<translation id="211328683600082144">မိုက်ခရိုဖုန်း ဖွင့်ရန်</translation>
 <translation id="2126242104232412123">မျက်နှာပြင်နေရာ အသစ်</translation>
 <translation id="2132302418721800944">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန်</translation>
 <translation id="2135456203358955318">နေရာချထားသည့် မှန်ဘီလူး</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">အနှစ်ချုပ်မုဒ် ကီး</translation>
 <translation id="504465286040788597">ယခင်စာပိုဒ်</translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
-<translation id="5071064518267176975">အက်ပ်က သင့်မိုက်ခရိုဖုန်းကို သုံးလိုသည်</translation>
 <translation id="5078796286268621944">မမှန်ကန်သည့် ပင်ကုဒ်</translation>
 <translation id="5083553833479578423">နောက်ထပ် Assistant ဝန်ဆောင်မှုများကို ဖွင့်ပါ</translation>
 <translation id="509790653408515442">သင့်ဖုန်း၏ အက်ပ်များကို တိုက်ရိုက်လွှင့်သောအခါ ၎င်းတို့က ဤနေရာတွင် ပေါ်လာမည်</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">ပုဂ္ဂိုလ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို ဖွင့်ထားသည်</translation>
 <translation id="6625718907317144388">ကြည့်ရှုမှုဆိုင်ရာ အကာအကွယ်ကို ဖွင့်ထားသောကြောင့် <ph name="APP_1_TITLE" />၊ <ph name="APP_2_TITLE" /> စသည်တို့၏ အကြောင်းကြားချက်များကို ဖျောက်ထားသည်</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> က မိုက်ခရိုဖုန်းကို သုံးလိုသည်</translation>
 <translation id="6637729079642709226">အချိန်ပြောင်းခြင်း</translation>
 <translation id="6641720045729354415">'တိုက်ရိုက်စာတန်း' ကို ပြောင်းပါ။ <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">အမည်ဖြင့် အစီအစဉ်တကျစီစဉ်မှုကို နောက်ပြန်ရန်</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
 <translation id="7745560842763881396">အက်ပ်များကို စင်တွင်ပြရန်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
-<translation id="7749640678855296659">သင့်မိုက်ခရိုဖုန်းကို လက်ရှိတွင် ပိတ်ထားသည်</translation>
 <translation id="776344839111254542">အပ်ဒိတ်အသေးစိတ် အချက်အလက်များကို ကြည့်ရန် နှိပ်ပါ</translation>
 <translation id="7768784765476638775">စကားပြော-ရွေးရန်</translation>
 <translation id="7780094051999721182">ဖြတ်လမ်းလင့်ခ်များ</translation>

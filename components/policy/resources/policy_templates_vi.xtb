@@ -1505,7 +1505,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Dịch vụ kiểm tra lỗi chính tả luôn có thể sử dụng một cuốn từ điển đã tải xuống trên máy trừ phi tính năng này bị tắt theo <ph name="SPELLCHECK_ENABLED_POLICY_NAME" />. Trong trường hợp đó, chính sách này sẽ không có hiệu lực.</translation>
 <translation id="2433516903565257847">Tỷ lệ phần trăm của nhóm thiết bị nên được cập nhật sau số ngày được chỉ định.</translation>
 <translation id="2435052056904485763">Danh sách cho phép máy chủ ủy quyền Kerberos</translation>
-<translation id="2435232509335686514">Chính sách cấu hình để <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> xử lý các tệp đã tải xuống</translation>
 <translation id="2436302465999055995">Đặt <ph name="LACROS_NAME" /> làm trình duyệt duy nhất sử dụng được (chưa triển khai)</translation>
 <translation id="2439187682308339104">Không cho phép trang web nào yêu cầu quyền truy cập vào thiết bị HID thông qua API WebHID</translation>
 <translation id="2439733504887695659">Bật chế độ đóng cảnh báo mật khẩu bị lộ cho thông tin xác thực đã nhập</translation>
@@ -1513,15 +1512,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2448315169529769573">Nếu bạn đặt chính sách này thành Bật, <ph name="PRODUCT_OS_NAME" /> sẽ báo cáo lại cho Google số liệu sử dụng và dữ liệu chẩn đoán, bao gồm cả báo cáo sự cố. Nếu bạn đặt chính sách này thành Tắt, báo cáo số liệu sử dụng và dữ liệu chẩn đoán sẽ tắt.
 
        Nếu bạn không đặt chính sách này, báo cáo số liệu sử dụng và dữ liệu chẩn đoán sẽ tắt trên các thiết bị không được quản lý và sẽ bật trên các thiết bị được quản lý.</translation>
-<translation id="244950822854046436">Danh sách các chế độ cài đặt sẽ áp dụng cho <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />. Trình kết nối này sẽ chạy khi tệp được tải xuống.
-
-      Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi tệp cho nhà cung cấp dịch vụ hay không khi tải xuống từ một trang web. URL của trang web này phải khớp với mẫu liên kết với một mẫu "enable'' và không liên kết với một mẫu ''disable''.  Loại MIME của tệp cũng phải khớp với mẫu liên kết với một mẫu "enable'' và không liên kết với một mẫu ''disable''.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> xác định nhà cung cấp dịch vụ phân tích nào tương ứng với các chế độ cài đặt.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> là mã nhận dạng duy nhất cho nhà cung cấp dịch vụ đối tác. Mã này xác định tài khoản khách hàng có với nhà cung cấp dịch vụ đó. Khi người dùng được yêu cầu đăng nhập trong quá trình thiết lập <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, chỉ những tài khoản người dùng liên kết với tài khoản nhà cung cấp dịch vụ của khách hàng này mới được cho phép.
-
-      Bạn chỉ có thể đặt chính sách này trên <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2452225615952836461">Luôn viết hoa phương thức yêu cầu</translation>
 <translation id="2454228136871844693">Tối ưu hóa cho độ ổn định.</translation>
 <translation id="2455033019778127130">Áp dụng hoạt động mặc định của trình duyệt, hiển thị Điều khoản dịch vụ (ToS) và chờ người dùng chấp nhận.</translation>

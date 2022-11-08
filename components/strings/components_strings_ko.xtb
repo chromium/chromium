@@ -1413,6 +1413,7 @@
 <translation id="4606870351894164739">강렬함</translation>
 <translation id="4607603470419975064">Chrome 도움말 보기 버튼, Enter를 눌러 Chrome 기능 자세히 알아보기</translation>
 <translation id="4607608436550361748">Chrome 도움말 보기</translation>
+<translation id="4610279718074907952"><ph name="SET_OWNER" />에서 정의한 그룹(내 활동을 볼 수 있음)에 속하는 사이트입니다.</translation>
 <translation id="4617273035598175554">그래픽 및 애니메이션 소프트웨어</translation>
 <translation id="4622292761762557753">무시하고 전송</translation>
 <translation id="4627675673814409125">이 정책은 Chrome 프로필 수준에서 설정할 수 없으며 무시됩니다.</translation>
@@ -2388,6 +2389,7 @@
 <translation id="7130775116821607281">업로드 차단됨</translation>
 <translation id="7132939140423847331">관리자가 복사를 금지한 데이터입니다.</translation>
 <translation id="7135130955892390533">상태 보기</translation>
+<translation id="7136009930065337683">시크릿 모드 자세히 알아보기</translation>
 <translation id="7138472120740807366">배달 방법</translation>
 <translation id="7139892792842608322">기본 트레이</translation>
 <translation id="714064300541049402">두 번째 면 이미지 X 시프트</translation>

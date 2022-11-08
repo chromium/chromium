@@ -1119,7 +1119,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="2007404777272201486">Report an Issue...</translation>
 <translation id="2009590708342941694">Emoji tool</translation>
 <translation id="2010501376126504057">Compatible devices</translation>
-<translation id="2010888903612390044">No microphone is connected</translation>
 <translation id="2015232545623037616">PC and Chromecast on the same Wi-Fi network</translation>
 <translation id="2016473077102413275">Features that need images won't work</translation>
 <translation id="2016574333161572915">Your Google Meet hardware is ready to set up</translation>
@@ -2169,7 +2168,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2927017729816812676">Cache Storage</translation>
 <translation id="2928795416630981206">Allowed to track your camera position</translation>
 <translation id="2931157624143513983">Fit to printable area</translation>
-<translation id="2931342457001070961">No microphone connected</translation>
 <translation id="2932085390869194046">Suggest password...</translation>
 <translation id="2932483646085333864">Sign out then sign in again to start sync</translation>
 <translation id="2932883381142163287">Report abuse</translation>
@@ -2862,7 +2860,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3616741288025931835">&amp;Clear Browsing Data...</translation>
 <translation id="3617891479562106823">Backgrounds are unavailable. Try again later.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3620136223548713675">Geolocation</translation>
 <translation id="3621807901162200696">Help improve Chrome OS features and performance</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{an app}other{# apps}}</translation>
 <translation id="362333465072914957">Waiting for the CA to issue a certificate</translation>
@@ -3084,7 +3081,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3813296892522778813">Go to <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome help<ph name="END_LINK_CHROMIUM" /> if you can't find what you're looking for</translation>
 <translation id="3813358687923336574">Language used for translating pages and Quick Answers</translation>
 <translation id="3814529970604306954">School account</translation>
-<translation id="3814792775883886759">No camera is connected</translation>
 <translation id="3816118180265633665">Chrome colours</translation>
 <translation id="3817524650114746564">Open your computer's proxy settings</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Allowing your ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use, and how much memory you typically use.<ph name="END_PARAGRAPH1" />
@@ -4105,7 +4101,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4780321648949301421">Save Page As...</translation>
 <translation id="4781443161433589743">You’re on Chrome’s strongest security</translation>
 <translation id="4781584184731045253">Clear data and permissions</translation>
-<translation id="4782861709165039462">All microphones disabled by devices hardware switch</translation>
 <translation id="4785719467058219317">You're using a security key that's not registered with this website</translation>
 <translation id="4785914069240823137">Cancel crop</translation>
 <translation id="4788092183367008521">Please check your network connection and try again.</translation>
@@ -5897,7 +5892,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="648927581764831596">None available</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="6491376743066338510">Authorisation failed</translation>
-<translation id="6492396476180293140">Internal camera deactivated by hardware switch</translation>
 <translation id="6494327278868541139">Show enhanced protection details</translation>
 <translation id="6494445798847293442">Not a Certification Authority</translation>
 <translation id="6497548114956205206">Learn more about energy saver</translation>
@@ -6659,7 +6653,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
-<translation id="7213903639823314449">Search engine used in the address bar</translation>
 <translation id="721490496276866468">Import passwords</translation>
 <translation id="7218514093816577632">Make sure that notifications are turned on on your <ph name="DEVICE_NAME" />.</translation>
 <translation id="7219473482981809164">We've found multiple profiles available to download. Select the ones that you would like to download before proceeding.</translation>

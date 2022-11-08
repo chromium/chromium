@@ -219,7 +219,6 @@
 <translation id="209965399369889474">មិនបាន​ភ្ជាប់ទៅ​បណ្ដាញ​ទេ</translation>
 <translation id="2107914222138020205">ខ្សែ USB-C របស់អ្នកមិនអាចប្រើ Thunderbolt បានទេ។ ប្រតិបត្តិការឧបករណ៍អាចត្រូវ​បានដាក់កំហិត។</translation>
 <translation id="2108303511227308752">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Alt + Backspace។ ដើម្បីប្រើ​គ្រាប់ចុច Delete សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + backspace។</translation>
-<translation id="211328683600082144">បើក​មីក្រូហ្វូន</translation>
 <translation id="2126242104232412123">តុធ្វើការថ្មី</translation>
 <translation id="2132302418721800944">ថតវីដេអូ​ពេញអេក្រង់</translation>
 <translation id="2135456203358955318">កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">គ្រាប់​ចុច​មុខងារ​ទិដ្ឋ​ភាពរួម</translation>
 <translation id="504465286040788597">កថាខណ្ឌមុន</translation>
 <translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
-<translation id="5071064518267176975">មានកម្មវិធីមួយ​ចង់ប្រើ​មីក្រូហ្វូន</translation>
 <translation id="5078796286268621944">លេខសម្គាល់មិនត្រឹមត្រូវ</translation>
 <translation id="5083553833479578423">ដោះសោ​មុខងារ​ជំនួយការ​ជាច្រើនទៀត។</translation>
 <translation id="509790653408515442">នៅពេល​អ្នក​ស្ទ្រីម​កម្មវិធី​ទូរសព្ទ​របស់អ្នក កម្មវិធី​ទាំងនោះ​នឹង​បង្ហាញ​នៅត្រង់នេះ</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">អេក្រង់​ឯកជនភាព​ត្រូវបានបើក</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> និងការជូនដំណឹងផ្សេងទៀត​ត្រូវបានលាក់ ដោយសារ​ការការពារ​ការមើលត្រូវបានបើក</translation>
 <translation id="6627638273713273709">ស្វែងរក+ប្ដូរ (Shift)+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> ចង់ប្រើ​មីក្រូហ្វូន</translation>
 <translation id="6637729079642709226">ប្ដូរម៉ោង</translation>
 <translation id="6641720045729354415">បិទ/បើក​អក្សររត់ក្នុងពេលជាក់ស្ដែង។ <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">ត្រឡប់លំដាប់នៃការតម្រៀបតាមឈ្មោះវិញ</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">កាត់</translation>
 <translation id="7745560842763881396">បង្ហាញកម្មវិធីនៅក្នុងធ្នើរ</translation>
 <translation id="7749443890790263709">ចំនួនតុ​បាន​ឈានដល់កម្រិតអតិបរមាហើយ។</translation>
-<translation id="7749640678855296659">បច្ចុប្បន្ននេះ មីក្រូហ្វូន​របស់អ្នក​ត្រូវបានបិទ</translation>
 <translation id="776344839111254542">ចុចដើម្បី​មើល​ព័ត៌មាន​លម្អិត​អំពីកំណែថ្មី</translation>
 <translation id="7768784765476638775">ជ្រើសរើសដើម្បីអាន</translation>
 <translation id="7780094051999721182">ផ្លូវកាត់</translation>

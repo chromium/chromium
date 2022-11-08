@@ -219,7 +219,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="209965399369889474">Non hai conexión á rede</translation>
 <translation id="2107914222138020205">O teu cable USB-C non é compatible con Thunderbolt. O rendemento do dispositivo podería verse limitado.</translation>
 <translation id="2108303511227308752">O atallo de teclado Alt + Retroceso cambiou. Para usar a tecla Suprimir, preme <ph name="LAUNCHER_KEY_NAME" /> + Retroceso.</translation>
-<translation id="211328683600082144">ACTIVAR MICRÓFONO</translation>
 <translation id="2126242104232412123">Novo escritorio</translation>
 <translation id="2132302418721800944">Gravar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
@@ -484,6 +483,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3633097874324966332">Abre a configuración de Bluetooth para vincular o teu dispositivo</translation>
 <translation id="3638400994746983214">Activar/desactivar a pantalla de privacidade. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualización pendente</translation>
+<translation id="3659444876902283058">(Día <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Tempo restante aproximado: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Conecta o dispositivo á corrente.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Usuario xestionado</translation>
@@ -735,7 +735,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5042305953558921026">Tecla do modo de visión xeral</translation>
 <translation id="504465286040788597">Anterior parágrafo</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
-<translation id="5071064518267176975">Unha aplicación quere usar o micrófono</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="509790653408515442">Cando emitas as aplicacións do teu teléfono, aparecerán aquí</translation>
@@ -1008,7 +1007,6 @@ Nova instalación</translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>
 <translation id="6625718907317144388">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" />, ademais doutras, porque está activada a protección fronte a usuarios non desexados</translation>
 <translation id="6627638273713273709">Buscar+Maiús+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> quere usar o micrófono</translation>
 <translation id="6637729079642709226">Cambiar hora</translation>
 <translation id="6641720045729354415">Activar/desactivar función Subtítulos instantáneos. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Desfacer orde de clasificación por nome</translation>
@@ -1209,7 +1207,6 @@ Nova instalación</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7745560842763881396">Mostrar as aplicacións do estante</translation>
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
-<translation id="7749640678855296659">Tes o micrófono desactivado</translation>
 <translation id="776344839111254542">Fai clic para ver os detalles da actualización</translation>
 <translation id="7768784765476638775">Escoitar selección</translation>
 <translation id="7780094051999721182">atallos</translation>
@@ -1269,9 +1266,11 @@ Nova instalación</translation>
 <translation id="8052898407431791827">Copiouse no portapapeis</translation>
 <translation id="8054466585765276473">Calculando o tempo da batería.</translation>
 <translation id="8083540854303889870">Elementos gardados para máis tarde</translation>
+<translation id="8091153018031979607">Inicio: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualizacións automáticas</translation>
 <translation id="8098591350844501178">Deter a emisión da pantalla en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Si, para todas</translation>
+<translation id="8113515504791187892">Botón Escoitar selección</translation>
 <translation id="8120151603115102514">O teu teléfono non ten unha pantalla de bloqueo. Para desbloquear o Chromebook, escribe o contrasinal.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -1381,6 +1380,7 @@ Nova instalación</translation>
 <translation id="8703634754197148428">Iniciar gravación. Unha vez iniciada a gravación, utilizar Alt + Maiúsculas + L para ir ao estante e buscar o botón Deter gravación</translation>
 <translation id="8721053961083920564">Activar ou desactivar o volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>
+<translation id="8731487213223706745">Finalización: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">É posible que estea tentando detectar as teclas que premes</translation>
 <translation id="8735678380411481005">Cor de retroiluminación do teclado</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

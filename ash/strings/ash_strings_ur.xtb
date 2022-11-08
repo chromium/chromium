@@ -219,7 +219,6 @@
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
 <translation id="2107914222138020205">‏آپ کی USB-C کیبل Thunderbolt کو سپورٹ نہیں کرتی ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
-<translation id="211328683600082144">مائیکروفون آن کریں</translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
 <translation id="2132302418721800944">فُل اسکرین ریکارڈ کریں</translation>
 <translation id="2135456203358955318">ڈاک کردہ مکبّر</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">مجموعی جائزہ وضع کی کلید</translation>
 <translation id="504465286040788597">گزشتہ پیراگراف</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
-<translation id="5071064518267176975">ایک ایپ مائیکروفون کا استعمال کرنا چاہتی ہے</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5083553833479578423">اسسٹنٹ کی مزید خصوصیات کو غیر مقفل کریں۔</translation>
 <translation id="509790653408515442">جب آپ اپنے فون کی ایپس کی سلسلہ بندی کریں گے تو وہ یہاں ظاہر ہوں گی</translation>
@@ -1007,7 +1005,6 @@
 <translation id="6614169507485700968">رازداری کی اسکرین آن ہے</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />، <ph name="APP_2_TITLE" /> اور دیگر اطلاعات پوشیدہ ہیں کیونکہ دیکھنے کا تحفظ آن ہے</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> ایپ مائیکروفون کا استعمال کرنا چاہتی ہے</translation>
 <translation id="6637729079642709226">وقت تبدیل کریں</translation>
 <translation id="6641720045729354415">لائیو کیپشن ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">نام کے لحاظ سے ترتیب کو کالعدم کریں</translation>
@@ -1208,7 +1205,6 @@
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7745560842763881396">شیلف میں ایپس دکھائیں</translation>
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
-<translation id="7749640678855296659">آپ کا مائیکروفون فی الحال آف ہے</translation>
 <translation id="776344839111254542">اپ ڈیٹ کی تفصیلات ملاحظہ کرنے کیلئے کلک کریں</translation>
 <translation id="7768784765476638775">سننے کیلئے منتخب کریں</translation>
 <translation id="7780094051999721182">شارٹ کٹس</translation>

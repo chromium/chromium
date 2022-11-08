@@ -1496,7 +1496,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Die Rechtschreibprüfung kann immer lokal auf ein heruntergeladenes Wörterbuch zugreifen, außer die Funktion wurde über <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> deaktiviert. In diesem Fall hat diese Richtlinie keine Auswirkungen.</translation>
 <translation id="2433516903565257847">Prozentualer Anteil der Geräte, die nach der angegebenen Anzahl von Tagen aktualisiert werden müssen.</translation>
 <translation id="2435052056904485763">Zulassungsliste für Kerberos-Bevollmächtigungs-Server</translation>
-<translation id="2435232509335686514">Konfigurationsrichtlinie für den Umgang mit heruntergeladenen Dateien durch den <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /></translation>
 <translation id="2436302465999055995"><ph name="LACROS_NAME" /> als einzigen verfügbaren Browser festlegen (noch nicht implementiert)</translation>
 <translation id="2439187682308339104">Websites nicht erlauben, den Nutzer über die WebHID API um Zugriff auf HID-Geräte zu bitten</translation>
 <translation id="2439733504887695659">Schließen von Warnungen zu gehackten Passwörtern für eingegebene Anmeldedaten aktivieren</translation>
@@ -1504,15 +1503,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2448315169529769573">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Nutzungsdaten und Fehlerberichte, inklusive Absturzberichte, an Google. Ist die Richtlinie deaktiviert, werden Nutzungsdaten und Fehlerberichte nicht gemeldet.
 
        Ist sie nicht konfiguriert, werden Nutzungsdaten und Fehlerberichte nur für verwaltete Geräte gemeldet.</translation>
-<translation id="244950822854046436">Liste der Einstellungen für den <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> – dieser wird ausgelöst, wenn eine Datei heruntergeladen wird.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei beim Download von einer Webseite an den Anbieter senden soll. Die URL dieser Webseite muss mit einem Muster übereinstimmen, das einem „enable“-Muster zugeordnet ist, nicht einem „disable“-Muster.  Der MIME-Typ der Datei muss ebenfalls mit einem Muster übereinstimmen, das einem „enable“-Muster zugeordnet ist, nicht einem „disable“-Muster.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
-
-      Das Feld „<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" />“ ist eine eindeutige ID für einen Partnerdienstleister und identifiziert das Kundenkonto beim Dienstleister. Wenn der Nutzer beim Einrichten von <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> gebeten wird, sich anzumelden, sind nur Konten dieses Kundendienstleisters zulässig.
-
-      Diese Richtlinie kann nur über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> konfiguriert werden.</translation>
 <translation id="2452225615952836461">Anfragemethoden immer groß schreiben</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
 <translation id="2455033019778127130">Verwendet das Standard-Browserverhalten, zeigt die Nutzungsbedingungen an und wartet auf die Zustimmung des Nutzers.</translation>

@@ -219,7 +219,6 @@
 <translation id="209965399369889474">ບໍ່ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ</translation>
 <translation id="2107914222138020205">ສາຍ USB-C ຂອງທ່ານບໍ່ຮອງຮັບ Thunderbolt. ປະສິດທິພາບອຸປະກອນອາດຖືກຈຳກັດໄວ້.</translation>
 <translation id="2108303511227308752">ຄີລັດ Alt + Backspace ຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Delete, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
-<translation id="211328683600082144">ເປີດໃຊ້ໄມໂຄຣໂຟນ</translation>
 <translation id="2126242104232412123">ພື້ນທີ່ເຮັດວຽກໃໝ່</translation>
 <translation id="2132302418721800944">ບັນທຶກໜ້າຈໍເຕັມ</translation>
 <translation id="2135456203358955318">ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">ປຸ່ມໂໝດພາບຮວມ</translation>
 <translation id="504465286040788597">ຫຍໍ້ໜ້າກ່ອນໜ້າ</translation>
 <translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
-<translation id="5071064518267176975">ມີແອັບຕ້ອງການໃຊ້ໄມໂຄຣໂຟນ</translation>
 <translation id="5078796286268621944">PIN ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5083553833479578423">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມຂອງຜູ້ຊ່ວຍ.</translation>
 <translation id="509790653408515442">ເມື່ອທ່ານສະຕຣີມແອັບຂອງໂທລະສັບທ່ານ, ພວກມັນຈະປາກົດຢູ່ບ່ອນນີ້</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວເປີດຢູ່</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ແລະ ການແຈ້ງເຕືອນອື່ນໆຖືກເຊື່ອງໄວ້ເນື່ອງຈາກເປີດໃຊ້ການປົກປ້ອງການເບິ່ງຢູ່</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> ຕ້ອງການໃຊ້ໄມໂຄຣໂຟນ</translation>
 <translation id="6637729079642709226">ປ່ຽນເວລາ</translation>
 <translation id="6641720045729354415">ສະຫຼັບຄຳບັນຍາຍສົດ. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">ຍົກເລີກການຈັດຮຽງລຳດັບຕາມຊື່</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7745560842763881396">ສະແດງແອັບໃນຖ້ານ</translation>
 <translation id="7749443890790263709">ຮອດຈຳນວນສູງສຸດຂອງພື້ນທີ່ເຮັດວຽກແລ້ວ</translation>
-<translation id="7749640678855296659">ຕອນນີ້ໄມໂຄຣໂຟນຂອງທ່ານປິດໄວ້ຢູ່</translation>
 <translation id="776344839111254542">ຄລິກເພື່ອເບິ່ງລາຍລະອຽດການອັບເດດ</translation>
 <translation id="7768784765476638775">ເລືອກເພື່ອເວົ້າ</translation>
 <translation id="7780094051999721182">ທາງລັດ</translation>

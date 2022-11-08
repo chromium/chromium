@@ -219,7 +219,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="209965399369889474">Ağa bağlı değilsiniz</translation>
 <translation id="2107914222138020205">USB-C kablonuz Thunderbolt'u desteklemiyor. Cihaz performansı sınırlı olabilir.</translation>
 <translation id="2108303511227308752">Alt + Geri tuşu klavye kısayolu değişti. Delete tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + geri tuşlarına basın.</translation>
-<translation id="211328683600082144">MİKROFONU AÇ</translation>
 <translation id="2126242104232412123">Yeni masa</translation>
 <translation id="2132302418721800944">Tam ekran kaydet</translation>
 <translation id="2135456203358955318">Yerleştirilmiş büyüteç</translation>
@@ -484,6 +483,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3633097874324966332">Cihazınızı eşlemek için Bluetooth ayarlarını açın</translation>
 <translation id="3638400994746983214">Gizlilik ekranını aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Güncelleme zamanı geçti</translation>
+<translation id="3659444876902283058">(Gün <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Yaklaşık <ph name="TIME_LEFT" /> kaldı (%<ph name="PERCENTAGE" />).
 Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Yönetilen kullanıcı</translation>
@@ -734,7 +734,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5042305953558921026">Genel bakış modu tuşu</translation>
 <translation id="504465286040788597">Önceki paragraf</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
-<translation id="5071064518267176975">Bir uygulama, mikrofonu kullanmak istiyor</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
 <translation id="509790653408515442">Telefonunuzdan yayınladığınız uygulamalar burada görünür</translation>
@@ -1007,7 +1006,6 @@ Yeni yüklenmiş</translation>
 <translation id="6614169507485700968">Gizlilik ekranı açık</translation>
 <translation id="6625718907317144388">Görüntüleme koruması açık olduğundan <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ve diğer bildirimler gösterilmiyor</translation>
 <translation id="6627638273713273709">Ara+Üst Karakter+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" />, mikrofonu kullanmak istiyor</translation>
 <translation id="6637729079642709226">Saati değiştir</translation>
 <translation id="6641720045729354415">Canlı Altyazı'yı açın/kapatın. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ada göre sıralama ölçütünü geri al</translation>
@@ -1208,7 +1206,6 @@ Yeni yüklenmiş</translation>
 <translation id="7724603315864178912">Kes</translation>
 <translation id="7745560842763881396">Raftaki uygulamaları göster</translation>
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
-<translation id="7749640678855296659">Mikrofonunuz şu anda kapalı</translation>
 <translation id="776344839111254542">Güncelleme ayrıntılarını görüntülemek için tıklayın</translation>
 <translation id="7768784765476638775">Seç ve Dinle</translation>
 <translation id="7780094051999721182">Kısayollar</translation>
@@ -1268,9 +1265,11 @@ Yeni yüklenmiş</translation>
 <translation id="8052898407431791827">Panoya kopyalandı</translation>
 <translation id="8054466585765276473">Pilin süresi hesaplanıyor.</translation>
 <translation id="8083540854303889870">Daha sonra kullanmak için kaydedildi</translation>
+<translation id="8091153018031979607">Başlama zamanı: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Otomatik güncellemeler</translation>
 <translation id="8098591350844501178">Ekranın <ph name="RECEIVER_NAME" /> cihazına yayınını durdur</translation>
 <translation id="8113423164597455979">Açık, tümü</translation>
+<translation id="8113515504791187892">Seç ve Dinle düğmesi</translation>
 <translation id="8120151603115102514">Telefonunuzda kilit ekranı yok. Chromebook'un kilidini açmak için şifreyi girin.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Onayla</translation>
@@ -1380,6 +1379,7 @@ Yeni yüklenmiş</translation>
 <translation id="8703634754197148428">Kaydı başlat. Kayıt başladıktan sonra Alt+Üst Karakter+L tuşlarını kullanarak rafta bulunan kaydı durdur düğmesine gidebilirsiniz</translation>
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tam ekran görüntüsü alma</translation>
+<translation id="8731487213223706745">Bitiş zamanı: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
 <translation id="8735678380411481005">Klavye arka ışığı rengi</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

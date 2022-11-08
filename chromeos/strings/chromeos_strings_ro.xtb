@@ -220,6 +220,7 @@
 <translation id="315116470104423982">Date mobile</translation>
 <translation id="3156846309055100599">Se scanează pagina <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">S-a detectat un portal captiv</translation>
+<translation id="3160172848211257835">Trimite <ph name="BEGIN_LINK1" />informații despre sistem și aplicații<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />valori<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Așază documentul pe scaner</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="319101249942218879">Imaginea avatar a fost schimbată</translation>
@@ -304,6 +305,7 @@
 <translation id="4044093238444069296">Nu se poate contacta gateway-ul</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
 <translation id="404928562651467259">AVERTISMENT</translation>
+<translation id="4060260348856573701">APN nou</translation>
 <translation id="4093865285251893588">Imagine de profil</translation>
 <translation id="409427325554347132">Salvează detaliile testului</translation>
 <translation id="4110686435123617899">Selectează albumul <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -582,6 +584,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6575134580692778371">Nu este configurată</translation>
 <translation id="6579509898032828423">Folosește fotografia</translation>
 <translation id="6596816719288285829">Adresă IP</translation>
+<translation id="6599673642868607614">Mulțumim pentru feedback. Feedbackul tău ne ajută să îmbunătățim experiența Chromebookurilor și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
 <translation id="6618744767048954150">Rulează</translation>
 <translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
 <translation id="6624819909909965616">Nu se poate încărca un fișier mai mare de 10 MB</translation>
@@ -603,6 +606,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="6791471867139427246">culoarea iluminării tastaturii</translation>
+<translation id="6793680441750437230">Apasă pe orice tastă de pe tastatură. Poți să apeși simultan până la patru taste. Apasă pe Alt și pe Esc pentru a închide caseta de dialog.</translation>
 <translation id="680983167891198932">Cheie</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
@@ -690,6 +694,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7762130827864645708">Parola a fost schimbată. Folosește noua parolă de acum înainte.</translation>
 <translation id="7763470514545477072">Potrivire a sufixului de domeniu</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
+<translation id="7778717409420828014">Feedbackul tău ne ajută să îmbunătățim experiența Chromebookurilor și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
 <translation id="779591286616261875">Trimite un raport nou</translation>
 <translation id="7799817062559422778">Modul Luminos</translation>

@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Не е поврзан на мрежа</translation>
 <translation id="2107914222138020205">Вашиот USB-C не поддржува Thunderbolt. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="2108303511227308752">Кратенката од тастатура Alt + Backspace се промени. За да го користите копчето Delete, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">ВКЛУЧИ ГО МИКРОФОНОТ</translation>
 <translation id="2126242104232412123">Нов работен простор</translation>
 <translation id="2132302418721800944">Снимање цел екран</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
@@ -736,7 +735,6 @@
 <translation id="5042305953558921026">Клуч за режимот на преглед</translation>
 <translation id="504465286040788597">Претходен пасус</translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
-<translation id="5071064518267176975">Дадена апликација сака да го користи микрофонот</translation>
 <translation id="5078796286268621944">Неточен PIN</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
 <translation id="509790653408515442">Кога ќе ги стримувате апликациите од телефонот, ќе се појават тука</translation>
@@ -1009,7 +1007,6 @@
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>
 <translation id="6625718907317144388">Известувањата од <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други се сокриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="6627638273713273709">„Пребарување“+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> сака да го користи микрофонот</translation>
 <translation id="6637729079642709226">Сменете го времето</translation>
 <translation id="6641720045729354415">Вклучете/исклучете „Автоматски титлови“. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Поништете го редоследот на подредувањето по име</translation>
@@ -1210,7 +1207,6 @@
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7745560842763881396">Прикажи ги апликациите од полицата</translation>
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
-<translation id="7749640678855296659">Микрофонот е исклучен во моментов</translation>
 <translation id="776344839111254542">Кликнете за да ги погледнете деталите за ажурирањето</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7780094051999721182">кратенки</translation>
@@ -1274,6 +1270,7 @@
 <translation id="8091387634532529612">Автоматски ажурирања</translation>
 <translation id="8098591350844501178">Престани со емитување на екранот на <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Вкл. за сите апл.</translation>
+<translation id="8113515504791187892">Копче за „Изберете за говор“</translation>
 <translation id="8120151603115102514">Немате заклучен екран на телефонот. За да го отклучите вашиот Chromebook, внесете лозинка.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Потврди</translation>

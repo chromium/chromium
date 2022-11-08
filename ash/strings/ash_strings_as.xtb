@@ -219,7 +219,6 @@
 <translation id="209965399369889474">নেটৱৰ্কৰ সৈতে সংযুক্ত হৈ নাই</translation>
 <translation id="2107914222138020205">আপোনাৰ USB-C কে’বলে Thunderbolt সমৰ্থন নকৰে। ডিভাইচৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে।</translation>
 <translation id="2108303511227308752">কীব’ৰ্ডৰ শ্বৰ্টকাট অল্ট + বেকস্পেচটো সলনি হৈছে। ডিলিট কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + বেকস্পেচ টিপক।</translation>
-<translation id="211328683600082144">মাইক্ৰ’ফ’ন অন কৰক</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
 <translation id="2132302418721800944">পূৰ্ণ স্ক্ৰীন ৰেকৰ্ড কৰক</translation>
 <translation id="2135456203358955318">ড’ক কৰা বিৱৰ্ধক</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">অৱলোকন ম’ডলৈ যাবলৈ কী</translation>
 <translation id="504465286040788597">পূৰ্বৱৰ্তী দফা</translation>
 <translation id="5045550434625856497">ভুল পাছৱৰ্ড</translation>
-<translation id="5071064518267176975">এটা এপে মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিব বিচাৰিছে</translation>
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083553833479578423">Assistantৰ অন্যান্য সুবিধাসমূহ ব্যৱহাৰ কৰক।</translation>
 <translation id="509790653408515442">আপুনি আপোনাৰ ফ’নৰ এপ্‌ ষ্ট্ৰীম কৰিলে সেয়া ইয়াত ওলাব</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">গোপনীয়তাৰ স্ক্ৰীনখন অন আছে</translation>
 <translation id="6625718907317144388">চোৱাৰ সুৰক্ষাটো অন হৈ থকাৰ বাবে <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> আৰু অন্য জাননীসমূহ লুকুওৱা হৈছে</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" />এ মাইক্ৰ’ফ’নটো ব্যৱহাৰ কৰিব বিচাৰে</translation>
 <translation id="6637729079642709226">সময় সলনি কৰক</translation>
 <translation id="6641720045729354415">লাইভ কেপশ্বন ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">নাম অনুসৰি সজোৱাটো আনডু কৰক</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">কাট কৰক</translation>
 <translation id="7745560842763881396">শ্বেল্‌ফত এপ্‌সমূহ দেখুৱাওক</translation>
 <translation id="7749443890790263709">ডেস্কৰ সৰ্বাধিক সংখ্যাত উপনীত হৈছে।</translation>
-<translation id="7749640678855296659">বৰ্তমান আপোনাৰ মাইক্ৰ’ফ’নটো অফ কৰা হৈছে</translation>
 <translation id="776344839111254542">আপডে'টৰ সবিশেষ চাবলৈ ক্লিক কৰক</translation>
 <translation id="7768784765476638775">কথা ক’বলৈ বাছনি কৰক</translation>
 <translation id="7780094051999721182">শ্বৰ্টকাট</translation>
@@ -1273,6 +1269,7 @@
 <translation id="8091387634532529612">স্বয়ংক্ৰিয় আপডে’ট</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> লৈ স্ক্ৰীন কাষ্ট কৰা বন্ধ কৰক</translation>
 <translation id="8113423164597455979">অন, সকলো এপতে</translation>
+<translation id="8113515504791187892">কথা ক’বলৈ বাছনি কৰক বুটাম</translation>
 <translation id="8120151603115102514">আপোনাৰ ফ’নটোত বন্ধ স্ক্ৰীন নাই। আপোনাৰ Chromebook আনলক কৰিবলৈ পাছৱৰ্ড দিয়ক।</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>

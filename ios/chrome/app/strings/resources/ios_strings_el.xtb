@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">Αποκλεισμένα cookie</translation>
 <translation id="165877110639533037">Δεν υπάρχουν ανοικτές καρτέλες</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> προς <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Αίτημα ιστοτόπου για κινητά</translation>
 <translation id="168715261339224929">Για να εμφανίζονται οι σελιδοδείκτες σας σε όλες τις συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="1687475363370981210">Επισήμανση όλων ως αναγνωσμένων</translation>
 <translation id="1689333818294560261">Ψευδώνυμο</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">Κλείσιμο καρτέλας</translation>
 <translation id="2890171748217283516">Οι ιστότοποι που ακολουθείτε αποθηκεύονται στον Λογαριασμό σας Google. Μπορείτε να τους διαχειριστείτε στις ρυθμίσεις του Discover.</translation>
 <translation id="2898963176829412617">Νέος φάκελος…</translation>
+<translation id="2902684821701498619">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="2916171785467530738">Αυτόματη συμπλήρωση αναζητήσεων και URL</translation>
 <translation id="291754862089661335">Τοποθετήστε τον κώδικα QR ή τον γραμμωτό κώδικα σε αυτό το πλαίσιο</translation>
 <translation id="2920866371965792875">Για να βλέπετε ενημερώσεις από αυτόν τον ιστότοπο, ακολουθήστε τον εδώ.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">Μήνας λήξης</translation>
 <translation id="3482959374254649722">Συγχρονισμός των καρτελών σας…</translation>
 <translation id="3484946776651937681">Άνοιγμα στις Λήψεις</translation>
+<translation id="3485558910355485767">Νέο παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
 <translation id="3494788280727468875">Επιβεβαίωση διαγραφής δεδομένων περιήγησης</translation>
 <translation id="35083190962747987">Άνοιγμα ${url}</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3861486700625780712">Κατάργηση παρακολούθησης</translation>
+<translation id="3863769054730344136">Αποστολή στις συσκευές σας</translation>
 <translation id="387280738075653372">Κατεβάστε το Chrome εδώ.</translation>
 <translation id="3892144330757387737">Εδώ θα βρείτε το ιστορικό σας</translation>
 <translation id="3897092660631435901">Μενού</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">Ηλεκτρονικό ταχυδρομείο</translation>
 <translation id="5669335982068190158">Αποσυνδεθήκατε στο πλαίσιο της επαναφοράς του iPhone. Πατήστε συνέχεια παρακάτω για να συνδεθείτε.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Δημιουργία κωδικού QR</translation>
 <translation id="567881659373499783">Έκδοση <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Δεν εμφανίζεται 1 παράθυρο του Chrome}other{Δεν εμφανίζονται {count} παράθυρα του Chrome}}</translation>
 <translation id="5701270923492462699">Επιτρέπεται η πρόσβαση στην κάμερα</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">Καλώς ορίσατε και πάλι</translation>
 <translation id="6219688215832490856">Να μην γίνεται ποτέ μετάφραση</translation>
 <translation id="6223816392543092032">Μεταφέρετε όλους τους σελιδοδείκτες, το ιστορικό, τους κωδικούς πρόσβασης και άλλες ρυθμίσεις σας σε όλες τις συσκευές σας.</translation>
+<translation id="6229318421047648685">Αίτημα ιστοτόπου για υπολογιστή</translation>
 <translation id="6231782223312638214">Προτεινόμενο</translation>
 <translation id="6232329973559504466">Ανώνυμη αναζήτηση</translation>
 <translation id="6232736989810857397">Με αυτόν τον τρόπο, θα μπορείτε να δημιουργείτε με ευκολία συμβάντα ημερολογίου χρησιμοποιώντας το Google Lens.</translation>

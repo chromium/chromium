@@ -219,7 +219,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
 <translation id="2107914222138020205">Twój kabel USB-C nie obsługuje standardu Thunderbolt. Wydajność urządzenia może być ograniczona.</translation>
 <translation id="2108303511227308752">Skrót klawiszowy Alt + Backspace został zmieniony. Aby użyć klawisza Delete, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">WŁĄCZ MIKROFON</translation>
 <translation id="2126242104232412123">Nowe biurko</translation>
 <translation id="2132302418721800944">Nagraj cały ekran</translation>
 <translation id="2135456203358955318">Lupa zadokowana</translation>
@@ -735,7 +734,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5042305953558921026">Klawisz trybu przeglądu</translation>
 <translation id="504465286040788597">Poprzedni akapit</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
-<translation id="5071064518267176975">Aplikacja chce używać mikrofonu</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
 <translation id="509790653408515442">Tutaj będą się pojawiać aplikacje przesyłane strumieniowo z telefonu</translation>
@@ -1007,7 +1005,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6614169507485700968">Ekran chroniący prywatność jest włączony</translation>
 <translation id="6625718907317144388">Powiadomienia z aplikacji <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> oraz inne powiadomienia zostały ukryte, bo masz włączoną ochronę przeglądania</translation>
 <translation id="6627638273713273709">Szukaj + Shift + K</translation>
-<translation id="6629480180092995136">Aplikacja <ph name="APP_NAME" /> chce używać mikrofonu</translation>
 <translation id="6637729079642709226">Zmień czas</translation>
 <translation id="6641720045729354415">Włącz lub wyłącz napisy na żywo. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Cofnij sortowanie według nazwy</translation>
@@ -1208,7 +1205,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7745560842763881396">Pokaż aplikacje na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
-<translation id="7749640678855296659">Mikrofon jest obecnie wyłączony</translation>
 <translation id="776344839111254542">Kliknij, by wyświetlić szczegóły aktualizacji</translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
 <translation id="7780094051999721182">skróty</translation>

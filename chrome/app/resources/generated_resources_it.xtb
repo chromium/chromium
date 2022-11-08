@@ -537,6 +537,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1495677929897281669">Torna alla scheda</translation>
 <translation id="1500297251995790841">Dispositivo sconosciuto [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Scopri di più sulle app di Chrome non supportate</translation>
+<translation id="1503392482221435031">Invia automaticamente statistiche sull'utilizzo a Google. Puoi attivare o disattivare i report sugli arresti anomali nelle impostazioni del dispositivo.</translation>
 <translation id="150411034776756821">Rimuovi <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Le cartelle condivise sono disponibili su Windows al percorso <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">esportare le password</translation>
@@ -1106,7 +1107,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="2007404777272201486">Segnala un problema...</translation>
 <translation id="2009590708342941694">Strumento Emoji</translation>
 <translation id="2010501376126504057">Dispositivi compatibili</translation>
-<translation id="2010888903612390044">Nessun microfono collegato</translation>
 <translation id="2015232545623037616">PC e Chromecast sono collegati alla stessa rete Wi-Fi</translation>
 <translation id="2016473077102413275">Le funzionalità che richiedono immagini non funzioneranno</translation>
 <translation id="2016574333161572915">L'hardware Google Meet è pronto per la configurazione</translation>
@@ -2153,7 +2153,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2927017729816812676">Spazio di archiviazione cache</translation>
 <translation id="2928795416630981206">Possono monitorare la posizione della videocamera</translation>
 <translation id="2931157624143513983">Adatta ad area stampabile</translation>
-<translation id="2931342457001070961">Nessun microfono collegato</translation>
 <translation id="2932085390869194046">Suggerisci password...</translation>
 <translation id="2932483646085333864">Esci e accedi di nuovo per avviare la sincronizzazione</translation>
 <translation id="2932883381142163287">Segnala abuso</translation>
@@ -2688,6 +2687,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3461766685318630278">Crea ed elimina altri container.</translation>
 <translation id="3462311546193741693">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google, quindi i dati sincronizzati possono essere cancellati.</translation>
 <translation id="3462413494201477527">Annullare la creazione dell'account?</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} password è stata salvata su questo dispositivo}other{{COUNT} password sono state salvate su questo dispositivo}}</translation>
 <translation id="346298925039590474">Questa rete mobile sarà disponibile per tutti gli utenti su questo dispositivo</translation>
 <translation id="3464145797867108663">Aggiungi profilo di lavoro</translation>
 <translation id="346431825526753">Si tratta di un account di minori gestito da <ph name="CUSTODIAN_EMAIL" />.</translation>
@@ -2845,7 +2845,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3616741288025931835">&amp;Cancella dati di navigazione...</translation>
 <translation id="3617891479562106823">Gli sfondi non sono disponibili. Riprova più tardi.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3620136223548713675">Geolocalizzazione</translation>
 <translation id="3621807901162200696">Contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{un'app}other{# app}}</translation>
 <translation id="362333465072914957">In attesa dell'emissione del certificato da parte della CA</translation>
@@ -2984,6 +2983,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3743842571276656710">Inserisci il PIN per eseguire l'accoppiamento con <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Per rimuovere le app apri Impostazioni &gt; Google Play Store &gt; Gestisci le preferenze Android &gt; App o Gestione applicazioni, quindi tocca l'app che vuoi disinstallare (potresti dover scorrere verso sinistra o verso destra per trovarla) e infine tocca Disinstalla o Disattiva.</translation>
 <translation id="3747603683749989726">Vuoi attivare la sicurezza avanzata?</translation>
+<translation id="3748424433435232460">Una password per questo account è già salvata su questo dispositivo</translation>
 <translation id="3748706263662799310">Segnala un bug</translation>
 <translation id="3750562496035670393">Chrome ha salvato la tua password su questo dispositivo, ma puoi salvarla sul tuo Account Google se preferisci. Se lo fai, saranno disponibili anche tutte le password sul tuo Account Google quando avrai eseguito l'accesso.</translation>
 <translation id="3752253558646317685">Chiedi a tuo figlio di continuare a sollevare il dito per salvare l'impronta</translation>
@@ -3066,7 +3066,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3813296892522778813">Visita la <ph name="BEGIN_LINK_CHROMIUM" />guida di Google Chrome<ph name="END_LINK_CHROMIUM" /> se non riesci a trovare quello che cerchi</translation>
 <translation id="3813358687923336574">Lingua utilizzata per la traduzione di pagine e Risposte rapide</translation>
 <translation id="3814529970604306954">Account della scuola</translation>
-<translation id="3814792775883886759">Nessuna fotocamera collegata</translation>
 <translation id="3816118180265633665">Colori di Chrome</translation>
 <translation id="3817524650114746564">Apri le impostazioni proxy del computer</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi ChromeOS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in ChromeOS. Questi report possono includere, ad esempio, informazioni su quando ChromeOS ha un arresto anomalo, sulle funzionalità che utilizzi e sulla quantità di memoria solitamente impiegata.<ph name="END_PARAGRAPH1" />
@@ -3164,6 +3163,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3897746662269329507">Il tuo <ph name="DEVICE_TYPE" /> è stato progettato per i giochi. Si aprirà l'app Esplora, dove potrai accedere a centinaia dei giochi più recenti, visualizzare offerte per i giochi e scoprire funzionalità di gioco disponibili con il tuo dispositivo.</translation>
 <translation id="3898233949376129212">Lingua dispositivo</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> richiede le autorizzazioni: <ph name="FIRST_PERMISSION" /> e <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">La password per il sito <ph name="WEBSITE" /> è stata salvata su questo dispositivo e nel tuo Account Google. Quale vuoi eliminare?</translation>
 <translation id="389901847090970821">Seleziona la tastiera</translation>
 <translation id="3900966090527141178">Esportazione delle password</translation>
 <translation id="3902789559055749153">Scegli come creare una passkey per <ph name="APP_NAME" /></translation>
@@ -4084,7 +4084,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4780321648949301421">Salva pagina con nome...</translation>
 <translation id="4781443161433589743">Stai usando la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="4781584184731045253">Cancella dati e autorizzazioni</translation>
-<translation id="4782861709165039462">Tutti i microfoni sono disattivati dall'interruttore hardware del dispositivo</translation>
 <translation id="4785719467058219317">Stai usando un token di sicurezza non registrato su questo sito web</translation>
 <translation id="4785914069240823137">Annulla ritaglio</translation>
 <translation id="4788092183367008521">Controlla la connessione di rete e riprova.</translation>
@@ -4653,6 +4652,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5331568967879689647">App sistema operativo ChromeOS</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta posteriore sinistra)</translation>
 <translation id="5333896723098573627">Per rimuovere le app, vai a Impostazioni &gt; App &gt; Google Play Store &gt; Gestisci le preferenze Android &gt; App o Gestione applicazioni, quindi tocca l'app che vuoi disinstallare (potresti dover scorrere verso sinistra o verso destra per trovarla) e infine tocca Disinstalla o Disattiva.</translation>
+<translation id="5334113802138581043">Accesso al microfono</translation>
 <translation id="5334142896108694079">Cache script</translation>
 <translation id="5336688142483283574">Anche questa pagina verrà rimossa dalla tua cronologia e dall'attività di <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursore e touchpad</translation>
@@ -5872,7 +5872,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="648927581764831596">Nessuno disponibile</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
 <translation id="6491376743066338510">Autorizzazione negata</translation>
-<translation id="6492396476180293140">Fotocamera interna disattivata tramite interruttore hardware</translation>
 <translation id="6494327278868541139">Mostra dettagli della protezione avanzata</translation>
 <translation id="6494445798847293442">Non è un'autorità di certificazione</translation>
 <translation id="6497548114956205206">Scopri di più sulla modalità Risparmio energetico</translation>
@@ -5891,6 +5890,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6508261954199872201">Applicazione: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licenza multimediale</translation>
 <translation id="6511827214781912955">Ti consigliamo di eliminare il file <ph name="FILENAME" /> per impedire alle altre persone che usano questo dispositivo di vedere le tue password</translation>
+<translation id="6512808201725371249">Una password per questo account è già salvata nel tuo Gestore delle password di Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome utilizzerà i dati mobili se non sei connesso a un'altra rete.</translation>
 <translation id="6514010653036109809">Dispositivo disponibile:</translation>
 <translation id="6514565641373682518">Questa pagina ha disattivato il puntatore del mouse.</translation>
@@ -6309,6 +6309,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6897363604023044284">Seleziona i siti da cancellare</translation>
 <translation id="6897688156970667447">Utile in condizioni di scarsa illuminazione e di risparmio energetico</translation>
+<translation id="6897972855231767338">Scopri di più sulla navigazione come ospite</translation>
 <translation id="6898440773573063262">Ora è possibile configurare l'avvio automatico delle applicazioni kiosk su questo dispositivo.</translation>
 <translation id="6900284862687837908">App in background: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Protezione avanzata</translation>
@@ -6632,7 +6633,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7210499381659830293">Stampanti estensione</translation>
 <translation id="7211783048245131419">Nessun sensore assegnato per il momento</translation>
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>
-<translation id="7213903639823314449">Motore di ricerca utilizzato nella barra degli indirizzi</translation>
 <translation id="721490496276866468">Importa password</translation>
 <translation id="7218514093816577632">Assicurati che le notifiche siano attive su <ph name="DEVICE_NAME" />.</translation>
 <translation id="7219473482981809164">Sono stati trovati più profili disponibili per il download. Seleziona quelli che vuoi scaricare prima di continuare.</translation>
@@ -8614,6 +8614,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> richiede l'accesso ai seguenti contenuti:</translation>
 <translation id="9057354806206861646">Aggiornamenti programmati</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Circa 1 notifica al giorno}other{Circa {NUM_NOTIFICATION} notifiche al giorno}}</translation>
+<translation id="9061383912634843744">Accedi automaticamente ai siti e alle app usando le credenziali salvate. Se la funzionalità è disattivata, ti verrà chiesta una conferma ogni volta che vuoi accedere a un sito o a un'app.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Errore dalla riga <ph name="ERROR_LINE_START" /> alla riga <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Attiva la funzione Compilazione automatica per compilare i moduli con un singolo clic</translation>
@@ -8644,6 +8645,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9081543426177426948">I siti che visiti non vengono salvati in modalità di navigazione in incognito</translation>
 <translation id="9084064520949870008">Apri in una finestra</translation>
 <translation id="9085256200913095638">Duplica scheda selezionata</translation>
+<translation id="9085446486797400519">Accesso alla fotocamera</translation>
 <translation id="9085776959277692427">Lingua <ph name="LANGUAGE" /> non selezionata. Premi il tasto per la ricerca e la barra spaziatrice per selezionarla.</translation>
 <translation id="9087949559523851360">Aggiungere utente con limitazioni</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> è bloccato dalle norme aziendali</translation>

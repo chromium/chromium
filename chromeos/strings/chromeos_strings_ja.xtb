@@ -220,6 +220,7 @@
 <translation id="315116470104423982">モバイル データ</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています...</translation>
 <translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>
+<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />システムとアプリの情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />を送信する</translation>
 <translation id="3170673040743561620">スキャナにドキュメントを置いてください</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="319101249942218879">アバター画像を変更しました</translation>
@@ -582,6 +583,7 @@
 <translation id="6575134580692778371">設定されていません</translation>
 <translation id="6579509898032828423">この写真を使う</translation>
 <translation id="6596816719288285829">IP アドレス</translation>
+<translation id="6599673642868607614">フィードバックをお送りいただきありがとうございます。お送りいただいたフィードバックは、担当チームで確認し、Chromebook の操作性向上に役立てさせていただきます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6620487321149975369">印刷ジョブは、手動で削除するまで履歴に表示されます</translation>
 <translation id="6624819909909965616">10 MB を超えるファイルはアップロードできません</translation>
@@ -690,6 +692,7 @@
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>
 <translation id="7763470514545477072">ドメイン サフィックス マッチ</translation>
 <translation id="7769672763586021400">モデル ID</translation>
+<translation id="7778717409420828014">お送りいただいたフィードバックは、担当チームで確認し、Chromebook の操作性向上に役立てさせていただきます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="7784116172884276937">DNS サーバーが設定されていません</translation>
 <translation id="779591286616261875">新しい報告を送信</translation>
 <translation id="7799817062559422778">ライトモード</translation>

@@ -219,7 +219,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="209965399369889474">Neprisijungta prie tinklo</translation>
 <translation id="2107914222138020205">USB-C laidas nepalaiko „Thunderbolt“. Įrenginio našumas gali būti apribotas.</translation>
 <translation id="2108303511227308752">Pakeistas spartusis klavišas „Alt“ + naikinimo klavišas. Jei norite naudoti klavišą „Delete“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + naikinimo klavišą.</translation>
-<translation id="211328683600082144">ĮJUNGTI MIKROFONĄ</translation>
 <translation id="2126242104232412123">Naujas darbalaukis</translation>
 <translation id="2132302418721800944">Įrašyti viso ekrano režimu</translation>
 <translation id="2135456203358955318">Prie doko prijungtas didintuvas</translation>
@@ -735,7 +734,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5042305953558921026">Apžvalgos režimo klavišas</translation>
 <translation id="504465286040788597">Ankstesnė pastraipa</translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
-<translation id="5071064518267176975">Programa nori naudoti mikrofoną</translation>
 <translation id="5078796286268621944">Neteisingas PIN kodas</translation>
 <translation id="5083553833479578423">Atrakinkite daugiau Padėjėjo funkcijų.</translation>
 <translation id="509790653408515442">Kai srautu perduodate telefono programas, jos rodomos čia</translation>
@@ -1008,7 +1006,6 @@ Naujas įdiegimas</translation>
 <translation id="6614169507485700968">Privatumo ekranas įjungtas</translation>
 <translation id="6625718907317144388">„<ph name="APP_1_TITLE" />“, „<ph name="APP_2_TITLE" />“ ir kiti pranešimai paslėpti, nes įjungta peržiūros apsauga</translation>
 <translation id="6627638273713273709">Paieškos klavišas + „Shift“ + K</translation>
-<translation id="6629480180092995136">„<ph name="APP_NAME" />“ nori naudoti mikrofoną</translation>
 <translation id="6637729079642709226">Laiko keitimas</translation>
 <translation id="6641720045729354415">Perjungti subtitrus realiuoju laiku. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Anuliuoti rūšiavimo tvarką pagal pavadinimą</translation>
@@ -1209,7 +1206,6 @@ Naujas įdiegimas</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
 <translation id="7745560842763881396">Rodyti programas lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
-<translation id="7749640678855296659">MIkrofonas šiuo metu išjungtas</translation>
 <translation id="776344839111254542">Spustelėkite ir peržiūrėkite išsamią atnaujinimo informaciją</translation>
 <translation id="7768784765476638775">Teksto ištarimas</translation>
 <translation id="7780094051999721182">sparčiųjų klavišų</translation>

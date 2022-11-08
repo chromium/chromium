@@ -1410,6 +1410,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4606870351894164739">D'impatto</translation>
 <translation id="4607603470419975064">Pulsante Leggi i suggerimenti di Chrome, premi Invio per scoprire di più sulle funzionalità di Chrome</translation>
 <translation id="4607608436550361748">Leggi i suggerimenti di Chrome</translation>
+<translation id="4610279718074907952">Questo sito fa parte di un gruppo definito da <ph name="SET_OWNER" />, che può vedere la tua attività</translation>
 <translation id="4617273035598175554">Software di grafica e animazione</translation>
 <translation id="4622292761762557753">Trasferisci comunque</translation>
 <translation id="4627675673814409125">Questo criterio non può essere impostato a livello di profilo Chrome e verrà ignorato.</translation>
@@ -2384,6 +2385,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7130775116821607281">Caricamento bloccato</translation>
 <translation id="7132939140423847331">Il tuo amministratore ha impedito la copia di questi dati.</translation>
 <translation id="7135130955892390533">Mostra stato</translation>
+<translation id="7136009930065337683">Scopri di più sulla modalità di navigazione in incognito</translation>
 <translation id="7138472120740807366">Metodo di consegna</translation>
 <translation id="7139892792842608322">Vassoio principale</translation>
 <translation id="714064300541049402">Spostamento X lato 2 immagine</translation>

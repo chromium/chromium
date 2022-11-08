@@ -219,7 +219,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="209965399369889474">Nav savienojuma ar tīklu</translation>
 <translation id="2107914222138020205">Jūsu USB-C vads neatbalsta Thunderbolt. Ierīces veiktspēja var būt ierobežota.</translation>
 <translation id="2108303511227308752">Šie īsinājumtaustiņi ir mainījušies: Alt + atkāpšanās taustiņš. Lai izmantotu dzēšanas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + atkāpšanās taustiņš.</translation>
-<translation id="211328683600082144">IESLĒGT MIKROFONU</translation>
 <translation id="2126242104232412123">Jauna darbvieta</translation>
 <translation id="2132302418721800944">Ierakstīt visu ekrānu</translation>
 <translation id="2135456203358955318">Dokota lupa</translation>
@@ -484,6 +483,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3633097874324966332">Atveriet Bluetooth iestatījumus, lai savienotu pārī savu ierīci.</translation>
 <translation id="3638400994746983214">Pārslēgt konfidencialitātes ekrānu. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Steidzami nepieciešama ierīces atjaunināšana</translation>
+<translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. diena no <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Vēl apmēram <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="366222428570480733">Pārvaldīts lietotājs <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -734,7 +734,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5042305953558921026">Kopsavilkuma režīma taustiņš</translation>
 <translation id="504465286040788597">Iepriekšējā rindkopa</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
-<translation id="5071064518267176975">Lietotne pieprasa atļauju izmantot mikrofonu</translation>
 <translation id="5078796286268621944">Nepareizs PIN</translation>
 <translation id="5083553833479578423">Piekļūstiet citām Asistenta funkcijām</translation>
 <translation id="509790653408515442">Šeit būs redzamas jūsu tālruņa lietotnes, kad tās straumēsiet.</translation>
@@ -1007,7 +1006,6 @@ Jauna instalācija</translation>
 <translation id="6614169507485700968">Konfidencialitātes ekrāns ir ieslēgts</translation>
 <translation id="6625718907317144388">Lietotņu <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> un citu lietotņu paziņojumi ir paslēpti, jo ir ieslēgta skatīšanas aizsardzība.</translation>
 <translation id="6627638273713273709">Meklēšana+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> pieprasa atļauju izmantot mikrofonu</translation>
 <translation id="6637729079642709226">Laika maiņa</translation>
 <translation id="6641720045729354415">Pārslēgt funkciju Subtitri reāllaikā. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Atsaukt kārtošanu pēc nosaukuma</translation>
@@ -1208,7 +1206,6 @@ Jauna instalācija</translation>
 <translation id="7724603315864178912">Izgriezt</translation>
 <translation id="7745560842763881396">Rādīt lietotņu joslu</translation>
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
-<translation id="7749640678855296659">Jūsu mikrofons pašlaik ir izslēgts</translation>
 <translation id="776344839111254542">Noklikšķiniet, lai skatītu atjauninājuma datus.</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7780094051999721182">saīsnes</translation>
@@ -1268,9 +1265,11 @@ Jauna instalācija</translation>
 <translation id="8052898407431791827">Kopēts starpliktuvē</translation>
 <translation id="8054466585765276473">Notiek akumulatora darbības ilguma aprēķināšana.</translation>
 <translation id="8083540854303889870">Saglabāti vēlākai izmantošanai</translation>
+<translation id="8091153018031979607">Sākums: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automātiskie atjauninājumi</translation>
 <translation id="8098591350844501178">Apturēt ekrāna apraidi uztvērējā “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">Iesl. v. lietotnēs</translation>
+<translation id="8113515504791187892">Poga “Atlasīt, lai izrunātu”</translation>
 <translation id="8120151603115102514">Jūsu tālrunim nav iespējots bloķēšanas ekrāns. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
@@ -1380,6 +1379,7 @@ Jauna instalācija</translation>
 <translation id="8703634754197148428">Sākt ierakstīšanu. Kad ierakstīšana ir sākta, izmantojiet taustiņu kombināciju Alt+Shift+L, lai pārietu uz plauktu un atrastu pogu Apturēt ierakstīšanu.</translation>
 <translation id="8721053961083920564">Skaļuma regulēšana. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Visa ekrāna uzņēmuma izveide</translation>
+<translation id="8731487213223706745">Beigas: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Tā, iespējams, mēģina piesavināties jūsu taustiņsitienus</translation>
 <translation id="8735678380411481005">Taustiņu izgaismojuma krāsa</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />.

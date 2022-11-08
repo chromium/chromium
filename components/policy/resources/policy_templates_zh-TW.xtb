@@ -1490,7 +1490,6 @@
       拼字檢查功能一律可以使用本機下載的字典，但如果 <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> 政策停用此功能，這項政策就不會有任何作用。</translation>
 <translation id="2433516903565257847">應在指定天數後更新的裝置百分比。</translation>
 <translation id="2435052056904485763">Kerberos 委派伺服器許可清單</translation>
-<translation id="2435232509335686514"><ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> 的下載檔案處理方式配置政策</translation>
 <translation id="2436302465999055995">將 <ph name="LACROS_NAME" /> 設為唯一可用的瀏覽器 (尚未實作)</translation>
 <translation id="2439187682308339104">不允許任何網站透過 WebHID API 要求 HID 裝置的存取權</translation>
 <translation id="2439733504887695659">針對已輸入的憑證啟用關閉密碼遭到外洩的防護警示</translation>
@@ -1498,15 +1497,6 @@
 <translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
 
        如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
-<translation id="244950822854046436">指定要套用 <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的設定清單，這份清單會在下載檔案時觸發。
-
-      從網頁執行下載作業時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否應將檔案傳送至服務供應商。相應的網頁網址必須符合與「enable」模式相關聯的模式，而非與「disable」模式相關聯的模式。該檔案的 MIME 類型也必須符合與「enable」模式相關聯的模式，而非與「disable」模式相關聯的模式。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的分析服務供應商。
-
-      <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> 欄位是合作夥伴服務供應商的專屬 ID，可用來指定客戶在服務供應商平台上使用的帳戶。如果 <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> 的設定作業需要使用者登入，系統只會接受與這個客戶的服務供應商帳戶相關的使用者帳戶。
-
-      這項政策只能透過 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />進行設定。</translation>
 <translation id="2452225615952836461">一律使用大寫字母要求方法</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>

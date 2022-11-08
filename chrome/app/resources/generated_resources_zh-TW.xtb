@@ -1107,7 +1107,6 @@
 <translation id="2007404777272201486">回報問題...</translation>
 <translation id="2009590708342941694">表情符號工具</translation>
 <translation id="2010501376126504057">相容裝置</translation>
-<translation id="2010888903612390044">未連上任何麥克風</translation>
 <translation id="2015232545623037616">電腦和 Chromecast 使用相同的 Wi-Fi 網路</translation>
 <translation id="2016473077102413275">需要使用圖片的功能將無法運作</translation>
 <translation id="2016574333161572915">現在可以開始設定你的 Google Meet 設備了</translation>
@@ -2154,7 +2153,6 @@
 <translation id="2927017729816812676">快取儲存空間</translation>
 <translation id="2928795416630981206">可以追蹤攝影機位置</translation>
 <translation id="2931157624143513983">依可列印範圍自動調整</translation>
-<translation id="2931342457001070961">未連上任何麥克風</translation>
 <translation id="2932085390869194046">建議密碼...</translation>
 <translation id="2932483646085333864">如要開始同步處理，請先登出，再重新登入</translation>
 <translation id="2932883381142163287">檢舉濫用情形</translation>
@@ -2847,7 +2845,6 @@
 <translation id="3616741288025931835">清除瀏覽資料(&amp;C)...</translation>
 <translation id="3617891479562106823">目前無法存取背景，請稍後再試。</translation>
 <translation id="3619115746895587757">卡布奇諾</translation>
-<translation id="3620136223548713675">地理位置</translation>
 <translation id="3621807901162200696">協助改善 Chrome OS 的功能與效能</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="362333465072914957">正在等待 CA 核發憑證</translation>
@@ -3069,7 +3066,6 @@
 <translation id="3813296892522778813">如果你找不到需要的資訊，請參閱 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 說明<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">網頁譯文和快速解答功能所用語言</translation>
 <translation id="3814529970604306954">學校帳戶</translation>
-<translation id="3814792775883886759">未連上任何相機</translation>
 <translation id="3816118180265633665">Chrome 顏色</translation>
 <translation id="3817524650114746564">開啟電腦的 Proxy 設定</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，可以協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
@@ -4087,7 +4083,6 @@
 <translation id="4780321648949301421">另存網頁...</translation>
 <translation id="4781443161433589743">你啟用了 Chrome 最強大的安全防護功能</translation>
 <translation id="4781584184731045253">清除資料和權限</translation>
-<translation id="4782861709165039462">裝置硬體切換按鈕已停用所有的麥克風</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
 <translation id="4788092183367008521">請檢查你的網路連線，然後再試一次。</translation>
@@ -5875,7 +5870,6 @@
 <translation id="648927581764831596">沒有可用的裝置</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6491376743066338510">授權失敗</translation>
-<translation id="6492396476180293140">內部相機已透過硬體切換按鈕停用</translation>
 <translation id="6494327278868541139">顯示強化防護功能詳細資料</translation>
 <translation id="6494445798847293442">這不是憑證授權單位</translation>
 <translation id="6497548114956205206">進一步瞭解節能模式</translation>
@@ -6637,7 +6631,6 @@
 <translation id="7210499381659830293">擴充印表機</translation>
 <translation id="7211783048245131419">尚未指派切換按鍵</translation>
 <translation id="7212097698621322584">請輸入目前的 PIN 碼以進行變更。如果你不知道自己的 PIN 碼，請重設安全金鑰，然後建立新的 PIN 碼。</translation>
-<translation id="7213903639823314449">網址列中使用的搜尋引擎</translation>
 <translation id="721490496276866468">匯入密碼</translation>
 <translation id="7218514093816577632">確認「<ph name="DEVICE_NAME" />」已開啟通知功能。</translation>
 <translation id="7219473482981809164">我們發現多個可供下載的設定檔。請先選取你要下載的設定檔再繼續。</translation>

@@ -219,7 +219,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2107914222138020205">Votre câble USB-C n'est pas compatible Thunderbolt. Cela peut limiter les performances de l'appareil.</translation>
 <translation id="2108303511227308752">Le raccourci clavier Alt+Retour arrière a été modifié. Pour utiliser la touche Supprimer, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Retour arrière.</translation>
-<translation id="211328683600082144">ACTIVER LE MICRO</translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
@@ -483,6 +482,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3633097874324966332">Ouvrez les paramètres Bluetooth pour associer votre appareil</translation>
 <translation id="3638400994746983214">Activer/Désactiver l'écran de confidentialité. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Mise à jour à effectuer</translation>
+<translation id="3659444876902283058">(Jour <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Il reste environ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="366222428570480733">Utilisateur géré, <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -733,7 +733,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5042305953558921026">Touche du mode Aperçu</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
-<translation id="5071064518267176975">Une appli souhaite utiliser le micro</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
 <translation id="509790653408515442">Lorsque vous diffusez les applis de votre téléphone en streaming, elles s'affichent ici</translation>
@@ -1006,7 +1005,6 @@ Nouvelle installation</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
 <translation id="6625718907317144388">Les notifications de <ph name="APP_1_TITLE" />, de <ph name="APP_2_TITLE" /> et d'autres applications sont masquées, car la protection contre l'espionnage est activée</translation>
 <translation id="6627638273713273709">Rechercher+Maj+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> souhaite utiliser le micro</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
 <translation id="6641720045729354415">Activer/Désactiver les Sous-titres instantanés. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Annuler le tri par nom</translation>
@@ -1207,7 +1205,6 @@ Nouvelle installation</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7745560842763881396">Afficher les applis sur l'étagère</translation>
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
-<translation id="7749640678855296659">Votre micro est actuellement désactivé</translation>
 <translation id="776344839111254542">Cliquer pour afficher les informations relatives à la mise à jour</translation>
 <translation id="7768784765476638775">Sélectionner pour prononcer</translation>
 <translation id="7780094051999721182">raccourcis</translation>
@@ -1267,9 +1264,11 @@ Nouvelle installation</translation>
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
 <translation id="8083540854303889870">Bureaux enregistrés</translation>
+<translation id="8091153018031979607">Commence à <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Mises à jour automatiques</translation>
 <translation id="8098591350844501178">Arrêter de diffuser l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>
+<translation id="8113515504791187892">Bouton "Sélectionner pour prononcer"</translation>
 <translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Déverrouillez votre Chromebook avec votre mot de passe.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>
@@ -1379,6 +1378,7 @@ Nouvelle installation</translation>
 <translation id="8703634754197148428">Démarrez l'enregistrement. Une fois l'enregistrement démarré, appuyez sur Alt+Maj+L pour aller à la barre d'accès et trouver le bouton pour arrêter l'enregistrement.</translation>
 <translation id="8721053961083920564">Activer/désactiver le volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Capture plein écran</translation>
+<translation id="8731487213223706745">Se termine à <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Il est possible que cet autre clavier tente d'enregistrer les touches sur lesquelles vous appuyez afin de vous soutirer des informations</translation>
 <translation id="8735678380411481005">Couleur de rétroéclairage du clavier</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>

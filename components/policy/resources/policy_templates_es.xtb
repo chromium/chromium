@@ -1508,7 +1508,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       El corrector ortográfico siempre puede usar un diccionario descargado en el almacenamiento local a no ser que esta función se haya inhabilitado con la política <ph name="SPELLCHECK_ENABLED_POLICY_NAME" />. En ese caso, esta política no tendrá ningún efecto.</translation>
 <translation id="2433516903565257847">Porcentaje de dispositivos que deben actualizarse una vez transcurrido el número de días indicado.</translation>
 <translation id="2435052056904485763">Lista de permitidos de servidores de delegación Kerberos</translation>
-<translation id="2435232509335686514">Política de configuración de la gestión que hace <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> de los archivos descargados</translation>
 <translation id="2436302465999055995">Establecer que <ph name="LACROS_NAME" /> sea el único navegador disponible (aún no se ha implementado)</translation>
 <translation id="2439187682308339104">No permite que ningún sitio solicite acceso a los dispositivos HID a través de la API WebHID</translation>
 <translation id="2439733504887695659">Habilitar la opción de cerrar alertas de contraseñas vulneradas para credenciales introducidas</translation>
@@ -1516,15 +1515,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2448315169529769573">Si se habilita la política, <ph name="PRODUCT_OS_NAME" /> enviará métricas de uso y datos de diagnóstico, como informes sobre fallos, a Google. Si se inhabilita la política, no se enviarán métricas ni datos de diagnóstico.
 
        Si no se establece la política, se desactivarán las métricas y los datos de diagnóstico en los dispositivos no administrados, y se activarán en los dispositivos administrados.</translation>
-<translation id="244950822854046436">Lista de los ajustes que se van a aplicar al conector <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, que se activa cuando se descarga un archivo.
-
-      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo al proveedor de servicios al descargar contenido desde una página web. La URL de la página web debe coincidir con un patrón asociado a un patrón enable y no asociado a un patrón disable.  El tipo de MIME del archivo también debe coincidir con un patrón asociado a un patrón enable y no asociado a un patrón disable.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponde la configuración.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> es un ID único para un proveedor de servicios que identifica la cuenta del cliente con el proveedor de servicios. En la configuración de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, cuando se le pide al usuario que inicie sesión, solo se permiten las cuentas de usuario asociadas a la cuenta del proveedor de servicios de este cliente.
-
-      Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2452225615952836461">Utilizar métodos de solicitud siempre en mayúsculas</translation>
 <translation id="2454228136871844693">Optimizar para una mejor estabilidad.</translation>
 <translation id="2455033019778127130">Sigue el comportamiento predeterminado del navegador, muestra los Términos del Servicio y espera a que el usuario los acepte.</translation>

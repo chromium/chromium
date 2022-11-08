@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Тармакка туташпай турат</translation>
 <translation id="2107914222138020205">USB-C кабелиңиз Thunderbolt түзмөгүн колдоого албайт. Түзмөктүн майнаптуулугу чектелиши мүмкүн.</translation>
 <translation id="2108303511227308752">Alt + Backspace ыкчам баскычы өзгөртүлдү. Delete баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> + backspace баскычтарын басыңыз.</translation>
-<translation id="211328683600082144">МИКРОФОНДУ КҮЙГҮЗҮҮ</translation>
 <translation id="2126242104232412123">Жаңы иш такта</translation>
 <translation id="2132302418721800944">Толук экран режиминде жаздыруу</translation>
 <translation id="2135456203358955318">Жалгаштырылган лупа</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">Сереп салуу режиминин ачкычы</translation>
 <translation id="504465286040788597">Мурунку абзац</translation>
 <translation id="5045550434625856497">Сырсөз туура эмес</translation>
-<translation id="5071064518267176975">Колдонмо микрофонду ачканы жатат</translation>
 <translation id="5078796286268621944">Туура эмес PIN</translation>
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
 <translation id="509790653408515442">Телефонуңуздагы колдонмолорду алып ойнотконуңузда, алар ушул жерде көрсөтүлөт</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">Купуялык экраны күйүк</translation>
 <translation id="6625718907317144388">Көрүүдөн коргоо функциясы күйүп тургандыктан, <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> жана башка колдонмолордун билдирмелери жашырылды</translation>
 <translation id="6627638273713273709">Издөө+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> микрофонду колдонгусу келет</translation>
 <translation id="6637729079642709226">Убакытты өзгөртүү</translation>
 <translation id="6641720045729354415">Ыкчам коштомо жазууларды өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Аталышы боюнча иреттөө тартибин артка кайтаруу</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">Кесүү</translation>
 <translation id="7745560842763881396">Текчедеги колдонмолорду көрсөтүү</translation>
 <translation id="7749443890790263709">Иш такталардын саны эң жогорку чегине жетти.</translation>
-<translation id="7749640678855296659">Микрофонуңуз учурда өчүк</translation>
 <translation id="776344839111254542">Жаңыртуунун чоо-жайын көрүү үчүн чыкылдатыңыз</translation>
 <translation id="7768784765476638775">Басып туруп угуу</translation>
 <translation id="7780094051999721182">ыкчам баскычтар</translation>
@@ -1273,6 +1269,7 @@
 <translation id="8091387634532529612">Автоматтык жаңыртуулар</translation>
 <translation id="8098591350844501178">Экранды <ph name="RECEIVER_NAME" /> түзмөгүнө чыгарууну токтотуу</translation>
 <translation id="8113423164597455979">Бүт колд. күйүк</translation>
+<translation id="8113515504791187892">Басып туруп угуңуз баскычы</translation>
 <translation id="8120151603115102514">Телефонуңуздун кулпу экраны иштетилген эмес. Chromebook'тун кулпусун ачуу үчүн сырсөздү териңиз.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Ырастоо</translation>

@@ -102,6 +102,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1657641691196698092">Vidakuzi Vilivyozuiwa</translation>
 <translation id="165877110639533037">Hakuna Vichupo Vilivyo Wazi</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kwenda <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Omba Tovuti ya Ukurasa wa Kifaa cha Mkononi</translation>
 <translation id="168715261339224929">Ili upate alamisho kwenye vifaa vyako vyote, washa usawazishaji.</translation>
 <translation id="1687475363370981210">Tia Alama kuwa Umesoma Zote</translation>
 <translation id="1689333818294560261">Jina la kuwakilisha</translation>
@@ -243,6 +244,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="288655811176831528">Funga Kichupo</translation>
 <translation id="2890171748217283516">Tovuti unazofuatilia huhifadhiwa katika akaunti yako ya Google. Unaweza kuzidhibiti katika Mipangilio ya Dokezo.</translation>
 <translation id="2898963176829412617">Folda Mpya…</translation>
+<translation id="2902684821701498619">Ongeza kwenye Orodha ya Kusoma</translation>
 <translation id="2916171785467530738">Jaza kiotomatiki URL na hoja za Utafutaji</translation>
 <translation id="291754862089661335">Weka msimbo wa QR au msimbo upau katika fremu hii</translation>
 <translation id="2920866371965792875">Ili uone taarifa kutoka kwenye tovuti hii, ifuate hapa.</translation>
@@ -320,6 +322,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3478058380795961209">Mwezi wa Muda wa Matumizi Kuisha</translation>
 <translation id="3482959374254649722">Inasawazisha vichupo vyako...</translation>
 <translation id="3484946776651937681">Fungua katika Folda ya Vipakuliwa</translation>
+<translation id="3485558910355485767">Dirisha Fiche Jipya</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> kuhusu maudhui yaliyopendekezwa</translation>
 <translation id="3494788280727468875">Thibitisha Kufuta Data ya Kuvinjari</translation>
 <translation id="35083190962747987">Fungua ${url}</translation>
@@ -366,6 +369,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3858860766373142691">Jina</translation>
 <translation id="3861486700625780712">Acha kufuata</translation>
+<translation id="3863769054730344136">Tuma kwenye Vifaa Vyako</translation>
 <translation id="387280738075653372">Pakua Chrome hapa.</translation>
 <translation id="3892144330757387737">Utapata historia yako hapa</translation>
 <translation id="3897092660631435901">Menyu</translation>
@@ -589,6 +593,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5659593005791499971">Barua pepe</translation>
 <translation id="5669335982068190158">Uliondolewa kwenye akaunti ikiwa sehemu ya kuweka upya mipangilio ya iPhone yako. Gusa "endelea" hapo chini ili uingie katika akaunti.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Unda Msimbo wa QR</translation>
 <translation id="567881659373499783">Toleo <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Sasa inaonyesha dirisha moja la Chrome}other{Sasa inaonyesha madirisha {count} ya Chrome}}</translation>
 <translation id="5701270923492462699">Ufikiaji wa Kamera Umeruhusiwa</translation>
@@ -673,6 +678,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6219550825416862075">Karibu Tena</translation>
 <translation id="6219688215832490856">Usitafsiri Kamwe</translation>
 <translation id="6223816392543092032">Pata alamisho, historia, manenosiri na mipangilio yako mingine kwenye vifaa vyako vyote.</translation>
+<translation id="6229318421047648685">Omba Tovuti ya Ukurasa wa Kompyuta ya Mezani</translation>
 <translation id="6231782223312638214">Inayopendekezwa</translation>
 <translation id="6232329973559504466">Utafutaji fiche</translation>
 <translation id="6232736989810857397">Hatua hii hukuruhusu kuunda matukio ya kalenda kwa urahisi kwa kutumia Lenzi ya Google.</translation>

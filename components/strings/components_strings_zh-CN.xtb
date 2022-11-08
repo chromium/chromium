@@ -1409,6 +1409,7 @@
 <translation id="4606870351894164739">富有影响力</translation>
 <translation id="4607603470419975064">“查看 Chrome 提示”按钮，按 Enter 键即可了解各项 Chrome 功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
+<translation id="4610279718074907952">此网站属于由 <ph name="SET_OWNER" /> 定义的群组，该群组可查看您的活动记录</translation>
 <translation id="4617273035598175554">图形与动画软件</translation>
 <translation id="4622292761762557753">仍然转移</translation>
 <translation id="4627675673814409125">此政策无法在 Chrome 个人资料级别设置，因而会被忽略。</translation>
@@ -2383,6 +2384,7 @@
 <translation id="7130775116821607281">禁止上传</translation>
 <translation id="7132939140423847331">您的管理员已禁止复制此数据。</translation>
 <translation id="7135130955892390533">显示状态</translation>
+<translation id="7136009930065337683">详细了解无痕模式</translation>
 <translation id="7138472120740807366">递送方式</translation>
 <translation id="7139892792842608322">主要纸匣</translation>
 <translation id="714064300541049402">侧边 2，图片沿 X 轴位移</translation>

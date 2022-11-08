@@ -535,6 +535,7 @@
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1500297251995790841">未知设备 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">详细了解不受支持的 Chrome 应用</translation>
+<translation id="1503392482221435031">自动将使用情况统计信息发送给 Google。您可在设备的设置中开启或关闭崩溃报告。</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504551620756424144">在 Windows 中，共享文件夹是位于 <ph name="BASE_DIR" /> 下。</translation>
 <translation id="1505494256539862015">导出密码</translation>
@@ -1099,7 +1100,6 @@
 <translation id="2007404777272201486">报告问题...</translation>
 <translation id="2009590708342941694">表情符号工具</translation>
 <translation id="2010501376126504057">兼容的设备</translation>
-<translation id="2010888903612390044">未连接任何麦克风</translation>
 <translation id="2015232545623037616">PC 和 Chromecast 使用同一个 Wi-Fi 网络</translation>
 <translation id="2016473077102413275">所有需要使用图片的功能都将无法正常运行</translation>
 <translation id="2016574333161572915">现在可以设置您的 Google Meet 设备了</translation>
@@ -2145,7 +2145,6 @@
 <translation id="2927017729816812676">缓存空间</translation>
 <translation id="2928795416630981206">允许跟踪您的摄像头位置</translation>
 <translation id="2931157624143513983">适合可打印区域</translation>
-<translation id="2931342457001070961">未连接到麦克风</translation>
 <translation id="2932085390869194046">建议密码…</translation>
 <translation id="2932483646085333864">退出并重新登录以开始同步</translation>
 <translation id="2932883381142163287">举报滥用行为</translation>
@@ -2680,6 +2679,7 @@
 <translation id="3461766685318630278">创建和删除额外容器。</translation>
 <translation id="3462311546193741693">会致使您从大多数网站退出。但您的 Google 帐号仍会保持登录状态，以便清除您的已同步数据。</translation>
 <translation id="3462413494201477527">要取消帐号设置吗？</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{此设备上保存了 {COUNT} 个密码}other{此设备上保存了 {COUNT} 个密码}}</translation>
 <translation id="346298925039590474">该移动网络将可供此设备上的所有用户使用</translation>
 <translation id="3464145797867108663">添加工作资料</translation>
 <translation id="346431825526753">此帐号是由 <ph name="CUSTODIAN_EMAIL" /> 管理的未成年人帐号。</translation>
@@ -2837,7 +2837,6 @@
 <translation id="3616741288025931835">清除浏览数据(&amp;C)...</translation>
 <translation id="3617891479562106823">背景不可用。请稍后重试。</translation>
 <translation id="3619115746895587757">卡布奇诺</translation>
-<translation id="3620136223548713675">地理定位</translation>
 <translation id="3621807901162200696">帮助改进 Chrome 操作系统的功能和性能</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 款应用}other{# 款应用}}</translation>
 <translation id="362333465072914957">正在等待 CA 颁发证书</translation>
@@ -2976,6 +2975,7 @@
 <translation id="3743842571276656710">请输入 PIN 码以与“<ph name="DEVICE_NAME" />”配对</translation>
 <translation id="3747077776423672805">要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
 <translation id="3747603683749989726">开启“增强型安全浏览”功能？</translation>
+<translation id="3748424433435232460">此帐号的密码已经保存在该设备上</translation>
 <translation id="3748706263662799310">报告错误</translation>
 <translation id="3750562496035670393">Chrome 已将您的密码保存到此设备，但您可改为将其保存到自己的 Google 帐号。这样一来，在登录后，您也能获取您 Google 帐号中保存的所有密码。</translation>
 <translation id="3752253558646317685">让您的孩子不时地移开手指，以便保存指纹</translation>
@@ -3058,7 +3058,6 @@
 <translation id="3813296892522778813">如果您找不到要查找的内容，请参阅 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 帮助<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">翻译页面和快速解答时使用的语言</translation>
 <translation id="3814529970604306954">学校帐号</translation>
-<translation id="3814792775883886759">未连接任何摄像头</translation>
 <translation id="3816118180265633665">Chrome 颜色</translation>
 <translation id="3817524650114746564">打开您计算机的代理设置</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
@@ -3156,6 +3155,7 @@
 <translation id="3897746662269329507">您的 <ph name="DEVICE_TYPE" /> 专为游戏打造。接下来系统会打开“探索”应用，以便您从中获取数百款最新游戏、查看游戏优惠，以及发现设备自带的游戏功能。</translation>
 <translation id="3898233949376129212">设备语言</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />和<ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">您在 <ph name="WEBSITE" /> 上使用的密码已保存到此设备上和您的 Google 帐号中。您想删除哪个位置存储的密码？</translation>
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3900966090527141178">导出密码</translation>
 <translation id="3902789559055749153">选择您希望以何种方式为<ph name="APP_NAME" />创建通行密钥</translation>
@@ -4073,7 +4073,6 @@
 <translation id="4780321648949301421">页面存储为...</translation>
 <translation id="4781443161433589743">您正在享受 Chrome 的最强安全保护</translation>
 <translation id="4781584184731045253">清除数据和权限</translation>
-<translation id="4782861709165039462">所有麦克风都已被设备硬件开关停用</translation>
 <translation id="4785719467058219317">您使用的安全密钥尚未在此网站注册</translation>
 <translation id="4785914069240823137">取消剪裁</translation>
 <translation id="4788092183367008521">请检查您的网络连接，然后重试。</translation>
@@ -4642,6 +4641,7 @@
 <translation id="5331568967879689647">Chrome 操作系统系统应用</translation>
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
 <translation id="5333896723098573627">如需移除应用，请依次转到“设置”&gt;“应用”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
+<translation id="5334113802138581043">麦克风使用权限</translation>
 <translation id="5334142896108694079">脚本缓存</translation>
 <translation id="5336688142483283574">此网页也将从您的历史记录和 <ph name="SEARCH_ENGINE" /> 活动记录中移除。</translation>
 <translation id="5336689872433667741">光标和触控板</translation>
@@ -5861,7 +5861,6 @@
 <translation id="648927581764831596">没有可用设备</translation>
 <translation id="6490471652906364588">USB-C 设备（右侧端口）</translation>
 <translation id="6491376743066338510">授权失败</translation>
-<translation id="6492396476180293140">内部摄像头已被硬件开关禁用</translation>
 <translation id="6494327278868541139">显示增强型保护详情</translation>
 <translation id="6494445798847293442">不是证书授权中心</translation>
 <translation id="6497548114956205206">详细了解节能模式</translation>
@@ -5880,6 +5879,7 @@
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒体许可</translation>
 <translation id="6511827214781912955">不妨考虑删除“<ph name="FILENAME" />”，让使用此设备的他人看不到您的密码</translation>
+<translation id="6512808201725371249">此帐号的密码已经保存到您的 Google 密码管理工具 (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
 <translation id="6514010653036109809">可用的设备：</translation>
 <translation id="6514565641373682518">此网页已隐藏鼠标指针。</translation>
@@ -6298,6 +6298,7 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897363604023044284">选择需要清除数据的网站</translation>
 <translation id="6897688156970667447">适应弱光条件并节省电量</translation>
+<translation id="6897972855231767338">详细了解如何以访客身份浏览</translation>
 <translation id="6898440773573063262">自助服务终端应用现在可配置为在此设备上自动启动。</translation>
 <translation id="6900284862687837908">后台应用：<ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">增强型保护</translation>
@@ -6621,7 +6622,6 @@
 <translation id="7210499381659830293">扩展打印机</translation>
 <translation id="7211783048245131419">尚未分配任何开关</translation>
 <translation id="7212097698621322584">请输入您的当前 PIN 码以更改它。如果您不知道 PIN 码，则需要重置安全密钥，然后创建新 PIN 码。</translation>
-<translation id="7213903639823314449">地址栏中使用的搜索引擎</translation>
 <translation id="721490496276866468">导入密码</translation>
 <translation id="7218514093816577632">请确保在您的“<ph name="DEVICE_NAME" />”上开启通知功能。</translation>
 <translation id="7219473482981809164">我们找到了多份可供下载的个人资料。请先选择您想下载的个人资料，然后继续操作。</translation>
@@ -8603,6 +8603,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />想访问以下内容：</translation>
 <translation id="9057354806206861646">更新时间表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天大约 1 条通知}other{每天大约 {NUM_NOTIFICATION} 条通知}}</translation>
+<translation id="9061383912634843744">使用已保存的凭据自动登录网站和应用。如果关闭了该功能，在您每次登录网站或应用之前，系统都会要求您确认。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>
 <translation id="9064275926664971810">启用自动填充功能后，只需点击一次即可填写多个表单</translation>
@@ -8633,6 +8634,7 @@
 <translation id="9081543426177426948">在无痕模式下，系统不会保存您访问过的网站</translation>
 <translation id="9084064520949870008">在窗口中打开</translation>
 <translation id="9085256200913095638">复制所选标签页</translation>
+<translation id="9085446486797400519">摄像头使用权限</translation>
 <translation id="9085776959277692427">未选择“<ph name="LANGUAGE" />”。按搜索键 + 空格键即可选择。</translation>
 <translation id="9087949559523851360">添加受限用户</translation>
 <translation id="9088234649737575428">系统已根据企业政策屏蔽 <ph name="PLUGIN_NAME" /></translation>

@@ -219,7 +219,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="209965399369889474">Sem conexão com a rede</translation>
 <translation id="2107914222138020205">O cabo USB-C não oferece suporte a Thunderbolt. O desempenho do dispositivo pode ser limitado.</translation>
 <translation id="2108303511227308752">O atalho de teclado Alt + Backspace mudou. Para usar a tecla Delete, pressione <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">ATIVAR MICROFONE</translation>
 <translation id="2126242104232412123">Novo espaço</translation>
 <translation id="2132302418721800944">Gravar tela cheia</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
@@ -735,7 +734,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5042305953558921026">Tecla do modo de visão geral</translation>
 <translation id="504465286040788597">Parágrafo anterior</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
-<translation id="5071064518267176975">Um app quer usar o microfone</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais recursos do Assistente.</translation>
 <translation id="509790653408515442">Quando você fizer uma transmissão dos apps do smartphone, eles vão aparecer aqui.</translation>
@@ -1008,7 +1006,6 @@ Nova instalação</translation>
 <translation id="6614169507485700968">A tela de privacidade está ativada</translation>
 <translation id="6625718907317144388">As notificações dos apps <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, entre outros estão ocultas porque a proteção de visualização está ativada</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
-<translation id="6629480180092995136">O app <ph name="APP_NAME" /> quer usar o microfone</translation>
 <translation id="6637729079642709226">Alterar horário</translation>
 <translation id="6641720045729354415">Alternar Legenda instantânea. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Desfazer ordem de classificação por nome</translation>
@@ -1209,7 +1206,6 @@ Nova instalação</translation>
 <translation id="7724603315864178912">Recortar</translation>
 <translation id="7745560842763881396">Exibir apps na estante</translation>
 <translation id="7749443890790263709">O número máximo de áreas de trabalho foi atingido.</translation>
-<translation id="7749640678855296659">Seu microfone está desligado</translation>
 <translation id="776344839111254542">Clique para ver detalhes da atualização</translation>
 <translation id="7768784765476638775">Selecionar para ouvir</translation>
 <translation id="7780094051999721182">atalhos</translation>

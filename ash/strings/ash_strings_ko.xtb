@@ -219,7 +219,6 @@
 <translation id="209965399369889474">네트워크에 연결되어 있지 않음</translation>
 <translation id="2107914222138020205">사용 중인 USB-C 케이블은 Thunderbolt를 지원하지 않습니다. 기기 성능이 제한될 수 있습니다.</translation>
 <translation id="2108303511227308752">Alt + Backspace 단축키가 변경되었습니다. Delete 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + backspace 키를 누르세요.</translation>
-<translation id="211328683600082144">마이크 켜기</translation>
 <translation id="2126242104232412123">새 데스크</translation>
 <translation id="2132302418721800944">화면 전체 녹화</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">전체보기 모드 키</translation>
 <translation id="504465286040788597">이전 단락</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
-<translation id="5071064518267176975">앱에서 마이크를 사용하려고 함</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
 <translation id="509790653408515442">휴대전화의 앱을 스트리밍하면 여기 표시됩니다.</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">개인정보 보호 화면이 켜져 있습니다</translation>
 <translation id="6625718907317144388">사생활 보호가 켜져 있으므로 <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> 및 기타 알림이 숨겨집니다.</translation>
 <translation id="6627638273713273709">검색+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> 앱에서 마이크를 사용하려고 합니다</translation>
 <translation id="6637729079642709226">시간 변경</translation>
 <translation id="6641720045729354415">실시간 자막을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">이름별 정렬 순서 실행취소</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7745560842763881396">실행기에 앱 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
-<translation id="7749640678855296659">현재 마이크가 꺼져 있습니다.</translation>
 <translation id="776344839111254542">업데이트 세부정보를 보려면 클릭하세요.</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7780094051999721182">바로가기</translation>
@@ -1273,6 +1269,7 @@
 <translation id="8091387634532529612">자동 업데이트</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />에 화면 전송 중지</translation>
 <translation id="8113423164597455979">모든 앱에서 사용 중</translation>
+<translation id="8113515504791187892">텍스트 읽어주기 버튼</translation>
 <translation id="8120151603115102514">휴대전화에 잠금 화면이 없습니다. Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">확인</translation>

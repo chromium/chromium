@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Սարքը միացած չէ ցանցին</translation>
 <translation id="2107914222138020205">USB-C մալուխը չի աջակցում Thunderbolt միջերես։ Սարքի աշխատանքի արդյունավետությունը կարող է սահմանափակվել։</translation>
 <translation id="2108303511227308752">«Alt + Backspace» ստեղնային դյուրանցումը փոփոխվել է։ Delete ստեղնի գործողությունն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Backspace։</translation>
-<translation id="211328683600082144">ՄԻԱՑՆԵԼ ԽՈՍԱՓՈՂԸ</translation>
 <translation id="2126242104232412123">Նոր աշխատանքային տարածք</translation>
 <translation id="2132302418721800944">Տեսագրել լիաէկրան ռեժիմում</translation>
 <translation id="2135456203358955318">Ամրացված խոշորացույց</translation>
@@ -483,6 +482,7 @@
 <translation id="3633097874324966332">Բացեք Bluetooth-ի կարգավորումները՝ սարքը զուգակցելու համար</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
+<translation id="3659444876902283058">(օր <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Մնացել է մոտ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)։
 Միացրեք սարքը հոսանքին։</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
@@ -733,7 +733,6 @@
 <translation id="5042305953558921026">Համատեսքի ռեժիմի ստեղն</translation>
 <translation id="504465286040788597">Նախորդ պարբերությունը</translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
-<translation id="5071064518267176975">Հավելվածը հայցում է խոսափողն օգտագործելու թույլտվություն</translation>
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
 <translation id="5083553833479578423">Օգտվեք Օգնականի այլ գործառույթներից</translation>
 <translation id="509790653408515442">Երբ դուք հեռարձակեք ձեր հեռախոսի հավելվածները, դրանք կհայտնվեն այստեղ</translation>
@@ -1006,7 +1005,6 @@
 <translation id="6614169507485700968">Գաղտնիության էկրանը միացված է</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> և այլ հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="6627638273713273709">Որոնում+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> հավելվածը հայցում է խոսափողն օգտագործելու թույլտվություն</translation>
 <translation id="6637729079642709226">Փոխել ժամանակը</translation>
 <translation id="6641720045729354415">Միացնել/անջատել Կենդանի ենթագրերը։ <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ըստ անվանման դասավորումը հետարկվեց</translation>
@@ -1206,7 +1204,6 @@
 <translation id="7724603315864178912">Կտրել</translation>
 <translation id="7745560842763881396">Ցուցադրել դարակի հավելվածները</translation>
 <translation id="7749443890790263709">Աշխատասեղանների առավելագույն թույլատրելի քանակը լրացել է:</translation>
-<translation id="7749640678855296659">Ձեր խոսափողն այժմ անջատված է</translation>
 <translation id="776344839111254542">Հպեք՝ թարմացման մանրամասները դիտելու համար</translation>
 <translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7780094051999721182">դյուրանցումներ</translation>
@@ -1266,9 +1263,11 @@
 <translation id="8052898407431791827">Պատճենվեց սեղմատախտակին</translation>
 <translation id="8054466585765276473">Մարտկոցի ժամանակի հաշվարկում:</translation>
 <translation id="8083540854303889870">Պահված է հետագայի համար</translation>
+<translation id="8091153018031979607">Մեկնարկը՝ <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Ավտոմատ թարմացումներ</translation>
 <translation id="8098591350844501178">Դադարեցնել էկրանի հեռարձակումը <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="8113423164597455979">Բոլորը միացված են</translation>
+<translation id="8113515504791187892">«Ընտրեք և լսեք» կոճակ</translation>
 <translation id="8120151603115102514">Հեռախոսում կարգավորված չէ կողպէկրան։ Ձեր Chromebook-ն ապակողպելու համար մուտքագրեք գաղտնաբառը։</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
@@ -1378,6 +1377,7 @@
 <translation id="8703634754197148428">Սկսել տեսագրումը։ Տեսագրումը սկսելուց հետո կարող եք օգտագործել Alt+Shift+L ստեղների համադրությունը՝ դարակ անցնելու և տեսագրումը կանգնեցնելու կոճակը գտնելու համար։</translation>
 <translation id="8721053961083920564">Միացնել/անջատել ձայնը: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Լիաէկրան տեսագրում</translation>
+<translation id="8731487213223706745">Ավարտը՝ <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Հնարավոր է՝ ինչ-որ մեկը փորձում է իմանալ, թե ինչ ստեղներ եք սեղմում։</translation>
 <translation id="8735678380411481005">Ստեղնաշարի հետնալույսի գույն</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

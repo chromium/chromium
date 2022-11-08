@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">Заблакіраваныя файлы cookie</translation>
 <translation id="165877110639533037">Няма адкрытых укладак</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Запытаць мабільны сайт</translation>
 <translation id="168715261339224929">Уключыце сінхранізацыю, каб бачыць закладкі на ўсіх сваіх прыладах.</translation>
 <translation id="1687475363370981210">Адзначыць усе як прачытаныя</translation>
 <translation id="1689333818294560261">Псеўданім</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">Закрыць укладку</translation>
 <translation id="2890171748217283516">Сайты, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Кіраваць імі можна ў наладах Рэкамендацый.</translation>
 <translation id="2898963176829412617">Новая папка…</translation>
+<translation id="2902684821701498619">Дадаць у Спіс на прагляд</translation>
 <translation id="2916171785467530738">Аўтазапаўненне ў полі пошуку і URL-адраса</translation>
 <translation id="291754862089661335">Змясціце QR-код або штрыхкод у гэтай рамцы</translation>
 <translation id="2920866371965792875">Каб бачыць навіны з гэтага сайта, падпішыцеся на яго тут.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">Месяц заканчэння дзеяння</translation>
 <translation id="3482959374254649722">Ідзе сінхранізацыя ўкладак...</translation>
 <translation id="3484946776651937681">Адкрыць у Спампоўках</translation>
+<translation id="3485558910355485767">Новае акно ў рэжыме інкогніта</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра прапанаванае змесціва</translation>
 <translation id="3494788280727468875">Пацвердзіць выдаленне гісторыі праглядаў</translation>
 <translation id="35083190962747987">Адкрыць ${url}</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3861486700625780712">Адпісацца</translation>
+<translation id="3863769054730344136">Адправіць на вашы прылады</translation>
 <translation id="387280738075653372">Спампуйце Chrome тут.</translation>
 <translation id="3892144330757387737">Ваша гісторыя знаходзіцца тут</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
 <translation id="5669335982068190158">У выніку скіду налад iPhone адбыўся выхад з уліковага запісу. Каб увайсці ў яго, націсніце Continue ("Працягнуць") ніжэй.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Стварыць QR-код</translation>
 <translation id="567881659373499783">Версія <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Зараз паказваецца 1 акно Chrome}one{Зараз паказваецца {count} акно Chrome}few{Зараз паказваецца {count} акны Chrome}many{Зараз паказваецца {count} акон Chrome}other{Зараз паказваецца {count} акна Chrome}}</translation>
 <translation id="5701270923492462699">Доступ да камеры дазволены</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">З вяртаннем!</translation>
 <translation id="6219688215832490856">Ніколі не перакладаць з мовы</translation>
 <translation id="6223816392543092032">Закладкі, гісторыя, паролі і іншыя налады будуць даступнымі на ўсіх вашых прыладах.</translation>
+<translation id="6229318421047648685">Запытаць сайт для ПК</translation>
 <translation id="6231782223312638214">Прапанаваныя</translation>
 <translation id="6232329973559504466">Пошук у рэжыме інкогніта</translation>
 <translation id="6232736989810857397">Вы зможаце лёгка ствараць падзеі ў календары з дапамогай Google Аб'ектыва.</translation>

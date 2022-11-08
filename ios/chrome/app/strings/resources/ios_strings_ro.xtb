@@ -102,6 +102,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1657641691196698092">Cookie-uri blocate</translation>
 <translation id="165877110639533037">Nu există file deschise</translation>
 <translation id="1674504678466460478">Din <ph name="SOURCE_LANGUAGE" /> în <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Solicită un site mobil</translation>
 <translation id="168715261339224929">Pentru a accesa marcajele pe toate dispozitivele, activează sincronizarea.</translation>
 <translation id="1687475363370981210">Marchează-le pe toate ca citite</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
@@ -243,6 +244,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="288655811176831528">Închide fila</translation>
 <translation id="2890171748217283516">Site-urile pe care le urmărești sunt salvate în contul tău Google. Le poți gestiona din Setările Discover.</translation>
 <translation id="2898963176829412617">Dosar nou…</translation>
+<translation id="2902684821701498619">Adaugă în lista de lecturi</translation>
 <translation id="2916171785467530738">Completează automat căutările și adresele URL</translation>
 <translation id="291754862089661335">Poziționează codul QR sau codul de bare în acest cadru</translation>
 <translation id="2920866371965792875">Pentru a vedea noutățile de pe site, urmărește-l aici.</translation>
@@ -320,6 +322,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3478058380795961209">Lună expirare</translation>
 <translation id="3482959374254649722">Se sincronizează filele...</translation>
 <translation id="3484946776651937681">Deschide în Descărcări</translation>
+<translation id="3485558910355485767">Fereastră incognito nouă</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre conținutul sugerat</translation>
 <translation id="3494788280727468875">Confirmă ștergerea datelor de navigare</translation>
 <translation id="35083190962747987">Deschide ${url}</translation>
@@ -366,6 +369,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3861486700625780712">Anulează urmărirea</translation>
+<translation id="3863769054730344136">Trimite pe dispozitivele tale</translation>
 <translation id="387280738075653372">Descarcă Chrome de aici.</translation>
 <translation id="3892144330757387737">Aici vei vedea istoricul</translation>
 <translation id="3897092660631435901">Meniu</translation>
@@ -568,6 +572,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5489208564673669003">Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="BEGIN_LINK" />Setări pentru cookie-uri<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blochează toate cookie-urile (nu este recomandat)</translation>
 <translation id="5513681519188741830">acum <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Atinge Manager de parole, apoi Adaugă</translation>
 <translation id="5525095647255982834">Pentru a trimite fila pe alt dispozitiv, conectează-te la Chrome pe dispozitivul respectiv.</translation>
 <translation id="5525269841082836315">Creează o expresie de acces</translation>
 <translation id="5542540507657872337">S-au găsit <ph name="COUNT" /></translation>
@@ -589,6 +594,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5659593005791499971">Adresă de e-mail</translation>
 <translation id="5669335982068190158">Te-ai deconectat în cadrul resetării dispozitivului iPhone. Atinge Continuă pentru a te conecta.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Creează un cod QR</translation>
 <translation id="567881659373499783">Versiunea <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Se afișează o fereastră Chrome}few{Se afișează {count} ferestre Chrome}other{Se afișează {count} de ferestre Chrome}}</translation>
 <translation id="5701270923492462699">Se acordă acces la camera foto</translation>
@@ -673,6 +679,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6219550825416862075">Bine ai revenit</translation>
 <translation id="6219688215832490856">Nu traduce niciodată</translation>
 <translation id="6223816392543092032">Accesează marcajele, istoricul, parolele și alte setări pe toate dispozitivele.</translation>
+<translation id="6229318421047648685">Solicită o versiune a site-ului pentru computer</translation>
 <translation id="6231782223312638214">Sugestii</translation>
 <translation id="6232329973559504466">Căutare incognito</translation>
 <translation id="6232736989810857397">Astfel, poți crea ușor evenimente în calendar cu Google Lens.</translation>
@@ -877,6 +884,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7726702057919861819">Meniu → Istoric → Șterge datele de navigare</translation>
 <translation id="7738120385185846461">Semnalează o problemă…</translation>
 <translation id="7741325291586284254">Pagina Filă incognito nouă</translation>
+<translation id="7744394900930577716">Parole din alte aplicații</translation>
 <translation id="7756478488453921771">Meniu → Setări → Metode de plată</translation>
 <translation id="7765158879357617694">Mută</translation>
 <translation id="7772032839648071052">Confirmă expresia de acces</translation>
@@ -1054,6 +1062,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9081058212938299310">Actualizezi parola pentru <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Pentru a sincroniza și a personaliza pe toate dispozitivele, activează sincronizarea.</translation>
 <translation id="9087108903408689779">Parolă sugerată de Chrome:</translation>
+<translation id="9093271241977565440">În partea de sus a ecranului, atinge pictograma de căutare</translation>
 <translation id="9094033019050270033">Actualizează parola</translation>
 <translation id="9097506547406246598">Nu se poate anula urmărirea. A apărut o eroare.</translation>
 <translation id="9100610230175265781">Este necesară o expresie de acces</translation>

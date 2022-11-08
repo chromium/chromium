@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Нет подключения к сети</translation>
 <translation id="2107914222138020205">Кабель USB-C не поддерживает интерфейс Thunderbolt. Производительность устройства может быть ограничена.</translation>
 <translation id="2108303511227308752">Функция сочетания клавиш Alt + Backspace изменилась. Чтобы выполнить действие клавиши Delete, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">ВКЛЮЧИТЬ МИКРОФОН</translation>
 <translation id="2126242104232412123">Добавить рабочий стол</translation>
 <translation id="2132302418721800944">Запись видео со всего экрана</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">Клавиша режима обзора</translation>
 <translation id="504465286040788597">Предыдущий абзац</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
-<translation id="5071064518267176975">Приложение запрашивает доступ к микрофону</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="509790653408515442">Приложения, которые вы транслируете с телефона, появляются здесь.</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">Экран конфиденциальности включен</translation>
 <translation id="6625718907317144388">Уведомления "<ph name="APP_1_TITLE" />", "<ph name="APP_2_TITLE" />" и других приложений скрыты, потому что включен режим безопасного просмотра.</translation>
 <translation id="6627638273713273709">Поиск + Shift + K</translation>
-<translation id="6629480180092995136">Приложение "<ph name="APP_NAME" />" запрашивает доступ к микрофону</translation>
 <translation id="6637729079642709226">Изменение времени</translation>
 <translation id="6641720045729354415">Переключатель автоматических субтитров. <ph name="STATE_TEXT" />.</translation>
 <translation id="6643169293433369663">Отменить упорядочивание по названию</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7745560842763881396">Показать приложения на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
-<translation id="7749640678855296659">Сейчас микрофон отключен.</translation>
 <translation id="776344839111254542">Нажмите, чтобы просмотреть информацию об обновлении</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7780094051999721182">ярлыки</translation>
@@ -1273,6 +1269,7 @@
 <translation id="8091387634532529612">Автоматическое обновление</translation>
 <translation id="8098591350844501178">Остановить трансляцию содержимого экрана на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Вкл. для всех</translation>
+<translation id="8113515504791187892">Кнопка "Озвучивание при нажатии"</translation>
 <translation id="8120151603115102514">На телефоне нет блокировки экрана. Чтобы разблокировать Chromebook, введите пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>

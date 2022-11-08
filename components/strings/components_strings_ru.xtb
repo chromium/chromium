@@ -1412,6 +1412,7 @@
 <translation id="4606870351894164739">Эффектный</translation>
 <translation id="4607603470419975064">Кнопка "Посмотреть советы по работе с Chrome". Чтобы узнать больше о функциях Chrome, нажмите Ввод.</translation>
 <translation id="4607608436550361748">Посмотреть советы по работе с Chrome</translation>
+<translation id="4610279718074907952">Этот сайт входит в группу <ph name="SET_OWNER" /> и может отслеживать ваши действия</translation>
 <translation id="4617273035598175554">ПО для графики и анимации</translation>
 <translation id="4622292761762557753">Все равно передать</translation>
 <translation id="4627675673814409125">Это правило нельзя установить на уровне профиля Chrome, поэтому оно будет игнорироваться.</translation>
@@ -2387,6 +2388,7 @@
 <translation id="7130775116821607281">Загрузка остановлена</translation>
 <translation id="7132939140423847331">Администратор запретил копирование этих данных.</translation>
 <translation id="7135130955892390533">Показать статус</translation>
+<translation id="7136009930065337683">Подробнее о режиме инкогнито</translation>
 <translation id="7138472120740807366">Способ доставки</translation>
 <translation id="7139892792842608322">Основной лоток</translation>
 <translation id="714064300541049402">Смещение изображений на оборотной стороне по оси X</translation>

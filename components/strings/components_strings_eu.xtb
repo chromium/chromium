@@ -1380,6 +1380,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu orri hau Google Translate-rekin itzultzeko</translation>
 <translation id="4514308731478712184">Desaktibatu bilaketa-ibilbideak</translation>
 <translation id="4515275063822566619">Chrome-tik eta zure Google-ko kontutik (<ph name="ACCOUNT_EMAIL" />) hartu dira txartelak eta helbideak. Kudeatu nahi badituzu, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
+<translation id="4520048001084013693">Administratzailearen gidalerroek ez dute uzten fitxategia deskargatzen</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Monarka gutun-azala</translation>
 <translation id="4521916730539354575">Ezkerreko erretilua</translation>
@@ -2380,6 +2381,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Ezin da entregatu helbide horretan. Hautatu beste helbide bat.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Kargatzeko aukera blokeatuta dago</translation>
 <translation id="7132939140423847331">Administratzaileak debekatu egin du datu hauek kopiatzea.</translation>
 <translation id="7135130955892390533">Erakutsi egoera</translation>
 <translation id="7136009930065337683">Lortu ezkutuko moduari buruzko informazio gehiago</translation>
@@ -2614,6 +2616,7 @@ Xehetasun gehiago:
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7659327900411729175">Kaku gutun-azala 8</translation>
 <translation id="7659878911471462949">Pozezko malkoak</translation>
+<translation id="766014026101194726">{0,plural, =1{Administratzailearen gidalerroek ez dute uzten fitxategia kargatzen}other{Administratzailearen gidalerroek ez dute uzten # fitxategi kargatzen}}</translation>
 <translation id="7662298039739062396">Luzapen batek kontrolatzen du ezarpena</translation>
 <translation id="7663736086183791259">Ziurtagiria <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Baimenik gabe ezkutuko moduan</translation>
@@ -2708,6 +2711,7 @@ Xehetasun gehiago:
 <translation id="7939744324936979484">Folka eta musika tradizionala</translation>
 <translation id="7941628148012649605">Chou gutun-azala 4</translation>
 <translation id="7942349550061667556">Gorria</translation>
+<translation id="7943397946612013052">Deskargatzeko aukera blokeatuta dago</translation>
 <translation id="7943893128817522649">Fitxategi bat baino gehiago automatikoki deskargatzea eska dezake</translation>
 <translation id="7947285636476623132">Egiaztatu iraungitze-urtea eta saiatu berriro</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu" Chrome-ren eginbideei buruzko informazioa lortzeko</translation>

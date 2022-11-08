@@ -219,7 +219,6 @@
 <translation id="209965399369889474">ქსელთან კავშირი არ არის</translation>
 <translation id="2107914222138020205">თქვენს USB-C კაბელს არ აქვს Thunderbolt-ის მხარდაჭერა. მოწყობილობის ეფექტურობა შეიძლება შეიზღუდოს.</translation>
 <translation id="2108303511227308752">კლავიატურის მალსახმობი Alt + Backspace შეიცვალა. წაშლის კლავიშით სარგებლობისთვის გამოიყენეთ კლავიშთა კომბინაცია <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
-<translation id="211328683600082144">მიკროფონის ჩართვა</translation>
 <translation id="2126242104232412123">ახალი სამუშაო მაგიდა</translation>
 <translation id="2132302418721800944">ეკრანის სრულად ჩაწერა</translation>
 <translation id="2135456203358955318">ჩამაგრებული ლუპა</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">მიმოხილვის რეჟიმის კლავიში</translation>
 <translation id="504465286040788597">წინა აბზაცი</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
-<translation id="5071064518267176975">აპი მოითხოვს მიკროფონის გამოყენებას</translation>
 <translation id="5078796286268621944">არასწორი პინი</translation>
 <translation id="5083553833479578423">განბლოკეთ ასისტენტის დამატებითი ფუნქციები.</translation>
 <translation id="509790653408515442">თქვენი ტელეფონის აპების გაშვებისას, ისინი აქ გამოჩნდება</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">კონფიდენციალურობის ეკრანი ჩართულია</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />-ის, <ph name="APP_2_TITLE" />-ის და სხვა შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> ითხოვს ამ მიკროფონის გამოყენებას</translation>
 <translation id="6637729079642709226">დროის შეცვლა</translation>
 <translation id="6641720045729354415">ავტოსუბტიტრების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">სახელის მიხედვით დალაგების გაუქმება</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7745560842763881396">თაროზე აპების ჩვენება</translation>
 <translation id="7749443890790263709">მიღწეულია სამუშაო მაგიდების მაქსიმალური რაოდენობა.</translation>
-<translation id="7749640678855296659">თქვენი მიკროფონი ამჟამად გამორთულია</translation>
 <translation id="776344839111254542">დააწკაპუნეთ განახლების დეტალების სანახავად</translation>
 <translation id="7768784765476638775">მონიშვნა წარმოსათქმელად</translation>
 <translation id="7780094051999721182">მალსახმობები</translation>

@@ -1104,7 +1104,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="2007404777272201486">Informar de un problema...</translation>
 <translation id="2009590708342941694">Herramienta de emojis</translation>
 <translation id="2010501376126504057">Dispositivos compatibles</translation>
-<translation id="2010888903612390044">No hay micrófonos conectados</translation>
 <translation id="2015232545623037616">Computadora y Chromecast en la misma red Wi-Fi</translation>
 <translation id="2016473077102413275">No se habilitarán las funciones que necesitan imágenes.</translation>
 <translation id="2016574333161572915">Tu hardware de Google Meet está listo para configurarse</translation>
@@ -2151,7 +2150,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2927017729816812676">Almacenamiento en caché</translation>
 <translation id="2928795416630981206">Puede realizar un seguimiento de la posición de la cámara</translation>
 <translation id="2931157624143513983">Ajustar al área de impresión</translation>
-<translation id="2931342457001070961">No hay ningún micrófono conectado</translation>
 <translation id="2932085390869194046">Sugerir contraseña…</translation>
 <translation id="2932483646085333864">Salir y volver a acceder para iniciar la sincronización</translation>
 <translation id="2932883381142163287">Informar sobre abusos</translation>
@@ -2844,7 +2842,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3616741288025931835">Eliminar datos de navega&amp;ción...</translation>
 <translation id="3617891479562106823">Los fondos no están disponibles. Vuelve a intentarlo más tarde.</translation>
 <translation id="3619115746895587757">Capuchino</translation>
-<translation id="3620136223548713675">Ubicación geográfica</translation>
 <translation id="3621807901162200696">Ayudar a mejorar las funciones y el rendimiento de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{una app}other{# apps}}</translation>
 <translation id="362333465072914957">Esperando que la CA emita un certificado</translation>
@@ -3066,7 +3063,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3813296892522778813">Consulta la <ph name="BEGIN_LINK_CHROMIUM" />Ayuda de Google Chrome<ph name="END_LINK_CHROMIUM" /> si no encuentras lo que estás buscando</translation>
 <translation id="3813358687923336574">Idioma utilizado para traducir páginas y Respuestas rápidas</translation>
 <translation id="3814529970604306954">Cuenta de una institución educativa</translation>
-<translation id="3814792775883886759">No hay cámaras conectadas</translation>
 <translation id="3816118180265633665">Colores de Chrome</translation>
 <translation id="3817524650114746564">Abre la configuración de proxy de tu computadora</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que fallo ChromeOS, qué funciones usas y la cantidad de memoria que usas en general.<ph name="END_PARAGRAPH1" />
@@ -3354,7 +3350,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="407543464472585404">El perfil de <ph name="NAME" /> está vinculado a <ph name="EMAIL" />.</translation>
 <translation id="4077917118009885966">Anuncios bloqueados en este sitio</translation>
 <translation id="4077919383365622693">Se borrarán todos los datos y las cookies de <ph name="SITE" />.</translation>
-<translation id="4078738236287221428">Forzado</translation>
+<translation id="4078738236287221428">Exhaustiva</translation>
 <translation id="4079140982534148664">Usar el corrector ortográfico mejorado</translation>
 <translation id="4081203444152654304">Buscar en la imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> te envió una notificación al teléfono. Sigue los pasos que se enumeran allí para confirmar tu identidad.</translation>
@@ -4085,7 +4081,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4780321648949301421">Guardar página como...</translation>
 <translation id="4781443161433589743">Tienes la seguridad más sólida de Chrome.</translation>
 <translation id="4781584184731045253">Borrar datos y permisos</translation>
-<translation id="4782861709165039462">El interruptor del hardware de los dispositivos inhabilitó todos los micrófonos</translation>
 <translation id="4785719467058219317">Estás usando una llave de seguridad que no se registró con este sitio web</translation>
 <translation id="4785914069240823137">Cancelar recorte</translation>
 <translation id="4788092183367008521">Comprueba la conexión de red y vuelve a intentarlo.</translation>
@@ -5876,7 +5871,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="648927581764831596">Ningún medio disponible</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="6491376743066338510">Se produjo un error en la autorización</translation>
-<translation id="6492396476180293140">El interruptor de hardware desactivó la cámara interna</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494445798847293442">No es una entidad de certificación</translation>
 <translation id="6497548114956205206">Más información sobre el ahorro de energía</translation>
@@ -6638,7 +6632,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
 <translation id="7211783048245131419">Aún no se asignaron interruptores</translation>
 <translation id="7212097698621322584">Ingresa tu PIN actual para cambiarlo. Si no sabes cuál es, deberás restablecer la llave de seguridad y, luego, crear uno nuevo.</translation>
-<translation id="7213903639823314449">Motor de búsqueda que se usa en la barra de direcciones</translation>
 <translation id="721490496276866468">Importar contraseñas</translation>
 <translation id="7218514093816577632">Asegúrate de que las notificaciones estén activadas en tu <ph name="DEVICE_NAME" /></translation>
 <translation id="7219473482981809164">Encontramos múltiples perfiles disponibles para descargar. Antes de continuar, selecciona los que quieras descargar.</translation>

@@ -1104,7 +1104,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="2007404777272201486">Problem melden...</translation>
 <translation id="2009590708342941694">Emojitool</translation>
 <translation id="2010501376126504057">Kompatible Geräte</translation>
-<translation id="2010888903612390044">Kein Mikrofon verbunden</translation>
 <translation id="2015232545623037616">Der PC und Chromecast befinden sich im gleichen WLAN</translation>
 <translation id="2016473077102413275">Funktionen, die Bilder erfordern, funktionieren dann nicht</translation>
 <translation id="2016574333161572915">Deine Google Meet-Hardware kann eingerichtet werden</translation>
@@ -2151,7 +2150,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2927017729816812676">Cache-Speicher</translation>
 <translation id="2928795416630981206">Dürfen meine Kameraposition erfassen</translation>
 <translation id="2931157624143513983">An Druckbereich anpassen</translation>
-<translation id="2931342457001070961">Es ist kein Mikrofon angeschlossen</translation>
 <translation id="2932085390869194046">Passwort vorschlagen…</translation>
 <translation id="2932483646085333864">Melde dich ab und dann wieder an, um die Synchronisierung zu starten</translation>
 <translation id="2932883381142163287">Missbrauch melden</translation>
@@ -2844,7 +2842,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3616741288025931835">&amp;Browserdaten löschen...</translation>
 <translation id="3617891479562106823">Hintergründe sind nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3620136223548713675">Standortbestimmung</translation>
 <translation id="3621807901162200696">Helfen, die Funktionen und die Leistung von Chrome OS zu verbessern</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{eine App}other{# Apps}}</translation>
 <translation id="362333465072914957">Es wird darauf gewartet, dass die Zertifizierungsstelle ein Zertifikat ausstellt</translation>
@@ -3066,7 +3063,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3813296892522778813">Wenn du keine Ergebnisse erhältst, <ph name="BEGIN_LINK_CHROMIUM" />rufe die Google Chrome-Hilfe auf<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Verwendete Sprache zum Übersetzen von Seiten und Schnellinfos</translation>
 <translation id="3814529970604306954">Konto einer Bildungseinrichtung</translation>
-<translation id="3814792775883886759">Keine Kamera verbunden</translation>
 <translation id="3816118180265633665">Chrome-Farben</translation>
 <translation id="3817524650114746564">Proxy-Einstellungen des Computers öffnen</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass deine ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über ChromeOS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
@@ -4085,7 +4081,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4780321648949301421">Seite speichern unter...</translation>
 <translation id="4781443161433589743">Du nutzt die höchste Sicherheit in Chrome</translation>
 <translation id="4781584184731045253">Daten und Berechtigungen löschen</translation>
-<translation id="4782861709165039462">Alle Mikrofone wurden durch den Hardwareschalter des Geräts deaktiviert</translation>
 <translation id="4785719467058219317">Du verwendest einen Sicherheitsschlüssel, der nicht auf dieser Website registriert ist</translation>
 <translation id="4785914069240823137">Zuschneiden abbrechen</translation>
 <translation id="4788092183367008521">Bitte überprüfe die Netzwerkverbindung und versuche es noch einmal.</translation>
@@ -5873,7 +5868,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="648927581764831596">Keine verfügbar</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
 <translation id="6491376743066338510">Fehler bei Autorisierung</translation>
-<translation id="6492396476180293140">Interne Kamera wurde per Hardwareschalter deaktiviert</translation>
 <translation id="6494327278868541139">Details zum erweiterten Schutz anzeigen</translation>
 <translation id="6494445798847293442">Keine Zertifizierungsstelle</translation>
 <translation id="6497548114956205206">Weitere Informationen zum Energiesparmodus</translation>
@@ -6635,7 +6629,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7210499381659830293">Erweiterungsdrucker</translation>
 <translation id="7211783048245131419">Es wurde noch keine Schaltertaste zugewiesen</translation>
 <translation id="7212097698621322584">Gib deine aktuelle PIN ein, um sie zu ändern. Falls du deine PIN nicht kennst, musst du den Sicherheitsschlüssel zurücksetzen und dann eine neue PIN erstellen.</translation>
-<translation id="7213903639823314449">In der Adressleiste verwendete Suchmaschine</translation>
 <translation id="721490496276866468">Passwörter importieren</translation>
 <translation id="7218514093816577632">Achte darauf, dass auf „<ph name="DEVICE_NAME" />“ Benachrichtigungen aktiviert sind.</translation>
 <translation id="7219473482981809164">Es wurden mehrere Profile zum Download gefunden. Wähle diejenigen aus, die du herunterladen möchtest, bevor du fortfährst.</translation>

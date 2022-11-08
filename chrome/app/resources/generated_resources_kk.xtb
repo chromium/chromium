@@ -407,6 +407,7 @@
 <translation id="1388253969141979417">Микрофоныңызды пайдалануға рұқсаты барлар</translation>
 <translation id="1388728792929436380">Жаңарту аяқталғанда, <ph name="DEVICE_TYPE" /> құрылғысы қайта қосылады.</translation>
 <translation id="1389601498324964367">Квотаға негізделген жад</translation>
+<translation id="1390113502208199250">Chrome Education Upgrade мүмкіндіктерін пайдалану үшін құрылғыны зауыттық параметрлерге қайтаруыңыз керек.</translation>
 <translation id="139013308650923562">Құрылғыңызда орнатылған қаріптерді пайдалануға рұқсат берілген сайттар</translation>
 <translation id="1390548061267426325">Қалыпты қойынды ретінде ашу</translation>
 <translation id="1390907927270446471">Пайдаланушының (<ph name="PROFILE_USERNAME" />) <ph name="PRINTER_NAME" /> принтеріне басып шығаруға рұқсаты жоқ. Әкімшіге хабарласыңыз.</translation>
@@ -477,6 +478,7 @@
 <translation id="1436784010935106834">Жойылды</translation>
 <translation id="1437986450143295708">Мәселені толық сипаттап беріңіз.</translation>
 <translation id="1439671507542716852">ұзақ мерзімді қолдау</translation>
+<translation id="1440090277117135316">Мектепке тіркелу аяқталды</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> таңдалған</translation>
 <translation id="1442851588227551435">Қосулы Kerberos билетін орнату</translation>
 <translation id="1444628761356461360">Бұл параметрді құрылғы иесі, <ph name="OWNER_EMAIL" />, басқарады.</translation>
@@ -1102,7 +1104,6 @@
 <translation id="2007404777272201486">Ақау туралы хабарлау…</translation>
 <translation id="2009590708342941694">Эмоджи құралы</translation>
 <translation id="2010501376126504057">Үйлесімді құрылғылар</translation>
-<translation id="2010888903612390044">Микрофон қосылмаған.</translation>
 <translation id="2015232545623037616">ДК және Chromecast бір Wi-Fi желісінде</translation>
 <translation id="2016473077102413275">Суреттерді қажет ететін функциялар жұмыс істемейді.</translation>
 <translation id="2016574333161572915">Google Meet жабдығы реттеуге дайын.</translation>
@@ -2149,7 +2150,6 @@
 <translation id="2927017729816812676">Кэш жады</translation>
 <translation id="2928795416630981206">Камераңыздың орнын қадағалауға рұқсаты барлар</translation>
 <translation id="2931157624143513983">Басып шығару аймағына сәйкестендіру</translation>
-<translation id="2931342457001070961">Ешқандай микрофон жалғанбаған.</translation>
 <translation id="2932085390869194046">Құпия сөз жасау...</translation>
 <translation id="2932483646085333864">Синхрондауды бастау үшін жүйеден шығып, қайта кіріп көріңіз</translation>
 <translation id="2932883381142163287">Бұзақылық туралы хабарлау</translation>
@@ -2394,6 +2394,7 @@
 <translation id="3170072451822350649">Сонымен қатар жүйеге кіруді өткізіп жіберіп, <ph name="LINK_START" />Қонақ ретінде шолуыңызға<ph name="LINK_END" /> болады.</translation>
 <translation id="31774765611822736">Сол жақтан жаңа қойынды ашу</translation>
 <translation id="3177909033752230686">Бет тілі:</translation>
+<translation id="3177914167275935955">Құрылғыда Chrome Education Upgrade қамтылған, бірақ пайдаланушы атыңыз Google for Education аккаунтымен байланыстырылмаған. Қосымша құрылғыда g.co/workspace/edusignup сайтына кіру арқылы Google for Education аккаунтын жасаңыз.</translation>
 <translation id="3179982752812949580">Мәтін қарпі</translation>
 <translation id="3181954750937456830">Safe Browsing қызметі (сізді және құрылғыңызды қауіпті сайттардан қорғайды)</translation>
 <translation id="3182749001423093222">Емле тексеру</translation>
@@ -2841,7 +2842,6 @@
 <translation id="3616741288025931835">&amp;Шолу деректерін жою…</translation>
 <translation id="3617891479562106823">Фондар жоқ. Кейінірек қайталап көріңіз.</translation>
 <translation id="3619115746895587757">Капучино</translation>
-<translation id="3620136223548713675">Геолокация</translation>
 <translation id="3621807901162200696">ChromeOS функциялары мен өнімділігін жақсартуға көмектесу</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{қолданба}other{# қолданба}}</translation>
 <translation id="362333465072914957">Сертификат шығуы үшін CA күтілуде</translation>
@@ -3063,7 +3063,6 @@
 <translation id="3813296892522778813">Іздегеніңіз табылмаса, <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome анықтамасына<ph name="END_LINK_CHROMIUM" /> өтіңіз</translation>
 <translation id="3813358687923336574">Беттерді аудару және жылдам жауаптар алу үшін қолданылатын тіл</translation>
 <translation id="3814529970604306954">Оқу аккаунты</translation>
-<translation id="3814792775883886759">Камера қосылмаған.</translation>
 <translation id="3816118180265633665">Chrome түстері</translation>
 <translation id="3817524650114746564">Компьютеріңіздің прокси параметрлерін ашу</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />ChromeOS құрылғыларына автоматты түрде жасалған есептерді жіберуге рұқсат берсеңіз, бізге ChromeOS жүйесіндегі ақауларды жойып, оны жетілдіруде басымдықты дұрыс анықтауға көмектесесіз. Мұндай есептерде ChromeOS бұзылатын кездер, қолданыстағы функциялар және әдетте пайдаланылатын жад көлемі сияқты ақпарат қамтылуы мүмкін.<ph name="END_PARAGRAPH1" />
@@ -4063,6 +4062,7 @@
 <translation id="4762489666082647806">Меңзер түсі</translation>
 <translation id="4762718786438001384">Құрылғы дискінде бос орын тым аз қалды</translation>
 <translation id="4763408175235639573">Осы бетті ашқанда, мына cookie файлдары орнатылды</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> жарамды Google for Education аккаунты емес. Әкімшіңізге хабарласыңыз. Егер сіз әкімші болсаңыз, келесі сілтемеге өтіп ұйымыңызды реттей аласыз: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Бұл құрылғы 1 ай сақталады және келесіде кодсыз қосыла аласыз. Оны әкімші орнатады.}other{Бұл құрылғы {MONTHS} ай сақталады және келесіде кодсыз қосыла аласыз. Оны әкімші орнатады.}}</translation>
 <translation id="4765582662863429759">Android Messages қолданбасына хабарларды телефоннан Chromebook құрылғысына жіберуге мүмкіндік береді</translation>
 <translation id="4766598565665644999">Барлық кеңейтім <ph name="HOST" /> сайтын оқып, өзгерте алады.</translation>
@@ -4081,7 +4081,6 @@
 <translation id="4780321648949301421">Бетті басқаша сақтау…</translation>
 <translation id="4781443161433589743">Chrome-ның ең күшті қорғанысы қолданылуда.</translation>
 <translation id="4781584184731045253">Деректер мен рұқсаттарды өшіру</translation>
-<translation id="4782861709165039462">Барлық микрофон құрылғының аппараттық ауыстырғышымен өшірілді.</translation>
 <translation id="4785719467058219317">Веб-сайтта тіркелмеген қауіпсіздік кілтін пайдаланып жатырсыз.</translation>
 <translation id="4785914069240823137">Қиюдан бас тарту</translation>
 <translation id="4788092183367008521">Желі байланысын тексеріп, әрекетті қайталаңыз.</translation>
@@ -4723,6 +4722,7 @@
 <translation id="5407167491482639988">Түсініксіз</translation>
 <translation id="5408750356094797285">Масштаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google аккаунтыңыздан</translation>
+<translation id="5411022484772257615">Мектепке тіркелуді аяқтау мүмкін болмады</translation>
 <translation id="5413640305322530561">Пайдалану және диагностика деректері туралы толығырақ</translation>
 <translation id="5414198321558177633">Профиль тізімі жаңартылуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="5414566801737831689">Сіз кірген веб-сайттардың белгішелерін оқу</translation>
@@ -5506,6 +5506,7 @@
 <translation id="6129953537138746214">Бос орын</translation>
 <translation id="6130692320435119637">Wi-Fi желісін қосу</translation>
 <translation id="6130887916931372608">Перне</translation>
+<translation id="6132714462430777655">Мектепке тіркелуді өткізіп жіберу керек пе?</translation>
 <translation id="6135823405800500595">Телефоныңыз жақын тұрғанына, оның құлпы ашық және Bluetooth, Wi-Fi функциясы қосулы екеніне көз жеткізіңіз.</translation>
 <translation id="6135826623269483856">Барлық дисплейде терезелерді басқаруға рұқсат берілмейді.</translation>
 <translation id="6136114942382973861">Жүктеп алынғандар жолағын жабу</translation>
@@ -5867,7 +5868,6 @@
 <translation id="648927581764831596">Жоқ</translation>
 <translation id="6490471652906364588">USB-C құрылғысы (оң жақ ұяшық)</translation>
 <translation id="6491376743066338510">Авторизация сәтсіз</translation>
-<translation id="6492396476180293140">Ішкі камера аппараттық ауыстырғыш арқылы өшірілген.</translation>
 <translation id="6494327278868541139">Жақсартылған қорғаныс туралы мәліметтерді көрсету</translation>
 <translation id="6494445798847293442">Сертификат беру органы емес</translation>
 <translation id="6497548114956205206">Қуат үнемдеу режимі туралы толық ақпарат</translation>
@@ -6629,7 +6629,6 @@
 <translation id="7210499381659830293">Кеңейтім қолданатын принтерлер</translation>
 <translation id="7211783048245131419">Әлі ешқандай ауыстырғыш тағайындалмады.</translation>
 <translation id="7212097698621322584">Қолданыстағы PIN кодын өзгерту үшін оны енгізіңіз. PIN кодыңызды білмесеңіз, оны бастапқы күйге қайтарып, жаңа PIN кодын жасаңыз.</translation>
-<translation id="7213903639823314449">Мекенжай жолағында пайдаланылатын іздеу жүйесі</translation>
 <translation id="721490496276866468">Құпия сөздерді импорттау</translation>
 <translation id="7218514093816577632"><ph name="DEVICE_NAME" /> құрылғысында хабарландырулар қосулы екенін тексеріңіз.</translation>
 <translation id="7219473482981809164">Жүктеп алуға болатын бірнеше профиль таптық. Жалғастырмас бұрын, жүктеп алғыңыз келетіндерін таңдаңыз.</translation>
@@ -6728,6 +6727,7 @@
 <translation id="7310598146671372464">Аккаунтқа кіру мүмкін болмады. Бұл серверде Kerberos шифрлау түрлері істемейді. Әкімшіңізге хабарласыңыз.</translation>
 <translation id="7311089766378749632"><ph name="SITE_NAME" /> сайтының деректерін оқу мен өзгерту сұралуда</translation>
 <translation id="7312210124139670355">Әкімші eSIM-ді қайта орнатуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
+<translation id="7317831949569936035">Мектепке тіркелу</translation>
 <translation id="7320213904474460808">Желіні әдепкісінше таңдау</translation>
 <translation id="7321545336522791733">Сервер қолжетімді емес</translation>
 <translation id="7323315405936922211">Курсор аумағының өлшемі</translation>

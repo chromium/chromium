@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Δεν υπάρχει σύνδεση στο δίκτυο</translation>
 <translation id="2107914222138020205">Το καλώδιο USB-C που έχετε δεν υποστηρίζει συσκευές Thunderbolt. Η απόδοση της συσκευής ενδέχεται να είναι περιορισμένη.</translation>
 <translation id="2108303511227308752">Η συντόμευση πληκτρολογίου Alt + Backspace άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Delete, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
-<translation id="211328683600082144">ΕΝΕΡΓΟΠΟΙΗΣΗ ΜΙΚΡΟΦΩΝΟΥ</translation>
 <translation id="2126242104232412123">Νέο γραφείο</translation>
 <translation id="2132302418721800944">Εγγραφή ολόκληρης της οθόνης</translation>
 <translation id="2135456203358955318">Μεγεθυντικός φακός σε παράθυρο</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">Πλήκτρο λειτουργίας επισκόπησης</translation>
 <translation id="504465286040788597">Προηγούμενη παράγραφος</translation>
 <translation id="5045550434625856497">Λανθασμένος κωδικός πρόσβασης</translation>
-<translation id="5071064518267176975">Μια εφαρμογή θέλει να χρησιμοποιήσει το μικρόφωνο</translation>
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
 <translation id="5083553833479578423">Ξεκλειδώστε περισσότερες λειτουργίες του Βοηθού.</translation>
 <translation id="509790653408515442">Όταν μεταδίδετε τις εφαρμογές του τηλεφώνου σας σε ροή, θα εμφανίζονται εδώ.</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">Η οθόνη απορρήτου είναι ενεργοποιημένη.</translation>
 <translation id="6625718907317144388">Έχει γίνει απόκρυψη των ειδοποιήσεων των εφαρμογών <ph name="APP_1_TITLE" /> και <ph name="APP_2_TITLE" /> και άλλων εφαρμογών επειδή η προστασία προβολής είναι ενεργοποιημένη</translation>
 <translation id="6627638273713273709">Αναζήτηση+Shift+K</translation>
-<translation id="6629480180092995136">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει το μικρόφωνο</translation>
 <translation id="6637729079642709226">Αλλαγή ώρας</translation>
 <translation id="6641720045729354415">Εναλλαγή Ζωντανών υπότιτλων. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Αναίρεση σειράς ταξινόμησης κατά όνομα</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">Αποκοπή</translation>
 <translation id="7745560842763881396">Εμφάνιση εφαρμογών στο ράφι</translation>
 <translation id="7749443890790263709">Συμπληρώθηκε ο μέγιστος αριθμός γραφείων.</translation>
-<translation id="7749640678855296659">Το μικρόφωνό σας είναι αυτήν τη στιγμή απενεργοποιημένο</translation>
 <translation id="776344839111254542">Κάντε κλικ, για να δείτε τις λεπτομέρειες της ενημέρωσης</translation>
 <translation id="7768784765476638775">Επιλέξτε για αυτόματη ανάγνωση</translation>
 <translation id="7780094051999721182">συντομεύσεις</translation>
@@ -1273,6 +1269,7 @@
 <translation id="8091387634532529612">Αυτόματες ενημερώσεις</translation>
 <translation id="8098591350844501178">Διακοπή μετάδοσης οθόνης σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ενεργές, όλες οι εφαρμογές</translation>
+<translation id="8113515504791187892">Κουμπί Επιλέξτε για αυτόματη ανάγνωση</translation>
 <translation id="8120151603115102514">Το τηλέφωνό σας δεν έχει οθόνη κλειδ/τος. Ξεκλειδώστε το Chromebook με τον κωδ. πρόσβ.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>

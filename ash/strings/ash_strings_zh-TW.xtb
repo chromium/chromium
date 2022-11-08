@@ -219,7 +219,6 @@
 <translation id="209965399369889474">未連上網路</translation>
 <translation id="2107914222138020205">你的 USB-C 連接線不支援 Thunderbolt。裝置效能可能會因此受到限制。</translation>
 <translation id="2108303511227308752">「Alt + Backspace 鍵」的鍵盤快速鍵已變更。如要使用 Delete 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵。</translation>
-<translation id="211328683600082144">開啟麥克風</translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
 <translation id="2132302418721800944">錄製全螢幕畫面</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
@@ -734,7 +733,6 @@
 <translation id="5042305953558921026">總覽模式按鍵</translation>
 <translation id="504465286040788597">上一段</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
-<translation id="5071064518267176975">某個應用程式要求使用麥克風</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
 <translation id="509790653408515442">串流手機的應用程式時，這些應用程式會顯示在這裡</translation>
@@ -1006,7 +1004,6 @@
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
 <translation id="6625718907317144388">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
-<translation id="6629480180092995136">「<ph name="APP_NAME" />」要求使用麥克風</translation>
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換即時字幕。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">復原依名稱排列順序</translation>
@@ -1207,7 +1204,6 @@
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7745560842763881396">顯示檔案櫃中的應用程式</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
-<translation id="7749640678855296659">你的麥克風目前已關閉</translation>
 <translation id="776344839111254542">按一下即可查看更新詳細資料</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7780094051999721182">捷徑</translation>

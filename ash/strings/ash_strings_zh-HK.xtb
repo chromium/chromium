@@ -219,7 +219,6 @@
 <translation id="209965399369889474">未連接網絡</translation>
 <translation id="2107914222138020205">USB-C 連接線不支援 Thunderbolt。裝置效能可能受到限制。</translation>
 <translation id="2108303511227308752">「Alt + Backspace 鍵」的鍵盤快速鍵已變更。如要使用 Delete 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵。</translation>
-<translation id="211328683600082144">開啟麥克風</translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
 <translation id="2132302418721800944">錄影全螢幕</translation>
 <translation id="2135456203358955318">固定的放大鏡</translation>
@@ -734,7 +733,6 @@
 <translation id="5042305953558921026">概覽模式鍵</translation>
 <translation id="504465286040788597">上一段</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
-<translation id="5071064518267176975">有應用程式要求使用麥克風</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="509790653408515442">串流手機的應用程式時，這些應用程式將會在這裡顯示</translation>
@@ -1006,7 +1004,6 @@
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
 <translation id="6625718907317144388">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> 要求使用麥克風</translation>
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換「即時字幕」。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">根據名稱復原排列次序</translation>
@@ -1207,7 +1204,6 @@
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7745560842763881396">在捷徑列中顯示應用程式</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
-<translation id="7749640678855296659">麥克風目前已關閉</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
 <translation id="7768784765476638775">選取以朗讀</translation>
 <translation id="7780094051999721182">捷徑</translation>
@@ -1271,7 +1267,7 @@
 <translation id="8091387634532529612">自動更新</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="8113423164597455979">已在所有應用程式上啟用通知</translation>
-<translation id="8113515504791187892">隨選朗讀按鈕</translation>
+<translation id="8113515504791187892">「選取以朗讀」掣</translation>
 <translation id="8120151603115102514">您的手機沒有上鎖畫面。如要解鎖 Chromebook，請輸入密碼。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>

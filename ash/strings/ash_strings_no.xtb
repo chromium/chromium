@@ -219,7 +219,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
 <translation id="2107914222138020205">USB-C-kabelen din støtter ikke Thunderbolt. Enhetens ytelse kan være begrenset.</translation>
 <translation id="2108303511227308752">Hurtigtasten Alt + tilbaketast er endret. For å bruke Delete-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + tilbaketasten.</translation>
-<translation id="211328683600082144">SLÅ PÅ MIKROFONEN</translation>
 <translation id="2126242104232412123">Nytt skrivebord</translation>
 <translation id="2132302418721800944">Ta opp hele skjermen</translation>
 <translation id="2135456203358955318">Dokket lupe</translation>
@@ -735,7 +734,6 @@ Koble enheten til strøm.</translation>
 <translation id="5042305953558921026">Tast for oversiktsmodus</translation>
 <translation id="504465286040788597">Forrige avsnitt</translation>
 <translation id="5045550434625856497">Feil passord</translation>
-<translation id="5071064518267176975">En app vil bruke mikrofonen</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
 <translation id="509790653408515442">Når du strømmer appene på telefonen din, vises de her</translation>
@@ -1008,7 +1006,6 @@ Nylig installert</translation>
 <translation id="6614169507485700968">Personvernskjermen er på</translation>
 <translation id="6625718907317144388">Varsler fra <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> og andre steder er skjult fordi visningsbeskyttelse er på</translation>
 <translation id="6627638273713273709">Søk + Shift + K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> vil bruke mikrofonen</translation>
 <translation id="6637729079642709226">Endre tiden</translation>
 <translation id="6641720045729354415">Slå av/på Direkteteksting. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Angre sortering etter navn</translation>
@@ -1209,7 +1206,6 @@ Nylig installert</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7745560842763881396">Vis apper på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
-<translation id="7749640678855296659">Mikrofonen din er av</translation>
 <translation id="776344839111254542">Klikk for å se oppdateringsdetaljene</translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7780094051999721182">snarveier</translation>

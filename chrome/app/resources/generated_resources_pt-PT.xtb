@@ -1107,7 +1107,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="2007404777272201486">Comunicar um problema...</translation>
 <translation id="2009590708342941694">Ferramenta de emojis</translation>
 <translation id="2010501376126504057">Dispositivos compatíveis</translation>
-<translation id="2010888903612390044">Não está ligado nenhum microfone</translation>
 <translation id="2015232545623037616">PC e Chromecast na mesma rede Wi-Fi</translation>
 <translation id="2016473077102413275">As funcionalidades que necessitam de imagens não funcionarão</translation>
 <translation id="2016574333161572915">O seu hardware Google Meet está pronto para ser configurado</translation>
@@ -2154,7 +2153,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2927017729816812676">Armazenamento de cache</translation>
 <translation id="2928795416630981206">Com autorização para monitorizar a posição da câmara</translation>
 <translation id="2931157624143513983">Ajustar à área de impressão</translation>
-<translation id="2931342457001070961">Nenhum microfone ligado</translation>
 <translation id="2932085390869194046">Sugerir palavra-passe…</translation>
 <translation id="2932483646085333864">Termine e inicie sessão novamente para iniciar a sincronização</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
@@ -2848,7 +2846,6 @@ Pretende pará-lo?</translation>
 <translation id="3616741288025931835">&amp;Limpar Dados de Navegação...</translation>
 <translation id="3617891479562106823">Os fundos não estão disponíveis. Tente mais tarde.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3620136223548713675">Geolocalização</translation>
 <translation id="3621807901162200696">Ajudar a melhorar as funcionalidades e o desempenho do ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{uma app}other{# apps}}</translation>
 <translation id="362333465072914957">A aguardar que a CA emita um certificado</translation>
@@ -3070,7 +3067,6 @@ Pretende pará-lo?</translation>
 <translation id="3813296892522778813">Aceda à <ph name="BEGIN_LINK_CHROMIUM" />ajuda do Google Chrome<ph name="END_LINK_CHROMIUM" /> se não conseguir encontrar aquilo que procura.</translation>
 <translation id="3813358687923336574">Idioma utilizado para traduzir páginas e Respostas rápidas</translation>
 <translation id="3814529970604306954">Conta escolar</translation>
-<translation id="3814792775883886759">Não está ligada nenhuma câmara</translation>
 <translation id="3816118180265633665">Cores do Chrome</translation>
 <translation id="3817524650114746564">Abrir definições do proxy do seu computador</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos com ChromeOS enviem relatórios automáticos, ajuda-nos a dar prioridade ao que deve ser corrigido e melhorado no ChromeOS. Estes relatórios podem incluir informações como a altura em que o ChromeOS falha, que funcionalidades usa e a quantidade de memória que usa habitualmente.<ph name="END_PARAGRAPH1" />
@@ -4089,7 +4085,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4780321648949301421">Guardar página como...</translation>
 <translation id="4781443161433589743">Tem a segurança mais avançada do Chrome</translation>
 <translation id="4781584184731045253">Limpar dados e autorizações</translation>
-<translation id="4782861709165039462">Todos os microfones desativados pelo interruptor do hardware dos dispositivos</translation>
 <translation id="4785719467058219317">Está a utilizar uma chave de segurança que não está registada neste Website.</translation>
 <translation id="4785914069240823137">Cancele o recorte</translation>
 <translation id="4788092183367008521">Verifique a sua ligação à rede e tente novamente.</translation>
@@ -5882,7 +5877,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="648927581764831596">Nenhum disponível</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta direita)</translation>
 <translation id="6491376743066338510">Falha na autorização</translation>
-<translation id="6492396476180293140">Câmara interna desativada pelo interruptor do hardware</translation>
 <translation id="6494327278868541139">Mostrar detalhes de proteção melhorada</translation>
 <translation id="6494445798847293442">Não é uma autoridade de certificação</translation>
 <translation id="6497548114956205206">Saber mais sobre a poupança de energia</translation>
@@ -6644,7 +6638,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7210499381659830293">Impressoras por extensão</translation>
 <translation id="7211783048245131419">Ainda não foi atribuído qualquer comutador</translation>
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>
-<translation id="7213903639823314449">Motor de pesquisa utilizado na barra de endereço</translation>
 <translation id="721490496276866468">Importar palavras-passe</translation>
 <translation id="7218514093816577632">Certifique-se de que as notificações estão ativadas no dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="7219473482981809164">Encontrámos vários perfis disponíveis para transferência. Selecione os que quer transferir antes de prosseguir.</translation>

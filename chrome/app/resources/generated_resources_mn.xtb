@@ -1115,7 +1115,6 @@
 <translation id="2007404777272201486">Асуудлыг тайлагнах...</translation>
 <translation id="2009590708342941694">Эможигийн хэрэгсэл</translation>
 <translation id="2010501376126504057">Тохирох төхөөрөмжүүд</translation>
-<translation id="2010888903612390044">Микрофон холбогдоогүй байна</translation>
 <translation id="2015232545623037616">Ижил Wi-Fi сүлжээнд холбогдсон компьютер болон Chromecast</translation>
 <translation id="2016473077102413275">Зураг шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="2016574333161572915">Таны Google Meet-н техник хангамжийг тохируулахад бэлэн боллоо</translation>
@@ -2165,7 +2164,6 @@
 <translation id="2927017729816812676">Нөөшийн сан</translation>
 <translation id="2928795416630981206">Таны камерын байрлалыг хянахыг зөвшөөрсөн</translation>
 <translation id="2931157624143513983">Хэвлэх талбайн хэмжээнд тааруулах</translation>
-<translation id="2931342457001070961">Микрофон холбоогүй байна</translation>
 <translation id="2932085390869194046">Нууц үг санал болгох...</translation>
 <translation id="2932483646085333864">Синкийг эхлүүлэхийн тулд гараад, буцаж нэвтэрнэ үү</translation>
 <translation id="2932883381142163287">Зөрчлийг мэдэгдэх</translation>
@@ -2858,7 +2856,6 @@
 <translation id="3616741288025931835">&amp; Хайлтын өгөгдлийг цэвэрлэ...</translation>
 <translation id="3617891479562106823">Арын дэвсгэр боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="3619115746895587757">Капучино</translation>
-<translation id="3620136223548713675">Геолокаци</translation>
 <translation id="3621807901162200696">ChromeOS-н онцлогууд болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 апп}other{# апп}}</translation>
 <translation id="362333465072914957">Цахим гэрчилгээний газраас гэрчилгээ олгохыг хүлээж байна</translation>
@@ -3080,7 +3077,6 @@
 <translation id="3813296892522778813">Хэрэв та хайж байгаа зүйлээ олохгүй байвал <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome тусламж<ph name="END_LINK_CHROMIUM" /> хэсэгт очно уу</translation>
 <translation id="3813358687923336574">Хуудсыг орчуулах болон Шуурхай хариултад ашигласан хэл</translation>
 <translation id="3814529970604306954">Сургуулийн бүртгэл</translation>
-<translation id="3814792775883886759">Камер холбогдоогүй байна</translation>
 <translation id="3816118180265633665">Chrome-н өнгө</translation>
 <translation id="3817524650114746564">Компьютерынхоо прокси тохиргоог нээнэ үү</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />ChromeOS төхөөрөмжүүддээ автомат тайлан илгээхийг зөвшөөрснөөр бидэнд ChromeOS-т юуг засаж, сайжруулахыг чухалчилж үзэхэд тусална. Эдгээр тайланд ChromeOS хэзээ гэмтсэн, та ямар онцлогууд ашигладаг болон хэр хэмжээний санах ойг ихэвчлэн ашигладаг зэргийг багтааж болно.<ph name="END_PARAGRAPH1" />
@@ -3752,6 +3748,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> нь таны өгөгдлийг илүү аюулгүй хадгалах боломжтой идэвхтэй TPM илрүүллээ.</translation>
 <translation id="4451479197788154834">Таны нууц үгийг энэ төхөөрөмж болон таны Google Бүртгэлд хадгалсан</translation>
 <translation id="4451757071857432900">Төвөгтэй эсвэл хуурамч зар харуулдаг сайтууд дээр блоклосон (санал болгосон)</translation>
+<translation id="4452898361839215358">эсвэл PPD-г сонгоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />-г хайх эсвэл URL оруулах</translation>
 <translation id="4458535500699390320">Энэ таб идэвхгүй байхад Санах ой хэмнэгч бусад ажилд зориулж санах ойг чөлөөлсөн. Та үүнийг тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> өдрийн өмнөөс идэвхтэй</translation>
@@ -4099,7 +4096,6 @@
 <translation id="4780321648949301421">Хуудсыг... хэлбэрээр хадгалах</translation>
 <translation id="4781443161433589743">Та Chrome-н хамгийн найдвартай хамгаалалтад байна</translation>
 <translation id="4781584184731045253">Өгөгдөл болон зөвшөөрөл арилгах</translation>
-<translation id="4782861709165039462">Бүх микрофоныг төхөөрөмжүүдийн техник хангамжийн сэлгүүрээр идэвхгүй болгосон</translation>
 <translation id="4785719467058219317">Та энэ веб сайтад бүртгүүлээгүй аюулгүй байдлын түлхүүрийг ашиглаж байна</translation>
 <translation id="4785914069240823137">Тайралтыг цуцална уу</translation>
 <translation id="4788092183367008521">Сүлжээний холболтоо шалгаад дахин оролдоно уу.</translation>
@@ -5891,7 +5887,6 @@
 <translation id="648927581764831596">Байхгүй</translation>
 <translation id="6490471652906364588">USB-C төхөөрөмж (баруун талын порт)</translation>
 <translation id="6491376743066338510">Баталгаажуулж чадсангүй</translation>
-<translation id="6492396476180293140">Техник хангамжийн сэлгүүрээр дотоод камерыг идэвхгүй болгосон</translation>
 <translation id="6494327278868541139">Сайжруулсан хамгаалалтын дэлгэрэнгүйг харуулах</translation>
 <translation id="6494445798847293442">Гэрчилгээжүүлэх эрхгүй</translation>
 <translation id="6497548114956205206">Эрчим хүч хэмнэгчийн талаар нэмэлт мэдээлэл авах</translation>
@@ -6653,7 +6648,6 @@
 <translation id="7210499381659830293">Өргөтгөлийн хэвлэгч</translation>
 <translation id="7211783048245131419">Одоохондоо оноосон сэлгэгч алга</translation>
 <translation id="7212097698621322584">ПИН-г өөрчлөхийн тулд одоогийн ПИН-ээ оруулна уу. Хэрэв та ПИН-ээ мэдэхгүй бол аюулгүй байдлын түлхүүрээ шинэчлээд дараа нь шинэ ПИН үүсгэх шаардлагатай.</translation>
-<translation id="7213903639823314449">Хаяг оруулах хэсэгт ашигласан хайлтын систем</translation>
 <translation id="721490496276866468">Нууц үгнүүдийг импорт хийх</translation>
 <translation id="7218514093816577632">Таны <ph name="DEVICE_NAME" /> дээр мэдэгдлийг асаасан эсэхийг баталгаажуулна уу.</translation>
 <translation id="7219473482981809164">Бид татах боломжтой олон профайл оллоо. Үргэлжлүүлэхийн өмнө татахыг хүссэн профайлаа сонгоно уу.</translation>
@@ -8376,6 +8370,7 @@
 <translation id="8823514049557262177">Текстийн холбоосыг хуулах</translation>
 <translation id="8823559166155093873">Күүкиг блоклох</translation>
 <translation id="8823704566850948458">Нууц үг санал болгох...</translation>
+<translation id="8823963789776061136">Эсвэл принтерийн PPD-г сонгоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Хуудас нэмэх...</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> болон бусад <ph name="COUNT" />-г блоклосон</translation>
 <translation id="8827289157496676362">Өргөтгөлийг бэхлэх</translation>
@@ -8630,6 +8625,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> нь дараах контентод хандахыг хүсэж байна:</translation>
 <translation id="9057354806206861646">Хуваарийг шинэчлэх</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Хоногт ойролцоогоор 1 мэдэгдэл}other{Хоногт ойролцоогоор {NUM_NOTIFICATION} мэдэгдэл}}</translation>
+<translation id="9058760336383947367">Принтерийн PPD харах</translation>
 <translation id="9061383912634843744">Хадгалсан мандат үнэмлэхийг ашиглан сайтууд болон аппуудад автоматаар нэвтрээрэй. Унтраасан тохиолдолд таныг сайт эсвэл аппад нэвтрэх бүрд танаас баталгаажуулахыг хүснэ.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />-с <ph name="ERROR_LINE_END" /> мөрийн алдаа</translation>

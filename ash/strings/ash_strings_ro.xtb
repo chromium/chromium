@@ -219,7 +219,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
 <translation id="2107914222138020205">Cablul USB-C nu acceptă Thunderbolt. Este posibil ca performanța dispozitivului să fie limitată.</translation>
 <translation id="2108303511227308752">Comanda rapidă de la tastatură Alt + Backspace s-a schimbat. Pentru a folosi tasta Delete, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
-<translation id="211328683600082144">ACTIVEAZĂ MICROFONUL</translation>
 <translation id="2126242104232412123">Birou nou</translation>
 <translation id="2132302418721800944">Înregistrează ecranul complet</translation>
 <translation id="2135456203358955318">Lupă andocată</translation>
@@ -484,6 +483,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3633097874324966332">Deschide setările Bluetooth pentru a asocia dispozitivul</translation>
 <translation id="3638400994746983214">Activează/dezactivează ecranul de confidențialitate. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualizare întârziată</translation>
+<translation id="3659444876902283058">(Ziua <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Timp aproximativ rămas: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="366222428570480733">Utilizatorul gestionat <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -734,7 +734,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5042305953558921026">Tasta pentru modul de prezentare generală</translation>
 <translation id="504465286040788597">Paragraful anterior</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
-<translation id="5071064518267176975">O aplicație solicită permisiunea de a folosi microfonul</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
 <translation id="509790653408515442">Când redai în stream aplicații de pe telefon, ele vor apărea aici</translation>
@@ -1007,7 +1006,6 @@ Instalare nouă</translation>
 <translation id="6614169507485700968">Ecranul de confidențialitate este activat</translation>
 <translation id="6625718907317144388">Notificările pentru <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> și altele sunt ascunse deoarece este activată protecția la afișare</translation>
 <translation id="6627638273713273709">Tasta de căutare + Shift + K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> solicită permisiunea de a folosi microfonul</translation>
 <translation id="6637729079642709226">Schimbă ora</translation>
 <translation id="6641720045729354415">Activează / dezactivează funcția Subtitrări live. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Anulează sortarea după nume</translation>
@@ -1208,7 +1206,6 @@ Instalare nouă</translation>
 <translation id="7724603315864178912">Decupează</translation>
 <translation id="7745560842763881396">Afișează aplicațiile în raft</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
-<translation id="7749640678855296659">Microfonul este dezactivat</translation>
 <translation id="776344839111254542">Dă clic pentru a vedea detaliile actualizării</translation>
 <translation id="7768784765476638775">Selectează și ascultă</translation>
 <translation id="7780094051999721182">comenzi rapide</translation>
@@ -1268,9 +1265,11 @@ Instalare nouă</translation>
 <translation id="8052898407431791827">S-a copiat în clipboard</translation>
 <translation id="8054466585765276473">Se calculează durata bateriei.</translation>
 <translation id="8083540854303889870">Salvate pentru mai târziu</translation>
+<translation id="8091153018031979607">Începe la <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualizări automate</translation>
 <translation id="8098591350844501178">Nu mai proiecta ecranul pe dispozitivul <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Activat, toate</translation>
+<translation id="8113515504791187892">Butonul Selectează și ascultă</translation>
 <translation id="8120151603115102514">Telefonul nu are ecran de blocare. Pentru a debloca Chromebookul, introdu parola.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmați</translation>
@@ -1380,6 +1379,7 @@ Instalare nouă</translation>
 <translation id="8703634754197148428">Pornește înregistrarea. După ce a început înregistrarea, apasă pe Alt + Shift + L pentru a naviga la raft și caută butonul de oprire a înregistrării</translation>
 <translation id="8721053961083920564">Activează sau dezactivează volumul: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captură pe ecran complet</translation>
+<translation id="8731487213223706745">Se încheie la <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Aceasta ar putea încerca să înregistreze ce taste apeși</translation>
 <translation id="8735678380411481005">Culoarea retroiluminării tastaturii</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

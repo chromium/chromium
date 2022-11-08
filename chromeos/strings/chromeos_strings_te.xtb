@@ -220,6 +220,7 @@
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />వ పేజీని స్కాన్ చేస్తోంది...</translation>
 <translation id="315738237743207937">క్యాప్టివ్ పోర్టల్ గుర్తించబడింది</translation>
+<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />సిస్టమ్, యాప్ సమాచారాన్ని<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />కొలమానాలను<ph name="END_LINK2" /> పంపండి</translation>
 <translation id="3170673040743561620">మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టండి</translation>
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
 <translation id="319101249942218879">అవతార్ ఇమేజ్ మారింది</translation>
@@ -332,6 +333,7 @@
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ఇమేజ్‌లు</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> కీని నొక్కారు</translation>
+<translation id="435692326371619097">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ని ఏర్పరుస్తాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">రన్ కాలేదు</translation>
 <translation id="4378551569595875038">కనెక్టింగ్...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -581,6 +583,7 @@
 <translation id="6575134580692778371">కాన్ఫిగర్ చేయలేదు</translation>
 <translation id="6579509898032828423">ఈ ఫోటోను ఉపయోగించండి</translation>
 <translation id="6596816719288285829">IP అడ్రస్‌</translation>
+<translation id="6599673642868607614">మీ ఫీడ్‌బ్యాక్‌ను తెలిపినందుకు ధన్యవాదాలు. మీ ఫీడ్‌బ్యాక్ Chromebook అనుభవాన్ని మెరుగుపరచడంలో మాకు సహాయపడుతుంది, ఇంకా మా టీమ్ ద్వారా రివ్యూ చేయబడుతుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లు ఉన్నందున మేము రిప్లయిని పంపడం సాధ్యం కాదు.</translation>
 <translation id="6618744767048954150">రన్ అవుతున్నాయి</translation>
 <translation id="6620487321149975369">ప్రింట్ టాస్క్‌లను మాన్యువల్‌గా తీసివేసేంత వరకు అవి హిస్టరీలో అలాగే ఉంటాయి</translation>
 <translation id="6624819909909965616">10 MB కంటే పెద్ద ఫైల్‌ను అప్‌లోడ్ చేయడం సాధ్యం కాదు</translation>
@@ -689,6 +692,7 @@
 <translation id="7762130827864645708">మీ పాస్‌వర్డ్ మార్పు విజయవంతమైంది. ఇప్పటి నుండి కొత్త పాస్‌వర్డ్‌ను ఉపయోగించండి.</translation>
 <translation id="7763470514545477072">డొమైన్ సఫిక్స్ మ్యాచ్</translation>
 <translation id="7769672763586021400">మోడల్ ID</translation>
+<translation id="7778717409420828014">మీ ఫీడ్‌బ్యాక్ Chromebook అనుభవాన్ని మెరుగుపరచడంలో మాకు సహాయపడుతుంది, ఇంకా మా టీమ్ ద్వారా రివ్యూ చేయబడుతుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లు ఉన్నందున మేము రిప్లయిని పంపడం సాధ్యం కాదు.</translation>
 <translation id="7784116172884276937">DNS సర్వర్‌లు ఏవీ సెటప్ చేయబడలేదు</translation>
 <translation id="779591286616261875">కొత్త రిపోర్ట్‌ను పంపండి</translation>
 <translation id="7799817062559422778">లైట్ మోడ్</translation>

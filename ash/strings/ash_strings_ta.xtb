@@ -219,7 +219,6 @@
 <translation id="209965399369889474">நெட்வொர்க்குடன் இணைக்கப்படவில்லை</translation>
 <translation id="2107914222138020205">Thunderboltடை உங்கள் USB-C கேபிள் ஆதரிக்காது. சாதனத்தின் செயல்திறன் பாதிக்கப்படலாம்.</translation>
 <translation id="2108303511227308752">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Alt + Backspace. Delete பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + backspace பட்டனை அழுத்தவும்.</translation>
-<translation id="211328683600082144">மைக்ரோஃபோனை இயக்கு</translation>
 <translation id="2126242104232412123">புதிய டெஸ்க்</translation>
 <translation id="2132302418721800944">முழுத்திரையையும் ரெக்கார்டு செய்யும்</translation>
 <translation id="2135456203358955318">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
@@ -484,6 +483,7 @@
 <translation id="3633097874324966332">உங்கள் சாதனத்தை இணைக்க, புளூடூத் அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="3638400994746983214">தனிப்பட்ட திரையை நிலைமாற்றும். <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">புதுப்பிப்பு நிலுவையில் உள்ளது</translation>
+<translation id="3659444876902283058">(நாள் <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">சுமார் <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%) சாதனத்தைப் பயன்படுத்தலாம்.
 சாதனத்தை சார்ஜ் செய்யவும்.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> நிர்வகிக்கப்பட்ட பயனர்</translation>
@@ -734,7 +734,6 @@
 <translation id="5042305953558921026">மேலோட்டப் பயன்முறை விசை</translation>
 <translation id="504465286040788597">முந்தைய பத்தி</translation>
 <translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
-<translation id="5071064518267176975">மைக்ரோஃபோனை ஓர் ஆப்ஸ் பயன்படுத்த விரும்புகிறது</translation>
 <translation id="5078796286268621944">தவறான PIN</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
 <translation id="509790653408515442">நீங்கள் ஸ்ட்ரீம் செய்யும் மொபைல் ஆப்ஸ் இங்கே காட்டப்படும்</translation>
@@ -1007,7 +1006,6 @@
 <translation id="6614169507485700968">தனிப்பட்ட திரை இயக்கப்பட்டுள்ளது</translation>
 <translation id="6625718907317144388">பார்ப்பதற்கான கட்டுப்பாடு இயக்கத்தில் உள்ளதால் <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> மற்றும் பிறவற்றின் அறிவிப்புகள் மறைக்கப்பட்டுள்ளன</translation>
 <translation id="6627638273713273709">தேடல்+Shift+K</translation>
-<translation id="6629480180092995136">உங்கள் மைக்ரோஃபோனை <ph name="APP_NAME" /> பயன்படுத்த விரும்புகிறது</translation>
 <translation id="6637729079642709226">நேரத்தை மாற்றுக</translation>
 <translation id="6641720045729354415">'உடனடி வசனத்தை' நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">பெயரின்படி வரிசைப்படுத்தியதைச் செயல்தவிர்க்கும்</translation>
@@ -1208,7 +1206,6 @@
 <translation id="7724603315864178912">வெட்டு</translation>
 <translation id="7745560842763881396">ஆப்ஸை ஷெல்ஃபில் காட்டும்</translation>
 <translation id="7749443890790263709">டெஸ்க்குகளின் எண்ணிக்கை அதிகபட்ச வரம்பை எட்டிவிட்டது.</translation>
-<translation id="7749640678855296659">உங்கள் மைக்ரோஃபோன் தற்போது முடக்கப்பட்டுள்ளது</translation>
 <translation id="776344839111254542">புதுப்பிப்பு விவரங்களைப் பார்க்க, கிளிக் செய்யவும்</translation>
 <translation id="7768784765476638775">பேசும் திரை</translation>
 <translation id="7780094051999721182">ஷார்ட்கட்கள்</translation>
@@ -1268,9 +1265,11 @@
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="8054466585765276473">பேட்டரி நேரத்தைக் கணக்கிடுகிறது.</translation>
 <translation id="8083540854303889870">பின்னர் பயன்படுத்தச் சேமிக்கப்பட்டவை</translation>
+<translation id="8091153018031979607">தொடங்கும் நேரம்: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">தானியங்குப் புதுப்பிப்புகள்</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புவதை நிறுத்து</translation>
 <translation id="8113423164597455979">எல்லா ஆப்ஸுக்கும் இயக்கு</translation>
+<translation id="8113515504791187892">பேசும் திரை பட்டன்</translation>
 <translation id="8120151603115102514">மொபைலில் பூட்டுத்திரை இல்லை. Chromebookகை திறக்க கடவுச்சொல் உள்ளிடுக</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">உறுதிப்படுத்து</translation>
@@ -1380,6 +1379,7 @@
 <translation id="8703634754197148428">ரெக்கார்டு செய்யத் தொடங்கும். ரெக்கார்டிங் தொடங்கியதும் Alt + Shift + L விசைகளை ஒன்றாக அழுத்தி ஷெல்ஃபிற்குச் செல்லலாம். அதில் 'ரெக்கார்டிங்கை நிறுத்து' பட்டன் இருக்கும்</translation>
 <translation id="8721053961083920564">ஒலியை இயக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">முழுத்திரையைப் படமெடுக்கும்</translation>
+<translation id="8731487213223706745">முடியும் நேரம்: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
 <translation id="8735678380411481005">கீபோர்டு பேக்லைட் வண்ணம்</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

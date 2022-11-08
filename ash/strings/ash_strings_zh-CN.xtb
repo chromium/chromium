@@ -219,7 +219,6 @@
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
 <translation id="2108303511227308752">键盘快捷键“Alt + 退格键”已更改。若要使用 Delete 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 退格键。</translation>
-<translation id="211328683600082144">开启麦克风</translation>
 <translation id="2126242104232412123">新桌面</translation>
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">“概览模式”键</translation>
 <translation id="504465286040788597">上一个段落</translation>
 <translation id="5045550434625856497">密码不正确</translation>
-<translation id="5071064518267176975">有一款应用想使用麦克风</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
 <translation id="509790653408515442">当您流式传输您手机上的应用时，它们会显示在此处</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
 <translation id="6625718907317144388">由于窥探保护功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />和其他通知</translation>
 <translation id="6627638273713273709">搜索键+Shift+K</translation>
-<translation id="6629480180092995136">“<ph name="APP_NAME" />”想使用麦克风</translation>
 <translation id="6637729079642709226">更改时间</translation>
 <translation id="6641720045729354415">开启/关闭“实时字幕”功能。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">撤消按名称排序</translation>
@@ -1206,7 +1203,6 @@
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7745560842763881396">显示任务栏中的应用</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
-<translation id="7749640678855296659">您的麦克风目前处于关闭状态</translation>
 <translation id="776344839111254542">点击即可查看相关更新的详情</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7780094051999721182">快捷方式</translation>
@@ -1270,6 +1266,7 @@
 <translation id="8091387634532529612">自动更新</translation>
 <translation id="8098591350844501178">停止将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>
+<translation id="8113515504791187892">随选朗读按钮</translation>
 <translation id="8120151603115102514">您的手机未设置锁屏。若要解锁 Chromebook，请输入密码。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">确认</translation>

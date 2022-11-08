@@ -219,7 +219,6 @@
 <translation id="209965399369889474">לא מחובר לרשת</translation>
 <translation id="2107914222138020205">‏כבל ה-USB-C שחיברת לא תומך ב-Thunderbolt. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="2108303511227308752">‏מקשי הקיצור Alt + ‏Backspace הוחלפו. כדי לדמות את הפעולה של המקש Delete, יש להקיש על המקש <ph name="LAUNCHER_KEY_NAME" /> + המקש Backspace.</translation>
-<translation id="211328683600082144">להפעלת המיקרופון</translation>
 <translation id="2126242104232412123">שולחן עבודה חדש</translation>
 <translation id="2132302418721800944">הקלטה של מסך מלא</translation>
 <translation id="2135456203358955318">מגדיל במצב מעוגן</translation>
@@ -734,7 +733,6 @@
 <translation id="5042305953558921026">מקש של מצב סקירה כללית</translation>
 <translation id="504465286040788597">הפיסקה הקודמת</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
-<translation id="5071064518267176975">אפליקציה כלשהי מבקשת להשתמש במיקרופון</translation>
 <translation id="5078796286268621944">‏PIN שגוי</translation>
 <translation id="5083553833479578423">‏אפשר להפעיל תכונות Assistant נוספות.</translation>
 <translation id="509790653408515442">כשמשדרים את האפליקציות של הטלפון, הן מופיעות כאן</translation>
@@ -1007,7 +1005,6 @@
 <translation id="6614169507485700968">מסך הפרטיות פועל</translation>
 <translation id="6625718907317144388">ההתראות מהאפליקציות <ph name="APP_1_TITLE" /> וכן <ph name="APP_2_TITLE" /> ומאפליקציות נוספות מוסתרות כי מופעלת הגנה על תצוגה</translation>
 <translation id="6627638273713273709">‏חיפוש+Shift‏+K</translation>
-<translation id="6629480180092995136">האפליקציה <ph name="APP_NAME" /> מבקשת להשתמש במיקרופון</translation>
 <translation id="6637729079642709226">שינוי הזמן</translation>
 <translation id="6641720045729354415">החלפה למצב 'כתוביות מיידיות'. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">ביטול של סדר המיון לפי שם</translation>
@@ -1210,7 +1207,6 @@
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7745560842763881396">הצגת האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
-<translation id="7749640678855296659">המיקרופון כבוי כרגע</translation>
 <translation id="776344839111254542">יש ללחוץ כדי להציג את פרטי העדכון</translation>
 <translation id="7768784765476638775">הקראה</translation>
 <translation id="7780094051999721182">קיצורי הדרך</translation>

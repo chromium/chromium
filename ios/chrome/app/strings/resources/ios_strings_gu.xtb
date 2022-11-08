@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">બ્લૉક કરેલી કુકી</translation>
 <translation id="165877110639533037">કોઈ ખુલ્લા ટેબ્સ નથી</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />થી<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">મોબાઇલ સાઇટ માટે વિનંતી કરો</translation>
 <translation id="168715261339224929">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સિંક કરવાનું ચાલુ કરો.</translation>
 <translation id="1687475363370981210">તમામને વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="1689333818294560261">ઉપનામ</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">ટૅબ બંધ કરો</translation>
 <translation id="2890171748217283516">તમે જે સાઇટ ફૉલો કરો છો તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. તમે તેમને Discoverના સેટિંગમાં મેનેજ કરી શકો છો.</translation>
 <translation id="2898963176829412617">નવું ફોલ્ડર…</translation>
+<translation id="2902684821701498619">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="2916171785467530738">શોધ અને URLsને ઑટોમૅટિક રીતે પૂર્ણ કરો</translation>
 <translation id="291754862089661335">QR કોડ અથવા બારકોડને આ ફ્રેમમાં મૂકો</translation>
 <translation id="2920866371965792875">આ સાઇટ પરની અપડેટ જોવા માટે, અહીં ક્લિક કરીને તેને ફૉલો કરો.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">સમય સમાપ્તિ મહિનો</translation>
 <translation id="3482959374254649722">તમારા ટેબ્સને સમન્વયિત કરી રહ્યું છે...</translation>
 <translation id="3484946776651937681">ડાઉનલોડ ફોલ્ડરમાં ખોલો</translation>
+<translation id="3485558910355485767">નવી છૂપી વિન્ડો</translation>
 <translation id="3493531032208478708">સૂચવેલ કન્ટેન્ટ વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">બ્રાઉઝિંગ ડેટા સાફ કરવાની પુષ્ટિ કરો</translation>
 <translation id="35083190962747987">${url} ખોલો</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3861486700625780712">અનફૉલો કરો</translation>
+<translation id="3863769054730344136">તમારા બધા ડિવાઇસ પર મોકલો</translation>
 <translation id="387280738075653372">અહીં Chrome ડાઉનલોડ કરો.</translation>
 <translation id="3892144330757387737">તમને તમારો ઇતિહાસ અહીં મળશે</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">ઇમેઇલ</translation>
 <translation id="5669335982068190158">તમારા iPhoneની રીસેટ પ્રક્રિયાને કારણે તમને સાઇન આઉટ કરવામાં આવ્યા હતા. સાઇન ઇન કરવા માટે નીચે ચાલુ રાખો બટન પર ટૅપ કરો.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">કોઈ QR કોડ બનાવો</translation>
 <translation id="567881659373499783">વર્ઝન <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{હમણાં 1 Chrome વિન્ડો બતાવવામાં આવી રહી છે}one{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}other{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}}</translation>
 <translation id="5701270923492462699">કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">આપનું ફરી સ્વાગત છે</translation>
 <translation id="6219688215832490856">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="6223816392543092032">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવો.</translation>
+<translation id="6229318421047648685">ડેસ્કટૉપ સાઇટ માટે વિનંતી કરો</translation>
 <translation id="6231782223312638214">સૂચવેલા</translation>
 <translation id="6232329973559504466">છૂપી શોધ</translation>
 <translation id="6232736989810857397">આ તમને Google Lensનો ઉપયોગ કરીને સરળતાથી કૅલેન્ડર ઇવેન્ટ બનાવવાની મંજૂરી આપે છે.</translation>

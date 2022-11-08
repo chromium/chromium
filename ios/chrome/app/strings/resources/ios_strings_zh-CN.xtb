@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">已拦截的 Cookie</translation>
 <translation id="165877110639533037">没有已打开的标签页</translation>
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">请求切换到移动版网站</translation>
 <translation id="168715261339224929">要想将您的书签同步到您的所有设备上，请开启同步功能。</translation>
 <translation id="1687475363370981210">全部标为已读</translation>
 <translation id="1689333818294560261">昵称</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">关闭标签页</translation>
 <translation id="2890171748217283516">您关注的网站会保存在您的 Google 帐号中。您可在“探索”设置中管理它们。</translation>
 <translation id="2898963176829412617">新建文件夹…</translation>
+<translation id="2902684821701498619">添加到阅读清单</translation>
 <translation id="2916171785467530738">自动补全搜索字词和网址</translation>
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
 <translation id="2920866371965792875">若要查看来自此网站的最新讯息，请从这里关注它。</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">到期月份</translation>
 <translation id="3482959374254649722">正在同步您的标签页…</translation>
 <translation id="3484946776651937681">在“下载内容”中打开</translation>
+<translation id="3485558910355485767">打开新的无痕式窗口</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
 <translation id="3494788280727468875">确认清除浏览数据</translation>
 <translation id="35083190962747987">打开 ${url}</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3861486700625780712">取消关注</translation>
+<translation id="3863769054730344136">发送到您的设备</translation>
 <translation id="387280738075653372">可从此处下载 Chrome。</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5669335982068190158">您在 iPhone 重置过程中退出了帐号。点按下方的“继续”即可登录。</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">生成二维码</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{目前显示了 1 个 Chrome 窗口}other{目前显示了 {count} 个 Chrome 窗口}}</translation>
 <translation id="5701270923492462699">已启用摄像头使用权限</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">欢迎回来</translation>
 <translation id="6219688215832490856">一律不翻译</translation>
 <translation id="6223816392543092032">获取您在自己的所有设备上保存的书签、历史记录、密码和其他设置。</translation>
+<translation id="6229318421047648685">请求切换到桌面版网站</translation>
 <translation id="6231782223312638214">建议</translation>
 <translation id="6232329973559504466">无痕搜索</translation>
 <translation id="6232736989810857397">这样您就可以使用 Google 智能镜头轻松创建日历活动。</translation>

@@ -219,7 +219,6 @@
 <translation id="209965399369889474">ネットワークに接続されていません</translation>
 <translation id="2107914222138020205">USB-C ケーブルは Thunderbolt に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
 <translation id="2108303511227308752">キーボード ショートカット「Alt+Backspace」が変更されました。Delete キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Backspace キーを押してください。</translation>
-<translation id="211328683600082144">マイクをオンにする</translation>
 <translation id="2126242104232412123">新しいデスク</translation>
 <translation id="2132302418721800944">全画面を録画</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
@@ -733,7 +732,6 @@
 <translation id="5042305953558921026">概要モード キー</translation>
 <translation id="504465286040788597">前の段落</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
-<translation id="5071064518267176975">アプリがマイクの使用を求めています</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
 <translation id="509790653408515442">スマートフォンのアプリでストリーミングした場合、そのアプリがここに表示されます</translation>
@@ -1004,7 +1002,6 @@
 <translation id="6614169507485700968">プライバシー スクリーンはオンになっています</translation>
 <translation id="6625718907317144388">表示保護機能が有効になっているため、<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />、その他の通知は表示されません</translation>
 <translation id="6627638273713273709">検索+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> がマイクの使用を求めています</translation>
 <translation id="6637729079642709226">時間を変更</translation>
 <translation id="6641720045729354415">自動字幕起こしを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">名前による並べ替えを元に戻す</translation>
@@ -1206,7 +1203,6 @@
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7745560842763881396">シェルフのアプリを表示</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
-<translation id="7749640678855296659">マイクは現在オフになっています</translation>
 <translation id="776344839111254542">クリックしてアップデートの詳細を表示する</translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7780094051999721182">ショートカット</translation>

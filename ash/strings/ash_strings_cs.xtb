@@ -219,7 +219,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2107914222138020205">Váš kabel USB-C nepodporuje rozhraní Thunderbolt. Výkon zařízení může být omezen.</translation>
 <translation id="2108303511227308752">Klávesová zkratka Alt + Backspace se změnila. Pokud chcete použít klávesu Delete, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">ZAPNOUT MIKROFON</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
 <translation id="2132302418721800944">Zaznamenat celou obrazovku</translation>
 <translation id="2135456203358955318">Zabudovaná lupa</translation>
@@ -484,6 +483,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3633097874324966332">Pokud zařízení chcete spárovat, otevřete nastavení rozhraní Bluetooth</translation>
 <translation id="3638400994746983214">Přepnout obrazovku ochrany soukromí. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Opožděná aktualizace</translation>
+<translation id="3659444876902283058">(den <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Zbývá asi: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Připojte zařízení k napájení.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – spravovaný uživatel</translation>
@@ -734,7 +734,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="5042305953558921026">Klávesa režimu přehledu</translation>
 <translation id="504465286040788597">Předchozí odstavec</translation>
 <translation id="5045550434625856497">Nesprávné heslo</translation>
-<translation id="5071064518267176975">Aplikace chce použít mikrofon</translation>
 <translation id="5078796286268621944">Nesprávný kód PIN</translation>
 <translation id="5083553833479578423">Odemkněte další funkce Asistenta.</translation>
 <translation id="509790653408515442">Tady se zobrazí aplikace streamované z telefonu</translation>
@@ -1007,7 +1006,6 @@ Nová instalace</translation>
 <translation id="6614169507485700968">Obrazovka ochrany soukromí je zapnutá</translation>
 <translation id="6625718907317144388">Oznámení aplikací <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a další oznámení jsou skryta, protože je zapnutá ochrana před špehováním</translation>
 <translation id="6627638273713273709">Vyhledávací tlačítko + Shift + K</translation>
-<translation id="6629480180092995136">Aplikace <ph name="APP_NAME" /> chce používat mikrofon</translation>
 <translation id="6637729079642709226">Změnit čas</translation>
 <translation id="6641720045729354415">Přepínání živého přepisu. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Zrušit řazení podle názvu</translation>
@@ -1208,7 +1206,6 @@ Nová instalace</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
 <translation id="7745560842763881396">Zobrazit aplikace v poličce</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
-<translation id="7749640678855296659">Mikrofon je momentálně vypnutý</translation>
 <translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizaci</translation>
 <translation id="7768784765476638775">Poslech vybraného textu</translation>
 <translation id="7780094051999721182">zkratky</translation>
@@ -1268,6 +1265,7 @@ Nová instalace</translation>
 <translation id="8052898407431791827">Zkopírováno do schránky</translation>
 <translation id="8054466585765276473">Výpočet doby výdrže baterie.</translation>
 <translation id="8083540854303889870">Uloženo na později</translation>
+<translation id="8091153018031979607">Začíná v <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatické aktualizace</translation>
 <translation id="8098591350844501178">Ukončit odesílání obrazovky do přijímače <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Zap., všechny</translation>
@@ -1381,6 +1379,7 @@ Nová instalace</translation>
 <translation id="8703634754197148428">Zahájit nahrávání. Po zahájení nahrávání můžete stisknutím kláves Alt + Shift + L přejít na poličku a najít tlačítko Zastavit nahrávání</translation>
 <translation id="8721053961083920564">Zapnout či vypnout zvuk. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Záznam celé obrazovky</translation>
+<translation id="8731487213223706745">Končí v <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Je možné, že se pokouší odcizit vaše stisknutí kláves.</translation>
 <translation id="8735678380411481005">Barva podsvícení klávesnice</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>

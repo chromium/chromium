@@ -219,7 +219,6 @@
 <translation id="209965399369889474">به شبکه متصل نیست</translation>
 <translation id="2107914222138020205">‏کابل USB-C شما از Thunderbolt پشتیبانی نمی‌کند. ممکن است عملکرد دستگاه محدود شود.</translation>
 <translation id="2108303511227308752">میان‌بر صفحه‌کلید «دگرساز + پس‌بَر» تغییر کرده است. برای استفاده از کلید «حذف»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + پس‌بَر» را فشار دهید.</translation>
-<translation id="211328683600082144">روشن کردن میکروفن</translation>
 <translation id="2126242104232412123">فضای کار جدید</translation>
 <translation id="2132302418721800944">ضبط تمام صفحه</translation>
 <translation id="2135456203358955318">ذره‌بین متصل</translation>
@@ -734,7 +733,6 @@
 <translation id="5042305953558921026">کلید حالت نمای کلی</translation>
 <translation id="504465286040788597">پاراگراف قبلی</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
-<translation id="5071064518267176975">برنامه‌ای می‌خواهد از میکروفون شما استفاده کند</translation>
 <translation id="5078796286268621944">پین اشتباه</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
 <translation id="509790653408515442">وقتی برنامه‌های تلفنتان را جاری‌سازی می‌کنید، اینجا نشان داده می‌شوند</translation>
@@ -1007,7 +1005,6 @@
 <translation id="6614169507485700968">صفحه حریم خصوصی روشن است</translation>
 <translation id="6625718907317144388">اعلان‌های <ph name="APP_1_TITLE" />، <ph name="APP_2_TITLE" />، و اعلان‌های دیگر پنهان شده است، زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> می‌خواهد از میکروفون استفاده کند</translation>
 <translation id="6637729079642709226">تغییر زمان</translation>
 <translation id="6641720045729354415">روشن/خاموش کردن «زیرنویس ناشنوایان زنده». <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">واگرد کردن مرتب‌سازی براساس نام</translation>
@@ -1208,7 +1205,6 @@
 <translation id="7724603315864178912">برش</translation>
 <translation id="7745560842763881396">نمایش برنامه‌ها در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
-<translation id="7749640678855296659">میکروفون شما درحال حاضر خاموش است</translation>
 <translation id="776344839111254542">برای مشاهده جزئیات به‌روزرسانی کلیک کنید</translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
 <translation id="7780094051999721182">میان‌برها</translation>

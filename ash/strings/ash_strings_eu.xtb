@@ -219,7 +219,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="209965399369889474">Ez zaude sarera konektatuta</translation>
 <translation id="2107914222138020205">USB-C kableak ez du onartzen Thunderbolt. Baliteke gailuaren errendimendua mugatuta egotea.</translation>
 <translation id="2108303511227308752">Alt + Atzera tekla lasterbidea aldatu egin da. "Ezabatu" tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + Atzera tekla.</translation>
-<translation id="211328683600082144">AKTIBATU MIKROFONOA</translation>
 <translation id="2126242104232412123">Lan-eremu berria</translation>
 <translation id="2132302418721800944">Grabatu pantaila osoa</translation>
 <translation id="2135456203358955318">Lupa ainguratua</translation>
@@ -736,7 +735,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5042305953558921026">Ikuspegi orokorreko moduaren tekla</translation>
 <translation id="504465286040788597">Aurreko paragrafoa</translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
-<translation id="5071064518267176975">Aplikazio batek mikrofonoa erabili nahi du</translation>
 <translation id="5078796286268621944">Okerra da PINa</translation>
 <translation id="5083553833479578423">Desblokeatu Laguntzailea zerbitzuaren eginbide gehiago.</translation>
 <translation id="509790653408515442">Telefonoko aplikazioak zuzenean igortzen dituzunean, hemen agertuko dira</translation>
@@ -1009,7 +1007,6 @@ Berriki instalatu da</translation>
 <translation id="6614169507485700968">Aktibatuta dago pribatutasun-pantaila</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> eta beste aplikazio baten jakinarazpenak ezkutatuta daude ikusteko babesa aktibatuta dagoelako</translation>
 <translation id="6627638273713273709">Bilatu + Maius + K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> aplikazioak mikrofonoa erabili nahi du</translation>
 <translation id="6637729079642709226">Aldatu ordua</translation>
 <translation id="6641720045729354415">Aldatu Istanteko azpitituluak eginbidearen egoera. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Desegin izenaren arabera ordenatzeko irizpidea ezartzeko aukera</translation>
@@ -1209,7 +1206,6 @@ Berriki instalatu da</translation>
 <translation id="7724603315864178912">Ebaki</translation>
 <translation id="7745560842763881396">Bistaratu aplikazioak apalean</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
-<translation id="7749640678855296659">Mikrofonoa desaktibatuta dago</translation>
 <translation id="776344839111254542">Egin klik eguneratzearen xehetasunak ikusteko</translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7780094051999721182">lasterbideak</translation>
@@ -1312,6 +1308,7 @@ Berriki instalatu da</translation>
 <translation id="8297006494302853456">Ahula</translation>
 <translation id="8308637677604853869">Aurreko menua</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8314772463905284467">Blok Maius aktibatuta dago</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> leihoa dago hautatuta</translation>
 <translation id="8351131234907093545">Sortu oharra</translation>

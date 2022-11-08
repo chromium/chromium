@@ -219,7 +219,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="209965399369889474">Nemáte pripojenie k sieti</translation>
 <translation id="2107914222138020205">Kábel USB-C nepodporuje Thunderbolt. Výkonnosť zariadenia môže byť obmedzená.</translation>
 <translation id="2108303511227308752">Klávesová skratka Alt + Backspace bola zmenená. Ak chcete použiť kláves Delete, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
-<translation id="211328683600082144">ZAPNÚŤ MIKROFÓN</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
 <translation id="2132302418721800944">Nahrať celú obrazovku</translation>
 <translation id="2135456203358955318">Ukotvená lupa</translation>
@@ -735,7 +734,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5042305953558921026">Kláves režimu prehľadu</translation>
 <translation id="504465286040788597">Predchádzajúci odsek</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
-<translation id="5071064518267176975">Určitá aplikácia chce používať mikrofón</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
 <translation id="509790653408515442">Tu sa zobrazia aplikácie streamované z telefónu</translation>
@@ -1008,7 +1006,6 @@ Nová inštalácia</translation>
 <translation id="6614169507485700968">Obrazovka ochrany súkromia je zapnutá</translation>
 <translation id="6625718907317144388">Upozornenia z aplikácií <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a ďalších sú skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="6627638273713273709">Hľadať+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> chce používať mikrofón</translation>
 <translation id="6637729079642709226">Zmena času</translation>
 <translation id="6641720045729354415">Prepnúť živý prepis. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Vrátiť späť poradie zoradenia podľa názvu</translation>
@@ -1209,7 +1206,6 @@ Nová inštalácia</translation>
 <translation id="7724603315864178912">Vystrihnúť</translation>
 <translation id="7745560842763881396">Zobraziť aplikácie na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
-<translation id="7749640678855296659">Mikrofón je momentálne vypnutý</translation>
 <translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizácii</translation>
 <translation id="7768784765476638775">Vyslovenie položky po vybratí</translation>
 <translation id="7780094051999721182">skratky</translation>

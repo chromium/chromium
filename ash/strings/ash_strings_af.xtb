@@ -219,7 +219,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="209965399369889474">Nie aan 'n netwerk gekoppel nie</translation>
 <translation id="2107914222138020205">Jou USB-C-kabel steun nie Thunderbolt nie. Toestelwerkverrigting kan beperk wees.</translation>
 <translation id="2108303511227308752">Die kortpadsleutel Alt + Backspace het verander. Om die Delete-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + Backspace druk.</translation>
-<translation id="211328683600082144">SKAKEL MIKROFOON AAN</translation>
 <translation id="2126242104232412123">Nuwe lessenaar</translation>
 <translation id="2132302418721800944">Neem volskerm op</translation>
 <translation id="2135456203358955318">Gedokte vergrootglas</translation>
@@ -736,7 +735,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5042305953558921026">Oorsigmodus-sleutel</translation>
 <translation id="504465286040788597">Vorige paragraaf</translation>
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
-<translation id="5071064518267176975">'n Program wil die mikrofoon gebruik</translation>
 <translation id="5078796286268621944">Verkeerde PIN</translation>
 <translation id="5083553833479578423">Ontsluit meer Assistent-kenmerke.</translation>
 <translation id="509790653408515442">Wanneer jy jou foon se programme stroom, sal hulle hier verskyn</translation>
@@ -1009,7 +1007,6 @@ Nuwe installasie</translation>
 <translation id="6614169507485700968">Privaatheidskerm is aan</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />-, <ph name="APP_2_TITLE" />- en ander kennisgewings word versteek omdat kykbeskerming aan is</translation>
 <translation id="6627638273713273709">Soek+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> wil die mikrofoon gebruik</translation>
 <translation id="6637729079642709226">Verander tyd</translation>
 <translation id="6641720045729354415">Wissel intydse onderskrif. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ontdoen sorteervolgorde volgens naam</translation>
@@ -1210,7 +1207,6 @@ Nuwe installasie</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7745560842763881396">Wys programme op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
-<translation id="7749640678855296659">Jou mikrofoon is tans afgeskakel</translation>
 <translation id="776344839111254542">Klik om die opdateringbesonderhede te sien</translation>
 <translation id="7768784765476638775">Hardoplees</translation>
 <translation id="7780094051999721182">kortpaaie</translation>

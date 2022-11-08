@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">차단된 쿠키 수</translation>
 <translation id="165877110639533037">열린 탭 없음</translation>
 <translation id="1674504678466460478">출발어: <ph name="SOURCE_LANGUAGE" />, 도착어: <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">모바일 버전으로 보기</translation>
 <translation id="168715261339224929">어느 기기에서나 북마크를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="1687475363370981210">모두 읽음으로 표시</translation>
 <translation id="1689333818294560261">닉네임</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">탭 닫기</translation>
 <translation id="2890171748217283516">내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
 <translation id="2898963176829412617">새 폴더 만들기…</translation>
+<translation id="2902684821701498619">읽기 목록에 추가</translation>
 <translation id="2916171785467530738">검색어 및 URL 자동 완성</translation>
 <translation id="291754862089661335">프레임 안에 QR 코드나 바코드를 위치시키세요.</translation>
 <translation id="2920866371965792875">이 사이트에서 최신 소식을 받아 보려면 여기를 클릭하여 사이트를 팔로우하세요.</translation>
@@ -320,6 +322,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3478058380795961209">만료 월</translation>
 <translation id="3482959374254649722">탭을 동기화하는 중...</translation>
 <translation id="3484946776651937681">다운로드에서 열기</translation>
+<translation id="3485558910355485767">새 시크릿 창</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">인터넷 사용 기록 삭제 확인</translation>
 <translation id="35083190962747987">${url} 열기</translation>
@@ -366,6 +369,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3861486700625780712">팔로우 해제</translation>
+<translation id="3863769054730344136">기기로 전송</translation>
 <translation id="387280738075653372">여기에서 Chrome을 다운로드하세요.</translation>
 <translation id="3892144330757387737">여기에서 방문 기록을 확인할 수 있습니다</translation>
 <translation id="3897092660631435901">메뉴</translation>
@@ -589,6 +593,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5669335982068190158">iPhone 재설정 중 로그아웃되었습니다. 아래에서 '계속'을 탭하여 로그인하세요.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR 코드 만들기</translation>
 <translation id="567881659373499783">버전 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Chrome 창 1개 표시 중}other{Chrome 창 {count}개 표시 중}}</translation>
 <translation id="5701270923492462699">카메라 액세스 허용됨</translation>
@@ -673,6 +678,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6219550825416862075">다시 방문해 주셔서 감사합니다</translation>
 <translation id="6219688215832490856">번역 안함</translation>
 <translation id="6223816392543092032">모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 동기화합니다</translation>
+<translation id="6229318421047648685">데스크톱 사이트로 보기</translation>
 <translation id="6231782223312638214">추천</translation>
 <translation id="6232329973559504466">시크릿 검색</translation>
 <translation id="6232736989810857397">이렇게 하면 Google 렌즈를 사용하여 간편하게 캘린더 일정을 만들 수 있습니다.</translation>

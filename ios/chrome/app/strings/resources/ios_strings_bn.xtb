@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">ব্লক করা কুকি</translation>
 <translation id="165877110639533037">কোনো ট্যাব খোলা নেই</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> থেকে <ph name="TARGET_LANGUAGE" />-এ</translation>
+<translation id="1683483432843341018">মোবাইল সাইটের জন্য অনুরোধ করুন</translation>
 <translation id="168715261339224929">সব ডিভাইসে আপনার বুকমার্ক পেতে সিঙ্ক চালু করুন।</translation>
 <translation id="1687475363370981210">সমস্ত পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="1689333818294560261">বিশেষ নাম</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">ট্যাব বন্ধ করুন</translation>
 <translation id="2890171748217283516">আপনি যেসব সাইট ফলো করেন, সেগুলি আপনার Google অ্যাকাউন্টে সেভ হয়ে যায়। আপনি 'ডিসকভার' সেটিংসে গিয়ে সেগুলি ম্যানেজ করতে পারেন।</translation>
 <translation id="2898963176829412617">নতুন ফোল্ডার...</translation>
+<translation id="2902684821701498619">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="2916171785467530738">সার্চ এবং ইউআরএলগুলি নিজে থেকে সম্পূর্ণ হতে দিন</translation>
 <translation id="291754862089661335">এই ফ্রেমের মধ্যে QR কোড বা বারকোড স্থাপন করুন</translation>
 <translation id="2920866371965792875">এই সাইট থেকে আপডেট দেখতে, এখানে এটি ফলো করুন।</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">মেয়াদপূর্তির মাস</translation>
 <translation id="3482959374254649722">আপনার ট্যাবগুলি সিঙ্ক করা হচ্ছে ...</translation>
 <translation id="3484946776651937681">ডাউনলোডগুলি খুলুন</translation>
+<translation id="3485558910355485767">নতুন ছদ্মবেশী উইন্ডো</translation>
 <translation id="3493531032208478708">প্রস্তাবিত কন্টেন্ট সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">ব্রাউজ করা ডেটা সাফ করার বিষয়টি নিশ্চিত করুন</translation>
 <translation id="35083190962747987">${url} খুলুন</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3861486700625780712">ফলো করা বন্ধ করুন</translation>
+<translation id="3863769054730344136">আপনার ডিভাইসে পাঠান</translation>
 <translation id="387280738075653372">এখান থেকে Chrome ডাউনলোড করুন।</translation>
 <translation id="3892144330757387737">আপনি এখানে আপনার ইতিহাস দেখতে পাবেন</translation>
 <translation id="3897092660631435901">মেনু</translation>
@@ -590,6 +594,7 @@
 <translation id="5659593005791499971">ইমেল আইডি</translation>
 <translation id="5669335982068190158">আপনার iPhone রিসেটের অংশ হিসেবে আপনি সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য নিচে 'চালিয়ে যান' বোতামে ট্যাপ করুন।</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">একটি QR কোড তৈরি করুন</translation>
 <translation id="567881659373499783">ভার্সন <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{এখন ১টি Chrome উইন্ডো দেখা যাচ্ছে}one{এখন {count}টি Chrome উইন্ডো দেখা যাচ্ছে}other{এখন {count}টি Chrome উইন্ডো দেখা যাচ্ছে}}</translation>
 <translation id="5701270923492462699">ক্যামেরা অ্যাক্সেসের অনুমতি আছে</translation>
@@ -674,6 +679,7 @@
 <translation id="6219550825416862075">আপনাকে আবার স্বাগত জানাই</translation>
 <translation id="6219688215832490856">কখনও অনুবাদ করবেন না</translation>
 <translation id="6223816392543092032">আপনার সবকটি ডিভাইসে বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস পান।</translation>
+<translation id="6229318421047648685">ডেস্কটপ সাইটের জন্য অনুরোধ করুন</translation>
 <translation id="6231782223312638214">সুপারিশকৃত</translation>
 <translation id="6232329973559504466">ছদ্মবেশী সার্চ</translation>
 <translation id="6232736989810857397">এর ফলে, আপনি সহজেই Google Lens ব্যবহার করে ক্যালেন্ডার ইভেন্ট তৈরি করতে পারবেন।</translation>

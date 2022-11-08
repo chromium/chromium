@@ -1382,6 +1382,7 @@
 <translation id="4509074745930862522">‏<ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לתרגם את הדף הזה באמצעות Google Translate</translation>
 <translation id="4514308731478712184">השבתת התהליכים</translation>
 <translation id="4515275063822566619">‏הכרטיסים והכתובות לקוחים מ-Chrome ומחשבון Google שלך (<ph name="ACCOUNT_EMAIL" />). אפשר לנהל אותם ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">בהתאם למדיניות האדמין, הורדת הקובץ הזה חסומה</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> מ"מ (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">‏מעטפה – Monarch</translation>
 <translation id="4521916730539354575">המגש השמאלי</translation>
@@ -2387,6 +2388,7 @@ Del</translation>
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">לא ניתן לבצע משלוח לכתובת הזו. עליך לבחור כתובת אחרת.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">ההעלאה חסומה</translation>
 <translation id="7132939140423847331">מנהל המערכת שלך אסר על העתקת הנתונים האלה.</translation>
 <translation id="7135130955892390533">הצגת סטטוס</translation>
 <translation id="7138472120740807366">שיטת מסירה</translation>
@@ -2619,6 +2621,7 @@ Del</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7659327900411729175">‏מעטפה – Kaku 8</translation>
 <translation id="7659878911471462949">דמעות של שמחה</translation>
+<translation id="766014026101194726">{0,plural, =1{בהתאם למדיניות האדמין, העלאת הקובץ הזה נחסמה}two{בהתאם למדיניות האדמין, ההעלאה של # קבצים נחסמה}many{בהתאם למדיניות האדמין, ההעלאה של # קבצים נחסמה}other{בהתאם למדיניות האדמין, ההעלאה של # קבצים נחסמה}}</translation>
 <translation id="7662298039739062396">ההגדרה נשלטת על-ידי תוסף</translation>
 <translation id="7663736086183791259">אישור <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">אין הרשאה במצב אנונימי</translation>
@@ -2713,6 +2716,7 @@ Del</translation>
 <translation id="7939744324936979484">מוזיקה עממית ומוזיקה מסורתית</translation>
 <translation id="7941628148012649605">‏מעטפה – Chou 4</translation>
 <translation id="7942349550061667556">אדום</translation>
+<translation id="7943397946612013052">ההורדה נחסמה</translation>
 <translation id="7943893128817522649">האתר יכול לבקש הרשאה להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="7947285636476623132">יש לבדוק את שנת התפוגה ולנסות שוב</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לקבל מידע על התכונות של Chrome</translation>

@@ -219,7 +219,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="209965399369889474">Nessuna connessione alla rete</translation>
 <translation id="2107914222138020205">Il cavo USB-C non supporta Thunderbolt. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="2108303511227308752">La scorciatoia da tastiera Alt + Backspace è cambiata. Per usare il tasto Canc, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">ATTIVA MICROFONO</translation>
 <translation id="2126242104232412123">Nuova scrivania</translation>
 <translation id="2132302418721800944">Registra schermo intero</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
@@ -736,7 +735,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5042305953558921026">Tasto modalità panoramica</translation>
 <translation id="504465286040788597">Paragrafo precedente</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
-<translation id="5071064518267176975">Un'app vuole usare il microfono</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
 <translation id="509790653408515442">Le app del tuo telefono che trasmetti in streaming verranno visualizzate qui</translation>
@@ -1009,7 +1007,6 @@ Nuova installazione</translation>
 <translation id="6614169507485700968">Schermata sulla privacy attiva</translation>
 <translation id="6625718907317144388">Le notifiche di <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> e altre app sono nascoste perché è attiva la protezione di visualizzazione</translation>
 <translation id="6627638273713273709">Tasto per la ricerca + MAIUSC + K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> vuole usare il microfono</translation>
 <translation id="6637729079642709226">Modifica tempo</translation>
 <translation id="6641720045729354415">Attiva o disattiva Sottotitoli in tempo reale. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Annulla l'ordinamento per nome</translation>
@@ -1210,7 +1207,6 @@ Nuova installazione</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7745560842763881396">Mostra app nella barra delle app</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
-<translation id="7749640678855296659">Al momento il microfono non è attivo</translation>
 <translation id="776344839111254542">Fai clic per visualizzare i dettagli dell'aggiornamento</translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7780094051999721182">scorciatoie</translation>
@@ -1274,6 +1270,7 @@ Nuova installazione</translation>
 <translation id="8091387634532529612">Aggiornamenti automatici</translation>
 <translation id="8098591350844501178">Interrompi la trasmissione dello schermo su <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">On, tutte</translation>
+<translation id="8113515504791187892">Pulsante Seleziona per ascoltare</translation>
 <translation id="8120151603115102514">Sul tuo telefono non è presente una schermata di blocco. Per sbloccare Chromebook, inserisci la password.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Conferma</translation>

@@ -219,7 +219,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
 <translation id="2107914222138020205">USB-C kabl ne podržava Thunderbolt. Učinak uređaja će možda biti ograničen.</translation>
 <translation id="2108303511227308752">Tasterska prečica Alt + Backspace je promenjena. Da biste koristili taster Delete, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
-<translation id="211328683600082144">UKLJUČI MIKROFON</translation>
 <translation id="2126242104232412123">Novi radni prostor</translation>
 <translation id="2132302418721800944">Snimi ceo ekran</translation>
 <translation id="2135456203358955318">Montirana lupa ekrana</translation>
@@ -736,7 +735,6 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5042305953558921026">Taster za režim pregleda</translation>
 <translation id="504465286040788597">Prethodni pasus</translation>
 <translation id="5045550434625856497">Neispravna lozinka</translation>
-<translation id="5071064518267176975">Aplikacija želi da koristi mikrofon</translation>
 <translation id="5078796286268621944">Netačan PIN</translation>
 <translation id="5083553833479578423">Otključajte još funkcija Pomoćnika.</translation>
 <translation id="509790653408515442">Kada strimujete aplikacije sa telefona, one se prikazuju ovde</translation>
@@ -1009,7 +1007,6 @@ Novo instaliranje</translation>
 <translation id="6614169507485700968">Ekran za privatnost je uključen</translation>
 <translation id="6625718907317144388">Obaveštenja aplikacija <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> i druga obaveštenja su skrivena jer je zaštita od pregleda uključena</translation>
 <translation id="6627638273713273709">Taster za pretragu+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> želi da koristi mikrofon</translation>
 <translation id="6637729079642709226">Promenite vreme</translation>
 <translation id="6641720045729354415">Uključite ili isključite titl uživo. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Opozovite redosled sortiranja prema nazivu</translation>
@@ -1210,7 +1207,6 @@ Novo instaliranje</translation>
 <translation id="7724603315864178912">Iseci</translation>
 <translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalan broj radnih površina.</translation>
-<translation id="7749640678855296659">Mikrofon je trenutno isključen</translation>
 <translation id="776344839111254542">Kliknite za prikaz detalja ažuriranja</translation>
 <translation id="7768784765476638775">Izaberite za govor</translation>
 <translation id="7780094051999721182">prečice</translation>

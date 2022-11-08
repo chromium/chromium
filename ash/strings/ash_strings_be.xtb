@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Няма падключэння да сеткі</translation>
 <translation id="2107914222138020205">Ваш кабель USB-C не падыходзіць для выкарыстання з Thunderbolt. Прадукцыйнасць прылады можа быць абмежавана.</translation>
 <translation id="2108303511227308752">Змянілася прызначэнне спалучэння клавіш Alt + Backspace. Каб выканаць дзеянне клавішы Delete, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">УКЛЮЧЫЦЬ МІКРАФОН</translation>
 <translation id="2126242104232412123">Новы стол</translation>
 <translation id="2132302418721800944">Запіс усяго экрана</translation>
 <translation id="2135456203358955318">Прыстыкаваная лупа</translation>
@@ -484,6 +483,7 @@
 <translation id="3633097874324966332">Каб спалучыць прыладу, адкрыйце налады Bluetooth</translation>
 <translation id="3638400994746983214">Уключыць або выключыць экран прыватнасці. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Абнаўленне пратэрмінавана</translation>
+<translation id="3659444876902283058">(дзень <ph name="CURRENT_DAY" /> з <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Засталося каля <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Падключыце прыладу да сілкавання.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, карыстальнік пад кіраваннем</translation>
@@ -734,7 +734,6 @@
 <translation id="5042305953558921026">Клавіша рэжыму агляду</translation>
 <translation id="504465286040788597">Папярэдні абзац</translation>
 <translation id="5045550434625856497">Няправільны пароль</translation>
-<translation id="5071064518267176975">Праграма запытвае дазвол на выкарыстанне мікрафона</translation>
 <translation id="5078796286268621944">Няправільны PIN-код</translation>
 <translation id="5083553833479578423">Адкрыйце больш функцый Памочніка.</translation>
 <translation id="509790653408515442">Тут будуць з'яўляцца праграмы з вашага тэлефона, якія вы адкрываеце без спампоўвання</translation>
@@ -1007,7 +1006,6 @@
 <translation id="6614169507485700968">Экран прыватнасці ўключаны</translation>
 <translation id="6625718907317144388">Апавяшчэнні ад праграм "<ph name="APP_1_TITLE" />" і "<ph name="APP_2_TITLE" />" некаторых іншых схаваны, бо ўключаны рэжым абароненага прагляду</translation>
 <translation id="6627638273713273709">Пошук+Shift+K</translation>
-<translation id="6629480180092995136">Праграма "<ph name="APP_NAME" />" запытвае дазвол на выкарыстанне мікрафона</translation>
 <translation id="6637729079642709226">Змена часу</translation>
 <translation id="6641720045729354415">Уключыць або выключыць Імгненныя субцітры. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Адрабіць сартаванне па назве</translation>
@@ -1208,7 +1206,6 @@
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7745560842763881396">Паказаць праграмы на паліцы</translation>
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
-<translation id="7749640678855296659">Ваш мікрафон зараз выключаны</translation>
 <translation id="776344839111254542">Каб паглядзець звесткі пра абнаўленне, націсніце тут</translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
 <translation id="7780094051999721182">ярлыкі</translation>
@@ -1268,9 +1265,11 @@
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
 <translation id="8054466585765276473">Разлічваецца час да разрадкі акумулятара.</translation>
 <translation id="8083540854303889870">Захавана на будучыню</translation>
+<translation id="8091153018031979607">Пачынаецца ў <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Аўтаматычныя абнаўленні</translation>
 <translation id="8098591350844501178">Спыніць трансляцыю экрана на прыёмнік "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Уключана, усе праграмы</translation>
+<translation id="8113515504791187892">Кнопка "Чытаць уголас"</translation>
 <translation id="8120151603115102514">На тэлефоне не выкарыстоўваецца функцыя экрана блакіроўкі. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
@@ -1380,6 +1379,7 @@
 <translation id="8703634754197148428">Пачаць запіс. Каб пасля пачатку запісу перайсці на паліцу, дзе знаходзіцца кнопка спынення запісу, націсніце Alt + Shift + L</translation>
 <translation id="8721053961083920564">Уключыць або выключыць гук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Здыманне ўсяго экрана</translation>
+<translation id="8731487213223706745">Заканчваецца ў <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Клавіятура можа спрабаваць адсочваць і перадаваць націсканні клавіш</translation>
 <translation id="8735678380411481005">Колер падсветкі клавіятуры</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

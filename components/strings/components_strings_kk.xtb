@@ -1383,6 +1383,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бұл бетті Google Translate арқылы аудару үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="4514308731478712184">Journeys функциясын өшіру</translation>
 <translation id="4515275063822566619">Chrome браузеріндегі және Google аккаунтындағы (<ph name="ACCOUNT_EMAIL" />) карталар мен мекенжайлар. Оларды <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> ішінде басқаруыңызға болады.</translation>
+<translation id="4520048001084013693">Әкімші саясаты бұл файлды жүктеп алуға тыйым салды.</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Monarch хатқалтасы</translation>
 <translation id="4521916730539354575">Сол жақ науа</translation>
@@ -2384,6 +2385,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Бұл мекенжайға жөнелтілмейді. Басқа мекенжайды таңдаңыз.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Жүктеп салуға тыйым салды</translation>
 <translation id="7132939140423847331">Әкімші бұл деректің көшірілуіне тыйым салды.</translation>
 <translation id="7135130955892390533">Күйін көрсету</translation>
 <translation id="7136009930065337683">Инкогнито туралы толық ақпарат</translation>
@@ -2618,6 +2620,7 @@
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7659327900411729175">Kaku 8 хатқалтасы</translation>
 <translation id="7659878911471462949">Қуаныштың көз жасы</translation>
+<translation id="766014026101194726">{0,plural, =1{Әкімші саясаты бұл файлды жүктеп салуға тыйым салды}other{Әкімші саясаты # файлды жүктеп салуға тыйым салды}}</translation>
 <translation id="7662298039739062396">Кеңейтім арқылы реттелетін параметр</translation>
 <translation id="7663736086183791259">Сертификат: <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Incognito режимінде рұқсат етілмеген.</translation>
@@ -2712,6 +2715,7 @@
 <translation id="7939744324936979484">Халық музыкасы мен дәстүрлі музыка</translation>
 <translation id="7941628148012649605">Chou 4 хатқалтасы</translation>
 <translation id="7942349550061667556">Қызыл</translation>
+<translation id="7943397946612013052">Жүктеп алуға тыйым салды</translation>
 <translation id="7943893128817522649">Автоматты түрде бірнеше файл жүктеп алуға рұқсат сұрай алады</translation>
 <translation id="7947285636476623132">Жарамдылық мерзімі бітетін жылды тексеріп, әрекетті қайталаңыз</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome функциялары туралы білу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>

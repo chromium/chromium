@@ -219,7 +219,6 @@
 <translation id="209965399369889474">नेटवर्कशी कनेक्ट केलेले नाही</translation>
 <translation id="2107914222138020205">तुमची USB-C केबल ही थंडरबोल्टला सपोर्ट करत नाही. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
 <translation id="2108303511227308752">Alt + Backspace कीबोर्ड शॉर्टकट बदलला आहे. डिलीट की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + Backspace दाबा.</translation>
-<translation id="211328683600082144">मायक्रोफोन सुरू करा</translation>
 <translation id="2126242104232412123">नवीन डेस्क</translation>
 <translation id="2132302418721800944">फुल स्क्रीन रेकॉर्ड करा</translation>
 <translation id="2135456203358955318">डॉक केलेले भिंग</translation>
@@ -735,7 +734,6 @@
 <translation id="5042305953558921026">पूर्वावलोकन मोड की</translation>
 <translation id="504465286040788597">मागील परिच्छेद</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
-<translation id="5071064518267176975">ॲपला मायक्रोफोन वापरायचा आहे</translation>
 <translation id="5078796286268621944">चुकीचा पिन</translation>
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
 <translation id="509790653408515442">तुम्ही तुमच्या फोनची अ‍ॅप्स स्ट्रीम कराल, तेव्हा ती येथे दिसतील</translation>
@@ -1008,7 +1006,6 @@
 <translation id="6614169507485700968">गोपनीयता स्क्रीन सुरू आहे</translation>
 <translation id="6625718907317144388">पाहण्यासंबंधित संरक्षण सुरू असल्याने, <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> आणि इतर सूचना लपवल्या आहेत</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> ला मायक्रोफोन वापरायचा आहे</translation>
 <translation id="6637729079642709226">वेळ बदला</translation>
 <translation id="6641720045729354415">लाइव्ह कॅप्शन टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">नावानुसार क्रमवारीचा क्रम पहिल्यासारखा करा</translation>
@@ -1209,7 +1206,6 @@
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7745560842763881396">शेल्फमधील अ‍ॅप्स दाखवा</translation>
 <translation id="7749443890790263709">डेस्कची कमाल मर्यादा गाठली आहे.</translation>
-<translation id="7749640678855296659">तुमचा मायक्रोफोन सध्या बंद केलेला आहे</translation>
 <translation id="776344839111254542">अपडेट तपशील पाहण्यासाठी क्लिक करा</translation>
 <translation id="7768784765476638775">बोलण्यासाठी निवडा</translation>
 <translation id="7780094051999721182">शॉर्टकट</translation>

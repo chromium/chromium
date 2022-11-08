@@ -219,7 +219,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="209965399369889474">Not connected to network</translation>
 <translation id="2107914222138020205">Your USB-C cable does not support Thunderbolt. Device performance may be limited.</translation>
 <translation id="2108303511227308752">The Alt + backspace keyboard shortcut has changed. To use the delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
-<translation id="211328683600082144">TURN ON MICROPHONE</translation>
 <translation id="2126242104232412123">New desk</translation>
 <translation id="2132302418721800944">Record full screen</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
@@ -735,7 +734,6 @@ Connect your device to power.</translation>
 <translation id="5042305953558921026">Overview mode key</translation>
 <translation id="504465286040788597">Previous paragraph</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
-<translation id="5071064518267176975">An app wants to use the microphone</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
 <translation id="509790653408515442">When you stream your phone’s apps, they will appear here</translation>
@@ -1008,7 +1006,6 @@ New install</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> and other notifications are hidden because viewing protection is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> wants to use the microphone</translation>
 <translation id="6637729079642709226">Change time</translation>
 <translation id="6641720045729354415">Toggle Live Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Undo sort order by name</translation>
@@ -1209,7 +1206,6 @@ New install</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7745560842763881396">Show apps in shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
-<translation id="7749640678855296659">Your microphone is currently turned off</translation>
 <translation id="776344839111254542">Click to view update details</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7780094051999721182">shortcuts</translation>

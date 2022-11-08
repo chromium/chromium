@@ -219,7 +219,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2107914222138020205">USB-C-kabeln har inte stöd för Thunderbolt. Enhetens prestanda kan försämras.</translation>
 <translation id="2108303511227308752">Kortkommandot Alt + backsteg har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + backsteg för att använda Delete-tangenten.</translation>
-<translation id="211328683600082144">AKTIVERA MIKROFONEN.</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
@@ -735,7 +734,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5042305953558921026">Tangent för översiktsläge</translation>
 <translation id="504465286040788597">Föregående stycke</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
-<translation id="5071064518267176975">En app vill använda mikrofonen</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5083553833479578423">Lås upp fler funktioner för Assistent</translation>
 <translation id="509790653408515442">När du streamar telefonens appar visas de här</translation>
@@ -1008,7 +1006,6 @@ Nyligen installerad</translation>
 <translation id="6614169507485700968">Integritetsskärmen är aktiverad</translation>
 <translation id="6625718907317144388">Aviseringar från <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> och andra appar har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="6627638273713273709">Söktangenten + Skift + K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> vill använda mikrofonen</translation>
 <translation id="6637729079642709226">Ändra tid</translation>
 <translation id="6641720045729354415">Aktivera och inaktivera Live Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ångra sortering efter namn</translation>
@@ -1209,7 +1206,6 @@ Nyligen installerad</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7745560842763881396">Visa appar på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
-<translation id="7749640678855296659">Mikrofonen är för närvarande inaktiverad</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
 <translation id="7780094051999721182">genvägar</translation>
@@ -1273,6 +1269,7 @@ Nyligen installerad</translation>
 <translation id="8091387634532529612">Automatiska uppdateringar</translation>
 <translation id="8098591350844501178">Sluta casta skärmen till <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Alla appar på</translation>
+<translation id="8113515504791187892">Knappen Textuppläsning</translation>
 <translation id="8120151603115102514">Telefonen saknar låsskärm. Lås upp Chromebook med lösenordet.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekräfta</translation>

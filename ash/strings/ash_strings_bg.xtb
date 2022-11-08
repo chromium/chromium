@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2107914222138020205">USB-C кабелът ви не поддържа Thunderbolt. Ефективността на устройството може да е ограничена.</translation>
 <translation id="2108303511227308752">Клавишната комбинация Alt + Backspace се промени. За да използвате клавиша за изтриване, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + Backspace.</translation>
-<translation id="211328683600082144">ВКЛЮЧВАНЕ НА МИКРОФОНА</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
@@ -484,6 +483,7 @@
 <translation id="3633097874324966332">Отворете настройките на Bluetooth, за да сдвоите устройството си</translation>
 <translation id="3638400994746983214">Превключване на екрана за поверителност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Просрочена актуализация</translation>
+<translation id="3659444876902283058">(ден <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Оставащото време е около <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Свържете устройството си със захранването.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – управляван потребител</translation>
@@ -734,7 +734,6 @@
 <translation id="5042305953558921026">Клавиш за режима за общ преглед</translation>
 <translation id="504465286040788597">Предишен абзац</translation>
 <translation id="5045550434625856497">Грешна парола</translation>
-<translation id="5071064518267176975">Приложение иска да използва микрофона</translation>
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="509790653408515442">Когато предавате поточно приложенията на телефона си, те ще се показват тук</translation>
@@ -1007,7 +1006,6 @@
 <translation id="6614169507485700968">Екранът за поверителност е включен</translation>
 <translation id="6625718907317144388">Известията от <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други приложения са скрити, тъй като защитата срещу надничане е включена</translation>
 <translation id="6627638273713273709">клавиш „търсене“ + Shift + K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> иска да използва микрофона</translation>
 <translation id="6637729079642709226">Промяна на часа</translation>
 <translation id="6641720045729354415">Превключване на „Надписи на живо“. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Отмяна на сортирането по име</translation>
@@ -1208,7 +1206,6 @@
 <translation id="7724603315864178912">Изрязване</translation>
 <translation id="7745560842763881396">Показване на приложенията в лавицата</translation>
 <translation id="7749443890790263709">Достигнат е максималният брой работни кътове.</translation>
-<translation id="7749640678855296659">Понастоящем микрофонът ви е изключен</translation>
 <translation id="776344839111254542">Кликнете, за да видите подробности за актуализацията</translation>
 <translation id="7768784765476638775">Прочитане на глас</translation>
 <translation id="7780094051999721182">преки пътища</translation>
@@ -1268,6 +1265,7 @@
 <translation id="8052898407431791827">Копирано в буферната памет</translation>
 <translation id="8054466585765276473">Издръжливостта на батерията се изчислява.</translation>
 <translation id="8083540854303889870">Запазено за по-късно</translation>
+<translation id="8091153018031979607">Започва в <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автоматични актуализации</translation>
 <translation id="8098591350844501178">Спиране на предаването на екрана към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="8113423164597455979">Вкл. за всички</translation>
@@ -1381,6 +1379,7 @@
 <translation id="8703634754197148428">Стартиране на записването. След като то започне, използвайте Alt + Shift + L, за да се придвижите до лавицата, където ще намерите бутона за спирането му</translation>
 <translation id="8721053961083920564">Превключване на звука. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Заснемане на целия екран</translation>
+<translation id="8731487213223706745">Приключва в <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Тя може да се опитва да записва кои клавиши натискате</translation>
 <translation id="8735678380411481005">Цвят на фоновото осветление на клавиатурата</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

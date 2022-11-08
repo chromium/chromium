@@ -220,6 +220,7 @@
 <translation id="315116470104423982">모바일 데이터</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />페이지 스캔 중…</translation>
 <translation id="315738237743207937">종속 포털 감지됨</translation>
+<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />시스템 및 앱 정보<ph name="END_LINK1" />와 <ph name="BEGIN_LINK2" />통계<ph name="END_LINK2" /> 전송</translation>
 <translation id="3170673040743561620">스캐너에 문서를 올리세요.</translation>
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="319101249942218879">아바타 이미지 변경됨</translation>
@@ -582,6 +583,7 @@
 <translation id="6575134580692778371">설정되지 않음</translation>
 <translation id="6579509898032828423">이 사진 사용</translation>
 <translation id="6596816719288285829">IP 주소</translation>
+<translation id="6599673642868607614">의견을 보내 주셔서 감사합니다. 사용자의 의견은 Google팀에서 검토할 예정이며 Chromebook 사용 환경을 개선하는 데 도움이 됩니다. 접수되는 의견이 많아 직접 답변해 드리기는 어렵습니다.</translation>
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 기록에 나타납니다.</translation>
 <translation id="6624819909909965616">10MB를 초과하는 파일은 업로드할 수 없습니다.</translation>
@@ -690,6 +692,7 @@
 <translation id="7762130827864645708">비밀번호가 변경되었습니다. 지금부터 새로운 비밀번호를 사용해 주세요.</translation>
 <translation id="7763470514545477072">도메인 서픽스 일치</translation>
 <translation id="7769672763586021400">모델 ID</translation>
+<translation id="7778717409420828014">사용자의 의견은 Google팀에서 검토할 예정이며 Chromebook 사용 환경을 개선하는 데 도움이 됩니다. 접수되는 의견이 많아 직접 답변해 드리기는 어렵습니다.</translation>
 <translation id="7784116172884276937">DNS 서버가 설정되어 있지 않습니다.</translation>
 <translation id="779591286616261875">신규 보고서 보내기</translation>
 <translation id="7799817062559422778">밝은 모드</translation>

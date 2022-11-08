@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">Cwcis a Rwystrwyd</translation>
 <translation id="165877110639533037">Dim Tabiau Ar Agor</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> i <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Gofyn am Wefan Symudol</translation>
 <translation id="168715261339224929">I gael eich nodau tudalen ar eich holl ddyfeisiau, trowch gysoni ymlaen.</translation>
 <translation id="1687475363370981210">Marcio Pob un ohonynt fel wedi'u Darllen</translation>
 <translation id="1689333818294560261">Llysenw</translation>
@@ -243,6 +244,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="288655811176831528">Cau'r Tab</translation>
 <translation id="2890171748217283516">Mae gwefannau rydych yn eu dilyn yn cael eu cadw yn eich cyfrif Google. Gallwch eu Rheoli yn y Gosodiadau Discover.</translation>
 <translation id="2898963176829412617">Ffolder Newydd…</translation>
+<translation id="2902684821701498619">Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="2916171785467530738">Awtogwblhau Chwiliadau a Chyfeiriadau URL</translation>
 <translation id="291754862089661335">Gosod cod QR neu god bar yn y ffrâm hon</translation>
 <translation id="2920866371965792875">I weld diweddariadau o'r wefan hon, dilynwch hi yma.</translation>
@@ -320,6 +322,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3478058380795961209">Mis Darfod</translation>
 <translation id="3482959374254649722">Wrthi'n cysoni eich tabiau...</translation>
 <translation id="3484946776651937681">Agor yn Lawrlwythiadau</translation>
+<translation id="3485558910355485767">Ffenestr Anhysbys Newydd</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am gynnwys a awgrymir</translation>
 <translation id="3494788280727468875">Cadarnhau Clirio Data Pori</translation>
 <translation id="35083190962747987">Agor ${url}</translation>
@@ -366,6 +369,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="385051799172605136">Nôl</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3861486700625780712">Peidio â dilyn</translation>
+<translation id="3863769054730344136">Anfon at Eich Dyfeisiau</translation>
 <translation id="387280738075653372">Lawrlwythwch Chrome yma.</translation>
 <translation id="3892144330757387737">Byddwch yn gweld eich hanes yma</translation>
 <translation id="3897092660631435901">Dewislen</translation>
@@ -589,6 +593,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5659593005791499971">E-bost</translation>
 <translation id="5669335982068190158">Cawsoch eich allgofnodi fel rhan o'ch ailosodiad iPhone. Tapiwch parhau isod i fewngofnodi.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Wrthi'n creu cod QR</translation>
 <translation id="567881659373499783">Fersiwn <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Nawr yn dangos 1 ffenestr Chrome}zero{Nawr yn dangos {count} ffenestr Chrome}two{Nawr yn dangos {count} ffenestr Chrome}few{Nawr yn dangos {count} ffenestr Chrome}many{Nawr yn dangos {count} ffenestr Chrome}other{Nawr yn dangos {count} ffenestr Chrome}}</translation>
 <translation id="5701270923492462699">Caniateir Mynediad at y Camera</translation>
@@ -673,6 +678,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6219550825416862075">Croeso'n Ôl</translation>
 <translation id="6219688215832490856">Peidio Byth â Chyfieithu</translation>
 <translation id="6223816392543092032">Cael eich nodau tudalen, eich hanes, eich cyfrineiriau a gosodiadau eraill ar eich holl ddyfeisiau.</translation>
+<translation id="6229318421047648685">Gofyn am Wefan Bwrdd Gwaith</translation>
 <translation id="6231782223312638214">Awgrymir</translation>
 <translation id="6232329973559504466">Chwiliad Anhysbys</translation>
 <translation id="6232736989810857397">Mae hyn yn eich galluogi i greu digwyddiadau calendr yn hawdd gan ddefnyddio Google Lens.</translation>

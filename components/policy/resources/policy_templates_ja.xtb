@@ -1413,7 +1413,6 @@
       スペルチェックでは常にダウンロード済み辞書をローカルで使用できます。ただしスペルチェック機能が <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> によって無効にされている場合、このポリシーは無視されます。</translation>
 <translation id="2433516903565257847">特定の日数が経過したときにアップデートを適用するデバイスの割合（%）です。</translation>
 <translation id="2435052056904485763">Kerberos 委任サーバーの許可リスト</translation>
-<translation id="2435232509335686514">ダウンロードされたファイルを処理する <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> の設定ポリシー</translation>
 <translation id="2436302465999055995"><ph name="LACROS_NAME" /> のみを使用可能なブラウザにする（未実装）</translation>
 <translation id="2439187682308339104">どのサイトにも WebHID API 経由での HID デバイスへのアクセス要求を許可しない</translation>
 <translation id="2439733504887695659">入力した認証情報に対して不正使用されたパスワードのアラートを非表示にすることを許可する</translation>
@@ -1421,7 +1420,6 @@
 <translation id="2448315169529769573">このポリシーを有効に設定すると、<ph name="PRODUCT_OS_NAME" /> から Google に、使用状況に関する統計情報と診断データが送信されます。このポリシーを無効に設定すると、統計情報と診断データは送信されません。
 
        このポリシーを未設定のままにすると、統計情報と診断データの送信は管理対象外のデバイスではオフになり、管理対象のデバイスではオンになります。</translation>
-<translation id="244950822854046436"><ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> に適用する設定のリストです。これはファイルがダウンロードされるときに呼び出されます。<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、ウェブページからダウンロードされるファイルをコネクタがサービス プロバイダに送信すべきかどうかを判別する際に使用されます。ウェブページの URL は、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。ファイルの MIME タイプも、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> フィールドは、サービス プロバイダでお客様のアカウントを識別するパートナー サービス プロバイダの一意の ID です。<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> の設定の一部としてログインが必要な場合、このお客様のサービス プロバイダ アカウントと関連付けられたユーザー アカウントのみが許可されます。このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
 <translation id="2452225615952836461">リクエスト メソッドを常に大文字にする</translation>
 <translation id="2454228136871844693">安定性を重視します。</translation>
 <translation id="2455033019778127130">デフォルトのブラウザ処理を行い、利用規約を表示してユーザーの同意を待ちます。</translation>

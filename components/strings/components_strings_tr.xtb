@@ -1413,6 +1413,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4606870351894164739">Etkili</translation>
 <translation id="4607603470419975064">Chrome ipuçlarını göster düğmesi, Chrome özellikleri hakkında bilgi edinmek için Enter'a basın</translation>
 <translation id="4607608436550361748">Chrome ipuçlarını göster</translation>
+<translation id="4610279718074907952">Bu site, <ph name="SET_OWNER" /> tarafından tanımlanmış, etkinliğinizi görebilen bir grupta bulunuyor</translation>
 <translation id="4617273035598175554">Grafik ve animasyon yazılımı</translation>
 <translation id="4622292761762557753">Yine de aktar</translation>
 <translation id="4627675673814409125">Bu politika, Chrome profili düzeyinde ayarlanamaz ve yoksayılır.</translation>
@@ -2388,6 +2389,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7130775116821607281">Yükleme işlemi engellendi</translation>
 <translation id="7132939140423847331">Yöneticiniz bu verilerin kopyalanmasını engellemiş.</translation>
 <translation id="7135130955892390533">Durumu göster</translation>
+<translation id="7136009930065337683">Gizli mod hakkında daha fazla bilgi</translation>
 <translation id="7138472120740807366">Teslimat yöntemi</translation>
 <translation id="7139892792842608322">Birincil Tepsi</translation>
 <translation id="714064300541049402">Taraf 2 resim X kayması</translation>

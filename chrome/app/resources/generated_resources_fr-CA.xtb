@@ -1108,7 +1108,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="2007404777272201486">Signaler un problème...</translation>
 <translation id="2009590708342941694">Émoji</translation>
 <translation id="2010501376126504057">Appareils compatibles</translation>
-<translation id="2010888903612390044">Aucun microphone n'est connecté</translation>
 <translation id="2015232545623037616">L'ordinateur et le Chromecast sont sur le même réseau Wi-Fi</translation>
 <translation id="2016473077102413275">Les fonctionnalités qui utilisent des images ne fonctionneront pas</translation>
 <translation id="2016574333161572915">Votre accessoire Google Meet est prêt à être configuré</translation>
@@ -2156,7 +2155,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2927017729816812676">Stockage du cache</translation>
 <translation id="2928795416630981206">Autorisés à suivre la position de votre caméra</translation>
 <translation id="2931157624143513983">Ajuster à la zone imprimable</translation>
-<translation id="2931342457001070961">Aucun microphone connecté</translation>
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2932483646085333864">Déconnectez-vous puis reconnectez-vous pour commencer la synchronisation</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
@@ -2849,7 +2847,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3616741288025931835">Effa&amp;cer les données de navigation…</translation>
 <translation id="3617891479562106823">Les arrière-plans ne sont pas disponibles. Réessayez plus tard.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3620136223548713675">Géolocalisation</translation>
 <translation id="3621807901162200696">Contribuer à améliorer les fonctionnalités et les performances de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une application}one{# application}other{# applications}}</translation>
 <translation id="362333465072914957">En attente de la publication du certificat par l'autorité correspondante</translation>
@@ -3071,7 +3068,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3813296892522778813">Accédez à l'<ph name="BEGIN_LINK_CHROMIUM" />aide Google Chrome<ph name="END_LINK_CHROMIUM" /> si vous ne parvenez pas à trouver ce que vous recherchez</translation>
 <translation id="3813358687923336574">Langue utilisée pour la traduction des pages et des réponses rapides</translation>
 <translation id="3814529970604306954">Compte scolaire</translation>
-<translation id="3814792775883886759">Aucun appareil photo n'est connecté</translation>
 <translation id="3816118180265633665">Couleurs de Chrome</translation>
 <translation id="3817524650114746564">Ouvrez les paramètres de mandataires de votre ordinateur</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Le fait d'autoriser vos appareils ChromeOS à envoyer des rapports automatiques nous permet de prioriser les éléments à corriger et à améliorer dans ChromeOS. Ces rapports peuvent comprendre des renseignements sur, entre autres, le moment où ChromeOS plante, les fonctionnalités que vous utilisez et la quantité de mémoire que vous utilisez normalement.<ph name="END_PARAGRAPH1" />
@@ -4090,7 +4086,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4780321648949301421">Enregistrer la page sous…</translation>
 <translation id="4781443161433589743">Vous profitez de la sécurité la plus robuste de Chrome</translation>
 <translation id="4781584184731045253">Effacer les données et les autorisations</translation>
-<translation id="4782861709165039462">Tous les microphones sont désactivés par le commutateur physique des appareils</translation>
 <translation id="4785719467058219317">Vous utilisez une clé de sécurité qui n'est pas enregistrée auprès de ce site Web</translation>
 <translation id="4785914069240823137">Annuler le recadrage</translation>
 <translation id="4788092183367008521">Veuillez vérifier votre connexion réseau et réessayer.</translation>
@@ -5881,7 +5876,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="648927581764831596">Aucun</translation>
 <translation id="6490471652906364588">Appareil USB-C (port de droite)</translation>
 <translation id="6491376743066338510">Échec de l'autorisation</translation>
-<translation id="6492396476180293140">Caméra interne désactivée par le commutateur matériel</translation>
 <translation id="6494327278868541139">Afficher les renseignements sur la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
 <translation id="6497548114956205206">En savoir plus à propos de l'économiseur d'énergie</translation>
@@ -6645,7 +6639,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7210499381659830293">Imprimantes d'extension</translation>
 <translation id="7211783048245131419">Aucun commutateur n'a été attribué</translation>
 <translation id="7212097698621322584">Entrez votre NIP actuel pour le modifier. Si vous ne connaissez pas votre NIP, vous devrez réinitialiser la clé de sécurité, puis créer un nouveau NIP.</translation>
-<translation id="7213903639823314449">Moteur de recherche utilisé dans la barre d'adresse</translation>
 <translation id="721490496276866468">Importer des mots de passe</translation>
 <translation id="7218514093816577632">Assurez-vous que les notifications sont activées sur votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="7219473482981809164">Plusieurs profils peuvent être téléchargés. Sélectionnez ceux que vous voulez télécharger avant de continuer.</translation>

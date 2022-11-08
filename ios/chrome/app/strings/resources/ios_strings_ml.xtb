@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">ബ്ലോക്ക് ചെയ്‌ത കുക്കികൾ</translation>
 <translation id="165877110639533037">തുറന്ന ടാബുകൾ ഒന്നുമില്ല</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> എന്നതിൽ നിന്ന് <ph name="TARGET_LANGUAGE" /> എന്നതിലേക്ക്</translation>
+<translation id="1683483432843341018">മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="168715261339224929">എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ ലഭിക്കാൻ, 'സമന്വയം' ഓണാക്കുക.</translation>
 <translation id="1687475363370981210">എല്ലാം വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="1689333818294560261">വിളിപ്പേര്</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">ടാബ് അവസാനിപ്പിക്കുക</translation>
 <translation id="2890171748217283516">നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നു. Discover ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് അവ മാനേജ് ചെയ്യാനാകും.</translation>
 <translation id="2898963176829412617">പുതിയ ഫോൾഡർ…</translation>
+<translation id="2902684821701498619">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിൽ ചേർക്കുക</translation>
 <translation id="2916171785467530738">സ്വമേധയായുള്ള തിരയലുകളും URL-കളും</translation>
 <translation id="291754862089661335">ഈ ഫ്രെയിമിൽ QR കോഡോ ബാർ‌കോഡോ സ്ഥാപിക്കുക</translation>
 <translation id="2920866371965792875">ഈ സൈറ്റിൽ നിന്നുള്ള അപ്ഡേറ്റുകൾ കാണാൻ ഇവിടെ അത് പിന്തുടരുക.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">കാലഹരണപ്പെടുന്ന മാസം</translation>
 <translation id="3482959374254649722">നിങ്ങളുടെ ടാബുകൾ സമന്വയിപ്പിക്കുന്നു...</translation>
 <translation id="3484946776651937681">ഡൗൺലോഡുകളിൽ തുറക്കുക</translation>
+<translation id="3485558910355485767">പുതിയ അദൃശ്യ വിൻഡോ</translation>
 <translation id="3493531032208478708">നിർദ്ദേശിച്ച ഉള്ളടക്കത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുന്നത് സ്ഥിരീകരിക്കുക</translation>
 <translation id="35083190962747987">${url} തുറക്കുക</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3861486700625780712">പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
+<translation id="3863769054730344136">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="387280738075653372">ഇവിടെ Chrome ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="3892144330757387737">നിങ്ങളുടെ ചരിത്രം ഇവിടെ കാണാം</translation>
 <translation id="3897092660631435901">മെനു</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">ഇമെയില്‍</translation>
 <translation id="5669335982068190158">iPhone റീസെറ്റ് ചെയ്യുന്നതിന്റെ ഭാഗമായി നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു. സൈൻ ഇൻ ചെയ്യാൻ ചുവടെയുള്ള 'തുടരുക' ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR കോഡ് സൃഷ്ടിക്കുക</translation>
 <translation id="567881659373499783">പതിപ്പ് <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{ഇപ്പോൾ ഒരു Chrome വിൻഡോ കാണിക്കുന്നു}other{ഇപ്പോൾ {count} Chrome വിൻഡോകൾ കാണിക്കുന്നു}}</translation>
 <translation id="5701270923492462699">ക്യാമറ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">വീണ്ടും സ്വാഗതം</translation>
 <translation id="6219688215832490856">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="6223816392543092032">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരണവും നേടുക.</translation>
+<translation id="6229318421047648685">ഡെസ്‌ക്ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="6231782223312638214">നിര്‍‌ദ്ദേശിച്ചത്</translation>
 <translation id="6232329973559504466">അദൃശ്യ മോഡിലെ തിരയൽ</translation>
 <translation id="6232736989810857397">Google Lens ഉപയോഗിച്ച് കലണ്ടർ ഇവന്റുകൾ എളുപ്പത്തിൽ സൃഷ്ടിക്കാൻ ഇത് നിങ്ങളെ അനുവദിക്കുന്നു.</translation>

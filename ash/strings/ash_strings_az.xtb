@@ -219,7 +219,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="209965399369889474">Şəbəkəyə qoşulmayıb</translation>
 <translation id="2107914222138020205">USB-C kabeliniz Thunderbolt'u dəstəkləmir. Cihazın performansı məhdud ola bilər.</translation>
 <translation id="2108303511227308752">Alt + Geri klaviatura qısayolu dəyişib. Silmə düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + geri düyməsini basın.</translation>
-<translation id="211328683600082144">MİKROFONU YANDIRIN</translation>
 <translation id="2126242104232412123">Yeni iş masası</translation>
 <translation id="2132302418721800944">Tam ekranı çəkin</translation>
 <translation id="2135456203358955318">Daxili miqyas</translation>
@@ -735,7 +734,6 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5042305953558921026">Giriş rejimi açarı</translation>
 <translation id="504465286040788597">Əvvəlki paraqraf</translation>
 <translation id="5045550434625856497">Yanlış parol</translation>
-<translation id="5071064518267176975">Tətbiq mikrofondan istifadə etmək istəyir</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Daha çox Assistent funksiyalarını kiliddən çıxarın.</translation>
 <translation id="509790653408515442">Telefonunuzdakı tətbiqləri yayımladığınız zaman onlar burada görünəcək</translation>
@@ -1008,7 +1006,6 @@ Yeni quraşdırma</translation>
 <translation id="6614169507485700968">Məxfilik ekranı aktivdir</translation>
 <translation id="6625718907317144388">Baxış qoruması aktiv olduğuna görə <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> və digər bildirişlər gizlədilib</translation>
 <translation id="6627638273713273709">Axtarış+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> mikrofondan istifadə etmək istəyir</translation>
 <translation id="6637729079642709226">Vaxtı dəyişin</translation>
 <translation id="6641720045729354415">Canlı Altyazını keçirin. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ad üzrə çeşidləmə sırasını ləğv edin</translation>
@@ -1209,7 +1206,6 @@ Yeni quraşdırma</translation>
 <translation id="7724603315864178912">Kəsin</translation>
 <translation id="7745560842763881396">Rəfdə tətbiqləri göstərin</translation>
 <translation id="7749443890790263709">Maksimum masa sayına çatmısınız.</translation>
-<translation id="7749640678855296659">Mikrofonunuz hazırda sönülüdür</translation>
 <translation id="776344839111254542">Güncəlləmə detallarını görmək üçün klikləyin</translation>
 <translation id="7768784765476638775">Seç və Dinlə</translation>
 <translation id="7780094051999721182">qısayollar</translation>

@@ -540,6 +540,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1495677929897281669">Tillbaka till flik</translation>
 <translation id="1500297251995790841">Okänd enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Läs mer om Chrome-appar som inte stöds</translation>
+<translation id="1503392482221435031">Skickar användningsstatistik till Google automatiskt. Du kan aktivera eller inaktivera felrapporter i enhetens inställningar.</translation>
 <translation id="150411034776756821">Ta bort <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Delade mappar finns i <ph name="BASE_DIR" /> i Windows.</translation>
 <translation id="1505494256539862015">exportera lösenord</translation>
@@ -1118,7 +1119,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="2007404777272201486">Rapportera ett problem...</translation>
 <translation id="2009590708342941694">Emojiverktyg</translation>
 <translation id="2010501376126504057">Kompatibla enheter</translation>
-<translation id="2010888903612390044">Ingen mikrofon är ansluten</translation>
 <translation id="2015232545623037616">Datorn och Chromecast-enheten är på samma wifi-nätverk</translation>
 <translation id="2016473077102413275">Funktioner som kräver bilder slutar fungera</translation>
 <translation id="2016574333161572915">Google Meet-maskinvara är klar att konfigureras</translation>
@@ -2168,7 +2168,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2927017729816812676">Cachelagring</translation>
 <translation id="2928795416630981206">Får registrera kamerans position</translation>
 <translation id="2931157624143513983">Anpassa till det utskrivbara området</translation>
-<translation id="2931342457001070961">Ingen mikrofon är ansluten</translation>
 <translation id="2932085390869194046">Föreslå lösenord …</translation>
 <translation id="2932483646085333864">Synkroniseringen påbörjas när du har loggat ut och loggat in igen</translation>
 <translation id="2932883381142163287">Anmäl otillåten användning</translation>
@@ -2703,6 +2702,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3461766685318630278">Skapa och radera extra behållare.</translation>
 <translation id="3462311546193741693">Du loggas ut från de flesta webbplatser. Du är fortfarande inloggad på Google-kontot så att synkroniserad data kan rensas.</translation>
 <translation id="3462413494201477527">Vill du avbryta konfigurationen av kontot?</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} lösenord har sparats på den här enheten}other{{COUNT} lösenord har sparats på den här enheten}}</translation>
 <translation id="346298925039590474">Det här mobilnätverket blir tillgängligt för alla som använder den här enheten</translation>
 <translation id="3464145797867108663">Lägg till jobbprofil</translation>
 <translation id="346431825526753">Det här är ett konto för barn som hanteras av <ph name="CUSTODIAN_EMAIL" />.</translation>
@@ -2860,7 +2860,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3616741288025931835">&amp;Rensa webbinformation...</translation>
 <translation id="3617891479562106823">Inga bakgrunder är tillgängliga. Försök igen senare.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3620136223548713675">Geolokalisering</translation>
 <translation id="3621807901162200696">Hjälp oss att förbättra funktioner och prestanda i Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{en app}other{# appar}}</translation>
 <translation id="362333465072914957">Väntar på att CA ska utfärda ett certifikat</translation>
@@ -2999,6 +2998,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3743842571276656710">Ange pinkod för att parkoppla med <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Om du vill ta bort appar öppnar du Inställningar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Appar eller Apphanteraren. Tryck sedan på appen du vill avinstallera (du kanske måste svepa åt höger eller vänster för att hitta appen). Tryck sedan på Avinstallera eller Inaktivera.</translation>
 <translation id="3747603683749989726">Vill du aktivera förbättrad säkerhet?</translation>
+<translation id="3748424433435232460">Ett lösenord för det här kontot har redan sparats på den här enheten</translation>
 <translation id="3748706263662799310">Rapportera ett fel</translation>
 <translation id="3750562496035670393">Chrome har sparat lösenordet på enheten, men du kan spara det i Google-kontot i stället. Alla lösenord som finns i Google-kontot är tillgängliga när du är inloggad.</translation>
 <translation id="3752253558646317685">Låt ditt barn trycka och lyfta på fingret upprepade gånger så att fingeravtrycket sparas</translation>
@@ -3081,7 +3081,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3813296892522778813">Öppna <ph name="BEGIN_LINK_CHROMIUM" />Hjälp för Google Chrome<ph name="END_LINK_CHROMIUM" /> om du inte hittar vad du letar efter.</translation>
 <translation id="3813358687923336574">Språk som används för att översätta sidor och Snabbinfo</translation>
 <translation id="3814529970604306954">Skolkonto</translation>
-<translation id="3814792775883886759">Ingen kamera är ansluten</translation>
 <translation id="3816118180265633665">Färger i Chrome</translation>
 <translation id="3817524650114746564">Öppna datorns proxyinställningar</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner du använder och hur mycket minne du brukar använda.<ph name="END_PARAGRAPH1" />
@@ -3179,6 +3178,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> är byggd för spel. Nu öppnas appen Utforska där du kan få åtkomst till hundratals av de senaste spelen, se spelerbjudanden och upptäcka spelfunktioner som hör till enheten.</translation>
 <translation id="3898233949376129212">Enhetens språk</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> vill <ph name="FIRST_PERMISSION" /> och <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">Ditt lösenord på <ph name="WEBSITE" /> har sparats på den här enheten och i Google-kontot. Vilket vill du radera?</translation>
 <translation id="389901847090970821">Välj tangentbord</translation>
 <translation id="3900966090527141178">Exportera lösenord</translation>
 <translation id="3902789559055749153">Välj hur du vill skapa en nyckel för <ph name="APP_NAME" /></translation>
@@ -4100,7 +4100,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4780321648949301421">Spara sida som...</translation>
 <translation id="4781443161433589743">Du använder Chromes starkaste skydd</translation>
 <translation id="4781584184731045253">Rensa data och behörigheter</translation>
-<translation id="4782861709165039462">Alla mikrofoner har inaktiverats med enhetens maskinvarureglage</translation>
 <translation id="4785719467058219317">Säkerhetsnyckeln som du använder är inte registrerad på den här webbplatsen</translation>
 <translation id="4785914069240823137">Avbryt beskärning</translation>
 <translation id="4788092183367008521">Kontrollera nätverksanslutningen och försök igen.</translation>
@@ -5891,7 +5890,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="648927581764831596">Inte tillgängligt</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="6491376743066338510">Auktoriseringen misslyckades</translation>
-<translation id="6492396476180293140">Intern kamera har inaktiverats med maskinvarureglage</translation>
 <translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
 <translation id="6494445798847293442">Inte från certifikatutfärdare</translation>
 <translation id="6497548114956205206">Läs mer om energisparläget</translation>
@@ -5910,6 +5908,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielicens</translation>
 <translation id="6511827214781912955">Det kan vara bra att radera <ph name="FILENAME" /> så att andra som använder enheten inte kan se lösenorden</translation>
+<translation id="6512808201725371249">Ett lösenord för det här kontot har redan sparats i Google Lösenordshantering (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome kommer att använda mobila data om du inte är ansluten till ett annat nätverk.</translation>
 <translation id="6514010653036109809">Tillgänglig enhet:</translation>
 <translation id="6514565641373682518">Muspekaren har inaktiverats av sidan.</translation>
@@ -6328,6 +6327,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6897363604023044284">Välj vilka webbplatser du vill rensa</translation>
 <translation id="6897688156970667447">Användbart vid svag belysning och sparar batteri</translation>
+<translation id="6897972855231767338">Läs mer om att surfa som gäst</translation>
 <translation id="6898440773573063262">Nu går det att konfigurera kioskappar så att de startas automatiskt på den här enheten.</translation>
 <translation id="6900284862687837908">Bakgrundsapp: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Förbättrat skydd</translation>
@@ -6651,7 +6651,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7210499381659830293">Tilläggsskrivare</translation>
 <translation id="7211783048245131419">Ingen brytare har tilldelats ännu</translation>
 <translation id="7212097698621322584">Ange den nuvarande pinkoden om du vill ändra den. Om du inte kan pinkoden måste du återställa säkerhetsnyckeln och sedan ställa in en ny pinkod.</translation>
-<translation id="7213903639823314449">Sökmotorn som används i adressfältet</translation>
 <translation id="721490496276866468">Importera lösenord</translation>
 <translation id="7218514093816577632">Kontrollera att aviseringar har aktiverats på <ph name="DEVICE_NAME" />.</translation>
 <translation id="7219473482981809164">Vi har hittat flera profiler som är tillgängliga för nedladdning. Välj de profiler som du vill ladda ned innan du fortsätter.</translation>
@@ -8633,6 +8632,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> vill få åtkomst till följande innehåll:</translation>
 <translation id="9057354806206861646">Uppdatera schema</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cirka 1 avisering om dagen}other{Cirka {NUM_NOTIFICATION} aviseringar om dagen}}</translation>
+<translation id="9061383912634843744">Logga automatiskt in på webbplatser och i appar med hjälp av sparade användaruppgifter. När funktionen är inaktiverad måste du bekräfta inloggningen varje gång du besöker en webbplats eller app.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Fel på rad <ph name="ERROR_LINE_START" /> till och med <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Aktivera Autofyll och fyll i formulär med ett enda klick</translation>

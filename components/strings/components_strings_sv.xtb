@@ -1413,6 +1413,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4606870351894164739">Effektiv</translation>
 <translation id="4607603470419975064">Knappen Visa tips om Chrome: tryck på Retur om du vill läsa mer om funktioner i Chrome</translation>
 <translation id="4607608436550361748">Visa tips om Chrome</translation>
+<translation id="4610279718074907952">Den här webbplatsen ingår i en grupp som definierats av <ph name="SET_OWNER" /> och som kan se din aktivitet</translation>
 <translation id="4617273035598175554">Grafik- och animationsprogramvara</translation>
 <translation id="4622292761762557753">Överför ändå</translation>
 <translation id="4627675673814409125">Den här policyn kan inte ställas in på Chrome-profilnivå och kommer att ignoreras.</translation>
@@ -2388,6 +2389,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7130775116821607281">Uppladdning blockeras</translation>
 <translation id="7132939140423847331">Administratören tillåter inte att denna data kopieras.</translation>
 <translation id="7135130955892390533">Visa status</translation>
+<translation id="7136009930065337683">Läs mer om inkognitoläget</translation>
 <translation id="7138472120740807366">Leveranssätt</translation>
 <translation id="7139892792842608322">Primär bricka</translation>
 <translation id="714064300541049402">Sida 2 bild X – byte</translation>

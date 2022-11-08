@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">ನಿರ್ಬಂಧಿಸಿದ ಕುಕೀಗಳು</translation>
 <translation id="165877110639533037">ಯಾವುದೇ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ನಿಂದ <ph name="TARGET_LANGUAGE" /> ಗೆ</translation>
+<translation id="1683483432843341018">ಮೊಬೈಲ್ ಸೈಟ್ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="168715261339224929">ನಿಮ್ಮ ಎಲ್ಲ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ.</translation>
 <translation id="1687475363370981210">ಎಲ್ಲವನ್ನೂ ಓದಿದಂತೆ ಗುರುತಿಸಿ</translation>
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="2890171748217283516">ನೀವು ಫಾಲೋ ಮಾಡುವ ಸೈಟ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ. ನೀವು ಅವುಗಳನ್ನು Discover ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="2898963176829412617">ಹೊಸ ಫೋಲ್ಡರ್‌…</translation>
+<translation id="2902684821701498619">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="2916171785467530738">ಸ್ವಯಂಪೂರ್ಣ ಹುಡುಕಾಟಗಳು ಮತ್ತು URLಗಳು</translation>
 <translation id="291754862089661335">ಈ ಫ್ರೇಮ್‌ನಲ್ಲಿ QR ಕೋಡ್ ಅಥವಾ ಬಾರ್‌ಕೋಡ್ ಅನ್ನು ಇರಿಸಿ</translation>
 <translation id="2920866371965792875">ಈ ಸೈಟ್‌ನಿಂದ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನೋಡಲು, ಅದನ್ನು ಇಲ್ಲಿ ಅನುಸರಿಸಿ.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">ಮುಕ್ತಾಯದ ತಿಂಗಳು</translation>
 <translation id="3482959374254649722">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3484946776651937681">ಡೌನ್‌ಲೋಡ್‌ಗಳಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="3485558910355485767">ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
 <translation id="3493531032208478708">ಸೂಚಿಸಲಾದ ವಿಷಯದ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="35083190962747987">${url} ಅನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
 <translation id="3861486700625780712">ಅನುಸರಿಸಬೇಡಿ</translation>
+<translation id="3863769054730344136">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="387280738075653372">Chrome ಅನ್ನು ಇಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="3892144330757387737">ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="3897092660631435901">ಮೆನು</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">ಇಮೇಲ್</translation>
 <translation id="5669335982068190158">ನಿಮ್ಮ ಐಫೋನ್ ರೀಸೆಟ್‌ನ ಭಾಗವಾಗಿ ನಿಮ್ಮನ್ನು ಸೈನ್‌ಔಟ್ ಮಾಡಲಾಗಿದೆ. ಸೈನ್ ಇನ್ ಮಾಡಲು, ಕೆಳಗೆ ಮುಂದುವರಿಸಿ ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR ಕೋಡ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="567881659373499783">ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{ಈಗ 1 Chrome ವಿಂಡೋವನ್ನು ತೋರಿಸುತ್ತಿದೆ}one{ಈಗ {count} Chrome ವಿಂಡೋಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ}other{ಈಗ {count} Chrome ವಿಂಡೋಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ}}</translation>
 <translation id="5701270923492462699">ಕ್ಯಾಮರಾ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">ಮರಳಿ ಸುಸ್ವಾಗತ</translation>
 <translation id="6219688215832490856">ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡಿ</translation>
 <translation id="6223816392543092032">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮದೇ ಆದ ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ.</translation>
+<translation id="6229318421047648685">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಸೈಟ್‌ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="6231782223312638214">ಸಲಹೆ ಮಾಡಿರುವುದು</translation>
 <translation id="6232329973559504466">ಅಜ್ಞಾತ ಹುಡುಕಾಟ</translation>
 <translation id="6232736989810857397">Google Lens ಬಳಸಿಕೊಂಡು ಕ್ಯಾಲೆಂಡರ್ ಈವೆಂಟ್‌ಗಳನ್ನು ಸುಲಭವಾಗಿ ರಚಿಸಲು ಇದು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ.</translation>

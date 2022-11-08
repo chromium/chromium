@@ -219,7 +219,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="209965399369889474">Ni povezave z omrežjem</translation>
 <translation id="2107914222138020205">Kabel USB-C ne podpira protokola Thunderbolt. Delovanje naprave bo morda omejeno.</translation>
 <translation id="2108303511227308752">Bližnjica na tipkovnici alt + preslednica je spremenjena. Če želite uporabiti tipko za brisanje, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in vračalko.</translation>
-<translation id="211328683600082144">VKLOPI MIKROFON</translation>
 <translation id="2126242104232412123">Novo namizje</translation>
 <translation id="2132302418721800944">Snemanje celotnega zaslona</translation>
 <translation id="2135456203358955318">Zasidrana lupa</translation>
@@ -735,7 +734,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5042305953558921026">Tipka za način pregleda</translation>
 <translation id="504465286040788597">Prejšnji odstavek</translation>
 <translation id="5045550434625856497">Nepravilno geslo</translation>
-<translation id="5071064518267176975">Aplikacija želi uporabljati mikrofon</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
 <translation id="509790653408515442">Ko pretočno predvajate aplikacije v telefonu, so prikazane tukaj.</translation>
@@ -1008,7 +1006,6 @@ Nova namestitev</translation>
 <translation id="6614169507485700968">Zaslon za zasebnost je vklopljen</translation>
 <translation id="6625718907317144388">Obvestili aplikacij <ph name="APP_1_TITLE" /> in <ph name="APP_2_TITLE" /> ter druga obvestila so skrita zaradi vklopljene zaščite pred ogledovanjem.</translation>
 <translation id="6627638273713273709">Tipka za iskanje + Shift + K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> želi uporabiti mikrofon</translation>
 <translation id="6637729079642709226">Spreminjanje časa</translation>
 <translation id="6641720045729354415">Preklop samodejnih podnapisov. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Razveljavi način razvrščanja po imenu</translation>
@@ -1209,7 +1206,6 @@ Nova namestitev</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7745560842763881396">Prikaz aplikacij na polici</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
-<translation id="7749640678855296659">Mikrofon je trenutno izklopljen.</translation>
 <translation id="776344839111254542">Kliknite, če si želite ogledati podrobnosti o posodobitvi</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7780094051999721182">bližnjicah</translation>

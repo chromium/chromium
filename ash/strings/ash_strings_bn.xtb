@@ -219,7 +219,6 @@
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2107914222138020205">আপনার USB-C কেবল Thunderbolt-এ কাজ করে না। ডিভাইসের পারফর্ম্যান্স সীমিত হতে পারে।</translation>
 <translation id="2108303511227308752">Alt + Backspace কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Delete কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Backspace কী প্রেস করুন।</translation>
-<translation id="211328683600082144">মাইক্রোফোন চালু করুন</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
 <translation id="2132302418721800944">ফুল স্ক্রিন রেকর্ড করুন</translation>
 <translation id="2135456203358955318">ডক করা ম্যাগনিফায়ার</translation>
@@ -484,6 +483,7 @@
 <translation id="3633097874324966332">আপনার ডিভাইস পেয়ার করতে ব্লুটুথ সেটিংস খুলুন</translation>
 <translation id="3638400994746983214">গোপনীয়তা স্ক্রিন টগল করুন। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649505501900178324">আপডেট করতে ডিভাইস রিস্টার্ট করুন</translation>
+<translation id="3659444876902283058">(দিন <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">আর <ph name="TIME_LEFT" /> চলবে (<ph name="PERCENTAGE" />%)।
 ডিভাইসটি চার্জে বসান।</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ম্যানেজ করা ব্যবহারকারী</translation>
@@ -734,7 +734,6 @@
 <translation id="5042305953558921026">এক নজরে দেখার বোতাম</translation>
 <translation id="504465286040788597">পূর্ববর্তী অনুচ্ছেদ</translation>
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
-<translation id="5071064518267176975">অ্যাপ মাইক্রোফোন ব্যবহার করতে চায়</translation>
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
 <translation id="509790653408515442">আপনি ফোনের অ্যাপ স্ট্রিম করলে, সেগুলি এখানে দেখা যাবে</translation>
@@ -1007,7 +1006,6 @@
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>
 <translation id="6625718907317144388">ভিউ সংক্রান্ত নিরাপত্তা চালু থাকার জন্য <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />-এর এবং অন্যান্য বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="6627638273713273709">সার্চ+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> মাইক্রোফোন ব্যবহার করতে চায়</translation>
 <translation id="6637729079642709226">ব্যবহারের মোট সময় পরিবর্তন করা</translation>
 <translation id="6641720045729354415">লাইভ ক্যাপশন টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">নাম অনুযায়ী বেছে নেওয়া সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
@@ -1208,7 +1206,6 @@
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7745560842763881396">শেল্ফে অ্যাপ দেখুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
-<translation id="7749640678855296659">বর্তমানে আপনার মাইক্রোফোন বন্ধ করা আছে</translation>
 <translation id="776344839111254542">আপডেটের বিশদ বিবরণ জানার জন্য ক্লিক করুন</translation>
 <translation id="7768784765476638775">বাছুন ও শুনুন</translation>
 <translation id="7780094051999721182">শর্টকাট</translation>
@@ -1268,9 +1265,11 @@
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="8054466585765276473">ব্যাটারি সময় গণনা করা হচ্ছে।</translation>
 <translation id="8083540854303889870">পরবর্তী সময়ের জন্য সেভ করুন</translation>
+<translation id="8091153018031979607"><ph name="DAYS_ELAPSED" />-এর <ph name="START_TIME" />-এ শুরু হবে</translation>
 <translation id="8091387634532529612">অটোমেটিক আপডেট</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা বন্ধ করুন</translation>
 <translation id="8113423164597455979">সমস্ত অ্যাপে</translation>
+<translation id="8113515504791187892">'বাছুন ও শুনুন' বোতাম</translation>
 <translation id="8120151603115102514">আপনার ফোনে লক স্ক্রিন নেই। Chromebook আনলক করতে, পাসওয়ার্ড লিখুন।</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
@@ -1380,6 +1379,7 @@
 <translation id="8703634754197148428">রেকর্ডিং শুরু করুন। রেকর্ডিং শুরু হলে, Alt, Shift ও L কী একসাথে প্রেস করে শেল্ফে যান এবং রেকর্ডিং বন্ধ করার বোতাম খুঁজুন</translation>
 <translation id="8721053961083920564">ভলিউম টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ফুল-স্ক্রিন ক্যাপচার</translation>
+<translation id="8731487213223706745"><ph name="DAYS_ELAPSED" />-এর <ph name="END_TIME" />-এ শেষ হবে</translation>
 <translation id="8734991477317290293">এটি আপনার পাসওয়ার্ড চুরি করার চেষ্টা করতে পারে</translation>
 <translation id="8735678380411481005">কীবোর্ড ব্যাকলাইটের রঙ</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

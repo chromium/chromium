@@ -219,7 +219,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="209965399369889474">Tarmoqqa ulanmagan</translation>
 <translation id="2107914222138020205">USB-C kabelingiz Thunderbolt qurilmalar bilan ishlamaydi. Qurilma samaradorligi cheklanishi mumkin.</translation>
 <translation id="2108303511227308752">Alt + Backspace tezkor tugmasi oʻzgardi. Delete tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Backspace tugmasini bosing.</translation>
-<translation id="211328683600082144">MIKROFONNI YOQISH</translation>
 <translation id="2126242104232412123">Yangi ish stoli</translation>
 <translation id="2132302418721800944">Butun ekranni yozib olish</translation>
 <translation id="2135456203358955318">Mahkamlangan lupa</translation>
@@ -735,7 +734,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5042305953558921026">Umumiy rejim tugmasi</translation>
 <translation id="504465286040788597">Avvalgi xatboshi</translation>
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
-<translation id="5071064518267176975">Ilova mikrofondan foydalanmoqchi</translation>
 <translation id="5078796286268621944">Noto‘g‘ri PIN-kod</translation>
 <translation id="5083553833479578423">Assistentning boshqa imkoniyatlarini oching.</translation>
 <translation id="509790653408515442">Telefon ilovalari namoyish qilinganda ular shu yerda chiqadi</translation>
@@ -1008,7 +1006,6 @@ yangi oʻrnatilgan</translation>
 <translation id="6614169507485700968">Maxfiylik ekrani yoniq</translation>
 <translation id="6625718907317144388">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> va boshqa ilovalar bildirishnomalari yashirildi</translation>
 <translation id="6627638273713273709">Qidiruv+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> mikrofondan foydalanmoqchi</translation>
 <translation id="6637729079642709226">Vaqtni oʻzgartirish</translation>
 <translation id="6641720045729354415">Jonli izohni yoqish/faolsizlantirish. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Nomi asosida saralanishini bekor qilish</translation>
@@ -1209,7 +1206,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7724603315864178912">Qirqish</translation>
 <translation id="7745560842763881396">Ilovalarni ishga tushirish panelida chiqarish</translation>
 <translation id="7749443890790263709">Ish stollari maksimal miqdorda.</translation>
-<translation id="7749640678855296659">Mikrofon hozir yoniq emas</translation>
 <translation id="776344839111254542">Yangilanish tafsilotlarini ko‘rish uchun bosing</translation>
 <translation id="7768784765476638775">Teginib tinglash</translation>
 <translation id="7780094051999721182">Yorliqlar</translation>

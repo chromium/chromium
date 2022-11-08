@@ -102,6 +102,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1657641691196698092">Cookie bloccati</translation>
 <translation id="165877110639533037">Nessuna scheda aperta</translation>
 <translation id="1674504678466460478">Da <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Richiedi sito mobile</translation>
 <translation id="168715261339224929">Attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi.</translation>
 <translation id="1687475363370981210">Segna tutti come già letti</translation>
 <translation id="1689333818294560261">Nickname</translation>
@@ -243,6 +244,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="288655811176831528">Chiudi scheda</translation>
 <translation id="2890171748217283516">I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle impostazioni di Discover.</translation>
 <translation id="2898963176829412617">Nuova cartella…</translation>
+<translation id="2902684821701498619">Aggiungi all'Elenco di lettura</translation>
 <translation id="2916171785467530738">Completamento automatico di ricerche e URL</translation>
 <translation id="291754862089661335">Posiziona il codice a barre o QR all'interno di quest'area</translation>
 <translation id="2920866371965792875">Per vedere aggiornamenti di questo sito, seguilo qui.</translation>
@@ -320,6 +322,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3478058380795961209">Mese di scadenza</translation>
 <translation id="3482959374254649722">Sincronizzazione delle schede...</translation>
 <translation id="3484946776651937681">Apri Download</translation>
+<translation id="3485558910355485767">Nuova finestra di navigazione in incognito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> sui contenuti suggeriti</translation>
 <translation id="3494788280727468875">Conferma cancellazione dati di navigazione</translation>
 <translation id="35083190962747987">Apri ${url}</translation>
@@ -366,6 +369,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861486700625780712">Non seguire più</translation>
+<translation id="3863769054730344136">Invia ai tuoi dispositivi</translation>
 <translation id="387280738075653372">Scarica Chrome qui.</translation>
 <translation id="3892144330757387737">Qui troverai la tua cronologia</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -589,6 +593,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5659593005791499971">Email</translation>
 <translation id="5669335982068190158">Il tuo account è stato disconnesso durante il ripristino dell'iPhone. Tocca Continua sotto per accedere.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Crea un codice QR</translation>
 <translation id="567881659373499783">Versione <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{1 finestra di Chrome visualizzata}other{{count} finestre di Chrome visualizzate}}</translation>
 <translation id="5701270923492462699">Accesso alla fotocamera consentito</translation>
@@ -673,6 +678,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6219550825416862075">Ti diamo il bentornato</translation>
 <translation id="6219688215832490856">Non tradurre mai</translation>
 <translation id="6223816392543092032">Trova i tuoi preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
+<translation id="6229318421047648685">Richiedi sito desktop</translation>
 <translation id="6231782223312638214">Suggerito</translation>
 <translation id="6232329973559504466">Ricerca in incognito</translation>
 <translation id="6232736989810857397">In questo modo puoi creare facilmente eventi nel calendario con Google Lens.</translation>

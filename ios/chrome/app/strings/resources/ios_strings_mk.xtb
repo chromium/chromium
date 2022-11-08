@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">Блокирани колачиња</translation>
 <translation id="165877110639533037">Нема отворени картички</translation>
 <translation id="1674504678466460478">Од <ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Побарајте сајт за мобилен</translation>
 <translation id="168715261339224929">За да ги добиете обележувачите на сите уреди, вклучете ја синхронизацијата.</translation>
 <translation id="1687475363370981210">Означи ги сите како прочитани</translation>
 <translation id="1689333818294560261">Прекар</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">Затвори ја картичката</translation>
 <translation id="2890171748217283516">Сајтовите што ги следите се зачувуваат во сметката на Google. Може да управувате со нив во поставките за Discover.</translation>
 <translation id="2898963176829412617">Нова папка…</translation>
+<translation id="2902684821701498619">Во „Список за читање“</translation>
 <translation id="2916171785467530738">Автоматски довршувај ги пребарувањата и URL-адресите</translation>
 <translation id="291754862089661335">Ставете го QR/бар-кодот во оваа рамка.</translation>
 <translation id="2920866371965792875">За да гледате новости од сајтов, следете го овде.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">Месец на истекување</translation>
 <translation id="3482959374254649722">Синхронизирање на картичките...</translation>
 <translation id="3484946776651937681">Отвори во „Преземања“</translation>
+<translation id="3485558910355485767">Нов прозорец „Инкогнито“</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> за предложените содржини</translation>
 <translation id="3494788280727468875">Одобри го чистењето на податоците од прелистување</translation>
 <translation id="35083190962747987">Отвори ${url}</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3861486700625780712">Не следи</translation>
+<translation id="3863769054730344136">Испратете до вашите уреди</translation>
 <translation id="387280738075653372">Преземете го Chrome тука.</translation>
 <translation id="3892144330757387737">Вашата историја ќе ја најдете тука</translation>
 <translation id="3897092660631435901">Мени</translation>
@@ -590,6 +594,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5659593005791499971">Е-пошта</translation>
 <translation id="5669335982068190158">Бевте одјавени како дел од ресетирањето на вашиот iPhone. Допрете „Продолжи“ подолу за да се најавите.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Создајте QR-код</translation>
 <translation id="567881659373499783">Верзија <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Сега се прикажува 1 прозорец на Chrome}one{Сега се прикажува {count} прозорец на Chrome}other{Сега се прикажуваат {count} прозорци на Chrome}}</translation>
 <translation id="5701270923492462699">Дозволен е пристап до „Камерата“</translation>
@@ -674,6 +679,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6219550825416862075">Добре дојдовте назад</translation>
 <translation id="6219688215832490856">Никогаш не преведувај</translation>
 <translation id="6223816392543092032">Добијте ги обележувачите, историјата, лозинките и другите поставки на сите ваши уреди.</translation>
+<translation id="6229318421047648685">Побарајте сајт за компјутер</translation>
 <translation id="6231782223312638214">Предложено</translation>
 <translation id="6232329973559504466">Пребарување во „Инкогнито“</translation>
 <translation id="6232736989810857397">Ова ви овозможува лесно да создавате настани во календар со Google Lens.</translation>

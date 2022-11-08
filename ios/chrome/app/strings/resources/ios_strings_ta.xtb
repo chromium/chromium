@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">தடுக்கப்பட்ட குக்கீகள்</translation>
 <translation id="165877110639533037">திறந்த தாவல்கள் இல்லை</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> இலிருந்து <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">மொபைல் தளத்தைக் காட்டு</translation>
 <translation id="168715261339224929">உங்கள் எல்லா சாதனங்களிலும் புத்தகக்குறிகளைப் பெற, ஒத்திசைவை இயக்கவும்.</translation>
 <translation id="1687475363370981210">அனைத்தையும் படித்ததாகக் குறி</translation>
 <translation id="1689333818294560261">புனைப்பெயர்</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">தாவலை மூடு</translation>
 <translation id="2890171748217283516">நீங்கள் பின்தொடரும் தளங்கள் உங்கள் Google கணக்கில் சேமிக்கப்படுகின்றன. அவற்றை Discover அமைப்புகளில் நிர்வகிக்கலாம்.</translation>
 <translation id="2898963176829412617">புதிய ஃபோல்டர்…</translation>
+<translation id="2902684821701498619">வாசிப்புப் பட்டியலில் சேர்</translation>
 <translation id="2916171785467530738">தேடல்கள் மற்றும் URLகளைத் தன்னிரப்புதல்</translation>
 <translation id="291754862089661335">இந்த ஃபிரேமில் QR அல்லது பார் குறியீடு தெரியும்படி வைக்கவும்</translation>
 <translation id="2920866371965792875">இந்தத் தளம் வழங்கும் அறிவிப்புகளைப் பார்க்க அதை இங்கே பின்தொடரவும்.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">காலாவதியாகும் மாதம்</translation>
 <translation id="3482959374254649722">உங்கள் தாவல்களை ஒத்திசைக்கிறது...</translation>
 <translation id="3484946776651937681">பதிவிறக்கங்களில் திற</translation>
+<translation id="3485558910355485767">புதிய மறைநிலைச் சாளரம்</translation>
 <translation id="3493531032208478708">பரிந்துரைக்கப்படும் உள்ளடக்கம் பற்றி <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">உலாவிய தரவை அழிப்பதை உறுதிப்படுத்துக</translation>
 <translation id="35083190962747987">${url} ஐத் திற</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3861486700625780712">பின்தொடர்வதை நிறுத்து</translation>
+<translation id="3863769054730344136">என் சாதனங்களுக்கு அனுப்பு</translation>
 <translation id="387280738075653372">Chromeமை இங்கே பதிவிறக்கவும்.</translation>
 <translation id="3892144330757387737">உங்கள் வரலாற்றை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="3897092660631435901">மெனு</translation>
@@ -588,6 +592,7 @@
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
 <translation id="5669335982068190158">iPhone மீட்டமைப்பின் ஒரு பகுதியாக வெளியேற்றப்பட்டீர்கள். உள்நுழைய கீழுள்ள 'தொடர்க' என்பதைத் தட்டவும்.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR குறியீட்டை உருவாக்கு</translation>
 <translation id="567881659373499783">பதிப்பு <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{இப்போது ஒரு Chrome சாளரம் காட்டப்படுகிறது}other{இப்போது {count} Chrome சாளரங்கள் காட்டப்படுகின்றன}}</translation>
 <translation id="5701270923492462699">கேமராவிற்கான அணுகல் வழங்கப்பட்டது</translation>
@@ -672,6 +677,7 @@
 <translation id="6219550825416862075">மீண்டும் வரவேற்கிறோம்</translation>
 <translation id="6219688215832490856">எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="6223816392543092032">உங்கள் புக்மார்க்குகள், இதுவரையான செயல்பாடுகள், கடவுச்சொற்கள் மற்றும் பிற அமைப்புகளை உங்கள் சாதனங்கள் அனைத்திலும் பெறலாம்.</translation>
+<translation id="6229318421047648685">டெஸ்க்டாப் தளத்தைக் காட்டு</translation>
 <translation id="6231782223312638214">பரிந்துரைக்கப்படுவது</translation>
 <translation id="6232329973559504466">மறைநிலையில் தேடுக</translation>
 <translation id="6232736989810857397">Google Lensஸைப் பயன்படுத்தி கேலெண்டர் நிகழ்வுகளை எளிதாக உருவாக்க இது உதவும்.</translation>

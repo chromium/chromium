@@ -219,7 +219,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="209965399369889474">Pole võrguga ühendatud</translation>
 <translation id="2107914222138020205">Teie USB-C-kaabel ei toeta Thunderbolti. Seadme toimivus võib olla piiratud.</translation>
 <translation id="2108303511227308752">Klaviatuuri otseteed Alt + tagasilükkeklahv on muudetud. Kustutusklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + tagasilükkeklahvi.</translation>
-<translation id="211328683600082144">LÜLITA MIKROFON SISSE</translation>
 <translation id="2126242104232412123">Uus töölaud</translation>
 <translation id="2132302418721800944">Täisekraani salvestamine</translation>
 <translation id="2135456203358955318">Dokitud luup</translation>
@@ -484,6 +483,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3633097874324966332">Avage oma seadme sidumiseks Bluetoothi seaded</translation>
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Värskendamise tähtaeg on möödas</translation>
+<translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. päev <ph name="TOTAL_DAYS" />-st)</translation>
 <translation id="3659814201068740063">Umbes <ph name="TIME_LEFT" /> jäänud (<ph name="PERCENTAGE" />%).
 Ühendage seade toiteallikaga.</translation>
 <translation id="366222428570480733">Kontoga <ph name="USER_EMAIL_ADDRESS" /> hallatav kasutaja</translation>
@@ -735,7 +735,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5042305953558921026">Ülevaaterežiimi klahv</translation>
 <translation id="504465286040788597">Eelmine lõik</translation>
 <translation id="5045550434625856497">Vale salasõna</translation>
-<translation id="5071064518267176975">Rakendus soovib mikrofoni kasutada</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
 <translation id="509790653408515442">Telefoni rakenduste voogesitamisel kuvatakse need siin</translation>
@@ -1008,7 +1007,6 @@ Uus installimine</translation>
 <translation id="6614169507485700968">Privaatsuskuva on sees</translation>
 <translation id="6625718907317144388">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> ning muud märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="6627638273713273709">Otsing + Tõstuklahv + K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> soovib mikrofoni kasutada</translation>
 <translation id="6637729079642709226">Kellaaja muutmine</translation>
 <translation id="6641720045729354415">Reaalajas subtiitrite lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Võta nime järgi sortimine tagasi</translation>
@@ -1209,7 +1207,6 @@ Uus installimine</translation>
 <translation id="7724603315864178912">Lõika</translation>
 <translation id="7745560842763881396">Kuva riiulil olevad rakendused</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
-<translation id="7749640678855296659">Teie mikrofon on praegu välja lülitatud</translation>
 <translation id="776344839111254542">Klõpsake värskenduse üksikasjade vaatamiseks</translation>
 <translation id="7768784765476638775">Vali ja kuula</translation>
 <translation id="7780094051999721182">otseteid</translation>
@@ -1269,9 +1266,11 @@ Uus installimine</translation>
 <translation id="8052898407431791827">Lõikelauale kopeeritud</translation>
 <translation id="8054466585765276473">Aku tööaja arvutamine.</translation>
 <translation id="8083540854303889870">Salvestatud hilisemaks</translation>
+<translation id="8091153018031979607">Algab kell <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automaatsed värskendused</translation>
 <translation id="8098591350844501178">Peata ekraani ülekandmine vastuvõtjasse <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sees, kõik rak.</translation>
+<translation id="8113515504791187892">Nupp Vali ja kuula</translation>
 <translation id="8120151603115102514">Teie telefonil pole lukustuskuva. Chromebooki avamiseks sisestage parool.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Kinnita</translation>
@@ -1381,6 +1380,7 @@ Uus installimine</translation>
 <translation id="8703634754197148428">Alusta salvestust. Kui salvestamine on alanud, vajutage klahvikombinatsiooni Alt + tõstuklahv + L, et liikuda riiulile ja leida salvestamise peatamise nupp.</translation>
 <translation id="8721053961083920564">Lülitage helitugevus sisse. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Täisekraani jäädvustamine</translation>
+<translation id="8731487213223706745">Lõpeb kell <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">See võib üritada varastada teie klahvivajutusi</translation>
 <translation id="8735678380411481005">Klaviatuuri taustavalguse värv</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

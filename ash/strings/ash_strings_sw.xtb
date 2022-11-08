@@ -219,7 +219,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="209965399369889474">Haijaunganishwa kwenye mtandao</translation>
 <translation id="2107914222138020205">Kebo yako ya USB-C haioani na Thunderbolt. Huenda utendaji kazi wa kifaa usiwe mzuri.</translation>
 <translation id="2108303511227308752">Mikato ya kibodi ya Alt + Backspace imebadilika. Ili utumie kitufe cha Kufuta, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na kitufe cha backspace.</translation>
-<translation id="211328683600082144">WASHA MAIKROFONI</translation>
 <translation id="2126242104232412123">Sehemu mpya ya kufanyia kazi</translation>
 <translation id="2132302418721800944">Rekodi skrini nzima</translation>
 <translation id="2135456203358955318">Kikuzaji kilichofungwa</translation>
@@ -735,7 +734,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5042305953558921026">Kitufe cha hali ya muhtasari</translation>
 <translation id="504465286040788597">Aya iliyotangulia</translation>
 <translation id="5045550434625856497">Nenosiri lisilo sahihi</translation>
-<translation id="5071064518267176975">Kuna programu inayotaka kutumia maikrofoni</translation>
 <translation id="5078796286268621944">PIN isiyo sahihi</translation>
 <translation id="5083553833479578423">Fungua vipengele zaidi vya programu yako ya Mratibu.</translation>
 <translation id="509790653408515442">Unapotiririsha programu za simu yako, zitaonekana hapa</translation>
@@ -1008,7 +1006,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6614169507485700968">Skrini ya faragha imewashwa</translation>
 <translation id="6625718907317144388">Arifa za <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> na nyinginezo zimefichwa kwa sababu ulinzi wa utazamaji umewashwa</translation>
 <translation id="6627638273713273709">Tafuta+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> inataka kutumia maikrofoni</translation>
 <translation id="6637729079642709226">Badilisha wakati</translation>
 <translation id="6641720045729354415">Zima au uwashe kipengele cha Manukuu Papo Hapo. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Tendua utaratibu wa kupanga kulingana na jina</translation>
@@ -1210,7 +1207,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7724603315864178912">Kata</translation>
 <translation id="7745560842763881396">Onyesha programu kwenye rafu</translation>
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
-<translation id="7749640678855296659">Maikrofoni yako imezimwa</translation>
 <translation id="776344839111254542">Bofya ili uone maelezo ya masasisho</translation>
 <translation id="7768784765476638775">Chagua ili izungumze</translation>
 <translation id="7780094051999721182">Njia za mkato</translation>
@@ -1274,6 +1270,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8091387634532529612">Masasisho ya kiotomatiki</translation>
 <translation id="8098591350844501178">Acha kutuma skrini kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Imewashwa: zote</translation>
+<translation id="8113515504791187892">Kitufe cha Chagua ili Izungumze</translation>
 <translation id="8120151603115102514">Simu yako haina kipengele cha kufunga skrini. Ili ufungue Chromebook yako, weka nenosiri.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Thibitisha</translation>

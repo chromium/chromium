@@ -444,7 +444,7 @@
 <translation id="205212645995975601">バーベキュー、グリル</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />のページは翻訳されません。</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは毎日更新されます。}=1{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは毎日更新されます。}other{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは {NUM_DAYS} 日ごとに更新されます。}}</translation>
-<translation id="2059202684901022309">55.9x86.4 cm</translation>
+<translation id="2059202684901022309">22x34 インチ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 件の候補}other{# 件の候補}}</translation>
 <translation id="2066915425250589881">削除のリクエスト</translation>
 <translation id="2068528718802935086">乳幼児</translation>
@@ -533,7 +533,7 @@
 <translation id="2277753418458118549">接続の詳細を表示</translation>
 <translation id="2283340219607151381">住所の保存と入力</translation>
 <translation id="2283447177162560884">「<ph name="PAGE_TITLE" />」を削除しました</translation>
-<translation id="2286383991450886080">86.4x111.8 cm</translation>
+<translation id="2286383991450886080">34x44 インチ</translation>
 <translation id="2288422996159078444">ウェブで入力した情報やアクセスしたページ、その他のアクティビティがすべて監視され、知らない間にサイトのコンテンツが改変されるおそれがあります。</translation>
 <translation id="2289385804009217824">トリミング</translation>
 <translation id="2292556288342944218">インターネット アクセスがブロックされています</translation>
@@ -702,7 +702,7 @@
 <translation id="2728127805433021124">サーバーの証明書は脆弱な署名アルゴリズムを使用して署名されています。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />接続診断ツールを実行する<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">クラシック音楽</translation>
-<translation id="2731382536835015353">111.8x172.7 cm</translation>
+<translation id="2731382536835015353">44x68 インチ</translation>
 <translation id="2734319753272419592">カートに入れたアイテムの割引情報の検索を Google に許可します。見つかった割引情報はカートに自動的に表示されます。</translation>
 <translation id="2738330467931008676">受け取り場所の住所を選択</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -775,7 +775,7 @@
 <translation id="2955913368246107853">検索バーを閉じる</translation>
 <translation id="2958544468932521864">クリケット</translation>
 <translation id="2959113999220720579">フェイス、ボディケア</translation>
-<translation id="2962073860865348475">30.5x45.7 cm</translation>
+<translation id="2962073860865348475">12x18 インチ</translation>
 <translation id="2968103128155246731">バン、ミニバン</translation>
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />が現在選択されています。<ph name="ROW_CONTENT" /></translation>
@@ -1181,7 +1181,7 @@
 <translation id="4030383055268325496">追加の取り消し（&amp;U）</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4040350669425716613">大学</translation>
-<translation id="4047351652147966654">45.7x61.0 cm</translation>
+<translation id="4047351652147966654">18x24 インチ</translation>
 <translation id="405399507749852140">値下げしたサイトがある場合に通知します</translation>
 <translation id="4056223980640387499">セピア</translation>
 <translation id="4063063121357725926">Google でカートの割引情報を検索</translation>
@@ -1610,7 +1610,7 @@
 <translation id="5093232627742069661">Z 折り</translation>
 <translation id="5094747076828555589">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は Chromium によって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="5097099694988056070">CPU や RAM の使用率などのデバイスの統計情報</translation>
-<translation id="5097468150760963273">68.6x99.1 cm</translation>
+<translation id="5097468150760963273">27x39 インチ</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">サイトは安全ではありません</translation>
 <translation id="5109892411553231226">お支払い方法を管理</translation>
@@ -1933,7 +1933,7 @@
 <translation id="5953516610448771166">このメディアでは自動字幕起こしを使用できません。字幕を使用するには、このサイトで <ph name="CONTENT_SETTINGS" /> をブロックしてください。</translation>
 <translation id="5955063559762970069">ホテル、宿泊施設</translation>
 <translation id="5963413905009737549">セクション</translation>
-<translation id="5967260682280773804">91.4x121.9 cm</translation>
+<translation id="5967260682280773804">36x48 インチ</translation>
 <translation id="5967592137238574583">連絡先情報の編集</translation>
 <translation id="5967867314010545767">履歴から削除</translation>
 <translation id="5968022600320704045">検索結果はありません</translation>
@@ -2005,7 +2005,7 @@
 <translation id="6127379762771434464">アイテムを削除しました</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome のシークレット モードについて<ph name="END_LINK" /></translation>
 <translation id="6133984428121856852">ファイル拡張子が空であるか、形式が正しくありません。</translation>
-<translation id="6139975341602920272">43.2x55.9 cm</translation>
+<translation id="6139975341602920272">17x22 インチ</translation>
 <translation id="6146055958333702838">ケーブルを確認し、使用しているネットワーク デバイス（ルーター、モデムなど）を
     再起動してください。</translation>
 <translation id="614940544461990577">次をお試しください</translation>
@@ -2055,7 +2055,7 @@
 <translation id="627746635834430766">カードと請求先住所を Google アカウントに保存すると、次回のお支払いが簡単になります。</translation>
 <translation id="6279183038361895380">カーソルを表示するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="6280223929691119688">この住所には配達できません。別の住所を選択してください。</translation>
-<translation id="6284292079994426700">66.0x96.5 cm</translation>
+<translation id="6284292079994426700">26x38 インチ</translation>
 <translation id="6285507000506177184">[Chrome でのダウンロードを管理] ボタンです。Enter キーを押すと、Chrome でダウンロードしたファイルを管理できます</translation>
 <translation id="6289939620939689042">ページの色</translation>
 <translation id="6290238015253830360">おすすめの記事がここに表示されます</translation>
@@ -3114,7 +3114,7 @@
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9044359186343685026">Touch ID を使用</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9048662076076074925">61.0x91.4 cm</translation>
+<translation id="9048662076076074925">24x36 インチ</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから無効な証明書が提示されました。</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>
 <translation id="9056953843249698117">ストア</translation>

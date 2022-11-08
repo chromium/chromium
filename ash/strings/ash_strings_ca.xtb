@@ -219,7 +219,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="209965399369889474">No hi ha connexió a la xarxa</translation>
 <translation id="2107914222138020205">El teu cable USB-C no admet Thunderbolt. És possible que el rendiment del dispositiu es vegi limitat.</translation>
 <translation id="2108303511227308752">La tecla de drecera Alt+Retrocés ha canviat. Per fer servir la tecla de suprimir, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+Retrocés.</translation>
-<translation id="211328683600082144">ACTIVA EL MICRÒFON</translation>
 <translation id="2126242104232412123">Escriptori nou</translation>
 <translation id="2132302418721800944">Grava la pantalla completa</translation>
 <translation id="2135456203358955318">Lupa acoblada</translation>
@@ -735,7 +734,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5042305953558921026">Tecla del mode de visió general</translation>
 <translation id="504465286040788597">Paràgraf anterior</translation>
 <translation id="5045550434625856497">Contrasenya incorrecta</translation>
-<translation id="5071064518267176975">Una aplicació vol utilitzar el micròfon</translation>
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
 <translation id="509790653408515442">Quan reprodueixis en continu aplicacions del telèfon, apareixeran aquí</translation>
@@ -1008,7 +1006,6 @@ Instal·lació nova</translation>
 <translation id="6614169507485700968">La pantalla de privadesa està activada</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> i altres notificacions estan amagades perquè la protecció de visualització està activada</translation>
 <translation id="6627638273713273709">Cerca+Maj+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> vol utilitzar el micròfon</translation>
 <translation id="6637729079642709226">Canvia l'hora</translation>
 <translation id="6641720045729354415">Commuta la funció Subtítols instantanis. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Desfés l'ordenació per nom</translation>
@@ -1206,7 +1203,6 @@ Instal·lació nova</translation>
 <translation id="7724603315864178912">Retalla</translation>
 <translation id="7745560842763881396">Mostra les aplicacions del prestatge</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
-<translation id="7749640678855296659">El micròfon està desactivat</translation>
 <translation id="776344839111254542">Fes clic per veure els detalls de l'actualització</translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
 <translation id="7780094051999721182">dreceres</translation>

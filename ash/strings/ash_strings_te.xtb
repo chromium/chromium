@@ -219,7 +219,6 @@
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2107914222138020205">మీ USB-C కేబుల్ Thunderboltను సపోర్ట్ చేయదు. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
 <translation id="2108303511227308752">Alt + బ్యాక్‌స్పేస్ కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. తొలగింపు కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ +బ్యాక్‌స్పేస్‌ను నొక్కండి.</translation>
-<translation id="211328683600082144">మైక్రోఫోన్‌ను ఆన్ చేయి</translation>
 <translation id="2126242104232412123">కొత్త డెస్క్</translation>
 <translation id="2132302418721800944">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
@@ -736,7 +735,6 @@
 <translation id="5042305953558921026">ఓవర్‌వ్యూ మోడ్ కీ</translation>
 <translation id="504465286040788597">మునుపటి పేరా</translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
-<translation id="5071064518267176975">యాప్ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
 <translation id="5083553833479578423">మరిన్ని Assistant ఫీచర్‌లను అన్‌లాక్ చేయండి.</translation>
 <translation id="509790653408515442">మీరు మీ ఫోన్ యాప్‌లను స్ట్రీమ్ చేసినప్పుడు, అవి ఇక్కడ కనిపిస్తాయి</translation>
@@ -1009,7 +1007,6 @@
 <translation id="6614169507485700968">గోప్యతా స్క్రీన్ ఆన్‌లో ఉంది</translation>
 <translation id="6625718907317144388">వీక్షణ ప్రొటెక్షన్ ఆన్‌లో ఉంది కాబట్టి <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, ఇతర నోటిఫికేషన్‌లు దాచబడ్డాయి</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> మీ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="6637729079642709226">సమయాన్ని మార్చండి</translation>
 <translation id="6641720045729354415">లైవ్ క్యాప్షన్‌ను టోగుల్ చేయి. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">పేరు ఆధారంగా క్రమపద్ధతిలో అమర్చిన దానిని రద్దు చేశారు</translation>
@@ -1210,7 +1207,6 @@
 <translation id="7724603315864178912">కత్తిరించండి</translation>
 <translation id="7745560842763881396">యాప్‌లను షెల్ఫ్‌లో చూపించు</translation>
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
-<translation id="7749640678855296659">మీ మైక్రోఫోన్ ప్రస్తుతం ఆఫ్ చేయబడింది</translation>
 <translation id="776344839111254542">అప్‌డేట్ వివరాలను చూడటం కోసం క్లిక్ చేయండి</translation>
 <translation id="7768784765476638775">వినడానికి ఎంచుకోండి</translation>
 <translation id="7780094051999721182">షార్ట్‌కట్‌లు</translation>
@@ -1274,6 +1270,7 @@
 <translation id="8091387634532529612">ఆటోమేటిక్ అప్‌డేట్‌లు</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />కి స్క్రీన్‌ను ప్రసారం చేయడాన్ని ఆపివేయి</translation>
 <translation id="8113423164597455979">యాప్‌లన్నీ ఆన్</translation>
+<translation id="8113515504791187892">వినడానికి ఎంచుకోండి బటన్</translation>
 <translation id="8120151603115102514">మీ ఫోన్‌కు లాక్ స్క్రీన్ ఎనేబుల్ చేసి లేదు. మీ Chromebookను అన్‌లాక్ చేయడానికి, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>

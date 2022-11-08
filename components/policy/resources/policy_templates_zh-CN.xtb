@@ -1492,7 +1492,6 @@
       拼写检查功能始终都能就地使用已下载的字典，除非该功能已被 <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> 停用（在这种情况下，此政策将不会产生任何影响）。</translation>
 <translation id="2433516903565257847">应在指定天数后更新的设备所占的百分比。</translation>
 <translation id="2435052056904485763">Kerberos 委派服务器许可名单</translation>
-<translation id="2435232509335686514">与<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />对所下载文件的处理方式有关的配置政策</translation>
 <translation id="2436302465999055995">将 <ph name="LACROS_NAME" /> 设为唯一可用的浏览器（尚未实施）</translation>
 <translation id="2439187682308339104">不允许任何网站通过 WebHID API 请求对 HID 设备的访问权限</translation>
 <translation id="2439733504887695659">允许关闭针对所输入凭据的密码泄露警示</translation>
@@ -1500,15 +1499,6 @@
 <translation id="2448315169529769573">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />便会将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。如果此政策已停用，系统会关闭指标和诊断数据报告功能。
 
        如果此政策未设置，在不受管理的设备上，指标和诊断数据报告功能会保持关闭状态；但在受管理的设备上，该功能会保持开启状态。</translation>
-<translation id="244950822854046436">让您能够指定要应用于<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的设置列表，以供系统在有人下载文件时调用。
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户从网页下载某个文件时，该接口是否应将此文件发送给服务提供商。相应的网页网址必须与已关联到“enable”格式但未关联到“disable”格式的格式匹配。此文件的 MIME 类型也必须如此。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于指明您指定的设置是与哪个分析服务提供商对应。
-
-      <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> 字段用于填写合作伙伴服务提供商的唯一 ID，以指明客户为使用该服务提供商而创建的帐号。在用户设置<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的过程中，当系统要求登录时，只能使用与此客户的服务提供商帐号关联的用户帐号。
-
-      此政策只能通过 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />进行设置。</translation>
 <translation id="2452225615952836461">始终大写请求方法</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2455033019778127130">使用默认浏览器行为，显示《服务条款》并等待用户接受。</translation>
@@ -6322,6 +6312,11 @@
 <translation id="7274077256421167535">启用 USB 电源共享</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
 <translation id="7275689301063927473">默认拒绝向所有网站授予本地字体权限</translation>
+<translation id="7275878175078795558">如果此政策设为 True，对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，<ph name="PRODUCT_NAME" /> 始终会执行撤消状态检查。如果 <ph name="PRODUCT_NAME" /> 无法获取撤消状态信息，<ph name="PRODUCT_NAME" /> 会将此类证书视为已撤消（硬性失败）。
+
+      如果此政策设为 False 或未设置，<ph name="PRODUCT_NAME" /> 会使用现有的在线撤消状态检查设置。
+
+      在 <ph name="MAC_OS_NAME" /> 上，如果 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 政策设为 False，此政策不会产生任何影响。</translation>
 <translation id="7278854311116092134">要从屏蔽名单中排除的本地消息传递主机名</translation>
 <translation id="7291084543582732020">如果您启用了此设置，用户将能够在满足相应要求的情况下使用 Smart Lock。
 

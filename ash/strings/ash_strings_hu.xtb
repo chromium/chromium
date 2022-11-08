@@ -219,7 +219,6 @@
 <translation id="209965399369889474">Nincs hálózati kapcsolat</translation>
 <translation id="2107914222138020205">Az USB-C kábel nem támogatja a Thunderbolt-eszközöket. Ez korlátozhatja az eszköz teljesítményét.</translation>
 <translation id="2108303511227308752">Az Alt + Backspace billentyűparancs módosult. A Delete billentyű használatához nyomja le a(z) <ph name="LAUNCHER_KEY_NAME" /> + Backspace billentyűparancsot.</translation>
-<translation id="211328683600082144">MIKROFON BEKAPCSOLÁSA</translation>
 <translation id="2126242104232412123">Új asztal</translation>
 <translation id="2132302418721800944">Teljes képernyő rögzítése</translation>
 <translation id="2135456203358955318">Dokkolt nagyító</translation>
@@ -736,7 +735,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5042305953558921026">Áttekintési mód billentyűje</translation>
 <translation id="504465286040788597">Előző bekezdés</translation>
 <translation id="5045550434625856497">Helytelen jelszó</translation>
-<translation id="5071064518267176975">Egy alkalmazás használni szeretné a mikrofont</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
 <translation id="509790653408515442">Telefonja alkalmazásai itt jelennek majd meg streameléskor</translation>
@@ -1009,7 +1007,6 @@ Frissen telepítve</translation>
 <translation id="6614169507485700968">Az adatvédelmi képernyő be van kapcsolva</translation>
 <translation id="6625718907317144388">A(z) <ph name="APP_1_TITLE" />, a(z) <ph name="APP_2_TITLE" /> és további alkalmazások értesítései rejtve vannak, mert be van kapcsolva a megtekintési védelem</translation>
 <translation id="6627638273713273709">Keresés+Shift+K</translation>
-<translation id="6629480180092995136">A(z) <ph name="APP_NAME" /> szeretné használni a mikrofont</translation>
 <translation id="6637729079642709226">Idő módosítása</translation>
 <translation id="6641720045729354415">Az Élő feliratozás be- és kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Név szerinti rendezés visszavonása</translation>
@@ -1210,7 +1207,6 @@ Frissen telepítve</translation>
 <translation id="7724603315864178912">Kivágás</translation>
 <translation id="7745560842763881396">A polcon található alkalmazások megjelenítése</translation>
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
-<translation id="7749640678855296659">A mikrofonja jelenleg ki van kapcsolva</translation>
 <translation id="776344839111254542">Kattintson a frissítés részleteinek megtekintéséhez</translation>
 <translation id="7768784765476638775">Felolvasás</translation>
 <translation id="7780094051999721182">billentyűparancsok</translation>
@@ -1274,6 +1270,7 @@ Frissen telepítve</translation>
 <translation id="8091387634532529612">Automatikus frissítések</translation>
 <translation id="8098591350844501178">A képernyő „<ph name="RECEIVER_NAME" />” eszközre történő átküldésének leállítása</translation>
 <translation id="8113423164597455979">Be, összes app</translation>
+<translation id="8113515504791187892">Felolvasás gomb</translation>
 <translation id="8120151603115102514">Telefonján nincs beállítva lezárási képernyő. A Chromebook feloldásához írja be jelszavát.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Megerősítés</translation>

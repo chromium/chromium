@@ -220,7 +220,6 @@
 <translation id="209965399369889474">لا يتوفّر اتصال بالشبكة</translation>
 <translation id="2107914222138020205">‏لا يتوافق الكابل المزوّد بمنفذ USB-C مع جهاز Thunderbolt. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="2108303511227308752">‏تم تغيير اختصارات لوحة المفاتيح "Alt + Backspace". لاستخدام مفتاح Delete، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + Backspace".</translation>
-<translation id="211328683600082144">تفعيل الميكروفون</translation>
 <translation id="2126242104232412123">سطح مكتب جديد</translation>
 <translation id="2132302418721800944">تسجيل فيديو في وضع ملء الشاشة</translation>
 <translation id="2135456203358955318">المكبّر الذي تم إرساؤه</translation>
@@ -485,6 +484,7 @@
 <translation id="3633097874324966332">يُرجى فتح إعدادات البلوتوث لإقران جهازك.</translation>
 <translation id="3638400994746983214">تبديل شاشة الخصوصية <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">يجب إجراء التحديث في أسرع وقت</translation>
+<translation id="3659444876902283058">(اليوم رقم <ph name="CURRENT_DAY" /> من إجمالي <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">يتبقّى <ph name="TIME_LEFT" /> تقريبًا (%<ph name="PERCENTAGE" />).
 يُرجى توصيل الجهاز بمصدر طاقة.</translation>
 <translation id="366222428570480733">المستخدِم المُدار <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -736,7 +736,6 @@
 <translation id="5042305953558921026">مفتاح وضع النظرة العامة</translation>
 <translation id="504465286040788597">الفقرة السابقة</translation>
 <translation id="5045550434625856497">كلمة مرور غير صحيحة</translation>
-<translation id="5071064518267176975">يريد أحد التطبيقات استخدام الميكروفون</translation>
 <translation id="5078796286268621944">رقم التعريف الشخصي غير صحيح</translation>
 <translation id="5083553833479578423">‏الاستفادة من المزيد من ميزات "مساعد Google"</translation>
 <translation id="509790653408515442">عند تشغيل تطبيقات هاتفك، سيتم عرضها هنا.</translation>
@@ -1009,7 +1008,6 @@
 <translation id="6614169507485700968">تم تفعيل شاشة الخصوصية.</translation>
 <translation id="6625718907317144388">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> وغيرها من الإشعارات بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136">يريد تطبيق <ph name="APP_NAME" /> استخدام الميكروفون.</translation>
 <translation id="6637729079642709226">تغيير الوقت</translation>
 <translation id="6641720045729354415">إيقاف/تفعيل ميزة "النسخ النصي التلقائي". <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">عكس نظام الترتيب حسب الاسم</translation>
@@ -1210,7 +1208,6 @@
 <translation id="7724603315864178912">قص</translation>
 <translation id="7745560842763881396">عرض التطبيقات في الرفّ</translation>
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>
-<translation id="7749640678855296659">الميكروفون متوقّف في الوقت الحالي.</translation>
 <translation id="776344839111254542">النقر لعرض تفاصيل التحديث</translation>
 <translation id="7768784765476638775">الاختيار والاستماع</translation>
 <translation id="7780094051999721182">الاختصارات</translation>
@@ -1270,6 +1267,7 @@
 <translation id="8052898407431791827">تمّ النسخ إلى الحافظة.</translation>
 <translation id="8054466585765276473">يجري حساب وقت البطارية.</translation>
 <translation id="8083540854303889870">محفوظة لوقت لاحق</translation>
+<translation id="8091153018031979607">يبدأ الحدث في <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" />.</translation>
 <translation id="8091387634532529612">التحديثات التلقائية</translation>
 <translation id="8098591350844501178">إيقاف إرسال الشاشة إلى <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">مفعلة، كل التطبيقات</translation>
@@ -1383,6 +1381,7 @@
 <translation id="8703634754197148428">‏بدأ التسجيل. بعد بدء التسجيل، يمكنك استخدام Alt + Shift + L للانتقال إلى الرف والبحث عن زر إيقاف التسجيل.</translation>
 <translation id="8721053961083920564">تبديل مستوى الصوت. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">تصوير الشاشة بأكملها</translation>
+<translation id="8731487213223706745">ينتهي الحدث في <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" />.</translation>
 <translation id="8734991477317290293">قد تحاول لوحة المفاتيح سرقة ضغطات المفاتيح.</translation>
 <translation id="8735678380411481005">لون الإضاءة الخلفية للوحة المفاتيح</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،

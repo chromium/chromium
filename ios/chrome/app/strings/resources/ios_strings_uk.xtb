@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">Заблоковані файли cookie</translation>
 <translation id="165877110639533037">Немає відкритих вкладок</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Мобільний сайт</translation>
 <translation id="168715261339224929">Щоб мати доступ до закладок на всіх своїх пристроях, увімкніть синхронізацію.</translation>
 <translation id="1687475363370981210">Позначити всі як прочитані</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">Закрити вкладку</translation>
 <translation id="2890171748217283516">Сайти, на які ви підписалися, зберігаються в обліковому записі Google. Керувати ними можна в налаштуваннях рекомендацій.</translation>
 <translation id="2898963176829412617">Нова папка…</translation>
+<translation id="2902684821701498619">Додати в список читання</translation>
 <translation id="2916171785467530738">Увімкнути автозавершення пошукових запитів і URL-адрес</translation>
 <translation id="291754862089661335">Розмістіть QR-код або штрих-код у цій рамці</translation>
 <translation id="2920866371965792875">Щоб отримувати новини з цього сайту, підпишіться на нього тут.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">Місяць закінчення терміну дії</translation>
 <translation id="3482959374254649722">Синхронізація вкладок…</translation>
 <translation id="3484946776651937681">Відкрити в папці "Завантаження"</translation>
+<translation id="3485558910355485767">Нове вікно в режимі анонімного перегляду</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про рекомендований контент</translation>
 <translation id="3494788280727468875">Підтвердити очищення даних веб-перегляду</translation>
 <translation id="35083190962747987">Відкрити ${url}</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3861486700625780712">Скасувати підписку</translation>
+<translation id="3863769054730344136">Надіслати на пристрої</translation>
 <translation id="387280738075653372">Завантажте Chrome тут.</translation>
 <translation id="3892144330757387737">Тут відображатиметься ваша історія</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5669335982068190158">Ви вийшли з облікового запису, коли було скинуто налаштування iPhone. Щоб увійти, натисніть "Продовжити" нижче.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Створити QR-код</translation>
 <translation id="567881659373499783">Версія <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Показано 1 вікно Chrome}one{Показано {count} вікно Chrome}few{Показано {count} вікна Chrome}many{Показано {count} вікон Chrome}other{Показано {count} вікна Chrome}}</translation>
 <translation id="5701270923492462699">Доступ до камери надано</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">З поверненням</translation>
 <translation id="6219688215832490856">Ніколи не перекладати</translation>
 <translation id="6223816392543092032">Отримайте доступ до своїх закладок, історії, паролів та інших налаштувань на всіх пристроях.</translation>
+<translation id="6229318421047648685">Версія сайту для комп’ютера</translation>
 <translation id="6231782223312638214">Пропозиції</translation>
 <translation id="6232329973559504466">Пошук в анонімному режимі</translation>
 <translation id="6232736989810857397">Ви зможете легко створювати події в календарі за допомогою Google Об’єктива.</translation>

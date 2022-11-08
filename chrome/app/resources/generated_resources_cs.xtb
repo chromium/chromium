@@ -1109,7 +1109,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="2007404777272201486">Nahlásit problém...</translation>
 <translation id="2009590708342941694">Nástroj Emodži</translation>
 <translation id="2010501376126504057">Kompatibilní zařízení</translation>
-<translation id="2010888903612390044">Není připojen žádný mikrofon</translation>
 <translation id="2015232545623037616">PC a Chromecast ve stejné síti Wi-Fi</translation>
 <translation id="2016473077102413275">Funkce vyžadující obrázky nebudou k dispozici</translation>
 <translation id="2016574333161572915">Hardware Google Meet je připraven k nastavení</translation>
@@ -1387,6 +1386,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2256115617011615191">Restartovat</translation>
 <translation id="2257053455312861282">Po přidání školního účtu se dítě bude moci přihlašovat na weby, do rozšíření a do aplikací jako student, přičemž zůstane aktivní rodičovská kontrola.</translation>
 <translation id="2261323523305321874">Administrátor provedl celosystémovou změnu, která zakazuje některé staré profily.</translation>
+<translation id="22614517036276112">Tento dokument nebo vaše zařízení nesplňuje některé zásady zabezpečení vaší organizace. Zeptejte se administrátora, co je potřeba opravit.</translation>
 <translation id="2262477216570151239">Prodleva před opakováním</translation>
 <translation id="2263189956353037928">Odhlásit se a znovu se přihlásit</translation>
 <translation id="2263371730707937087">Obnovovací frekvence obrazovky</translation>
@@ -2155,7 +2155,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2927017729816812676">Cache Storage</translation>
 <translation id="2928795416630981206">Povolení sledovat pozici kamery</translation>
 <translation id="2931157624143513983">Přizpůsobit tisknutelné oblasti</translation>
-<translation id="2931342457001070961">Není připojen žádný mikrofon</translation>
 <translation id="2932085390869194046">Navrhnout heslo...</translation>
 <translation id="2932483646085333864">Chcete-li zahájit synchronizaci, odhlaste se a poté se znovu přihlaste.</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
@@ -2848,7 +2847,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3616741288025931835">&amp;Smazat údaje o prohlížení...</translation>
 <translation id="3617891479562106823">Pozadí nejsou k dispozici. Zkuste to znovu později.</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
-<translation id="3620136223548713675">Geolokace</translation>
 <translation id="3621807901162200696">Pomoci vylepšovat funkce a výkon systému ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="362333465072914957">Čeká se, než certifikační autorita vydá certifikát</translation>
@@ -3070,7 +3068,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3813296892522778813">Pokud nemůžete najít, co hledáte, navštivte <ph name="BEGIN_LINK_CHROMIUM" />nápovědu Google Chrome<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="3813358687923336574">Jazyk používaný při překladu stránek a Rychlých odpovědí</translation>
 <translation id="3814529970604306954">Školní účet</translation>
-<translation id="3814792775883886759">Není připojena žádná kamera</translation>
 <translation id="3816118180265633665">Barvy Chromu</translation>
 <translation id="3817524650114746564">Otevřít nastavení proxy serveru počítače</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Povolením odesílání automatických zpráv v systému ChromeOS nám pomůžete určit, které opravy a vylepšení systému ChromeOS mají prioritu. Tyto zprávy mohou zahrnovat údaje, jako jsou datum a čas selhání systému ChromeOS, používané funkce a typické využití paměti.<ph name="END_PARAGRAPH1" />
@@ -4088,7 +4085,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4780321648949301421">Uložit stránku jako...</translation>
 <translation id="4781443161433589743">Používáte nejsilnější zabezpečení Chromu</translation>
 <translation id="4781584184731045253">Vymazat data a oprávnění</translation>
-<translation id="4782861709165039462">Všechny mikrofony deaktivovány hardwarovým přepínačem na zařízeních</translation>
 <translation id="4785719467058219317">Používáte bezpečnostní klíč, který pro tento web není zaregistrován</translation>
 <translation id="4785914069240823137">Zrušit oříznutí</translation>
 <translation id="4788092183367008521">Zkontrolujte připojení k síti a zkuste to znovu.</translation>
@@ -5076,6 +5072,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5733866499231170760">Neplatné ID. Zadali jste neplatný formát. Projděte si pokyny k zadání správného formátu. Pokud se vám problém nedaří odstranit, nechte pole prázdné a pokračujte v instalaci.</translation>
 <translation id="5734362860645681824">Komunikační příslušenství</translation>
 <translation id="5734697361979786483">Přidat sdílené úložiště</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Tato data nebo vaše zařízení nesplňují některé zásady zabezpečení vaší organizace. Zeptejte se administrátora, co je potřeba opravit.}=1{Tento soubor nebo vaše zařízení nesplňují některé zásady zabezpečení vaší organizace. Zeptejte se administrátora, co je potřeba opravit.}few{Tyto soubory nesplňují některé zásady zabezpečení vaší organizace. Zeptejte se administrátora, co je potřeba opravit.}many{Tyto soubory nesplňují některé zásady zabezpečení vaší organizace. Zeptejte se administrátora, co je potřeba opravit.}other{Tyto soubory nesplňují některé zásady zabezpečení vaší organizace. Zeptejte se administrátora, co je potřeba opravit.}}</translation>
 <translation id="5736796278325406685">Zadejte prosím platné uživatelské jméno</translation>
 <translation id="5738093759615225354">K přihlášení do počítače potřebujete tento přístupový klíč</translation>
 <translation id="5738329404678738022">Ukládejte si záložky a provádějte další akce pomocí synchronizace</translation>
@@ -5875,7 +5872,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="648927581764831596">Není k dispozici</translation>
 <translation id="6490471652906364588">Zařízení USB Type-C (pravý port)</translation>
 <translation id="6491376743066338510">Autorizace se nezdařila</translation>
-<translation id="6492396476180293140">Interní kamera deaktivována hardwarovým přepínačem</translation>
 <translation id="6494327278868541139">Zobrazit podrobnosti vylepšené ochrany</translation>
 <translation id="6494445798847293442">Není certifikační autorita</translation>
 <translation id="6497548114956205206">Další informace o spořiči energie</translation>
@@ -6572,6 +6568,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7123030151043029868">Povolení stahovat automaticky několik souborů</translation>
 <translation id="7123302939607518173">Určitý zájem nebo web přidejte, pokud se domníváte, že by reklamy související s příslušnou položkou byly pro vás užitečné.</translation>
 <translation id="7124013154139278147">Přiřazení přepínače pro akci Předchozí</translation>
+<translation id="7124712201233930202">Nejsou splněny zásady vaší organizace</translation>
 <translation id="7125029162161377569">Zkušební technologie Privacy Sandbox webům umožňují poskytovat stejné prostředí a využívat při tom méně vašich údajů. To znamená, že vaše soukromí bude lépe chráněno a bude méně často docházet ke sledování napříč weby. Nové zkušební funkce přidáme hned, jak budou připravené k testování.</translation>
 <translation id="7125148293026877011">Smazat Crostini</translation>
 <translation id="7127980134843952133">Historie stahování</translation>
@@ -6640,7 +6637,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7210499381659830293">Rozšíření pro tiskárny</translation>
 <translation id="7211783048245131419">Zatím nebyl přiřazen žádný přepínač</translation>
 <translation id="7212097698621322584">Chcete-li změnit PIN, zadejte aktuální PIN. Pokud svůj PIN neznáte, budete bezpečnostní klíč muset resetovat a poté vytvořit nový PIN.</translation>
-<translation id="7213903639823314449">Vyhledávač používaný v adresním řádku</translation>
 <translation id="721490496276866468">Importovat hesla</translation>
 <translation id="7218514093816577632">V zařízení <ph name="DEVICE_NAME" /> musí být zapnutá oznámení.</translation>
 <translation id="7219473482981809164">Našli jsme několik profilů ke stažení. Než budete pokračovat, vyberte, které chcete stáhnout.</translation>
@@ -8537,6 +8533,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="897939795688207351">V doméně <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Zprávy zpětné vazby</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – selhalo</translation>
+<translation id="8981038076986775523">Další informace o používání mikrofonu</translation>
 <translation id="8981825781894055334">Dochází papír</translation>
 <translation id="8983018820925880511">Tento nový profil bude spravovat doména <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Web <ph name="ORIGIN" /> může upravovat soubor <ph name="FILENAME" /></translation>

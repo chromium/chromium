@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">Бөгөттөлгөн cookie-файлдары</translation>
 <translation id="165877110639533037">Ачык өтмөктөр жок</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тилинен <ph name="TARGET_LANGUAGE" /> тилине</translation>
+<translation id="1683483432843341018">Мобилдик версиясы керек</translation>
 <translation id="168715261339224929">Кыстармаларды бардык түзмөктөрүңүздө колдонуу үчүн шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="1687475363370981210">Баары окулган деп белгилөө</translation>
 <translation id="1689333818294560261">Ылакап ат</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">Өтмөктү жабуу</translation>
 <translation id="2890171748217283516">Сиз жазылган сайттар Google аккаунтуңузда сакталат. Аларды Сунуштардын жөндөөлөрүнөн башкара аласыз.</translation>
 <translation id="2898963176829412617">Жаңы куржун…</translation>
+<translation id="2902684821701498619">Окуу тизмесине кошуу</translation>
 <translation id="2916171785467530738">Издөө сурамдарын жана URL'дерди автоматтык түрдө толтуруу</translation>
 <translation id="291754862089661335">QR кодун же штрих кодду бул алкакка жайгаштырыңыз</translation>
 <translation id="2920866371965792875">Бул сайттагы жаңыртууларды көрүү үчүн ага бул жерден жазылыңыз.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">Мөөнтү аяктг ай</translation>
 <translation id="3482959374254649722">Өтмөктөрүңүз шайкештирилүүдө…</translation>
 <translation id="3484946776651937681">Жүктөлүп алынгандарда ачуу</translation>
+<translation id="3485558910355485767">Жаңы жашыруун терезе</translation>
 <translation id="3493531032208478708">Сунушталган мазмун жөнүндө <ph name="BEGIN_LINK" />көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">Серептөө дайындарын тазалоону ырастоо</translation>
 <translation id="35083190962747987">${url} ачуу</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">Артка</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3861486700625780712">Жазылууну токтотуу</translation>
+<translation id="3863769054730344136">Түзмөктөрүңүзгө жөнөтүңүз</translation>
 <translation id="387280738075653372">Chrome'ду бул жерден жүктөп алыңыз.</translation>
 <translation id="3892144330757387737">Таржымалыңызды ушул жерден табасыз</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -589,6 +593,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5659593005791499971">Электрондук почта</translation>
 <translation id="5669335982068190158">iPhone түзмөгүңүз баштапкы абалга келтирилип жатканда аккаунтуңуздан чыктыңыз. Кирүү үчүн төмөндөгү "Улантуу" дегенди таптаңыз.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR кодун түзүү</translation>
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{1 Chrome терезеси көрсөтүлүүдө}other{{count} Chrome терезеси көрсөтүлүүдө}}</translation>
 <translation id="5701270923492462699">Камераны колдонууга уруксат берилди</translation>
@@ -673,6 +678,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6219550825416862075">Кайтып келишиңиз менен</translation>
 <translation id="6219688215832490856">Эч качан которулбасын</translation>
 <translation id="6223816392543092032">Бардык түзмөктөрүңүздөн кыстармаларды, таржымалды, сырсөздөрдү жана башка жөндөөлөрүңүздү алыңыз.</translation>
+<translation id="6229318421047648685">Компьютердик версия талап кылынат</translation>
 <translation id="6231782223312638214">Сунушталат</translation>
 <translation id="6232329973559504466">Жашыруун издөө</translation>
 <translation id="6232736989810857397">Google Lens аркылуу жылнаамада иш-чараларды түзө аласыз.</translation>

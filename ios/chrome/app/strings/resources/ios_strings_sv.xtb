@@ -102,6 +102,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1657641691196698092">Blockerade cookies</translation>
 <translation id="165877110639533037">Inga öppna flikar</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> till <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Använd mobil webbplats</translation>
 <translation id="168715261339224929">Aktivera synkronisering om du vill få tillgång till dina bokmärken på alla enheter</translation>
 <translation id="1687475363370981210">Markera alla som lästa</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
@@ -243,6 +244,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="288655811176831528">Stäng fliken</translation>
 <translation id="2890171748217283516">Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
 <translation id="2898963176829412617">Ny mapp ...</translation>
+<translation id="2902684821701498619">Lägg till i läslistan</translation>
 <translation id="2916171785467530738">Autoslutför sökningar och webbadresser</translation>
 <translation id="291754862089661335">Passa in QR-koden eller streckkoden i den här rutan</translation>
 <translation id="2920866371965792875">Följ här för att få nyheter från den här sidan</translation>
@@ -320,6 +322,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3478058380795961209">Sista giltighetsmånad</translation>
 <translation id="3482959374254649722">Flikarna synkroniseras ...</translation>
 <translation id="3484946776651937681">Öppna i Nedladdningar</translation>
+<translation id="3485558910355485767">Nytt inkognitofönster</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om förslag på innehåll</translation>
 <translation id="3494788280727468875">Bekräfta rensning av webbinformation</translation>
 <translation id="35083190962747987">Öppna ${url}</translation>
@@ -366,6 +369,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3861486700625780712">Sluta följa</translation>
+<translation id="3863769054730344136">Skicka till dina enheter</translation>
 <translation id="387280738075653372">Ladda ned Chrome här.</translation>
 <translation id="3892144330757387737">Du hittar historiken här</translation>
 <translation id="3897092660631435901">Meny</translation>
@@ -589,6 +593,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5669335982068190158">Du har loggats ut som en del av återställningen av din iPhone. Tryck på Fortsätt nedan för att logga in.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Skapa en QR-kod</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Nu visas 1 fönster i Chrome}other{Nu visas {count} fönster i Chrome}}</translation>
 <translation id="5701270923492462699">Kameraåtkomst har tillåtits</translation>
@@ -673,6 +678,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6219550825416862075">Välkommen tillbaka</translation>
 <translation id="6219688215832490856">Översätt aldrig</translation>
 <translation id="6223816392543092032">Använd bokmärken, historik och andra inställningar på alla dina enheter.</translation>
+<translation id="6229318421047648685">Använd webbplats för dator</translation>
 <translation id="6231782223312638214">Förslag</translation>
 <translation id="6232329973559504466">Inkognitosökning</translation>
 <translation id="6232736989810857397">Detta gör att du enkelt kan skapa kalenderhändelser med Google Lens.</translation>

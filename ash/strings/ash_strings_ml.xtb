@@ -219,7 +219,6 @@
 <translation id="209965399369889474">നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="2107914222138020205">നിങ്ങളുടെ USB-C കേബിൾ, Thunderbolt-നെ പിന്തുണയ്ക്കുന്നില്ല. ഉപകരണ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം.</translation>
 <translation id="2108303511227308752">'Alt + Backspace' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Delete കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ + Backspace അമർത്തുക.</translation>
-<translation id="211328683600082144">മൈക്രോഫോൺ ഓണാക്കുക</translation>
 <translation id="2126242104232412123">പുതിയ ഡെസ്‌ക്</translation>
 <translation id="2132302418721800944">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="2135456203358955318">ഡോക്ക് ചെയ്‌ത മാഗ്‌നിഫയർ</translation>
@@ -484,6 +483,7 @@
 <translation id="3633097874324966332">നിങ്ങളുടെ ഉപകരണം ജോടിയാക്കാൻ Bluetooth ക്രമീകരണം തുറക്കുക</translation>
 <translation id="3638400994746983214">സ്വകാര്യതാ സ്‌ക്രീൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">അപ്‌ഡേറ്റ് കാലാവധി കഴിഞ്ഞിരിക്കുന്നു</translation>
+<translation id="3659444876902283058">(ദിവസം <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">ഏതാണ്ട് <ph name="TIME_LEFT" /> ശേഷിക്കുന്നു (<ph name="PERCENTAGE" />%).
 നിങ്ങളുടെ ഉപകരണം വൈദ്യുതി സ്രോതസ്സിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -734,7 +734,6 @@
 <translation id="5042305953558921026">ചുരുക്കവിവരണ മോഡ് കീ</translation>
 <translation id="504465286040788597">മുമ്പത്തെ പാരഗ്രാഫ്</translation>
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
-<translation id="5071064518267176975">ഒരു ആപ്പിന് മൈക്രോഫോൺ ഉപയോഗിക്കണം</translation>
 <translation id="5078796286268621944">തെറ്റായ PIN</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
 <translation id="509790653408515442">ഫോണിലെ ആപ്പുകൾ നിങ്ങൾ സ്ട്രീം ചെയ്യുമ്പോൾ അവ ഇവിടെ ദൃശ്യമാകും</translation>
@@ -1007,7 +1006,6 @@
 <translation id="6614169507485700968">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാണ്</translation>
 <translation id="6625718907317144388">'കാണുന്നതിൽ നിന്നുള്ള പരിരക്ഷ' ഓണായതിനാൽ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> എന്നിവയിൽ നിന്നും മറ്റ് ആപ്പുകളിൽ നിന്നുമുള്ള അറിയിപ്പുകൾ മറച്ചിരിക്കുന്നു</translation>
 <translation id="6627638273713273709">തിരയല്‍+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> ആപ്പിന് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കണം</translation>
 <translation id="6637729079642709226">സമയം മാറ്റുക</translation>
 <translation id="6641720045729354415">തത്സമയ ക്യാപ്ഷൻ മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">പേര് അനുസരിച്ചുള്ള അടുക്കൽ ക്രമം പഴയപടിയാക്കുക</translation>
@@ -1208,7 +1206,6 @@
 <translation id="7724603315864178912">മുറിക്കുക</translation>
 <translation id="7745560842763881396">ഷെൽഫിലെ ആപ്പുകൾ കാണിക്കുക</translation>
 <translation id="7749443890790263709">ഡെസ്‌ക്കുകളുടെ പരമാവധി എണ്ണത്തിൽ എത്തിയിരിക്കുന്നു.</translation>
-<translation id="7749640678855296659">നിങ്ങളുടെ മൈക്രോഫോൺ നിലവിൽ ഓഫാണ്</translation>
 <translation id="776344839111254542">അപ്‌ഡേറ്റ് ചെയ്‌ത വിശദാംശങ്ങൾ കാണാൻ ‌ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="7768784765476638775">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7780094051999721182">കുറുക്കുവഴികൾ</translation>
@@ -1268,9 +1265,11 @@
 <translation id="8052898407431791827">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
 <translation id="8054466585765276473">ബാറ്ററി സമയം കണക്കാക്കുന്നു.</translation>
 <translation id="8083540854303889870">പിന്നീട് കാണാൻ സംരക്ഷിച്ചവ</translation>
+<translation id="8091153018031979607"><ph name="START_TIME" />-ന് <ph name="DAYS_ELAPSED" /> ആരംഭിക്കുന്നു</translation>
 <translation id="8091387634532529612">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകൾ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് സ്‌ക്രീൻ കാസ്‌റ്റുചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="8113423164597455979">ആപ്പിലെല്ലാം ഓൺ</translation>
+<translation id="8113515504791187892">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക ബട്ടൺ</translation>
 <translation id="8120151603115102514">നിങ്ങളുടെ ഫോണിന് ലോക്ക് സ്ക്രീനില്ല. Chromebook അൺലോക്ക് ചെയ്യാൻ പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
@@ -1380,6 +1379,7 @@
 <translation id="8703634754197148428">റെക്കോർഡിംഗ് ആരംഭിക്കൂ. റെക്കോർഡിംഗ് ആരംഭിച്ചുകഴിഞ്ഞാൽ, ഷെൽഫിലേക്ക് പോയി റെക്കോർഡിംഗ് നിർത്തുക ബട്ടൺ കണ്ടെത്താൻ Alt + Shift + L ഉപയോഗിക്കുക</translation>
 <translation id="8721053961083920564">വോളിയം മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യൽ</translation>
+<translation id="8731487213223706745"><ph name="END_TIME" />-ന് <ph name="DAYS_ELAPSED" /> അവസാനിക്കുന്നു</translation>
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
 <translation id="8735678380411481005">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് നിറം</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

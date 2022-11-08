@@ -219,7 +219,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2107914222138020205">Kablloja jote USB-C nuk mbështet Thunderbolt. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="2108303511227308752">Shkurtorja për Alt + Backspace është ndryshuar. Për të përdorur tastin Delete, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
-<translation id="211328683600082144">NDIZ MIKROFONIN</translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
 <translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
@@ -484,6 +483,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3633097874324966332">Hap cilësimet e Bluetooth-it për të çiftuar pajisjen</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">Afati i përditësimit ka kaluar</translation>
+<translation id="3659444876902283058">(Dita <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Të mbetura: rreth <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="366222428570480733">Përdorues i menaxhuar (<ph name="USER_EMAIL_ADDRESS" />)</translation>
@@ -734,7 +734,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5042305953558921026">Tasti i modalitetit "Përmbledhja"</translation>
 <translation id="504465286040788597">Paragrafi i mëparshëm</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
-<translation id="5071064518267176975">Një aplikacion kërkon të përdorë mikrofonin</translation>
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
 <translation id="509790653408515442">Kur transmeton aplikacionet e telefonit tënd, ato do të shfaqen këtu</translation>
@@ -1007,7 +1006,6 @@ Instalim i ri</translation>
 <translation id="6614169507485700968">Ekrani i privatësisë është aktiv</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> dhe njoftimet e tjera janë fshehur sepse është aktivizuar mbrojtja e shikimit</translation>
 <translation id="6627638273713273709">Kërko+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> dëshiron të përdorë mikrofonin</translation>
 <translation id="6637729079642709226">Ndrysho kohën</translation>
 <translation id="6641720045729354415">Aktivizo/çaktivizo "Titrat në çast". <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Zhbëj mënyrën e renditjes sipas emrit</translation>
@@ -1208,7 +1206,6 @@ Instalim i ri</translation>
 <translation id="7724603315864178912">Prite</translation>
 <translation id="7745560842763881396">Shfaq aplikacionet në raft</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
-<translation id="7749640678855296659">Mikrofoni yt është aktualisht i fikur</translation>
 <translation id="776344839111254542">Kliko për të parë detajet e përditësimit</translation>
 <translation id="7768784765476638775">Zgjidh që të thuhet</translation>
 <translation id="7780094051999721182">shkurtoret</translation>
@@ -1268,9 +1265,11 @@ Instalim i ri</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
 <translation id="8054466585765276473">Po llogarit kohën e baterisë.</translation>
 <translation id="8083540854303889870">Ruajtur për më vonë</translation>
+<translation id="8091153018031979607">Fillon në <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Përditësimet automatike</translation>
 <translation id="8098591350844501178">Ndalo transmetimin e ekranit te <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Aktiv, të gjitha aplikacionet</translation>
+<translation id="8113515504791187892">Butoni i "Zgjidh që të thuhet"</translation>
 <translation id="8120151603115102514">Telefoni yt nuk ka një ekran kyçjeje. Për të shkyçur Chromebook-un tënd, fut fjalëkalimin.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
@@ -1380,6 +1379,7 @@ Instalim i ri</translation>
 <translation id="8703634754197148428">Nis regjistrimin. Pasi të ketë filluar regjistrimi, përdor Alt + Shift + L për të shkuar te rafti dhe gjej butonin e ndalimit të regjistrimit</translation>
 <translation id="8721053961083920564">Ndërro volumin. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Regjistrimi i plotë i ekranit</translation>
+<translation id="8731487213223706745">Përfundon në <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ajo ndoshta po përpiqet të regjistrojë goditjet e tasteve</translation>
 <translation id="8735678380411481005">Ngjyra e dritës së sfondit të tastierës</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

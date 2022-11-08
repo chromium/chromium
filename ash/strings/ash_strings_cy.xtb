@@ -219,7 +219,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="209965399369889474">Heb ei gysylltu â rhwydwaith</translation>
 <translation id="2107914222138020205">Nid yw eich cebl USB-C yn cefnogi Thunderbolt. Mae'n bosib y bydd perfformiad y ddyfais yn gyfyngedig.</translation>
 <translation id="2108303511227308752">Mae'r llwybr byr bysellfwrdd Alt + Backspace wedi newid. I ddefnyddio'r fysell Delete, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
-<translation id="211328683600082144">TROI'R MEICROFFON YMLAEN</translation>
 <translation id="2126242104232412123">Desg newydd</translation>
 <translation id="2132302418721800944">Recordio'r sgrîn lawn</translation>
 <translation id="2135456203358955318">Chwyddwr sydd wedi'i docio</translation>
@@ -484,6 +483,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3633097874324966332">Agorwch y gosodiadau Bluetooth i baru'ch dyfais</translation>
 <translation id="3638400994746983214">Toglo'r sgrîn preifatrwydd. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Mae Diweddariad yn hwyr</translation>
+<translation id="3659444876902283058">(Diwrnod <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Tua <ph name="TIME_LEFT" /> ar ôl (<ph name="PERCENTAGE" />%).
 Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Defnyddiwr a Reolir</translation>
@@ -734,7 +734,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5042305953558921026">Bysell modd trosolwg</translation>
 <translation id="504465286040788597">Paragraff blaenorol</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
-<translation id="5071064518267176975">Mae ap eisiau defnyddio'r meicroffon</translation>
 <translation id="5078796286268621944">PIN anghywir</translation>
 <translation id="5083553833479578423">Datgloi rhagor o nodweddion Assistant.</translation>
 <translation id="509790653408515442">Pan fyddwch yn ffrydio apiau eich ffôn, byddant yn ymddangos yma</translation>
@@ -1007,7 +1006,6 @@ Gosodiad newydd</translation>
 <translation id="6614169507485700968">Mae'r sgrîn preifatrwydd ymlaen</translation>
 <translation id="6625718907317144388">Mae hysbysiadau <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ac eraill wedi'u cuddio oherwydd bod amddiffyniad gwylio ymlaen</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
-<translation id="6629480180092995136">Mae <ph name="APP_NAME" /> eisiau defnyddio'r meicroffon</translation>
 <translation id="6637729079642709226">Newid yr amser</translation>
 <translation id="6641720045729354415">Toglo Capsiynau Byw. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Dadwnued trefnu yn ôl enw</translation>
@@ -1208,7 +1206,6 @@ Gosodiad newydd</translation>
 <translation id="7724603315864178912">Torri</translation>
 <translation id="7745560842763881396">Dangos apiau ar y silff</translation>
 <translation id="7749443890790263709">Wedi cyrraedd y nifer uchaf o ddesgiau.</translation>
-<translation id="7749640678855296659">Mae eich meicroffon wedi'i ddiffodd ar hyn o bryd</translation>
 <translation id="776344839111254542">Cliciwch i weld manylion y diweddariad</translation>
 <translation id="7768784765476638775">Dewis i siarad</translation>
 <translation id="7780094051999721182">llwybrau byr</translation>
@@ -1268,9 +1265,11 @@ Gosodiad newydd</translation>
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="8054466585765276473">Wrthi'n cyfrifo amser y batri.</translation>
 <translation id="8083540854303889870">Cadwyd ar gyfer nes ymlaen</translation>
+<translation id="8091153018031979607">Yn dechrau am <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Diweddariadau awtomatig</translation>
 <translation id="8098591350844501178">Stopio castio'r sgrîn i <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ymlaen, pob ap</translation>
+<translation id="8113515504791187892">Botwm dewis i siarad</translation>
 <translation id="8120151603115102514">Nid oes clo sgrîn ar eich ffôn. I ddatgloi eich Chromebook, rhowch eich cyfrinair.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
@@ -1380,6 +1379,7 @@ Gosodiad newydd</translation>
 <translation id="8703634754197148428">Dechrau recordio. Ar ôl i'r recordio ddechrau, gallwch ddefnyddio Alt + Shift + L i lywio i'r silff i ddod o hyd i'r botwm stopio recordio</translation>
 <translation id="8721053961083920564">Toglo Lefel y Sain. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tynnu sgrinlun sgrîn lawn</translation>
+<translation id="8731487213223706745">Yn dod i ben am <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Mae'n bosib ei fod yn ceisio dwyn eich trawiadau</translation>
 <translation id="8735678380411481005">Lliw ôl-olau bysellfwrdd</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

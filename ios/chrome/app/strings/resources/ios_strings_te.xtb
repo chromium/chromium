@@ -102,6 +102,7 @@
 <translation id="1657641691196698092">బ్లాక్ చేసిన కుక్కీలు</translation>
 <translation id="165877110639533037">తెరిచి ఉన్న ట్యాబ్‌లు లేవు</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> నుండి <ph name="TARGET_LANGUAGE" />లోకి</translation>
+<translation id="1683483432843341018">మొబైల్ సైట్‌ను రిక్వెస్ట్ చేయండి</translation>
 <translation id="168715261339224929">మీ బుక్‌మార్క్‌లను మీ అన్ని పరికరాలలోనూ పొందాలంటే, సింక్‌ను ఆన్ చేయండి.</translation>
 <translation id="1687475363370981210">అన్నీ చదివినట్లు గుర్తు పెట్టు</translation>
 <translation id="1689333818294560261">మారుపేరు</translation>
@@ -243,6 +244,7 @@
 <translation id="288655811176831528">ట్యాబ్‌ని మూసివేయి</translation>
 <translation id="2890171748217283516">మీరు ఫాలో అయ్యే సైట్‌లు మీ Google ఖాతాలో సేవ్ చేయబడతాయి. మీరు వాటిని Discover సెట్టింగ్‌లలో మేనేజ్ చేయవచ్చు.</translation>
 <translation id="2898963176829412617">కొత్త ఫోల్డర్…</translation>
+<translation id="2902684821701498619">చదవాల్సిన లిస్ట్‌కు జోడించండి</translation>
 <translation id="2916171785467530738">సెర్చ్‌లను, URLలను ఆటో-ఫిల్ చేయడం</translation>
 <translation id="291754862089661335">QR కోడ్ లేదా బార్‌కోడ్‌ను ఈ ఫ్రేమ్‌లో ఉంచండి</translation>
 <translation id="2920866371965792875">ఈ సైట్ నుండి అప్‌డేట్‌లను చూడటానికి, ఇక్కడ క్లిక్ చేసి, దాన్ని ఫాలో అవ్వండి.</translation>
@@ -320,6 +322,7 @@
 <translation id="3478058380795961209">గడువు ముగింపు నెల</translation>
 <translation id="3482959374254649722">మీ ట్యాబ్‌లను సింక్ చేస్తోంది...</translation>
 <translation id="3484946776651937681">డౌన్‌లోడ్‌లలో తెరవండి</translation>
+<translation id="3485558910355485767">కొత్త అజ్ఞాత విండో</translation>
 <translation id="3493531032208478708">సూచించిన కంటెంట్ గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">బ్రౌజింగ్ డేటాను తీసివేయడాన్ని నిర్ధారించు</translation>
 <translation id="35083190962747987">${url}ని తెరవండి</translation>
@@ -366,6 +369,7 @@
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3858860766373142691">పేరు</translation>
 <translation id="3861486700625780712">అన్-ఫాలో చేయండి</translation>
+<translation id="3863769054730344136">మీ పరికరాలకు పంపండి</translation>
 <translation id="387280738075653372">Chromeను ఇక్కడ డౌన్‌లోడ్ చేయండి.</translation>
 <translation id="3892144330757387737">మీ హిస్టరీని ఇక్కడ చూడగలరు</translation>
 <translation id="3897092660631435901">మెనూ</translation>
@@ -589,6 +593,7 @@
 <translation id="5659593005791499971">ఈమెయిల్‌</translation>
 <translation id="5669335982068190158">మీ iPhone రీసెట్ ప్రాసెస్‌లో భాగంగా మీరు సైన్ అవుట్ చేయబడ్డారు. సైన్ ఇన్ చేయడానికి దిగువున ఉన్న కొనసాగించండి ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">QR కోడ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" /> వెర్షన్</translation>
 <translation id="5690398455483874150">{count,plural, =1{ఇప్పుడు 1 Chrome విండో చూపబడుతుంది}other{ఇప్పుడు {count} Chrome విండోలు చూపబడుతున్నాయి}}</translation>
 <translation id="5701270923492462699">కెమెరా యాక్సెస్ అనుమతించబడింది</translation>
@@ -673,6 +678,7 @@
 <translation id="6219550825416862075">పునఃస్వాగతం</translation>
 <translation id="6219688215832490856">ఎన్నటికీ అనువదించవద్దు</translation>
 <translation id="6223816392543092032">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, అలాగే ఇతర సెట్టింగ్‌లను మీ అన్ని పరికరాల్లో పొందండి.</translation>
+<translation id="6229318421047648685">డెస్క్‌టాప్ సైట్‌ను రిక్వెస్ట్ చేయండి</translation>
 <translation id="6231782223312638214">సూచించబడింది</translation>
 <translation id="6232329973559504466">అజ్ఞాత సెర్చ్</translation>
 <translation id="6232736989810857397">Google Lensను ఉపయోగించి సులభంగా క్యాలెండర్ ఈవెంట్‌లను క్రియేట్ చేయడానికి ఇది మిమ్మల్ని అనుమతిస్తుంది.</translation>

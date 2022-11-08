@@ -219,7 +219,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="209965399369889474">Tidak terhubung ke jaringan</translation>
 <translation id="2107914222138020205">Kabel USB-C Anda tidak mendukung Thunderbolt. Performa perangkat mungkin dibatasi.</translation>
 <translation id="2108303511227308752">Pintasan keyboard Alt + Backspace telah diubah. Untuk menggunakan tombol Delete, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
-<translation id="211328683600082144">AKTIFKAN MIKROFON</translation>
 <translation id="2126242104232412123">Desktop baru</translation>
 <translation id="2132302418721800944">Rekam dalam layar penuh</translation>
 <translation id="2135456203358955318">Kaca pembesar tersemat</translation>
@@ -735,7 +734,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5042305953558921026">Tombol mode ringkasan</translation>
 <translation id="504465286040788597">Paragraf sebelumnya</translation>
 <translation id="5045550434625856497">Sandi salah</translation>
-<translation id="5071064518267176975">Sebuah aplikasi ingin menggunakan mikrofon</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
 <translation id="509790653408515442">Aplikasi yang di-streaming pada ponsel Anda akan ditampilkan di sini</translation>
@@ -1008,7 +1006,6 @@ Baru diinstal</translation>
 <translation id="6614169507485700968">Layar privasi aktif</translation>
 <translation id="6625718907317144388">Notifikasi <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, dan lainnya disembunyikan karena perlindungan tampilan aktif</translation>
 <translation id="6627638273713273709">Tombol Penelusuran+Shift+K</translation>
-<translation id="6629480180092995136"><ph name="APP_NAME" /> ingin menggunakan mikrofon</translation>
 <translation id="6637729079642709226">Ubah waktu</translation>
 <translation id="6641720045729354415">Tombol Teks Otomatis. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Urungkan tata urutan menurut nama</translation>
@@ -1209,7 +1206,6 @@ Baru diinstal</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7745560842763881396">Tampilkan aplikasi di rak</translation>
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
-<translation id="7749640678855296659">Mikrofon Anda saat ini dinonaktifkan</translation>
 <translation id="776344839111254542">Klik untuk melihat detail update</translation>
 <translation id="7768784765476638775">Klik untuk diucapkan</translation>
 <translation id="7780094051999721182">pintasan</translation>
