@@ -533,9 +533,11 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
     id<AutocompleteSuggestion> suggestion =
         [self suggestionAtIndexPath:self.highlightedIndexPath];
     if (suggestion) {
+      NSInteger absoluteRow =
+          [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
       [self.delegate autocompleteResultConsumer:self
                             didSelectSuggestion:suggestion
-                                          inRow:self.highlightedIndexPath.row];
+                                          inRow:absoluteRow];
       return;
     }
   }
@@ -578,10 +580,11 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   if (section >= self.currentResult.count ||
       row >= self.currentResult[indexPath.section].suggestions.count)
     return;
+  NSInteger absoluteRow = [self absoluteRowIndexForIndexPath:indexPath];
   [self.delegate
       autocompleteResultConsumer:self
              didSelectSuggestion:[self suggestionAtIndexPath:indexPath]
-                           inRow:row];
+                           inRow:absoluteRow];
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -786,9 +789,11 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
       [self suggestionAtIndexPath:carouselItem.indexPath];
   DCHECK(suggestion);
 
+  NSInteger absoluteRow =
+      [self absoluteRowIndexForIndexPath:carouselItem.indexPath];
   [self.delegate autocompleteResultConsumer:self
                         didSelectSuggestion:suggestion
-                                      inRow:carouselItem.indexPath.row];
+                                      inRow:absoluteRow];
 }
 
 #pragma mark - Internal API methods
@@ -925,6 +930,26 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
     return nil;
   }
   return self.currentResult[indexPath.section].suggestions[indexPath.row];
+}
+
+// Returns the absolute row number for `indexPath`, counting every row in every
+// section above. Used for logging.
+- (NSInteger)absoluteRowIndexForIndexPath:(NSIndexPath*)indexPath {
+  if (![self suggestionAtIndexPath:indexPath]) {
+    return NSNotFound;
+  }
+  NSInteger rowCount = 0;
+  // For each section above `indexPath` add the number of row used by the
+  // section.
+  for (NSInteger i = 0; i < indexPath.section; ++i) {
+    rowCount += [self.tableView numberOfRowsInSection:i];
+  }
+  switch (self.currentResult[indexPath.section].displayStyle) {
+    case SuggestionGroupDisplayStyleDefault:
+      return rowCount + indexPath.row;
+    case SuggestionGroupDisplayStyleCarousel:
+      return rowCount;
+  }
 }
 
 - (void)updateVisibleSuggestionCount {
