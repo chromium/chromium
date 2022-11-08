@@ -820,6 +820,11 @@ void VideoEncoder::ProcessEncode(Request* request) {
       &VideoEncoder::OnEncodeDone, MakeUnwrappingCrossThreadWeakHandle(this),
       MakeUnwrappingCrossThreadHandle(request)));
 
+  if (frame->metadata().frame_duration) {
+    frame_metadata_.Put(frame->timestamp(),
+                        FrameMetadata{*frame->metadata().frame_duration});
+  }
+
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
@@ -848,11 +853,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
   if (frame->storage_type() == media::VideoFrame::STORAGE_OWNED_MEMORY &&
       frame->format() == media::PIXEL_FORMAT_I420A) {
     frame = media::WrapAsI420VideoFrame(std::move(frame));
-  }
-
-  if (frame->metadata().frame_duration) {
-    frame_metadata_.Put(frame->timestamp(),
-                        FrameMetadata{*frame->metadata().frame_duration});
   }
 
   --requested_encodes_;
