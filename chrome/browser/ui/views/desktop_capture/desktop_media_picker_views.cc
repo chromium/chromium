@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -392,6 +394,12 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   dialog_type_ = current_tab_among_sources ? DialogType::kPreferCurrentTab
                                            : DialogType::kStandard;
 
+  // This command-line switch takes precedence over
+  // params.force_audio_checkboxes_to_default_checked.
+  const bool screen_capture_audio_default_unchecked =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kScreenCaptureAudioDefaultUnchecked);
+
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
       case DesktopMediaList::Type::kNone: {
@@ -433,7 +441,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         categories_.emplace_back(
             DesktopMediaList::Type::kScreen, std::move(list_controller),
             audio_offered,
-            /*audio_checked=*/params.force_audio_checkboxes_to_default_checked,
+            /*audio_checked=*/
+            params.force_audio_checkboxes_to_default_checked &&
+                !screen_capture_audio_default_unchecked,
             supports_reselect_button);
 
         screen_scroll_view->ClipHeightTo(
@@ -469,7 +479,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         categories_.emplace_back(
             DesktopMediaList::Type::kWindow, std::move(list_controller),
             /*audio_offered=*/AudioSupported(DesktopMediaList::Type::kWindow),
-            /*audio_checked=*/params.force_audio_checkboxes_to_default_checked,
+            /*audio_checked=*/
+            params.force_audio_checkboxes_to_default_checked &&
+                !screen_capture_audio_default_unchecked,
             supports_reselect_button);
 
         window_scroll_view->ClipHeightTo(kWindowStyle.item_size.height(),
@@ -498,7 +510,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             DesktopMediaList::Type::kWebContents, std::move(list_controller),
             /*audio_offered=*/
             AudioSupported(DesktopMediaList::Type::kWebContents),
-            /*audio_checked=*/true, supports_reselect_button);
+            /*audio_checked=*/!screen_capture_audio_default_unchecked,
+            supports_reselect_button);
         break;
       }
       case DesktopMediaList::Type::kCurrentTab: {
@@ -524,7 +537,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             DesktopMediaList::Type::kCurrentTab, std::move(list_controller),
             /*audio_offered=*/
             AudioSupported(DesktopMediaList::Type::kWebContents),
-            /*audio_checked=*/true, supports_reselect_button);
+            /*audio_checked=*/!screen_capture_audio_default_unchecked,
+            supports_reselect_button);
         window_scroll_view->ClipHeightTo(
             kCurrentTabStyle.item_size.height(),
             kCurrentTabStyle.item_size.height() * 2);

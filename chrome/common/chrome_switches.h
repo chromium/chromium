@@ -155,6 +155,7 @@ extern const char kRemoteDebuggingTargets[];
 extern const char kRestart[];
 extern const char kRestoreLastSession[];
 extern const char kSavePageAsMHTML[];
+extern const char kScreenCaptureAudioDefaultUnchecked[];
 extern const char kSilentDebuggerExtensionAPI[];
 extern const char kSilentLaunch[];
 extern const char kSimulateCriticalUpdate[];

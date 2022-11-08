@@ -501,6 +501,11 @@ const char kRestoreLastSession[] = "restore-last-session";
 // See http://crbug.com/120416 for how to remove this switch.
 const char kSavePageAsMHTML[] = "save-page-as-mhtml";
 
+// This flag sets the checkboxes for sharing audio during screen capture to off
+// by default. It is primarily intended to be used for tests.
+const char kScreenCaptureAudioDefaultUnchecked[] =
+    "screen-capture-audio-default-unchecked";
+
 // Does not show an infobar when an extension attaches to a page using
 // chrome.debugger page. Required to attach to extension background pages.
 const char kSilentDebuggerExtensionAPI[] = "silent-debugger-extension-api";

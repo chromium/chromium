@@ -1100,12 +1100,25 @@ INSTANTIATE_TEST_SUITE_P(
 
 class GetDisplayMediaChangeSourceBrowserTest
     : public WebRtcTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   GetDisplayMediaChangeSourceBrowserTest()
       : dynamic_surface_switching_requested_(std::get<0>(GetParam())),
-        feature_enabled_(std::get<1>(GetParam())) {}
+        feature_enabled_(std::get<1>(GetParam())),
+        user_shared_audio_(std::get<2>(GetParam())) {}
   ~GetDisplayMediaChangeSourceBrowserTest() override = default;
+
+  void SetUp() override {
+    // TODO(crbug.com/1381951): Fix GetDisplayMediaChangeSourceBrowserTest with
+    // audio requested on ChromeOS
+#if (BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    if (dynamic_surface_switching_requested_ && feature_enabled_ &&
+        user_shared_audio_) {
+      GTEST_SKIP();
+    }
+#endif
+    WebRtcTestBase::SetUp();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     feature_list_.InitWithFeatureState(
@@ -1124,11 +1137,14 @@ class GetDisplayMediaChangeSourceBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+    if (!user_shared_audio_) {
+      command_line->AppendSwitch(switches::kScreenCaptureAudioDefaultUnchecked);
+    }
   }
 
   std::string GetConstraints() const {
     return base::StringPrintf(
-        "{video: true, surfaceSwitching: \"%s\"}",
+        "{video: true, audio: true, surfaceSwitching: \"%s\"}",
         dynamic_surface_switching_requested_ ? "include" : "exclude");
   }
 
@@ -1140,11 +1156,14 @@ class GetDisplayMediaChangeSourceBrowserTest
   base::test::ScopedFeatureList feature_list_;
   const bool dynamic_surface_switching_requested_;
   const bool feature_enabled_;
+  const bool user_shared_audio_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GetDisplayMediaChangeSourceBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
   ASSERT_TRUE(embedded_test_server()->Start());
