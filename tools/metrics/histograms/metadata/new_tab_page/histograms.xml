@@ -881,7 +881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.FeedPositionSegmentationResult"
-    enum="FeedPositionSegmentationResult" expires_after="2022-11-15">
+    enum="FeedPositionSegmentationResult" expires_after="2023-04-30">
   <owner>hanxi@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
