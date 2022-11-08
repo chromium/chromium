@@ -67,7 +67,17 @@ public class TabSelectionEditorMenu
         mActionViewLayout.setActionViewLayoutDelegate(this);
 
         mModelList = new ModelList();
-        mAdapter = new ModelListAdapter(mModelList);
+        mAdapter = new ModelListAdapter(mModelList) {
+            @Override
+            public boolean isEnabled(int position) {
+                // For accessibility on Android Q and earlier even if the View for the item is
+                // disabled the list item may behave as though it is enabled. Pass back the model
+                // state for isEnabled() queries. This is also necessary in some testing frameworks
+                // such as Espresso.
+                return mModelList.get(position).model.get(
+                        TabSelectionEditorActionProperties.ENABLED);
+            }
+        };
         registerItemTypes();
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.app_menu_layout, null);
         mListView = mContentView.findViewById(R.id.app_menu_list);
