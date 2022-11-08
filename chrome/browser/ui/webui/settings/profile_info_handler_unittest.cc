@@ -115,9 +115,9 @@ class ProfileInfoHandlerTest : public testing::Test {
 };
 
 TEST_F(ProfileInfoHandlerTest, GetProfileInfo) {
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append("get-profile-info-callback-id");
-  handler()->HandleGetProfileInfo(list_args.GetList());
+  handler()->HandleGetProfileInfo(list_args);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 

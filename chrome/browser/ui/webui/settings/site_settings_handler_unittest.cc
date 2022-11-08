@@ -2869,21 +2869,20 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   ContentSettingsForOneType accept_language_settings;
 
   std::string language = "en-us";
-  base::Value accept_language_dictionary(base::Value::Type::DICTIONARY);
-  accept_language_dictionary.SetKey("reduce-accept-language",
-                                    base::Value(language));
+  base::Value::Dict accept_language_dictionary;
+  accept_language_dictionary.Set("reduce-accept-language", language);
 
   // Add setting for the hosts.
   for (const auto& host : hosts) {
     host_content_settings_map->SetWebsiteSettingDefaultScope(
         host, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE,
-        accept_language_dictionary.Clone());
+        base::Value(accept_language_dictionary.Clone()));
   }
 
   // Clear at the eTLD+1 level and ensure affected origins are cleared.
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append("example.com");
-  handler()->HandleClearEtldPlus1DataAndCookies(args.GetList());
+  handler()->HandleClearEtldPlus1DataAndCookies(args);
   host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
   EXPECT_EQ(2U, accept_language_settings.size());
@@ -2904,9 +2903,9 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
 
   // Clear unpartitioned usage data, which should only affect the specific
   // origin.
-  args.ClearList();
+  args.clear();
   args.Append("https://google.com/");
-  handler()->HandleClearUnpartitionedUsage(args.GetList());
+  handler()->HandleClearUnpartitionedUsage(args);
 
   // Validate the reduce accept language has been cleared.
   host_content_settings_map->GetSettingsForOneType(
@@ -2924,9 +2923,9 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   // Clear unpartitioned usage data through HTTPS scheme, make sure https site
   // reduced accept language have been cleared when the specific origin HTTPS
   // scheme exist.
-  args.ClearList();
+  args.clear();
   args.Append("http://www.google.com/");
-  handler()->HandleClearUnpartitionedUsage(args.GetList());
+  handler()->HandleClearUnpartitionedUsage(args);
 
   // Validate the reduced accept language has been cleared.
   host_content_settings_map->GetSettingsForOneType(

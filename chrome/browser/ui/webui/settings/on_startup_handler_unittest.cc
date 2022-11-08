@@ -78,9 +78,9 @@ class OnStartupHandlerTest : public testing::Test {
 };
 
 TEST_F(OnStartupHandlerTest, HandleGetNtpExtension) {
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kCallbackId);
-  handler()->HandleGetNtpExtension(list_args.GetList());
+  handler()->HandleGetNtpExtension(list_args);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -95,10 +95,10 @@ TEST_F(OnStartupHandlerTest, HandleGetNtpExtension) {
 }
 
 TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kCallbackId);
   list_args.Append("http://example.com");
-  handler()->HandleValidateStartupPage(list_args.GetList());
+  handler()->HandleValidateStartupPage(list_args);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -116,10 +116,10 @@ TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
 }
 
 TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Invalid) {
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kCallbackId);
   list_args.Append("@");
-  handler()->HandleValidateStartupPage(list_args.GetList());
+  handler()->HandleValidateStartupPage(list_args);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 

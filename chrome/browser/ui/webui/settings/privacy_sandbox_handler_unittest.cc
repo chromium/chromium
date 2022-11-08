@@ -169,10 +169,10 @@ TEST_F(PrivacySandboxHandlerTestMockService, SetFledgeJoiningAllowed) {
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               SetFledgeJoiningAllowed(kTestSite, true));
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kTestSite);
   args.Append(true);
-  handler()->HandleSetFledgeJoiningAllowed(args.GetList());
+  handler()->HandleSetFledgeJoiningAllowed(args);
 }
 
 TEST_F(PrivacySandboxHandlerTestMockService, GetFledgeState) {
@@ -188,13 +188,13 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetFledgeState) {
       .WillOnce([&](Callback callback) { callback_one = std::move(callback); })
       .WillOnce([&](Callback callback) { callback_two = std::move(callback); });
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kCallbackId1);
-  handler()->HandleGetFledgeState(args.GetList());
+  handler()->HandleGetFledgeState(args);
 
-  args.ClearList();
+  args.clear();
   args.Append(kCallbackId2);
-  handler()->HandleGetFledgeState(args.GetList());
+  handler()->HandleGetFledgeState(args);
 
   // Provide different sets of information to each request to the FLEDGE
   // backend.
@@ -224,11 +224,11 @@ TEST_F(PrivacySandboxHandlerTestMockService, SetTopicAllowed) {
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               SetTopicAllowed(kTestTopic, false))
       .Times(1);
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kTestTopic.topic_id().value());
   args.Append(kTestTopic.taxonomy_version());
   args.Append(false);
-  handler()->HandleSetTopicAllowed(args.GetList());
+  handler()->HandleSetTopicAllowed(args);
 }
 
 TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
@@ -250,9 +250,9 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
       .Times(1)
       .WillOnce(testing::Return(kBlockedTopics));
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kCallbackId1);
-  handler()->HandleGetTopicsState(args.GetList());
+  handler()->HandleGetTopicsState(args);
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(kCallbackId1, data.arg1()->GetString());

@@ -46,9 +46,9 @@ class DeviceNameHandlerTest : public testing::Test {
   void CallHandleNotifyReadyForDeviceName() {
     // Need to call HandleNotifyReadyForDeviceName() once for handler to start
     // listening to changes in device name metadata.
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append("callback-id");
-    handler()->HandleNotifyReadyForDeviceName(args.GetList());
+    handler()->HandleNotifyReadyForDeviceName(args);
 
     // On notifying, device name metadata should be received and be equal to the
     // default values.
@@ -83,10 +83,10 @@ class DeviceNameHandlerTest : public testing::Test {
   void VerifySetDeviceNameResult(
       const std::string& device_name,
       DeviceNameStore::SetDeviceNameResult expected_result) {
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append("callback-id");
     args.Append(device_name);
-    handler()->HandleAttemptSetDeviceName(args.GetList());
+    handler()->HandleAttemptSetDeviceName(args);
 
     const content::TestWebUI::CallData& call_data =
         *web_ui()->call_data().back();

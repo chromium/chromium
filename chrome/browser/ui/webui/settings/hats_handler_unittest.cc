@@ -109,15 +109,15 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
                   kHatsSurveyTriggerSettingsPrivacy, web_contents(), 15000,
                   expected_product_specific_data, _, true))
       .Times(2);
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
   task_environment()->RunUntilIdle();
 
-  args.GetList()[0] = base::Value(
+  args[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
   task_environment()->RunUntilIdle();
 }
 
@@ -127,10 +127,10 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
                                        kHatsSurveyTriggerPrivacyGuide,
                                        web_contents(), 15000, _, _, true))
       .Times(1);
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
   task_environment()->RunUntilIdle();
 }
 
@@ -161,10 +161,10 @@ TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
 
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
   task_environment()->RunUntilIdle();
 }
 
@@ -182,10 +182,10 @@ TEST_F(HatsHandlerTest, PrivacySandboxHats) {
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerPrivacySandbox, web_contents(), 10000,
                   expected_product_specific_data, _, true));
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
   task_environment()->RunUntilIdle();
 }
 
@@ -195,15 +195,15 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   EXPECT_CALL(*mock_sentiment_service_,
               InteractedWithPrivacySettings(web_contents()))
       .Times(1);
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
 
   EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
-  args.GetList()[0] = base::Value(
+  args[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
 }
 
 TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
@@ -213,16 +213,16 @@ TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
   // Check that interactions relevant to the T&S sentiment service are
   // correctly reported.
   EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
 
   EXPECT_CALL(*mock_sentiment_service_, OpenedPasswordManager(web_contents()));
-  args.GetList()[0] = base::Value(static_cast<int>(
+  args[0] = base::Value(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PASSWORD_MANAGER));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
+  handler()->HandleTrustSafetyInteractionOccurred(args);
 }
 
 }  // namespace settings
