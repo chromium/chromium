@@ -1852,16 +1852,17 @@ void QuicChromiumClientSession::OnConnectionClosed(
         multi_port_stats
             ->num_multi_port_probe_failures_when_path_not_degrading +
         multi_port_stats->num_multi_port_probe_failures_when_path_degrading;
+    uint64_t srtt_ms =
+        multi_port_stats->rtt_stats.smoothed_rtt().ToMilliseconds();
     if (multi_port_stats->num_path_degrading > 0 &&
-        total_multi_port_probe_failures > 0) {
+        total_multi_port_probe_failures > 0 && srtt_ms > 0) {
       base::UmaHistogramSparse(
           "Net.QuicMultiPort.AltPortRttWhenPathDegradingVsGeneral",
           static_cast<int>(
               multi_port_stats->rtt_stats_when_default_path_degrading
                   .smoothed_rtt()
                   .ToMilliseconds() *
-              100 /
-              multi_port_stats->rtt_stats.smoothed_rtt().ToMilliseconds()));
+              100 / srtt_ms));
       UMA_HISTOGRAM_COUNTS_1000(
           "Net.QuicMultiPort.NumMultiPortFailureWhenPathDegrading",
           multi_port_stats->num_multi_port_probe_failures_when_path_degrading);
