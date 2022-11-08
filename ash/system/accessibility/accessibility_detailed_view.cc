@@ -51,26 +51,6 @@ namespace {
 
 using ml::UserSettingsEvent;
 
-enum AccessibilityState {
-  A11Y_NONE = 0,
-  A11Y_SPOKEN_FEEDBACK = 1 << 0,
-  A11Y_HIGH_CONTRAST = 1 << 1,
-  A11Y_SCREEN_MAGNIFIER = 1 << 2,
-  A11Y_LARGE_CURSOR = 1 << 3,
-  A11Y_AUTOCLICK = 1 << 4,
-  A11Y_VIRTUAL_KEYBOARD = 1 << 5,
-  A11Y_MONO_AUDIO = 1 << 6,
-  A11Y_CARET_HIGHLIGHT = 1 << 7,
-  A11Y_HIGHLIGHT_MOUSE_CURSOR = 1 << 8,
-  A11Y_HIGHLIGHT_KEYBOARD_FOCUS = 1 << 9,
-  A11Y_STICKY_KEYS = 1 << 10,
-  A11Y_SELECT_TO_SPEAK = 1 << 11,
-  A11Y_DOCKED_MAGNIFIER = 1 << 12,
-  A11Y_DICTATION = 1 << 13,
-  A11Y_SWITCH_ACCESS = 1 << 14,
-  A11Y_LIVE_CAPTION = 1 << 15,
-};
-
 void LogUserAccessibilityEvent(UserSettingsEvent::Event::AccessibilityId id,
                                bool new_state) {
   auto* logger = ml::UserSettingsEventLogger::Get();
