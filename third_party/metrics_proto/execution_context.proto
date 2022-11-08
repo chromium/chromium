@@ -84,6 +84,16 @@ enum Thread {
   // DRM threads (in GPU process).
   DRM_THREAD = 22;
 
+  // Audio device threads (in renderer process), a worker thread type used to
+  // transfer data between the browser and the renderer process.
+  AUDIO_DEVICE_THREAD = 23;
+
+  // Audio threads that are not in the renderer processes.
+  AUDIO_THREAD = 24;
+
+  // Dav1d worker threads (in renderer process), which runs the AV1 codec.
+  DAV1D_WORKER_THREAD = 25;
+
   // A Chrome thread not identified by any other enum. Defined for the benefit
   // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
   // enum instead.
