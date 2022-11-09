@@ -264,6 +264,10 @@ void ServiceWorkerMetrics::RecordStartWorkerTime(base::TimeDelta time,
                       StartSituationToDeprecatedSuffix(start_situation),
                       EventTypeToSuffix(purpose)}),
         time);
+    base::UmaHistogramMediumTimes(
+        base::StrCat(
+            {"ServiceWorker.StartWorker.Time_Any", EventTypeToSuffix(purpose)}),
+        time);
   } else {
     UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.StartNewWorker.Time", time);
   }
