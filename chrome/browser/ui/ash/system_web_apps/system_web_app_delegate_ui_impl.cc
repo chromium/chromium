@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
@@ -58,7 +59,8 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     started_new_navigation = true;
   } else if (!reuse_existing_window) {
     gfx::Rect initial_bounds = browser->window()->GetRestoredBounds();
-    initial_bounds.Offset(20, 20);
+    const int offset = GetLayoutConstant(WEB_APP_WINDOW_STAGGER_OFFSET);
+    initial_bounds.Offset(offset, offset);
     browser = web_app::CreateWebApplicationWindow(
         profile, params.app_id, params.disposition, params.restore_id,
         kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize(),

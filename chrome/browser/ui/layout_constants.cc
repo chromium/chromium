@@ -47,6 +47,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       // We must limit the size of icons in the title bar to avoid vertically
       // stretching the container view.
       return 16;
+    case WEB_APP_WINDOW_STAGGER_OFFSET:
+      return 20;
     case LOCATION_BAR_BUBBLE_FONT_VERTICAL_PADDING:
       return 2;
     case LOCATION_BAR_BUBBLE_ANCHOR_VERTICAL_INSET:

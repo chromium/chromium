@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
@@ -35,6 +36,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "extensions/common/constants.h"
 #include "ui/display/scoped_display_for_new_windows.h"
+#include "ui/display/screen.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -60,6 +62,32 @@ absl::optional<GURL> GetProtocolHandlingTranslatedUrl(
       os_integration_manager.TranslateProtocolUrl(params.app_id, protocol_url);
 
   return translated_url;
+}
+
+// Finds the most recently active browser for the web app, on the current
+// workspace and display.
+Browser* FindRecentlyActiveAppBrowser(Profile* profile, const AppId& app_id) {
+#if BUILDFLAG(IS_CHROMEOS)
+  const auto display = display::Screen::GetScreen()->GetDisplayForNewWindows();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  BrowserList* const browser_list = BrowserList::GetInstance();
+  const auto end = browser_list->end_browsers_ordered_by_activation();
+  for (auto iter = browser_list->begin_browsers_ordered_by_activation();
+       iter != end; ++iter) {
+    Browser* const browser = *iter;
+    if (browser->profile() == profile &&
+        AppBrowserController::IsForWebApp(browser, app_id) &&
+#if BUILDFLAG(IS_CHROMEOS)
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            browser->window()->GetNativeWindow()) == display &&
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        browser->window()->IsOnCurrentWorkspace()) {
+      return browser;
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -294,8 +322,19 @@ Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
                                                  /*user_gesture=*/true));
   }
 
+  gfx::Rect initial_bounds;
+  if (Browser* app_browser =
+          FindRecentlyActiveAppBrowser(&profile_, params_.app_id)) {
+    initial_bounds = app_browser->window()->GetRestoredBounds();
+    const int offset = GetLayoutConstant(WEB_APP_WINDOW_STAGGER_OFFSET);
+    initial_bounds.Offset(offset, offset);
+  }
+
   return CreateWebApplicationWindow(&profile_, params_.app_id,
-                                    params_.disposition, params_.restore_id);
+                                    params_.disposition, params_.restore_id,
+                                    /*omit_from_session_restore=*/false,
+                                    /*can_resize=*/true,
+                                    /*can_maximize=*/true, initial_bounds);
 }
 
 WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(

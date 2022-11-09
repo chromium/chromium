@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
 
   const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
   app_browser->window()->SetBounds(bounds);
-  app_browser->window()->Close();
+  CloseAndWait(app_browser);
 
   Browser* const new_browser = LaunchWebAppBrowser(app_id);
   EXPECT_EQ(new_browser->window()->GetBounds(), bounds);
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
 
   const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
   app_browser->window()->SetBounds(bounds);
-  app_browser->window()->Close();
+  CloseAndWait(app_browser);
 
   content::WebContentsAddedObserver new_contents_observer;
 
@@ -892,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppWindow) {
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   ASSERT_TRUE(app_browser->is_type_app());
-  app_browser->window()->Close();
+  CloseAndWait(app_browser);
 
   content::WebContentsAddedObserver new_contents_observer;
 
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppPopupWindow) {
       profile(), app_id, WindowOpenDisposition::NEW_POPUP);
 
   ASSERT_TRUE(app_browser->is_type_app_popup());
-  app_browser->window()->Close();
+  CloseAndWait(app_browser);
 
   content::WebContentsAddedObserver new_contents_observer;
 

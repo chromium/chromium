@@ -112,6 +112,10 @@ enum LayoutConstant {
 
   // The size of page action icons in a web app title bar.
   WEB_APP_PAGE_ACTION_ICON_SIZE,
+
+  // When multiple windows are opened for a specific web app, they are offset
+  // down and to the right.
+  WEB_APP_WINDOW_STAGGER_OFFSET,
 };
 
 enum LayoutInset {
