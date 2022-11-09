@@ -100,6 +100,7 @@ class PageInfo : private content_settings::CookieControlsView {
     SAFE_BROWSING_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE,
     SAFE_BROWSING_STATUS_ENTERPRISE_PASSWORD_REUSE,
     SAFE_BROWSING_STATUS_BILLING,
+    SAFE_BROWSING_STATUS_MANAGED_POLICY,
   };
 
   // Events for UMA. Do not reorder or change! Exposed in header so enum is

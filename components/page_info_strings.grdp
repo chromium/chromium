@@ -788,4 +788,13 @@
   <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON" desc="The text on the button, that opens privacy sandbox settings page, in 'Ad personalization' subpage in page info bubble. ">
     Manage interests
   </message>
+
+  <!-- Enterprise interstitial strings -->
+  <message name="IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been flagged by your admin to show a warning">
+    This site is flagged by your organization
+  </message>
+  <message name="IDS_PAGE_INFO_ENTERPRISE_WARN_DETAILS" desc="A more detailed summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been flagged by your admin to show a warning">
+    Your organization has blocked this site because it violates a policy.
+  </message>
+
 </grit-part>

@@ -1428,6 +1428,11 @@ void PageInfo::GetSafeBrowsingStatusByMaliciousContentStatus(
       *status = PageInfo::SAFE_BROWSING_STATUS_BILLING;
       *details = l10n_util::GetStringUTF16(IDS_PAGE_INFO_BILLING_DETAILS);
       break;
+    case security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY:
+      *status = PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY;
+      *details =
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ENTERPRISE_WARN_DETAILS);
+      break;
   }
 }
 
