@@ -13,12 +13,6 @@
  *
  */
 
-/** @enum {number} */
-const BridgeContext = {
-  BACKGROUND: 0,
-  CONTENT_SCRIPT: 1,
-};
-
 export class ExtensionBridge {
   /** @private */
   constructor() {
@@ -26,8 +20,6 @@ export class ExtensionBridge {
     this.messageListeners_ = [];
     /** @private {!Array<!function()>} */
     this.disconnectListeners_ = [];
-    /** @private {?BridgeContext} */
-    this.context_ = null;
     /** @private {number} */
     this.id_ = -1;
 
@@ -55,21 +47,7 @@ export class ExtensionBridge {
    */
   static init() {
     ExtensionBridge.instance = new ExtensionBridge();
-
-    if (/^chrome-extension:\/\/.*background\.html$/.test(
-            window.location.href)) {
-      // This depends on the fact that the background page has a specific url.
-      // We should never be loaded into another extension's background page, so
-      // this is a safe check.
-      ExtensionBridge.instance.context_ = BridgeContext.BACKGROUND;
-      ExtensionBridge.instance.initBackground_();
-      return;
-    }
-
-    if (chrome && chrome.extension) {
-      ExtensionBridge.instance.context_ = BridgeContext.CONTENT_SCRIPT;
-      ExtensionBridge.instance.initContentScript_();
-    }
+    ExtensionBridge.instance.initBackground_();
   }
 
   /**
@@ -80,14 +58,7 @@ export class ExtensionBridge {
    * @param {Object} message The message to be sent.
    */
   static send(message) {
-    switch (ExtensionBridge.instance.context_) {
-      case BridgeContext.BACKGROUND:
-        ExtensionBridge.instance.sendBackgroundToContentScript_(message);
-        break;
-      case BridgeContext.CONTENT_SCRIPT:
-        ExtensionBridge.instance.sendContentScriptToBackground_(message);
-        break;
-    }
+    ExtensionBridge.instance.sendBackgroundToContentScript_(message);
   }
 
   /**
