@@ -1048,7 +1048,7 @@ AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
 
 void AXObjectCacheImpl::Invalidate(Document& document, AXID ax_id) {
   if (GetInvalidatedIds(document).insert(ax_id).is_new_entry)
-    ScheduleVisualUpdate(document);
+    ScheduleAXUpdate();
 }
 
 AXID AXObjectCacheImpl::GetAXID(Node* node) {
@@ -1961,7 +1961,7 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
 
   // These events are fired during RunPostLifecycleTasks(),
   // ensure there is a document lifecycle update scheduled.
-  ScheduleVisualUpdate(*tree_update_document);
+  ScheduleAXUpdate();
 }
 
 void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
@@ -1996,7 +1996,7 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
 
   // These events are fired during RunPostLifecycleTasks(),
   // ensure there is a document lifecycle update scheduled.
-  ScheduleVisualUpdate(tree_update_document);
+  ScheduleAXUpdate();
 }
 
 void AXObjectCacheImpl::DeferTreeUpdate(
@@ -2497,7 +2497,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     DCHECK_EQ(&document, GetPopupDocumentIfShowing());
     // Since a change occurred in the popup, processing of both documents will
     // be needed. A visual update on the main document will force this.
-    ScheduleVisualUpdate(GetDocument());
+    ScheduleAXUpdate();
     return;
   }
 
@@ -2901,27 +2901,28 @@ void AXObjectCacheImpl::PostNotification(AXObject* object,
 
   // These events are fired during RunPostLifecycleTasks(),
   // ensure there is a visual update scheduled.
-  ScheduleVisualUpdate(document);
+  ScheduleAXUpdate();
 }
 
-void AXObjectCacheImpl::ScheduleVisualUpdate(Document& document) {
+void AXObjectCacheImpl::ScheduleAXUpdate() {
+  // A visual update will force accessibility to be updated as well.
   // Scheduling visual updates before the document is finished loading can
   // interfere with event ordering. In any case, at least one visual update will
   // occur between now and when the document load is complete.
-  if (!document.IsLoadCompleted())
+  if (!GetDocument().IsLoadCompleted())
     return;
 
   // If there was a document change that doesn't trigger a lifecycle update on
   // its own, (e.g. because it doesn't make layout dirty), make sure we run
   // lifecycle phases to update the computed accessibility tree.
-  LocalFrameView* frame_view = document.View();
-  Page* page = document.GetPage();
+  LocalFrameView* frame_view = GetDocument().View();
+  Page* page = GetDocument().GetPage();
   if (!frame_view || !page)
     return;
 
   if (!frame_view->CanThrottleRendering() &&
-      !document.GetPage()->Animator().IsServicingAnimations()) {
-    page->Animator().ScheduleVisualUpdate(document.GetFrame());
+      !GetDocument().GetPage()->Animator().IsServicingAnimations()) {
+    page->Animator().ScheduleVisualUpdate(GetDocument().GetFrame());
   }
 }
 

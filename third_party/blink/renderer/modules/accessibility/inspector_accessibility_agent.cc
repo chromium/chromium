@@ -1032,10 +1032,10 @@ void InspectorAccessibilityAgent::queryAXTree(
     vector.emplace_back(std::move(query));
     queries_.insert(&document, std::move(vector));
   }
-  // ScheduleVisualUpdate() ensures the lifecycle doesn't get stalled,
+  // ScheduleAXUpdate() ensures the lifecycle doesn't get stalled,
   // and therefore ensures we get the AXReadyCallback callback as soon as a11y
   // is clean again.
-  cache.ScheduleVisualUpdate(document);
+  cache.ScheduleAXUpdate();
 }
 
 void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
@@ -1157,27 +1157,27 @@ void InspectorAccessibilityAgent::ProcessPendingDirtyNodes(Document& document) {
   GetFrontend()->nodesUpdated(std::move(nodes));
 }
 
-void InspectorAccessibilityAgent::ScheduleVisualUpdateIfNeeded(
-    TimerBase*,
-    Document* document) {
+void InspectorAccessibilityAgent::ScheduleAXUpdateIfNeeded(TimerBase*,
+                                                           Document* document) {
   DCHECK(document);
 
   if (!dirty_nodes_.Contains(document))
     return;
 
+  // Scheduling an AX update for the cache will schedule it for both the main
+  // document, and the popup document (if present).
   if (document->HasAXObjectCache())
-    document->ExistingAXObjectCache()->ScheduleVisualUpdate(*document);
+    document->ExistingAXObjectCache()->ScheduleAXUpdate();
 }
 
 void InspectorAccessibilityAgent::ScheduleAXChangeNotification(
     Document* document) {
   DCHECK(document);
   if (!timers_.Contains(document)) {
-    timers_.insert(
-        document,
-        MakeGarbageCollected<DisallowNewWrapper<DocumentTimer>>(
-            document, this,
-            &InspectorAccessibilityAgent::ScheduleVisualUpdateIfNeeded));
+    timers_.insert(document,
+                   MakeGarbageCollected<DisallowNewWrapper<DocumentTimer>>(
+                       document, this,
+                       &InspectorAccessibilityAgent::ScheduleAXUpdateIfNeeded));
   }
   DisallowNewWrapper<DocumentTimer>* timer = timers_.at(document);
   if (!timer->Value().IsActive())

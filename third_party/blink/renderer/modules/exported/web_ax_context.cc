@@ -124,4 +124,10 @@ void WebAXContext::UpdateAXForAllDocuments() {
   return private_->GetAXObjectCache().UpdateAXForAllDocuments();
 }
 
+void WebAXContext::ScheduleAXUpdate() {
+  if (!private_->HasActiveDocument())
+    return;
+  return private_->GetAXObjectCache().ScheduleAXUpdate();
+}
+
 }  // namespace blink

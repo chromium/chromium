@@ -84,6 +84,9 @@ class BLINK_EXPORT WebAXContext {
   // popup document. Ensures layout is clean as well.
   void UpdateAXForAllDocuments();
 
+  // Ensure that a layout and accessibility update will occur soon.
+  void ScheduleAXUpdate();
+
  private:
   std::unique_ptr<AXContext> private_;
 };

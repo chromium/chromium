@@ -254,7 +254,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                bool insert_at_beginning) = 0;
 
   // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
-  virtual void ScheduleVisualUpdate(Document& document) = 0;
+  virtual void ScheduleAXUpdate() = 0;
 
  protected:
   friend class ScopedBlinkAXEventIntent;
