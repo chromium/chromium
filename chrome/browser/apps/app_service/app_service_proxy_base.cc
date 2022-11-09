@@ -89,6 +89,12 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
         allow_placeholder_icon, std::move(callback));
   }
 
+  if (host_->ShouldReadIcons()) {
+    host_->ReadIcons(app_id, size_hint_in_dip, icon_key, icon_type,
+                     std::move(callback));
+    return nullptr;
+  }
+
   auto* publisher = host_->GetPublisher(app_type);
   if (!publisher) {
     LOG(WARNING) << "No publisher for requested icon";
@@ -262,7 +268,7 @@ AppServiceProxyBase::LoadIconFromIconKey(AppType app_type,
                                          IconType icon_type,
                                          int32_t size_hint_in_dip,
                                          bool allow_placeholder_icon,
-                                         apps::LoadIconCallback callback) {
+                                         LoadIconCallback callback) {
   return outer_icon_loader_.LoadIconFromIconKey(
       app_type, app_id, icon_key, icon_type, size_hint_in_dip,
       allow_placeholder_icon, std::move(callback));
@@ -863,6 +869,10 @@ void AppServiceProxyBase::PerformPostUninstallTasks(
 void AppServiceProxyBase::OnLaunched(LaunchCallback callback,
                                      LaunchResult&& launch_result) {
   std::move(callback).Run(std::move(launch_result));
+}
+
+bool AppServiceProxyBase::ShouldReadIcons() {
+  return false;
 }
 
 IntentLaunchInfo::IntentLaunchInfo() = default;

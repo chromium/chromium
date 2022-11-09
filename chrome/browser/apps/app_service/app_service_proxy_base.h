@@ -411,6 +411,17 @@ class AppServiceProxyBase : public KeyedService,
   virtual void OnLaunched(LaunchCallback callback,
                           LaunchResult&& launch_result);
 
+  // Returns true if we should read icon image files from the local app_service
+  // icon directory on disk, e.g. for ChromeOS. Otherwise, returns false.
+  virtual bool ShouldReadIcons();
+
+  // Reads icon image files from the local app_service icon directory on disk.
+  virtual void ReadIcons(const std::string& app_id,
+                         int32_t size_hint_in_dip,
+                         const IconKey& icon_key,
+                         IconType icon_type,
+                         LoadIconCallback callback) {}
+
   base::flat_map<AppType, AppPublisher*> publishers_;
 
   // This proxy privately owns its instance of the App Service. This should not

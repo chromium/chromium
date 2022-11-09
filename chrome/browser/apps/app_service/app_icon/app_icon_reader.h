@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_READER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
@@ -35,7 +36,9 @@ class AppIconReader {
                  LoadIconCallback callback);
 
  private:
-  void OnIconRead(IconType icon_type, std::vector<uint8_t> icon_data);
+  void OnIconRead(IconType icon_type,
+                  LoadIconCallback callback,
+                  std::vector<uint8_t> icon_data);
 
   const raw_ptr<Profile> profile_;
 

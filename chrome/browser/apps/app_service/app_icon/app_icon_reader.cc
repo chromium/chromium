@@ -41,8 +41,10 @@ void AppIconReader::ReadIcons(const std::string& app_id,
                               IconType icon_type,
                               LoadIconCallback callback) {
   switch (icon_type) {
-    case IconType::kUnknown:
+    case IconType::kUnknown: {
+      std::move(callback).Run(std::make_unique<apps::IconValue>());
       return;
+    }
     case IconType::kCompressed:
       if (icon_effects == apps::IconEffects::kNone) {
         base::ThreadPool::PostTaskAndReplyWithResult(
@@ -50,7 +52,8 @@ void AppIconReader::ReadIcons(const std::string& app_id,
             base::BindOnce(&ReadOnBackgroundThread, profile_, app_id,
                            size_hint_in_dip, icon_effects),
             base::BindOnce(&AppIconReader::OnIconRead,
-                           weak_ptr_factory_.GetWeakPtr(), icon_type));
+                           weak_ptr_factory_.GetWeakPtr(), icon_type,
+                           std::move(callback)));
         return;
       }
       [[fallthrough]];
@@ -63,8 +66,16 @@ void AppIconReader::ReadIcons(const std::string& app_id,
 }
 
 void AppIconReader::OnIconRead(IconType icon_type,
+                               LoadIconCallback callback,
                                std::vector<uint8_t> icon_data) {
-  // TODO(crbug.com/1380608): Implement the OnIconRead function.
+  // TODO(crbug.com/1380608): Implement OnIconRead for uncompressed and standard
+  // icons.
+
+  auto iv = std::make_unique<apps::IconValue>();
+  iv->icon_type = icon_type;
+  iv->compressed = std::move(icon_data);
+
+  std::move(callback).Run(std::move(iv));
 }
 
 }  // namespace apps

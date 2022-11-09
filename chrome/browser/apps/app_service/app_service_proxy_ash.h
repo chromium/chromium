@@ -244,6 +244,17 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                     LaunchCallback callback,
                                     bool is_allowed);
 
+  bool ShouldReadIcons() override;
+
+  // Reads icon image files from the local app_service icon directory on disk.
+  void ReadIcons(const std::string& app_id,
+                 int32_t size_hint_in_dip,
+                 const IconKey& icon_key,
+                 IconType icon_type,
+                 LoadIconCallback callback) override;
+
+  void OnIconRead(LoadIconCallback callback, IconValuePtr iv);
+
   SubscriberCrosapi* crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
