@@ -130,4 +130,9 @@ public interface TasksSurface {
      */
     @Nullable
     TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
+
+    /**
+     * Initialize the listener to decide whether the tasks view can be draggable or scrollable.
+     */
+    void initHeaderDragListener();
 }
