@@ -1167,7 +1167,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuComputers"),
         TestCase("dirContextMenuTrash").EnableTrash(),
         TestCase("dirContextMenuShortcut"),
-        TestCase("dirContextMenuFocus")));
+        TestCase("dirContextMenuFocus"),
+        TestCase("dirContextMenuKeyboardNavigation")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */

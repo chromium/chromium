@@ -1857,3 +1857,52 @@ testcase.dirContextMenuFocus = async () => {
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq('menuitem', focusedElement.attributes['role']);
 };
+
+/**
+ * Test that the directory tree context menu can be opened by keyboard
+ * navigation.
+ */
+testcase.dirContextMenuKeyboardNavigation = async () => {
+  // Open Files app on local Downloads.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+
+  // Navigate to /My files/Downloads which will focus the Downloads tree item.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+
+  // Send a contextmenu event to the directory tree. Downloads is initially
+  // focused so the subitem context menu will appear.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId, ['#directory-tree', 'contextmenu']));
+
+  // Wait for context menu to appear.
+  const contextMenuQuery =
+      '#directory-tree-context-menu:not([hidden]) cr-menu-item:not([hidden])';
+  await remoteCall.waitForElement(appId, contextMenuQuery);
+
+  // Dismiss the context menu.
+  await remoteCall.callRemoteTestUtil(
+      'fakeKeyDown', appId, [contextMenuQuery, 'Escape', false, false, false]);
+  await remoteCall.waitForElementLost(appId, contextMenuQuery);
+
+  // Move the focus up on the directory tree to "My files" via keyboard
+  // navigation.
+  await remoteCall.callRemoteTestUtil(
+      'fakeKeyDown', appId,
+      ['#directory-tree', 'ArrowUp', false, false, false]);
+
+  // Send a contextmenu event to the directory tree.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId, ['#directory-tree', 'contextmenu']));
+
+  // Wait for the "New folder" to appear in the context menu and then press it.
+  // This is to verify that the folder created is done in the correct location
+  // (i.e. "My files").
+  const newFolderQuery = contextMenuQuery + '[command="#new-folder"]';
+  await remoteCall.waitForElement(appId, newFolderQuery);
+  await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId, [newFolderQuery]);
+
+  // Ensure it's possible to navigate to the newly created folder.
+  await navigateWithDirectoryTree(appId, '/My files/New folder');
+};

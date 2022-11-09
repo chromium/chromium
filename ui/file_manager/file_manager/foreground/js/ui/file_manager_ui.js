@@ -592,6 +592,23 @@ export class FileManagerUI {
         queryDecoratedElement('#directory-tree-context-menu', Menu);
     this.directoryTree.disabledContextMenu =
         queryDecoratedElement('#disabled-context-menu', Menu);
+
+    // The context menu event that is created via keyboard navigation is
+    // dispatched to the `directoryTree` however the tree items actually have
+    // the context menu handlers. To ensure they receive the event, recompute
+    // their location and re-dispatch the "contextmenu" event to the item that
+    // is selected.
+    this.directoryTree.addEventListener('contextmenu', e => {
+      const selectedItem = this.directoryTree?.selectedItem?.rowElement;
+      if (!selectedItem) {
+        return;
+      }
+      const domRect = selectedItem.getBoundingClientRect();
+      const x = domRect.x + (domRect.width / 2);
+      const y = domRect.y + (domRect.height / 2);
+      this.directoryTree.selectedItem.dispatchEvent(
+          new PointerEvent(e.type, {...e, clientX: x, clientY: y}));
+    });
   }
 
   /**
