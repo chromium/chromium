@@ -219,7 +219,8 @@ void AssistantOptInFlowScreenHandler::OnSpeakerIdEnrollmentDone() {
 
 void AssistantOptInFlowScreenHandler::OnSpeakerIdEnrollmentFailure() {
   StopSpeakerIdEnrollment();
-  RecordAssistantOptInStatus(VOICE_MATCH_ENROLLMENT_ERROR);
+  RecordAssistantOptInStatus(
+      AssistantOptInFlowStatus::kVoiceMatchEnrollmentError);
   voice_match_enrollment_error_ = true;
   CallExternalAPI("onVoiceMatchUpdate", "failure");
   LOG(ERROR) << "Speaker ID enrollment failure.";
@@ -285,8 +286,9 @@ void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
 
 void AssistantOptInFlowScreenHandler::OnScreenContextOptInResult(
     bool opted_in) {
-  RecordAssistantOptInStatus(opted_in ? RELATED_INFO_ACCEPTED
-                                      : RELATED_INFO_SKIPPED);
+  RecordAssistantOptInStatus(
+      opted_in ? AssistantOptInFlowStatus::kRelatedInfoAccepted
+               : AssistantOptInFlowStatus::kRelatedInfoSkipped);
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetBoolean(assistant::prefs::kAssistantContextEnabled, opted_in);
 }
@@ -407,7 +409,7 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
 
   DCHECK(settings_ui.has_consent_flow_ui());
 
-  RecordAssistantOptInStatus(FLOW_STARTED);
+  RecordAssistantOptInStatus(AssistantOptInFlowStatus::kFlowStarted);
 
   base::Value::List zippy_data;
   bool skip_activity_control = true;
@@ -552,12 +554,14 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
 
   if (action == kVoiceMatchDone) {
-    RecordAssistantOptInStatus(VOICE_MATCH_ENROLLMENT_DONE);
+    RecordAssistantOptInStatus(
+        AssistantOptInFlowStatus::kVoiceMatchEnrollmentDone);
     voice_match_enrollment_done_ = true;
     voice_match_enrollment_error_ = false;
     ShowNextScreen();
   } else if (action == kSkipPressed) {
-    RecordAssistantOptInStatus(VOICE_MATCH_ENROLLMENT_SKIPPED);
+    RecordAssistantOptInStatus(
+        AssistantOptInFlowStatus::kVoiceMatchEnrollmentSkipped);
     // Disable hotword for user if voice match enrollment has not completed.
     // No need to disable for retrain flow since user has a model.
     // No need to disable if there's error during the enrollment.
@@ -585,15 +589,15 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
 }
 
 void AssistantOptInFlowScreenHandler::HandleValuePropScreenShown() {
-  RecordAssistantOptInStatus(ACTIVITY_CONTROL_SHOWN);
+  RecordAssistantOptInStatus(AssistantOptInFlowStatus::kActivityControlShown);
 }
 
 void AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenShown() {
-  RecordAssistantOptInStatus(RELATED_INFO_SHOWN);
+  RecordAssistantOptInStatus(AssistantOptInFlowStatus::kRelatedInfoShown);
 }
 
 void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenShown() {
-  RecordAssistantOptInStatus(VOICE_MATCH_SHOWN);
+  RecordAssistantOptInStatus(AssistantOptInFlowStatus::kVoiceMatchShown);
 }
 
 void AssistantOptInFlowScreenHandler::HandleLoadingTimeout() {

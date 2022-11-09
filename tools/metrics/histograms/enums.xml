@@ -5081,29 +5081,29 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AssistantOptInFlowStatus">
-  <int value="0" label="FLOW_STARTED"/>
-  <int value="1" label="ACTIVITY_CONTROL_SHOWN"/>
-  <int value="2" label="ACTIVITY_CONTROL_ACCEPTED"/>
-  <int value="3" label="ACTIVITY_CONTROL_SKIPPED"/>
-  <int value="4" label="THIRD_PARTY_SHOWN"/>
-  <int value="5" label="THIRD_PARTY_CONTINUED"/>
-  <int value="6" label="GET_MORE_SHOWN"/>
-  <int value="7" label="EMAIL_OPTED_IN"/>
-  <int value="8" label="EMAIL_OPTED_OUT"/>
-  <int value="9" label="GET_MORE_CONTINUED"/>
-  <int value="10" label="READY_SCREEN_SHOWN"/>
-  <int value="11" label="READY_SCREEN_CONTINUED"/>
-  <int value="12" label="VOICE_MATCH_SHOWN"/>
-  <int value="13" label="VOICE_MATCH_ENROLLMENT_DONE"/>
-  <int value="14" label="VOICE_MATCH_ENROLLMENT_SKIPPED"/>
-  <int value="15" label="VOICE_MATCH_ENROLLMENT_ERROR"/>
-  <int value="16" label="RELATED_INFO_SHOWN"/>
-  <int value="17" label="RELATED_INFO_ACCEPTED"/>
-  <int value="18" label="RELATED_INFO_SKIPPED"/>
-  <int value="19" label="ACTIVITY_CONTROL_DA_ACCEPTED"/>
-  <int value="20" label="ACTIVITY_CONTROL_DA_SKIPPED"/>
-  <int value="21" label="ACTIVITY_CONTROL_WAA_ACCEPTED"/>
-  <int value="22" label="ACTIVITY_CONTROL_WAA_SKIPPED"/>
+  <int value="0" label="kFlowStarted"/>
+  <int value="1" label="kActivityControlShown"/>
+  <int value="2" label="kActivityControlAccepted"/>
+  <int value="3" label="kActivityControlSkipped"/>
+  <int value="4" label="kThirdPartyShown"/>
+  <int value="5" label="kThirdPartyContinued"/>
+  <int value="6" label="kGetMoreShown"/>
+  <int value="7" label="kEmailOptedIn"/>
+  <int value="8" label="kEmailOptedOut"/>
+  <int value="9" label="kGetMoreContinued"/>
+  <int value="10" label="kReadyScreenShown"/>
+  <int value="11" label="kReadyScreenContinued"/>
+  <int value="12" label="kVoiceMatchShown"/>
+  <int value="13" label="kVoiceMatchEnrollmentDone"/>
+  <int value="14" label="kVoiceMatchEnrollmentSkipped"/>
+  <int value="15" label="kVoiceMatchEnrollmentError"/>
+  <int value="16" label="kRelatedInfoShown"/>
+  <int value="17" label="kRelatedInfoAccepted"/>
+  <int value="18" label="kRelatedInfoSkipped"/>
+  <int value="19" label="kActivityControlDaAccepted"/>
+  <int value="20" label="kActivityControlDaSkipped"/>
+  <int value="21" label="kActivityControlWaaAccepted"/>
+  <int value="22" label="kActivityControlWaaSkipped"/>
 </enum>
 
 <enum name="AssistantQueryResponseType">

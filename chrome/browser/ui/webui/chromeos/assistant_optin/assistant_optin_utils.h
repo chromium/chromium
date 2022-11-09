@@ -18,32 +18,32 @@ namespace chromeos {
 
 // Type of Assistant opt-in flow status. This enum is used to back an UMA
 // histogram and should be treated as append-only.
-enum AssistantOptInFlowStatus {
-  FLOW_STARTED = 0,
-  ACTIVITY_CONTROL_SHOWN = 1,
-  ACTIVITY_CONTROL_ACCEPTED = 2,
-  ACTIVITY_CONTROL_SKIPPED = 3,
-  THIRD_PARTY_SHOWN = 4,
-  THIRD_PARTY_CONTINUED = 5,
-  GET_MORE_SHOWN = 6,
-  EMAIL_OPTED_IN = 7,
-  EMAIL_OPTED_OUT = 8,
-  GET_MORE_CONTINUED = 9,
-  READY_SCREEN_SHOWN = 10,
-  READY_SCREEN_CONTINUED = 11,
-  VOICE_MATCH_SHOWN = 12,
-  VOICE_MATCH_ENROLLMENT_DONE = 13,
-  VOICE_MATCH_ENROLLMENT_SKIPPED = 14,
-  VOICE_MATCH_ENROLLMENT_ERROR = 15,
-  RELATED_INFO_SHOWN = 16,
-  RELATED_INFO_ACCEPTED = 17,
-  RELATED_INFO_SKIPPED = 18,
-  ACTIVITY_CONTROL_DA_ACCEPTED = 19,
-  ACTIVITY_CONTROL_DA_SKIPPED = 20,
-  ACTIVITY_CONTROL_WAA_ACCEPTED = 21,
-  ACTIVITY_CONTROL_WAA_SKIPPED = 22,
+enum class AssistantOptInFlowStatus {
+  kFlowStarted = 0,
+  kActivityControlShown = 1,
+  kActivityControlAccepted = 2,
+  kActivityControlSkipped = 3,
+  kThirdPartyShown = 4,
+  kThirdPartyContinued = 5,
+  kGetMoreShown = 6,
+  kEmailOptedIn = 7,
+  kEmailOptedOut = 8,
+  kGetMoreContinued = 9,
+  kReadyScreenShown = 10,
+  kReadyScreenContinued = 11,
+  kVoiceMatchShown = 12,
+  kVoiceMatchEnrollmentDone = 13,
+  kVoiceMatchEnrollmentSkipped = 14,
+  kVoiceMatchEnrollmentError = 15,
+  kRelatedInfoShown = 16,
+  kRelatedInfoAccepted = 17,
+  kRelatedInfoSkipped = 18,
+  kActivityControlDaAccepted = 19,
+  kActivityControlDaSkipped = 20,
+  kActivityControlWaaAccepted = 21,
+  kActivityControlWaaSkipped = 22,
   // Magic constant used by the histogram macros.
-  kMaxValue = ACTIVITY_CONTROL_WAA_SKIPPED
+  kMaxValue = kActivityControlWaaSkipped
 };
 
 void RecordAssistantOptInStatus(AssistantOptInFlowStatus);
@@ -95,9 +95,8 @@ GetActivityControlConsentSettingType(const SettingZippyList& setting_zippys);
 
 // TODO(https://crbug.com/1164001): remove when it moved to ash.
 namespace ash {
-using ::chromeos::ACTIVITY_CONTROL_SHOWN;
+using ::chromeos::AssistantOptInFlowStatus;
 using ::chromeos::CreateZippyData;
-using ::chromeos::FLOW_STARTED;
 using ::chromeos::GetActivityControlConsentSettingType;
 using ::chromeos::GetSettingsUiSelector;
 using ::chromeos::GetSettingsUiStrings;
@@ -106,13 +105,6 @@ using ::chromeos::IsHotwordDspAvailable;
 using ::chromeos::IsVoiceMatchEnforcedOff;
 using ::chromeos::RecordActivityControlConsent;
 using ::chromeos::RecordAssistantActivityControlOptInStatus;
-using ::chromeos::RELATED_INFO_ACCEPTED;
-using ::chromeos::RELATED_INFO_SHOWN;
-using ::chromeos::RELATED_INFO_SKIPPED;
-using ::chromeos::VOICE_MATCH_ENROLLMENT_DONE;
-using ::chromeos::VOICE_MATCH_ENROLLMENT_ERROR;
-using ::chromeos::VOICE_MATCH_ENROLLMENT_SKIPPED;
-using ::chromeos::VOICE_MATCH_SHOWN;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_

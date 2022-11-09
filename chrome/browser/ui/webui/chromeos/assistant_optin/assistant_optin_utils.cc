@@ -76,7 +76,9 @@ AssistantNativeIconType SettingIdToIconType(
 }  // namespace
 
 void RecordAssistantOptInStatus(AssistantOptInFlowStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Assistant.OptInFlowStatus", status, kMaxValue + 1);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Assistant.OptInFlowStatus", status,
+      static_cast<int>(AssistantOptInFlowStatus::kMaxValue) + 1);
 }
 
 void RecordAssistantActivityControlOptInStatus(
@@ -87,15 +89,16 @@ void RecordAssistantActivityControlOptInStatus(
   switch (setting_type) {
     case AssistantActivityControlConsent::ALL:
     case AssistantActivityControlConsent::SETTING_TYPE_UNSPECIFIED:
-      status = opted_in ? ACTIVITY_CONTROL_ACCEPTED : ACTIVITY_CONTROL_SKIPPED;
+      status = opted_in ? AssistantOptInFlowStatus::kActivityControlAccepted
+                        : AssistantOptInFlowStatus::kActivityControlSkipped;
       break;
     case AssistantActivityControlConsent::WEB_AND_APP_ACTIVITY:
-      status = opted_in ? ACTIVITY_CONTROL_WAA_ACCEPTED
-                        : ACTIVITY_CONTROL_WAA_SKIPPED;
+      status = opted_in ? AssistantOptInFlowStatus::kActivityControlWaaAccepted
+                        : AssistantOptInFlowStatus::kActivityControlWaaSkipped;
       break;
     case AssistantActivityControlConsent::DEVICE_APPS:
-      status =
-          opted_in ? ACTIVITY_CONTROL_DA_ACCEPTED : ACTIVITY_CONTROL_DA_SKIPPED;
+      status = opted_in ? AssistantOptInFlowStatus::kActivityControlDaAccepted
+                        : AssistantOptInFlowStatus::kActivityControlDaSkipped;
       break;
   }
   RecordAssistantOptInStatus(status);
