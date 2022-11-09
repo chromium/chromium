@@ -279,6 +279,7 @@ class BrowsingTopicsDisabledInternalsBrowserTest
             privacy_sandbox::kPrivacySandboxSettings3,
             optimization_guide::features::kPageContentAnnotations,
             optimization_guide::features::kPageContentAnnotationsValidation,
+            optimization_guide::features::kRemotePageMetadata,
         });
   }
 
