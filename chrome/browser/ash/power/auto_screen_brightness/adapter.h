@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"

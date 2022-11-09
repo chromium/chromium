@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 

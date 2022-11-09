@@ -7,7 +7,6 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_LOGIN_LOGIN_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_UI_LOGIN_LOGIN_NAVIGATION_THROTTLE_H_
 
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button_controller.h"
 
 namespace views {

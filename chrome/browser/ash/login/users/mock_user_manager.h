@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"

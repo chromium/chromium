@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/mac/foundation_util.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 

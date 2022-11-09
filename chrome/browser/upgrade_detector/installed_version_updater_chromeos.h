@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

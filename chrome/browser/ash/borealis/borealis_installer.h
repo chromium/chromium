@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"

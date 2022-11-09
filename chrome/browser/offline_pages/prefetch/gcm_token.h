@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/prefetch/prefetch_gcm_app_handler.h"
 

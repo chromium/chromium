@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"

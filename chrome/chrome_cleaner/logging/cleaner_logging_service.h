@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/singleton.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/chrome_cleaner/logging/detailed_info_sampler.h"

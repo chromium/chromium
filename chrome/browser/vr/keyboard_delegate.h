@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_KEYBOARD_DELEGATE_H_
 #define CHROME_BROWSER_VR_KEYBOARD_DELEGATE_H_
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace gfx {

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "components/arc/common/intent_helper/activity_icon_loader.h"

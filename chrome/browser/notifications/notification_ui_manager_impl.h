@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/notifications/notification_system_observer.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"

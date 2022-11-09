@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_CACHE_FACADE_FACTORY_H_
 
 #include "base/auto_reset.h"
-#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"

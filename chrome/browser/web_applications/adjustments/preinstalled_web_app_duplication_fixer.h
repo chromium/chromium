@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ADJUSTMENTS_PREINSTALLED_WEB_APP_DUPLICATION_FIXER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ADJUSTMENTS_PREINSTALLED_WEB_APP_DUPLICATION_FIXER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"

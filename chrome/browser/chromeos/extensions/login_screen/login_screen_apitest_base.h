@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "components/version_info/version_info.h"
 

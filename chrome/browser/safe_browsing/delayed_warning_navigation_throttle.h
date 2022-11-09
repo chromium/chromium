@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {

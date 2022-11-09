@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"

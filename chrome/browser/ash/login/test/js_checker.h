@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 
 namespace content {

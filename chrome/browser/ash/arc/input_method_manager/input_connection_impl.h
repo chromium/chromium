@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/components/arc/mojom/input_method_manager.mojom-forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"

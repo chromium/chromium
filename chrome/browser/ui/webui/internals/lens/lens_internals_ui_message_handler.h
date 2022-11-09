@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_INTERNALS_LENS_LENS_INTERNALS_UI_MESSAGE_HANDLER_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_ui_message_handler.h"
 

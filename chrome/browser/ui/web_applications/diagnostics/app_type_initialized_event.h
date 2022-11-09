@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_DIAGNOSTICS_APP_TYPE_INITIALIZED_EVENT_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"

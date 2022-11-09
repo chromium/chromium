@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_LACROS_FIELD_TRIAL_OBSERVER_H_
 #define CHROME_BROWSER_LACROS_FIELD_TRIAL_OBSERVER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/field_trial.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

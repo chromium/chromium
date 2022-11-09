@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"

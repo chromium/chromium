@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"

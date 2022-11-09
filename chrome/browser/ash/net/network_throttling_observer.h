@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;

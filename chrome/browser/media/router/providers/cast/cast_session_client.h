@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"

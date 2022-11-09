@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"

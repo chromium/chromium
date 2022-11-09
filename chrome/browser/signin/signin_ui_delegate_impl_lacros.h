@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 
 namespace base {

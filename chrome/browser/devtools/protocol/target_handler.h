@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/target.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"

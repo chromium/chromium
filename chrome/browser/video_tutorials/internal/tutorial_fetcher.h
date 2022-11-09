@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
 namespace network {
