@@ -230,9 +230,13 @@ void EncoderBase<Traits>::ResetInternal() {
   // Schedule deletion of |media_encoder_| for later.
   // ResetInternal() might be called by an error reporting callback called by
   // |media_encoder_|. If we delete it now, this thread might come back up
-  // the call stack and continu executing code belonging to deleted
+  // the call stack and continue executing code belonging to deleted
   // |media_encoder_|.
-  callback_runner_->DeleteSoon(FROM_HERE, std::move(media_encoder_));
+  //
+  // NOTE: This task runner may be destroyed without running tasks, so don't
+  // use DeleteSoon() which can leak the codec. See https://crbug.com/1376851.
+  callback_runner_->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(media_encoder_)));
 
   // This codec isn't holding on to any resources, and doesn't need to be
   // reclaimed.
