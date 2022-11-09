@@ -616,32 +616,22 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
     return;
   }
 
-  // Estimate the amount of buffers needed for the CAPTURE queue and for codec
-  // reference requirements. For VP9 and AV1, the maximum number of reference
-  // frames is constant and 8 (for VP8 is 4); for H.264 and other ITU-T codecs,
-  // it depends on the bitstream. Here we query it from the driver anyway.
-  constexpr size_t kDefaultNumReferenceFrames = 8;
-  size_t num_codec_reference_frames = kDefaultNumReferenceFrames;
-  // On QC Venus, this control ranges between 1 and 32 at the time of writing.
   auto ctrl = device_->GetCtrl(V4L2_CID_MIN_BUFFERS_FOR_CAPTURE);
-  if (ctrl) {
-    VLOGF(2) << "V4L2_CID_MIN_BUFFERS_FOR_CAPTURE  = " << ctrl->value;
-    num_codec_reference_frames = std::max(
-        base::checked_cast<size_t>(ctrl->value), num_codec_reference_frames);
-  }
-  // Verify |num_codec_reference_frames| has a reasonable value. Anecdotally 16
-  // is the largest amount of reference frames seen, on an ITU-T H.264 test
-  // vector (CAPCM*1_Sand_E.h264).
-  CHECK_LE(num_codec_reference_frames, 32u);
+  constexpr size_t kDefaultNumOutputBuffers = 7;
+  constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
+  const size_t num_output_buffers =
+      (ctrl ? ctrl->value : kDefaultNumOutputBuffers) + kPicsInPipeline;
+  if (!ctrl)
+    VLOGF(1) << "Using default minimum number of CAPTURE buffers";
 
   // Signal that we are flushing and initiate the resolution change.
   // Our flush will be done when we receive a buffer with the LAST flag on the
   // CAPTURE queue.
   client_->InitiateFlush();
   DCHECK(!resolution_change_cb_);
-  resolution_change_cb_ = base::BindOnce(
-      &V4L2StatefulVideoDecoderBackend::ContinueChangeResolution, weak_this_,
-      pic_size, *visible_rect, num_codec_reference_frames);
+  resolution_change_cb_ =
+      base::BindOnce(&V4L2StatefulVideoDecoderBackend::ContinueChangeResolution,
+                     weak_this_, pic_size, *visible_rect, num_output_buffers);
 
   // ...that is, unless we are not streaming yet, in which case the resolution
   // change can take place immediately.
@@ -652,18 +642,19 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
 void V4L2StatefulVideoDecoderBackend::ContinueChangeResolution(
     const gfx::Size& pic_size,
     const gfx::Rect& visible_rect,
-    const size_t num_codec_reference_frames) {
+    const size_t num_output_buffers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
   // Flush is done, but stay in flushing state and ask our client to set the new
   // resolution.
-  client_->ChangeResolution(pic_size, visible_rect, num_codec_reference_frames);
+  client_->ChangeResolution(pic_size, visible_rect, num_output_buffers);
 }
 
 bool V4L2StatefulVideoDecoderBackend::ApplyResolution(
     const gfx::Size& pic_size,
-    const gfx::Rect& visible_rect) {
+    const gfx::Rect& visible_rect,
+    const size_t num_output_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 

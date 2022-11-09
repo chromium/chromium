@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -71,25 +72,6 @@ absl::optional<Fourcc> PickRenderableFourcc(
       return value;
   }
   return absl::nullopt;
-}
-
-// Estimates the number of buffers needed in the output frame pool to fill the
-// Renderer pipeline (this pool may provide buffers to the VideoDecoder
-// directly or to the ImageProcessor, when this is instantiated).
-size_t EstimateRequiredRendererPipelineBuffers(bool low_delay) {
-  // kMaxVideoFrames is meant to be the number of VideoFrames needed to populate
-  // the whole Renderer playback pipeline when there's no smoothing playback
-  // queue, i.e. in low latency scenarios such as WebRTC etc. For non-low
-  // latency scenarios, a large smoothing playback is used in the Renderer
-  // process. Heuristically, the extra depth needed is in the range of 15 or
-  // so, so we need to add a few extra buffers.
-  constexpr size_t kExpectedNonLatencyPipelineDepth = 16;
-  static_assert(kExpectedNonLatencyPipelineDepth > limits::kMaxVideoFrames,
-                "kMaxVideoFrames is expected to be relatively small");
-  if (low_delay)
-    return limits::kMaxVideoFrames + 1;
-  else
-    return kExpectedNonLatencyPipelineDepth;
 }
 
 class DecoderThreadPool {
@@ -376,7 +358,7 @@ bool VideoDecoderPipeline::CanReadWithoutStalling() const {
 }
 
 void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
-                                      bool low_delay,
+                                      bool /* low_delay */,
                                       CdmContext* cdm_context,
                                       InitCB init_cb,
                                       const OutputCB& output_cb,
@@ -433,12 +415,11 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
   decoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoDecoderPipeline::InitializeTask, decoder_weak_this_,
-                     config, low_delay, cdm_context, std::move(init_cb),
+                     config, cdm_context, std::move(init_cb),
                      std::move(output_cb), std::move(waiting_cb)));
 }
 
 void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
-                                          bool low_delay,
                                           CdmContext* cdm_context,
                                           InitCB init_cb,
                                           const OutputCB& output_cb,
@@ -465,9 +446,6 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
                        DecoderStatus::Codes::kFailedToCreateDecoder));
     return;
   }
-
-  estimated_num_buffers_for_renderer_ =
-      EstimateRequiredRendererPipelineBuffers(low_delay);
 
   decoder_->Initialize(
       config, /* low_delay=*/false, cdm_context,
@@ -759,16 +737,12 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     const gfx::Rect& decoder_visible_rect,
     const gfx::Size& decoder_natural_size,
     absl::optional<gfx::Size> output_size,
-    size_t num_codec_reference_frames,
+    size_t num_of_pictures,
     bool use_protected,
     bool need_aux_frame_pool,
     absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  // Verify |num_codec_reference_frames| has a reasonable value. Anecdotally 16
-  // is the largest amount of reference frames seen, on an ITU-T H.264 test
-  // vector (CAPCM*1_Sand_E.h264).
-  CHECK_LE(num_codec_reference_frames, 32u);
 
   if (candidates.empty())
     return CroStatus::Codes::kNoDecoderOutputFormatCandidates;
@@ -823,19 +797,11 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 #endif
 
   if (viable_candidate) {
-    // |main_frame_pool_| needs to allocate enough buffers for both the codec
-    // reference needs and the Renderer pipeline.
-    // |num_codec_reference_frames| is augmented by 1 to account for the frame
-    // being decoded.
-    const size_t num_pictures =
-        num_codec_reference_frames + 1 + estimated_num_buffers_for_renderer_;
-    VLOGF(1) << "Initializing frame pool with up to " << num_pictures
-             << " VideoFrames. No ImageProcessor needed.";
     CroStatus::Or<GpuBufferLayout> status_or_layout =
         main_frame_pool_->Initialize(viable_candidate->fourcc,
                                      viable_candidate->size,
                                      decoder_visible_rect, decoder_natural_size,
-                                     num_pictures, use_protected);
+                                     num_of_pictures, use_protected);
     if (!status_or_layout.has_value())
       return std::move(status_or_layout).error();
 
@@ -861,23 +827,18 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 #endif  // BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
-  // We haven't found a |viable_candidate|, and need to instantiate an
-  // ImageProcessor; this might need to allocate buffers internally, but only
-  // to fill the Renderer pipeline.
   std::unique_ptr<ImageProcessor> image_processor;
   if (create_image_processor_cb_for_testing_) {
     image_processor = create_image_processor_cb_for_testing_.Run(
         candidates,
         /*input_visible_rect=*/decoder_visible_rect,
         output_size ? *output_size : decoder_visible_rect.size(),
-        estimated_num_buffers_for_renderer_);
+        num_of_pictures);
   } else {
-    VLOGF(1) << "Initializing ImageProcessor; max buffers: "
-             << estimated_num_buffers_for_renderer_;
     image_processor = ImageProcessorFactory::CreateWithInputCandidates(
         candidates, /*input_visible_rect=*/decoder_visible_rect,
         output_size ? *output_size : decoder_visible_rect.size(),
-        estimated_num_buffers_for_renderer_, decoder_task_runner_,
+        num_of_pictures, decoder_task_runner_,
         base::BindRepeating(&PickRenderableFourcc),
         BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
                                               decoder_weak_this_,
@@ -892,23 +853,15 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 
   if (need_aux_frame_pool) {
     // Initialize the auxiliary frame pool with the input format of the image
-    // processor. Same as before, this might need to allocate buffers
-    // internally, but only to serve the codec needs, hence |num_pictures| is
-    // just the number of codec reference frames, plus one to serve the video
-    // destination.
+    // processor.
     auxiliary_frame_pool_ = std::make_unique<PlatformVideoFramePool>();
-    // Use here |num_codec_reference_frames| + 1 to account for the frame being
-    // decoded.
-    const size_t num_pictures = num_codec_reference_frames + 1;
 
-    VLOGF(1) << "Initializing auxiliary frame pool with up to " << num_pictures
-             << " VideoFrames";
     auxiliary_frame_pool_->set_parent_task_runner(decoder_task_runner_);
     CroStatus::Or<GpuBufferLayout> status_or_layout =
         auxiliary_frame_pool_->Initialize(
             image_processor->input_config().fourcc,
             image_processor->input_config().size, decoder_visible_rect,
-            decoder_natural_size, num_pictures, use_protected);
+            decoder_natural_size, num_of_pictures, use_protected);
     if (!status_or_layout.has_value()) {
       // A PlatformVideoFramePool should never abort initialization.
       DCHECK_NE(status_or_layout.code(), CroStatus::Codes::kResetRequired);
@@ -920,18 +873,14 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   auto fourcc = image_processor->input_config().fourcc;
   auto size = image_processor->input_config().size;
 
-  // We need to instantiate an ImageProcessor with a pool large enough to serve
-  // the Renderer pipeline, hence we use |estimated_num_buffers_for_renderer_|.
-  //
+  // Setup new pipeline.
   // TODO(b/203240043): Verify that if we're using the image processor for tiled
   // to linear transformation, that the created frame pool is of linear format.
   // TODO(b/203240043): Add CHECKs to verify that the image processor is being
   // created for only valid use cases. Writing to a linear output buffer, e.g.
-  VLOGF(1) << "Initializing Image Processor frame pool with up to "
-           << estimated_num_buffers_for_renderer_ << " VideoFrames";
   auto status_or_image_processor = ImageProcessorWithPool::Create(
-      std::move(image_processor), main_frame_pool_.get(),
-      estimated_num_buffers_for_renderer_, use_protected, decoder_task_runner_);
+      std::move(image_processor), main_frame_pool_.get(), num_of_pictures,
+      use_protected, decoder_task_runner_);
   if (!status_or_image_processor.has_value()) {
     DVLOGF(2) << "Unable to create ImageProcessorWithPool.";
     return std::move(status_or_image_processor).error();

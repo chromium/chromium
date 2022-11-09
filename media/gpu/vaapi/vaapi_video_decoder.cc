@@ -805,15 +805,9 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
        .modifier = dummy_frame->layout().modifier()}};
 #endif  // BUILDFLAG(IS_LINUX)
 
-  const size_t num_codec_reference_frames = decoder_->GetNumReferenceFrames();
-  // Verify |num_codec_reference_frames| has a reasonable value. Anecdotally 16
-  // is the largest amount of reference frames seen, on an ITU-T H.264 test
-  // vector (CAPCM*1_Sand_E.h264).
-  CHECK_LE(num_codec_reference_frames, 32u);
-
   auto status_or_layout = client_->PickDecoderOutputFormat(
       candidates, decoder_visible_rect, decoder_natural_size,
-      output_visible_rect.size(), num_codec_reference_frames,
+      output_visible_rect.size(), decoder_->GetRequiredNumOfPictures(),
       /*use_protected=*/!!cdm_context_ref_,
       /*need_aux_frame_pool=*/true, std::move(allocator));
 

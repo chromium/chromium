@@ -407,10 +407,8 @@ bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
   return true;
 }
 
-CroStatus V4L2VideoDecoder::SetupOutputFormat(
-    const gfx::Size& size,
-    const gfx::Rect& visible_rect,
-    size_t num_codec_reference_frames) {
+CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
+                                              const gfx::Rect& visible_rect) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3) << "size: " << size.ToString()
             << ", visible_rect: " << visible_rect.ToString();
@@ -442,7 +440,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(
   CroStatus::Or<PixelLayoutCandidate> status_or_output_format =
       client_->PickDecoderOutputFormat(
           candidates, visible_rect, aspect_ratio_.GetNaturalSize(visible_rect),
-          /*output_size=*/absl::nullopt, num_codec_reference_frames,
+          /*output_size=*/absl::nullopt, num_output_frames_,
           /*use+protected=*/false, /*need_aux_frame_pool=*/false,
           absl::nullopt);
   if (!status_or_output_format.has_value()) {
@@ -670,7 +668,7 @@ void V4L2VideoDecoder::CompleteFlush() {
 
 void V4L2VideoDecoder::ChangeResolution(gfx::Size pic_size,
                                         gfx::Rect visible_rect,
-                                        size_t num_codec_reference_frames) {
+                                        size_t num_output_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
   DCHECK(!continue_change_resolution_cb_);
@@ -681,7 +679,7 @@ void V4L2VideoDecoder::ChangeResolution(gfx::Size pic_size,
   continue_change_resolution_cb_ =
       base::BindOnce(&V4L2VideoDecoder::ContinueChangeResolution,
                      base::Unretained(this), pic_size, visible_rect,
-                     num_codec_reference_frames)
+                     num_output_frames)
           .Then(base::BindOnce(&V4L2VideoDecoder::OnChangeResolutionDone,
                                base::Unretained(this)));
 
@@ -700,7 +698,7 @@ void V4L2VideoDecoder::ApplyResolutionChange() {
 CroStatus V4L2VideoDecoder::ContinueChangeResolution(
     const gfx::Size& pic_size,
     const gfx::Rect& visible_rect,
-    const size_t num_codec_reference_frames) {
+    const size_t num_output_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
@@ -715,6 +713,10 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
   if (state_ != State::kFlushing)
     return CroStatus::Codes::kResetRequired;
 
+  DCHECK_GT(num_output_frames,
+            static_cast<size_t>(limits::kMaxVideoFrames + 1));
+  num_output_frames_ = num_output_frames;
+
   // Stateful decoders require the input queue to keep running during resolution
   // changes, but stateless ones require it to be stopped.
   if (!StopStreamV4L2Queue(backend_->StopInputQueueOnResChange()))
@@ -725,13 +727,12 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
     return CroStatus::Codes::kFailedToChangeResolution;
   }
 
-  if (!backend_->ApplyResolution(pic_size, visible_rect)) {
+  if (!backend_->ApplyResolution(pic_size, visible_rect, num_output_frames_)) {
     SetState(State::kError);
     return CroStatus::Codes::kFailedToChangeResolution;
   }
 
-  const CroStatus status =
-      SetupOutputFormat(pic_size, visible_rect, num_codec_reference_frames);
+  const CroStatus status = SetupOutputFormat(pic_size, visible_rect);
   if (status == CroStatus::Codes::kResetRequired) {
     DVLOGF(2) << "SetupOutputFormat is aborted.";
     return CroStatus::Codes::kResetRequired;
@@ -750,12 +751,9 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
   const v4l2_memory type =
       use_v4l2_allocated_buffers ? V4L2_MEMORY_MMAP : V4L2_MEMORY_DMABUF;
   // If we don't use driver-allocated buffers, request as many as possible
-  // (VIDEO_MAX_FRAME) since they are shallow allocations. Otherwise, allocate
-  // |num_codec_reference_frames| plus one for the video frame being decoded,
-  // and one for our client (presumably an ImageProcessor).
-  const size_t v4l2_num_buffers = use_v4l2_allocated_buffers
-                                      ? num_codec_reference_frames + 2
-                                      : VIDEO_MAX_FRAME;
+  // (VIDEO_MAX_FRAME) since they are shallow allocations.
+  const size_t v4l2_num_buffers =
+      use_v4l2_allocated_buffers ? num_output_frames_ : VIDEO_MAX_FRAME;
 
   VLOGF(1) << "Requesting: " << v4l2_num_buffers << " CAPTURE buffers of type "
            << (use_v4l2_allocated_buffers ? "V4L2_MEMORY_MMAP"
