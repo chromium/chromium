@@ -92,6 +92,7 @@ void ParentAccessUIHandlerImpl::GetParentAccessParams(
   if (!delegate_) {
     LOG(ERROR) << "Delegate not available in ParentAccessUIHandler - WebUI was "
                   "probably created without a dialog";
+    std::move(callback).Run(parent_access_ui::mojom::ParentAccessParams::New());
     return;
   }
   std::move(callback).Run(delegate_->CloneParentAccessParams());
@@ -104,6 +105,7 @@ void ParentAccessUIHandlerImpl::OnParentAccessDone(
   if (!delegate_) {
     LOG(ERROR) << "Delegate not available in ParentAccessUIHandler - WebUI was "
                   "probably created without a dialog";
+    std::move(callback).Run();
     return;
   }
   switch (result) {

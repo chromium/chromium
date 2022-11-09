@@ -31,6 +31,10 @@ namespace ash {
 class ParentAccessUIHandlerImpl
     : public parent_access_ui::mojom::ParentAccessUIHandler {
  public:
+  // When |delegate| parameter is null, any internal methods that rely
+  // on the delegate will log an error and return empty data to the
+  // caller.  This can occur in certain browser tests in which no dialog
+  // that implements the delegate is created.
   ParentAccessUIHandlerImpl(
       mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
           receiver,
