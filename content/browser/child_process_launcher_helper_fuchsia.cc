@@ -92,6 +92,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  DCHECK(sandbox_policy_);
 
   mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_transfer,
                                              command_line());
@@ -115,8 +116,12 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   DCHECK(mojo_channel_);
   DCHECK(mojo_channel_->remote_endpoint().is_valid());
+  DCHECK(sandbox_policy_);
 
   Process child_process;
+  // Move `sandbox_policy_` into the child process object so that it doesn't get
+  // destroyed before the child process.
+  child_process.sandbox_policy = std::move(sandbox_policy_);
   child_process.process = base::LaunchProcess(*command_line(), options);
   return child_process;
 }
@@ -130,6 +135,8 @@ void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  // Wait for the process to terminate to ensure that `process` and its child
+  // `sandbox_policy` aren't destroyed before the process is terminated.
   process.process.Terminate(RESULT_CODE_NORMAL_EXIT, true);
 }
 

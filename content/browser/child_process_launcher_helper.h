@@ -90,9 +90,9 @@ class ChildProcessLauncherHelper
   // Abstraction around a process required to deal in a platform independent way
   // between Linux (which can use zygotes) and the other platforms.
   struct Process {
-    Process() {}
+    Process();
     Process(Process&& other);
-    ~Process() {}
+    ~Process();
     Process& operator=(Process&& other);
 
     base::Process process;
@@ -100,6 +100,12 @@ class ChildProcessLauncherHelper
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
     ZygoteHandle zygote = nullptr;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+
+#if BUILDFLAG(IS_FUCHSIA)
+    // Store `sandbox_policy` within `Process` to ensure that the sandbox policy
+    // isn't removed before the process is terminated.
+    std::unique_ptr<sandbox::policy::SandboxPolicyFuchsia> sandbox_policy;
+#endif
   };
 
   ChildProcessLauncherHelper(

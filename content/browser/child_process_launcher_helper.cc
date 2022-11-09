@@ -47,25 +47,26 @@ void RecordHistogramsOnLauncherThread(base::TimeDelta launch_time) {
 
 }  // namespace
 
+ChildProcessLauncherHelper::Process::Process() = default;
+
+ChildProcessLauncherHelper::Process::~Process() = default;
+
 ChildProcessLauncherHelper::Process::Process(Process&& other)
     : process(std::move(other.process))
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
       ,
       zygote(other.zygote)
 #endif
+#if BUILDFLAG(IS_FUCHSIA)
+      ,
+      sandbox_policy(std::move(other.sandbox_policy))
+#endif
 {
 }
 
 ChildProcessLauncherHelper::Process&
 ChildProcessLauncherHelper::Process::Process::operator=(
-    ChildProcessLauncherHelper::Process&& other) {
-  DCHECK_NE(this, &other);
-  process = std::move(other.process);
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
-  zygote = other.zygote;
-#endif
-  return *this;
-}
+    ChildProcessLauncherHelper::Process&& other) = default;
 
 ChildProcessLauncherHelper::ChildProcessLauncherHelper(
     int child_process_id,
