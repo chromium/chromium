@@ -3779,7 +3779,7 @@ TEST_P(PaintArtifactCompositorTest, CreatesViewportNodes) {
   const cc::TransformNode* cc_transform_node =
       transform_tree.FindNodeFromElementId(compositor_element_id);
   EXPECT_TRUE(cc_transform_node);
-  EXPECT_EQ(matrix.ToTransform(), cc_transform_node->local);
+  EXPECT_EQ(matrix, cc_transform_node->local);
   EXPECT_EQ(gfx::Point3F(), cc_transform_node->origin);
 }
 

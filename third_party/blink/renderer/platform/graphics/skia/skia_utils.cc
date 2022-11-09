@@ -36,7 +36,6 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
@@ -249,34 +248,6 @@ SkMatrix AffineTransformToSkMatrix(const AffineTransform& source) {
   result.setPerspX(0);
   result.setPerspY(0);
   result.set(SkMatrix::kMPersp2, SK_Scalar1);
-
-  return result;
-}
-
-SkMatrix TransformationMatrixToSkMatrix(const TransformationMatrix& source) {
-  // SkMatrix is 3x3, TransformationMatrix is 4x4, this function encodes
-  // assuming that a 2D-transformation with perspective is what's desired,
-  // throwing out the z-dimension values. i.e.:
-
-  //                  INPUT                               OUTPUT
-  // | scale_x skew_xy skew_xz trans_x |     | scale_x skew_x  trans_x |
-  // | skew_yx scale_y skew_yz trans_y | --> | skew_y  scale_y trans_y |
-  // | skew_xz skew_zy scale_z trans_z |     | persp_x persp_y persp_w |
-  // | persp_x persp_y persp_z persp_w |
-
-  SkMatrix result;
-
-  result.setScaleX(WebCoreDoubleToSkScalar(source.rc(0, 0)));
-  result.setSkewX(WebCoreDoubleToSkScalar(source.rc(0, 1)));
-  result.setTranslateX(WebCoreDoubleToSkScalar(source.rc(0, 3)));
-
-  result.setScaleY(WebCoreDoubleToSkScalar(source.rc(1, 1)));
-  result.setSkewY(WebCoreDoubleToSkScalar(source.rc(1, 0)));
-  result.setTranslateY(WebCoreDoubleToSkScalar(source.rc(1, 3)));
-
-  result.setPerspX(source.rc(3, 0));
-  result.setPerspY(source.rc(3, 1));
-  result.set(SkMatrix::kMPersp2, source.rc(3, 3));
 
   return result;
 }

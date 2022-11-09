@@ -86,7 +86,7 @@ static void UpdateCcTransformLocalMatrix(
     }
   } else {
     DCHECK(!transform_node.ScrollNode());
-    compositor_node.local = transform_node.Matrix().ToTransform();
+    compositor_node.local = transform_node.Matrix();
     compositor_node.origin = transform_node.Origin();
   }
   compositor_node.needs_local_transform_update = true;

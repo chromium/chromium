@@ -72,6 +72,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace gfx {
+class Transform;
+}
+
 namespace blink {
 
 using std::max;
@@ -100,7 +104,6 @@ class StyleInitialData;
 class StyleResolver;
 class StyleResolverState;
 class StyleSelfAlignmentData;
-class TransformationMatrix;
 
 namespace css_longhand {
 
@@ -1970,13 +1973,13 @@ class ComputedStyle : public ComputedStyleBase,
     kIncludeTransformOperations,
     kExcludeTransformOperations
   };
-  void ApplyTransform(TransformationMatrix&,
+  void ApplyTransform(gfx::Transform&,
                       const LayoutSize& border_box_data_size,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
-  void ApplyTransform(TransformationMatrix&,
+  void ApplyTransform(gfx::Transform&,
                       const gfx::RectF& bounding_box,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
@@ -2523,7 +2526,7 @@ class ComputedStyle : public ComputedStyleBase,
   void ApplyMotionPathTransform(float origin_x,
                                 float origin_y,
                                 const gfx::RectF& bounding_box,
-                                TransformationMatrix&) const;
+                                gfx::Transform&) const;
 
   bool ScrollAnchorDisablingPropertyChanged(const ComputedStyle& other,
                                             const StyleDifference&) const;

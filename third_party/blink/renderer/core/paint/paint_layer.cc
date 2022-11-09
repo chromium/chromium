@@ -1355,7 +1355,7 @@ bool PaintLayer::IsInTopLayer() const {
 // points.
 static double ComputeZOffset(const HitTestingTransformState& transform_state) {
   // We got an affine transform, so no z-offset
-  if (transform_state.AccumulatedTransform().IsAffine())
+  if (transform_state.AccumulatedTransform().Is2dTransform())
     return 0;
 
   // Flatten the point into the target plane

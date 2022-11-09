@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -99,13 +100,13 @@ class PLATFORM_EXPORT GeometryMapper {
         matrix_->PostTranslate(x, y);
     }
 
-    SkM44 ToSkM44() const { return Matrix().ToSkM44(); }
+    SkM44 ToSkM44() const { return gfx::TransformToSkM44(Matrix()); }
 
     SkMatrix ToSkMatrix() const {
       if (LIKELY(IsIdentityOr2DTranslation())) {
         return SkMatrix::Translate(Translation2D().x(), Translation2D().y());
       }
-      return Matrix().ToSkM44().asM33();
+      return gfx::TransformToFlattenedSkMatrix(Matrix());
     }
 
     bool operator==(const Translation2DOrMatrix& other) const {

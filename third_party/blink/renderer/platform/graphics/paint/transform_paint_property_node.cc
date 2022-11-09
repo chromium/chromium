@@ -16,7 +16,7 @@ TransformPaintPropertyNode::TransformAndOrigin::TransformAndOrigin(
     translation_2d_ = gfx::Vector2dF(transform.E(), transform.F());
   } else {
     matrix_and_origin_ = std::make_unique<MatrixAndOrigin>(
-        TransformationMatrix(transform), gfx::Point3F());
+        transform.ToTransform(), gfx::Point3F());
   }
 }
 

@@ -7602,7 +7602,7 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
       TransformationMatrix t;
       GetTransformFromContainer(container ? container : Container(),
                                 container_offset, t);
-      rect = t.MapRect(rect);
+      rect = EnclosingLayoutRect(t.MapRect(gfx::RectF(rect)));
     } else {
       rect.Move(container_offset.ToLayoutSize());
     }

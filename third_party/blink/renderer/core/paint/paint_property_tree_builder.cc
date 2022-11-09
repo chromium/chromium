@@ -920,15 +920,16 @@ FragmentPaintPropertyTreeBuilder::TransformAndOriginForSVGChild() const {
                 object_.LocalToSVGParentTransform());
       // For composited transform animation to work, we need to store transform
       // origin separately. It's baked in object_.LocalToSVGParentTransform().
-      return {TransformationMatrix(TransformHelper::ComputeTransform(
-                  object_, ComputedStyle::kExcludeTransformOrigin)),
+      return {TransformHelper::ComputeTransform(
+                  object_, ComputedStyle::kExcludeTransformOrigin)
+                  .ToTransform(),
               gfx::Point3F(TransformHelper::ComputeTransformOrigin(object_))};
     } else {
       // We composite the object but can't start composited animation. Still
       // keep the compositing reason because it still improves performance of
       // main thread animation, but avoid the 2d translation optimization to
       // meet the requirement of TransformPaintPropertyNode.
-      return {TransformationMatrix(object_.LocalToSVGParentTransform())};
+      return {object_.LocalToSVGParentTransform().ToTransform()};
     }
   }
   return TransformPaintPropertyNode::TransformAndOrigin(

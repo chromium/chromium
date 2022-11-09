@@ -90,7 +90,7 @@ AffineTransform TransformHelper::ComputeTransform(
   if (zoom != 1)
     transform.Zoom(1 / zoom);
   // Flatten any 3D transform.
-  return transform.ToAffineTransform();
+  return AffineTransform::FromTransform(transform);
 }
 
 gfx::PointF TransformHelper::ComputeTransformOrigin(

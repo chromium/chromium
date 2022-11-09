@@ -282,9 +282,9 @@ DOMMatrix* DOMMatrix::invertSelf() {
   // TODO(crbug.com/1359528): Let gfx::Transform::GetInverse() preserve
   // 2d status and avoid the following block.
   if (is2d_) {
-    AffineTransform affine_transform = matrix_.ToAffineTransform();
+    AffineTransform affine_transform = AffineTransform::FromTransform(matrix_);
     if (affine_transform.IsInvertible()) {
-      matrix_ = TransformationMatrix(affine_transform.Inverse());
+      matrix_ = affine_transform.Inverse().ToTransform();
       return this;
     }
   } else if (matrix_.GetInverse(&matrix_)) {

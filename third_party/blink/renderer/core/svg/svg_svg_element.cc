@@ -483,12 +483,13 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
       // At the SVG/HTML boundary (aka LayoutSVGRoot), we need to apply the
       // localToBorderBoxTransform to map an element from SVG viewport
       // coordinates to CSS box coordinates.
-      matrix.PreConcat(TransformationMatrix(
-          To<LayoutSVGRoot>(layout_object)->LocalToBorderBoxTransform()));
+      matrix.PreConcat(To<LayoutSVGRoot>(layout_object)
+                           ->LocalToBorderBoxTransform()
+                           .ToTransform());
       // Drop any potential non-affine parts, because we're not able to convey
       // that information further anyway until getScreenCTM returns a DOMMatrix
       // (4x4 matrix.)
-      return matrix.ToAffineTransform();
+      return AffineTransform::FromTransform(matrix);
     }
   }
   if (!HasEmptyViewBox())

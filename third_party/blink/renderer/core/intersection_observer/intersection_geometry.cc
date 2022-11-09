@@ -354,17 +354,16 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
           ? target->GetPropertyContainer(nullptr, &container_properties)
           : nullptr;
   if (property_container) {
-    LayoutRect target_layout_rect = target_rect_.ToLayoutRect();
-    target_layout_rect.Move(
-        target->FirstFragment().PaintOffset().ToLayoutSize());
+    gfx::RectF target_rect(target_rect_);
+    target_rect.Offset(gfx::Vector2dF(target->FirstFragment().PaintOffset()));
     GeometryMapper::SourceToDestinationRect(container_properties.Transform(),
                                             target->GetDocument()
                                                 .GetLayoutView()
                                                 ->FirstFragment()
                                                 .LocalBorderBoxProperties()
                                                 .Transform(),
-                                            target_layout_rect);
-    target_rect_ = PhysicalRect(target_layout_rect);
+                                            target_rect);
+    target_rect_ = PhysicalRect::EnclosingRect(target_rect);
   } else {
     target_rect_ = target->LocalToAncestorRect(target_rect_, nullptr);
   }

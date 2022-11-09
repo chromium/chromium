@@ -105,7 +105,7 @@ void TransformState::ApplyAccumulatedOffset() {
 void TransformState::ApplyTransform(
     const AffineTransform& transform_from_container,
     TransformAccumulation accumulate) {
-  ApplyTransform(transform_from_container.ToTransformationMatrix(), accumulate);
+  ApplyTransform(transform_from_container.ToTransform(), accumulate);
 }
 
 void TransformState::ApplyTransform(

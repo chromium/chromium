@@ -9,6 +9,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {

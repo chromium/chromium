@@ -223,7 +223,7 @@ static double ComputeSquaredLocalFontSizeScalingFactor(
     const TransformationMatrix* transform) {
   if (!transform)
     return 1;
-  const auto affine = transform->ToAffineTransform();
+  const auto affine = AffineTransform::FromTransform(*transform);
   return affine.XScaleSquared() + affine.YScaleSquared();
 }
 

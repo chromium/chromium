@@ -111,15 +111,13 @@ void ToGfxTransformOperations(
       case TransformOperation::kMatrix: {
         auto* transform =
             static_cast<const MatrixTransformOperation*>(operation.get());
-        out_transform_operations->AppendMatrix(
-            transform->Matrix().ToTransform());
+        out_transform_operations->AppendMatrix(transform->Matrix());
         break;
       }
       case TransformOperation::kMatrix3D: {
         auto* transform =
             static_cast<const Matrix3DTransformOperation*>(operation.get());
-        out_transform_operations->AppendMatrix(
-            transform->Matrix().ToTransform());
+        out_transform_operations->AppendMatrix(transform->Matrix());
         break;
       }
       case TransformOperation::kPerspective: {
@@ -138,7 +136,7 @@ void ToGfxTransformOperations(
       case TransformOperation::kInterpolated: {
         TransformationMatrix m;
         operation->Apply(m, box_size);
-        out_transform_operations->AppendMatrix(m.ToTransform());
+        out_transform_operations->AppendMatrix(m);
         break;
       }
       default:

@@ -5836,7 +5836,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   if (transform.IsIdentityOr2DTranslation()) {
     out_bounds_in_container.Offset(transform.To2dTranslation());
   } else {
-    out_container_transform = transform.ToTransform();
+    out_container_transform = transform;
   }
 }
 

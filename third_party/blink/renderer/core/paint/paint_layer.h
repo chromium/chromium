@@ -69,7 +69,6 @@ class FilterOperations;
 class HitTestResult;
 class HitTestingTransformState;
 class PaintLayerScrollableArea;
-class TransformationMatrix;
 
 enum IncludeSelfOrNot { kIncludeSelf, kExcludeSelf };
 
@@ -104,7 +103,7 @@ struct CORE_EXPORT PaintLayerRareData final
   // set by any other style.
   PhysicalOffset offset_for_in_flow_rel_position;
 
-  std::unique_ptr<TransformationMatrix> transform;
+  std::unique_ptr<gfx::Transform> transform;
 
   // Pointer to the enclosing Layer that caused us to be paginated. It is 0 if
   // we are not paginated.
@@ -382,17 +381,17 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   }
 
   // Note that this transform has the transform-origin baked in.
-  TransformationMatrix* Transform() const {
+  gfx::Transform* Transform() const {
     return rare_data_ ? rare_data_->transform.get() : nullptr;
   }
 
   // Returns *Transform(), or identity matrix if Transform() is nullptr.
-  TransformationMatrix CurrentTransform() const;
+  gfx::Transform CurrentTransform() const;
 
   bool Preserves3D() const { return GetLayoutObject().Preserves3D(); }
   bool Has3DTransform() const {
     return rare_data_ && rare_data_->transform &&
-           !rare_data_->transform->IsAffine();
+           !rare_data_->transform->Is2dTransform();
   }
 
   // Returns |true| if any property that renders using filter operations is

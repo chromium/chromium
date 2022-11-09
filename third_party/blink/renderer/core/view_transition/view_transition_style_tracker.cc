@@ -1143,7 +1143,7 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
                    element_data->container_properties[0]
                        .border_box_size_in_css_space.Height());
     element.viewport_matrix =
-        element_data->container_properties[0].snapshot_matrix.ToTransform();
+        element_data->container_properties[0].snapshot_matrix;
     element.overflow_rect_in_layout_space =
         gfx::RectF(element_data->visual_overflow_rect_in_layout_space);
     element.snapshot_id = element_data->old_snapshot_id;

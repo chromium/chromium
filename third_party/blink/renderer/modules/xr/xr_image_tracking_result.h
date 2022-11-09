@@ -12,9 +12,12 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace gfx {
+class Transform;
+}
+
 namespace blink {
 
-class TransformationMatrix;
 class XRSession;
 class XRSpace;
 
@@ -27,7 +30,7 @@ class XRImageTrackingResult : public ScriptWrappable {
       const device::mojom::blink::XRTrackedImageData& image_tracking_result);
 
   XRSpace* imageSpace() const;
-  absl::optional<TransformationMatrix> MojoFromObject() const;
+  absl::optional<gfx::Transform> MojoFromObject() const;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 

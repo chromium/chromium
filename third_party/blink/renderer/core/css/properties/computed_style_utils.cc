@@ -1973,10 +1973,10 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformationMatrix(
     const TransformationMatrix& matrix,
     float zoom,
     bool force_matrix3d) {
-  if (matrix.IsAffine() && !force_matrix3d) {
+  if (matrix.Is2dTransform() && !force_matrix3d) {
     auto* result = MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kMatrix);
     // CSS matrix values are returned in column-major order.
-    auto unzoomed = matrix.ToAffineTransform().Zoom(1.f / zoom);
+    auto unzoomed = AffineTransform::FromTransform(matrix).Zoom(1.f / zoom);
     for (double value : {unzoomed.A(), unzoomed.B(), unzoomed.C(), unzoomed.D(),
                          unzoomed.E(), unzoomed.F()}) {
       result->Append(*CSSNumericLiteralValue::Create(

@@ -347,7 +347,8 @@ AffineTransform LayoutSVGShape::ComputeRootTransform() const {
   const LayoutObject* root = this;
   while (root && !root->IsSVGRoot())
     root = root->Parent();
-  return LocalToAncestorTransform(To<LayoutSVGRoot>(root)).ToAffineTransform();
+  return AffineTransform::FromTransform(
+      LocalToAncestorTransform(To<LayoutSVGRoot>(root)));
 }
 
 AffineTransform LayoutSVGShape::ComputeNonScalingStrokeTransform() const {

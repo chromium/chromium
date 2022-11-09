@@ -39,11 +39,10 @@ class PointF;
 class QuadF;
 class Rect;
 class RectF;
+class Transform;
 }  // namespace gfx
 
 namespace blink {
-
-class TransformationMatrix;
 
 class PLATFORM_EXPORT AffineTransform {
   DISALLOW_NEW();
@@ -127,7 +126,11 @@ class PLATFORM_EXPORT AffineTransform {
   bool IsInvertible() const;
   [[nodiscard]] AffineTransform Inverse() const;
 
-  TransformationMatrix ToTransformationMatrix() const;
+  // Creates an AffineTransform by extracting affine components from
+  // gfx::Transform and ignoring other components.
+  [[nodiscard]] static AffineTransform FromTransform(const gfx::Transform&);
+
+  [[nodiscard]] gfx::Transform ToTransform() const;
 
   bool operator==(const AffineTransform& m2) const {
     return gfx::AllTrue(gfx::LoadDouble4(transform_) ==

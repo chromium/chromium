@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -219,10 +220,14 @@ gfx::QuadF AffineTransform::MapQuad(const gfx::QuadF& q) const {
                     MapPoint(q.p4()));
 }
 
-TransformationMatrix AffineTransform::ToTransformationMatrix() const {
-  return TransformationMatrix::Affine(transform_[0], transform_[1],
-                                      transform_[2], transform_[3],
-                                      transform_[4], transform_[5]);
+// static
+AffineTransform AffineTransform::FromTransform(const gfx::Transform& t) {
+  return AffineTransform(t.rc(0, 0), t.rc(1, 0), t.rc(0, 1), t.rc(1, 1),
+                         t.rc(0, 3), t.rc(1, 3));
+}
+
+gfx::Transform AffineTransform::ToTransform() const {
+  return gfx::Transform::Affine(A(), B(), C(), D(), E(), F());
 }
 
 AffineTransform& AffineTransform::Zoom(double zoom_factor) {
@@ -241,8 +246,7 @@ String AffineTransform::ToString(bool as_matrix) const {
   if (IsIdentity())
     return "identity";
 
-  absl::optional<gfx::DecomposedTransform> decomp =
-      ToTransformationMatrix().Decompose();
+  absl::optional<gfx::DecomposedTransform> decomp = ToTransform().Decompose();
   if (!decomp)
     return ToString(true) + " (degenerate)";
 

@@ -93,7 +93,7 @@ class PLATFORM_EXPORT MatrixTransformOperation final
 
   explicit MatrixTransformOperation(const TransformationMatrix& t)
       : matrix_(t) {
-    DCHECK(t.IsAffine());
+    DCHECK(t.Is2dTransform());
   }
 
   // TODO(wangxianzhu): Use AffineTransform when we have Decompose2dTransform()

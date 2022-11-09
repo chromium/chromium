@@ -401,7 +401,7 @@ AffineTransform SVGLayoutSupport::DeprecatedCalculateTransformToLayer(
   PaintLayer* layer = layout_object ? layout_object->EnclosingLayer() : nullptr;
   while (layer) {
     if (TransformationMatrix* layer_transform = layer->Transform())
-      transform = layer_transform->ToAffineTransform() * transform;
+      transform = AffineTransform::FromTransform(*layer_transform) * transform;
     layer = layer->Parent();
   }
 

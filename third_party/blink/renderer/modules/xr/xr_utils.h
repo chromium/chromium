@@ -13,18 +13,20 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace gfx {
+class Transform;
+}
+
 namespace blink {
 
 class DOMPointReadOnly;
-class TransformationMatrix;
 class WebGLRenderingContextBase;
 
-DOMFloat32Array* transformationMatrixToDOMFloat32Array(
-    const TransformationMatrix&);
+DOMFloat32Array* transformationMatrixToDOMFloat32Array(const gfx::Transform&);
 
-TransformationMatrix DOMFloat32ArrayToTransformationMatrix(DOMFloat32Array*);
+gfx::Transform DOMFloat32ArrayToTransformationMatrix(DOMFloat32Array*);
 
-TransformationMatrix WTFFloatVectorToTransformationMatrix(const Vector<float>&);
+gfx::Transform WTFFloatVectorToTransformationMatrix(const Vector<float>&);
 
 DOMPointReadOnly* makeNormalizedQuaternion(double x,
                                            double y,
@@ -40,8 +42,9 @@ constexpr char kUnableToNormalizeZeroLength[] =
 // Conversion method from transformation matrix to device::Pose. The conversion
 // may fail if the matrix cannot be decomposed. In case of failure, the method
 // will return absl::nullopt.
-absl::optional<device::Pose> CreatePose(
-    const blink::TransformationMatrix& matrix);
+// TODO(crbug.com/1359528): The above comment about failure is not true.
+// Remove this function.
+absl::optional<device::Pose> CreatePose(const gfx::Transform& matrix);
 
 // Hand joint conversion methods
 device::mojom::blink::XRHandJoint StringToMojomHandJoint(
