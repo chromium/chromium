@@ -1773,6 +1773,7 @@ test("content_browsertests") {
     ]
     deps += [
       "//content/common:sandbox_support_linux",
+      "//media/gpu:buildflags",
       "//printing/buildflags",
       "//ui/gfx:test_support",
     ]

@@ -1,6 +1,7 @@
 include_rules = [
   "+chromeos/ash/components/assistant/buildflags.h",
   "+components/services/screen_ai/buildflags",
+  "+media/gpu/buildflags.h",
   "+ppapi/buildflags",
   "+printing/buildflags",
   "+sandbox/constants.h",

@@ -72,6 +72,13 @@ component("policy") {
       "linux/sandbox_seccomp_bpf_linux.cc",
       "linux/sandbox_seccomp_bpf_linux.h",
     ]
+    if (is_linux || is_chromeos_ash) {
+      sources += [
+        "linux/bpf_hardware_video_decoding_policy_linux.cc",
+        "linux/bpf_hardware_video_decoding_policy_linux.h",
+      ]
+      deps += [ "//media/gpu:buildflags" ]
+    }
     if (enable_oop_printing) {
       sources += [
         "linux/bpf_print_backend_policy_linux.cc",

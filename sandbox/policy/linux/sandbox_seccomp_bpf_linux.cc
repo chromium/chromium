@@ -67,6 +67,10 @@
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#include "sandbox/policy/linux/bpf_hardware_video_decoding_policy_linux.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::ResultExpr;
 
@@ -200,10 +204,9 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
-      // TODO(b/195769334): we're using the GPU process sandbox policy for now
-      // as a transition step. However, we should create a policy that's tighter
-      // just for hardware video decoding.
-      return GetGpuProcessSandbox(options.use_amd_specific_policies);
+      return std::make_unique<HardwareVideoDecodingProcessPolicy>(
+          HardwareVideoDecodingProcessPolicy::ComputePolicyType(
+              options.use_amd_specific_policies));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoEncoding:
       // TODO(b/255554267): we're using the GPU process sandbox policy for now

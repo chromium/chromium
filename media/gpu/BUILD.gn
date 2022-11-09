@@ -594,9 +594,8 @@ source_set("unit_tests") {
 }
 
 # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-if (use_v4l2_codec || use_vaapi) {
+if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
   test("video_decode_accelerator_tests") {
-    assert(enable_av1_decoder)
     testonly = true
     sources = [ "video_decode_accelerator_tests.cc" ]
     data = [ "//media/test/data/" ]
