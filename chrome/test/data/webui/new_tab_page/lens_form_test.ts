@@ -119,6 +119,20 @@ suite('LensFormTest', () => {
     assertEquals('cntpubb', ep);
   });
 
+  test('submit file should set rendering environment parameter', async () => {
+    // Arrange.
+    const file = new File([], 'file-name.png', {type: 'image/png'});
+
+    // Act.
+    dispatchFileInputChange(file);
+
+    // Assert.
+    const action = new URL(lensForm.$.fileForm.action);
+    const re = action.searchParams.get('re');
+    assertEquals('df', re);
+  });
+
+
   test('submit file should set language parameter', async () => {
     // Arrange.
     const file = new File([], 'file-name.png', {type: 'image/png'});
@@ -252,6 +266,15 @@ suite('LensFormTest', () => {
 
     // Assert.
     assertEquals('cntpubu', input.value);
+  });
+
+  test('submit url should set rendering environment parameter', async () => {
+    // Arrange.
+    const input =
+        lensForm.$.urlForm.children.namedItem('re') as HTMLInputElement;
+
+    // Assert.
+    assertEquals('df', input.value);
   });
 
   test('submit url should set language parameter', async () => {

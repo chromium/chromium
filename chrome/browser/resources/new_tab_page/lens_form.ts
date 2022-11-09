@@ -19,6 +19,9 @@ const UPLOAD_BY_URL_ACTION: string = 'https://lens.google.com/uploadbyurl';
 /** Entrypoint for the upload by url action. */
 const UPLOAD_URL_ENTRYPOINT: string = 'cntpubu';
 
+/** Rendering environment for the NTP searchbox entrypoint. */
+const RENDERING_ENVIRONMENT: string = 'df';
+
 /** Max length for encoded input URL. */
 const MAX_URL_LENGTH: number = 2000;
 
@@ -81,6 +84,11 @@ export class LensFormElement extends PolymerElement {
         type: String,
         readOnly: true,
         value: SUPPORTED_FILE_TYPES.join(','),
+      },
+      renderingEnvironment_: {
+        type: String,
+        readOnly: true,
+        value: RENDERING_ENVIRONMENT,
       },
       uploadFileAction_: String,
       uploadUrlAction_: {
@@ -160,6 +168,7 @@ export class LensFormElement extends PolymerElement {
     action.searchParams.set('hl', this.language_);
     action.searchParams.set('st', this.startTime_.toString());
     action.searchParams.set('cd', this.clientData_);
+    action.searchParams.set('re', RENDERING_ENVIRONMENT);
     this.uploadFileAction_ = action.toString();
 
     this.dispatchLoading_(LensSubmitType.FILE);
