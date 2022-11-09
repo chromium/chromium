@@ -104717,7 +104717,7 @@
        ]
       ],
       "css3-counter-styles-138.html": [
-       "bf6e1fc5ad6510cb80f55298330ba0edefc453d5",
+       "10b344e44b6880b6fd322d7f512411f6e1989dc2",
        [
         null,
         [
@@ -104726,7 +104726,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             255
+            ],
+            [
+             0,
+             240
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "css3-counter-styles-139.html": [
@@ -225557,6 +225573,74 @@
        {}
       ]
      ],
+     "progress-appearance-native-horizontal.optional.html": [
+      "f3c00e78a4712f720309aad7845322cf04982d4e",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/progress-appearance-native-vertical.optional.html",
+         "!="
+        ],
+        [
+         "/css/css-writing-modes/progress-appearance-none-vertical.optional.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "progress-appearance-native-vertical.optional.html": [
+      "62d9ff54ec3d686fca18d8fbfb5d1995018e7799",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/progress-appearance-native-horizontal.optional.html",
+         "!="
+        ],
+        [
+         "/css/css-writing-modes/progress-appearance-none-horizontal.optional.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "progress-appearance-none-horizontal.optional.html": [
+      "22f720792ef062284f9c27e773355d7c1ac2629a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/progress-appearance-native-vertical.optional.html",
+         "!="
+        ],
+        [
+         "/css/css-writing-modes/progress-appearance-none-vertical.optional.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "progress-appearance-none-vertical.optional.html": [
+      "1b45c6bb8f7e051ab1d3f34fba3052d21bb217f0",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/progress-appearance-native-horizontal.optional.html",
+         "!="
+        ],
+        [
+         "/css/css-writing-modes/progress-appearance-none-horizontal.optional.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "relpos-inline-overflowing-block-vrl.html": [
       "fa09cf37cf59b61dbbd59f22ea49e24c809dc9d7",
       [
@@ -312158,7 +312242,7 @@
       []
      ],
      "minmax-angle-serialize-expected.txt": [
-      "14d29fed17d1ef8eb55aa32757008bfa21a1bd87",
+      "8f56a1de89b32088e7f0cc5bb09c190f42d67620",
       []
      ],
      "minmax-angle-serialize.html.ini": [
@@ -440608,6 +440692,13 @@
        ]
       ]
      },
+     "progress-appearance-native-computed-style.optional.html": [
+      "6bb48bf19845968f1fcf945c8c9f349630ed4d04",
+      [
+       null,
+       {}
+      ]
+     ],
      "text-combine-upright-parsing-invalid-001.html": [
       "beb54108a31387dcd4f9ab3c8b2c7703c1b3b4ca",
       [
@@ -443090,7 +443181,7 @@
       ]
      ],
      "DOMMatrix-invert-invertible.html": [
-      "3e7c73ad2bb36512212fb94a84cfc6b3100d34ce",
+      "d5bef624d2b00be427aec7d88e9fff80042b3a3a",
       [
        null,
        {}
