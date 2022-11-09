@@ -10,7 +10,7 @@
       "strip_debug_info": true,
       "symbol_level": 0,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-clang-tidy-rel": {

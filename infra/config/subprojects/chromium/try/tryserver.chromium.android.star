@@ -47,6 +47,8 @@ try_.builder(
     mirrors = [
         "ci/android-11-x86-rel",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -55,6 +57,8 @@ try_.builder(
         "ci/Android x64 Builder (dbg)",
         "ci/android-12-x64-dbg-tests",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.orchestrator_builder(
@@ -88,6 +92,8 @@ try_.builder(
 
 try_.builder(
     name = "android-asan",
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -95,6 +101,8 @@ try_.builder(
     mirrors = [
         "ci/android-bfcache-rel",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -144,18 +152,26 @@ try_.builder(
             cq.location_filter(path_regexp = "components/cronet/ios/.+", exclude = True),
         ],
     ),
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-arm64-dbg",
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-arm64-rel",
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-asan-arm-rel",
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -417,6 +433,7 @@ try_.builder(
         "ci/android-x86-rel",
         "ci/android-webview-10-x86-rel-tests",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -490,10 +507,10 @@ try_.builder(
 
 try_.builder(
     name = "android-arm64-all-targets-dbg",
-    goma_jobs = goma.jobs.J300,
     mirrors = [
         "ci/Android arm64 Builder All Targets (dbg)",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -557,6 +574,7 @@ try_.builder(
             "third_party/gvr-android-sdk/.+",
         ],
     ),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -584,6 +602,7 @@ try_.builder(
             "third_party/gvr-android-sdk/.+",
         ],
     ),
+    goma_backend = None,
 )
 
 try_.builder(

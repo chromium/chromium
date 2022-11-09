@@ -31,7 +31,7 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-12-x64-dbg": {
@@ -46,7 +46,7 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-12-x64-rel": {
@@ -94,7 +94,7 @@
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-asan": {
@@ -110,7 +110,7 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-bfcache-rel": {
@@ -128,7 +128,7 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-binary-size": {
@@ -183,10 +183,10 @@
       "target_cpu": "arm",
       "target_os": "android",
       "use_crash_key_stubs": true,
-      "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
+      "use_remoteexec": true,
       "use_thin_lto": false
     }
   },
@@ -210,10 +210,10 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_crash_key_stubs": true,
-      "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
+      "use_remoteexec": true,
       "use_thin_lto": false
     }
   },
@@ -240,10 +240,10 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_crash_key_stubs": true,
-      "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
+      "use_remoteexec": true,
       "use_thin_lto": false
     }
   },
@@ -272,10 +272,10 @@
       "target_cpu": "arm",
       "target_os": "android",
       "use_crash_key_stubs": true,
-      "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
+      "use_remoteexec": true,
       "use_thin_lto": false
     }
   },
@@ -844,7 +844,7 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-webview-12-x64-dbg": {
@@ -1023,7 +1023,7 @@
       "symbol_level": 0,
       "target_cpu": "x64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android_compile_x86_dbg": {
@@ -1036,7 +1036,7 @@
       "symbol_level": 0,
       "target_cpu": "x86",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android_coverage": {
