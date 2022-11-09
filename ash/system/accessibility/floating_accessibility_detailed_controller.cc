@@ -15,6 +15,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -139,11 +140,11 @@ views::Button* FloatingAccessibilityDetailedController::CreateBackButton(
     views::Button::PressedCallback callback) {
   views::ImageButton* button = static_cast<views::ImageButton*>(
       DetailedViewDelegate::CreateBackButton(std::move(callback)));
-  gfx::ImageSkia image = gfx::CreateVectorIcon(
+  ui::ImageModel image = ui::ImageModel::FromVectorIcon(
       kAutoclickCloseIcon,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary));
-  button->SetImage(views::Button::STATE_NORMAL, image);
+  button->SetImageModel(views::Button::STATE_NORMAL, image);
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_CLOSE));
 
