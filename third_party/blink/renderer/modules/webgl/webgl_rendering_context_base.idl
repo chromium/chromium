@@ -498,9 +498,11 @@ interface mixin WebGLRenderingContextBase {
     void compileShader(WebGLShader shader);
 
     void compressedTexImage2D(GLenum target, GLint level, GLenum internalformat,
-                              GLsizei width, GLsizei height, GLint border, [AllowShared] ArrayBufferView data);
+                              GLsizei width, GLsizei height, GLint border,
+                              [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data);
     void compressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
-                                 GLsizei width, GLsizei height, GLenum format, [AllowShared] ArrayBufferView data);
+                                 GLsizei width, GLsizei height, GLenum format,
+                                 [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data);
 
     void copyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
     void copyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
@@ -616,7 +618,8 @@ interface mixin WebGLRenderingContextBase {
     void texImage2D(
         GLenum target, GLint level, GLint internalformat,
         GLsizei width, GLsizei height, GLint border,
-        GLenum format, GLenum type, [AllowShared] ArrayBufferView? pixels);
+        GLenum format, GLenum type,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView? pixels);
     void texImage2D(
         GLenum target, GLint level, GLint internalformat,
         GLenum format, GLenum type, ImageData pixels);
@@ -641,8 +644,8 @@ interface mixin WebGLRenderingContextBase {
 
     void texSubImage2D(
         GLenum target, GLint level, GLint xoffset, GLint yoffset,
-        GLsizei width, GLsizei height,
-        GLenum format, GLenum type, [AllowShared] ArrayBufferView? pixels);
+        GLsizei width, GLsizei height, GLenum format, GLenum type,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView? pixels);
     void texSubImage2D(
         GLenum target, GLint level, GLint xoffset, GLint yoffset,
         GLenum format, GLenum type, ImageData pixels);

@@ -222,19 +222,138 @@ test(() => {
   // The read data (8x12=96) should still fit in.
   const read_offset = kMemSizeInWords - 100;
   const too_big_width = 16895999;
-  const too_big_height = 32;
-  assert_greater_than(too_big_width * too_big_height,
+  const too_big_height_in_words = 32;
+  const too_big_height_in_bytes = 128;
+  assert_greater_than(too_big_width * too_big_height_in_words,
                       kArrayBufferSizeLimitInBytes / 4);
   gl.readPixels(0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE, u8Data);
   assert_equals(gl.getError(), gl.NO_ERROR);
-  gl.readPixels(0, 0, too_big_width, too_big_height, gl.RGBA, gl.UNSIGNED_BYTE, u8Data);
+  gl.readPixels(0, 0, too_big_width, too_big_height_in_words, gl.RGBA, gl.UNSIGNED_BYTE, u8Data);
   assert_equals(gl.getError(), gl.INVALID_VALUE);
   gl.readPixels(0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE, u8Data, 16);
   assert_equals(gl.getError(), gl.NO_ERROR);
   gl.readPixels(0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE, u8Data, read_offset);
   assert_equals(gl.getError(), gl.NO_ERROR);
-  gl.readPixels(0, 0, too_big_width, too_big_height, gl.RGBA, gl.UNSIGNED_BYTE, u8Data, 4);
+  gl.readPixels(0, 0, too_big_width, too_big_height_in_words, gl.RGBA, gl.UNSIGNED_BYTE, u8Data, 4);
   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  let texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 12, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+// TODO(crbug.com/1353652): Fix this test of texImage2D so that more data than
+// kArrayBufferSizeLimitInBytes is required. This should result in
+// INVALID_VALUE.
+//   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, too_big_width,
+//                 too_big_height_in_bytes, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+//                 u8Data);
+//   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 12, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, 16);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 12, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, read_offset);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+// TODO(crbug.com/1353652): Fix this test to texImage2D so that more data than
+// kArrayBufferSizeLimitInBytes is required. This should result in
+// INVALID_VALUE.
+//   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, too_big_width,
+//                 too_big_height_in_bytes, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+//                 u8Data, 16);
+//   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+// TODO(crbug.com/1353652): Fix this test of texSubImage2D so that more data than
+// kArrayBufferSizeLimitInBytes is required. This should result in
+// INVALID_VALUE.
+//   gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, too_big_width,
+//                    too_big_height_in_bytes, gl.RGBA, gl.UNSIGNED_BYTE,
+//                 u8Data);
+//   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, 16);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, read_offset);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+// TODO(crbug.com/1353652): Fix this test of texSubImage2D so that more data than
+// kArrayBufferSizeLimitInBytes is required. This should result in
+// INVALID_VALUE.
+//   gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, too_big_width,
+//                    too_big_height_in_bytes, gl.RGBA, gl.UNSIGNED_BYTE,
+//                 u8Data, 16);
+//   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_3D, texture);
+
+  gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, 8, 12, 6, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+// TODO(crbug.com/1353652): Fix this test of texImage3D so that more data than
+// kArrayBufferSizeLimitInBytes is required. This should result in
+// INVALID_VALUE.
+//   gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, too_big_width,
+//                 too_big_height_in_bytes, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+//                 u8Data);
+//   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, 8, 12, 6, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, 16);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, 8, 12, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, read_offset);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+// TODO(crbug.com/1353652): Fix this test of texImage3D so that more data than
+// kArrayBufferSizeLimitInBytes is required. This should result in
+// INVALID_VALUE.
+//   gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, too_big_width,
+//                 too_big_height_in_bytes, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+//                 u8Data, 16);
+//   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.texSubImage3D(gl.TEXTURE_3D, 0, 0, 0, 0, 8, 12, 6, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, 16);
+  // assert_equals(gl.getError(), gl.NO_ERROR);
+// TODO(crbug.com/1353652): Fix this test of texSubImage3D so that more data than
+// kArrayBufferSizeLimitInBytes is required. This should result in
+// INVALID_VALUE.
+//   gl.texSubImage3D(gl.TEXTURE_3D, 0, 0, 0, 0, too_big_width,
+//                    too_big_height_in_bytes, 1, gl.RGBA, gl.UNSIGNED_BYTE,
+//                 u8Data);
+//   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+// TODO(crbug.com/1353652): Fix the following tests of texSubImage3D so that
+// they pass without error.  At the moment they pass the ArrayBuffer size check
+// but fail in the webgl backend.
+   gl.texSubImage3D(gl.TEXTURE_3D, 0, 0, 0, 0, 8, 12, 6, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, 16);
+//   assert_equals(gl.getError(), gl.NO_ERROR);
+   gl.texSubImage3D(gl.TEXTURE_3D, 0, 0, 0, 0, 8, 12, 1, gl.RGBA, gl.UNSIGNED_BYTE,
+                u8Data, read_offset);
+//   assert_equals(gl.getError(), gl.NO_ERROR);
+
+// TODO(crbug.com/1353652): Fix this test of texSubImage3D so that more data than
+// kArrayBufferSizeLimitInBytes is required. This should result in
+// INVALID_VALUE.
+//   gl.texSubImage3D(gl.TEXTURE_3D, 0, 0, 0, 0, too_big_width,
+//                    too_big_height_in_bytes, gl.RGBA, gl.UNSIGNED_BYTE,
+//                 u8Data, 16);
+//   assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+// TODO(crbug.com/1353652): Add tests for the following functions:
+// * webgl's compressedTexImage2D
+// * webgl2's compressedTexImage2D
+// * webgl's compressedTexSubImage2D
+// * webgl2's compressedTexSubImage2D
+// * compressedTexImage3D
+// * compressedTexSubImage3D
 }, "Test that webgl accepts a small view of ArrayBuffer bigger than 2GB.");
   </script>
 </body>

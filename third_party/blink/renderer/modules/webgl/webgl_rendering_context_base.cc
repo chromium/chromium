@@ -2425,6 +2425,11 @@ void WebGLRenderingContextBase::compressedTexImage2D(
   GLsizei data_length;
   if (!ExtractDataLengthIfValid("compressedTexImage2D", data, &data_length))
     return;
+  if (static_cast<size_t>(data_length) > kMaximumSupportedArrayBufferSize) {
+    SynthesizeGLError(GL_INVALID_VALUE, "compressedTexImage2D",
+                      "ArrayBufferView size exceeds the supported range");
+    return;
+  }
   ContextGL()->CompressedTexImage2D(target, level, internalformat, width,
                                     height, border, data_length,
                                     data->BaseAddressMaybeShared());
@@ -2448,6 +2453,11 @@ void WebGLRenderingContextBase::compressedTexSubImage2D(
   GLsizei data_length;
   if (!ExtractDataLengthIfValid("compressedTexSubImage2D", data, &data_length))
     return;
+  if (static_cast<size_t>(data_length) > kMaximumSupportedArrayBufferSize) {
+    SynthesizeGLError(GL_INVALID_VALUE, "compressedTexImage2D",
+                      "ArrayBufferView size exceeds the supported range");
+    return;
+  }
   ContextGL()->CompressedTexSubImage2D(target, level, xoffset, yoffset, width,
                                        height, format, data_length,
                                        data->BaseAddressMaybeShared());
@@ -8094,10 +8104,16 @@ bool WebGLRenderingContextBase::ValidateTexFuncData(
   total *= pixels->TypeSize();
   total += total_bytes_required;
   total += skip_bytes;
-  if (!total.IsValid() ||
-      pixels->byteLength() < static_cast<size_t>(total.ValueOrDie())) {
+  uint32_t total_val;
+  if (!total.AssignIfValid(&total_val) ||
+      pixels->byteLength() < static_cast<size_t>(total_val)) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "ArrayBufferView not big enough for request");
+    return false;
+  }
+  if (static_cast<size_t>(total_val) > kMaximumSupportedArrayBufferSize) {
+    SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                      "ArrayBufferView size exceeds the supported range");
     return false;
   }
   return true;

@@ -2419,6 +2419,12 @@ void WebGL2RenderingContextBase::compressedTexImage2D(
                       "srcLengthOverride is out of range");
     return;
   }
+  if (static_cast<size_t>(src_length_override) >
+      kMaximumSupportedArrayBufferSize) {
+    SynthesizeGLError(GL_INVALID_VALUE, "compressedTexImage2D",
+                      "src_length_override exceeds the supported range");
+    return;
+  }
   ContextGL()->CompressedTexImage2D(
       target, level, internalformat, width, height, border, src_length_override,
       static_cast<uint8_t*>(data->BaseAddressMaybeShared()) + src_offset);
@@ -2501,6 +2507,12 @@ void WebGL2RenderingContextBase::compressedTexSubImage2D(
                       "srcLengthOverride is out of range");
     return;
   }
+  if (static_cast<size_t>(src_length_override) >
+      kMaximumSupportedArrayBufferSize) {
+    SynthesizeGLError(GL_INVALID_VALUE, "compressedTexSubImage2D",
+                      "src_length_override exceeds the supported range");
+    return;
+  }
   ContextGL()->CompressedTexSubImage2D(
       target, level, xoffset, yoffset, width, height, format,
       src_length_override,
@@ -2563,6 +2575,12 @@ void WebGL2RenderingContextBase::compressedTexImage3D(
   } else if (src_length_override > data_length - src_offset) {
     SynthesizeGLError(GL_INVALID_VALUE, "compressedTexImage3D",
                       "srcLengthOverride is out of range");
+    return;
+  }
+  if (static_cast<size_t>(src_length_override) >
+      kMaximumSupportedArrayBufferSize) {
+    SynthesizeGLError(GL_INVALID_VALUE, "compressedTexImage3D",
+                      "src_length_override exceeds the supported range");
     return;
   }
   ContextGL()->CompressedTexImage3D(
@@ -2631,6 +2649,12 @@ void WebGL2RenderingContextBase::compressedTexSubImage3D(
   } else if (src_length_override > data_length - src_offset) {
     SynthesizeGLError(GL_INVALID_VALUE, "compressedTexSubImage3D",
                       "srcLengthOverride is out of range");
+    return;
+  }
+  if (static_cast<size_t>(src_length_override) >
+      kMaximumSupportedArrayBufferSize) {
+    SynthesizeGLError(GL_INVALID_VALUE, "compressedTexSubImage3D",
+                      "src_length_override exceeds the supported range");
     return;
   }
   ContextGL()->CompressedTexSubImage3D(
