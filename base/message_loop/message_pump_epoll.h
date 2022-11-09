@@ -108,7 +108,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   void AddEpollEvent(EpollEventEntry& entry);
   void UpdateEpollEvent(EpollEventEntry& entry);
   void UnregisterInterest(const scoped_refptr<Interest>& interest);
-  bool WaitForEpollEvent(TimeDelta timeout);
+  bool WaitForEpollEvents(TimeDelta timeout);
   void OnEpollEvent(const epoll_event& e);
   void HandleEvent(int fd,
                    bool can_read,
