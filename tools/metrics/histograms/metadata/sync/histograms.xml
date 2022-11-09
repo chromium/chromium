@@ -1477,6 +1477,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultHintDegradedRecoverabilityChangedReason"
+    enum="TrustedVaultHintDegradedRecoverabilityChangedReason"
+    expires_after="2023-04-09">
+  <owner>mmrashad@google.com</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded when an immediate degraded recoverability request is going to be
+    sent to the server. Records which heuristic triggered immediate request of
+    the current degraded recoverability state from the server.
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultKeyRetrievalTrigger"
     enum="TrustedVaultUserActionTrigger" expires_after="2023-04-09">
   <owner>mmoskvitin@google.com</owner>

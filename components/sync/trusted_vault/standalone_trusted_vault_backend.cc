@@ -483,7 +483,9 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
       // |kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling| is set.
       if (degraded_recoverability_handler_) {
         // TODO(crbug.com/1247990): Add Integration test.
-        degraded_recoverability_handler_->HintDegradedRecoverabilityChanged();
+        degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
+            TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
+                kPersistentAuthErrorResolved);
       }
     }
 
@@ -1063,7 +1065,9 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
   std::move(cb).Run();
   if (base::FeatureList::IsEnabled(
           kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
-    degraded_recoverability_handler_->HintDegradedRecoverabilityChanged();
+    degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
+        TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
+            kRecoveryMethodAdded);
   } else {
     delegate_->NotifyRecoverabilityDegradedChanged();
   }

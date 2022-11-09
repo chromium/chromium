@@ -101115,6 +101115,11 @@ Full version information for the fingerprint enum values:
   <int value="5" label="Data proto deserialization failed"/>
 </enum>
 
+<enum name="TrustedVaultHintDegradedRecoverabilityChangedReason">
+  <int value="0" label="Recovery method added"/>
+  <int value="1" label="Persistent auth error resolved"/>
+</enum>
+
 <enum name="TrustedVaultUserActionTrigger">
   <int value="0" label="Settings page"/>
   <int value="1" label="Profile menu"/>

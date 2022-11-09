@@ -13,6 +13,14 @@ struct SyncStatus;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA {
+  kRecoveryMethodAdded = 0,
+  kPersistentAuthErrorResolved = 1,
+  kMaxValue = kPersistentAuthErrorResolved,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class TrustedVaultDeviceRegistrationStateForUMA {
   kAlreadyRegisteredV0 = 0,
   kLocalKeysAreStale = 1,
@@ -66,6 +74,10 @@ enum class TrustedVaultFileReadStatusForUMA {
   kDataProtoDeserializationFailed = 5,
   kMaxValue = kDataProtoDeserializationFailed
 };
+
+void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
+    TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
+        hint_degraded_recoverability_changed_reason);
 
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state);

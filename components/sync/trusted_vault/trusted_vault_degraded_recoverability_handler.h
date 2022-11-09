@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 
 namespace sync_pb {
@@ -49,7 +50,8 @@ class TrustedVaultDegradedRecoverabilityHandler {
       const TrustedVaultDegradedRecoverabilityHandler&) = delete;
   ~TrustedVaultDegradedRecoverabilityHandler();
 
-  void HintDegradedRecoverabilityChanged();
+  void HintDegradedRecoverabilityChanged(
+      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA reason);
   // TODO(crbug.com/1247990): The accessibility of the following three functions
   // should be changed to be private.
   void StartLongIntervalRefreshing();

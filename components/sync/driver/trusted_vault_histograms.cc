@@ -35,6 +35,14 @@ std::string GetReasonSuffix(TrustedVaultURLFetchReasonForUMA reason) {
 
 }  // namespace
 
+void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
+    TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
+        hint_degraded_recoverability_changed_reason) {
+  base::UmaHistogramEnumeration(
+      "Sync.TrustedVaultHintDegradedRecoverabilityChangedReason",
+      hint_degraded_recoverability_changed_reason);
+}
+
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationState",
