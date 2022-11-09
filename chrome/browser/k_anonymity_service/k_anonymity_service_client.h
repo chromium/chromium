@@ -19,10 +19,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/oblivious_http_request.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
 // This class implements the KAnonymityServiceDelegate by sending requests
@@ -127,7 +129,8 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
       KAnonymityTrustTokenGetter::KeyAndNonUniqueUserId key_and_id);
   // Handle the response to the JoinSet request and call CompleteJoinSetRequest
   // if successful.
-  void JoinSetOnGotResponse(scoped_refptr<net::HttpResponseHeaders> headers);
+  void JoinSetOnGotResponse(const absl::optional<std::string>& response,
+                            int error_code);
   // Calls DoJoinSetCallback indicating the current request completed
   // successfully. If there are other items in the queue calls
   // JoinSetStartNextQueued to start processing them.
@@ -156,7 +159,8 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // Called as an asynchronous response to the OHTTP request started by
   // QuerySetsSendRequest. Passes the JSON response received to be decoded and
   // handled in QuerySetsOnParsedResponse.
-  void QuerySetsOnGotResponse(std::unique_ptr<std::string> response);
+  void QuerySetsOnGotResponse(const absl::optional<std::string>& response,
+                              int error_code);
   // Called asynchronously when the QuerySet response from
   // QuerySetsOnGotResponse has been decoded.
   void QuerySetsOnParsedResponse(
@@ -183,6 +187,9 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   base::circular_deque<std::unique_ptr<PendingJoinRequest>> join_queue_;
   base::circular_deque<std::unique_ptr<PendingQueryRequest>> query_queue_;
 
+  mojo::UniqueReceiverSet<network::mojom::ObliviousHttpClient>
+      ohttp_client_receivers_;
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> join_url_loader_;
   std::unique_ptr<network::SimpleURLLoader> query_url_loader_;
@@ -194,6 +201,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   url::Origin join_origin_;
   url::Origin query_origin_;
 
+  base::raw_ptr<Profile> profile_;
   base::WeakPtrFactory<KAnonymityServiceClient> weak_ptr_factory_{this};
 };
 

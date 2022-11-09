@@ -6,6 +6,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
@@ -15,16 +16,28 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
-#include "net/dns/mock_host_resolver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 class KAnonymityServiceClientTest : public testing::Test {
+ public:
+  KAnonymityServiceClientTest()
+      : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()) {
+  }
+  explicit KAnonymityServiceClientTest(
+      std::unique_ptr<content::BrowserTaskEnvironment> env)
+      : task_environment_(std::move(env)) {}
+
  protected:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(network::features::kTrustTokens);
@@ -53,14 +66,14 @@ class KAnonymityServiceClientTest : public testing::Test {
   }
 
   void SimulateResponseForPendingRequest(std::string url, std::string content) {
-    task_environment_.RunUntilIdle();
+    task_environment_->RunUntilIdle();
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         url, content, net::HTTP_OK,
         network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix));
   }
 
   void SimulateFailedResponseForPendingRequest(std::string url) {
-    task_environment_.RunUntilIdle();
+    task_environment_->RunUntilIdle();
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         url, "", net::HTTP_NOT_FOUND,
         network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix));
@@ -132,9 +145,8 @@ class KAnonymityServiceClientTest : public testing::Test {
     return test_url_loader_factory_.NumPending();
   }
 
- private:
   base::test::ScopedFeatureList feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   data_decoder::test::InProcessDataDecoder decoder_;
@@ -328,14 +340,125 @@ TEST_F(KAnonymityServiceClientTest, TryQuerySetAllNotKAnon) {
   hist.ExpectUniqueSample("Chrome.KAnonymityService.QuerySet.Size", 2, 1);
 }
 
+class TestTrustTokenQueryAnswerer
+    : public network::mojom::TrustTokenQueryAnswerer {
+ public:
+  TestTrustTokenQueryAnswerer() = default;
+  TestTrustTokenQueryAnswerer(const TestTrustTokenQueryAnswerer&) = delete;
+  TestTrustTokenQueryAnswerer& operator=(const TestTrustTokenQueryAnswerer&) =
+      delete;
+
+  void HasTrustTokens(const ::url::Origin& issuer,
+                      HasTrustTokensCallback callback) override {
+    // We can always return false here since KAnonymityTrustTokenGetter doesn't
+    // check after it successfully gets tokens.
+    std::move(callback).Run(network::mojom::HasTrustTokensResult::New(
+        network::mojom::TrustTokenOperationStatus::kOk, false));
+  }
+  void HasRedemptionRecord(const ::url::Origin& issuer,
+                           HasRedemptionRecordCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+};
+
+const char kJoinRelayURL[] = "https://relay.test/join_relay";
+const char kQueryRelayURL[] = "https://relay.test/query_relay";
+
+class OhttpTestNetworkContext : public network::TestNetworkContext {
+ public:
+  void GetTrustTokenQueryAnswerer(
+      mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
+      const url::Origin& top_frame_origin) override {
+    mojo::MakeSelfOwnedReceiver<network::mojom::TrustTokenQueryAnswerer>(
+        std::make_unique<TestTrustTokenQueryAnswerer>(), std::move(receiver));
+  }
+
+  void GetViaObliviousHttp(
+      network::mojom::ObliviousHttpRequestPtr request,
+      mojo::PendingRemote<network::mojom::ObliviousHttpClient> client)
+      override {
+    EXPECT_FALSE(remote_.is_bound());
+    remote_.reset();
+    if (drop_requests_)
+      return;
+
+    remote_.Bind(std::move(client));
+    EXPECT_EQ("binaryKeyInBase64", request->key_config);
+    EXPECT_EQ("application/json", request->request_body->content_type);
+    if (request->trust_token_params) {
+      EXPECT_EQ(kJoinRelayURL, request->relay_url);
+      EXPECT_TRUE(base::StartsWith(
+          request->resource_url.spec(),
+          "https://chromekanonymity-pa.googleapis.com/v1/types/"
+          "fledge/sets/"));
+    } else {
+      EXPECT_EQ(kQueryRelayURL, request->relay_url);
+      EXPECT_TRUE(base::StartsWith(
+          request->resource_url.spec(),
+          "https://chromekanonymityquery-pa.googleapis.com/v1:query"));
+    }
+    pending_request_ = std::move(request);
+  }
+
+  void RespondToPendingRequest(std::string url_prefix, std::string body) {
+    if (!pending_request_) {
+      ADD_FAILURE() << "No request pending";
+      return;
+    }
+    if (!base::StartsWith(pending_request_->relay_url.spec(), url_prefix)) {
+      ADD_FAILURE() << "Pending URL " << pending_request_->relay_url
+                    << " did not match " << url_prefix;
+      return;
+    }
+    if (error_) {
+      remote_->OnCompleted(absl::nullopt, error_.value());
+      error_.reset();
+    } else {
+      remote_->OnCompleted(body, net::OK);
+    }
+    remote_.reset();
+    pending_request_.reset();
+  }
+
+  void SetDropRequests(bool drop) { drop_requests_ = drop; }
+  void SetErrorOnce(net::Error err) { error_ = err; }
+
+ private:
+  absl::optional<net::Error> error_;
+  bool drop_requests_ = false;
+  network::mojom::ObliviousHttpRequestPtr pending_request_;
+  mojo::Remote<network::mojom::ObliviousHttpClient> remote_;
+};
+
 class KAnonymityServiceClientJoinQueryTest
     : public KAnonymityServiceClientTest {
+ public:
+  KAnonymityServiceClientJoinQueryTest()
+      : KAnonymityServiceClientTest(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                content::BrowserTaskEnvironment::IO_MAINLOOP)),
+        network_context_receiver_(&network_context_) {}
+
  protected:
   void SetUp() override {
-    KAnonymityServiceClientTest::SetUp();
-    feature_list_.InitWithFeatures({network::features::kTrustTokens,
-                                    features::kKAnonymityServiceOHTTPRequests},
-                                   {});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{network::features::kTrustTokens, {}},
+         {features::kKAnonymityService,
+          {
+              {"KAnonymityServiceJoinRelayServer", kJoinRelayURL},
+              {"KAnonymityServiceQueryRelayServer", kQueryRelayURL},
+          }},
+         {features::kKAnonymityServiceOHTTPRequests, {}}},
+        {});
+    TestingProfile::Builder builder;
+    builder.SetSharedURLLoaderFactory(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment(
+            builder, signin::AccountConsistencyMethod::kMirror);
+    profile_->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+        network_context_receiver_.BindNewPipeAndPassRemote());
   }
 
   void RespondWithJoinKey() {
@@ -345,8 +468,8 @@ class KAnonymityServiceClientJoinQueryTest
   }
 
   void RespondWithJoin() {
-    SimulateResponseForPendingRequest(
-        "https://chromekanonymity-pa.googleapis.com/v1/types/fledge/sets/", "");
+    task_environment_->RunUntilIdle();
+    network_context_.RespondToPendingRequest(kJoinRelayURL, "{}\n");
   }
 
   void RespondWithQueryKey() {
@@ -355,13 +478,18 @@ class KAnonymityServiceClientJoinQueryTest
         "binaryKeyInBase64");
   }
 
-  void RespondWithQuery(const std::string& response) {
-    SimulateResponseForPendingRequest(
-        "https://chromekanonymityquery-pa.googleapis.com/v1:query", response);
+  void RespondWithQuery(const std::string& response_str) {
+    task_environment_->RunUntilIdle();
+    network_context_.RespondToPendingRequest(kQueryRelayURL, response_str);
   }
 
+  void DropOhttpRequests() { network_context_.SetDropRequests(true); }
+
+  void SetOhttpErrorOnce(net::Error err) { network_context_.SetErrorOnce(err); }
+
  private:
-  base::test::ScopedFeatureList feature_list_;
+  OhttpTestNetworkContext network_context_;
+  mojo::Receiver<network::mojom::NetworkContext> network_context_receiver_;
 };
 
 TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetGetOHTTPKeyFailed) {
@@ -389,9 +517,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetSignedIn) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1",
-
-                    base::BindLambdaForTesting([&run_loop](bool result) {
+  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_TRUE(result);
                       run_loop.Quit();
                     }));
@@ -406,6 +532,103 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetSignedIn) {
              {KAnonymityServiceJoinSetAction::kFetchJoinSetOHTTPKey, 1},
              {KAnonymityServiceJoinSetAction::kSendJoinSetRequest, 1},
              {KAnonymityServiceJoinSetAction::kJoinSetSuccess, 1}});
+}
+
+TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetNetworkDrop) {
+  InitializeIdentity(true);
+  DropOhttpRequests();
+
+  KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
+  base::RunLoop run_loop;
+  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+                      EXPECT_FALSE(result);
+                      run_loop.Quit();
+                    }));
+  RespondWithJoinKey();
+  RespondWithTrustTokenNonUniqueUserID(2);
+  RespondWithTrustTokenKeys(2);
+  RespondWithTrustTokenIssued(2);
+  run_loop.Run();
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 1},
+             {KAnonymityServiceJoinSetAction::kFetchJoinSetOHTTPKey, 1},
+             {KAnonymityServiceJoinSetAction::kSendJoinSetRequest, 1},
+             {KAnonymityServiceJoinSetAction::kJoinSetRequestFailed, 1}});
+}
+
+TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetTokenAlreadyUsedOnce) {
+  InitializeIdentity(true);
+  SetOhttpErrorOnce(net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+  KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
+  base::RunLoop run_loop;
+  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+                      EXPECT_TRUE(result);
+                      run_loop.Quit();
+                    }));
+  RespondWithJoinKey();
+  RespondWithTrustTokenNonUniqueUserID(2);
+  RespondWithTrustTokenKeys(2);
+  RespondWithTrustTokenIssued(2);
+  RespondWithJoin();
+  RespondWithTrustTokenIssued(2);
+  RespondWithJoin();
+  run_loop.Run();
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 1},
+             {KAnonymityServiceJoinSetAction::kFetchJoinSetOHTTPKey, 1},
+             {KAnonymityServiceJoinSetAction::kSendJoinSetRequest, 2},
+             {KAnonymityServiceJoinSetAction::kJoinSetSuccess, 1}});
+}
+
+TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetOtherErrorsNotRetried) {
+  InitializeIdentity(true);
+  SetOhttpErrorOnce(net::ERR_FAILED);
+  KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
+  base::RunLoop run_loop;
+  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+                      EXPECT_FALSE(result);
+                      run_loop.Quit();
+                    }));
+  RespondWithJoinKey();
+  RespondWithTrustTokenNonUniqueUserID(2);
+  RespondWithTrustTokenKeys(2);
+  RespondWithTrustTokenIssued(2);
+  RespondWithJoin();
+  run_loop.Run();
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 1},
+             {KAnonymityServiceJoinSetAction::kFetchJoinSetOHTTPKey, 1},
+             {KAnonymityServiceJoinSetAction::kSendJoinSetRequest, 1},
+             {KAnonymityServiceJoinSetAction::kJoinSetRequestFailed, 1}});
+}
+
+TEST_F(KAnonymityServiceClientJoinQueryTest,
+       TryJoinSetTokenAlreadyRetriedTooMany) {
+  InitializeIdentity(true);
+  KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
+  base::RunLoop run_loop;
+  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+                      EXPECT_FALSE(result);
+                      run_loop.Quit();
+                    }));
+  RespondWithJoinKey();
+  RespondWithTrustTokenNonUniqueUserID(2);
+  RespondWithTrustTokenKeys(2);
+  for (int i = 0; i < 6; i++) {
+    RespondWithTrustTokenIssued(2);
+    SetOhttpErrorOnce(net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+    RespondWithJoin();
+  }
+  run_loop.Run();
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 1},
+             {KAnonymityServiceJoinSetAction::kFetchJoinSetOHTTPKey, 1},
+             {KAnonymityServiceJoinSetAction::kSendJoinSetRequest, 6},
+             {KAnonymityServiceJoinSetAction::kJoinSetRequestFailed, 1}});
 }
 
 TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetGetOHTTPKeyFailed) {
@@ -655,13 +878,14 @@ TEST_F(KAnonymityServiceClientJoinQueryTest,
                                   ASSERT_EQ(0u, result.size());
                                   EXPECT_EQ(2, callback_count++);
                                 }));
-  RespondWithQueryKey();
   SimulateFailedResponseForPendingRequest(
-      "https://chromekanonymityquery-pa.googleapis.com/v1:query");
+      "https://chromekanonymityquery-pa.googleapis.com/v1/proxy/keys");
   run_loop.Run();
   CheckQuerySetHistogramActions(
-      hist, {{KAnonymityServiceQuerySetAction::kQuerySet, 3},
-             {KAnonymityServiceQuerySetAction::kFetchQuerySetOHTTPKey, 1},
-             {KAnonymityServiceQuerySetAction::kSendQuerySetRequest, 1},
-             {KAnonymityServiceQuerySetAction::kQuerySetRequestFailed, 1}});
+      hist,
+      {{KAnonymityServiceQuerySetAction::kQuerySet, 3},
+       {KAnonymityServiceQuerySetAction::kFetchQuerySetOHTTPKey, 1},
+       {KAnonymityServiceQuerySetAction::kFetchQuerySetOHTTPKeyFailed, 1}});
 }
+
+}  // namespace
