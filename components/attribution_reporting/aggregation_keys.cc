@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -19,20 +20,24 @@
 namespace attribution_reporting {
 
 namespace {
+
 using ::attribution_reporting::mojom::SourceRegistrationError;
+
+bool IsValid(const AggregationKeys::Keys& keys) {
+  return keys.size() <= kMaxAggregationKeysPerSourceOrTrigger &&
+         base::ranges::all_of(keys, [](const auto& key) {
+           return key.first.size() <= kMaxBytesPerAggregationKeyId;
+         });
+}
+
 }  // namespace
 
 // static
 absl::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
-  bool is_valid =
-      keys.size() <=
-          attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger &&
-      base::ranges::all_of(keys, [](const auto& key) {
-        return key.first.size() <=
-               attribution_reporting::kMaxBytesPerAggregationKeyId;
-      });
-  return is_valid ? absl::make_optional(AggregationKeys(std::move(keys)))
-                  : absl::nullopt;
+  if (!IsValid(keys))
+    return absl::nullopt;
+
+  return AggregationKeys(std::move(keys));
 }
 
 // static
@@ -48,7 +53,7 @@ AggregationKeys::FromJSON(const base::Value* value) {
 
   const size_t num_keys = dict->size();
 
-  if (num_keys > attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger) {
+  if (num_keys > kMaxAggregationKeysPerSourceOrTrigger) {
     return base::unexpected(
         SourceRegistrationError::kAggregationKeysTooManyKeys);
   }
@@ -57,7 +62,7 @@ AggregationKeys::FromJSON(const base::Value* value) {
   keys.reserve(num_keys);
 
   for (auto [key_id, maybe_string_value] : *dict) {
-    if (key_id.size() > attribution_reporting::kMaxBytesPerAggregationKeyId) {
+    if (key_id.size() > kMaxBytesPerAggregationKeyId) {
       return base::unexpected(
           SourceRegistrationError::kAggregationKeysKeyTooLong);
     }
@@ -82,7 +87,9 @@ AggregationKeys::FromJSON(const base::Value* value) {
   return AggregationKeys(Keys(base::sorted_unique, std::move(keys)));
 }
 
-AggregationKeys::AggregationKeys(Keys keys) : keys_(std::move(keys)) {}
+AggregationKeys::AggregationKeys(Keys keys) : keys_(std::move(keys)) {
+  DCHECK(IsValid(keys_));
+}
 
 AggregationKeys::AggregationKeys() = default;
 
