@@ -29,8 +29,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE)
 
   ~HibernateManager();
 
-  static HibernateManager* Get();
-
   base::WeakPtr<HibernateManager> AsWeakPtr();
 
   // Resume from hibernate, in the form of an AuthOperation.

@@ -14,25 +14,9 @@
 
 namespace ash {
 
-namespace {
+HibernateManager::HibernateManager() = default;
 
-HibernateManager* g_instance = nullptr;
-
-}  // namespace
-
-HibernateManager::HibernateManager() {
-  DCHECK(!g_instance);
-  g_instance = this;
-}
-
-HibernateManager::~HibernateManager() {
-  g_instance = nullptr;
-}
-
-// static
-HibernateManager* HibernateManager::Get() {
-  return g_instance;
-}
+HibernateManager::~HibernateManager() = default;
 
 base::WeakPtr<HibernateManager> HibernateManager::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
