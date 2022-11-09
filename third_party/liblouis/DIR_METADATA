@@ -1,4 +1,10 @@
 monorail: {
-  component: "UI>Accessibility"
+  component: "OS>Accessibility>ChromeVox"
 }
 team_email: "chromium-accessibility@chromium.org"
+buganizer {
+  component_id: 1272673
+}
+buganizer_public {
+  component_id: 1272761
+}

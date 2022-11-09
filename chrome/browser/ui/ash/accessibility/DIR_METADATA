@@ -1,4 +1,1 @@
-mixins: "//ui/accessibility/COMMON_METADATA"
-monorail {
-  component: "UI>Accessibility"
-}
+mixins: "//ash/accessibility/COMMON_METADATA"

@@ -3,8 +3,8 @@ monorail {
 }
 team_email: "chromium-accessibility@chromium.org"
 buganizer {
-  component_id: 1272673
+  component_id: 1272891
 }
 buganizer_public {
-  component_id: 1272761
+  component_id: 1272895
 }
