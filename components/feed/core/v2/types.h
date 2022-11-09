@@ -67,9 +67,21 @@ struct RequestMetadata {
 // Data internal to MetricsReporter which is persisted to Prefs.
 struct PersistentMetricsData {
   // The midnight time for the day in which this metric was recorded.
-  base::Time current_day_start;
+  base::Time current_day_start{};
   // The total recorded time spent on the Feed for the current day.
-  base::TimeDelta accumulated_time_spent_in_feed;
+  base::TimeDelta accumulated_time_spent_in_feed{};
+  // Beginning of the most recent "visit", a period of feed use during which
+  // user interactions are no more than five minutes apart.
+  base::Time visit_start{};
+  // End of the most recent "visit". Visit is ongoing if `visit_end` is less
+  // than five minutes ago.
+  base::Time visit_end{};
+  // True if a "good visit" was reported during the current visit.
+  bool did_report_good_visit = false;
+  // Amount of time the user spent in the feed during the current visit.
+  base::TimeDelta time_in_feed_for_good_visit{};
+  // True if the user scrolled in the feed during the current visit.
+  bool did_scroll_in_visit = false;
 };
 
 base::Value::Dict PersistentMetricsDataToDict(

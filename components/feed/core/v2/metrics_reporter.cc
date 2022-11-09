@@ -339,9 +339,10 @@ MetricsReporter::SurfaceWaiting& MetricsReporter::SurfaceWaiting::operator=(
 
 MetricsReporter::MetricsReporter(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs),
-      good_visit_state_(base::FeatureList::IsEnabled(kClientGoodVisits)
-                            ? absl::make_optional<GoodVisitState>()
-                            : absl::nullopt) {
+      good_visit_state_(
+          base::FeatureList::IsEnabled(kClientGoodVisits)
+              ? absl::make_optional<GoodVisitState>(persistent_data_)
+              : absl::nullopt) {
   persistent_data_ = prefs::GetPersistentMetricsData(*profile_prefs_);
   ReportPersistentDataIfDayIsDone();
 }
@@ -1250,10 +1251,13 @@ void MetricsReporter::OnInfoCardStateReset(const StreamType& stream_type,
                            info_card_type);
 }
 
+MetricsReporter::GoodVisitState::GoodVisitState(PersistentMetricsData& data)
+    : data_(data) {}
+
 void MetricsReporter::GoodVisitState::OnScroll() {
   ExtendOrStartNewVisit();
-  did_scroll_ = true;
-  if (time_in_feed_ >= kGoodTimeInFeed.Get())
+  data_.did_scroll_in_visit = true;
+  if (data_.time_in_feed_for_good_visit >= kGoodTimeInFeed.Get())
     MaybeReportGoodVisit();
 }
 
@@ -1272,12 +1276,12 @@ void MetricsReporter::GoodVisitState::ExtendOrStartNewVisit() {
   const base::Time now = base::Time::Now();
 
   // Reset visit state if enough time has passed since visit_end_.
-  if (now - visit_end_ >= kVisitTimeout.Get())
-    *this = {};
+  if (now - data_.visit_end >= kVisitTimeout.Get())
+    Reset();
 
-  if (visit_start_ == base::Time())
-    visit_start_ = now;
-  visit_end_ = now;
+  if (data_.visit_start == base::Time())
+    data_.visit_start = now;
+  data_.visit_end = now;
 }
 
 void MetricsReporter::GoodVisitState::AddTimeInFeed(base::TimeDelta time) {
@@ -1289,16 +1293,26 @@ void MetricsReporter::GoodVisitState::AddTimeInFeed(base::TimeDelta time) {
 
   ExtendOrStartNewVisit();
 
-  time_in_feed_ += time;
-  if (did_scroll_ && time_in_feed_ >= kGoodTimeInFeed.Get())
+  data_.time_in_feed_for_good_visit += time;
+  if (data_.did_scroll_in_visit &&
+      data_.time_in_feed_for_good_visit >= kGoodTimeInFeed.Get()) {
     MaybeReportGoodVisit();
+  }
 }
 
 void MetricsReporter::GoodVisitState::MaybeReportGoodVisit() {
-  if (did_report_good_visit_)
+  if (data_.did_report_good_visit)
     return;
   ReportCombinedEngagementTypeHistogram(FeedEngagementType::kGoodVisit);
-  did_report_good_visit_ = true;
+  data_.did_report_good_visit = true;
+}
+
+void MetricsReporter::GoodVisitState::Reset() {
+  data_.visit_start = base::Time();
+  data_.visit_end = base::Time();
+  data_.did_report_good_visit = false;
+  data_.time_in_feed_for_good_visit = base::Seconds(0);
+  data_.did_scroll_in_visit = false;
 }
 
 void MetricsReporter::ReportContentDuplication(

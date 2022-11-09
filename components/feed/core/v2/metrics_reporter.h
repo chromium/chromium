@@ -258,6 +258,7 @@ class MetricsReporter {
 
   class GoodVisitState {
    public:
+    explicit GoodVisitState(PersistentMetricsData& data);
     void OnScroll();
     void OnGoodExplicitInteraction();
     void OnOpenComplete(base::TimeDelta open_duration);
@@ -266,11 +267,11 @@ class MetricsReporter {
 
    private:
     void MaybeReportGoodVisit();
+    void Reset();
 
-    base::Time visit_start_{}, visit_end_{};
-    bool did_report_good_visit_ = false;
-    base::TimeDelta time_in_feed_{};
-    bool did_scroll_ = false;
+    // Owned by MetricsReporter. Will live through the lifetime of
+    // GoodVisitState.
+    PersistentMetricsData& data_;
   };
   absl::optional<GoodVisitState> good_visit_state_;
 

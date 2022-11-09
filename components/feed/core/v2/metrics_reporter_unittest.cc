@@ -17,6 +17,7 @@
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/stream_type.h"
@@ -1717,6 +1718,24 @@ TEST_F(MetricsReporterTest, GoodVisit_DisableGoodVisits) {
       "ContentSuggestions.Feed.AllFeeds.EngagementType",
       FeedEngagementType::kGoodVisit, 0);
 }
+
+TEST_F(MetricsReporterTest, GoodVisitStateIsPersistent) {
+  reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
+                             FeedUserActionType::kShare);
+  histogram_.ExpectBucketCount(
+      "ContentSuggestions.Feed.AllFeeds.EngagementType",
+      FeedEngagementType::kGoodVisit, 1);
+  reporter_->OnEnterBackground();
+  RecreateMetricsReporter();
+
+  // This one shouldn't report a good visit.
+  reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
+                             FeedUserActionType::kShare);
+  histogram_.ExpectBucketCount(
+      "ContentSuggestions.Feed.AllFeeds.EngagementType",
+      FeedEngagementType::kGoodVisit, 1);
+}
+
 TEST_F(MetricsReporterTest, OpenActionSingleWebFeed) {
   reporter_->OpenAction(StreamType(StreamKind::kSingleWebFeed, "A"), 5,
                         OpenActionType::kDefault);
