@@ -632,7 +632,9 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
     return [[UIView alloc] init];
   }
 
-  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+  // When most visited tiles are enabled, only allow section separator under the
+  // verbatim suggestion.
+  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles) && section > 0) {
     return nil;
   }
 
