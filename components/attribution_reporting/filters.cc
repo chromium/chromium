@@ -21,18 +21,18 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 bool IsValidForSourceOrTrigger(const FilterValues& filter_values) {
-  if (filter_values.size() > attribution_reporting::kMaxFiltersPerSource)
+  if (filter_values.size() > kMaxFiltersPerSource)
     return false;
 
   for (const auto& [filter, values] : filter_values) {
-    if (filter.size() > attribution_reporting::kMaxBytesPerFilterString)
+    if (filter.size() > kMaxBytesPerFilterString)
       return false;
 
-    if (values.size() > attribution_reporting::kMaxValuesPerFilter)
+    if (values.size() > kMaxValuesPerFilter)
       return false;
 
     for (const auto& value : values) {
-      if (value.size() > attribution_reporting::kMaxBytesPerFilterString)
+      if (value.size() > kMaxBytesPerFilterString)
         return false;
     }
   }
@@ -67,7 +67,7 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
     return base::unexpected(SourceRegistrationError::kFilterDataWrongType);
 
   const size_t num_filters = dict->size();
-  if (num_filters > attribution_reporting::kMaxFiltersPerSource)
+  if (num_filters > kMaxFiltersPerSource)
     return base::unexpected(SourceRegistrationError::kFilterDataTooManyKeys);
 
   if (dict->contains(kSourceTypeFilterKey)) {
@@ -79,7 +79,7 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
   filter_values.reserve(dict->size());
 
   for (auto [filter, value] : *dict) {
-    if (filter.size() > attribution_reporting::kMaxBytesPerFilterString)
+    if (filter.size() > kMaxBytesPerFilterString)
       return base::unexpected(SourceRegistrationError::kFilterDataKeyTooLong);
 
     base::Value::List* list = value.GetIfList();
@@ -89,7 +89,7 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
     }
 
     const size_t num_values = list->size();
-    if (num_values > attribution_reporting::kMaxValuesPerFilter)
+    if (num_values > kMaxValuesPerFilter)
       return base::unexpected(SourceRegistrationError::kFilterDataListTooLong);
 
     std::vector<std::string> values;
@@ -102,7 +102,7 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
             SourceRegistrationError::kFilterDataValueWrongType);
       }
 
-      if (string->size() > attribution_reporting::kMaxBytesPerFilterString) {
+      if (string->size() > kMaxBytesPerFilterString) {
         return base::unexpected(
             SourceRegistrationError::kFilterDataValueTooLong);
       }
