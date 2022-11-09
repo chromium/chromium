@@ -18,23 +18,13 @@ namespace crypto {
 namespace {
 
 const EVP_MD* ToOpenSSLDigest(SignatureCreator::HashAlgorithm hash_alg) {
-  switch (hash_alg) {
-    case SignatureCreator::SHA1:
-      return EVP_sha1();
-    case SignatureCreator::SHA256:
-      return EVP_sha256();
-  }
-  return nullptr;
+  return hash_alg == SignatureCreator::SHA1 ? EVP_sha1() : 
+	      hash_alg == SignatureCreator::SHA256 ? EVP_sha256() : nullptr;
 }
 
 int ToOpenSSLDigestType(SignatureCreator::HashAlgorithm hash_alg) {
-  switch (hash_alg) {
-    case SignatureCreator::SHA1:
-      return NID_sha1;
-    case SignatureCreator::SHA256:
-      return NID_sha256;
-  }
-  return NID_undef;
+  return hash_alg == SignatureCreator::SHA1 ? NID_sha1 : 
+	      hash_alg == SignatureCreator::SHA256 ? NID_sha256 : NID_undef;
 }
 
 }  // namespace
