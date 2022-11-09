@@ -26,6 +26,7 @@ generate_grd("build_grdp") {
     "googlemic_clr_24px.svg",
     "icon_pencil.svg",
     "info.svg",
+    "lens_icon.svg",
     "link.svg",
     "mail.svg",
     "mic.svg",

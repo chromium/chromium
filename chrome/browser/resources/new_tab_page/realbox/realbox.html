@@ -129,10 +129,8 @@
     width: 26px;
   }
 
-  #lensSearchButton {
-    /* TODO(crbug.com/1370120): Update background to use Lens logo. */
-    background: lime;
-    background-size: 21px 21px;
+  :host #lensSearchButton {
+    background-image: url(chrome://new-tab-page/icons/lens_icon.svg);
   }
 
   :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
