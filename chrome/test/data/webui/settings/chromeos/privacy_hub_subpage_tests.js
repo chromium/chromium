@@ -251,14 +251,18 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     assertEquals(
         privacyHubSubpage.i18n('noCameraConnectedText'),
         getNoCameraText().textContent.trim());
-    assertEquals('', getCameraToggleSublabel().textContent.trim());
+    assertEquals(
+        privacyHubSubpage.i18n('cameraToggleSubtext'),
+        getCameraToggleSublabel().textContent.trim());
 
     assertFalse(!!getMicrophoneList());
     assertTrue(!!getNoMicrophoneText());
     assertEquals(
         privacyHubSubpage.i18n('noMicrophoneConnectedText'),
         getNoMicrophoneText().textContent.trim());
-    assertEquals('', getMicrophoneToggleSublabel().textContent.trim());
+    assertEquals(
+        privacyHubSubpage.i18n('microphoneToggleSubtext'),
+        getMicrophoneToggleSublabel().textContent.trim());
 
     const tests = [
       {
@@ -342,26 +346,18 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
         assertTrue(!!getCameraList());
         assertEquals(cams, getCameraList().items.length);
         assertFalse(getCameraCrToggle().disabled);
-        assertEquals(
-            privacyHubSubpage.i18n('cameraToggleSubtext'),
-            getCameraToggleSublabel().textContent.trim());
       } else {
         assertFalse(!!getCameraList());
         assertTrue(getCameraCrToggle().disabled);
-        assertEquals('', getCameraToggleSublabel().textContent.trim());
       }
 
       if (mics) {
         assertTrue(!!getMicrophoneList());
         assertEquals(mics, getMicrophoneList().items.length);
         assertFalse(getMicrophoneCrToggle().disabled);
-        assertEquals(
-            privacyHubSubpage.i18n('microphoneToggleSubtext'),
-            getMicrophoneToggleSublabel().textContent.trim());
       } else {
         assertFalse(!!getMicrophoneList());
         assertTrue(getMicrophoneCrToggle().disabled);
-        assertEquals('', getMicrophoneToggleSublabel().textContent.trim());
       }
     }
 
@@ -381,26 +377,18 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
         assertTrue(!!getCameraList());
         assertEquals(cams, getCameraList().items.length);
         assertFalse(getCameraCrToggle().disabled);
-        assertEquals(
-            privacyHubSubpage.i18n('cameraToggleSubtext'),
-            getCameraToggleSublabel().textContent.trim());
       } else {
         assertFalse(!!getCameraList());
         assertTrue(getCameraCrToggle().disabled);
-        assertEquals('', getCameraToggleSublabel().textContent.trim());
       }
 
       if (mics) {
         assertTrue(!!getMicrophoneList());
         assertEquals(mics, getMicrophoneList().items.length);
         assertFalse(getMicrophoneCrToggle().disabled);
-        assertEquals(
-            privacyHubSubpage.i18n('microphoneToggleSubtext'),
-            getMicrophoneToggleSublabel().textContent.trim());
       } else {
         assertFalse(!!getMicrophoneList());
         assertTrue(getMicrophoneCrToggle().disabled);
-        assertEquals('', getMicrophoneToggleSublabel().textContent.trim());
       }
     }
   });

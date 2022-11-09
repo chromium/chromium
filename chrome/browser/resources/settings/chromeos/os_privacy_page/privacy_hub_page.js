@@ -141,12 +141,6 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
         computed: 'computeIsCameraListEmpty_(camerasConnected_)',
       },
 
-      /** @private {string} */
-      cameraToggleSubLabel_: {
-        type: String,
-        computed: 'computeCameraToggleSubLabel_(isCameraListEmpty_)',
-      },
-
       /**
        * The list of connected microphones.
        * @private {Array<string>}
@@ -160,12 +154,6 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
       isMicListEmpty_: {
         type: Boolean,
         computed: 'computeIsMicListEmpty_(microphonesConnected_)',
-      },
-
-      /** @private {string} */
-      microphoneToggleSubLabel_: {
-        type: String,
-        computed: 'computeMicrophoneToggleSubLabel_(isMicListEmpty_)',
       },
 
       /** @private {boolean} */
@@ -205,34 +193,12 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
   }
 
   /**
-   * @return {string} The camera toggle sublabel.
-   * @private
-   */
-  computeCameraToggleSubLabel_() {
-    if (this.isCameraListEmpty_) {
-      return '';
-    }
-    return this.i18n('cameraToggleSubtext');
-  }
-
-  /**
    * @return {boolean} Whether the list of microphones displayed in this page is
    *     empty.
    * @private
    */
   computeIsMicListEmpty_() {
     return this.microphonesConnected_.length === 0;
-  }
-
-  /**
-   * @return {string} The microphone toggle sublabel.
-   * @private
-   */
-  computeMicrophoneToggleSubLabel_() {
-    if (this.isMicListEmpty_) {
-      return '';
-    }
-    return this.i18n('microphoneToggleSubtext');
   }
 
   /**

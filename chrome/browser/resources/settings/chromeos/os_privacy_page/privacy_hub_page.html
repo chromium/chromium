@@ -10,7 +10,7 @@
       pref="{{prefs.ash.user.camera_allowed}}"
       id="cameraToggle"
       label="$i18n{cameraToggleTitle}"
-      sub-label="[[cameraToggleSubLabel_]]"
+      sub-label="$i18n{cameraToggleSubtext}"
       deep-link-focus-id$="[[Setting.kCameraOnOff]]"
       disabled="[[isCameraListEmpty_]]"
       on-change="onCameraToggleChanged_">
@@ -42,7 +42,7 @@
       id="microphoneToggle"
       label="$i18n{microphoneToggleTitle}"
       deep-link-focus-id$="[[Setting.kMicrophoneOnOff]]"
-      sub-label="[[microphoneToggleSubLabel_]]"
+      sub-label="$i18n{microphoneToggleSubtext}"
       disabled="[[shouldDisableMicrophoneToggle_]]"
       on-change="onMicrophoneToggleChanged_">
   </settings-toggle-button>
