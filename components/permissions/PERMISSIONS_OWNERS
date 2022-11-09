@@ -1,6 +1,7 @@
-# Prefer permissions-reviews@ to individual owners to help distribute code load.
+# Prefer permissions-reviews@chromium.org to help distribute review load.
 # Assign to individual owners only if there is a reason to pick a specific person.
-permissions-reviews@chromium.org
+
+# permissions-reviews@chromium.org
 
 andypaicu@chromium.org
 dominickn@chromium.org
