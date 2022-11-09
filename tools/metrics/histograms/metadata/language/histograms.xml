@@ -275,6 +275,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageName"
     expires_after="2023-03-19">
+  <obsolete>
+    Removed in M109. Use UMA.SystemProfile.ApplicationLocale which is a
+    synthetic histogram that supports country codes.
+  </obsolete>
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

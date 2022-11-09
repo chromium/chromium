@@ -365,8 +365,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   language::LanguageUsageMetrics::RecordAcceptLanguages(
       last_used_browser_state->GetPrefs()->GetString(
           language::prefs::kAcceptLanguages));
-  language::LanguageUsageMetrics::RecordApplicationLanguage(
-      application_context_->GetApplicationLocale());
   translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
       ChromeIOSTranslateClient::CreateTranslatePrefs(
           last_used_browser_state->GetPrefs()));

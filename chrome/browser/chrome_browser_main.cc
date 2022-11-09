@@ -1237,8 +1237,6 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
 
   language::LanguageUsageMetrics::RecordAcceptLanguages(
       profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-  language::LanguageUsageMetrics::RecordApplicationLanguage(
-      browser_process_->GetApplicationLocale());
   translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
       ChromeTranslateClient::CreateTranslatePrefs(profile->GetPrefs()));
 // On ChromeOS results in a crash. https://crbug.com/1151558

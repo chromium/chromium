@@ -48,16 +48,6 @@ void LanguageUsageMetrics::RecordPageLanguages(
 }
 
 // static
-void LanguageUsageMetrics::RecordApplicationLanguage(
-    base::StringPiece application_locale) {
-  const int language_code = ToLanguageCodeHash(application_locale);
-  if (language_code != 0) {
-    base::UmaHistogramSparse("LanguageUsage.ApplicationLanguage",
-                             language_code);
-  }
-}
-
-// static
 int LanguageUsageMetrics::ToLanguageCodeHash(base::StringPiece locale) {
   base::StringPiece language_part =
       locale.substr(0U, locale.find_first_of("-_"));

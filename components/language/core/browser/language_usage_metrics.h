@@ -34,11 +34,6 @@ class LanguageUsageMetrics {
   static void RecordPageLanguages(
       const language::UrlLanguageHistogram& language_counts);
 
-  // Records the application language as a UMA histogram. |application_locale|
-  // is a case-insensitive locale string of either xx, xx-YY, or xx_YY format.
-  // Only the language part (xx in the example) is considered.
-  static void RecordApplicationLanguage(base::StringPiece application_locale);
-
   // Maps |locale| to a hash value in the "LanguageName" enum.
   // Deprecated - please use the enum "LocaleCodeISO639" which maps the full
   // locale including country variant to a base::HashMetricName value.

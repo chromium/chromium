@@ -166,26 +166,6 @@ TEST(LanguageUsageMetricsTest, RecordAcceptLanguages) {
   recorder_count.CheckValueCount(3, 1);
 }
 
-TEST(LanguageUsageMetricsTest, RecordApplicationLanguage) {
-  const LanguageCodeHash EN("en", 25966);
-  const LanguageCodeHash ES("es", 25971);
-
-  // Initialize recorder
-  MetricsRecorder recorder("LanguageUsage.ApplicationLanguage");
-
-  LanguageUsageMetrics::RecordApplicationLanguage("en");
-  LanguageUsageMetrics::RecordApplicationLanguage("en-US");
-  LanguageUsageMetrics::RecordApplicationLanguage("en-UK");
-  recorder.CheckTotalCount(3);
-  recorder.CheckValueCount(EN.hash, 3);
-
-  LanguageUsageMetrics::RecordApplicationLanguage("es");
-  LanguageUsageMetrics::RecordApplicationLanguage("es-ES");
-  LanguageUsageMetrics::RecordApplicationLanguage("es-419");
-  recorder.CheckTotalCount(6);
-  recorder.CheckValueCount(ES.hash, 3);
-}
-
 TEST(LanguageUsageMetricsTest, ParseAcceptLanguages) {
   std::set<int> language_set;
   std::set<int>::const_iterator it;
