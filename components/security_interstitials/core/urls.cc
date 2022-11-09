@@ -12,4 +12,7 @@ const char kSafeBrowsingWhitePaperUrl[] =
     "https://www.google.com/chrome/browser/privacy/"
     "whitepaper.html#extendedreport";
 
+const char kEnterpriseInterstitialHelpLink[] =
+    "https://support.google.com/chrome/a/?p=block_warn";
+
 }  // namespace security_interstitials

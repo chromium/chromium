@@ -10,6 +10,7 @@ namespace security_interstitials {
 // Using strings in code for non-translatable strings decreases binary size
 extern const char kSafeBrowsingPrivacyPolicyUrl[];
 extern const char kSafeBrowsingWhitePaperUrl[];
+extern const char kEnterpriseInterstitialHelpLink[];
 
 }  // namespace security_interstitials
 

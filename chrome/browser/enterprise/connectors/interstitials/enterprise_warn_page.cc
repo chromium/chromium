@@ -9,6 +9,7 @@
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/urls.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -85,13 +86,16 @@ void EnterpriseWarnPage::CommandReceived(const std::string& command) {
     case security_interstitials::CMD_PROCEED:
       controller()->Proceed();
       break;
+    case security_interstitials::CMD_OPEN_HELP_CENTER:
+      controller()->OpenUrlInNewForegroundTab(
+          GURL(security_interstitials::kEnterpriseInterstitialHelpLink));
+      break;
     case security_interstitials::CMD_DO_REPORT:
     case security_interstitials::CMD_DONT_REPORT:
     case security_interstitials::CMD_SHOW_MORE_SECTION:
     case security_interstitials::CMD_OPEN_DATE_SETTINGS:
     case security_interstitials::CMD_OPEN_REPORTING_PRIVACY:
     case security_interstitials::CMD_OPEN_WHITEPAPER:
-    case security_interstitials::CMD_OPEN_HELP_CENTER:
     case security_interstitials::CMD_RELOAD:
     case security_interstitials::CMD_OPEN_DIAGNOSTIC:
     case security_interstitials::CMD_OPEN_LOGIN:
