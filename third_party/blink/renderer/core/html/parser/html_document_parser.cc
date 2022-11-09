@@ -184,7 +184,17 @@ PreloadProcessingMode GetPreloadProcessingMode() {
   return kPreloadProcessingModeValue;
 }
 
+bool BackgroundScanMainFrameOnly() {
+  static const base::FeatureParam<bool> kScanMainFrameOnlyParam{
+      &features::kThreadedPreloadScanner, "scan-main-frame-only", false};
+  // Cache the value to avoid parsing the param string more than once.
+  static const bool kScanMainFrameOnlyValue = kScanMainFrameOnlyParam.Get();
+  return kScanMainFrameOnlyValue;
+}
+
 bool IsPreloadScanningEnabled(Document* document) {
+  if (BackgroundScanMainFrameOnly() && !document->IsInOutermostMainFrame())
+    return false;
   return document->GetSettings() &&
          document->GetSettings()->GetDoHtmlPreloadScanning();
 }
