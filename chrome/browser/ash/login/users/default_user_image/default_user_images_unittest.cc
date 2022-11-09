@@ -34,15 +34,6 @@ TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligible) {
   }
 }
 
-TEST(DefaultUserImagesTest, RandomlyPickedIndexShouldBeCurrent) {
-  const auto index = default_user_image::GetRandomDefaultImageIndex();
-  EXPECT_TRUE(IsValidIndex(index));
-  EXPECT_TRUE(IsInCurrentImageSet(index));
-
-  const auto default_user_image = GetDefaultUserImage(index);
-  EXPECT_FALSE(default_user_image.title.empty());
-}
-
 TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligibleWithFlag) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);

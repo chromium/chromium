@@ -325,6 +325,11 @@ const int kFirstDefaultImageIndex = 48;
 
 const int kLastLegacyImageIndex = 33;
 
+// Limit random default image index to prevent undesirable UI behavior when
+// selecting an image with a high index. E.g. automatic scrolling of picture
+// list that is used to present default images.
+const int kLastRandomDefaultImageIndex = 62;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // The order and the values of these constants are important for histograms
@@ -385,8 +390,7 @@ int GetDefaultImageResourceId(int index) {
 }
 
 int GetRandomDefaultImageIndex() {
-  return kCurrentImageIndexes[base::RandInt(0,
-                                            std::size(kCurrentImageIndexes))];
+  return base::RandInt(kFirstDefaultImageIndex, kLastRandomDefaultImageIndex);
 }
 
 bool IsValidIndex(int index) {
