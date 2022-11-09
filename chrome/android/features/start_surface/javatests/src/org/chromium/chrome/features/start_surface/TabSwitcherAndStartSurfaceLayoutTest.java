@@ -1255,6 +1255,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisabledTest(message = "https://crbug.com/1297930")
     public void testRecycling_defaultAspectRatio() {
         prepareTabs(10, 0, mUrl);
         ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
