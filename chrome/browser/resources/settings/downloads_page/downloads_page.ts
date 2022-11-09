@@ -14,21 +14,14 @@ import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {listenOnce} from 'chrome://resources/js/util.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {listenOnce} from 'chrome://resources/js/util.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_browser_proxy.js';
 import {getTemplate} from './downloads_page.html.js';
-
-interface AccountInfo {
-  linked: boolean;
-  account: {name: string, login: string};
-  folder: {name: string, link: string};
-}
 
 const SettingsDownloadsPageElementBase =
     WebUiListenerMixin(PrefsMixin(PolymerElement));
@@ -51,32 +44,6 @@ export class SettingsDownloadsPageElement extends
       prefs: {
         type: Object,
         notify: true,
-      },
-
-      showConnection_: {
-        type: Boolean,
-        value: false,
-      },
-
-      connectionLearnMoreLink_: {
-        type: String,
-        value:
-            'https://chromeenterprise.google/policies/?policy=SendDownloadToCloudEnterpriseConnector',
-      },
-
-      /**
-       * The connection account info object. The definition is based on
-       * chrome/browser/enterprise/connectors/file_system/signin_experience.cc:
-       * GetFileSystemConnectorLinkedAccountInfoForSettingsPage()
-       */
-      connectionAccountInfo_: {
-        type: Object,
-        notify: true,
-      },
-
-      connectionSetupInProgress_: {
-        type: Boolean,
-        value: false,
       },
 
       autoOpenDownloads_: {
@@ -102,10 +69,6 @@ export class SettingsDownloadsPageElement extends
   // </if>
 
 
-  private showConnection_: boolean;
-  private connectionLearnMoreLink_: string;
-  private connectionAccountInfo_: AccountInfo;
-  private connectionSetupInProgress_: boolean;
   private autoOpenDownloads_: boolean;
 
   // <if expr="chromeos_ash">
@@ -123,39 +86,7 @@ export class SettingsDownloadsPageElement extends
           this.autoOpenDownloads_ = autoOpen;
         });
 
-    this.addWebUIListener(
-        'downloads-connection-policy-changed',
-        (downloadsConnectionEnabled: boolean) => {
-          this.showConnection_ = downloadsConnectionEnabled;
-        });
-
-    this.addWebUIListener(
-        'downloads-connection-link-changed', (accountInfo: AccountInfo) => {
-          this.connectionAccountInfo_ = accountInfo;
-          this.connectionSetupInProgress_ = false;
-          // Focus on the link/unlink button so that the updated linked account
-          // status gets announced by screen reader.
-          afterNextRender(this, () => {
-            const button = this.connectionAccountInfo_.linked ?
-                this.shadowRoot!.querySelector<HTMLElement>(
-                    '#unlinkAccountButton') :
-                this.shadowRoot!.querySelector<HTMLElement>(
-                    '#linkAccountButton');
-            focusWithoutInk(button!);
-          });
-        });
-
     this.browserProxy_.initializeDownloads();
-  }
-
-  private onLinkDownloadsConnectionClick_() {
-    this.connectionSetupInProgress_ = true;
-    this.browserProxy_.setDownloadsConnectionAccountLink(true);
-  }
-
-  private onUnlinkDownloadsConnectionClick_() {
-    this.connectionSetupInProgress_ = true;
-    this.browserProxy_.setDownloadsConnectionAccountLink(false);
   }
 
   private selectDownloadLocation_() {

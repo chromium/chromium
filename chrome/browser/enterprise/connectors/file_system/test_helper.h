@@ -17,6 +17,8 @@ namespace enterprise_connectors {
 // 1994-04-27 00:00:00.001 GMT+2 (South Africa Standard Time)
 const base::Time::Exploded kTestDateTime = {1994, 4, 2, 27, 0, 0, 0, 1};
 
+// TODO(b/256182367): This was kept to not break FileSystemRenameHandler tests.
+// Remove when deleting the file_system/ directory.
 constexpr char kWildcardSendDownloadToCloudPref[] = R"([
   {
     "service_provider": "box",
