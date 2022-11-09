@@ -127,6 +127,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void OnPlaybackEnded();
   void OnFormatChange();
   void OnLoadedData();
+  void OnCanPlayThrough();
   void OnPlaying();
   void OnWaiting();
   void OnTimeUpdate();

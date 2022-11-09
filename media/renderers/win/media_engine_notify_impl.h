@@ -31,6 +31,7 @@ class MediaEngineNotifyImpl
   using EndedCB = base::RepeatingClosure;
   using FormatChangeCB = base::RepeatingClosure;
   using LoadedDataCB = base::RepeatingClosure;
+  using CanPlayThroughCB = base::RepeatingClosure;
   using PlayingCB = base::RepeatingClosure;
   using WaitingCB = base::RepeatingClosure;
   using TimeUpdateCB = base::RepeatingClosure;
@@ -39,6 +40,7 @@ class MediaEngineNotifyImpl
                                  EndedCB ended_cb,
                                  FormatChangeCB format_change_cb,
                                  LoadedDataCB loaded_data_cb,
+                                 CanPlayThroughCB can_play_through_cb,
                                  PlayingCB playing_cb,
                                  WaitingCB waiting_cb,
                                  TimeUpdateCB time_update_cb);
@@ -58,6 +60,7 @@ class MediaEngineNotifyImpl
   EndedCB ended_cb_;
   FormatChangeCB format_change_cb_;
   LoadedDataCB loaded_data_cb_;
+  CanPlayThroughCB can_play_through_cb_;
   PlayingCB playing_cb_;
   WaitingCB waiting_cb_;
   TimeUpdateCB time_update_cb_;
