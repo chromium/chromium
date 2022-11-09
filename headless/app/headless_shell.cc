@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <iostream>
+#include <cstdint>
+#include <cstdio>
 #include <memory>
 #include <sstream>
-#include <string>
 #include <utility>
 
 #include "base/base64.h"
@@ -14,17 +14,17 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -42,11 +42,11 @@
 #include "headless/public/headless_devtools_target.h"
 #include "net/base/filename_util.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
-#include "net/base/net_errors.h"
 #include "net/http/http_util.h"
+#include "net/proxy_resolution/proxy_config.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_WIN)
