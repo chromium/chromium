@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "media/base/cross_origin_data_source.h"
 #include "media/base/data_source.h"
 #include "media/base/ranges.h"
 #include "media/base/tuneable.h"
@@ -37,7 +38,8 @@ class MultiBufferReader;
 //
 // MultiBufferDataSource must be created and destroyed on the thread associated
 // with the |task_runner| passed in the constructor.
-class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
+class PLATFORM_EXPORT MultiBufferDataSource
+    : public media::CrossOriginDataSource {
  public:
   using DownloadingCB = base::RepeatingCallback<void(bool)>;
   using RedirectCB = base::RepeatingCallback<void()>;
@@ -55,6 +57,13 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
   MultiBufferDataSource& operator=(const MultiBufferDataSource&) = delete;
   ~MultiBufferDataSource() override;
 
+  // CrossOriginDataSource overrides.
+  bool IsCorsCrossOrigin() const override;
+  bool HasAccessControl() const override;
+  const std::string& GetMimeType() const override {
+    return url_data_->mime_type();
+  }
+
   // Executes |init_cb| with the result of initialization when it has completed.
   //
   // Method called on the render thread.
@@ -70,16 +79,8 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
   // Method called on the render thread.
   bool HasSingleOrigin();
 
-  // https://html.spec.whatwg.org/#cors-cross-origin
-  // This must be called after the response arrives.
-  bool IsCorsCrossOrigin() const;
-
   // Provides a callback to be run when the underlying url is redirected.
   void OnRedirect(RedirectCB callback);
-
-  // Returns true if the response includes an Access-Control-Allow-Origin
-  // header (that is not "null").
-  bool HasAccessControl() const;
 
   bool PassedTimingAllowOriginCheck() override;
 
@@ -119,9 +120,11 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
     is_client_audio_element_ = is_client_audio_element;
   }
 
-  bool cancel_on_defer_for_testing() const { return cancel_on_defer_; }
+  const CrossOriginDataSource* GetAsCrossOriginDataSource() const override {
+    return this;
+  }
 
-  const std::string& mime_type() const { return url_data_->mime_type(); }
+  bool cancel_on_defer_for_testing() const { return cancel_on_defer_; }
 
  protected:
   void OnRedirected(const scoped_refptr<UrlData>& new_destination);

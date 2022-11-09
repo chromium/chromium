@@ -13,6 +13,8 @@
 
 namespace media {
 
+class CrossOriginDataSource;
+
 class MEDIA_EXPORT DataSource {
  public:
   using ReadCB = base::OnceCallback<void(int)>;
@@ -104,6 +106,9 @@ class MEDIA_EXPORT DataSource {
   // sources won't care too much about these events though.
   virtual void OnMediaPlaybackRateChanged(double playback_rate);
   virtual void OnMediaIsPlaying();
+
+  // Gets a CrossOriginDataSource version of |this|, or nullptr if it isn't one.
+  virtual const CrossOriginDataSource* GetAsCrossOriginDataSource() const;
 };
 
 }  // namespace media

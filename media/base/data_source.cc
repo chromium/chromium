@@ -32,4 +32,8 @@ void DataSource::OnMediaPlaybackRateChanged(double playback_rate) {}
 
 void DataSource::OnMediaIsPlaying() {}
 
+const CrossOriginDataSource* DataSource::GetAsCrossOriginDataSource() const {
+  return nullptr;
+}
+
 }  // namespace media

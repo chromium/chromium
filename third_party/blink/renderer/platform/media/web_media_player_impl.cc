@@ -1923,7 +1923,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     }
 
     MimeType mime_type =
-        TranslateMimeTypeToHistogramEnum(mb_data_source_->mime_type());
+        TranslateMimeTypeToHistogramEnum(mb_data_source_->GetMimeType());
     base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
                                   mime_type);
     if (mb_data_source_->IsCorsCrossOrigin()) {

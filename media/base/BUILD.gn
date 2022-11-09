@@ -137,6 +137,7 @@ source_set("base") {
     "converting_audio_fifo.cc",
     "converting_audio_fifo.h",
     "crc_16.h",
+    "cross_origin_data_source.h",
     "data_buffer.cc",
     "data_buffer.h",
     "data_source.cc",
