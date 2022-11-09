@@ -56,7 +56,7 @@ generate_grd("build_untrusted_grd") {
   grd_prefix = "image_editor_untrusted"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [ "untrusted.html" ]
-  input_files_base_dir = rebase_path(preprocess_folder, "//")
+  input_files_base_dir = rebase_path(preprocess_folder, root_build_dir)
   deps = [ ":build_ts" ]
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
