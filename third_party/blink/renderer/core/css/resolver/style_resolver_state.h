@@ -108,6 +108,12 @@ class CORE_EXPORT StyleResolverState {
   CSSToLengthConversionData FontSizeConversionData() const;
   CSSToLengthConversionData UnzoomedLengthConversionData() const;
 
+  ScopedCSSToLengthConversionData GetScopedCSSToLengthConversionData(
+      const TreeScope* scope) const {
+    return ScopedCSSToLengthConversionData(css_to_length_conversion_data_,
+                                           scope);
+  }
+
   void SetConversionFontSizes(
       const CSSToLengthConversionData::FontSizes& font_sizes) {
     css_to_length_conversion_data_.SetFontSizes(font_sizes);

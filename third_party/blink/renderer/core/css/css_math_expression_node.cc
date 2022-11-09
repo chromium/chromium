@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -1189,7 +1190,8 @@ AnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
-  AtomicString anchor_name = anchor_name_->Value();
+  ScopedCSSName* anchor_name = MakeGarbageCollected<ScopedCSSName>(
+      anchor_name_->Value(), length_resolver.GetTreeScope());
   Length fallback = fallback_ ? fallback_->ConvertToLength(length_resolver)
                               : Length::Fixed(0);
 
@@ -1198,17 +1200,17 @@ CSSMathExpressionAnchorQuery::ToCalculationExpression(
             DynamicTo<CSSPrimitiveValue>(*value_)) {
       DCHECK(percentage->IsPercentage());
       return CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
-          anchor_name, percentage->GetFloatValue(), fallback);
+          *anchor_name, percentage->GetFloatValue(), fallback);
     }
     const CSSIdentifierValue& side = To<CSSIdentifierValue>(*value_);
     return CalculationExpressionAnchorQueryNode::CreateAnchor(
-        anchor_name, CSSValueIDToAnchorValueEnum(side.GetValueID()), fallback);
+        *anchor_name, CSSValueIDToAnchorValueEnum(side.GetValueID()), fallback);
   }
 
   DCHECK_EQ(type_, CSSAnchorQueryType::kAnchorSize);
   const CSSIdentifierValue& size = To<CSSIdentifierValue>(*value_);
   return CalculationExpressionAnchorQueryNode::CreateAnchorSize(
-      anchor_name, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
+      *anchor_name, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
       fallback);
 }
 
@@ -1669,8 +1671,10 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     CSSAnchorQueryType type = anchor_query.Type() == AnchorQueryType::kAnchor
                                   ? CSSAnchorQueryType::kAnchor
                                   : CSSAnchorQueryType::kAnchorSize;
+    // TODO(1380112): Handle implicit anchor name.
     CSSCustomIdentValue* anchor_name =
-        MakeGarbageCollected<CSSCustomIdentValue>(anchor_query.AnchorName());
+        MakeGarbageCollected<CSSCustomIdentValue>(
+            anchor_query.AnchorName().GetName());
     CSSValue* value = AnchorQueryValueToCSSValue(anchor_query);
     CSSPrimitiveValue* fallback = CSSPrimitiveValue::CreateFromLength(
         anchor_query.GetFallback(), /* zoom */ 1);

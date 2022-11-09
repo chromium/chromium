@@ -1304,6 +1304,13 @@ Length StyleBuilderConverter::ConvertLength(const StyleResolverState& state,
   return To<CSSPrimitiveValue>(value).ConvertToLength(
       state.CssToLengthConversionData());
 }
+Length StyleBuilderConverter::ConvertLength(
+    const StyleResolverState& state,
+    const ScopedCSSValue& scoped_value) {
+  return To<CSSPrimitiveValue>(scoped_value.GetCSSValue())
+      .ConvertToLength(state.GetScopedCSSToLengthConversionData(
+          scoped_value.GetTreeScope()));
+}
 
 UnzoomedLength StyleBuilderConverter::ConvertUnzoomedLength(
     const StyleResolverState& state,
@@ -1337,18 +1344,34 @@ float StyleBuilderConverter::ConvertZoom(const StyleResolverState& state,
 Length StyleBuilderConverter::ConvertLengthOrAuto(
     const StyleResolverState& state,
     const CSSValue& value) {
+  return ConvertLengthOrAuto(state,
+                             ScopedCSSValue(value, nullptr /* TreeScope */));
+}
+
+Length StyleBuilderConverter::ConvertLengthOrAuto(
+    const StyleResolverState& state,
+    const ScopedCSSValue& scoped_value) {
+  const CSSValue& value = scoped_value.GetCSSValue();
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto)
     return Length::Auto();
   return To<CSSPrimitiveValue>(value).ConvertToLength(
-      state.CssToLengthConversionData());
+      state.GetScopedCSSToLengthConversionData(scoped_value.GetTreeScope()));
 }
 
 Length StyleBuilderConverter::ConvertLengthSizing(StyleResolverState& state,
                                                   const CSSValue& value) {
+  return ConvertLengthSizing(state,
+                             ScopedCSSValue(value, nullptr /* TreeScope */));
+}
+
+Length StyleBuilderConverter::ConvertLengthSizing(
+    StyleResolverState& state,
+    const ScopedCSSValue& scoped_value) {
+  const CSSValue& value = scoped_value.GetCSSValue();
   const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (!identifier_value)
-    return ConvertLength(state, value);
+    return ConvertLength(state, scoped_value);
 
   switch (identifier_value->GetValueID()) {
     case CSSValueID::kMinContent:
@@ -1378,6 +1401,16 @@ Length StyleBuilderConverter::ConvertLengthMaxSizing(StyleResolverState& state,
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone)
     return Length::None();
   return ConvertLengthSizing(state, value);
+}
+
+Length StyleBuilderConverter::ConvertLengthMaxSizing(
+    StyleResolverState& state,
+    const ScopedCSSValue& scoped_value) {
+  const CSSValue& value = scoped_value.GetCSSValue();
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone)
+    return Length::None();
+  return ConvertLengthSizing(state, scoped_value);
 }
 
 TabSize StyleBuilderConverter::ConvertLengthOrTabSpaces(

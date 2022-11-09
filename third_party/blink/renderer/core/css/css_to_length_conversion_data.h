@@ -220,6 +220,20 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   ContainerSizes container_sizes_;
 };
 
+class ScopedCSSToLengthConversionData : public CSSToLengthConversionData {
+  STACK_ALLOCATED();
+
+ public:
+  ScopedCSSToLengthConversionData(const CSSToLengthConversionData& data,
+                                  const TreeScope* scope)
+      : CSSToLengthConversionData(data), tree_scope_(scope) {}
+
+  const TreeScope* GetTreeScope() const override { return tree_scope_; }
+
+ private:
+  const TreeScope* tree_scope_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TO_LENGTH_CONVERSION_DATA_H_

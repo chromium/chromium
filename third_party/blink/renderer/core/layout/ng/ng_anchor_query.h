@@ -24,6 +24,7 @@ class LayoutObject;
 class NGLogicalAnchorQuery;
 class NGLogicalAnchorQueryMap;
 class NGPhysicalFragment;
+class ScopedCSSName;
 struct NGLogicalAnchorReference;
 
 struct CORE_EXPORT NGPhysicalAnchorReference
@@ -193,15 +194,17 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
     is_right_or_bottom_ = is_right_or_bottom;
   }
 
-  absl::optional<LayoutUnit> EvaluateAnchor(
-      const AtomicString& anchor_name,
-      AnchorValue anchor_value) const override;
-  absl::optional<LayoutUnit> EvaluateAnchorSize(
-      const AtomicString& anchor_name,
-      AnchorSizeValue anchor_size_value) const override;
+  absl::optional<LayoutUnit> Evaluate(
+      const CalculationExpressionNode&) const override;
 
  private:
   const NGLogicalAnchorQuery* AnchorQuery() const;
+
+  absl::optional<LayoutUnit> EvaluateAnchor(const ScopedCSSName& anchor_name,
+                                            AnchorValue anchor_value) const;
+  absl::optional<LayoutUnit> EvaluateAnchorSize(
+      const ScopedCSSName& anchor_name,
+      AnchorSizeValue anchor_size_value) const;
 
   mutable const NGLogicalAnchorQuery* anchor_query_ = nullptr;
   const NGLogicalAnchorQueryMap* anchor_queries_ = nullptr;

@@ -2137,6 +2137,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "box-shadow",
@@ -2851,6 +2852,7 @@
       supports_incremental_style: true,
       valid_for_formatted_text: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "hyphenate-limit-chars",
@@ -2974,6 +2976,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "letter-spacing",
@@ -3255,6 +3258,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "max-width",
@@ -3272,6 +3276,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "min-height",
@@ -3288,6 +3293,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "min-width",
@@ -3304,6 +3310,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "mix-blend-mode",
@@ -3901,6 +3908,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "r",
@@ -4820,6 +4828,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "touch-action",
@@ -5740,6 +5749,7 @@
       supports_incremental_style: true,
       valid_for_formatted_text: true,
       valid_for_position_fallback: true,
+      tree_scoped_value: true,
     },
     {
       name: "will-change",

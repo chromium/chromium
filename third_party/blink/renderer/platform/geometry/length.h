@@ -45,6 +45,7 @@ struct PixelsAndPercent {
   float percent;
 };
 
+class CalculationExpressionNode;
 class CalculationValue;
 
 class PLATFORM_EXPORT Length {
@@ -309,14 +310,11 @@ class PLATFORM_EXPORT Length {
 
   class PLATFORM_EXPORT AnchorEvaluator {
    public:
-    // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
-    // the query is invalid (e.g., no targets or wrong axis.)
-    virtual absl::optional<LayoutUnit> EvaluateAnchor(
-        const AtomicString& anchor_name,
-        AnchorValue anchor_value) const;
-    virtual absl::optional<LayoutUnit> EvaluateAnchorSize(
-        const AtomicString& anchor_name,
-        AnchorSizeValue anchor_size_value) const;
+    // Evaluates an anchor() or anchor-size() function given by the
+    // CalculationExpressionNode. Returns |nullopt| if the query is invalid
+    // (e.g., no targets or wrong axis.)
+    virtual absl::optional<LayoutUnit> Evaluate(
+        const CalculationExpressionNode&) const = 0;
   };
   float NonNanCalculatedValue(LayoutUnit max_value,
                               const AnchorEvaluator* = nullptr) const;

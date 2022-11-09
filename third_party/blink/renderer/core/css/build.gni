@@ -30,6 +30,8 @@ blink_core_sources_css = [
   "binary_data_font_face_source.h",
   "box_shadow_paint_image_generator.cc",
   "box_shadow_paint_image_generator.h",
+  "calculation_expression_anchor_query_node.cc",
+  "calculation_expression_anchor_query_node.h",
   "cascade_layer.cc",
   "cascade_layer.h",
   "cascade_layer_map.cc",

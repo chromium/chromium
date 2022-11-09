@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
 
+#include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query_map.h"
@@ -288,24 +289,43 @@ const NGLogicalAnchorQuery* NGAnchorEvaluatorImpl::AnchorQuery() const {
   return nullptr;
 }
 
+absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
+    const CalculationExpressionNode& node) const {
+  DCHECK(node.IsAnchorQuery());
+  const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
+  switch (anchor_query.Type()) {
+    case AnchorQueryType::kAnchor:
+      return EvaluateAnchor(anchor_query.AnchorName(),
+                            anchor_query.AnchorSide());
+    case AnchorQueryType::kAnchorSize:
+      return EvaluateAnchorSize(anchor_query.AnchorName(),
+                                anchor_query.AnchorSize());
+  }
+}
+
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
-    const AtomicString& anchor_name,
+    const ScopedCSSName& anchor_name,
     AnchorValue anchor_value) const {
   has_anchor_functions_ = true;
+  // TODO(crbug.com/1380112): Support implicit anchor.
+  // TODO(xiaochengh): Perform tree-scoped anchor query
   if (const NGLogicalAnchorQuery* anchor_query = AnchorQuery()) {
-    return anchor_query->EvaluateAnchor(
-        anchor_name, anchor_value, available_size_, container_converter_,
-        offset_to_padding_box_, is_y_axis_, is_right_or_bottom_);
+    return anchor_query->EvaluateAnchor(anchor_name.GetName(), anchor_value,
+                                        available_size_, container_converter_,
+                                        offset_to_padding_box_, is_y_axis_,
+                                        is_right_or_bottom_);
   }
   return absl::nullopt;
 }
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
-    const AtomicString& anchor_name,
+    const ScopedCSSName& anchor_name,
     AnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
+  // TODO(crbug.com/1380112): Support implicit anchor.
+  // TODO(xiaochengh): Perform tree-scoped anchor query
   if (const NGLogicalAnchorQuery* anchor_query = AnchorQuery()) {
-    return anchor_query->EvaluateSize(anchor_name, anchor_size_value,
+    return anchor_query->EvaluateSize(anchor_name.GetName(), anchor_size_value,
                                       container_converter_.GetWritingMode(),
                                       self_writing_mode_);
   }
