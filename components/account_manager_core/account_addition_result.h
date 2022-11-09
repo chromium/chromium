@@ -29,12 +29,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
     kUnexpectedResponse = 4,
     // The sign-in was blocked by policy for this user.
     kBlockedByPolicy = 5,
-    // Mojo remote to Account Manager is disconnected.
-    kMojoRemoteDisconnected = 6,
-    // Remote and receiver have incompatible Mojo versions.
-    kIncompatibleMojoVersions = 7,
-
-    kMaxValue = kIncompatibleMojoVersions,
+    kMaxValue = kBlockedByPolicy,
   };
 
   // Creates result with `status` different from `kSuccess` and `kNetworkError`.
