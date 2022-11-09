@@ -3407,6 +3407,8 @@ static_library("ui") {
     sources += [
       "startup/lacros_first_run_service.cc",
       "startup/lacros_first_run_service.h",
+      "startup/silent_sync_enabler.cc",
+      "startup/silent_sync_enabler.h",
       "views/chrome_browser_main_extra_parts_views_lacros.cc",
       "views/chrome_browser_main_extra_parts_views_lacros.h",
       "views/frame/browser_frame_lacros.cc",

@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -21,6 +21,7 @@
 #endif
 
 class Profile;
+class SilentSyncEnabler;
 
 // Task to run after the FRE is exited, with `proceed` indicating whether it
 // should be aborted or resumed.
@@ -82,13 +83,13 @@ class LacrosFirstRunService : public KeyedService {
  private:
   void OpenFirstRunInternal(EntryPoint entry_point,
                             ResumeTaskCallback callback);
-  void TryEnableSyncSilentlyWithToken(const CoreAccountId& account_id,
-                                      base::OnceClosure callback);
+  void StartSilentSync(base::OnceClosure callback);
+  void ClearSilentSyncEnabler();
 
   // Owns of this instance via the KeyedService mechanism.
   const raw_ptr<Profile> profile_;
 
-  std::unique_ptr<signin::IdentityManager::Observer> token_load_observer_;
+  std::unique_ptr<SilentSyncEnabler> silent_sync_enabler_;
 
   base::WeakPtrFactory<LacrosFirstRunService> weak_ptr_factory_{this};
 };
@@ -114,23 +115,6 @@ class LacrosFirstRunServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
-
-namespace testing {
-
-// Overrides the outcome of a check made during
-// `LacrosFirstRunService::TryEnableSyncSilentlyWithToken()` to indicate that
-// Sync is required for the primary profile, without having to mock policies or
-// device settings.
-class ScopedSyncRequiredInFirstRun {
- public:
-  explicit ScopedSyncRequiredInFirstRun(bool required);
-  ~ScopedSyncRequiredInFirstRun();
-
- private:
-  absl::optional<bool> overriden_value_;
-};
-
-}  // namespace testing
 
 // Helper to call `LacrosFirstRunService::ShouldOpenFirstRun()` without having
 // to first obtain the service instance.

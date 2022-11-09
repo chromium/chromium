@@ -7,141 +7,36 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "base/scoped_observation.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lacros/device_settings_lacros.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/sync_startup_tracker.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
+#include "chrome/browser/ui/startup/silent_sync_enabler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "content/public/browser/browser_context.h"
 
 namespace {
 
-// Overrides signals indicating that Sync is required, for testing purposes.
-absl::optional<bool> g_sync_required_for_testing;
-
-// Helper to run `callback` once refresh tokens from the
-// `signin::IdentityManager` are loaded.
-class RefreshTokensLoadObserver : public signin::IdentityManager::Observer {
- public:
-  RefreshTokensLoadObserver(signin::IdentityManager* identity_manager,
-                            base::OnceClosure callback)
-      : callback_(std::move(callback)) {
-    DCHECK(callback_);
-    DCHECK(!identity_manager->AreRefreshTokensLoaded());
-    scoped_observation_.Observe(identity_manager);
-  }
-
-  void OnRefreshTokensLoaded() override {
-    // We're using a `OnceCallback`, no need to continue observing.
-    scoped_observation_.Reset();
-
-    if (callback_)
-      std::move(callback_).Run();
-  }
-
- private:
-  base::OnceClosure callback_;
-
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      scoped_observation_{this};
-};
-
-// Silently goes through the `TurnSyncOnHelper` flow, enabling Sync when given
-// the opportunity.
-class SilentSyncEnablerDelegate : public TurnSyncOnHelper::Delegate {
- public:
-  ~SilentSyncEnablerDelegate() override = default;
-
-  // TurnSyncOnHelper::Delegate:
-  void ShowEnterpriseAccountConfirmation(
-      const AccountInfo& account_info,
-      signin::SigninChoiceCallback callback) override {
-    // We proceed here, and we are waiting until `ShowSyncConfirmation()` for
-    // the Sync engine to be started to know if we can proceed or not.
-    // TODO(https://crbug.com/1324569): Introduce a `DEFER` status or a new
-    // `ShouldShowEnterpriseAccountConfirmation()` delegate method to handle
-    // management consent not being handled at this step.
-    std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
-  }
-
-  void ShowSyncConfirmation(
-      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-          callback) override {
-    // The purpose of this delegate is specifically to enable Sync silently. If
-    // we get all the way here, we assume that we can proceed with it.
-    std::move(callback).Run(LoginUIService::SyncConfirmationUIClosedResult::
-                                SYNC_WITH_DEFAULT_SETTINGS);
-
-    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
-        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
-  }
-
-  bool ShouldAbortBeforeShowSyncDisabledConfirmation() override {
-    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
-        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
-    return true;
-  }
-
-  void ShowSyncDisabledConfirmation(
-      bool is_managed_account,
-      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-          callback) override {
-    LOG(WARNING) << "crbug.com/1340791 | Unexpected Sync disabled prompt.";
-    // If Sync is disabled, the `TurnSyncOnHelper` should quit earlier due to
-    // `ShouldAbortBeforeShowSyncDisabledConfirmation()`.
-    NOTREACHED();
-  }
-
-  void ShowLoginError(const SigninUIError& error) override {
-    LOG(WARNING) << "crbug.com/1340791 | Login error: "
-                 << static_cast<int>(error.type());
-    NOTREACHED();
-  }
-
-  void ShowMergeSyncDataConfirmation(const std::string&,
-                                     const std::string&,
-                                     signin::SigninChoiceCallback) override {
-    LOG(WARNING) << "crbug.com/1340791 | Unexpected data merge prompt";
-    NOTREACHED();
-  }
-
-  void ShowSyncSettings() override {
-    LOG(WARNING) << "crbug.com/1340791 | Unexpected Sync settings prompt";
-    NOTREACHED();
-  }
-
-  void SwitchToProfile(Profile*) override {
-    LOG(WARNING) << "crbug.com/1340791 | Unexpected profile switch";
-    NOTREACHED();
-  }
-};
-
 bool IsFirstRunEligibleProfile(Profile* profile) {
+  // Skip for users without Gaia account (e.g. Active Directory, Kiosk, Guest…)
+  if (!profiles::SessionHasGaiaAccount())
+    return false;
+
   // Having secondary profiles implies that the user already used Chrome and so
   // should not have to see the FRE. So we never want to run it for these.
   if (!profile->IsMainProfile())
@@ -159,9 +54,6 @@ bool IsFirstRunEligibleProfile(Profile* profile) {
 
 // Whether policies and device settings require Sync to be always enabled.
 bool IsSyncRequired(Profile* profile) {
-  if (g_sync_required_for_testing.has_value())
-    return g_sync_required_for_testing.value();
-
   if (!profile->GetPrefs()->GetBoolean(prefs::kEnableSyncConsent))
     return true;
 
@@ -223,10 +115,6 @@ bool LacrosFirstRunService::ShouldOpenFirstRun() const {
   if (command_line->HasSwitch(switches::kNoFirstRun))
     return false;
 
-  // Skip for users without Gaia account (e.g. Active Directory, Kiosk, Guest…)
-  if (!profiles::SessionHasGaiaAccount())
-    return false;
-
   const PrefService* const pref_service = g_browser_process->local_state();
   return !pref_service->GetBoolean(
       lacros_prefs::kPrimaryProfileFirstRunFinished);
@@ -239,10 +127,9 @@ void LacrosFirstRunService::TryMarkFirstRunAlreadyFinished(
   // The method has multiple exit points, this ensures `callback` gets called.
   base::ScopedClosureRunner scoped_closure_runner(std::move(callback));
 
-  // If the FRE is already open, no need to do any of the below. We need to
-  // check this to avoid conflicts, but also because the FRE being open can make
-  // some checks below inaccurate. For example, it turns Sync on while
-  // configuring it, but might end up turning it off at the end of the flow.
+  // If the FRE is already open, it is obviously not finished and we also don't
+  // want to preemptively mark it completed. Skip all the below, the profile
+  // picker can handle being called while already shown.
   if (ProfilePicker::IsLacrosFirstRunOpen())
     return;
 
@@ -254,62 +141,38 @@ void LacrosFirstRunService::TryMarkFirstRunAlreadyFinished(
     return;
   }
 
-  if (!IsSyncRequired(profile_)) {
-    // Let the FRE be shown when the user opens a browser UI for the first time.
+  if (IsSyncRequired(profile_)) {  // Enable Sync silently.
+    // At this point, Sync is about to be enabled, or can't be enabled at
+    // all for some reason. In any case, we should consider the FRE
+    // triggering complete and ensure it doesn't open after this.
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
+    SetFirstRunFinished();
+
+    StartSilentSync(scoped_closure_runner.Release());
     return;
   }
 
-  CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  if (identity_manager->HasAccountWithRefreshToken(account_id)) {
-    TryEnableSyncSilentlyWithToken(account_id, scoped_closure_runner.Release());
-  } else {
-    if (token_load_observer_) {
-      // An attempt to mark the FRE finish is already ongoing. We choose to
-      // abort the current one and let the previous one continue.
-      LOG(WARNING)
-          << "Aborting slient sync opt-in attempt, another one is ongoing.";
-      return;
-    }
-
-    // The observer will get cleared by `TryEnableSyncSilentlyWithToken()`.
-    token_load_observer_ = std::make_unique<RefreshTokensLoadObserver>(
-        identity_manager,
-        base::BindOnce(
-            &LacrosFirstRunService::TryEnableSyncSilentlyWithToken,
-            // Unretained is safe because the observer will get destroyed before
-            // this object and won't be able to trigger the callback.
-            base::Unretained(this), account_id,
-            scoped_closure_runner.Release()));
-  }
-
-  // At this point, Sync is either enabled, or can't be enabled at all for some
-  // reason, so we should not reopen the FRE.
-  SetFirstRunFinished();
+  // Fallthrough: let the FRE be shown when the user opens a browser UI for the
+  // first time.
 }
 
-void LacrosFirstRunService::TryEnableSyncSilentlyWithToken(
-    const CoreAccountId& account_id,
-    base::OnceClosure callback) {
-  token_load_observer_.reset();
+void LacrosFirstRunService::StartSilentSync(base::OnceClosure callback) {
+  // We should not be able to re-enter here as the FRE should be marked
+  // already finished.
+  DCHECK(!silent_sync_enabler_);
 
-  const signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  if (identity_manager &&
-      !identity_manager->HasAccountWithRefreshToken(account_id)) {
-    // Still no token, just give up.
-    if (callback)
-      std::move(callback).Run();
-    return;
-  }
+  auto reset_enabler_callback =
+      base::BindOnce(&LacrosFirstRunService::ClearSilentSyncEnabler,
+                     weak_ptr_factory_.GetWeakPtr());
+  silent_sync_enabler_ = std::make_unique<SilentSyncEnabler>(profile_);
+  silent_sync_enabler_->StartAttempt(
+      callback ? std::move(reset_enabler_callback).Then(std::move(callback))
+               : std::move(reset_enabler_callback));
+}
 
-  // TurnSyncOnHelper deletes itself once done.
-  new TurnSyncOnHelper(
-      profile_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kForcedSigninPrimaryAccount, account_id,
-      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-      std::make_unique<SilentSyncEnablerDelegate>(), std::move(callback));
+void LacrosFirstRunService::ClearSilentSyncEnabler() {
+  silent_sync_enabler_.reset();
 }
 
 void LacrosFirstRunService::OpenFirstRunIfNeeded(EntryPoint entry_point,
@@ -331,6 +194,8 @@ void LacrosFirstRunService::OpenFirstRunInternal(EntryPoint entry_point,
   base::UmaHistogramEnumeration(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", entry_point);
 
+  // Note: we call `Show()` even if the FRE might be already open and rely on
+  // the ProfilePicker to decide what it wants to do with `callback`.
   ProfilePicker::Show(ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(
       base::BindOnce(&OnFirstRunHasExited, std::move(callback))));
 }
@@ -338,10 +203,13 @@ void LacrosFirstRunService::OpenFirstRunInternal(EntryPoint entry_point,
 // LacrosFirstRunServiceFactory ------------------------------------------------
 
 LacrosFirstRunServiceFactory::LacrosFirstRunServiceFactory()
-    : ProfileKeyedServiceFactory("LacrosFirstRunServiceFactory",
-                                 ProfileSelections::Builder()
-                                     .WithGuest(ProfileSelection::kNone)
-                                     .Build()) {
+    : ProfileKeyedServiceFactory(
+          "LacrosFirstRunServiceFactory",
+          // TODO(crbug.com/1375277): Update this instead of checking
+          // the profile compatibility with `IsFirstRunEligibleProfile()`?
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelection::kNone)
+              .Build()) {
   // Used for checking Sync consent level.
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -392,22 +260,3 @@ bool ShouldOpenPrimaryProfileFirstRun(Profile* profile) {
   auto* instance = LacrosFirstRunServiceFactory::GetForBrowserContext(profile);
   return instance && instance->ShouldOpenFirstRun();
 }
-
-namespace testing {
-
-ScopedSyncRequiredInFirstRun::ScopedSyncRequiredInFirstRun(bool required) {
-  if (g_sync_required_for_testing.has_value()) {
-    overriden_value_ = g_sync_required_for_testing.value();
-  }
-  g_sync_required_for_testing = required;
-}
-
-ScopedSyncRequiredInFirstRun::~ScopedSyncRequiredInFirstRun() {
-  if (overriden_value_.has_value()) {
-    g_sync_required_for_testing = overriden_value_.value();
-  } else {
-    g_sync_required_for_testing.reset();
-  }
-}
-
-}  // namespace testing

@@ -55,7 +55,11 @@ constexpr char kNavigationUrl[] = "https://www.google.com/";
 
 class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
  public:
-  BrowserServiceLacrosBrowserTest() = default;
+  BrowserServiceLacrosBrowserTest(
+      crosapi::mojom::SessionType session_type =
+          crosapi::mojom::SessionType::kRegularSession)
+      : session_type_(session_type) {}
+
   BrowserServiceLacrosBrowserTest(const BrowserServiceLacrosBrowserTest&) =
       delete;
   BrowserServiceLacrosBrowserTest& operator=(
@@ -66,10 +70,14 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
-  void SetSessionType(SessionType type) {
-    BrowserInitParamsPtr init_params = BrowserInitParams::New();
-    init_params->session_type = type;
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->session_type = session_type_;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
   }
 
   void CreateFullscreenWindow() {
@@ -135,6 +143,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<BrowserServiceLacros> browser_service_;
+  crosapi::mojom::SessionType session_type_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest, NewFullscreenWindow) {
@@ -142,9 +151,16 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest, NewFullscreenWindow) {
   VerifyFullscreenWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
+class BrowserServiceLacrosKioskBrowserTest
+    : public BrowserServiceLacrosBrowserTest {
+ public:
+  BrowserServiceLacrosKioskBrowserTest()
+      : BrowserServiceLacrosBrowserTest(
+            crosapi::mojom::SessionType::kWebKioskSession) {}
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosKioskBrowserTest,
                        BlockAdditionalWindowsInWebKiosk) {
-  SetSessionType(SessionType::kWebKioskSession);
   CreateFullscreenWindow();
 
   // The new window should be blocked in the web Kiosk session.
@@ -156,7 +172,6 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
                        AllowAdditionalWindowsInRegularSession) {
-  SetSessionType(SessionType::kRegularSession);
   CreateFullscreenWindow();
 
   // The new window should be allowed in the regular session.
@@ -432,7 +447,7 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
   BrowserServiceLacrosNonSyncingProfilesBrowserTest(
       crosapi::mojom::SessionType session_type =
           crosapi::mojom::SessionType::kRegularSession)
-      : session_type_(session_type) {}
+      : BrowserServiceLacrosBrowserTest(session_type) {}
 
   // BrowserServiceLacrosBrowserTest:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
@@ -456,16 +471,6 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
         profile_manager->GetPrimaryUserProfilePath());
   }
 
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->session_type = session_type_;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
-    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
@@ -475,8 +480,6 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
 
   profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
       non_enterprise_domain_setter_;
-
-  crosapi::mojom::SessionType session_type_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
