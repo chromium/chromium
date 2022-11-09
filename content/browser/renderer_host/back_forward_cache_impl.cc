@@ -1211,15 +1211,6 @@ void BackForwardCache::DisableForRenderFrameHost(
 }
 
 // static
-void BackForwardCache::ClearDisableReasonForRenderFrameHost(
-    GlobalRenderFrameHostId id,
-    BackForwardCache::DisabledReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (auto* rfh = RenderFrameHostImpl::FromID(id))
-    rfh->ClearDisableBackForwardCache(reason);
-}
-
-// static
 void BackForwardCache::DisableForRenderFrameHost(
     GlobalRenderFrameHostId id,
     BackForwardCache::DisabledReason reason) {

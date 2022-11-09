@@ -97,9 +97,6 @@ class CONTENT_EXPORT BackForwardCache {
   // its |id| can be used.
   static void DisableForRenderFrameHost(GlobalRenderFrameHostId id,
                                         DisabledReason reason);
-  // Clear a previously set `reason` for a `render_frame_host`.
-  static void ClearDisableReasonForRenderFrameHost(GlobalRenderFrameHostId id,
-                                                   DisabledReason reason);
 
   // List of reasons the BackForwardCache was disabled for a specific test. If a
   // test needs to be disabled for a reason not covered below, please add to

@@ -2118,11 +2118,6 @@ void RenderFrameHostImpl::DisableBackForwardCache(
   MaybeEvictFromBackForwardCache();
 }
 
-void RenderFrameHostImpl::ClearDisableBackForwardCache(
-    BackForwardCache::DisabledReason reason) {
-  back_forward_cache_disabled_reasons_.erase(reason);
-}
-
 void RenderFrameHostImpl::DisableProactiveBrowsingInstanceSwapForTesting() {
   // This should only be called on primary main frames.
   DCHECK(IsInPrimaryMainFrame());

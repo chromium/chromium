@@ -1602,7 +1602,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DisableBackForwardCache(BackForwardCache::DisabledSource source,
                                BackForwardCache::DisabledReasonType reason);
   void DisableBackForwardCache(BackForwardCache::DisabledReason reason);
-  void ClearDisableBackForwardCache(BackForwardCache::DisabledReason reason);
 
   bool is_evicted_from_back_forward_cache() {
     return is_evicted_from_back_forward_cache_;
