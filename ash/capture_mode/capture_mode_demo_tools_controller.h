@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_DEMO_TOOLS_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_DEMO_TOOLS_CONTROLLER_H_
 
+#include "base/timer/timer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -47,6 +48,9 @@ class CaptureModeDemoToolsController {
 
   gfx::Rect CalculateBounds() const;
 
+  // Resets the `demo_tools_widget_` when the `hide_timer_` expires.
+  void AnimateToResetTheWidget();
+
   VideoRecordingWatcher* const video_recording_watcher_;
   views::UniqueWidgetPtr demo_tools_widget_;
   KeyComboView* key_combo_view_ = nullptr;
@@ -56,6 +60,10 @@ class CaptureModeDemoToolsController {
 
   // The most recently pressed non-modifier key.
   ui::KeyboardCode last_non_modifier_key_ = ui::VKEY_UNKNOWN;
+
+  // Starts on key up of the last non-modifier key and the `key_combo_view_`
+  // will disappear when it expires.
+  base::OneShotTimer hide_timer_;
 };
 
 }  // namespace ash

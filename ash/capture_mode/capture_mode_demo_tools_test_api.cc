@@ -53,4 +53,9 @@ ui::KeyboardCode CaptureModeDemoToolsTestApi::GetShownNonModifierKeyCode() {
   return key_combo_view->last_non_modifier_key_;
 }
 
+base::OneShotTimer* CaptureModeDemoToolsTestApi::GetKeyComboHideTimer() {
+  DCHECK(demo_tools_controller_);
+  return &(demo_tools_controller_->hide_timer_);
+}
+
 }  // namespace ash

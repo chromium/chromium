@@ -91,6 +91,11 @@ constexpr gfx::Size kSettingsIconSize{20, 20};
 // Border value used for each section of the settings menu.
 constexpr auto kSettingsMenuBorderSize = gfx::Insets::VH(8, 16);
 
+// The duration to continue showing the key combo view on key up of the
+// non-modifier key.
+constexpr base::TimeDelta kDelayToHideKeyComboDuration =
+    base::Milliseconds(1500);
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

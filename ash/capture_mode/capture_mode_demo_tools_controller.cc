@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/key_combo_view.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "base/check_op.h"
@@ -88,16 +89,36 @@ void CaptureModeDemoToolsController::OnKeyEvent(ui::KeyEvent* event) {
 
 void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
   const ui::KeyboardCode key_code = event->key_code();
-  modifiers_ &= ~GetModifierFlagForKeyCode(key_code);
+  const int modifier_flag = GetModifierFlagForKeyCode(key_code);
+  modifiers_ &= ~modifier_flag;
 
-  if (last_non_modifier_key_ == key_code)
+  // If the timer is running, it means that the non-modifier key of the
+  // key combo has recently been released and the timer is about to hide the
+  // entire widget when it expires. When the modifier keys of the shortcut get
+  // released, we want to ignore them such that the key combo continues to show
+  // on the screen as a complete combo until the timer expires.
+  if (hide_timer_.IsRunning() && modifier_flag != ui::EF_NONE)
+    return;
+
+  if (last_non_modifier_key_ == key_code) {
     last_non_modifier_key_ = ui::VKEY_UNKNOWN;
+    hide_timer_.Start(FROM_HERE, capture_mode::kDelayToHideKeyComboDuration,
+                      this,
+                      &CaptureModeDemoToolsController::AnimateToResetTheWidget);
+    return;
+  }
 
   RefreshKeyComboViewer();
 }
 
 void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
   const ui::KeyboardCode key_code = event->key_code();
+
+  // On any key down, we want to cancel any ongoing request to hide the widget,
+  // since this is considered a new key combo other than the one the timer was
+  // running for.
+  hide_timer_.Stop();
+
   // Return directly if it is a repeated key event for non-modifier key.
   if (key_code == last_non_modifier_key_)
     return;
@@ -113,8 +134,7 @@ void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
 
 void CaptureModeDemoToolsController::RefreshKeyComboViewer() {
   if ((modifiers_ == 0) && !ShouldConsiderKey(last_non_modifier_key_)) {
-    demo_tools_widget_.reset();
-    key_combo_view_ = nullptr;
+    AnimateToResetTheWidget();
     return;
   }
 
@@ -141,6 +161,13 @@ gfx::Rect CaptureModeDemoToolsController::CalculateBounds() const {
   bounds.ClampToCenteredSize(preferred_size);
   bounds.set_y(demo_tools_y);
   return bounds;
+}
+
+void CaptureModeDemoToolsController::AnimateToResetTheWidget() {
+  // TODO(http://b/258349669): apply animation to the hide process when the
+  // specs are ready.
+  demo_tools_widget_.reset();
+  key_combo_view_ = nullptr;
 }
 
 }  // namespace ash

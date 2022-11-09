@@ -26,6 +26,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace ash {
 
@@ -166,6 +167,14 @@ UserNudgeController* GetUserNudgeController() {
   return CaptureModeSessionTestApi(session).GetUserNudgeController();
 }
 
+bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {
+  DCHECK_EQ(layer->parent(), sibling->parent());
+  const auto& children = layer->parent()->children();
+  const int sibling_index =
+      base::ranges::find(children, sibling) - children.begin();
+  return sibling_index > 0 && children[sibling_index - 1] == layer;
+}
+
 // -----------------------------------------------------------------------------
 // ProjectorCaptureModeIntegrationHelper:
 
@@ -206,12 +215,26 @@ void ProjectorCaptureModeIntegrationHelper::StartProjectorModeSession() {
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
-bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {
-  DCHECK_EQ(layer->parent(), sibling->parent());
-  const auto& children = layer->parent()->children();
-  const int sibling_index =
-      base::ranges::find(children, sibling) - children.begin();
-  return sibling_index > 0 && children[sibling_index - 1] == layer;
+// -----------------------------------------------------------------------------
+// ViewVisibilityChangeWaiter:
+
+ViewVisibilityChangeWaiter ::ViewVisibilityChangeWaiter(views::View* view)
+    : view_(view) {
+  view_->AddObserver(this);
+}
+
+ViewVisibilityChangeWaiter::~ViewVisibilityChangeWaiter() {
+  view_->RemoveObserver(this);
+}
+
+void ViewVisibilityChangeWaiter::Wait() {
+  wait_loop_.Run();
+}
+
+void ViewVisibilityChangeWaiter::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  wait_loop_.Quit();
 }
 
 }  // namespace ash

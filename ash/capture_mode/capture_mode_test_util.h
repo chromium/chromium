@@ -10,9 +10,12 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/public/cpp/test/mock_projector_client.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace base {
 class FilePath;
@@ -133,6 +136,26 @@ class ProjectorCaptureModeIntegrationHelper {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   MockProjectorClient projector_client_;
+};
+
+// Defines a waiter to observe the visibility change of the view.
+class ViewVisibilityChangeWaiter : public views::ViewObserver {
+ public:
+  explicit ViewVisibilityChangeWaiter(views::View* view);
+  ViewVisibilityChangeWaiter(const ViewVisibilityChangeWaiter&) = delete;
+  ViewVisibilityChangeWaiter& operator=(const ViewVisibilityChangeWaiter&) =
+      delete;
+  ~ViewVisibilityChangeWaiter() override;
+
+  void Wait();
+
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
+
+ private:
+  views::View* const view_;
+  base::RunLoop wait_loop_;
 };
 
 }  // namespace ash

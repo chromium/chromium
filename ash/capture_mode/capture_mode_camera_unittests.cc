@@ -59,7 +59,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
@@ -142,28 +141,6 @@ class CameraDevicesChangeWaiter : public CaptureModeCameraController::Observer {
 
   // Tracks the number of times `OnSelectedCameraChanged()` was triggered.
   int selected_camera_change_event_count_ = 0;
-};
-
-// Defines a waiter to observe the visibility change of the view.
-class ViewVisibilityChangeWaiter : public views::ViewObserver {
- public:
-  explicit ViewVisibilityChangeWaiter(views::View* view) : view_(view) {
-    view_->AddObserver(this);
-  }
-
-  ~ViewVisibilityChangeWaiter() override { view_->RemoveObserver(this); }
-
-  void Wait() { wait_loop_.Run(); }
-
-  // views::ViewObserver:
-  void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override {
-    wait_loop_.Quit();
-  }
-
- private:
-  views::View* const view_;
-  base::RunLoop wait_loop_;
 };
 
 gfx::Rect GetTooSmallToFitCameraRegion() {

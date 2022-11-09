@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/timer/timer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace views {
@@ -44,6 +45,10 @@ class CaptureModeDemoToolsTestApi {
 
   // Returns the non-modifier key that is currently on display.
   ui::KeyboardCode GetShownNonModifierKeyCode();
+
+  // Returns the timer to hide the key combo view on key up of the
+  // non-modifier key after the expiration.
+  base::OneShotTimer* GetKeyComboHideTimer();
 
  private:
   CaptureModeDemoToolsController* const demo_tools_controller_;
