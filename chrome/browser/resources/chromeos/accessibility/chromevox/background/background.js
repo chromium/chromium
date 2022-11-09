@@ -86,7 +86,8 @@ export class Background extends ChromeVoxState {
 
   /** @private */
   init_() {
-    // Initialize TTS and legacy background page first.
+    // Initialize braille, TTS, and legacy background page first.
+    BrailleBackground.init();
     TtsBackground.init();
     ChromeVoxBackground.init();
 
@@ -128,6 +129,7 @@ export class Background extends ChromeVoxState {
 
     AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
+    BrailleCommandHandler.init();
     DesktopAutomationHandler.init();
     DownloadHandler.init();
     EventStreamLogger.init();

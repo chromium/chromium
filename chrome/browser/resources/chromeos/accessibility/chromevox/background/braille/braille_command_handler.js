@@ -36,11 +36,13 @@ export class BrailleCommandHandler {
     this.enabled_ = true;
   }
 
-  static get instance() {
-    if (!BrailleCommandHandler.instance_) {
-      BrailleCommandHandler.instance_ = new BrailleCommandHandler();
-    }
-    return BrailleCommandHandler.instance_;
+  static init() {
+    BrailleCommandHandler.instance = new BrailleCommandHandler();
+
+    BridgeHelper.registerHandler(
+        BridgeConstants.BrailleCommandHandler.TARGET,
+        BridgeConstants.BrailleCommandHandler.Action.SET_ENABLED,
+        enabled => BrailleCommandHandler.setEnabled(enabled));
   }
 
   /**
@@ -258,9 +260,4 @@ export class BrailleCommandHandler {
 }
 
 /** @type {BrailleCommandHandler} */
-BrailleCommandHandler.instance_;
-
-BridgeHelper.registerHandler(
-    BridgeConstants.BrailleCommandHandler.TARGET,
-    BridgeConstants.BrailleCommandHandler.Action.SET_ENABLED,
-    enabled => BrailleCommandHandler.setEnabled(enabled));
+BrailleCommandHandler.instance;

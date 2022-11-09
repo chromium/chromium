@@ -70,12 +70,17 @@ export class BrailleInputHandler {
     /** @private {function()?} */
     this.uncommittedCellsChangedListener_ = null;
 
-    this.translatorManager_.addChangeListener(
-        this.commitAndClearEntryState_.bind(this));
+    this.init_();
   }
 
-  /** Starts to listen for connections from the Chrome OS braille IME. */
-  init() {
+  /**
+   * Starts to listen for connections from the Chrome OS braille IME.
+   * @private
+   */
+  init_() {
+    this.translatorManager_.addChangeListener(
+        this.commitAndClearEntryState_.bind(this));
+
     chrome.runtime.onConnectExternal.addListener(this.onImeConnect_.bind(this));
   }
 

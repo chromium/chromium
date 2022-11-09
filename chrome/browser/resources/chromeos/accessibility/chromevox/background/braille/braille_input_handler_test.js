@@ -459,7 +459,6 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxNextE2ETest {
     chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP = 'keyup';
     this.translatorManager = new FakeTranslatorManager();
     this.inputHandler = new BrailleInputHandler(this.translatorManager);
-    this.inputHandler.init();
     this.uncontractedTranslator = new FakeTranslator(UNCONTRACTED_TABLE);
     this.contractedTranslator = new FakeTranslator(CONTRACTED_TABLE, true);
     this.keyEvents = [];

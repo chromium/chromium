@@ -47,7 +47,6 @@ export class BrailleBackground {
     /** @private {!BrailleInputHandler} */
     this.inputHandler_ = opt_inputHandlerForTest ||
         new BrailleInputHandler(this.translatorManager_);
-    this.inputHandler_.init();
 
     /** @private {BrailleKeyEventRewriter} */
     this.keyEventRewriter_ = new BrailleKeyEventRewriter();
@@ -58,12 +57,23 @@ export class BrailleBackground {
     this.lastContentId_ = null;
   }
 
-  /** @return {!BrailleBackground} */
-  static get instance() {
-    if (!BrailleBackground.instance_) {
-      BrailleBackground.instance_ = new BrailleBackground();
-    }
-    return BrailleBackground.instance_;
+  static init() {
+    BrailleBackground.instance = new BrailleBackground();
+
+    BridgeHelper.registerHandler(
+        BridgeConstants.BrailleBackground.TARGET,
+        BridgeConstants.BrailleBackground.Action.BACK_TRANSLATE,
+        cells => new Promise(resolve => {
+          BrailleBackground.instance.getTranslatorManager()
+              .getDefaultTranslator()
+              .backTranslate(cells, resolve);
+        }));
+    BridgeHelper.registerHandler(
+        BridgeConstants.BrailleBackground.TARGET,
+        BridgeConstants.BrailleBackground.Action.REFRESH_BRAILLE_TABLE,
+        brailleTable =>
+            BrailleBackground.instance.getTranslatorManager().refresh(
+                brailleTable));
   }
 
   /** @override */
@@ -164,20 +174,5 @@ export class BrailleBackground {
   }
 }
 
-/** @type {?BrailleBackground} */
-BrailleBackground.instance_ = null;
-
-BridgeHelper.registerHandler(
-    BridgeConstants.BrailleBackground.TARGET,
-    BridgeConstants.BrailleBackground.Action.BACK_TRANSLATE,
-    cells => new Promise(resolve => {
-      BrailleBackground.instance.getTranslatorManager()
-          .getDefaultTranslator()
-          .backTranslate(cells, resolve);
-    }));
-
-BridgeHelper.registerHandler(
-    BridgeConstants.BrailleBackground.TARGET,
-    BridgeConstants.BrailleBackground.Action.REFRESH_BRAILLE_TABLE,
-    brailleTable => BrailleBackground.instance.getTranslatorManager().refresh(
-        brailleTable));
+/** @type {BrailleBackground} */
+BrailleBackground.instance;
