@@ -1560,11 +1560,14 @@ static void InvokeOnAnnotation(const v8::FunctionCallbackInfo<v8::Value>& args) 
       AnnotationHookJSName);
     return;
   }
-  v8::Isolate* isolate = args.GetIsolate();
 
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::Local<v8::Object> payload = v8::Object::New(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  payload->Set(context, ToV8String(isolate, "message"), args[1]).Check();
+
   v8::Local<v8::String> json;
-  if (!v8::JSON::Stringify(context, args[1]).ToLocal(&json)) {
+  if (!v8::JSON::Stringify(context, payload).ToLocal(&json)) {
     recordreplay::Print("%s contents failed to json stringify",
       AnnotationHookJSName);
     return;
