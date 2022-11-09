@@ -278,8 +278,8 @@ js_library("ip_config_info_drawer_test") {
 
 js_library("keyboard_tester_test") {
   deps = [
-    "..:mock_controller.m",
     "../..:chai_assert",
+    "../..:mock_controller",
     "../..:test_util",
     "//ash/webui/diagnostics_ui/mojom:mojom_webui_js",
     "//ash/webui/diagnostics_ui/resources:keyboard_tester",

@@ -8,7 +8,7 @@ import {DialogType, SCREEN_MAX_LENGTH, TouchEventType} from 'chrome://diagnostic
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertTrue} from '../../chai_assert.js';
-import {MockController} from '../mock_controller.m.js';
+import {MockController} from '../../mock_controller.js';
 import {eventToPromise} from '../../test_util.js';
 
 suite('touchscreenTesterTestSuite', function() {
