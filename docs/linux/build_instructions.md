@@ -21,6 +21,21 @@ Are you a Google employee? See
 Most development is done on Ubuntu (currently 18.04, Bionic Beaver). There are
 some instructions for other distros below, but they are mostly unsupported.
 
+### Docker requirements
+
+While it is not a common setup, Chromium compilation should work from within a
+Docker container. If you choose to compile from within a container for whatever
+reason, you will need to make sure that the following tools are available:
+
+* `curl`
+* `git`
+* `lsb_release`
+* `python3`
+* `sudo`
+
+There may be additional Docker-specific issues during compilation. See
+[this bug](https://crbug.com/1377520) for additional details on this.
+
 ## Install `depot_tools`
 
 Clone the `depot_tools` repository:
