@@ -657,10 +657,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux_android_dbg_ng",
-)
-
-try_.builder(
     name = "try-nougat-phone-tester",
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [

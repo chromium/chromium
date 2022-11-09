@@ -308,12 +308,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "win10_chromium_x64_rel_ng_exp",
-    builderless = False,
-    os = os.WINDOWS_ANY,
-)
-
-try_.builder(
     name = "win7-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [

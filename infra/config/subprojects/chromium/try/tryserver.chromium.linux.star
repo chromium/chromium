@@ -381,10 +381,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux_chromium_analysis",
-)
-
-try_.builder(
     name = "linux_chromium_archive_rel_ng",
     mirrors = [
         "ci/linux-archive-rel",
