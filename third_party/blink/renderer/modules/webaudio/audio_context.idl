@@ -30,6 +30,10 @@ enum AudioContextLatencyCategory {
     "playback"
 };
 
+[RuntimeEnabled=AudioContextSetSinkId] dictionary AudioSinkOptions {
+  required AudioSinkType type;
+};
+
 // https://webaudio.github.io/web-audio-api/#AudioContext
 [
     Exposed=Window,
@@ -52,7 +56,7 @@ enum AudioContextLatencyCategory {
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamSource] MediaStreamAudioSourceNode createMediaStreamSource(MediaStream mediaStream);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamDestination] MediaStreamAudioDestinationNode createMediaStreamDestination();
 
-    [RuntimeEnabled=AudioContextSetSinkId, MeasureAs=AudioContextSinkId] readonly attribute DOMString sinkId;
-    [RuntimeEnabled=AudioContextSetSinkId, MeasureAs=AudioContextSetSinkId, RaisesException, CallWith=ScriptState] Promise<void> setSinkId(DOMString sinkId);
+    [RuntimeEnabled=AudioContextSetSinkId, MeasureAs=AudioContextSinkId, SecureContext] readonly attribute (DOMString or AudioSinkInfo) sinkId;
+    [RuntimeEnabled=AudioContextSetSinkId, MeasureAs=AudioContextSetSinkId, RaisesException, CallWith=ScriptState, SecureContext] Promise<void> setSinkId((DOMString or AudioSinkOptions) sinkId);
     [RuntimeEnabled=AudioContextSetSinkId] attribute EventHandler onsinkchange;
 };

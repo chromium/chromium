@@ -56,10 +56,6 @@ class AudioDestinationNode : public AudioNode {
   void ReportDidCreate() final;
   void ReportWillBeDestroyed() final;
 
-  // This will invoke 'RendererWebAudioDeviceImpl::SwitchOutputDevice()' and
-  // pass 'sink_id' and callback used for returning the result status.
-  void SetSinkId(const String& sink_id, media::OutputDeviceStatusCB callback);
-
  protected:
   explicit AudioDestinationNode(BaseAudioContext&);
 };
