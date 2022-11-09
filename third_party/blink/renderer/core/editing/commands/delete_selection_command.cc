@@ -321,8 +321,11 @@ void DeleteSelectionCommand::InitializePositionData(
   // to the selection
   leading_whitespace_ = LeadingCollapsibleWhitespacePosition(
       upstream_start_, selection_to_delete_.Affinity());
-  trailing_whitespace_ = TrailingWhitespacePosition(
-      downstream_end_, kNotConsiderNonCollapsibleWhitespace);
+  trailing_whitespace_ =
+      IsEditablePosition(downstream_end_)
+          ? TrailingWhitespacePosition(downstream_end_,
+                                       kNotConsiderNonCollapsibleWhitespace)
+          : Position();
 
   if (options_.IsSmartDelete()) {
     // skip smart delete if the selection to delete already starts or ends with

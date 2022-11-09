@@ -118,4 +118,22 @@ TEST_F(TypingCommandTest, ForwardDeleteInvalidatesSelection) {
       GetSelectionTextFromBody());
 }
 
+// crbug.com/1382250
+TEST_F(TypingCommandTest, ForwardDeleteAtTableEnd) {
+  SetBodyContent("<table contenteditable></table>");
+  Element* table = GetDocument().QuerySelector("table");
+  table->setTextContent("a");
+  UpdateAllLifecyclePhasesForTest();
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .Collapse(Position(table->firstChild(), 1))
+                               .Build(),
+                           SetSelectionOptions());
+
+  // Should not crash.
+  EditingState editing_state;
+  TypingCommand::ForwardDeleteKeyPressed(GetDocument(), &editing_state);
+
+  EXPECT_EQ("<table contenteditable>a|</table>", GetSelectionTextFromBody());
+}
+
 }  // namespace blink
