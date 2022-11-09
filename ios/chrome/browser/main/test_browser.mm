@@ -57,3 +57,7 @@ void TestBrowser::AddObserver(BrowserObserver* observer) {
 void TestBrowser::RemoveObserver(BrowserObserver* observer) {
   observers_.RemoveObserver(observer);
 }
+
+base::WeakPtr<Browser> TestBrowser::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}

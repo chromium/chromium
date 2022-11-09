@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 
 class BrowserObserver;
@@ -41,6 +42,9 @@ class Browser : public base::SupportsUserData {
   // Adds and removes observers.
   virtual void AddObserver(BrowserObserver* observer) = 0;
   virtual void RemoveObserver(BrowserObserver* observer) = 0;
+
+  // Returns a weak pointer to the Browser.
+  virtual base::WeakPtr<Browser> AsWeakPtr() = 0;
 
  protected:
   Browser() {}

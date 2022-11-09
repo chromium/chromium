@@ -7,9 +7,9 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#import "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/main/browser.h"
 
 class ChromeBrowserState;
 @class SceneState;
@@ -21,7 +21,7 @@ class WebStateListDelegate;
 // session.
 //
 // See src/docs/ios/objects.md for more information.
-class BrowserImpl : public Browser {
+class BrowserImpl final : public Browser {
  public:
   // Constructs a BrowserImpl attached to `browser_state`.
   BrowserImpl(ChromeBrowserState* browser_state);
@@ -29,14 +29,15 @@ class BrowserImpl : public Browser {
   BrowserImpl(const BrowserImpl&) = delete;
   BrowserImpl& operator=(const BrowserImpl&) = delete;
 
-  ~BrowserImpl() override;
+  ~BrowserImpl() final;
 
   // Browser.
-  ChromeBrowserState* GetBrowserState() override;
-  WebStateList* GetWebStateList() override;
-  CommandDispatcher* GetCommandDispatcher() override;
-  void AddObserver(BrowserObserver* observer) override;
-  void RemoveObserver(BrowserObserver* observer) override;
+  ChromeBrowserState* GetBrowserState() final;
+  WebStateList* GetWebStateList() final;
+  CommandDispatcher* GetCommandDispatcher() final;
+  void AddObserver(BrowserObserver* observer) final;
+  void RemoveObserver(BrowserObserver* observer) final;
+  base::WeakPtr<Browser> AsWeakPtr() final;
 
  private:
   ChromeBrowserState* browser_state_;
@@ -44,6 +45,10 @@ class BrowserImpl : public Browser {
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
+
+  // Needs to be the last member field to ensure all weak pointers are
+  // invalidated before the other internal objects are destroyed.
+  base::WeakPtrFactory<Browser> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_IMPL_H_

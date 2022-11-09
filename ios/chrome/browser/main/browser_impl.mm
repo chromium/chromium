@@ -55,6 +55,10 @@ void BrowserImpl::RemoveObserver(BrowserObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+base::WeakPtr<Browser> BrowserImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // static
 std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state) {
   std::unique_ptr<BrowserImpl> browser =
