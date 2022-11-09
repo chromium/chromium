@@ -8,7 +8,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
+#include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -84,41 +87,71 @@ LayoutUnit ComputeInset(const Length& inset, LayoutUnit viewport_size) {
   return MinimumValueForLength(inset, viewport_size);
 }
 
-Length ParseLength(const InsetValueSequence& array,
-                   wtf_size_t index,
-                   Length default_value,
-                   ExceptionState& exception_state) {
+const CSSValue* ParseInset(const InsetValueSequence& array,
+                           wtf_size_t index,
+                           ExceptionState& exception_state) {
   if (index >= array.size())
-    return default_value;
+    return nullptr;
 
   V8UnionCSSNumericValueOrString* value = array[index];
   if (value->IsString()) {
-    if (value->GetAsString() != "auto") {
+    if (value->GetAsString() != "auto")
       exception_state.ThrowTypeError("inset must be CSSNumericValue or auto");
-    }
-    // TODO(crbug.com/1317765): Not the correct default value.
-    // "auto" indicates to use the value of scroll-padding.
-    // Resolve once handled in pure CSS implementation.
-    return default_value;
-  } else {
-    CSSNumericValue* numeric_value = value->GetAsCSSNumericValue();
-    CSSUnitValue* value_as_percentage =
-        numeric_value->to(CSSPrimitiveValue::UnitType::kPercentage);
-    if (value_as_percentage)
-      return Length(value_as_percentage->value(), Length::Type::kPercent);
 
-    CSSUnitValue* value_as_px =
-        numeric_value->to(CSSPrimitiveValue::UnitType::kPixels);
-    if (value_as_px)
-      return Length(value_as_px->value(), Length::Type::kFixed);
+    return CSSIdentifierValue::Create(Length(Length::Type::kAuto));
+  }
 
-    // TODO(crbug.com/1317765): Support other length units and calc?
-    // Resolve once handled in pure CSS implementation.
+  CSSNumericValue* numeric_value = value->GetAsCSSNumericValue();
+  const CSSPrimitiveValue* css_value =
+      DynamicTo<CSSPrimitiveValue>(numeric_value->ToCSSValue());
+  if (!css_value || (!css_value->IsLength() && !css_value->IsPercentage())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Unsupported inset: value must be percent or px");
-    return default_value;
+        "Unsupported inset: value must be length or percent");
   }
+
+  return css_value;
+}
+
+bool IsStyleDependant(const CSSValue* value) {
+  if (const CSSPrimitiveValue* css_primitive_value =
+          DynamicTo<CSSPrimitiveValue>(value)) {
+    return !css_primitive_value->IsPx() && !css_primitive_value->IsPercentage();
+  }
+
+  return false;
+}
+
+Length InsetValueToLength(const CSSValue* inset_value,
+                          Element* subject,
+                          Length default_value) {
+  if (!inset_value)
+    return default_value;
+
+  if (!subject)
+    return Length(Length::Type::kAuto);
+
+  if (inset_value->IsIdentifierValue()) {
+    DCHECK_EQ(To<CSSIdentifierValue>(inset_value)->GetValueID(),
+              CSSValueID::kAuto);
+    return Length(Length::Type::kAuto);
+  }
+
+  if (inset_value->IsPrimitiveValue()) {
+    ElementResolveContext element_resolve_context(*subject);
+    Document& document = subject->GetDocument();
+    CSSToLengthConversionData length_conversion_data(
+        subject->GetComputedStyle(), element_resolve_context.ParentStyle(),
+        element_resolve_context.RootElementStyle(), document.GetLayoutView(),
+        CSSToLengthConversionData::ContainerSizes(subject),
+        subject->GetComputedStyle()->EffectiveZoom());
+
+    return DynamicTo<CSSPrimitiveValue>(inset_value)
+        ->ConvertToLength(length_conversion_data);
+  }
+
+  NOTREACHED();
+  return Length(Length::Type::kAuto);
 }
 
 }  // end namespace
@@ -147,14 +180,26 @@ ViewTimeline* ViewTimeline::Create(Document& document,
     exception_state.ThrowTypeError("Invalid inset");
     return nullptr;
   }
+
   Inset inset;
-  inset.start_side = ParseLength(inset_array, 0, Length(Length::Type::kFixed),
-                                 exception_state);
+  const CSSValue* start_inset_value =
+      ParseInset(inset_array, 0, exception_state);
+  const CSSValue* end_inset_value = ParseInset(inset_array, 1, exception_state);
+
+  inset.start_side = InsetValueToLength(start_inset_value, subject,
+                                        Length(Length::Type::kFixed));
+
   inset.end_side =
-      ParseLength(inset_array, 1, inset.start_side, exception_state);
+      InsetValueToLength(end_inset_value, subject, inset.start_side);
 
   ViewTimeline* view_timeline = MakeGarbageCollected<ViewTimeline>(
       &document, subject, orientation, inset);
+
+  if (IsStyleDependant(start_inset_value))
+    view_timeline->style_dependant_start_inset_ = start_inset_value;
+  if (IsStyleDependant(end_inset_value))
+    view_timeline->style_dependant_end_inset_ = end_inset_value;
+
   view_timeline->UpdateSnapshot();
   return view_timeline;
 }
@@ -217,6 +262,17 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   viewport_size_ = viewport_size.ToDouble();
 
   Inset inset = ResolveAuto(inset_, *source, GetOrientation());
+
+  // Update inset lengths if style dependent.
+  if (style_dependant_start_inset_) {
+    inset.start_side = InsetValueToLength(style_dependant_start_inset_,
+                                          subject(), Length::Fixed());
+  }
+  if (style_dependant_end_inset_) {
+    inset.end_side = InsetValueToLength(style_dependant_end_inset_, subject(),
+                                        Length::Fixed());
+  }
+
   // Note that the end_side_inset is used to adjust the start offset,
   // and the start_side_inset is used to adjust the end offset.
   // This is because "start side" refers to logical start side [1] of the
@@ -337,6 +393,12 @@ AnimationTimeline::TimeDelayPair ViewTimeline::TimelineOffsetsToTimeDelays(
   absl::optional<double> end_fraction = ToFractionalOffset(timing.end_delay);
   return std::make_pair(start_fraction.value_or(0) * duration.value(),
                         (1 - end_fraction.value_or(1)) * duration.value());
+}
+
+void ViewTimeline::Trace(Visitor* visitor) const {
+  visitor->Trace(style_dependant_start_inset_);
+  visitor->Trace(style_dependant_end_inset_);
+  ScrollTimeline::Trace(visitor);
 }
 
 }  // namespace blink

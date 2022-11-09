@@ -31,6 +31,13 @@
     height:  100px;
     width:  100px;
     display:  inline-block;
+    font-size:  16px;
+  }
+  #target.big-font {
+    font-size:  20px;
+  }
+  #container.scroll-padded {
+    scroll-padding-inline: 10px 20px;
   }
 </style>
 </style>
@@ -90,5 +97,53 @@
     });
   }, 'View timeline with percent based inset.');
 
-  // Add tests for inset "auto".
+  promise_test(async t => {
+    t.add_cleanup(() => {
+      container.class = '';
+    });
+    const anim = await runTimelineInsetTest(t, {
+      inset: [ "auto", "auto" ],
+      rangeStart: 600,
+      rangeEnd: 900
+    });
+    container.classList.add('scroll-padded');
+    await runTimelineRangeTest(t, {
+      anim: anim,
+      rangeStart: 620,
+      rangeEnd: 890,
+    }, 'Adjust for scroll-padding');
+  }, 'view timeline with inset auto.');
+
+promise_test(async t => {
+  t.add_cleanup(() => {
+    target.class = '';
+  });
+  const anim = await runTimelineInsetTest(t, {
+    inset: [ CSS.em(1), CSS.em(2) ],
+    rangeStart: 632,
+    rangeEnd: 884
+  });
+  target.classList.add('big-font');
+  await runTimelineRangeTest(t, {
+    anim: anim,
+    rangeStart: 640,
+    rangeEnd: 880,
+  }, 'Adjust for font size increase');
+}, 'view timeline with font relative inset.');
+
+promise_test(async t => {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const vmin = Math.min(vw, vh);
+  await runTimelineInsetTest(t, {
+    inset: [ CSS.vw(10), CSS.vw(20) ],
+    rangeStart: 600 + 0.2 * vw,
+    rangeEnd: 900 - 0.1 * vw
+  });
+  await runTimelineInsetTest(t, {
+    inset: [ CSS.vmin(10), CSS.vmin(20) ],
+    rangeStart: 600 + 0.2 * vmin,
+    rangeEnd: 900 - 0.1 * vmin
+  });
+}, 'view timeline with viewport relative insets.');
 </script>

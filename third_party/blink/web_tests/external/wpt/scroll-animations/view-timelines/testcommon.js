@@ -14,10 +14,7 @@ function CreateViewTimelineOpacityAnimation(test, target, options) {
   const anim =
       target.animate(
           { opacity: [0.3, 0.7] },
-          {
-            timeline: new ViewTimeline(viewTimelineOptions),
-            fill: 'none'
-          });
+          { timeline: new ViewTimeline(viewTimelineOptions) });
   test.add_cleanup(() => {
     anim.cancel();
   });
@@ -38,7 +35,9 @@ async function runTimelineRangeTest(t, options, message) {
   container.scrollLeft = 0;
   await waitForNextFrame();
 
-  const anim = CreateViewTimelineOpacityAnimation(t, target, options.timeline);
+  const anim =
+      options.anim ||
+      CreateViewTimelineOpacityAnimation(t, target, options.timeline);
   if (options.timing)
     anim.effect.updateTiming(options.timing);
 
@@ -62,6 +61,9 @@ async function runTimelineRangeTest(t, options, message) {
   await waitForNextFrame();
   assert_equals(getComputedStyle(target).opacity, '0.7',
                 `Effect is in the active phase at effect end time: ${message}`);
+
+  // Return the animation so that we can continue testing with the same object.
+  return anim;
 }
 
 // Sets the start and end delays for a view timeline and ensures that the
@@ -98,7 +100,7 @@ async function runTimelineDelayTest(t, options) {
     fill: 'both'
   };
 
-  await runTimelineRangeTest(t, options, range);
+  return runTimelineRangeTest(t, options, range);
 }
 
 // Sets the Inset for a view timeline and ensures that the range aligns with
@@ -122,5 +124,5 @@ async function runTimelineInsetTest(t, options) {
   }
   const length = options.inset.length;
   const range = options.inset.join(' ');
-  await runTimelineRangeTest(t, options, range);
+  return runTimelineRangeTest(t, options, range);
 }
