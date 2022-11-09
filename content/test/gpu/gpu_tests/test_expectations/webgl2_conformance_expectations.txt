@@ -308,7 +308,6 @@ crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/misc/shader
 # Metal failures #
 # Common to all GPU types (both AMD and Intel, at least)
 crbug.com/angleproject/6430 [ mac passthrough angle-metal ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal ] conformance2/rendering/fs-color-type-mismatch-color-buffer-type.html [ Failure ]
 crbug.com/angleproject/7079 [ mac passthrough angle-metal ] deqp/functional/gles3/fboinvalidate/sub.html [ Failure ]
 crbug.com/angleproject/7079 [ mac passthrough angle-metal ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
@@ -336,7 +335,6 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 crbug.com/angleproject/7425 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
-crbug.com/1355825 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage2d_format_2d_00.html [ Failure ]
 crbug.com/1369290 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ RetryOnFailure ]
 
 # Metal Intel
@@ -451,7 +449,6 @@ crbug.com/870856 [ mac amd ] conformance2/textures/misc/tex-base-level-bug.html 
 
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
 
-crbug.com/636648 [ mac amd ] deqp/functional/gles3/shaderindexing/mat_01.html [ RetryOnFailure ]
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
@@ -511,7 +508,6 @@ crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/function
 # AMD Radeon HD 7800 GPU (1002:679e)
 crbug.com/1276186 [ mac amd-0x679e angle-opengl passthrough ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 crbug.com/1240443 [ mac amd-0x679e angle-opengl passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-crbug.com/1345755 [ mac amd-0x679e angle-opengl passthrough ] deqp/functional/gles3/texturefiltering/cube_no_edges_visible.html [ Failure ]
 
 # Mac / M1 / OpenGL
 crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
@@ -718,7 +714,6 @@ crbug.com/1285114 [ chromeos chromeos-board-kevin passthrough ] conformance2/tra
 crbug.com/1286099 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
 crbug.com/1374291 [ chromeos chromeos-board-kevin passthrough ] conformance2/textures/video/tex-3d-rgba8-rgba-unsigned_byte.html [ Failure ]
 
-crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
 
 crbug.com/1373277 [ chromeos chromeos-board-kevin ] conformance2/textures/video/tex-3d-srgb8-rgb-unsigned_byte.html [ Failure ]
 
