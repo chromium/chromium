@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(FuchsiaFrameAccessibilityTest, DataSentWithBatching) {
 
   // Run until we expect more than a batch's worth of nodes to be present.
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage2NodeCount);
-  EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(kNodeName);
 
   // Checks if the actual batching happened.
   EXPECT_GE(semantics_manager_.semantic_tree()->num_update_calls(), 18u);
@@ -206,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(FuchsiaFrameAccessibilityTest, NavigateFromPageToPage) {
 
   EXPECT_TRUE(
       semantics_manager_.semantic_tree()->GetNodeFromLabel(kPage2Title));
-  EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
+
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(kNodeName);
 
   // Check that data from the first page has been deleted successfully.
   EXPECT_FALSE(
@@ -520,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(FuchsiaFrameAccessibilityTest, OutOfProcessIframe) {
       kPage2Title);
 
   // check that the iframe navigated to a different page.
-  EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(kNodeName);
 
   // Old iframe data should be gone.
   EXPECT_FALSE(

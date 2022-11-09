@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DataSentWithBatching) {
 
   // Run until we expect more than a batch's worth of nodes to be present.
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage2NodeCount);
-  EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(kNodeName);
   EXPECT_EQ(semantics_manager_.semantic_tree()->num_delete_calls(), 0u);
 
   // Checks if the actual batching happened.
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, NavigateFromPageToPage) {
 
   EXPECT_TRUE(
       semantics_manager_.semantic_tree()->GetNodeFromLabel(kPage2Title));
-  EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(kNodeName);
 
   // Check that data from the first page has been deleted successfully.
   EXPECT_FALSE(
@@ -1146,7 +1146,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
       kPage2Title);
 
   // check that the iframe navigated to a different page.
-  EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(kNodeName);
 
   // Old iframe data should be gone.
   EXPECT_FALSE(
