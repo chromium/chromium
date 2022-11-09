@@ -403,6 +403,25 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
 )
 
+try_.orchestrator_builder(
+    name = "android-pie-arm64-rel-inverse-fyi",
+    mirrors = [
+        "ci/android-pie-arm64-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
+    compilator = "android-pie-arm64-rel-compilator",
+    check_for_flakiness = True,
+    use_orchestrator_pool = True,
+)
+
 try_.compilator_builder(
     name = "android-pie-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,

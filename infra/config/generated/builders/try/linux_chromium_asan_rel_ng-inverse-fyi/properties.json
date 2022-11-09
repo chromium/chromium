@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "linux_chromium_asan_rel_ng-compilator",
+    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -6,7 +10,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux TSan Builder",
+              "builder": "Linux ASan LSan Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -15,10 +19,11 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "lsan",
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium_tsan2",
+                "config": "chromium_asan",
                 "target_bits": 64
               },
               "legacy_gclient_config": {
@@ -29,7 +34,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux TSan Tests",
+              "builder": "Linux ASan LSan Tests (1)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -38,10 +43,11 @@
               "execution_mode": "TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "lsan",
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium_tsan2",
+                "config": "chromium_asan",
                 "target_bits": 64
               },
               "legacy_gclient_config": {
@@ -49,7 +55,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "Linux TSan Builder",
+                "builder": "Linux ASan LSan Builder",
                 "project": "chromium"
               }
             }
@@ -59,33 +65,21 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Linux TSan Builder",
+          "builder": "Linux ASan LSan Builder",
           "project": "chromium"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Linux TSan Tests",
+          "builder": "Linux ASan LSan Tests (1)",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux_chromium_tsan_rel_ng",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux_chromium_tsan_rel_ng-inverse-fyi",
-          "group": "tryserver.chromium.linux"
-        }
-      ]
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -94,9 +88,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.memory",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium/orchestrator"
 }

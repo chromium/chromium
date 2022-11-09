@@ -254,6 +254,27 @@ try_.builder(
     omit_python2 = False,
 )
 
+try_.builder(
+    name = "linux-wayland-rel-inverse-fyi",
+    mirrors = [
+        "ci/Linux Builder (Wayland)",
+        "ci/Linux Tests (Wayland)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    builderless = True,
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
+
+    # TODO(crbug.com/1366987): remove this.
+    omit_python2 = False,
+)
+
 # TODO (crbug.com/1287228): Remove when orchestrator is confirmed to work
 try_.orchestrator_builder(
     name = "linux-wayland-rel-orchestrator",
@@ -383,6 +404,26 @@ try_.orchestrator_builder(
 
     # TODO(crbug.com/1366987): remove this.
     omit_python2 = False,
+)
+
+try_.orchestrator_builder(
+    name = "linux_chromium_asan_rel_ng-inverse-fyi",
+    compilator = "linux_chromium_asan_rel_ng-compilator",
+    mirrors = [
+        "ci/Linux ASan LSan Builder",
+        "ci/Linux ASan LSan Tests (1)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
+    omit_python2 = False,
+    use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
@@ -550,6 +591,26 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
 
     # TODO(crbug.com/1366987): remove this.
+    omit_python2 = False,
+)
+
+try_.orchestrator_builder(
+    name = "linux_chromium_tsan_rel_ng-inverse-fyi",
+    mirrors = [
+        "ci/Linux TSan Builder",
+        "ci/Linux TSan Tests",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    compilator = "linux_chromium_tsan_rel_ng-compilator",
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
+    use_orchestrator_pool = True,
     omit_python2 = False,
 )
 

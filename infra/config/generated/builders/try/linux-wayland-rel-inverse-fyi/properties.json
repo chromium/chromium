@@ -6,22 +6,25 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux TSan Builder",
+              "builder": "Linux Builder (Wayland)",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
-              "builder_group": "chromium.memory",
+              "build_gs_bucket": "chromium-linux-archive",
+              "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium_tsan2",
+                "config": "chromium",
                 "target_bits": 64
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
                 "config": "chromium"
               }
             }
@@ -29,27 +32,30 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux TSan Tests",
+              "builder": "Linux Tests (Wayland)",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
-              "builder_group": "chromium.memory",
+              "build_gs_bucket": "chromium-linux-archive",
+              "builder_group": "chromium.linux",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium_tsan2",
+                "config": "chromium",
                 "target_bits": 64
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
                 "config": "chromium"
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "Linux TSan Builder",
+                "builder": "Linux Builder (Wayland)",
                 "project": "chromium"
               }
             }
@@ -59,32 +65,29 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Linux TSan Builder",
+          "builder": "Linux Builder (Wayland)",
           "project": "chromium"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Linux TSan Tests",
+          "builder": "Linux Tests (Wayland)",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux_chromium_tsan_rel_ng",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux_chromium_tsan_rel_ng-inverse-fyi",
-          "group": "tryserver.chromium.linux"
-        }
-      ]
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
     }
   },
+  "$build/goma": {
+    "enable_ats": true,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org"
+  },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -94,9 +97,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.memory",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium_trybot"
 }

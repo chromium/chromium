@@ -39,6 +39,9 @@ _EXPERIMENTAL_ORCHESTRATOR_NAMES_BY_COMPILATOR_NAME = {
     "try/android-nougat-x86-rel-compilator": ["try/android-nougat-x86-rel-inverse-fyi"],
     "try/win10_chromium_x64_rel_ng-compilator": ["try/win10_chromium_x64_rel_ng-inverse-fyi"],
     "try/mac-rel-compilator": ["try/mac-rel-inverse-fyi"],
+    "try/android-pie-arm64-rel-compilator": ["try/android-pie-arm64-rel-inverse-fyi"],
+    "try/linux_chromium_asan_rel_ng-compilator": ["try/linux_chromium_asan_rel_ng-inverse-fyi"],
+    "try/linux_chromium_tsan_rel_ng-compilator": ["try/linux_chromium_tsan_rel_ng-inverse-fyi"],
 }
 
 def register_orchestrator(bucket, name, builder_group, compilator):

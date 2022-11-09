@@ -75,6 +75,10 @@
           "group": "tryserver.chromium.linux"
         },
         {
+          "builder": "linux-wayland-rel-inverse-fyi",
+          "group": "tryserver.chromium.linux"
+        },
+        {
           "builder": "linux-wayland-rel-orchestrator",
           "group": "tryserver.chromium.linux"
         }
