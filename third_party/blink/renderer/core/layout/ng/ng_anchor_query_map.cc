@@ -298,10 +298,8 @@ struct NGStitchedAnchorQueries {
                          const PhysicalOffset& offset_from_fragmentainer,
                          const FragmentainerContext& fragmentainer) {
     DCHECK(fragment.IsOutOfFlowPositioned());
-    const AtomicString anchor_name = fragment.Style().AnchorName();
-    if (anchor_name.IsNull() && !fragment.AnchorQuery())
+    if (!fragment.Style().AnchorName() && !fragment.AnchorQuery())
       return;
-
     // OOF fragments in block-fragmentation context are children of the
     // fragmentainers, but they should be added to anchor queries of their
     // containing block chain. Traverse the containing block chain and add
@@ -325,10 +323,12 @@ struct NGStitchedAnchorQueries {
            !skip_info.AncestorSkipped()) {
       NGStitchedAnchorQuery& query =
           EnsureStitchedAnchorQuery(*containing_block);
-      if (!anchor_name.IsNull()) {
+      if (fragment.Style().AnchorName()) {
+        // TODO(xiaochengh): Handle tree-scoped anchor name.
         query.AddAnchorReference(
-            anchor_name, fragment, {offset_from_fragmentainer, fragment.Size()},
-            fragmentainer, NGStitchedAnchorQuery::Conflict::kOverwriteIfBefore);
+            fragment.Style().AnchorName()->GetName(), fragment,
+            {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
+            NGStitchedAnchorQuery::Conflict::kOverwriteIfBefore);
       }
       query.AddAnchorQuery(fragment, offset_from_fragmentainer, fragmentainer);
       containing_block = containing_block->Container(&skip_info);

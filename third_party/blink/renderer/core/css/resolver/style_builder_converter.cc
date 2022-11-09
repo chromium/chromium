@@ -60,10 +60,12 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/transform_builder.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
@@ -302,9 +304,10 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
 
 FontDescription::FamilyDescription StyleBuilderConverter::ConvertFontFamily(
     StyleResolverState& state,
-    const CSSValue& value) {
+    const ScopedCSSValue& scoped_value) {
+  state.GetFontBuilder().SetFamilyTreeScope(scoped_value.GetTreeScope());
   return StyleBuilderConverterBase::ConvertFontFamily(
-      value,
+      scoped_value.GetCSSValue(),
       state.GetDocument().GetSettings() ? &state.GetFontBuilder() : nullptr,
       &state.GetDocument());
 }
@@ -1451,6 +1454,19 @@ AtomicString StyleBuilderConverter::ConvertNoneOrCustomIdent(
     return g_null_atom;
   }
   return To<CSSCustomIdentValue>(value).Value();
+}
+
+ScopedCSSName* StyleBuilderConverter::ConvertNoneOrCustomIdent(
+    StyleResolverState& state,
+    const ScopedCSSValue& value) {
+  if (const auto* identifier_value =
+          DynamicTo<CSSIdentifierValue>(value.GetCSSValue())) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+  return MakeGarbageCollected<ScopedCSSName>(
+      To<CSSCustomIdentValue>(value.GetCSSValue()).Value(),
+      value.GetTreeScope());
 }
 
 StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(

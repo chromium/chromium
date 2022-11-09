@@ -2900,4 +2900,70 @@ TEST_F(StyleResolverTestCQ, ContainerUnitContext) {
   EXPECT_DOUBLE_EQ(200.0, state.CssToLengthConversionData().ContainerHeight());
 }
 
+TEST_F(StyleResolverTest, ScopedAnchorName) {
+  GetDocument()
+      .documentElement()
+      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <div id="outer-anchor" style="anchor-name: --outer"></div>
+    <style>#host::part(anchor) { anchor-name: --part; }</style>
+    <div id="host">
+      <template shadowroot=open>
+        <style>:host { anchor-name: --host; }</style>
+        <div id="part" part="anchor"></div>
+        <div id="inner-anchor" style="anchor-name: --inner"></div>
+      </template>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer_anchor = GetElementById("outer-anchor");
+  Element* host = GetElementById("host");
+  ShadowRoot* shadow = host->GetShadowRoot();
+  Element* part = shadow->getElementById("part");
+  Element* inner_anchor = shadow->getElementById("inner-anchor");
+
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
+            *outer_anchor->ComputedStyleRef().AnchorName());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--host", shadow),
+            *host->ComputedStyleRef().AnchorName());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--part", &GetDocument()),
+            *part->ComputedStyleRef().AnchorName());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--inner", shadow),
+            *inner_anchor->ComputedStyleRef().AnchorName());
+}
+
+TEST_F(StyleResolverTest, ScopedAnchorScroll) {
+  GetDocument()
+      .documentElement()
+      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <div id="outer-anchor" style="anchor-scroll: --outer"></div>
+    <style>#host::part(anchor) { anchor-scroll: --part; }</style>
+    <div id="host">
+      <template shadowroot=open>
+        <style>:host { anchor-scroll: --host; }</style>
+        <div id="part" part="anchor"></div>
+        <div id="inner-anchor" style="anchor-scroll: --inner"></div>
+      </template>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer_anchor = GetElementById("outer-anchor");
+  Element* host = GetElementById("host");
+  ShadowRoot* shadow = host->GetShadowRoot();
+  Element* part = shadow->getElementById("part");
+  Element* inner_anchor = shadow->getElementById("inner-anchor");
+
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
+            *outer_anchor->ComputedStyleRef().AnchorScroll());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--host", shadow),
+            *host->ComputedStyleRef().AnchorScroll());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--part", &GetDocument()),
+            *part->ComputedStyleRef().AnchorScroll());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--inner", shadow),
+            *inner_anchor->ComputedStyleRef().AnchorScroll());
+}
+
 }  // namespace blink

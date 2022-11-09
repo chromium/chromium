@@ -493,6 +493,16 @@ class ComputedStyle : public ComputedStyleBase,
    * class, and be kept to a minimum.
    */
 
+  // anchor-name
+  bool AnchorNameDataEquivalent(const ComputedStyle& o) const {
+    return base::ValuesEquivalent(AnchorName(), o.AnchorName());
+  }
+
+  // anchor-scroll
+  bool AnchorScrollDataEquivalent(const ComputedStyle& o) const {
+    return base::ValuesEquivalent(AnchorScroll(), o.AnchorScroll());
+  }
+
   const FilterOperations& BackdropFilter() const {
     DCHECK(BackdropFilterInternal().Get());
     return BackdropFilterInternal()->operations_;

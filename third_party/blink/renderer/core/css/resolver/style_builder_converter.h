@@ -70,6 +70,8 @@ class Font;
 class FontBuilder;
 class RotateTransformOperation;
 class ScaleTransformOperation;
+class ScopedCSSName;
+class ScopedCSSValue;
 class StyleAutoColor;
 class StylePath;
 class StyleResolverState;
@@ -126,7 +128,7 @@ class StyleBuilderConverter {
   static T ConvertFlags(StyleResolverState&, const CSSValue&);
   static FontDescription::FamilyDescription ConvertFontFamily(
       StyleResolverState&,
-      const CSSValue&);
+      const ScopedCSSValue&);
   static scoped_refptr<FontFeatureSettings> ConvertFontFeatureSettings(
       StyleResolverState&,
       const CSSValue&);
@@ -193,6 +195,8 @@ class StyleBuilderConverter {
                             const CSSValue&);  // clamps to [0,1]
   static AtomicString ConvertNoneOrCustomIdent(StyleResolverState&,
                                                const CSSValue&);
+  static ScopedCSSName* ConvertNoneOrCustomIdent(StyleResolverState&,
+                                                 const ScopedCSSValue&);
   static StyleInitialLetter ConvertInitialLetter(StyleResolverState&,
                                                  const CSSValue&);
   static StyleOffsetRotation ConvertOffsetRotate(StyleResolverState&,

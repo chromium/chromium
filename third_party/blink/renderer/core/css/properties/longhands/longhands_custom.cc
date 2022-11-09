@@ -161,9 +161,10 @@ const CSSValue* AnchorName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.AnchorName().empty())
+  if (!style.AnchorName())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
-  return MakeGarbageCollected<CSSCustomIdentValue>(style.AnchorName());
+  return MakeGarbageCollected<CSSCustomIdentValue>(
+      style.AnchorName()->GetName());
 }
 
 const CSSValue* AnchorScroll::ParseSingleValue(
@@ -180,9 +181,10 @@ const CSSValue* AnchorScroll::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.AnchorScroll().empty())
+  if (!style.AnchorScroll())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
-  return MakeGarbageCollected<CSSCustomIdentValue>(style.AnchorScroll());
+  return MakeGarbageCollected<CSSCustomIdentValue>(
+      style.AnchorScroll()->GetName());
 }
 
 const CSSValue* AnimationDelay::ParseSingleValue(
@@ -392,12 +394,6 @@ const CSSValue* AnimationName::CSSValueFromComputedStyleInternal(
 
 const CSSValue* AnimationName::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kNone);
-}
-
-void AnimationName::ApplyValue(StyleResolverState& state,
-                               const ScopedCSSValue& scoped_value) const {
-  // TODO(futhark): Set the TreeScope on CSSAnimationData.
-  ApplyValue(state, scoped_value.GetCSSValue());
 }
 
 const CSSValue* AnimationPlayState::ParseSingleValue(
@@ -2909,12 +2905,6 @@ const CSSValue* FontFamily::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForFontFamily(style);
-}
-
-void FontFamily::ApplyValue(StyleResolverState& state,
-                            const ScopedCSSValue& scoped_value) const {
-  state.GetFontBuilder().SetFamilyTreeScope(scoped_value.GetTreeScope());
-  ApplyValue(state, scoped_value.GetCSSValue());
 }
 
 void FontFamily::ApplyInitial(StyleResolverState& state) const {

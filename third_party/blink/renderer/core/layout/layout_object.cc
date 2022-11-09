@@ -3141,7 +3141,7 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     }
   }
 
-  if (!StyleRef().AnchorName().IsNull())
+  if (StyleRef().AnchorName())
     MarkMayHaveAnchorQuery();
 }
 

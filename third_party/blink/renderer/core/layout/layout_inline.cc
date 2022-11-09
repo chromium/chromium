@@ -409,7 +409,7 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
       style.MayHaveMargin())
     return true;
 
-  if (!style.AnchorName().IsNull())
+  if (style.AnchorName())
     return true;
 
   return ComputeIsAbsoluteContainer(&style) ||
