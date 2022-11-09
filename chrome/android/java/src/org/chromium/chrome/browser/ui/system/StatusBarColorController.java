@@ -144,7 +144,14 @@ public class StatusBarColorController
 
             @Override
             public void onDidChangeThemeColor(Tab tab, int color) {
-                updateStatusBarColor();
+                if (ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
+                    // The theme color change assignment will override the feature flag which
+                    // matches the toolbar and the status bar color, specifically for custom tabs
+                    // with theme colors.
+                    updateStatusBarColor(color);
+                } else {
+                    updateStatusBarColor();
+                }
             }
 
             @Override
