@@ -6,6 +6,14 @@ including tips and tricks.
 
 [TOC]
 
+## Code Organization
+
+### Cross-platform Code
+Where possible, cross-platform code is preferred to other alternatives. This
+means that the source code of the updater is organized in sub-directories,
+first by functionality (or feature), and second by platform name. For example,
+the source code contains `updater\net` instead of `updater\mac\net`.
+
 ## Bots & Lab
 >**_NOTE:_** Knowledge in this section may become out-of-date as LUCI evolves
 quickly.

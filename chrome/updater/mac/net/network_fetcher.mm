@@ -16,11 +16,12 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/mac/net/network.h"
+#include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
 #import "net/base/mac/url_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -293,7 +294,7 @@ void NetworkFetcher::PostRequest(
     ResponseStartedCallback response_started_callback,
     ProgressCallback progress_callback,
     PostRequestCompleteCallback post_request_complete_callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::scoped_nsobject<CRUUpdaterNetworkDataDelegate> delegate(
       [[CRUUpdaterNetworkDataDelegate alloc]
@@ -335,7 +336,7 @@ void NetworkFetcher::DownloadToFile(
     ResponseStartedCallback response_started_callback,
     ProgressCallback progress_callback,
     DownloadToFileCompleteCallback download_to_file_complete_callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::scoped_nsobject<CRUUpdaterNetworkDownloadDelegate> delegate(
       [[CRUUpdaterNetworkDownloadDelegate alloc]
@@ -365,7 +366,7 @@ NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<NetworkFetcher>();
 }
 

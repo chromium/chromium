@@ -1,21 +1,26 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/net/network_fetcher.h"
+#include "chrome/updater/net/network.h"
 
+#include <windows.h>
+
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "chrome/updater/policy/service.h"
-#include "chrome/updater/win/net/network.h"
 #include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_util.h"
@@ -23,6 +28,7 @@
 #include "components/winhttp/network_fetcher.h"
 #include "components/winhttp/proxy_configuration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace updater {
 namespace {
@@ -119,7 +125,49 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
   return base::MakeRefCounted<winhttp::ProxyConfiguration>();
 }
 
-}  // namespace
+class NetworkFetcher : public update_client::NetworkFetcher {
+ public:
+  using ResponseStartedCallback =
+      update_client::NetworkFetcher::ResponseStartedCallback;
+  using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+  using PostRequestCompleteCallback =
+      update_client::NetworkFetcher::PostRequestCompleteCallback;
+  using DownloadToFileCompleteCallback =
+      update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+
+  NetworkFetcher(const HINTERNET& session_handle,
+                 scoped_refptr<winhttp::ProxyConfiguration> proxy_config);
+  ~NetworkFetcher() override;
+  NetworkFetcher(const NetworkFetcher&) = delete;
+  NetworkFetcher& operator=(const NetworkFetcher&) = delete;
+
+  // NetworkFetcher overrides.
+  void PostRequest(
+      const GURL& url,
+      const std::string& post_data,
+      const std::string& content_type,
+      const base::flat_map<std::string, std::string>& post_additional_headers,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      PostRequestCompleteCallback post_request_complete_callback) override;
+  void DownloadToFile(const GURL& url,
+                      const base::FilePath& file_path,
+                      ResponseStartedCallback response_started_callback,
+                      ProgressCallback progress_callback,
+                      DownloadToFileCompleteCallback
+                          download_to_file_complete_callback) override;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  void PostRequestComplete(int response_code);
+  void DownloadToFileComplete(int response_code);
+
+  scoped_refptr<winhttp::NetworkFetcher> winhttp_network_fetcher_;
+
+  DownloadToFileCompleteCallback download_to_file_complete_callback_;
+  PostRequestCompleteCallback post_request_complete_callback_;
+};
 
 NetworkFetcher::NetworkFetcher(
     const HINTERNET& session_handle,
@@ -200,6 +248,8 @@ void NetworkFetcher::DownloadToFileComplete(int /*response_code*/) {
       .Run(winhttp_network_fetcher_->GetNetError(),
            winhttp_network_fetcher_->GetContentSize());
 }
+
+}  // namespace
 
 NetworkFetcherFactory::NetworkFetcherFactory(
     absl::optional<PolicyServiceProxyConfiguration>

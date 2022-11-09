@@ -1,20 +1,32 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_MAC_NET_NETWORK_H_
-#define CHROME_UPDATER_MAC_NET_NETWORK_H_
+#ifndef CHROME_UPDATER_NET_NETWORK_H_
+#define CHROME_UPDATER_NET_NETWORK_H_
 
 #include <memory>
 
-#include "base/threading/thread_checker.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "components/update_client/network.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "components/winhttp/scoped_hinternet.h"
+
+namespace winhttp {
+class ProxyConfiguration;
+}
+
+#endif  // IS_WIN
 
 namespace updater {
 
 struct PolicyServiceProxyConfiguration;
 
+// Network fetcher factory for WinHTTP.
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
   explicit NetworkFetcherFactory(absl::optional<PolicyServiceProxyConfiguration>
@@ -28,9 +40,17 @@ class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
   ~NetworkFetcherFactory() override;
 
  private:
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
+
+// TODO(crbug.com/1382551) - remove platform dependend code from this header.
+#if BUILDFLAG(IS_WIN)
+  // Proxy configuration for WinHTTP must be initialized before the session
+  // handle.
+  scoped_refptr<winhttp::ProxyConfiguration> proxy_configuration_;
+  winhttp::ScopedHInternet session_handle_;
+#endif  // IS_WIN
 };
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_MAC_NET_NETWORK_H_
+#endif  // CHROME_UPDATER_NET_NETWORK_H_

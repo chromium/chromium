@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/mac/net/network.h"
-
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -18,6 +16,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chrome/updater/mac/net/network_fetcher.h"
+#include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/unittest_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

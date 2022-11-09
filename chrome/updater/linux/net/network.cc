@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/linux/net/network.h"
-
 #include <memory>
 
 #include "base/sequence_checker.h"
 #include "chrome/updater/linux/net/libcurl_network_fetcher.h"
+#include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
 #include "components/update_client/network.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

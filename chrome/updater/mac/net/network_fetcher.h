@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/update_client/network.h"
 
 class GURL;
@@ -51,7 +51,7 @@ class NetworkFetcher : public update_client::NetworkFetcher {
           download_to_file_complete_callback) override;
 
  private:
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace updater

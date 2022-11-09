@@ -1,10 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/net/network.h"
-
-#include <Urlmon.h>
+#include "chrome/updater/net/network.h"
 
 #include <memory>
 #include <string>
@@ -20,12 +18,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/unittest_util.h"
-#include "chrome/updater/win/net/network_fetcher.h"
+#include "components/update_client/network.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <Urlmon.h>
+#endif
 
 namespace updater {
 namespace {
@@ -55,6 +58,7 @@ class UpdaterDownloadTest : public ::testing::Test {
 
 }  // namespace
 
+#if BUILDFLAG(IS_WIN)
 // Tests that a direct download through URL moniker from a local HTTP server is
 // reasonably fast. This provides a baseline to compare the network throughput
 // of various fetchers.
@@ -65,6 +69,7 @@ TEST_F(UpdaterDownloadTest, URLMonFetcher) {
                           dest_.value().c_str(), 0, nullptr));
   EXPECT_TRUE(base::PathExists(dest_));
 }
+#endif
 
 TEST_F(UpdaterDownloadTest, NetworkFetcher) {
   EXPECT_FALSE(base::PathExists(dest_));
