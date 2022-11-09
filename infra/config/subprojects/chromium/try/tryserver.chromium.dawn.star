@@ -201,6 +201,8 @@ try_.builder(
     os = os.MAC_ANY,
     mirrors = [
         "ci/Dawn Mac x64 Builder",
+        # Not enough capacity on Mac AMD https://crbug.com/1380184.
+        # "ci/Dawn Mac x64 Release (AMD)",
         "ci/Dawn Mac x64 Release (Intel)",
     ],
     test_presentation = resultdb.test_presentation(
