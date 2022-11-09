@@ -125,6 +125,8 @@ void TrustedVaultDegradedRecoverabilityHandler::Refresh() {
 void TrustedVaultDegradedRecoverabilityHandler::
     OnRecoverabilityIsDegradedDownloaded(
         TrustedVaultRecoverabilityStatus status) {
+  base::UmaHistogramEnumeration(
+      "Sync.TrustedVaultRecoverabilityStatusOnRequestCompletion", status);
   sync_pb::DegradedRecoverabilityValue old_degraded_recoverability_value =
       degraded_recoverability_value_;
   switch (status) {

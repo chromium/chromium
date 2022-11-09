@@ -101123,6 +101123,12 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Persistent auth error resolved"/>
 </enum>
 
+<enum name="TrustedVaultRecoverabilityStatus">
+  <int value="0" label="Not degraded"/>
+  <int value="1" label="Degraded"/>
+  <int value="2" label="Error"/>
+</enum>
+
 <enum name="TrustedVaultUserActionTrigger">
   <int value="0" label="Settings page"/>
   <int value="1" label="Profile menu"/>

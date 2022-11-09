@@ -55,11 +55,16 @@ enum class TrustedVaultDownloadKeysStatus {
   kOtherError,
 };
 
+// This enum is used in histograms. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused, only add
+// at the end and. Also remember to update in tools/metrics/histograms/enums.xml
+// TrustedVaultRecoverabilityStatus enum.
 enum class TrustedVaultRecoverabilityStatus {
   // Recoverability status not retrieved due to network, http or protocol error.
-  kError,
-  kNotDegraded,
-  kDegraded
+  kNotDegraded = 0,
+  kDegraded = 1,
+  kError = 2,
+  kMaxValue = kError,
 };
 
 enum class AuthenticationFactorType { kPhysicalDevice, kUnspecified };
