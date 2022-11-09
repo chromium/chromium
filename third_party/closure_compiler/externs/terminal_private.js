@@ -117,6 +117,7 @@ chrome.terminalPrivate.openSettingsSubpage = function(subpage, callback) {};
  *   alternative_emulator: boolean,
  *   multi_profile: boolean,
  *   sftp: boolean,
+ *   tast: boolean,
  *   tmux_integration: boolean
  * }): void} callback Callback that will be called with the info object.
  */
