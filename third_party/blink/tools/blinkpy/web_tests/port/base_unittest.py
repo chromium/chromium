@@ -1581,6 +1581,58 @@ class PortTest(LoggingTestCase):
         port = self.make_port()
         self.assertRaises(AssertionError, port.virtual_test_suites)
 
+    def test_virtual_exclusive_tests(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["b1", "b2"],'
+            ' "exclusive_tests": "ALL", "args": ["-a"]},'
+            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["b2"],'
+            ' "exclusive_tests": ["b2/test.html"], "args": ["-b"]},'
+            '{"prefix": "v3", "platforms": ["Linux"], "bases": ["b3"],'
+            ' "args": ["-c"]}'
+            ']')
+        fs.write_text_file(fs.join(web_tests_dir, 'b1', 'test.html'), '')
+        fs.write_text_file(fs.join(web_tests_dir, 'b1', 'test2.html'), '')
+        fs.write_text_file(fs.join(web_tests_dir, 'b2', 'test.html'), '')
+        fs.write_text_file(fs.join(web_tests_dir, 'b2', 'test.html'), '')
+        fs.write_text_file(fs.join(web_tests_dir, 'b3', 'test.html'), '')
+
+        self.assertTrue(port.skipped_due_to_exclusive_virtual_tests('b1'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests('b1/test.html'))
+        self.assertTrue(port.skipped_due_to_exclusive_virtual_tests('b2'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests('b2/test.html'))
+        self.assertFalse(port.skipped_due_to_exclusive_virtual_tests('b3'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests('b3/test.html'))
+
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v1/b1'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/b1/test.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v1/b2'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/b2/test.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/b2/test2.html'))
+
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v2/b2'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/b2/test.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/b2/test2.html'))
+
     def test_default_results_directory(self):
         port = self.make_port(
             options=optparse.Values({

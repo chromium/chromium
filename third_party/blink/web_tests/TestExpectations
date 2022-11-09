@@ -240,28 +240,6 @@ crbug.com/1124352 external/wpt/picture-in-picture/exit-picture-in-picture.html [
 crbug.com/1124352 external/wpt/picture-in-picture/picture-in-picture-element.html [ Crash Pass ]
 crbug.com/1124352 external/wpt/picture-in-picture/shadow-dom.html [ Crash Pass ]
 
-# These tests require portals, and some require cross-origin portals.
-# Keep this in sync with VirtualTestSuites.
-crbug.com/1093466 external/wpt/fetch/metadata/portal.https.sub.html [ Skip ]
-crbug.com/1093466 external/wpt/portals/* [ Skip ]
-crbug.com/1093466 http/tests/devtools/portals/* [ Skip ]
-crbug.com/1093466 http/tests/inspector-protocol/portals/* [ Skip ]
-crbug.com/1093466 http/tests/portals/* [ Skip ]
-crbug.com/1093466 wpt_internal/portals/* [ Skip ]
-crbug.com/1093466 virtual/portals/external/wpt/fetch/metadata/portal.https.sub.html [ Pass ]
-crbug.com/1093466 virtual/portals/external/wpt/portals/* [ Pass ]
-crbug.com/1093466 virtual/portals/http/tests/devtools/portals/* [ Pass ]
-crbug.com/1093466 virtual/portals/http/tests/inspector-protocol/portals/* [ Pass ]
-crbug.com/1093466 virtual/portals/http/tests/portals/* [ Pass ]
-crbug.com/1093466 virtual/portals/wpt_internal/portals/* [ Pass ]
-
-# These tests require fenced-frames
-# Keep this in sync with VirtualTestSuites.
-crbug.com/1123606 wpt_internal/fenced_frame/* [ Skip ]
-crbug.com/1123606 http/tests/fenced_frame/* [ Skip ]
-crbug.com/1123606 virtual/fenced-frame-shadow-dom/* [ Pass ]
-crbug.com/1123606 virtual/fenced-frame-mparch/* [ Pass ]
-
 # These fail due to subtle anti-aliasing differences cause by the fact that
 # <canvas> renders via IOSurface and OffscreenCanvas does not.
 crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
@@ -271,18 +249,7 @@ crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-path
 # See crbug.com/1315650
 crbug.com/1322089 virtual/gpu/fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Failure Pass ]
 
-# These tests require shared-storage and fenced-frames
-# Keep this in sync with VirtualTestSuites.
-crbug.com/1218540 wpt_internal/shared_storage/* [ Skip ]
-crbug.com/1218540 external/wpt/shared-storage/* [ Skip ]
-crbug.com/1218540 virtual/shared-storage-fenced-frame-mparch/* [ Pass ]
-crbug.com/1218540 virtual/shared-storage-fenced-frame-shadow-dom/* [ Pass ]
-
-# These tests require flags enabled under the virtual/prerender/ suite.
-crbug.com/1355146 external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html* [ Skip ]
-crbug.com/1355146 virtual/prerender/external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html* [ Pass ]
 # This test is originally added with external/wpt/speculation-rules/prerender/* skipped and broken.
-# TODO(https://crbug.com/1356449): Fix the test.
 crbug.com/1356449 external/wpt/speculation-rules/prerender/credentialed-prerender-opt-in.html [ Skip ]
 # These tests are tentatively disabled.
 crbug.com/1302831 external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
@@ -291,20 +258,10 @@ crbug.com/1302831 wpt_internal/prerender/restriction-web-auth.https.html [ Skip 
 crbug.com/1302831 [ Mac10.14 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 crbug.com/1302831 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 
-# These tests require the experimental speculative prefetch feature, and requires extra switches to enable content implementation of speculation rules prefetch.
-# This expectation and the virtual suite can be removed once that is enabled by default.
-crbug.com/1343590 external/wpt/speculation-rules/prefetch/* [ Skip ]
-crbug.com/1343590 virtual/prefetch/external/wpt/speculation-rules/prefetch/* [ Pass ]
 crbug.com/1343590 virtual/prefetch/external/wpt/speculation-rules/prefetch/redirect-url.https.html [ Failure ]
-crbug.com/1343590 http/tests/inspector-protocol/prefetch/* [ Skip ]
-crbug.com/1343590 virtual/prefetch/http/tests/inspector-protocol/prefetch/* [ Pass ]
 
 # These tests are flaky with BFCache, which is enabled by default.
 crbug.com/1311546 http/tests/test-runner/back-forward.html [ Failure Pass ]
-
-# These tests require LazyEmbed, which is currently disabled by default.
-crbug.com/1247131 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/* [ Pass ]
-crbug.com/1247131 wpt_internal/lazyembed/* [ Skip ]
 
 # Ref test with very minor differences. We need fuzzy matching for our ref tests,
 # or upstream this to WPT.
@@ -315,15 +272,6 @@ crbug.com/1225630 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Sk
 crbug.com/1225630 fast/multicol/insane-column-count-and-padding-nested-crash.html [ Skip ]
 crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip ]
-
-# Document transition tests
-crbug.com/1276999 view-transition/* [ Skip ]
-crbug.com/1316157 inspector-protocol/css/css-get-styles-for-view-transition.js [ Skip ]
-crbug.com/1276999 wpt_internal/view-transition/* [ Skip ]
-crbug.com/1276999 wpt_internal/view-transition-on-navigation/* [ Skip ]
-crbug.com/1276999 virtual/view-transition/* [ Pass ]
-crbug.com/1276999 virtual/view-transition-wide-gamut/* [ Pass ]
-crbug.com/1372584 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/* [ Pass ]
 
 crbug.com/1351556 virtual/view-transition-wide-gamut/wpt_internal/view-transition/commit-timeout-crash.html [ Failure Timeout ]
 crbug.com/1351556 virtual/view-transition/view-transition/capture-callback-exception.html [ Failure ]
@@ -2875,16 +2823,6 @@ crbug.com/1299212 [ Linux ] fast/forms/select/menulist-popup-mutation-crash.html
 # These appear to be flaky at least on Linux:
 crbug.com/1299212 [ Linux ] fast/forms/select-popup/popup-menu-ax.html [ Failure Pass ]
 
-# isInputPending requires threaded compositing and layerized iframes
-crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
-crbug.com/910421 virtual/threaded-composited-iframes/external/wpt/is-input-pending/* [ Pass ]
-
-# requestIdleCallback requires threaded compositing
-crbug.com/1259718 external/wpt/requestidlecallback/* [ Skip ]
-crbug.com/1259718 virtual/threaded/external/wpt/requestidlecallback/* [ Pass ]
-crbug.com/1259718 http/tests/devtools/isolated-code-cache/* [ Skip ]
-crbug.com/1259718 virtual/threaded/http/tests/devtools/isolated-code-cache/* [ Pass ]
-
 # WebVTT is off because additional padding
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/2_cues_overlapping_completely_move_up.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/2_cues_overlapping_partially_move_down.html [ Failure ]
@@ -3834,9 +3772,6 @@ crbug.com/626703 external/wpt/content-security-policy/securitypolicyviolation/ta
 crbug.com/626703 external/wpt/web-animations/timing-model/timelines/update-and-send-events.html [ Failure ]
 crbug.com/626703 external/wpt/screen-orientation/orientation-reading.html [ Timeout ]
 
-# Tests that rely on a non-exposed test-only API. Tested in virtual/task-tracking
-wpt_internal/task-tracking/* [ Failure Skip ]
-virtual/task-tracking/* [ Pass ]
 crbug.com/1326491 [ Mac ] virtual/task-tracking/wpt_internal/task-tracking/soft-navigation-heuristics/detached-iframe-container.html [ Timeout ]
 
 crbug.com/1380987 external/wpt/html/user-activation/detached-iframe.html [ Failure ]
@@ -4796,11 +4731,6 @@ crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-padding.html [ F
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas.html [ Failure ]
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-mask.html [ Failure ]
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-border.html [ Failure ]
-
-# Expected failures for forced colors mode tests when the corresponding flags
-# are not enabled.
-crbug.com/970285 external/wpt/forced-colors-mode/* [ Failure ]
-crbug.com/970285 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/* [ Pass ]
 
 # Sheriff 2019-08-14
 crbug.com/993671 [ Win ] http/tests/media/video-frame-size-change.html [ Failure Pass ]
@@ -6758,16 +6688,11 @@ crbug.com/1318318 virtual/plz-dedicated-worker/external/wpt/fetch/private-networ
 crbug.com/1318561 [ Linux ] external/wpt/x-frame-options/get-decode-split.html [ Failure Pass ]
 
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
-crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Skip ]
 crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Skip ]
-crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Skip ]
 crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Skip ]
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-transfer-video.https.html [ Skip ]
 crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-transfer-video.https.html [ Skip ]
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-transfer.https.html [ Skip ]
-# Explicit PASS expectation for the virtual suite, to stop it inheriting "Skip".
-crbug.com/1288839 virtual/mediastreamtrack-transfer/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Pass ]
-crbug.com/1288839 virtual/mediastreamtrack-transfer/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Pass ]
 
 # Sheriff 2022-04-22
 crbug.com/1318695 http/tests/devtools/elements/highlight/highlight-multiple-css-grid.js [ Failure Pass ]

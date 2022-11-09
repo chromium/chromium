@@ -235,13 +235,6 @@ def _check_never_fix_tests(host, port, path, expectations):
             return False
         if skip_exp.is_glob and pass_exp.test.startswith(skip_exp.test[:-1]):
             return True
-        base_test = port.lookup_virtual_test_base(pass_exp.test)
-        if not base_test:
-            return False
-        if base_test == skip_exp.test:
-            return True
-        if skip_exp.is_glob and base_test.startswith(skip_exp.test[:-1]):
-            return True
         return False
 
     failures = []
@@ -259,10 +252,17 @@ def _check_never_fix_tests(host, port, path, expectations):
                 pass_validly_overrides_skip(exp, expectations[j])
                 for j in range(i - 1, 0, -1)):
             continue
-        error = (
-            "{}:{} {}: The [ Pass ] entry must override a previous [ Skip ]"
-            " entry with a more specific test name or tags".format(
-                host.filesystem.basename(path), exp.lineno, exp.test))
+
+        if port.lookup_virtual_test_base(exp.test):
+            error = (
+                "{}:{} {}: Please use 'exclusive_tests' in VirtualTestSuite to skip"
+                " base tests of a virtual suite".format(
+                    host.filesystem.basename(path), exp.lineno, exp.test))
+        else:
+            error = (
+                "{}:{} {}: The [ Pass ] entry must override a previous [ Skip ]"
+                " entry with a more specific test name or tags".format(
+                    host.filesystem.basename(path), exp.lineno, exp.test))
         failures.append(error)
     return failures
 
@@ -346,12 +346,35 @@ def check_virtual_test_suites(host, options):
                     base, prefix)
                 failures.append(failure)
                 continue
+
+            if port.skipped_due_to_exclusive_virtual_tests(suite.full_prefix +
+                                                           base):
+                failure = (
+                    'Base "{}" in virtual suite "{}" is in exclusive_tests '
+                    'of other virtual suites. It will be skipped. '
+                    'Either remove the base or list the base in this '
+                    'suite\'s exclusive_tests.'.format(base, prefix))
+                failures.append(failure)
+                continue
+
             comps = [web_tests_dir] + suite_comps + base_comps + ['README.txt']
             path_to_readme_txt = fs.join(*comps)
             if (not fs.exists(path_to_readme_md)
                     and not fs.exists(path_to_readme_txt)):
                 failure = '"{}" and "{}" are both missing (each virtual suite must have one).'.format(
                     path_to_readme_txt, path_to_readme_md)
+                failures.append(failure)
+
+        for exclusive_test in suite.exclusive_tests:
+            if not fs.exists(port.abspath_for_test(exclusive_test)):
+                failure = 'Exclusive_tests entry "{}" in virtual suite "{}" must refer to a real file or directory'.format(
+                    exclusive_test, prefix)
+                failures.append(failure)
+            elif not any(
+                    port.normalize_test_name(exclusive_test).startswith(base)
+                    for base in normalized_bases):
+                failure = 'Exclusive_tests entry "{}" in virtual suite "{}" is not a subset of bases'.format(
+                    exclusive_test, prefix)
                 failures.append(failure)
 
     return failures
