@@ -1021,7 +1021,8 @@ void RootWindowController::InitLayoutManagers(
 
   for (auto* container : desks_util::GetDesksContainers(root)) {
     // Installs WorkspaceLayoutManager on the container.
-    SetWorkspaceController(container, new WorkspaceController(container));
+    SetWorkspaceController(container,
+                           std::make_unique<WorkspaceController>(container));
   }
 
   aura::Window* modal_container =

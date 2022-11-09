@@ -134,13 +134,15 @@ void WorkspaceController::OnWindowDestroying(aura::Window* window) {
   layout_manager_ = nullptr;
 }
 
-void SetWorkspaceController(aura::Window* desk_container,
-                            WorkspaceController* workspace_controller) {
+void SetWorkspaceController(
+    aura::Window* desk_container,
+    std::unique_ptr<WorkspaceController> workspace_controller) {
   DCHECK(desk_container);
   DCHECK(desks_util::IsDeskContainer(desk_container));
 
   if (workspace_controller)
-    desk_container->SetProperty(kWorkspaceController, workspace_controller);
+    desk_container->SetProperty(kWorkspaceController,
+                                std::move(workspace_controller));
   else
     desk_container->ClearProperty(kWorkspaceController);
 }
