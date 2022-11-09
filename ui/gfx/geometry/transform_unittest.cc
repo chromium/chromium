@@ -150,6 +150,173 @@ Transform ApproxIdentityMatrix(double error) {
 
 constexpr double kErrorThreshold = 1e-7;
 
+// This test is to make it easier to understand the order of operations.
+TEST(XFormTest, PrePostOperations) {
+  auto m1 = Transform::Affine(1, 2, 3, 4, 5, 6);
+  auto m2 = m1;
+  m1.Translate(10, 20);
+  m2.PreConcat(Transform::MakeTranslation(10, 20));
+  EXPECT_EQ(m1, m2);
+
+  m1.PostTranslate(11, 22);
+  m2.PostConcat(Transform::MakeTranslation(11, 22));
+  EXPECT_EQ(m1, m2);
+
+  m1.Scale(3, 4);
+  m2.PreConcat(Transform::MakeScale(3, 4));
+  EXPECT_EQ(m1, m2);
+
+  m1.PostScale(5, 6);
+  m2.PostConcat(Transform::MakeScale(5, 6));
+  EXPECT_EQ(m1, m2);
+}
+
+// This test mostly overlaps with other tests, but similar to the above test,
+// this test may help understand how accumulated transforms are equivalent to
+// multiple mapping operations e.g. MapPoint().
+TEST(XFormTest, BasicOperations) {
+  // Just some arbitrary matrix that introduces no rounding, and is unlikely
+  // to commute with other operations.
+  auto m = Transform::ColMajor(2.f, 3.f, 5.f, 0.f, 7.f, 11.f, 13.f, 0.f, 17.f,
+                               19.f, 23.f, 0.f, 29.f, 31.f, 37.f, 1.f);
+
+  Point3F p(41.f, 43.f, 47.f);
+
+  EXPECT_EQ(Point3F(1211.f, 1520.f, 1882.f), m.MapPoint(p));
+
+  {
+    Transform n;
+    n.Scale(2.f);
+    EXPECT_EQ(Point3F(82.f, 86.f, 47.f), n.MapPoint(p));
+
+    Transform mn = m;
+    mn.Scale(2.f);
+    EXPECT_EQ(mn.MapPoint(p), m.MapPoint(n.MapPoint(p)));
+  }
+
+  {
+    Transform n;
+    n.Scale(2.f, 3.f);
+    EXPECT_EQ(Point3F(82.f, 129.f, 47.f), n.MapPoint(p));
+
+    Transform mn = m;
+    mn.Scale(2.f, 3.f);
+    EXPECT_EQ(mn.MapPoint(p), m.MapPoint(n.MapPoint(p)));
+  }
+
+  {
+    Transform n;
+    n.Scale3d(2.f, 3.f, 4.f);
+    EXPECT_EQ(Point3F(82.f, 129.f, 188.f), n.MapPoint(p));
+
+    Transform mn = m;
+    mn.Scale3d(2.f, 3.f, 4.f);
+    EXPECT_EQ(mn.MapPoint(p), m.MapPoint(n.MapPoint(p)));
+  }
+
+  {
+    Transform n;
+    n.Rotate(90.f);
+    EXPECT_FLOAT_EQ(0.f, (Point3F(-43.f, 41.f, 47.f) - n.MapPoint(p)).Length());
+
+    Transform mn = m;
+    mn.Rotate(90.f);
+    EXPECT_FLOAT_EQ(0.f, (mn.MapPoint(p) - m.MapPoint(n.MapPoint(p))).Length());
+  }
+
+  {
+    Transform n;
+    n.RotateAbout(10.f, 10.f, 10.f, 120.f);
+    EXPECT_FLOAT_EQ(0.f, (Point3F(47.f, 41.f, 43.f) - n.MapPoint(p)).Length());
+
+    Transform mn = m;
+    mn.RotateAbout(10.f, 10.f, 10.f, 120.f);
+    EXPECT_FLOAT_EQ(0.f, (mn.MapPoint(p) - m.MapPoint(n.MapPoint(p))).Length());
+  }
+
+  {
+    Transform n;
+    n.Translate(5.f, 6.f);
+    EXPECT_EQ(Point3F(46.f, 49.f, 47.f), n.MapPoint(p));
+
+    Transform mn = m;
+    mn.Translate(5.f, 6.f);
+    EXPECT_EQ(mn.MapPoint(p), m.MapPoint(n.MapPoint(p)));
+  }
+
+  {
+    Transform n;
+    n.Translate3d(5.f, 6.f, 7.f);
+    EXPECT_EQ(Point3F(46.f, 49.f, 54.f), n.MapPoint(p));
+
+    Transform mn = m;
+    mn.Translate3d(5.f, 6.f, 7.f);
+    EXPECT_EQ(mn.MapPoint(p), m.MapPoint(n.MapPoint(p)));
+  }
+
+  {
+    Transform nm = m;
+    nm.PostTranslate(5.f, 6.f);
+    EXPECT_EQ(nm.MapPoint(p), m.MapPoint(p) + Vector3dF(5.f, 6.f, 0.f));
+  }
+
+  {
+    Transform nm = m;
+    nm.PostTranslate3d(5.f, 6.f, 7.f);
+    EXPECT_EQ(nm.MapPoint(p), m.MapPoint(p) + Vector3dF(5.f, 6.f, 7.f));
+  }
+
+  {
+    Transform n;
+    n.Skew(45.f, -45.f);
+    EXPECT_FLOAT_EQ(0.f, (Point3F(84.f, 2.f, 47.f) - n.MapPoint(p)).Length());
+
+    Transform mn = m;
+    mn.Skew(45.f, -45.f);
+    EXPECT_FLOAT_EQ(0.f, (mn.MapPoint(p) - m.MapPoint(n.MapPoint(p))).Length());
+  }
+
+  {
+    Transform n;
+    n.SkewX(45.f);
+    EXPECT_FLOAT_EQ(0.f, (Point3F(84.f, 43.f, 47.f) - n.MapPoint(p)).Length());
+
+    Transform mn = m;
+    mn.SkewX(45.f);
+    EXPECT_FLOAT_EQ(0.f, (mn.MapPoint(p) - m.MapPoint(n.MapPoint(p))).Length());
+  }
+
+  {
+    Transform n;
+    n.SkewY(45.f);
+    EXPECT_FLOAT_EQ(0.f, (Point3F(41.f, 84.f, 47.f) - n.MapPoint(p)).Length());
+
+    Transform mn = m;
+    mn.SkewY(45.f);
+    EXPECT_FLOAT_EQ(0.f, (mn.MapPoint(p) - m.MapPoint(n.MapPoint(p))).Length());
+  }
+
+  {
+    Transform n;
+    n.ApplyPerspectiveDepth(94.f);
+    EXPECT_FLOAT_EQ(0.f, (Point3F(82.f, 86.f, 94.f) - n.MapPoint(p)).Length());
+
+    Transform mn = m;
+    mn.ApplyPerspectiveDepth(94.f);
+    EXPECT_FLOAT_EQ(0.f, (mn.MapPoint(p) - m.MapPoint(n.MapPoint(p))).Length());
+  }
+
+  {
+    Transform n = m;
+    n.Zoom(2.f);
+    Point3F expectation = p;
+    expectation.Scale(0.5f, 0.5f, 0.5f);
+    expectation = m.MapPoint(expectation);
+    expectation.Scale(2.f, 2.f, 2.f);
+    EXPECT_EQ(expectation, n.MapPoint(p));
+  }
+}
+
 TEST(XFormTest, Equality) {
   Transform lhs, interpolated;
   auto rhs = Transform::RowMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
@@ -181,27 +348,6 @@ TEST(XFormTest, Equality) {
     rhs.Translate(2 * i, 2 * i);
     EXPECT_TRUE(lhs == rhs);
   }
-}
-
-// This test is to make it easier to understand the order of operations.
-TEST(XFormTest, PrePostOperations) {
-  auto m1 = Transform::Affine(1, 2, 3, 4, 5, 6);
-  auto m2 = m1;
-  m1.Translate(10, 20);
-  m2.PreConcat(Transform::MakeTranslation(10, 20));
-  EXPECT_EQ(m1, m2);
-
-  m1.PostTranslate(11, 22);
-  m2.PostConcat(Transform::MakeTranslation(11, 22));
-  EXPECT_EQ(m1, m2);
-
-  m1.Scale(3, 4);
-  m2.PreConcat(Transform::MakeScale(3, 4));
-  EXPECT_EQ(m1, m2);
-
-  m1.PostScale(5, 6);
-  m2.PostConcat(Transform::MakeScale(5, 6));
-  EXPECT_EQ(m1, m2);
 }
 
 TEST(XFormTest, ConcatTranslate) {
@@ -284,7 +430,17 @@ TEST(XFormTest, ConcatRotate) {
   }
 }
 
-TEST(XFormTest, SetTranslate) {
+TEST(XFormTest, ConcatSelf) {
+  auto a = Transform::ColMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                               15, 16);
+  auto expected_a_times_a =
+      Transform::ColMajor(90, 100, 110, 120, 202, 228, 254, 280, 314, 356, 398,
+                          440, 426, 484, 542, 600);
+  a.PreConcat(a);
+  EXPECT_EQ(expected_a_times_a, a);
+}
+
+TEST(XFormTest, Translate) {
   static const struct TestCase {
     int x1;
     int y1;
@@ -332,7 +488,7 @@ TEST(XFormTest, SetTranslate) {
   }
 }
 
-TEST(XFormTest, SetScale) {
+TEST(XFormTest, Scale) {
   static const struct TestCase {
     int before;
     float s;
@@ -782,7 +938,11 @@ TEST(XFormTest, CannotBlendSingularMatrix) {
   Transform from;
   Transform to;
   to.set_rc(1, 1, 0);
-  EXPECT_FALSE(to.Blend(from, 0.5));
+  Transform original_to = to;
+  EXPECT_FALSE(to.Blend(from, 0.25));
+  EXPECT_EQ(original_to, to);
+  EXPECT_FALSE(to.Blend(from, 0.75));
+  EXPECT_EQ(original_to, to);
 }
 
 TEST(XFormTest, VerifyBlendForTranslation) {
@@ -1098,7 +1258,7 @@ TEST(XFormTest, BlendForRotationAboutZ) {
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 }
 
-TEST(XFormTest, VerifyBlendForCompositeTransform) {
+TEST(XFormTest, BlendForCompositeTransform) {
   // Verify that the.Blending was done with a decomposition in correct order
   // by blending a composite transform. Using matrix x vector notation
   // (Ax = b, where x is column vector), the ordering should be:
@@ -1141,6 +1301,195 @@ TEST(XFormTest, VerifyBlendForCompositeTransform) {
   normalized_expected_end_of_animation.PreConcat(normalization_matrix);
 
   EXPECT_TRUE(MatricesAreNearlyEqual(normalized_expected_end_of_animation, to));
+}
+
+TEST(XFormTest, Blend2dXFlip) {
+  // Test 2D x-flip (crbug.com/797472).
+  auto from = Transform::Affine(1, 0, 0, 1, 100, 150);
+  auto to = Transform::Affine(-1, 0, 0, 1, 400, 150);
+
+  EXPECT_TRUE(from.Is2dTransform());
+  EXPECT_TRUE(to.Is2dTransform());
+
+  // OK for interpolated transform to be degenerate.
+  Transform result = to;
+  EXPECT_TRUE(result.Blend(from, 0.5));
+  auto expected = Transform::Affine(0, 0, 0, 1, 250, 150);
+  EXPECT_TRANSFORM_EQ(expected, result);
+}
+
+TEST(XFormTest, Blend2dRotationDirection) {
+  // Interpolate taking shorter rotation path.
+  auto from =
+      Transform::Affine(-0.5, 0.86602575498, -0.86602575498, -0.5, 0, 0);
+  auto to = Transform::Affine(-0.5, -0.86602575498, 0.86602575498, -0.5, 0, 0);
+
+  // Expect clockwise Rotation.
+  Transform result = to;
+  EXPECT_TRUE(result.Blend(from, 0.5));
+  auto expected = Transform::Affine(-1, 0, 0, -1, 0, 0);
+  EXPECT_TRANSFORM_EQ(expected, result);
+
+  // Reverse from and to.
+  // Expect same midpoint with counter-clockwise rotation.
+  result = from;
+  EXPECT_TRUE(result.Blend(to, 0.5));
+  EXPECT_TRANSFORM_EQ(expected, result);
+}
+
+gfx::DecomposedTransform GetRotationDecomp(double x,
+                                           double y,
+                                           double z,
+                                           double w) {
+  gfx::DecomposedTransform decomp;
+  decomp.quaternion = gfx::Quaternion(x, y, z, w);
+  return decomp;
+}
+
+const double kCos30deg = std::cos(base::kPiDouble / 6);
+const double kSin30deg = 0.5;
+const double kRoot2 = std::sqrt(2);
+
+TEST(XFormTest, QuaternionFromRotationMatrix) {
+  // Test rotation around each axis.
+
+  Transform m;
+  m.RotateAbout(1, 0, 0, 60);
+  absl::optional<DecomposedTransform> decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion,
+                         gfx::Quaternion(kSin30deg, 0, 0, kCos30deg), 1e-6);
+
+  m.MakeIdentity();
+  m.RotateAbout(0, 1, 0, 60);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion,
+                         gfx::Quaternion(0, kSin30deg, 0, kCos30deg), 1e-6);
+
+  m.MakeIdentity();
+  m.RotateAbout(0, 0, 1, 60);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion,
+                         gfx::Quaternion(0, 0, kSin30deg, kCos30deg), 1e-6);
+
+  // Test rotation around non-axis aligned vector.
+
+  m.MakeIdentity();
+  m.RotateAbout(1, 1, 0, 60);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(
+      decomp->quaternion,
+      gfx::Quaternion(kSin30deg / kRoot2, kSin30deg / kRoot2, 0, kCos30deg),
+      1e-6);
+
+  // Test edge tests.
+
+  // Cases where q_w = 0. In such cases we resort to basing the calculations on
+  // the largest diagonal element in the rotation matrix to ensure numerical
+  // stability.
+
+  m.MakeIdentity();
+  m.RotateAbout(1, 0, 0, 180);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(1, 0, 0, 0), 1e-6);
+
+  m.MakeIdentity();
+  m.RotateAbout(0, 1, 0, 180);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(0, 1, 0, 0), 1e-6);
+
+  m.MakeIdentity();
+  m.RotateAbout(0, 0, 1, 180);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(0, 0, 1, 0), 1e-6);
+
+  // No rotation.
+
+  m.MakeIdentity();
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(0, 0, 0, 1), 1e-6);
+
+  m.MakeIdentity();
+  m.RotateAbout(0, 0, 1, 360);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(0, 0, 0, 1), 1e-6);
+}
+
+TEST(XFormTest, QuaternionToRotationMatrixTest) {
+  // Test rotation about each axis.
+  Transform rotate_x_60deg;
+  rotate_x_60deg.RotateAboutXAxis(60);
+  EXPECT_TRANSFORM_EQ(rotate_x_60deg, Transform::Compose(GetRotationDecomp(
+                                          kSin30deg, 0, 0, kCos30deg)));
+
+  Transform rotate_y_60deg;
+  rotate_y_60deg.RotateAboutYAxis(60);
+  EXPECT_TRANSFORM_EQ(rotate_y_60deg, Transform::Compose(GetRotationDecomp(
+                                          0, kSin30deg, 0, kCos30deg)));
+
+  Transform rotate_z_60deg;
+  rotate_z_60deg.RotateAboutZAxis(60);
+  EXPECT_TRANSFORM_EQ(rotate_z_60deg, Transform::Compose(GetRotationDecomp(
+                                          0, 0, kSin30deg, kCos30deg)));
+
+  // Test non-axis aligned rotation
+  Transform rotate_xy_60deg;
+  rotate_xy_60deg.RotateAbout(1, 1, 0, 60);
+  EXPECT_TRANSFORM_EQ(rotate_xy_60deg, Transform::Compose(GetRotationDecomp(
+                                           kSin30deg / kRoot2,
+                                           kSin30deg / kRoot2, 0, kCos30deg)));
+
+  // Test 180deg rotation.
+  auto rotate_z_180deg = Transform::Affine(-1, 0, 0, -1, 0, 0);
+  EXPECT_TRANSFORM_EQ(rotate_z_180deg,
+                      Transform::Compose(GetRotationDecomp(0, 0, 1, 0)));
+}
+
+TEST(XFormTest, QuaternionInterpolation) {
+  // Rotate from identity matrix.
+  Transform from_matrix;
+  Transform to_matrix;
+  to_matrix.RotateAbout(0, 0, 1, 120);
+  to_matrix.Blend(from_matrix, 0.5);
+  Transform rotate_z_60;
+  rotate_z_60.Rotate(60);
+  EXPECT_TRANSFORM_EQ(rotate_z_60, to_matrix);
+
+  // Rotate to identity matrix.
+  from_matrix.MakeIdentity();
+  from_matrix.RotateAbout(0, 0, 1, 120);
+  to_matrix.MakeIdentity();
+  EXPECT_TRUE(to_matrix.Blend(from_matrix, 0.5));
+  EXPECT_TRANSFORM_EQ(rotate_z_60, to_matrix);
+
+  // Interpolation about a common axis of rotation.
+  from_matrix.MakeIdentity();
+  from_matrix.RotateAbout(1, 1, 0, 45);
+  to_matrix.MakeIdentity();
+  from_matrix.RotateAbout(1, 1, 0, 135);
+  EXPECT_TRUE(to_matrix.Blend(from_matrix, 0.5));
+  Transform rotate_xy_90;
+  rotate_xy_90.RotateAbout(1, 1, 0, 90);
+  EXPECT_TRANSFORM_NEAR(rotate_xy_90, to_matrix, 1e-15);
+
+  // Interpolation without a common axis of rotation.
+
+  from_matrix.MakeIdentity();
+  from_matrix.RotateAbout(1, 0, 0, 90);
+  to_matrix.MakeIdentity();
+  to_matrix.RotateAbout(0, 0, 1, 90);
+  EXPECT_TRUE(to_matrix.Blend(from_matrix, 0.5));
+  Transform expected;
+  expected.RotateAbout(1 / kRoot2, 0, 1 / kRoot2, 70.528778372);
+  EXPECT_TRANSFORM_EQ(expected, to_matrix);
 }
 
 TEST(XFormTest, ComposeIdentity) {
@@ -1317,6 +1666,24 @@ TEST(XFormTest, DecomposeAndCompose) {
   EXPECT_EQ(0, ComputeDecompRecompError(transform(-1, 1, -1, 1, 2)));
   EXPECT_EQ(0, ComputeDecompRecompError(transform(-1, -1, 1, 0, 2)));
   EXPECT_EQ(0, ComputeDecompRecompError(transform(-1, -1, 1, 1, 2)));
+}
+
+TEST(XFormTest, IsIdentityOr2DTranslation) {
+  EXPECT_TRUE(Transform().IsIdentityOr2DTranslation());
+  EXPECT_TRUE(Transform::MakeTranslation(10, 0).IsIdentityOr2DTranslation());
+  EXPECT_TRUE(Transform::MakeTranslation(0, -20).IsIdentityOr2DTranslation());
+
+  Transform transform;
+  transform.Translate3d(0, 0, 1);
+  EXPECT_FALSE(transform.IsIdentityOr2DTranslation());
+
+  transform.MakeIdentity();
+  transform.Rotate(40);
+  EXPECT_FALSE(transform.IsIdentityOr2DTranslation());
+
+  transform.MakeIdentity();
+  transform.SkewX(30);
+  EXPECT_FALSE(transform.IsIdentityOr2DTranslation());
 }
 
 TEST(XFormTest, IntegerTranslation) {
@@ -1760,7 +2127,7 @@ TEST(XFormTest, verifyMultiplyAndAssignOperator) {
   EXPECT_FALSE(C == D);
 }
 
-TEST(XFormTest, verifyMatrixMultiplication) {
+TEST(XFormTest, PreConcat) {
   Transform A;
   InitializeTestMatrix(&A);
 
@@ -2629,7 +2996,7 @@ TEST(XFormTest, verifyIsScaleOrTranslation) {
   EXPECT_FALSE(A.IsScaleOrTranslation());
 }
 
-TEST(XFormTest, Scale) {
+TEST(XFormTest, To2dScale) {
   Transform t;
   EXPECT_TRUE(t.IsScale2d());
   EXPECT_EQ(Vector2dF(1, 1), t.To2dScale());
