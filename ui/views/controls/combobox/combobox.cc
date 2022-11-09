@@ -136,11 +136,7 @@ Combobox::Combobox(std::unique_ptr<ui::ComboboxModel> model,
 }
 
 Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
-    : text_context_(text_context),
-      text_style_(text_style),
-      arrow_button_(new TransparentButton(
-          base::BindRepeating(&Combobox::ArrowButtonPressed,
-                              base::Unretained(this)))) {
+    : text_context_(text_context), text_style_(text_style) {
   SetModel(model);
 #if BUILDFLAG(IS_MAC)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -151,8 +147,9 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
   SetBackgroundColorId(ui::kColorTextfieldBackground);
   UpdateBorder();
 
-  arrow_button_->SetVisible(should_show_arrow_);
-  AddChildView(arrow_button_.get());
+  arrow_button_ =
+      AddChildView(std::make_unique<TransparentButton>(base::BindRepeating(
+          &Combobox::ArrowButtonPressed, base::Unretained(this))));
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
   // boundaries (for the sake of drawing the arrow).

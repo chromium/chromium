@@ -39,7 +39,9 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
     return destination_dropdown_;
   }
 
-  views::View* GetUsernameTextfieldForTest() const;
+  views::EditableCombobox* username_dropdown_for_testing() const {
+    return username_dropdown_.get();
+  }
 
  private:
   // Type of the IPH to show.

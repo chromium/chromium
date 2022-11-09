@@ -92,6 +92,10 @@ class InteractiveTestApi {
       ElementSpecifier tab_collection,
       size_t tab_index,
       InputType input_type = InputType::kDontCare);
+  [[nodiscard]] StepBuilder SelectDropdownItem(
+      ElementSpecifier collection,
+      size_t item,
+      InputType input_type = InputType::kDontCare);
 
   // Specifies a test action that is not tied to any one UI element.
   // Returns true on success, false on failure (which will fail the test).

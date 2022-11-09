@@ -27,6 +27,14 @@ class MockInteractionSimulator : public InteractionTestUtil::Simulator {
                bool(TrackedElement* element, InputType input_type));
   MOCK_METHOD2(DoDefaultAction,
                bool(TrackedElement* element, InputType input_type));
+  MOCK_METHOD3(SelectTab,
+               bool(TrackedElement* tab_collection,
+                    size_t index,
+                    InputType input_type));
+  MOCK_METHOD3(SelectDropdownItem,
+               bool(TrackedElement* dropdown,
+                    size_t index,
+                    InputType input_type));
 };
 
 }  // namespace
@@ -35,7 +43,7 @@ TEST(InteractionTestUtilTest, PressButton) {
   TestElement element(kTestElementIdentifier, kTestElementContext);
   InteractionTestUtil util;
   auto* const mock = util.AddSimulator(
-      std::make_unique<testing::NiceMock<MockInteractionSimulator>>());
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
   EXPECT_CALL(*mock,
               PressButton(&element, InteractionTestUtil::InputType::kDontCare))
       .WillOnce(testing::Return(true));
@@ -46,7 +54,7 @@ TEST(InteractionTestUtilTest, SelectMenuItem) {
   TestElement element(kTestElementIdentifier, kTestElementContext);
   InteractionTestUtil util;
   auto* const mock = util.AddSimulator(
-      std::make_unique<testing::NiceMock<MockInteractionSimulator>>());
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
   EXPECT_CALL(*mock, SelectMenuItem(&element,
                                     InteractionTestUtil::InputType::kDontCare))
       .WillOnce(testing::Return(true));
@@ -57,11 +65,34 @@ TEST(InteractionTestUtilTest, DoDefaultAction) {
   TestElement element(kTestElementIdentifier, kTestElementContext);
   InteractionTestUtil util;
   auto* const mock = util.AddSimulator(
-      std::make_unique<testing::NiceMock<MockInteractionSimulator>>());
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
   EXPECT_CALL(*mock, DoDefaultAction(&element,
                                      InteractionTestUtil::InputType::kDontCare))
       .WillOnce(testing::Return(true));
   util.DoDefaultAction(&element);
+}
+
+TEST(InteractionTestUtilTest, SelectTab) {
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  auto* const mock = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+  EXPECT_CALL(
+      *mock, SelectTab(&element, 1U, InteractionTestUtil::InputType::kDontCare))
+      .WillOnce(testing::Return(true));
+  util.SelectTab(&element, 1U);
+}
+
+TEST(InteractionTestUtilTest, SelectDropdownItem) {
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  auto* const mock = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+  EXPECT_CALL(*mock,
+              SelectDropdownItem(&element, 1U,
+                                 InteractionTestUtil::InputType::kDontCare))
+      .WillOnce(testing::Return(true));
+  util.SelectDropdownItem(&element, 1U);
 }
 
 }  // namespace ui::test

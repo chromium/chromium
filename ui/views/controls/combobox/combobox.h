@@ -32,6 +32,7 @@ class MenuModel;
 namespace views {
 namespace test {
 class ComboboxTestApi;
+class InteractionTestUtilSimulatorViews;
 }
 
 class MenuRunner;
@@ -166,6 +167,7 @@ class VIEWS_EXPORT Combobox : public View,
 
  private:
   friend class test::ComboboxTestApi;
+  friend class test::InteractionTestUtilSimulatorViews;
 
   // Updates the border according to the current node_data.
   void UpdateBorder();
@@ -196,9 +198,6 @@ class VIEWS_EXPORT Combobox : public View,
   int MaybeAdjustWidthForCheckmarks(int original_width) const;
 
   void OnContentSizeMaybeChanged();
-
-  // Handles the clicking event.
-  void HandleClickEvent();
 
   PrefixSelector* GetPrefixSelector();
 

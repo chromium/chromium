@@ -36,6 +36,9 @@ class InteractionTestUtilSimulatorViews
   bool SelectTab(ui::TrackedElement* tab_collection,
                  size_t index,
                  InputType input_type) override;
+  bool SelectDropdownItem(ui::TrackedElement* dropdown,
+                          size_t index,
+                          InputType input_type) override;
 
   // Convenience method for tests that need to simulate a button press and have
   // direct access to the button.

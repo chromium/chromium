@@ -97,6 +97,12 @@ class InteractionTestUtil {
     [[nodiscard]] virtual bool SelectTab(TrackedElement* tab_collection,
                                          size_t index,
                                          InputType input_type);
+
+    // Tries to select item `index` in `dropdown`. The collection could be
+    // a listbox, combobox, or similar. Note that `index` is zero-indexed.
+    [[nodiscard]] virtual bool SelectDropdownItem(TrackedElement* dropdown,
+                                                  size_t index,
+                                                  InputType input_type);
   };
 
   InteractionTestUtil();
@@ -128,6 +134,21 @@ class InteractionTestUtil {
   void SelectTab(TrackedElement* tab_collection,
                  size_t index,
                  InputType input_type = InputType::kDontCare);
+
+  // Simulate selecting item `index` in `dropdown`. The collection could be
+  // a listbox, combobox, or similar. Will fail if the target object is not a
+  // supported type, if `index` is out of bounds, or if `input_type` is not
+  // supported.
+  //
+  // Note that if `input_type` is kDontCare, the approach with the broadest
+  // possible compatibility will be used, possibly bypassing the dropdown menu
+  // associated with the element. This is because dropdown menus vary in
+  // implementation across platforms and can be a source of flakiness. Options
+  // other than kDontCare may not be supported on all platforms for this reason;
+  // if they are not, an error message will be printed and the test will fail.
+  void SelectDropdownItem(TrackedElement* dropdown,
+                          size_t index,
+                          InputType input_type = InputType::kDontCare);
 
   // Simulate the default action for `element` - typically whatever happens when
   // the user clicks or taps on it. Will fail if `input_type` is not supported.

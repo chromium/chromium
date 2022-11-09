@@ -419,18 +419,6 @@ void EditableCombobox::RevealPasswords(bool revealed) {
   menu_model_->UpdateItemsShown();
 }
 
-size_t EditableCombobox::GetItemCountForTest() {
-  return menu_model_->GetItemCount();
-}
-
-std::u16string EditableCombobox::GetItemForTest(size_t index) {
-  return menu_model_->GetItemTextAt(index, showing_password_text_);
-}
-
-ui::ImageModel EditableCombobox::GetIconForTest(size_t index) {
-  return menu_model_->GetIconAt(index);
-}
-
 void EditableCombobox::Layout() {
   View::Layout();
   if (arrow_) {
@@ -571,6 +559,14 @@ void EditableCombobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
                           base::Unretained(this)));
   menu_runner_->RunMenuAt(GetWidget(), nullptr, bounds,
                           MenuAnchorPosition::kTopLeft, source_type);
+}
+
+const ui::MenuModel* EditableCombobox::GetMenuModelForTesting() const {
+  return menu_model_.get();
+}
+
+std::u16string EditableCombobox::GetItemTextForTesting(size_t index) const {
+  return menu_model_->GetItemTextAt(index, showing_password_text_);
 }
 
 BEGIN_METADATA(EditableCombobox, View)

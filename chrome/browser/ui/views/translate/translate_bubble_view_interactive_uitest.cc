@@ -144,16 +144,6 @@ class TranslateBubbleViewUITest
     return steps;
   }
 
-  // Callback that selects a specific row in a combobox.
-  static auto SelectComboboxRow(int row) {
-    return base::BindOnce(
-        [](int row, ui::TrackedElement* element) {
-          auto* const combobox = AsView<views::Combobox>(element);
-          combobox->SetSelectedRow(row);
-        },
-        row);
-  }
-
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     if (request.GetURL().path() != "/mock_translate_script.js")
@@ -260,8 +250,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
       // languages.
       AfterHide(TranslateBubbleView::kChangeTargetLanguage, base::DoNothing()),
       // P4. Select a language from the list and select translate.
-      AfterShow(TranslateBubbleView::kTargetLanguageCombobox,
-                SelectComboboxRow(0)),
+      SelectDropdownItem(TranslateBubbleView::kTargetLanguageCombobox, 0),
       PressButton(TranslateBubbleView::kTargetLanguageDoneButton),
       // V2. Verify that the language list will be dismissed, the target
       // language tab shows updated target language. Source language tab is
@@ -300,8 +289,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       // languages.
       AfterHide(TranslateBubbleView::kChangeSourceLanguage, base::DoNothing()),
       // P4. Select a language from the list and select translate.
-      AfterShow(TranslateBubbleView::kSourceLanguageCombobox,
-                SelectComboboxRow(1)),  // 0 = Detected Language
+      // Item 0 is the detected language.
+      SelectDropdownItem(TranslateBubbleView::kSourceLanguageCombobox, 1),
       PressButton(TranslateBubbleView::kSourceLanguageDoneButton),
       // V2. The language list will be dismissed, the source language tab
       // shows updated source language. Source language tab is no longer

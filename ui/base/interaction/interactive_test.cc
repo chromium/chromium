@@ -84,6 +84,21 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectTab(
   return builder;
 }
 
+InteractionSequence::StepBuilder InteractiveTestApi::SelectDropdownItem(
+    ElementSpecifier collection,
+    size_t item,
+    InputType input_type) {
+  StepBuilder builder;
+  internal::SpecifyElement(builder, collection);
+  builder.SetStartCallback(base::BindOnce(
+      [](size_t item, InputType input_type, InteractiveTestApi* test,
+         InteractionSequence*, TrackedElement* el) {
+        test->test_util().SelectDropdownItem(el, item, input_type);
+      },
+      item, input_type, base::Unretained(this)));
+  return builder;
+}
+
 InteractiveTestApi::StepBuilder InteractiveTestApi::Check(
     CheckCallback check_callback) {
   StepBuilder builder;

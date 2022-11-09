@@ -456,10 +456,6 @@ PasswordSaveUpdateView::~PasswordSaveUpdateView() {
   CloseIPHBubbleIfOpen();
 }
 
-views::View* PasswordSaveUpdateView::GetUsernameTextfieldForTest() const {
-  return username_dropdown_->GetTextfieldForTest();
-}
-
 PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController() {
   return &controller_;
 }

@@ -31,6 +31,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/controls/editable_combobox/editable_combobox.h"
+#include "ui/views/focus/focus_manager.h"
 
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
@@ -50,10 +52,11 @@ bool IsBubbleShowing() {
              ->IsVisible();
 }
 
-views::View* GetUsernameTextfield(const PasswordBubbleViewBase* bubble) {
+views::EditableCombobox* GetUsernameDropdown(
+    const PasswordBubbleViewBase* bubble) {
   const PasswordSaveUpdateView* save_bubble =
       static_cast<const PasswordSaveUpdateView*>(bubble);
-  return save_bubble->GetUsernameTextfieldForTest();
+  return save_bubble->username_dropdown_for_testing();
 }
 
 }  // namespace
@@ -95,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
   bubble = PasswordBubbleViewBase::manage_password_bubble();
   // A pending password with empty username should initially focus on the
   // username field.
-  EXPECT_EQ(GetUsernameTextfield(bubble),
-            bubble->GetFocusManager()->GetFocusedView());
+  EXPECT_TRUE(GetUsernameDropdown(bubble)->Contains(
+      bubble->GetFocusManager()->GetFocusedView()));
   PasswordBubbleViewBase::CloseCurrentBubble();
   EXPECT_FALSE(IsBubbleShowing());
 }

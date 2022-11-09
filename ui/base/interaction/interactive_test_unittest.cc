@@ -24,7 +24,8 @@ enum class ActionType {
   kPressButton,
   kSelectMenuItem,
   kDoDefaultAction,
-  kSelectTab
+  kSelectTab,
+  kSelectDropdownItem
 };
 
 using ActionRecord = std::tuple<ActionType,
@@ -66,6 +67,13 @@ class TestSimulator : public InteractionTestUtil::Simulator {
                  size_t index,
                  InputType input_type) override {
     DoAction(ActionType::kSelectTab, tab_collection, input_type);
+    return true;
+  }
+
+  bool SelectDropdownItem(TrackedElement* collection,
+                          size_t item,
+                          InputType input_type) override {
+    DoAction(ActionType::kSelectDropdownItem, collection, input_type);
     return true;
   }
 
@@ -130,22 +138,25 @@ TEST_F(InteractiveTestTest, InteractionVerbs) {
   e2.Show();
   e3.Show();
   e4.Show();
-  RunTestSequenceInContext(kTestContext1,
-                           PressButton(kTestId1, InputType::kDontCare),
-                           SelectMenuItem(kTestId2, InputType::kKeyboard),
-                           DoDefaultAction(kTestId3, InputType::kMouse),
-                           SelectTab(kTestId4, 3U, InputType::kTouch));
+  RunTestSequenceInContext(
+      kTestContext1, PressButton(kTestId1, InputType::kDontCare),
+      SelectMenuItem(kTestId2, InputType::kKeyboard),
+      DoDefaultAction(kTestId3, InputType::kMouse),
+      SelectTab(kTestId4, 3U, InputType::kTouch),
+      SelectDropdownItem(kTestId1, 2U, InputType::kDontCare));
 
-  EXPECT_THAT(
-      simulator()->records(),
-      testing::ElementsAre(ActionRecord{ActionType::kPressButton, kTestId1,
-                                        kTestContext1, InputType::kDontCare},
-                           ActionRecord{ActionType::kSelectMenuItem, kTestId2,
-                                        kTestContext1, InputType::kKeyboard},
-                           ActionRecord{ActionType::kDoDefaultAction, kTestId3,
-                                        kTestContext1, InputType::kMouse},
-                           ActionRecord{ActionType::kSelectTab, kTestId4,
-                                        kTestContext1, InputType::kTouch}));
+  EXPECT_THAT(simulator()->records(),
+              testing::ElementsAre(
+                  ActionRecord{ActionType::kPressButton, kTestId1,
+                               kTestContext1, InputType::kDontCare},
+                  ActionRecord{ActionType::kSelectMenuItem, kTestId2,
+                               kTestContext1, InputType::kKeyboard},
+                  ActionRecord{ActionType::kDoDefaultAction, kTestId3,
+                               kTestContext1, InputType::kMouse},
+                  ActionRecord{ActionType::kSelectTab, kTestId4, kTestContext1,
+                               InputType::kTouch},
+                  ActionRecord{ActionType::kSelectDropdownItem, kTestId1,
+                               kTestContext1, InputType::kDontCare}));
 }
 
 TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
@@ -161,18 +172,21 @@ TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
       kTestContext2, InAnyContext(PressButton(kTestId1, InputType::kDontCare)),
       InAnyContext(SelectMenuItem(kTestId2, InputType::kKeyboard)),
       InAnyContext(DoDefaultAction(kTestId3, InputType::kMouse)),
-      InAnyContext(SelectTab(kTestId4, 3U, InputType::kTouch)));
+      InAnyContext(SelectTab(kTestId4, 3U, InputType::kTouch)),
+      InAnyContext(SelectDropdownItem(kTestId1, 2U, InputType::kDontCare)));
 
-  EXPECT_THAT(
-      simulator()->records(),
-      testing::ElementsAre(ActionRecord{ActionType::kPressButton, kTestId1,
-                                        kTestContext1, InputType::kDontCare},
-                           ActionRecord{ActionType::kSelectMenuItem, kTestId2,
-                                        kTestContext1, InputType::kKeyboard},
-                           ActionRecord{ActionType::kDoDefaultAction, kTestId3,
-                                        kTestContext1, InputType::kMouse},
-                           ActionRecord{ActionType::kSelectTab, kTestId4,
-                                        kTestContext1, InputType::kTouch}));
+  EXPECT_THAT(simulator()->records(),
+              testing::ElementsAre(
+                  ActionRecord{ActionType::kPressButton, kTestId1,
+                               kTestContext1, InputType::kDontCare},
+                  ActionRecord{ActionType::kSelectMenuItem, kTestId2,
+                               kTestContext1, InputType::kKeyboard},
+                  ActionRecord{ActionType::kDoDefaultAction, kTestId3,
+                               kTestContext1, InputType::kMouse},
+                  ActionRecord{ActionType::kSelectTab, kTestId4, kTestContext1,
+                               InputType::kTouch},
+                  ActionRecord{ActionType::kSelectDropdownItem, kTestId1,
+                               kTestContext1, InputType::kDontCare}));
 }
 
 TEST_F(InteractiveTestTest, Do) {

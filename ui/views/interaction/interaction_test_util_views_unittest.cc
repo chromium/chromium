@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -18,9 +19,13 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/models/combobox_model.h"
+#include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
@@ -47,6 +52,9 @@ const char16_t kMenuItem2[] = u"Menu item 2";
 const char16_t kTab1Title[] = u"Tab1";
 const char16_t kTab2Title[] = u"Tab2";
 const char16_t kTab3Title[] = u"Tab3";
+const char16_t kComboBoxItem1[] = u"Item1";
+const char16_t kComboBoxItem2[] = u"Item2";
+const char16_t kComboBoxItem3[] = u"Item3";
 constexpr int kMenuID1 = 1;
 constexpr int kMenuID2 = 2;
 
@@ -156,6 +164,14 @@ class InteractionTestUtilViewsTest
     ViewsTestBase::TearDown();
   }
 
+  std::unique_ptr<ui::ComboboxModel> CreateComboboxModel() {
+    return std::make_unique<ui::SimpleComboboxModel>(
+        std::vector<ui::SimpleComboboxModel::Item>{
+            ui::SimpleComboboxModel::Item(kComboBoxItem1),
+            ui::SimpleComboboxModel::Item(kComboBoxItem2),
+            ui::SimpleComboboxModel::Item(kComboBoxItem3)});
+  }
+
  protected:
   std::unique_ptr<ui::test::InteractionTestUtil> test_util_;
   std::unique_ptr<Widget> widget_;
@@ -246,6 +262,100 @@ TEST_P(InteractionTestUtilViewsTest, SelectTab) {
   EXPECT_EQ(0U, pane->GetSelectedTabIndex());
   test_util_->SelectTab(pane_el, 1, GetParam());
   EXPECT_EQ(1U, pane->GetSelectedTabIndex());
+}
+
+TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_Combobox) {
+#if BUILDFLAG(IS_MAC)
+  // Only kDontCare is supported on Mac.
+  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare)
+    GTEST_SKIP();
+#endif
+
+  auto* const box = contents_->AddChildView(
+      std::make_unique<Combobox>(CreateComboboxModel()));
+  box->SetAccessibleName(u"Combobox");
+  widget_->LayoutRootViewIfNecessary();
+  auto* const box_el =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(box, true);
+  test_util_->SelectDropdownItem(box_el, 2, GetParam());
+  EXPECT_EQ(2U, box->GetSelectedIndex());
+  test_util_->SelectDropdownItem(box_el, 0, GetParam());
+  EXPECT_EQ(0U, box->GetSelectedIndex());
+  test_util_->SelectDropdownItem(box_el, 1, GetParam());
+  EXPECT_EQ(1U, box->GetSelectedIndex());
+}
+
+TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_EditableCombobox) {
+#if BUILDFLAG(IS_MAC)
+  // Only kDontCare is supported on Mac.
+  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare)
+    GTEST_SKIP();
+#endif
+
+  auto* const box = contents_->AddChildView(
+      std::make_unique<EditableCombobox>(CreateComboboxModel()));
+  box->SetAccessibleName(u"Editable Combobox");
+  widget_->LayoutRootViewIfNecessary();
+  auto* const box_el =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(box, true);
+  test_util_->SelectDropdownItem(box_el, 2, GetParam());
+  EXPECT_EQ(kComboBoxItem3, box->GetText());
+  test_util_->SelectDropdownItem(box_el, 0, GetParam());
+  EXPECT_EQ(kComboBoxItem1, box->GetText());
+  test_util_->SelectDropdownItem(box_el, 1, GetParam());
+  EXPECT_EQ(kComboBoxItem2, box->GetText());
+}
+
+TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_Combobox_NoArrow) {
+#if BUILDFLAG(IS_MAC)
+  // Only kDontCare is supported on Mac.
+  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare)
+    GTEST_SKIP();
+#endif
+
+  auto* const box = contents_->AddChildView(
+      std::make_unique<Combobox>(CreateComboboxModel()));
+  box->SetShouldShowArrow(false);
+  box->SetAccessibleName(u"Combobox");
+  widget_->LayoutRootViewIfNecessary();
+  auto* const box_el =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(box, true);
+  test_util_->SelectDropdownItem(box_el, 2, GetParam());
+  EXPECT_EQ(2U, box->GetSelectedIndex());
+  test_util_->SelectDropdownItem(box_el, 0, GetParam());
+  EXPECT_EQ(0U, box->GetSelectedIndex());
+  test_util_->SelectDropdownItem(box_el, 1, GetParam());
+  EXPECT_EQ(1U, box->GetSelectedIndex());
+}
+
+TEST_P(InteractionTestUtilViewsTest,
+       SelectDropdownItem_EditableCombobox_NoArrow) {
+#if BUILDFLAG(IS_MAC)
+  // Only kDontCare is supported on Mac.
+  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare)
+    GTEST_SKIP();
+#endif
+
+  // These cases are not supported for editable combobox without an arrow
+  // button; editable comboboxes without arrows trigger on specific text input.
+  if (GetParam() == ui::test::InteractionTestUtil::InputType::kMouse ||
+      GetParam() == ui::test::InteractionTestUtil::InputType::kTouch) {
+    GTEST_SKIP();
+  }
+  // Pass the default values for every parameter except for `display_arrow`.
+  auto* const box = contents_->AddChildView(std::make_unique<EditableCombobox>(
+      CreateComboboxModel(), false, true, EditableCombobox::Type::kRegular,
+      EditableCombobox::kDefaultTextContext,
+      EditableCombobox::kDefaultTextStyle, /* display_arrow =*/false));
+  box->SetAccessibleName(u"Editable Combobox");
+  auto* const box_el =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(box, true);
+  test_util_->SelectDropdownItem(box_el, 2, GetParam());
+  EXPECT_EQ(kComboBoxItem3, box->GetText());
+  test_util_->SelectDropdownItem(box_el, 0, GetParam());
+  EXPECT_EQ(kComboBoxItem1, box->GetText());
+  test_util_->SelectDropdownItem(box_el, 1, GetParam());
+  EXPECT_EQ(kComboBoxItem2, box->GetText());
 }
 
 INSTANTIATE_TEST_SUITE_P(

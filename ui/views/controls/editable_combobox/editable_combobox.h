@@ -31,6 +31,7 @@ class Range;
 namespace ui {
 class ComboboxModel;
 class Event;
+class MenuModel;
 }  // namespace ui
 
 namespace views {
@@ -39,6 +40,10 @@ class EditableComboboxMenuModel;
 class EditableComboboxPreTargetHandler;
 class MenuRunner;
 class Textfield;
+
+namespace test {
+class InteractionTestUtilSimulatorViews;
+}  // namespace test
 
 // Textfield that also shows a drop-down list with suggestions.
 class VIEWS_EXPORT EditableCombobox
@@ -108,15 +113,9 @@ class VIEWS_EXPORT EditableCombobox
   // drop-down menu will reveal their current content.
   void RevealPasswords(bool revealed);
 
-  // Accessors of private members for tests.
-  ui::ComboboxModel* GetComboboxModelForTest() { return combobox_model_.get(); }
-  size_t GetItemCountForTest();
-  std::u16string GetItemForTest(size_t index);
-  ui::ImageModel GetIconForTest(size_t index);
-  MenuRunner* GetMenuRunnerForTest() { return menu_runner_.get(); }
-  Textfield* GetTextfieldForTest() { return textfield_; }
-
  private:
+  friend class EditableComboboxTest;
+  friend class test::InteractionTestUtilSimulatorViews;
   class EditableComboboxMenuModel;
   class EditableComboboxPreTargetHandler;
 
@@ -133,6 +132,10 @@ class VIEWS_EXPORT EditableCombobox
 
   // Shows the drop-down menu.
   void ShowDropDownMenu(ui::MenuSourceType source_type = ui::MENU_SOURCE_NONE);
+
+  // These are for unit tests to get data from private implementation classes.
+  const ui::MenuModel* GetMenuModelForTesting() const;
+  std::u16string GetItemTextForTesting(size_t index) const;
 
   // Overridden from View:
   void Layout() override;
