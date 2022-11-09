@@ -154,6 +154,18 @@ class PeerConnectionStaticDeps {
     }
   }
 
+  ~PeerConnectionStaticDeps() {
+    if (chrome_worker_thread_.IsRunning()) {
+      chrome_worker_thread_.task_runner()->DeleteSoon(
+          FROM_HERE, std::move(metronome_source_));
+    }
+  }
+
+  MetronomeSource& metronome_source() {
+    CHECK(metronome_source_);
+    return *metronome_source_;
+  }
+
   void EnsureChromeThreadsStarted() {
     base::ThreadType thread_type = base::ThreadType::kDefault;
     if (base::FeatureList::IsEnabled(
@@ -176,6 +188,10 @@ class PeerConnectionStaticDeps {
     // To allow sending to the signaling/worker threads.
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
+    if (!metronome_source_) {
+      metronome_source_ = std::make_unique<MetronomeSource>(
+          chrome_worker_thread_.task_runner());
+    }
   }
 
   base::WaitableEvent& InitializeWorkerThread() {
@@ -297,6 +313,8 @@ class PeerConnectionStaticDeps {
   base::Thread chrome_signaling_thread_;
   base::Thread chrome_worker_thread_;
   absl::optional<base::Thread> chrome_network_thread_;
+
+  std::unique_ptr<MetronomeSource> metronome_source_;
 
   // WaitableEvents for observing thread initialization.
   base::WaitableEvent init_signaling_event{
@@ -493,10 +511,6 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
   DVLOG(1) << "PeerConnectionDependencyFactory::CreatePeerConnectionFactory()";
 
-  if (!metronome_source_) {
-    metronome_source_ = base::MakeRefCounted<MetronomeSource>();
-  }
-
   StaticDeps().EnsureChromeThreadsStarted();
   base::WaitableEvent& worker_thread_started_event =
       StaticDeps().InitializeWorkerThread();
@@ -679,8 +693,10 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     LOG(INFO) << "Running WebRTC with a combined Network and Worker thread.";
   }
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
-  if (base::FeatureList::IsEnabled(blink::features::kWebRtcMetronome))
-    pcf_deps.metronome = metronome_source_->CreateWebRtcMetronome();
+  if (base::FeatureList::IsEnabled(blink::features::kWebRtcMetronome)) {
+    pcf_deps.metronome =
+        StaticDeps().metronome_source().CreateWebRtcMetronome();
+  }
   pcf_deps.call_factory = webrtc::CreateCallFactory();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
       pcf_deps.task_queue_factory.get());
