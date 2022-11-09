@@ -531,10 +531,14 @@ void WebRtcMedium::OnIceServersFetched(
   dependencies.async_resolver_factory =
       std::make_unique<ProxyAsyncResolverFactory>(socket_factory_.get());
 
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection =
-      peer_connection_factory_->CreatePeerConnection(rtc_config,
-                                                     std::move(dependencies));
-  callback(std::move(peer_connection));
+  webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::PeerConnectionInterface>>
+      peer_connection = peer_connection_factory_->CreatePeerConnectionOrError(
+          rtc_config, std::move(dependencies));
+  if (peer_connection.ok()) {
+    callback(peer_connection.MoveValue());
+  } else {
+    callback(/*peer_connection=*/nullptr);
+  }
 }
 
 std::unique_ptr<api::WebRtcSignalingMessenger>
