@@ -88,16 +88,20 @@ class BrowserDataBackMigrator {
     kMergeSplitItemsMergeStateStoreLevelDBFailed = 9,
     kMergeSplitItemsMergeSyncDataFailed = 10,
     kDeleteAshItemsDeleteExtensionsFailed = 11,
-    kDeleteTmpDirDeleteFailed = 12,
-    kDeleteLacrosDirDeleteFailed = 13,
-    kMaxValue = kDeleteLacrosDirDeleteFailed,
+    kDeleteAshItemsDeleteLacrosItemFailed = 12,
+    kDeleteTmpDirDeleteFailed = 13,
+    kDeleteLacrosDirDeleteFailed = 14,
+    kMoveLacrosItemsToTmpDirMoveFailed = 15,
+    kMoveMergedItemsBackToAshMoveFileFailed = 16,
+    kMoveMergedItemsBackToAshCopyDirectoryFailed = 17,
+    kMaxValue = kMoveMergedItemsBackToAshCopyDirectoryFailed,
   };
 
   enum class MigrationStep {
     kStart = 0,
     kPreMigrationCleanUp = 1,
     kMergeSplitItems = 2,
-    kMoveLacrosItemsBackToAsh = 3,
+    kMoveLacrosItemsToTmpDir = 3,
     kDeleteAshItems = 4,
     kMoveMergedItemsBackToAsh = 5,
     kDeleteLacrosDir = 6,
@@ -139,18 +143,18 @@ class BrowserDataBackMigrator {
 
   // Deletes Ash items that will be overwritten by either Lacros items or items
   // merged in `MergeSplitItems()`. This prevents conflicts during the calls to
-  // `MoveLacrosItemsBackToAsh()` and `MoveMergedItemsBackToAsh()`.
+  // `MoveLacrosItemsToTmpDir()` and `MoveMergedItemsBackToAsh()`.
   static TaskResult DeleteAshItems(const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `DeleteAshItems()`.
   void OnDeleteAshItems(TaskResult result);
 
   // Moves Lacros-only items back into the Ash profile directory.
-  static TaskResult MoveLacrosItemsBackToAsh(
+  static TaskResult MoveLacrosItemsToTmpDir(
       const base::FilePath& ash_profile_dir);
 
-  // Called as a reply to `MoveLacrosItemsBackToAsh()`.
-  void OnMoveLacrosItemsBackToAsh(TaskResult result);
+  // Called as a reply to `MoveLacrosItemsToTmpDir()`.
+  void OnMoveLacrosItemsToTmpDir(TaskResult result);
 
   // Moves the temporary directory into the Ash profile directory.
   static TaskResult MoveMergedItemsBackToAsh(
@@ -230,6 +234,12 @@ class BrowserDataBackMigrator {
   static bool MergeSyncDataLevelDB(const base::FilePath& ash_db_path,
                                    const base::FilePath& lacros_db_path,
                                    const base::FilePath& tmp_db_path);
+
+  // Go through all top-level items in the directory. If they are files move
+  // them directly. If they are directories, call the same function recursively.
+  static bool MoveFilesToAshDirectory(const base::FilePath& source_dir,
+                                      const base::FilePath& dest_dir,
+                                      unsigned int recursion_depth);
 
   // Transforms `TaskResult` to `Result`, which is then returned to the caller.
   static Result ToResult(TaskResult result);

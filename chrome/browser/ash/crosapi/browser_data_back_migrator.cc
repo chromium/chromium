@@ -41,6 +41,9 @@ namespace {
 const char kBrowserDataBackwardMigrationForceSkip[] = "force-skip";
 const char kBrowserDataBackwardMigrationForceMigration[] = "force-migration";
 
+// We set a generous recursion depth, that should never be reached, but this
+// way we protect against file system loops.
+const unsigned int kMaxRecursionDepth = 2000;
 }  // namespace
 
 BrowserDataBackMigrator::BrowserDataBackMigrator(
@@ -315,6 +318,28 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteAshItems(
     return {TaskStatus::kDeleteAshItemsDeleteExtensionsFailed, errno};
   }
 
+  // `ItemType::kLacros` items should be deleted from Ash before they are
+  // overwritten by `MoveMergedItemsBackToAsh`. We call
+  // `base::DeletePathRecursively` because it deletes both files and directories
+  // and it does not fail if an item does not exist.
+  browser_data_migrator_util::TargetItems lacros_items =
+      browser_data_migrator_util::GetTargetItems(
+          ash_profile_dir, browser_data_migrator_util::ItemType::kLacros);
+  for (const auto& item : lacros_items.items) {
+    // Print permissions for debugging purposes to be able to compare with the
+    // persmissions of the directories created in `MoveMergedItemsBackToAsh`.
+    int permissions;
+    if (base::GetPosixFilePermissions(item.path, &permissions)) {
+      VLOG(1) << "Deleting " << item.path.value() << " with permissions "
+              << permissions;
+    }
+
+    if (!base::DeletePathRecursively(item.path)) {
+      PLOG(ERROR) << "Failed to delete " << item.path.value();
+      return {TaskStatus::kDeleteAshItemsDeleteLacrosItemFailed, errno};
+    }
+  }
+
   return {TaskStatus::kSucceeded};
 }
 
@@ -325,32 +350,51 @@ void BrowserDataBackMigrator::OnDeleteAshItems(TaskResult result) {
     return;
   }
 
-  SetProgress(MigrationStep::kMoveLacrosItemsBackToAsh);
+  SetProgress(MigrationStep::kMoveLacrosItemsToTmpDir);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&BrowserDataBackMigrator::MoveLacrosItemsBackToAsh,
+      base::BindOnce(&BrowserDataBackMigrator::MoveLacrosItemsToTmpDir,
                      ash_profile_dir_),
-      base::BindOnce(&BrowserDataBackMigrator::OnMoveLacrosItemsBackToAsh,
+      base::BindOnce(&BrowserDataBackMigrator::OnMoveLacrosItemsToTmpDir,
                      weak_factory_.GetWeakPtr()));
 }
 
 // static
 BrowserDataBackMigrator::TaskResult
-BrowserDataBackMigrator::MoveLacrosItemsBackToAsh(
+BrowserDataBackMigrator::MoveLacrosItemsToTmpDir(
     const base::FilePath& ash_profile_dir) {
-  LOG(WARNING) << "Running MoveLacrosItemsBackToAsh()";
+  LOG(WARNING) << "Running MoveLacrosItemsToTmpDir()";
 
-  // TODO(b/244573664): Not yet implemented.
+  const base::FilePath lacros_profile_dir =
+      ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir)
+          .Append(browser_data_migrator_util::kLacrosProfilePath);
+
+  const base::FilePath tmp_profile_dir =
+      ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
+
+  browser_data_migrator_util::TargetItems lacros_items =
+      browser_data_migrator_util::GetTargetItems(
+          lacros_profile_dir, browser_data_migrator_util::ItemType::kLacros);
+
+  for (const auto& item : lacros_items.items) {
+    // The corresponding items in Ash will be deleted in `DeleteAshItems` before
+    // they are overwritten by the Lacros items from the tmp directory.
+    if (!base::Move(item.path, tmp_profile_dir.Append(item.path.BaseName()))) {
+      PLOG(ERROR) << "Failed to move item " << item.path.value() << " to "
+                  << tmp_profile_dir.Append(item.path.BaseName()) << ": ";
+      return {TaskStatus::kMoveLacrosItemsToTmpDirMoveFailed, errno};
+    }
+  }
 
   return {TaskStatus::kSucceeded};
 }
 
-void BrowserDataBackMigrator::OnMoveLacrosItemsBackToAsh(
+void BrowserDataBackMigrator::OnMoveLacrosItemsToTmpDir(
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
-    LOG(ERROR) << "MoveLacrosItemsBackToAsh() failed.";
+    LOG(ERROR) << "MoveLacrosItemsToTmpDir() failed.";
     std::move(finished_callback_).Run(ToResult(result));
     return;
   }
@@ -372,9 +416,78 @@ BrowserDataBackMigrator::MoveMergedItemsBackToAsh(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running MoveMergedItemsBackToAsh()";
 
-  // TODO(b/244573664): Not yet implemented.
+  const base::FilePath tmp_profile_dir =
+      ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
+
+  if (!MoveFilesToAshDirectory(tmp_profile_dir, ash_profile_dir, 1)) {
+    PLOG(ERROR) << "Failed moving " << tmp_profile_dir.value() << " to "
+                << ash_profile_dir.value();
+    return {TaskStatus::kMoveMergedItemsBackToAshMoveFileFailed, errno};
+  }
 
   return {TaskStatus::kSucceeded};
+}
+
+// static
+bool BrowserDataBackMigrator::MoveFilesToAshDirectory(
+    const base::FilePath& source_dir,
+    const base::FilePath& dest_dir,
+    unsigned int recursion_depth) {
+  LOG(WARNING) << "Calling MoveFilesToAshDirectory from " << source_dir.value()
+               << " to " << dest_dir.value() << " at recursion depth "
+               << recursion_depth;
+
+  if (recursion_depth >= kMaxRecursionDepth) {
+    LOG(WARNING) << "We have reached maximum recursion depth "
+                 << kMaxRecursionDepth
+                 << " and we are stopping MoveFilesToAshDirectory()";
+    return false;
+  }
+
+  base::FileEnumerator enumerator(
+      source_dir, false /* recursive */,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath entry = enumerator.Next(); !entry.empty();
+       entry = enumerator.Next()) {
+    const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
+    const base::FilePath source_path = source_dir.Append(entry.BaseName());
+    if (S_ISREG(info.stat().st_mode)) {
+      if (!base::Move(source_path, dest_dir.Append(entry.BaseName()))) {
+        PLOG(ERROR) << "Failed moving " << source_path.value() << " to "
+                    << dest_dir.value();
+        return false;
+      }
+    } else if (S_ISDIR(info.stat().st_mode)) {
+      const base::FilePath& new_source_dir =
+          source_dir.Append(entry.BaseName());
+      const base::FilePath& new_dest_dir = dest_dir.Append(entry.BaseName());
+      if (!base::PathExists(new_dest_dir)) {
+        if (!base::CreateDirectory(new_dest_dir)) {
+          PLOG(ERROR) << "Failed to create " << new_dest_dir.value();
+          return false;
+        }
+
+        // Print permissions for debugging purposes to be able to compare with
+        // the persmissions of the directories deleted in `DeleteAshItems`.
+        int permissions;
+        if (base::GetPosixFilePermissions(new_dest_dir, &permissions)) {
+          VLOG(1) << "Created " << new_dest_dir << " with permissions "
+                  << permissions;
+        }
+      }
+
+      if (!MoveFilesToAshDirectory(new_source_dir, new_dest_dir,
+                                   ++recursion_depth)) {
+        return false;
+      }
+    } else {
+      PLOG(ERROR) << "Received an entry that is neither a file nor a directory "
+                  << entry;
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void BrowserDataBackMigrator::OnMoveMergedItemsBackToAsh(
@@ -731,6 +844,15 @@ bool BrowserDataBackMigrator::MergeLevelDB(
     const base::FilePath& ash_db_path,
     const base::FilePath& tmp_db_path,
     const browser_data_migrator_util::LevelDBType leveldb_type) {
+  // If the Ash database does not exist we do not need to merge anything. We are
+  // sure that the Lacros database exists in the temporary directory at this
+  // step, otherwise the `CopyLevelDBBase` call would have already failed.
+  if (!base::PathExists(ash_db_path)) {
+    LOG(WARNING) << "Only Lacros LevelDB exists, not " << ash_db_path.value();
+    return true;
+  }
+
+  // Both databases exist so we need to merge them.
   leveldb_env::Options options;
   options.create_if_missing = false;
 
@@ -939,8 +1061,12 @@ BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
     case TaskStatus::kMergeSplitItemsMergeStateStoreLevelDBFailed:
     case TaskStatus::kMergeSplitItemsMergeSyncDataFailed:
     case TaskStatus::kDeleteAshItemsDeleteExtensionsFailed:
+    case TaskStatus::kDeleteAshItemsDeleteLacrosItemFailed:
     case TaskStatus::kDeleteLacrosDirDeleteFailed:
     case TaskStatus::kDeleteTmpDirDeleteFailed:
+    case TaskStatus::kMoveLacrosItemsToTmpDirMoveFailed:
+    case TaskStatus::kMoveMergedItemsBackToAshCopyDirectoryFailed:
+    case TaskStatus::kMoveMergedItemsBackToAshMoveFileFailed:
       return Result::kFailed;
   }
 }
