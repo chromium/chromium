@@ -125,18 +125,18 @@ pub mod __private {
         extern "C" {
             // The C++ mangled name for rust_gtest_interop::rust_gtest_add_failure_at(). This comes
             // from `objdump -t` on the C++ object file.
-            fn _ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKhiS1_(
-                file: *const u8,
+            fn _ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKciS1_(
+                file: *const std::ffi::c_char,
                 line: i32,
-                message: *const u8,
+                message: *const std::ffi::c_char,
             );
 
         }
         unsafe {
-            _ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKhiS1_(
-                null_term_file.as_ptr() as *const u8,
+            _ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKciS1_(
+                null_term_file.as_ptr(),
                 line.try_into().unwrap_or(-1),
-                null_term_message.as_ptr() as *const u8,
+                null_term_message.as_ptr(),
             )
         }
     }
