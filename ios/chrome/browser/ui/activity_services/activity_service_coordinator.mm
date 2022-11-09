@@ -110,7 +110,9 @@ const char kMimeTypePDF[] = "application/pdf";
     return;
   }
 
-  if (self.params.filePath) {
+  if (self.params.filePath &&
+      [[NSFileManager defaultManager]
+          isReadableFileAtPath:self.params.filePath.path]) {
     [self shareFile];
     return;
   }
