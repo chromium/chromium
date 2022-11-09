@@ -29,6 +29,7 @@ struct TestParam {
   std::string test_suffix = "";
   bool use_dark_theme = false;
   bool use_fixed_size = false;
+  bool use_longer_strings = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -44,7 +45,21 @@ const TestParam kTestParams[] = {
      .use_dark_theme = true,
      .use_fixed_size = true},
     {.test_suffix = "LightTheme"},
+    {.test_suffix = "LongerStringsFixedSize",
+     .use_fixed_size = true,
+     .use_longer_strings = true},
 };
+
+const std::string kMakeCardDescriptionLongerJsString =
+    "(async () => {"
+    "const introApp = document.querySelector('intro-app');"
+    "const signInPromo = introApp.shadowRoot.querySelector('sign-in-promo');"
+    "const cardDescriptions = "
+    "Array.from(signInPromo.shadowRoot.querySelectorAll('.benefit-card-"
+    "description'));"
+    "cardDescriptions[0].innerHTML = cardDescriptions[0].innerHTML.repeat(20);"
+    "return true;"
+    "})();";
 
 }  // namespace
 
@@ -77,6 +92,11 @@ class FirstRunIntroPixelTest : public UiBrowserTest,
         GetParam().use_fixed_size
             ? absl::optional<gfx::Size>(gfx::Size(840, 630))
             : absl::nullopt);
+
+    if (GetParam().use_longer_strings) {
+      EXPECT_EQ(true, content::EvalJs(profile_picker_view_->GetPickerContents(),
+                                      kMakeCardDescriptionLongerJsString));
+    }
   }
 
   bool VerifyUi() override {
