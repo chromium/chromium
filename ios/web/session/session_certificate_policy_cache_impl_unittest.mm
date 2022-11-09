@@ -6,6 +6,7 @@
 
 #import "base/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -41,7 +42,7 @@ web::CertPolicy::Judgment GetJudgmenet(
                                              judgement = cache->QueryPolicy(
                                                  cert.get(), host, status);
                                            }));
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(1.0, ^{
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(base::Seconds(1), ^{
     return completed;
   }));
   return judgement;
