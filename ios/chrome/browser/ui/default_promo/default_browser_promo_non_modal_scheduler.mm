@@ -30,17 +30,17 @@ namespace {
 
 // Default time interval to wait to show the promo after loading a webpage.
 // This should allow any initial overlays to be presented first.
-const int64_t kShowPromoWebpageLoadWaitTime = 3;
+constexpr base::TimeDelta kShowPromoWebpageLoadWaitTime = base::Seconds(3);
 
 // Default time interval to wait to show the promo after the share action is
 // completed.
-const int64_t kShowPromoPostShareWaitTime = 1;
+constexpr base::TimeDelta kShowPromoPostShareWaitTime = base::Seconds(1);
 
 // Number of times to show the promo to a user.
 const int kPromoShownTimesLimit = 3;
 
 // Timeout before the promo is dismissed.
-const double kPromoTimeout = 45;
+constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
 
 bool PromoCanBeDisplayed() {
   return !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown() &&
@@ -343,7 +343,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
     return;
   }
 
-  int64_t promoTimeInterval;
+  base::TimeDelta promoTimeInterval;
   switch (self.currentPromoReason) {
     case PromoReasonNone:
       NOTREACHED();
@@ -362,8 +362,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
   __weak __typeof(self) weakSelf = self;
   _showPromoTimer = std::make_unique<base::OneShotTimer>();
-  _showPromoTimer->Start(FROM_HERE, base::Seconds(promoTimeInterval),
-                         base::BindOnce(^{
+  _showPromoTimer->Start(FROM_HERE, promoTimeInterval, base::BindOnce(^{
                            [weakSelf showPromoTimerFinished];
                          }));
 }
@@ -402,8 +401,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
   __weak __typeof(self) weakSelf = self;
   _dismissPromoTimer = std::make_unique<base::OneShotTimer>();
-  _dismissPromoTimer->Start(FROM_HERE, base::Seconds(kPromoTimeout),
-                            base::BindOnce(^{
+  _dismissPromoTimer->Start(FROM_HERE, kPromoTimeout, base::BindOnce(^{
                               [weakSelf dismissPromoTimerFinished];
                             }));
 }
