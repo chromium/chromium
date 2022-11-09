@@ -187,6 +187,12 @@ class PrerenderBrowserTest : public ContentBrowserTest,
  public:
   using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
+  enum class OriginType {
+    kSameOrigin,
+    kSameSiteCrossOrigin,
+    kCrossSite,
+  };
+
   PrerenderBrowserTest() {
     prerender_helper_ =
         std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
@@ -396,6 +402,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
           EXPECT_TRUE(ExecJs(rfhi, kMojoScript));
         });
   }
+
+  void TestPrerenderAllowedOnIframeWithStatusCode(OriginType origin_type,
+                                                  std::string status_code);
 
   test::PrerenderTestHelper* prerender_helper() {
     return prerender_helper_.get();
@@ -906,7 +915,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn205Page) {
       PrerenderHost::FinalStatus::kNavigationBadHttpStatus);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAllowedOn204Iframe) {
+namespace {
+
+// Tests that an iframe navigation whose response has either 204 or 205 doesn't
+// cancel prerendering.
+// This is also a regression test for https://crbug.com/1362818.
+void PrerenderBrowserTest::TestPrerenderAllowedOnIframeWithStatusCode(
+    OriginType origin_type,
+    std::string status_code) {
+  // This test is designed for 204 and 205 status codes.
+  ASSERT_TRUE(status_code == "204" || status_code == "205");
+
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -917,18 +936,89 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAllowedOn204Iframe) {
   test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
   WaitForPrerenderLoadCompletion(kPrerenderingUrl);
 
-  // Fetch a subframe that responses 204 status code.
-  const GURL kIFrameUrl = GetUrl("/echo?status=204");
-  RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
-  std::ignore =
-      ExecJs(prerender_rfh,
-             "const i = document.createElement('iframe'); i.src = '" +
-                 kIFrameUrl.spec() + "'; document.body.appendChild(i);");
+  // Construct an iframe URL whose response has 204/205.
+  GURL iframe_url;
+  std::string file_path = "/echo?status=" + status_code;
+  switch (origin_type) {
+    case OriginType::kSameOrigin:
+      iframe_url = GetUrl(file_path);
+      break;
+    case OriginType::kSameSiteCrossOrigin:
+      iframe_url = GetSameSiteCrossOriginUrl(file_path);
+      break;
+    case OriginType::kCrossSite:
+      iframe_url = GetCrossOriginUrl(file_path);
+      break;
+  }
 
-  // Fetching a subframe that response 204 status code shouldn't cancel
-  // prerendering unlike the mainframe that response 204 status code.
+  // Fetch the iframe.
+  TestNavigationManager iframe_navigation_manager(web_contents(), iframe_url);
+  RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  std::ignore = ExecJs(prerender_rfh, JsReplace(R"(
+                const i = document.createElement('iframe');
+                i.src = $1;
+                document.body.appendChild(i);
+             )",
+                                                iframe_url.spec()));
+  switch (origin_type) {
+    case OriginType::kSameOrigin:
+      // Wait for the completion of the iframe navigation.
+      iframe_navigation_manager.WaitForNavigationFinished();
+      break;
+    case OriginType::kSameSiteCrossOrigin:
+    case OriginType::kCrossSite:
+      // Cross-origin iframe navigation is deferred in WillStartRequest() before
+      // checking the status code.
+      iframe_navigation_manager.WaitForFirstYieldAfterDidStartNavigation();
+      auto* request = static_cast<NavigationRequest*>(
+          iframe_navigation_manager.GetNavigationHandle());
+      EXPECT_TRUE(request->IsDeferredForTesting());
+      NavigationThrottleRunner* throttle_runner =
+          request->GetNavigationThrottleRunnerForTesting();
+      EXPECT_STREQ(
+          "PrerenderSubframeNavigationThrottle",
+          throttle_runner->GetDeferringThrottle()->GetNameForLogging());
+      break;
+  }
+
+  // Fetching an iframe whose response has 204/205 status code shouldn't cancel
+  // prerendering unlike the mainframe whose response has 204/205 status code.
   // https://wicg.github.io/nav-speculation/prerendering.html#no-bad-navs
   EXPECT_EQ(GetHostForUrl(kPrerenderingUrl), host_id);
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAllowedOnIframe_204_SameOrigin) {
+  TestPrerenderAllowedOnIframeWithStatusCode(OriginType::kSameOrigin, "204");
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAllowedOnIframe_204_SameSiteCrossOrigin) {
+  TestPrerenderAllowedOnIframeWithStatusCode(OriginType::kSameSiteCrossOrigin,
+                                             "204");
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAllowedOnIframe_204_CrossSite) {
+  TestPrerenderAllowedOnIframeWithStatusCode(OriginType::kCrossSite, "204");
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAllowedOnIframe_205_SameOrigin) {
+  TestPrerenderAllowedOnIframeWithStatusCode(OriginType::kSameOrigin, "205");
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAllowedOnIframe_205_SameSiteCrossOrigin) {
+  TestPrerenderAllowedOnIframeWithStatusCode(OriginType::kSameSiteCrossOrigin,
+                                             "205");
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderAllowedOnIframe_205_CrossSite) {
+  TestPrerenderAllowedOnIframeWithStatusCode(OriginType::kCrossSite, "205");
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequested) {
