@@ -8,7 +8,7 @@ import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {MockController} from '../../mock_controller.js';
+import {MockController} from '../mock_controller.m.js';
 import {isVisible} from '../../test_util.js';
 
 import {FakeMediaQueryList} from './scanning_app_test_utils.js';

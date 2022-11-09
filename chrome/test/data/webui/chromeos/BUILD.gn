@@ -14,7 +14,10 @@ js_type_check("closure_compile_local") {
                                                     root_build_dir),
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
-  deps = [ ":fake_network_config_mojom" ]
+  deps = [
+    ":fake_network_config_mojom",
+    ":mock_controller.m",
+  ]
 }
 
 js_library("fake_network_config_mojom") {
@@ -23,6 +26,9 @@ js_library("fake_network_config_mojom") {
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:promise_resolver",
   ]
+}
+
+js_library("mock_controller.m") {
 }
 
 group("closure_compile") {
