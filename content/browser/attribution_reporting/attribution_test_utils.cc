@@ -669,7 +669,7 @@ TriggerBuilder& TriggerBuilder::SetAggregatableTriggerData(
 }
 
 TriggerBuilder& TriggerBuilder::SetAggregatableValues(
-    AttributionAggregatableValues aggregatable_values) {
+    attribution_reporting::AggregatableValues aggregatable_values) {
   aggregatable_values_ = std::move(aggregatable_values);
   return *this;
 }
@@ -929,11 +929,6 @@ bool operator==(const AttributionAggregatableTriggerData& a,
                            trigger_data.filters(), trigger_data.not_filters());
   };
   return tie(a) == tie(b);
-}
-
-bool operator==(const AttributionAggregatableValues& a,
-                const AttributionAggregatableValues& b) {
-  return a.values() == b.values();
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -1312,18 +1307,6 @@ std::ostream& operator<<(
              << ",not_filters=" << trigger_data.not_filters() << "}";
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionAggregatableValues& values) {
-  out << "{";
-
-  const char* separator = "";
-  for (const auto& [key, value] : values.values()) {
-    out << separator << key << ":" << value;
-    separator = ", ";
-  }
-  return out << "}";
-}
-
 AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
     const {
   Map map;
@@ -1446,7 +1429,7 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
     const std::vector<uint32_t>& histogram_values) {
   std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
 
-  AttributionAggregatableValues::Values aggregatable_values;
+  attribution_reporting::AggregatableValues::Values aggregatable_values;
 
   for (size_t i = 0; i < histogram_values.size(); ++i) {
     std::string key_id = base::NumberToString(i);
@@ -1461,7 +1444,7 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
 
   return TriggerBuilder()
       .SetAggregatableTriggerData(std::move(aggregatable_trigger_data))
-      .SetAggregatableValues(AttributionAggregatableValues::CreateForTesting(
+      .SetAggregatableValues(*attribution_reporting::AggregatableValues::Create(
           std::move(aggregatable_values)));
 }
 

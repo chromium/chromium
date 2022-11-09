@@ -12,11 +12,11 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -407,7 +407,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               /*not_filters=*/AttributionFilters()),
                       },
                       /*aggregatable_trigger_data=*/{},
-                      /*aggregatable_values=*/AttributionAggregatableValues()),
+                      /*aggregatable_values=*/
+                      attribution_reporting::AggregatableValues()),
                   .time = kOffsetTime + base::Milliseconds(1643235576123),
               },
               _),
@@ -424,7 +425,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       /*aggregatable_dedup_key=*/absl::nullopt,
                       /*event_triggers=*/{},
                       /*aggregatable_trigger_data=*/{},
-                      /*aggregatable_values=*/AttributionAggregatableValues()),
+                      /*aggregatable_values=*/
+                      attribution_reporting::AggregatableValues()),
                   .time = kOffsetTime + base::Milliseconds(1643235575123),
               },
               _),
@@ -446,7 +448,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           /*filters=*/AttributionFilters(),
                           /*not_filters=*/AttributionFilters())},
                       /*aggregatable_values=*/
-                      AttributionAggregatableValues::CreateForTesting(
+                      *attribution_reporting::AggregatableValues::Create(
                           {{"a", 1}})),
                   .time = kOffsetTime + base::Milliseconds(1643235574123),
               },

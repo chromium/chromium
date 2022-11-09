@@ -17,6 +17,7 @@ class uint128;
 }  // namespace absl
 
 namespace attribution_reporting {
+class AggregatableValues;
 class AggregationKeys;
 class FilterData;
 }  // namespace attribution_reporting
@@ -26,7 +27,6 @@ namespace content {
 class AggregatableHistogramContribution;
 class AggregatableReportRequest;
 class AttributionAggregatableTriggerData;
-class AttributionAggregatableValues;
 class AttributionReport;
 
 // Creates histograms from the specified source and trigger data.
@@ -37,7 +37,7 @@ CreateAggregatableHistogram(
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<AttributionAggregatableTriggerData>&
         aggregatable_trigger_data,
-    const AttributionAggregatableValues& aggregatable_values);
+    const attribution_reporting::AggregatableValues&);
 
 // Returns a hex string representation of the 128-bit aggregatable key in big
 // endian order.

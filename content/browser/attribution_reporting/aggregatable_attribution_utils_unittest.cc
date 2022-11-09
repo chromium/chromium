@@ -14,11 +14,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -80,7 +80,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       attribution_reporting::FilterData::Create({{"filter", {"value"}}});
   ASSERT_TRUE(source_filter_data.has_value());
 
-  auto aggregatable_values = AttributionAggregatableValues::CreateForTesting(
+  auto aggregatable_values = *attribution_reporting::AggregatableValues::Create(
       {{"key1", 32768}, {"key2", 1664}});
 
   std::vector<AggregatableHistogramContribution> contributions =
@@ -139,7 +139,8 @@ TEST(AggregatableAttributionUtilsTest,
           AttributionSourceType::kNavigation, *source,
           /*aggregatable_trigger_data=*/{},
           /*aggregatable_values=*/
-          AttributionAggregatableValues::CreateForTesting({{"key2", 32768}}));
+          *attribution_reporting::AggregatableValues::Create(
+              {{"key2", 32768}}));
 
   histograms.ExpectTotalCount(
       "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 0);

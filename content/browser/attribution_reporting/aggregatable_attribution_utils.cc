@@ -15,13 +15,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -55,7 +55,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<AttributionAggregatableTriggerData>&
         aggregatable_trigger_data,
-    const AttributionAggregatableValues& aggregatable_values) {
+    const attribution_reporting::AggregatableValues& aggregatable_values) {
   int num_trigger_data_filtered = 0;
 
   attribution_reporting::AggregationKeys::Keys buckets = keys.keys();
@@ -79,7 +79,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     }
   }
 
-  const AttributionAggregatableValues::Values& values =
+  const attribution_reporting::AggregatableValues::Values& values =
       aggregatable_values.values();
 
   std::vector<AggregatableHistogramContribution> contributions;

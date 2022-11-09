@@ -33,7 +33,7 @@ AttributionTrigger::AttributionTrigger(
     absl::optional<uint64_t> aggregatable_dedup_key,
     std::vector<EventTriggerData> event_triggers,
     std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data,
-    AttributionAggregatableValues aggregatable_values)
+    attribution_reporting::AggregatableValues aggregatable_values)
     : destination_origin_(std::move(destination_origin)),
       reporting_origin_(std::move(reporting_origin)),
       filters_(std::move(filters)),

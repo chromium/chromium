@@ -23,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
@@ -30,7 +31,6 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -546,7 +546,7 @@ class TriggerBuilder {
           aggregatable_trigger_data);
 
   TriggerBuilder& SetAggregatableValues(
-      AttributionAggregatableValues aggregatable_values);
+      attribution_reporting::AggregatableValues);
 
   TriggerBuilder& SetAggregatableDedupKey(
       absl::optional<uint64_t> aggregatable_dedup_key);
@@ -562,7 +562,7 @@ class TriggerBuilder {
   absl::optional<uint64_t> dedup_key_;
   absl::optional<uint64_t> debug_key_;
   std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data_;
-  AttributionAggregatableValues aggregatable_values_;
+  attribution_reporting::AggregatableValues aggregatable_values_;
   absl::optional<uint64_t> aggregatable_dedup_key_;
 };
 
@@ -661,9 +661,6 @@ bool operator==(const SendResult& a, const SendResult& b);
 bool operator==(const AttributionAggregatableTriggerData& a,
                 const AttributionAggregatableTriggerData& b);
 
-bool operator==(const AttributionAggregatableValues& a,
-                const AttributionAggregatableValues& b);
-
 std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::EventLevelResult status);
 
@@ -721,9 +718,6 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
 std::ostream& operator<<(
     std::ostream& out,
     const AttributionAggregatableTriggerData& trigger_data);
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionAggregatableValues& values);
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManager* manager);

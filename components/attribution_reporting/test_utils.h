@@ -9,6 +9,7 @@
 
 namespace attribution_reporting {
 
+class AggregatableValues;
 class AggregationKeys;
 class FilterData;
 class Filters;
@@ -29,6 +30,10 @@ std::ostream& operator<<(std::ostream&, const Filters&);
 bool operator==(const SourceRegistration&, const SourceRegistration&);
 
 std::ostream& operator<<(std::ostream&, const SourceRegistration&);
+
+bool operator==(const AggregatableValues&, const AggregatableValues&);
+
+std::ostream& operator<<(std::ostream&, const AggregatableValues&);
 
 }  // namespace attribution_reporting
 

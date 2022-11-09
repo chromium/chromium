@@ -22,11 +22,11 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -288,7 +288,7 @@ class AttributionSimulatorInputParser {
     attribution_reporting::Filters not_filters;
     std::vector<AttributionTrigger::EventTriggerData> event_triggers;
     std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
-    AttributionAggregatableValues aggregatable_values;
+    attribution_reporting::AggregatableValues aggregatable_values;
     absl::optional<uint64_t> aggregatable_dedup_key;
 
     if (!ParseAttributionEvent(
@@ -628,20 +628,20 @@ class AttributionSimulatorInputParser {
     return aggregatable_triggers;
   }
 
-  AttributionAggregatableValues ParseAggregatableValues(
+  attribution_reporting::AggregatableValues ParseAggregatableValues(
       const base::Value::Dict& dict) {
     static constexpr char kKey[] = "aggregatable_values";
 
     const base::Value* value = dict.Find(kKey);
     if (!value)
-      return AttributionAggregatableValues();
+      return attribution_reporting::AggregatableValues();
 
     auto context = PushContext(kKey);
 
     if (!EnsureDictionary(*value))
-      return AttributionAggregatableValues();
+      return attribution_reporting::AggregatableValues();
 
-    AttributionAggregatableValues::Values::container_type container;
+    attribution_reporting::AggregatableValues::Values::container_type container;
 
     for (auto [id, key_value] : value->GetDict()) {
       auto key_context = PushContext(id);
@@ -652,12 +652,14 @@ class AttributionSimulatorInputParser {
       }
     }
 
-    absl::optional<AttributionAggregatableValues> aggregatable_values =
-        AttributionAggregatableValues::FromValues(std::move(container));
+    absl::optional<attribution_reporting::AggregatableValues>
+        aggregatable_values = attribution_reporting::AggregatableValues::Create(
+            std::move(container));
     if (!aggregatable_values.has_value())
       *Error() << "invalid";
 
-    return aggregatable_values.value_or(AttributionAggregatableValues());
+    return aggregatable_values.value_or(
+        attribution_reporting::AggregatableValues());
   }
 
   bool EnsureDictionary(const base::Value& value) {

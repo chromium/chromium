@@ -15,12 +15,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -538,8 +538,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     return;
   }
 
-  absl::optional<AttributionAggregatableValues> aggregatable_values =
-      AttributionAggregatableValues::FromValues(
+  absl::optional<attribution_reporting::AggregatableValues>
+      aggregatable_values = attribution_reporting::AggregatableValues::Create(
           std::move(data->aggregatable_values));
   if (!aggregatable_values.has_value()) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);

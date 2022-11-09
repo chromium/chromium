@@ -9,9 +9,9 @@
 
 #include <vector>
 
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -111,7 +111,7 @@ class CONTENT_EXPORT AttributionTrigger {
       absl::optional<uint64_t> aggregatable_dedup_key,
       std::vector<EventTriggerData> event_triggers,
       std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data,
-      AttributionAggregatableValues aggregatable_values);
+      attribution_reporting::AggregatableValues aggregatable_values);
 
   AttributionTrigger(const AttributionTrigger&);
   AttributionTrigger& operator=(const AttributionTrigger&);
@@ -146,7 +146,7 @@ class CONTENT_EXPORT AttributionTrigger {
     return aggregatable_trigger_data_;
   }
 
-  const AttributionAggregatableValues& aggregatable_values() const {
+  const attribution_reporting::AggregatableValues& aggregatable_values() const {
     return aggregatable_values_;
   }
 
@@ -171,7 +171,7 @@ class CONTENT_EXPORT AttributionTrigger {
   std::vector<EventTriggerData> event_triggers_;
 
   std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data_;
-  AttributionAggregatableValues aggregatable_values_;
+  attribution_reporting::AggregatableValues aggregatable_values_;
 };
 
 }  // namespace content

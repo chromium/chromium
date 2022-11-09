@@ -25,11 +25,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -2542,7 +2542,8 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               AttributionFiltersForSourceType(AttributionSourceType::kEvent),
               /*not_filters=*/AttributionFilters())},
           /*aggregatable_trigger_data=*/{},
-          /*aggregatable_values=*/AttributionAggregatableValues())));
+          /*aggregatable_values=*/
+          attribution_reporting::AggregatableValues())));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
@@ -2625,7 +2626,8 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
                 /*debug_key=*/absl::nullopt,
                 /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
                 /*aggregatable_trigger_data=*/{},
-                /*aggregatable_values=*/AttributionAggregatableValues())));
+                /*aggregatable_values=*/
+                attribution_reporting::AggregatableValues())));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(EventLevelDataIs(
@@ -2646,7 +2648,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*not_filters=*/AttributionFilters())};
 
   auto aggregatable_values =
-      AttributionAggregatableValues::CreateForTesting({{"0", 1}});
+      *attribution_reporting::AggregatableValues::Create({{"0", 1}});
 
   storage()->StoreSource(
       SourceBuilder()

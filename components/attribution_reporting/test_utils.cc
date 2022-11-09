@@ -7,6 +7,7 @@
 #include <ostream>
 #include <tuple>
 
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -103,6 +104,20 @@ std::ostream& operator<<(std::ostream& out, const SourceRegistration& s) {
       << ",aggregation_keys=" << s.aggregation_keys()
       << ",debug_reporting=" << s.debug_reporting() << "}";
   return out;
+}
+
+bool operator==(const AggregatableValues& a, const AggregatableValues& b) {
+  return a.values() == b.values();
+}
+
+std::ostream& operator<<(std::ostream& out, const AggregatableValues& values) {
+  out << "{";
+  const char* separator = "";
+  for (const auto& [key, value] : values.values()) {
+    out << separator << key << ":" << value;
+    separator = ", ";
+  }
+  return out << "}";
 }
 
 }  // namespace attribution_reporting
