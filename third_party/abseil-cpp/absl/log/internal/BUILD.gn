@@ -100,6 +100,9 @@ absl_source_set("log_message") {
     "//third_party/abseil-cpp/absl/time",
     "//third_party/abseil-cpp/absl/types:span",
   ]
+  # TODO(crbug.com/1382143): Needed for log_message.cc using ATOMIC_FLAG_INIT which is marked as deprecated.
+  # Remove when absl moves away from ATOMIC_FLAG_INIT (when the bug below is unblocked)
+  cflags_cc = [ "-Wno-deprecated" ]
 }
 
 absl_source_set("log_sink_set") {
@@ -121,6 +124,9 @@ absl_source_set("log_sink_set") {
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/types:span",
   ]
+  if (is_android) {
+    libs = [ "log" ]
+  }
 }
 
 absl_source_set("nullguard") {

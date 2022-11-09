@@ -689,6 +689,149 @@ source_set("platform_public_logging") {
 }
 
 ###############################################################################
+# src/presence
+###############################################################################
+# src/presence
+source_set("presence") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [
+    "src/presence/presence_client.cc",
+    "src/presence/presence_service.cc",
+  ]
+  public = [
+    "src/presence/presence_client.h",
+    "src/presence/presence_service.h",
+  ]
+  public_deps = [
+    ":presence_types",
+    ":presence_internal",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+source_set("presence_types") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [
+    "src/presence/device_motion.cc",
+    "src/presence/discovery_filter.cc",
+    "src/presence/presence_action.cc",
+    "src/presence/presence_device.cc",
+    "src/presence/presence_zone.cc",
+    "src/presence/scan_request_builder.cc",
+  ]
+  public = [
+    "src/presence/broadcast_options.h",
+    "src/presence/broadcast_request.h",
+    "src/presence/data_element.h",
+    "src/presence/data_types.h",
+    "src/presence/device_motion.h",
+    "src/presence/discovery_filter.h",
+    "src/presence/listeners.h",
+    "src/presence/power_mode.h",
+    "src/presence/presence_action.h",
+    "src/presence/presence_device.h",
+    "src/presence/presence_zone.h",
+    "src/presence/scan_request.h",
+    "src/presence/scan_request_builder.h",
+    "src/presence/status.h",
+  ]
+  public_deps = [
+    ":connections_credential_proto",
+    ":platform_base",
+    ":platform_public_logging",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+# src/presence/implementation
+source_set("presence_internal") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [
+    "src/presence/implementation/action_factory.cc",
+    "src/presence/implementation/advertisement_decoder.cc",
+    "src/presence/implementation/advertisement_factory.cc",
+    "src/presence/implementation/base_broadcast_request.cc",
+    "src/presence/implementation/credential_manager_impl.cc",
+    "src/presence/implementation/encryption.cc",
+    "src/presence/implementation/scan_manager.cc",
+    "src/presence/implementation/service_controller_impl.cc",
+  ]
+  public = [
+    "src/presence/implementation/action_factory.h",
+    "src/presence/implementation/advertisement_decoder.h",
+    "src/presence/implementation/advertisement_factory.h",
+    "src/presence/implementation/base_broadcast_request.h",
+    "src/presence/implementation/broadcast_manager.h",
+    "src/presence/implementation/credential_manager.h",
+    "src/presence/implementation/credential_manager_impl.h",
+    "src/presence/implementation/encryption.h",
+    "src/presence/implementation/scan_manager.h",
+    "src/presence/implementation/service_controller.h",
+    "src/presence/implementation/service_controller_impl.h",
+  ]
+  public_deps = [
+    ":connections_enums_proto",
+    ":platform_base",
+    ":platform_base_uuid",
+    ":platform_public_comm",
+    ":platform_public_logging",
+    ":platform_public_types",
+    ":presence_types",
+    ":presence_mediums",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl:boringssl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+source_set("presence_sensor_fusion") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [
+    "src/presence/implementation/sensor_fusion.h",
+  ]
+  public_deps = [
+    ":presence_types",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+# src/presence/implementation/mediums
+source_set("presence_mediums") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [
+    "src/presence/implementation/mediums/ble.h",
+    "src/presence/implementation/mediums/mediums.h",
+  ]
+  public_deps = [
+    ":platform_base_uuid",
+    ":platform_public_comm",
+    ":presence_types",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+###############################################################################
 # src/proto
 ###############################################################################
 # src/proto
