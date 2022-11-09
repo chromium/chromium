@@ -449,10 +449,10 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
   if (drag_image_element_) {
     return NodeImage(*frame, *drag_image_element_);
   }
-  if (drag_image_) {
-    std::unique_ptr<DragImage> drag_image =
-        DragImage::Create(drag_image_->GetImage());
-    drag_image.get()->Scale(device_scale_factor, device_scale_factor);
+  std::unique_ptr<DragImage> drag_image =
+      drag_image_ ? DragImage::Create(drag_image_->GetImage()) : nullptr;
+  if (drag_image) {
+    drag_image->Scale(device_scale_factor, device_scale_factor);
     return drag_image;
   }
   return nullptr;
