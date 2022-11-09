@@ -68,6 +68,7 @@ class AbstractInlineTextBox;
 class AXRelationCache;
 class HTMLAreaElement;
 class LocalFrameView;
+class WebLocalFrameClient;
 
 // This class should only be used from inside the accessibility directory.
 class MODULES_EXPORT AXObjectCacheImpl
@@ -557,6 +558,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   mojo::Remote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
+  WebLocalFrameClient* GetWebLocalFrameClient() const;
   void ProcessDeferredAccessibilityEventsImpl(Document&);
   void UpdateLifecycleIfNeeded(Document& document);
 

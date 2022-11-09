@@ -3654,6 +3654,17 @@ bool IsNodeAriaVisible(Node* node) {
   return !is_null && !hidden;
 }
 
+WebLocalFrameClient* AXObjectCacheImpl::GetWebLocalFrameClient() const {
+  DCHECK(document_);
+  WebLocalFrameImpl* web_frame =
+      WebLocalFrameImpl::FromFrame(document_->AXObjectCacheOwner().GetFrame());
+  if (!web_frame)
+    return nullptr;
+  WebLocalFrameClient* client = web_frame->Client();
+  DCHECK(client);
+  return client;
+}
+
 void AXObjectCacheImpl::PostPlatformNotification(
     AXObject* obj,
     ax::mojom::blink::Event event_type,
@@ -3664,22 +3675,28 @@ void AXObjectCacheImpl::PostPlatformNotification(
   if (!obj)
     return;
 
-  WebLocalFrameImpl* web_frame =
-      WebLocalFrameImpl::FromFrame(document_->AXObjectCacheOwner().GetFrame());
-  if (web_frame && web_frame->Client()) {
-    ui::AXEvent event;
-    event.id = obj->AXObjectID();
-    event.event_type = event_type;
-    event.event_from = event_from;
-    event.event_from_action = event_from_action;
-    event.event_intents.resize(event_intents.size());
-    // We need to filter out the counts from every intent.
-    std::transform(event_intents.begin(), event_intents.end(),
-                   event.event_intents.begin(),
-                   [](const auto& intent) { return intent.key.intent(); });
-    for (auto agent : agents_)
-      agent->AXEventFired(obj, event_type);
-    web_frame->Client()->PostAccessibilityEvent(event);
+  ui::AXEvent event;
+  event.id = obj->AXObjectID();
+  event.event_type = event_type;
+  event.event_from = event_from;
+  event.event_from_action = event_from_action;
+  event.event_intents.resize(event_intents.size());
+  // We need to filter out the counts from every intent.
+  std::transform(event_intents.begin(), event_intents.end(),
+                 event.event_intents.begin(),
+                 [](const auto& intent) { return intent.key.intent(); });
+  for (auto agent : agents_)
+    agent->AXEventFired(obj, event_type);
+
+  if (auto* client = GetWebLocalFrameClient()) {
+    // TODO(accessibility) This doesn't need to call into RAI -- it
+    // can add to pending events and dirty objects here. The only reason to call
+    // into RAI would be during a page load, to inform in the case of an
+    // event that requires immediate serialization, such as focus.
+    // MarkAXObjectDirtyWithDetails(obj, false, event_from, event_from_action,
+    //                              event.event_intents);
+    // AddPendingEvent(event);
+    client->PostAccessibilityEvent(event);
   }
 }
 
@@ -3699,11 +3716,11 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   if (IsPopup(*obj->GetDocument()))
     MarkElementDirty(GetDocument().FocusedElement());
 
-  WebLocalFrameImpl* webframe = WebLocalFrameImpl::FromFrame(
-      obj->GetDocument()->AXObjectCacheOwner().GetFrame());
-  if (webframe && webframe->Client()) {
-    webframe->Client()->NotifyWebAXObjectMarkedDirty(WebAXObject(obj));
-  }
+  // TODO(aleventhal) This is for web tests only, in order to record MarkDirty
+  // events. Is there a way to avoid these calls for normal browsing?
+  // Maybe we should use dependency injection from AccessibilityController.
+  if (auto* client = GetWebLocalFrameClient())
+    client->NotifyWebAXObjectMarkedDirty(WebAXObject(obj));
 
   std::vector<ui::AXEventIntent> event_intents;
   MarkAXObjectDirty(obj, subtree, event_from, event_from_action, event_intents);
