@@ -59,8 +59,8 @@ class MonikerMap {
  public:
   struct ExtractTokenResult {
     enum class ResultType {
-      // The fs_url_as_string was a Moniker FileSystemURL (it started with the
-      // fusebox::kMonikerFileSystemURL prefix) and held a well-formed token.
+      // The fs_url_as_string was a Moniker FileSystemURL (it started with
+      // "moniker/") and held a well-formed token.
       OK = 0,
       // The fs_url_as_string was not a Moniker FileSystemURL.
       NOT_A_MONIKER_FS_URL = 1,
@@ -77,9 +77,12 @@ class MonikerMap {
 
   using FSURLAndReadOnlyState = std::pair<storage::FileSystemURL, bool>;
 
-  // Returns the 1234etc base::Token from a storage::FileSystemURL in its
-  // string form (like "dummy://moniker/1234etc"), where "dummy://moniker" is
-  // the fusebox::kMonikerFileSystemURL prefix.
+  // Returns the 1234etc base::Token from a Fusebox relative path (like
+  // "moniker/1234etc"), where "moniker" is the fusebox::kMonikerSubdir prefix.
+  //
+  // The argument name is "fs_url_etc", as in storage::FileSystemURL, for
+  // historical reasons, even though it is a relative path, not a FileSystemURL
+  // (in string form) any more.
   //
   // This function does not resolve the base::Token (for that, use the Resolve
   // function instead). It does not confirm the token's *validity* (that the
