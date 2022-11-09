@@ -5,19 +5,33 @@
 source_set("network") {
   public = [
     "key_network_delegate.h",
+    "key_upload_request.h",
     "util.h",
   ]
 
-  sources = [ "util.cc" ]
+  sources = [
+    "key_upload_request.cc",
+    "util.cc",
+  ]
 
-  deps = [ "//base" ]
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+    "//url",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
+    "//components/policy/proto",
+    "//crypto",
+  ]
 
   if (is_win) {
     public += [ "win_key_network_delegate.h" ]
 
     sources += [ "win_key_network_delegate.cc" ]
 
-    public_deps = [ "//components/winhttp" ]
+    public_deps += [ "//components/winhttp" ]
 
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher",

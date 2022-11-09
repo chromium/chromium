@@ -46,7 +46,7 @@ using HttpResponseCode = KeyNetworkDelegate::HttpResponseCode;
 
 namespace {
 
-constexpr char kDmServerUrl[] = "dmserver.example.com";
+constexpr char kDmServerUrl[] = "https://dmserver.example.com";
 constexpr char kDmToken[] = "dm_token";
 constexpr char kFakeNonce[] = "nonce";
 
@@ -219,20 +219,45 @@ class KeyRotationManagerTest : public testing::Test {
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;
 };
 
+TEST_F(KeyRotationManagerTest, Rotate_InvalidDMServerURL) {
+  SetUpOldKey(/*exists=*/true);
+
+  base::test::TestFuture<KeyRotationManager::Result> future;
+  key_rotation_manager_->Rotate(GURL(), kDmToken, kFakeNonce,
+                                future.GetCallback());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
+
+  histogram_tester_->ExpectUniqueSample(
+      kRotateStatusWithNonceHistogram,
+      RotationStatus::FAILURE_INVALID_DMSERVER_URL, 1);
+
+  EXPECT_THAT(histogram_tester_->GetTotalCountsForPrefix(kHistogramPrefix),
+              ElementsAre(Pair(kRotateStatusWithNonceHistogram, 1)));
+}
+
 TEST_F(KeyRotationManagerTest, Rotate_InvalidDmToken) {
+  SetUpOldKey(/*exists=*/true);
+
   // Create a DM token that has 5000 characters.
   std::string long_dm_token(5000, 'a');
 
   base::test::TestFuture<KeyRotationManager::Result> future;
-  key_rotation_manager_->Rotate(GURL(kDmServerUrl), long_dm_token,
-                                std::string(), future.GetCallback());
+  key_rotation_manager_->Rotate(GURL(kDmServerUrl), long_dm_token, kFakeNonce,
+                                future.GetCallback());
   EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
+
+  histogram_tester_->ExpectUniqueSample(kRotateStatusWithNonceHistogram,
+                                        RotationStatus::FAILURE_INVALID_DMTOKEN,
+                                        1);
+
+  EXPECT_THAT(histogram_tester_->GetTotalCountsForPrefix(kHistogramPrefix),
+              ElementsAre(Pair(kRotateStatusWithNonceHistogram, 1)));
 }
 
 TEST_F(KeyRotationManagerTest, Rotate_MissingNonce) {
   SetUpOldKey(/*exists=*/true);
 
-  RunRotate(KeyRotationManager::Result::FAILED);
+  RunRotate(KeyRotationManager::Result::FAILED, /*with_nonce=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       kRotateStatusWithNonceHistogram,
