@@ -8,7 +8,7 @@
 #         mac highsierra mojave catalina bigsur monterey
 #         win win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
+# tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
@@ -151,9 +151,6 @@ crbug.com/867718 [ win angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Sk
 [ android qualcomm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 [ android qualcomm ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 [ android qualcomm ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
-[ android android-nexus-5 no-passthrough ] WebglExtension_OES_texture_float_linear [ Skip ]
-[ android android-nexus-5 ] WebglExtension_WEBGL_depth_texture [ Skip ]
-[ android android-nexus-5 ] WebglExtension_WEBGL_compressed_texture_astc [ Skip ]
 [ android android-nexus-5x ] WebglExtension_WEBGL_depth_texture [ Skip ]
 [ android android-nexus-5x ] WebglExtension_EXT_sRGB [ Skip ]
 crbug.com/1286830 [ android arm ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
@@ -494,30 +491,6 @@ crbug.com/352645 [ android ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_
 
 # These video tests are flakey on many configurations.
 crbug.com/1347077 [ android ] conformance/textures/misc/video-rotation.html [ Failure ]
-
-# Nexus 5
-crbug.com/899754 [ android android-nexus-5 ] conformance/attribs/gl-disabled-vertex-attrib-update.html [ Failure ]
-crbug.com/611943 [ android android-nexus-5 ] conformance/extensions/ext-texture-filter-anisotropic.html [ Failure ]
-crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/bugs/array-of-struct-with-int-first-position.html [ Failure ]
-crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Failure ]
-crbug.com/527761 [ android android-nexus-5 ] conformance/glsl/bugs/qualcomm-loop-with-continue-crash.html [ Failure ]
-crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
-crbug.com/559342 [ android android-nexus-5 ] conformance/glsl/bugs/struct-constructor-highp-bug.html [ Failure ]
-crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/matrices/glsl-mat4-to-mat3.html [ Failure ]
-crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/misc/shader-struct-scope.html [ Failure ]
-crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/misc/shader-with-vec4-vec3-vec4-conditional.html [ Failure ]
-crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/misc/struct-equals.html [ Failure ]
-crbug.com/478572 [ android android-nexus-5 ] deqp/data/gles2/shaders/linkage.html [ Failure ]
-crbug.com/678850 [ android android-nexus-5 ] conformance/more/functions/vertexAttribPointerBadArgs.html [ Failure ]
-crbug.com/678850 [ android android-nexus-5 ] conformance/attribs/gl-vertexattribpointer.html [ Failure ]
-
-crbug.com/1357064 [ android android-nexus-5 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1359027 [ android android-nexus-5 ] conformance/attribs/gl-enable-vertex-attrib.html [ Failure ]
-crbug.com/1359027 [ android android-nexus-5 ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
-
-# Started failing after the upgrade to Marshmallow.
-crbug.com/1264880 [ android-marshmallow android-nexus-5 ] conformance/extensions/webgl-multi-draw.html [ Failure ]
-crbug.com/1264882 [ android-marshmallow android-nexus-5 ] conformance/glsl/bugs/sketchfab-lighting-shader-crash.html [ Failure ]
 
 # Nexus 5X
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so

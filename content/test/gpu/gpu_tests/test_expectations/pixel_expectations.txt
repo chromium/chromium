@@ -8,7 +8,7 @@
 #         mac highsierra mojave catalina bigsur monterey
 #         win win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
+# tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
@@ -195,7 +195,6 @@ crbug.com/1307787 [ mac ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 
 # Test is too slow for old phones and laptops, and in Debug mode.
-crbug.com/1356246 [ android android-nexus-5 ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ android android-nexus-5x ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
 # Mac Nvidia laptops are quite old and the test times out on release builds too.
