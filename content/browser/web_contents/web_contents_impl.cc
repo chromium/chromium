@@ -7142,8 +7142,9 @@ void WebContentsImpl::RunFileChooser(
 double WebContentsImpl::GetPendingPageZoomLevel() {
 #if BUILDFLAG(IS_ANDROID)
   // On Android, use the default page zoom level when the AccessibilityPageZoom
-  // feature is not enabled.
-  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
+  // and RequestDesktopSiteZoom features are not enabled.
+  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom) &&
+      !base::FeatureList::IsEnabled(features::kRequestDesktopSiteZoom)) {
     return 0.0;
   }
 #endif

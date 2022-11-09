@@ -2920,6 +2920,7 @@ test("content_unittests") {
       "../browser/android/overscroll_controller_android_unittest.cc",
       "../browser/android/scoped_surface_request_manager_unittest.cc",
       "../browser/font_unique_name_lookup/font_unique_name_lookup_unittest.cc",
+      "../browser/host_zoom_map_impl_android_unittest.cc",
       "../browser/renderer_host/render_widget_host_view_android_unittest.cc",
       "../browser/sms/sms_provider_gms_unittest.cc",
       "../renderer/java/gin_java_bridge_value_converter_unittest.cc",

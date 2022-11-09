@@ -81,6 +81,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void SetDefaultZoomLevelPrefCallback(
       HostZoomMap::DefaultZoomChangedCallback callback) override;
   HostZoomMap::DefaultZoomChangedCallback* GetDefaultZoomLevelPrefCallback();
+  double GetDesktopSiteZoomScale(WebContents* web_contents);
 #endif
 
  private:

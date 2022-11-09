@@ -79,6 +79,7 @@ public class PageZoomMediatorUnitTest {
         mMediator = new PageZoomMediator(mModel);
 
         HostZoomMap.SYSTEM_FONT_SCALE = 1.0f;
+        when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.0);
     }
 
     @Test
@@ -111,6 +112,22 @@ public class PageZoomMediatorUnitTest {
     }
 
     @Test
+    public void testDecreaseZoom_SmallConfiguration_DesktopUserAgent() {
+        // Verify that calling decrease zoom method sends expected value to native code.
+        HostZoomMap.SYSTEM_FONT_SCALE = 0.85f;
+        when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
+        when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
+        mMediator.setWebContents(mWebContentsMock);
+        Assert.assertEquals(
+                CURRENT_ZOOM_FAILURE, 110, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+        mMediator.handleDecreaseClicked(null);
+        verify(mHostZoomMapMock, times(1).description(DECREASE_ZOOM_FAILURE_NO_JNI))
+                .setZoomLevel(mWebContentsMock, 2.22, 1.85);
+        Assert.assertEquals(
+                CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+    }
+
+    @Test
     public void testIncreaseZoom() {
         // Verify that calling increase zoom method sends expected value to native code.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
@@ -137,6 +154,22 @@ public class PageZoomMediatorUnitTest {
                 .setZoomLevel(mWebContentsMock, 1.22, 2.66);
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 75, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+    }
+
+    @Test
+    public void testIncreaseZoom_LargeConfiguration_DesktopUserAgent() {
+        // Verify that calling increase zoom method sends expected value to native code.
+        HostZoomMap.SYSTEM_FONT_SCALE = 1.3f;
+        when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
+        when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
+        mMediator.setWebContents(mWebContentsMock);
+        Assert.assertEquals(
+                CURRENT_ZOOM_FAILURE, 55, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+        mMediator.handleIncreaseClicked(null);
+        verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
+                .setZoomLevel(mWebContentsMock, 0.52, 2.48);
+        Assert.assertEquals(
+                CURRENT_ZOOM_FAILURE, 60, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
     }
 
     @Test

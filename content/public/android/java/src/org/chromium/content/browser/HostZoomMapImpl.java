@@ -10,6 +10,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 
@@ -59,9 +60,25 @@ public class HostZoomMapImpl {
         return HostZoomMapImplJni.get().getDefaultZoomLevel(context);
     }
 
+    /**
+     * Get the page zoom scaling factor to use when a desktop or mobile user agent is used.
+     * @param webContents The {@link WebContents} to get the desktop site zoom scale for.
+     * @return The desktop site zoom scale.
+     */
+    public static float getDesktopSiteZoomScale(WebContents webContents) {
+        return (float) HostZoomMapImplJni.get().getDesktopSiteZoomScale(webContents);
+    }
+
     @CalledByNative
-    public static double getAdjustedZoomLevel(double zoomLevel) {
-        return HostZoomMap.adjustZoomLevel(zoomLevel, SYSTEM_FONT_SCALE);
+    public static double getAdjustedZoomLevel(double zoomLevel, double desktopSiteZoomScale) {
+        float systemFontScale = SYSTEM_FONT_SCALE;
+        // The OS |fontScale| will not be factored in zoom estimation if Page Zoom is disabled; a
+        // systemFontScale = 1 will be used in this case.
+        if (!ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
+            systemFontScale = 1;
+        }
+        return HostZoomMap.adjustZoomLevel(
+                zoomLevel, systemFontScale, (float) desktopSiteZoomScale);
     }
 
     @NativeMethods
@@ -70,5 +87,6 @@ public class HostZoomMapImpl {
         double getZoomLevel(WebContents webContents);
         void setDefaultZoomLevel(BrowserContextHandle context, double newDefaultZoomLevel);
         double getDefaultZoomLevel(BrowserContextHandle context);
+        double getDesktopSiteZoomScale(WebContents webContents);
     }
 }
