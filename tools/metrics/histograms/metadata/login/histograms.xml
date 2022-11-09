@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Login.PromptToLoginTime" units="ms" expires_after="2023-04-05">
   <owner>elijahtaylor@google.com</owner>
-  <owner>yusukes@chromium.org</owner>
+  <owner>khmel@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>

@@ -928,7 +928,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
   <owner>bgeffon@chromium.org</owner>
-  <owner>yusukes@chromium.org</owner>
+  <owner>khmel@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of all ARC and ARCVM processes in Chrome OS, reported every 10

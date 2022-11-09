@@ -2811,7 +2811,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins"
     units="VMsTrimmed" expires_after="2022-04-03">
-  <owner>yusukes@chromium.org</owner>
+  <owner>khmel@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <summary>
     Number of ARCVM's crosvm trimmed in the last 30 minutes. Recorded every 30
@@ -2826,7 +2826,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.WorkingSetTrim.ArcVmTrimFailCountPer30Mins"
     units="failures" expires_after="2022-10-15">
   <owner>raging@google.com</owner>
-  <owner>yusukes@chromium.org</owner>
+  <owner>khmel@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <summary>
     Tracks the number of failures that resulted from ArcVM trim operations.
@@ -2839,7 +2839,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.WorkingSetTrim.ArcVmTrimPageLimit" units="pages"
     expires_after="2022-10-15">
   <owner>raging@google.com</owner>
-  <owner>yusukes@chromium.org</owner>
+  <owner>khmel@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <summary>
     Tracks the ongoing computed value used to limit the number of pages to trim
