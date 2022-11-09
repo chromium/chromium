@@ -835,6 +835,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAStandaloneAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAOsUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMADarkModeDisabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnapGroupEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsStartAssistantAudioDecoderOnDemandEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImeTrayHideVoiceButtonEnabled();
