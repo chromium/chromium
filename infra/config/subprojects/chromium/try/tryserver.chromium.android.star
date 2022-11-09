@@ -131,7 +131,6 @@ try_.builder(
             ],
         },
     },
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(),
     ssd = True,
 )

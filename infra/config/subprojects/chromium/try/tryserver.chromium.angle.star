@@ -17,7 +17,7 @@ try_.defaults.set(
     goma_backend = goma.backend.RBE_PROD,
     goma_jobs = goma.jobs.J150,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
     service_account = try_.gpu.SERVICE_ACCOUNT,
