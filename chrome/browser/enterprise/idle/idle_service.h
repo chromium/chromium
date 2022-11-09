@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_IDLE_IDLE_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_IDLE_IDLE_SERVICE_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/idle/action_runner.h"
 #include "chrome/browser/enterprise/idle/browser_closer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -46,12 +50,11 @@ class IdleService : public KeyedService,
   void OnCloseFinished(BrowserCloser::CloseResult result);
 
   raw_ptr<Profile> const profile_;
+  std::unique_ptr<ActionRunner> action_runner_;
   PrefChangeRegistrar pref_change_registrar_;
 
   bool is_idle_ = false;
   base::TimeDelta idle_threshold_;
-
-  base::CallbackListSubscription browser_close_subscription_;
 
   base::ScopedObservation<ui::IdlePollingService,
                           ui::IdlePollingService::Observer>

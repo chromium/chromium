@@ -8,9 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/browser/enterprise/idle/browser_closer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/idle/idle.h"
@@ -18,7 +16,11 @@
 
 namespace enterprise_idle {
 
-IdleService::IdleService(Profile* profile) : profile_(profile) {
+IdleService::IdleService(Profile* profile)
+    : profile_(profile),
+      action_runner_(
+          std::make_unique<ActionRunner>(profile_,
+                                         ActionFactory::GetInstance())) {
   DCHECK_EQ(profile_->GetOriginalProfile(), profile_);
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
@@ -59,36 +61,10 @@ void IdleService::OnIdleStateChange(
     }
   } else {
     if (polled_state.idle_time >= idle_threshold_) {
-      // Profile just became idle. Show the dialog.
+      // Profile just became idle. Run actions.
       is_idle_ = true;
-      browser_close_subscription_ =
-          BrowserCloser::GetInstance()->ShowDialogAndCloseBrowsers(
-              profile_, idle_threshold_,
-              base::BindOnce(&IdleService::OnCloseFinished,
-                             weak_ptr_factory_.GetWeakPtr()));
+      action_runner_->Run();
     }
-  }
-}
-
-void IdleService::OnCloseFinished(BrowserCloser::CloseResult result) {
-  switch (result) {
-    case BrowserCloser::CloseResult::kSuccess:
-      // Technically, this shows the ProfilePicker once per profile. However,
-      // all IdleServices run OnCloseFinished() in succession (once they're
-      // *all* closed), and there's only one ProfilePicker.
-      //
-      // Calling ProfilePicker::Show() multiple times like
-      // this is a no-op, so we don't need to bother de-duping work.
-      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-          ProfilePicker::EntryPoint::kProfileIdle));
-      break;
-
-    case BrowserCloser::CloseResult::kAborted:
-    case BrowserCloser::CloseResult::kSkip:
-      break;
-
-    default:
-      NOTREACHED();
   }
 }
 

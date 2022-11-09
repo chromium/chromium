@@ -8555,6 +8555,8 @@ test("unit_tests") {
       "../browser/browser_switcher/mock_alternative_browser_driver.cc",
       "../browser/browser_switcher/mock_alternative_browser_driver.h",
       "../browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service_unittest.cc",
+      "../browser/enterprise/idle/action_runner_unittest.cc",
+      "../browser/enterprise/idle/action_unittest.cc",
       "../browser/enterprise/idle/browser_closer_unittest.cc",
       "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
       "../browser/enterprise/signals/user_delegate_impl_unittest.cc",
