@@ -63,9 +63,9 @@ template <bool is_once,
           typename R,
           typename... UnboundArgs,
           typename... BoundArgs>
-static std::conditional_t<is_once,
-                          OnceCallback<R(UnboundArgs...)>,
-                          RepeatingCallback<R(UnboundArgs...)>>
+std::conditional_t<is_once,
+                   OnceCallback<R(UnboundArgs...)>,
+                   RepeatingCallback<R(UnboundArgs...)>>
 ToDoNothingCallback(DoNothingCallbackTag::WithBoundArguments<BoundArgs...> t) {
   return std::apply(
       [](auto&&... args) {
