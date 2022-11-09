@@ -1853,7 +1853,7 @@ UsageTracker* QuotaManagerImpl::GetUsageTracker(StorageType type) const {
       return syncable_usage_tracker_.get();
     case StorageType::kDeprecatedQuotaNotManaged:
       return nullptr;
-    case StorageType::kPersistent:
+    case StorageType::kDeprecatedPersistent:
     case StorageType::kUnknown:
       NOTREACHED();
   }

@@ -23,7 +23,7 @@ TEST(BucketLocatorMojomTraitsTest, SerializeAndDeserialize) {
       BucketLocator(
           BucketId(123),
           blink::StorageKey::CreateFromStringForTesting("http://google.com/"),
-          blink::mojom::StorageType::kPersistent, /*is_default=*/true),
+          blink::mojom::StorageType::kTemporary, /*is_default=*/true),
       BucketLocator(
           BucketId(1000),
           blink::StorageKey::CreateFromStringForTesting("http://test.com/"),
