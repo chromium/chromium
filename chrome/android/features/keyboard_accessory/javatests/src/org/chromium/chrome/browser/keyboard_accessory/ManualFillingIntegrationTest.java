@@ -41,6 +41,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -163,11 +164,8 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testAccessorySheetHiddenWhenRefocusingField() throws TimeoutException {
+    @DisabledTest(message = "https://crbug.com/1376371")
+    public void testAccessorySheetHiddenWhenRefocusingField() throws TimeoutException {
         AtomicReference<ViewGroup.MarginLayoutParams> accessoryMargins = new AtomicReference<>();
         AtomicReference<View> accessorySheetView = new AtomicReference<>();
         mHelper.loadTestPage(false);
