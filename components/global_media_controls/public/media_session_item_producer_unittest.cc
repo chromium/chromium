@@ -28,6 +28,7 @@
 
 using media_session::mojom::AudioFocusRequestState;
 using media_session::mojom::AudioFocusRequestStatePtr;
+using media_session::mojom::MediaSessionAction;
 using media_session::mojom::MediaSessionInfo;
 using media_session::mojom::MediaSessionInfoPtr;
 using testing::_;
@@ -138,24 +139,13 @@ class MediaSessionItemProducerTest : public testing::Test {
     item_itr->second.item()->MediaSessionMetadataChanged(std::move(metadata));
   }
 
-  void SimulateHasArtwork(const base::UnguessableToken& id) {
+  void SimulateMediaSessionActions(
+      const base::UnguessableToken& id,
+      const std::vector<media_session::mojom::MediaSessionAction>& actions) {
     auto item_itr = sessions().find(id.ToString());
     ASSERT_NE(sessions().end(), item_itr);
 
-    SkBitmap image;
-    image.allocN32Pixels(10, 10);
-    image.eraseColor(SK_ColorMAGENTA);
-
-    item_itr->second.item()->MediaControllerImageChanged(
-        media_session::mojom::MediaSessionImageType::kArtwork, image);
-  }
-
-  void SimulateHasNoArtwork(const base::UnguessableToken& id) {
-    auto item_itr = sessions().find(id.ToString());
-    ASSERT_NE(sessions().end(), item_itr);
-
-    item_itr->second.item()->MediaControllerImageChanged(
-        media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
+    item_itr->second.item()->MediaSessionActionsChanged(actions);
   }
 
   bool IsSessionFrozen(const base::UnguessableToken& id) const {
@@ -438,9 +428,11 @@ TEST_F(MediaSessionItemProducerTest, DismissesMediaSession) {
 // Regression test for https://crbug.com/1015903: we could end up in a
 // situation where the toolbar icon was disabled indefinitely.
 TEST_F(MediaSessionItemProducerTest, LoseGainLoseDoesNotCauseRaceCondition) {
-  // First, start an active session and include artwork.
+  // First, start an active session with some actions.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
-  SimulateHasArtwork(id);
+  std::vector<media_session::mojom::MediaSessionAction> actions = {
+      MediaSessionAction::kPlay};
+  SimulateMediaSessionActions(id, actions);
   EXPECT_TRUE(HasActiveItems());
 
   // Then, stop playing media so the session is frozen, but hasn't been hidden
@@ -449,16 +441,17 @@ TEST_F(MediaSessionItemProducerTest, LoseGainLoseDoesNotCauseRaceCondition) {
   EXPECT_FALSE(HasActiveItems());
   EXPECT_TRUE(HasFrozenItems());
 
-  // Simulate no artwork, so we wait for new artwork.
-  SimulateHasNoArtwork(id);
+  // Simulate no actions, so we wait for actions.
+  actions.clear();
+  SimulateMediaSessionActions(id, actions);
 
-  // Simulate regaining focus, but no artwork yet so we wait.
+  // Simulate gaining focus but with no actions yet so we wait.
   SimulateFocusGained(id, true);
   SimulateNecessaryMetadata(id);
   EXPECT_FALSE(HasActiveItems());
   EXPECT_TRUE(HasFrozenItems());
 
-  // Then, lose focus again before getting artwork.
+  // Then, lose focus again before getting actions.
   SimulateFocusLost(id);
   EXPECT_FALSE(HasActiveItems());
   EXPECT_TRUE(HasFrozenItems());

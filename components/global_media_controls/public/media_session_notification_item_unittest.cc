@@ -224,7 +224,7 @@ TEST_F(MediaSessionNotificationItemTest, UnfreezingDoesntMissUpdates) {
   testing::Mock::VerifyAndClearExpectations(&view());
 }
 
-TEST_F(MediaSessionNotificationItemTest, UnfreezingWaitsForArtwork_Timeout) {
+TEST_F(MediaSessionNotificationItemTest, SemiUnfreezesWithoutArtwork_Timeout) {
   item().MediaSessionActionsChanged(
       {MediaSessionAction::kPlay, MediaSessionAction::kPause});
 
@@ -268,27 +268,27 @@ TEST_F(MediaSessionNotificationItemTest, UnfreezingWaitsForArtwork_Timeout) {
   // The item should still be frozen, and the view should contain the old data.
   EXPECT_TRUE(item().frozen());
 
-  // Update the metadata.
+  // Update the metadata. This should unfreeze everything except the artwork.
+  EXPECT_CALL(unfrozen_callback, Run);
+  EXPECT_CALL(view(), UpdateWithMediaSessionInfo(_));
+  EXPECT_CALL(view(), UpdateWithMediaMetadata(_));
+  EXPECT_CALL(view(), UpdateWithMediaArtwork(_)).Times(0);
   media_session::MediaMetadata metadata;
   metadata.title = u"title2";
   metadata.artist = u"artist2";
   item().MediaSessionMetadataChanged(metadata);
 
-  // The item should still be frozen, and waiting for a new image.
-  EXPECT_TRUE(item().frozen());
+  // The item should no longer be frozen, but will be waiting for a new image.
+  EXPECT_FALSE(item().frozen());
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   testing::Mock::VerifyAndClearExpectations(&view());
 
-  // Once the freeze timer fires, the item should unfreeze even if there's no
-  // artwork.
-  EXPECT_CALL(unfrozen_callback, Run);
-  EXPECT_CALL(view(), UpdateWithMediaSessionInfo(_));
-  EXPECT_CALL(view(), UpdateWithMediaMetadata(_));
-  EXPECT_CALL(view(), UpdateWithMediaArtwork(_));
+  // Once the freeze timer fires, the artwork should unfreeze even if there's no
+  // artwork. Since we've received no artwork, the artwork should be null.
+  EXPECT_CALL(view(), UpdateWithMediaArtwork(_))
+      .WillOnce(testing::Invoke(
+          [](const gfx::ImageSkia& image) { EXPECT_TRUE(image.isNull()); }));
   AdvanceClockMilliseconds(2600);
-
-  EXPECT_FALSE(item().frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   testing::Mock::VerifyAndClearExpectations(&view());
 }
 
@@ -355,7 +355,7 @@ TEST_F(MediaSessionNotificationItemTest, UnfreezingWaitsForActions) {
 }
 
 TEST_F(MediaSessionNotificationItemTest,
-       UnfreezingWaitsForArtwork_ReceiveArtwork) {
+       SemiUnfreezesWithoutArtwork_ReceiveArtwork) {
   item().MediaSessionActionsChanged(
       {MediaSessionAction::kPlay, MediaSessionAction::kPause});
 
@@ -399,30 +399,28 @@ TEST_F(MediaSessionNotificationItemTest,
   // The item should still be frozen, and the view should contain the old data.
   EXPECT_TRUE(item().frozen());
 
-  // Update the metadata.
+  // Update the metadata. This should unfreeze everything except the artwork.
+  EXPECT_CALL(unfrozen_callback, Run);
+  EXPECT_CALL(view(), UpdateWithMediaSessionInfo(_));
+  EXPECT_CALL(view(), UpdateWithMediaMetadata(_));
+  EXPECT_CALL(view(), UpdateWithMediaArtwork(_)).Times(0);
   media_session::MediaMetadata metadata;
   metadata.title = u"title2";
   metadata.artist = u"artist2";
   item().MediaSessionMetadataChanged(metadata);
 
-  // The item should still be frozen, and waiting for a new image.
-  EXPECT_TRUE(item().frozen());
+  // The item should no longer be frozen, but will be waiting for a new image.
+  EXPECT_FALSE(item().frozen());
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   testing::Mock::VerifyAndClearExpectations(&view());
 
-  // Once we receive artwork, the item should unfreeze.
-  EXPECT_CALL(unfrozen_callback, Run);
-  EXPECT_CALL(view(), UpdateWithMediaSessionInfo(_));
-  EXPECT_CALL(view(), UpdateWithMediaMetadata(_));
+  // Once we receive artwork, the artwork should unfreeze.
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_));
   SkBitmap new_image;
   new_image.allocN32Pixels(10, 10);
   new_image.eraseColor(SK_ColorYELLOW);
   item().MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, new_image);
-
-  EXPECT_FALSE(item().frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   testing::Mock::VerifyAndClearExpectations(&view());
 }
 

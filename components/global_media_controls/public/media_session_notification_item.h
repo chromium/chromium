@@ -142,7 +142,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   void MaybeUnfreeze();
 
-  void Unfreeze();
+  void UnfreezeNonArtwork();
+
+  void UnfreezeArtwork();
 
   bool HasActions() const;
 
@@ -205,10 +207,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   // True if we're currently frozen and the frozen view contains non-null
   // artwork.
   bool frozen_with_artwork_ = false;
-
-  // True if we have the necessary metadata to unfreeze, but we're waiting for
-  // new artwork to load.
-  bool waiting_for_artwork_ = false;
 
   // The timer that will notify the controller to destroy this item after it
   // has been frozen for a certain period of time.
