@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<style>
+  /* These should be ignored when in autofilled state. */
+  input {
+     font-feature-settings: "case", "ss01", "ss02", "ss03";
+  }
+</style>
+<input id="input" style="width: 99px;" >
+<script>
+internals.setSuggestedValue(input, 'Hello');
+internals.setAutofilled(input, true);
+</script>

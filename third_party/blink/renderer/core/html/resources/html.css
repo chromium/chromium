@@ -541,11 +541,14 @@ input::-internal-input-suggested {
     text-overflow: inherit;
     white-space: nowrap;
     overflow: hidden;
-}
+  }
 
-input::-internal-input-suggested,
-textarea::-internal-input-suggested {
+  input::-internal-input-suggested,
+  textarea::-internal-input-suggested {
     font: -webkit-small-control !important;
+    /* -webkit-small-control does not pin the font-feature-settings and we want
+       previews to look consistent. */
+    font-feature-settings: normal !important;
     /* Prevent that overflow affects the scrollable area. Without this,
        LayoutBox::*Scroll{Height,Width}() may determine the scroll width/height
        from the scrollable area instead of from the overrides in
