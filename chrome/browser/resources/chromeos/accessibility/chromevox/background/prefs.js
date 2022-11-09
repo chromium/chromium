@@ -33,22 +33,35 @@ export class ChromeVoxPrefs {
 
     // Default per session sticky to off.
     localStorage['sticky'] = false;
-
-    this.init();
   }
 
   /**
    * Merge the default values of all known prefs with what's found in
    * localStorage.
    */
-  init() {
+  static init() {
+    ChromeVoxPrefs.instance = new ChromeVoxPrefs();
+
     // Set the default value of any pref that isn't already in localStorage.
     for (const pref in ChromeVoxPrefs.DEFAULT_PREFS) {
       if (localStorage[pref] === undefined) {
         localStorage[pref] = ChromeVoxPrefs.DEFAULT_PREFS[pref];
       }
     }
-    this.enableOrDisableLogUrlWatcher_();
+    ChromeVoxPrefs.instance.enableOrDisableLogUrlWatcher_();
+
+    BridgeHelper.registerHandler(
+        BridgeConstants.ChromeVoxPrefs.TARGET,
+        BridgeConstants.ChromeVoxPrefs.Action.GET_PREFS,
+        () => ChromeVoxPrefs.instance.getPrefs());
+    BridgeHelper.registerHandler(
+        BridgeConstants.ChromeVoxPrefs.TARGET,
+        BridgeConstants.ChromeVoxPrefs.Action.SET_LOGGING_PREFS,
+        (key, value) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
+    BridgeHelper.registerHandler(
+        BridgeConstants.ChromeVoxPrefs.TARGET,
+        BridgeConstants.ChromeVoxPrefs.Action.SET_PREF,
+        (key, value) => ChromeVoxPrefs.instance.setPref(key, value));
   }
 
   /**
@@ -220,18 +233,5 @@ ChromeVoxPrefs.loggingPrefs = {
   EVENT: 'enableEventStreamLogging',
 };
 
-/** @type {!ChromeVoxPrefs} */
-ChromeVoxPrefs.instance = new ChromeVoxPrefs();
-
-BridgeHelper.registerHandler(
-    BridgeConstants.ChromeVoxPrefs.TARGET,
-    BridgeConstants.ChromeVoxPrefs.Action.GET_PREFS,
-    () => ChromeVoxPrefs.instance.getPrefs());
-BridgeHelper.registerHandler(
-    BridgeConstants.ChromeVoxPrefs.TARGET,
-    BridgeConstants.ChromeVoxPrefs.Action.SET_LOGGING_PREFS,
-    (key, value) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
-BridgeHelper.registerHandler(
-    BridgeConstants.ChromeVoxPrefs.TARGET,
-    BridgeConstants.ChromeVoxPrefs.Action.SET_PREF,
-    (key, value) => ChromeVoxPrefs.instance.setPref(key, value));
+/** @type {ChromeVoxPrefs} */
+ChromeVoxPrefs.instance;
