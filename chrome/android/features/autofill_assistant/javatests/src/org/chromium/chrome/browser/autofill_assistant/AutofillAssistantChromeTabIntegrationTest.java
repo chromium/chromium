@@ -119,6 +119,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @MediumTest
     // Restricted to phones due to https://crbug.com/429671
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisabledTest(message = "https://crbug.com/1382850")
     public void newTabButtonHidesAndRecoversAutofillAssistant() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
