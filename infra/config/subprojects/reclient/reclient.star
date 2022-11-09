@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "cpu", "os", "xcode")
+load("//lib/builders.star", "builders", "cpu", "os", "reclient", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/structs.star", "structs")
@@ -398,11 +398,12 @@ ci.builder(
         category = "linux",
         short_name = "cmp",
     ),
-    goma_jobs = 250,
     executable = "recipe:reclient_reclient_comparison",
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Linux remote links - cache siloed",
     os = os.LINUX_DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_bootstrap_env = {
         "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
