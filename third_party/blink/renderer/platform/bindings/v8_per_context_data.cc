@@ -79,8 +79,6 @@ void V8PerContextData::Dispose() {
   context_holder_ = nullptr;
   if (!context_.IsEmpty())
     context_.SetPhantom();
-  if (!private_custom_element_definition_id_.IsEmpty())
-    private_custom_element_definition_id_.SetPhantom();
 }
 
 void V8PerContextData::Trace(Visitor* visitor) const {

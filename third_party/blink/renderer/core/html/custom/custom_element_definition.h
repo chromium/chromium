@@ -35,10 +35,6 @@ class CORE_EXPORT CustomElementDefinition
     : public GarbageCollected<CustomElementDefinition>,
       public NameClient {
  public:
-  // Each definition has an ID that is unique within the
-  // CustomElementRegistry that created it.
-  using Id = uint32_t;
-
   CustomElementDefinition(const CustomElementDefinition&) = delete;
   CustomElementDefinition& operator=(const CustomElementDefinition&) = delete;
   ~CustomElementDefinition() override;

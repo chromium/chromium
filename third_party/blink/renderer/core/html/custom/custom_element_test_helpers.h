@@ -27,17 +27,20 @@ class TestCustomElementDefinitionBuilder
   STACK_ALLOCATED();
 
  public:
-  TestCustomElementDefinitionBuilder() = default;
+  explicit TestCustomElementDefinitionBuilder(ScriptState*);
   TestCustomElementDefinitionBuilder(
       const TestCustomElementDefinitionBuilder&) = delete;
   TestCustomElementDefinitionBuilder& operator=(
       const TestCustomElementDefinitionBuilder&) = delete;
 
+  V8CustomElementConstructor* Constructor() override { return constructor_; }
   bool CheckConstructorIntrinsics() override { return true; }
   bool CheckConstructorNotRegistered() override { return true; }
   bool RememberOriginalProperties() override { return true; }
-  CustomElementDefinition* Build(const CustomElementDescriptor&,
-                                 CustomElementDefinition::Id) override;
+  CustomElementDefinition* Build(const CustomElementDescriptor&) override;
+
+ private:
+  V8CustomElementConstructor* constructor_;
 };
 
 class TestCustomElementDefinition : public CustomElementDefinition {

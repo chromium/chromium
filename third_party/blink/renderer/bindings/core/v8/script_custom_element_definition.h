@@ -5,16 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_CUSTOM_ELEMENT_DEFINITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_CUSTOM_ELEMENT_DEFINITION_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 class CustomElementDescriptor;
-class CustomElementRegistry;
 class ScriptCustomElementDefinitionData;
 class ScriptState;
 class V8CustomElementAdoptedCallback;
@@ -28,14 +25,8 @@ class V8VoidFunction;
 class CORE_EXPORT ScriptCustomElementDefinition final
     : public CustomElementDefinition {
  public:
-  static ScriptCustomElementDefinition* ForConstructor(
-      ScriptState*,
-      CustomElementRegistry*,
-      v8::Local<v8::Value> constructor);
-
   ScriptCustomElementDefinition(const ScriptCustomElementDefinitionData& data,
-                                const CustomElementDescriptor&,
-                                CustomElementDefinition::Id);
+                                const CustomElementDescriptor&);
 
   ScriptCustomElementDefinition(const ScriptCustomElementDefinition&) = delete;
   ScriptCustomElementDefinition& operator=(

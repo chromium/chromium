@@ -99,20 +99,6 @@ class PLATFORM_EXPORT V8PerContextData final
       v8::Local<v8::Object>* prototype_object,
       v8::Local<v8::Function>* interface_object);
 
-  // Gets a Private to store custom element definition IDs on a
-  // constructor that has been registered as a custom element in this
-  // context. This private has to be per-context because the same
-  // constructor could be simultaneously registered as a custom
-  // element in many contexts and they each need to give it a unique
-  // identifier.
-  v8::Local<v8::Private> GetPrivateCustomElementDefinitionId() {
-    if (UNLIKELY(private_custom_element_definition_id_.IsEmpty())) {
-      private_custom_element_definition_id_.Set(isolate_,
-                                                v8::Private::New(isolate_));
-    }
-    return private_custom_element_definition_id_.NewLocal(isolate_);
-  }
-
   V8DOMActivityLogger* ActivityLogger() const { return activity_logger_; }
   void SetActivityLogger(V8DOMActivityLogger* activity_logger) {
     activity_logger_ = activity_logger;
@@ -144,8 +130,6 @@ class PLATFORM_EXPORT V8PerContextData final
   std::unique_ptr<gin::ContextHolder> context_holder_;
 
   ScopedPersistent<v8::Context> context_;
-
-  ScopedPersistent<v8::Private> private_custom_element_definition_id_;
 
   // This is owned by a static hash map in V8DOMActivityLogger.
   V8DOMActivityLogger* activity_logger_;

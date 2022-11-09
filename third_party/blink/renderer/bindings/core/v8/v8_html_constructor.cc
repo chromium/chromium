@@ -59,9 +59,8 @@ void V8HTMLConstructor::HtmlConstructor(
   // NewTarget.
   // If there is no such definition, then throw a TypeError and abort these
   // steps.
-  ScriptCustomElementDefinition* definition =
-      ScriptCustomElementDefinition::ForConstructor(script_state, registry,
-                                                    new_target);
+  CustomElementDefinition* definition =
+      registry->DefinitionForConstructor(new_target.As<v8::Object>());
   if (!definition) {
     V8ThrowException::ThrowTypeError(isolate, "Illegal constructor");
     return;
