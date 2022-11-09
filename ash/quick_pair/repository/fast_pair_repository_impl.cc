@@ -337,8 +337,7 @@ bool FastPairRepositoryImpl::AssociateAccountKeyLocally(
     scoped_refptr<Device> device) {
   QP_LOG(VERBOSE) << __func__;
 
-  absl::optional<std::vector<uint8_t>> account_key =
-      device->GetAdditionalData(Device::AdditionalDataType::kAccountKey);
+  absl::optional<std::vector<uint8_t>> account_key = device->account_key();
   if (!account_key) {
     QP_LOG(WARNING) << __func__ << ": Account key not found for device.";
     return false;

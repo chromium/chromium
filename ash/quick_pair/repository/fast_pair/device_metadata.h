@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_H_
 
+#include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ui/gfx/image/image.h"
 
@@ -23,6 +24,7 @@ class DeviceMetadata {
   ~DeviceMetadata();
 
   const nearby::fastpair::Device& GetDetails();
+  DeviceFastPairVersion InferFastPairVersion();
   const gfx::Image& image() { return image_; }
   const nearby::fastpair::GetObservedDeviceResponse& response() {
     return response_;

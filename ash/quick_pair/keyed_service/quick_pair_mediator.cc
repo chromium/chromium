@@ -259,14 +259,9 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
 
   switch (action) {
     case DiscoveryAction::kPairToDevice: {
-      absl::optional<std::vector<uint8_t>> additional_data =
-          device->GetAdditionalData(
-              Device::AdditionalDataType::kFastPairVersion);
-
       // Skip showing the in-progress UI for Fast Pair v1 because that pairing
       // is not handled by us E2E.
-      if (!additional_data.has_value() || additional_data->size() != 1 ||
-          (*additional_data)[0] != 1) {
+      if (device->version().value() == DeviceFastPairVersion::kHigherThanV1) {
         ui_broker_->ShowPairing(device);
       }
 

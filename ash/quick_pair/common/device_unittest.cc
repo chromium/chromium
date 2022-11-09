@@ -13,8 +13,6 @@
 namespace ash {
 namespace quick_pair {
 
-using AdditionalDataType = Device::AdditionalDataType;
-
 class DeviceTest : public testing::Test {
  protected:
   scoped_refptr<Device> device_ =
@@ -23,33 +21,18 @@ class DeviceTest : public testing::Test {
                                    Protocol::kFastPairInitial);
 };
 
-TEST_F(DeviceTest, GetAndSetAdditionalData) {
-  // Test that it returns null before any sets.
-  absl::optional<std::vector<uint8_t>> additional_data =
-      device_->GetAdditionalData(AdditionalDataType::kAccountKey);
-  EXPECT_FALSE(additional_data.has_value());
-
-  // Test that it returns the set value.
+TEST_F(DeviceTest, GetAndSetAccountKey) {
+  absl::optional<std::vector<uint8_t>> accountKey;
   std::vector<uint8_t> data = {0};
-  device_->SetAdditionalData(AdditionalDataType::kAccountKey, data);
-  additional_data = device_->GetAdditionalData(AdditionalDataType::kAccountKey);
-  EXPECT_TRUE(additional_data.has_value());
-  EXPECT_EQ(additional_data.value(), data);
+  device_->set_account_key(data);
+  accountKey = device_->account_key();
+  EXPECT_EQ(accountKey, data);
 
   // Test that overriding works.
   std::vector<uint8_t> more_data = {1};
-  device_->SetAdditionalData(AdditionalDataType::kAccountKey, more_data);
-  additional_data = device_->GetAdditionalData(AdditionalDataType::kAccountKey);
-  EXPECT_TRUE(additional_data.has_value());
-  EXPECT_EQ(additional_data.value(), more_data);
-}
-
-TEST_F(DeviceTest, SetClassicAddressForV1Devices) {
-  // Test that overriding works.
-  std::vector<uint8_t> more_data = {1};
-  device_->SetAdditionalData(AdditionalDataType::kFastPairVersion, more_data);
-
-  EXPECT_EQ(device_->classic_address(), device_->ble_address);
+  device_->set_account_key(more_data);
+  accountKey = device_->account_key();
+  EXPECT_EQ(accountKey, more_data);
 }
 
 TEST_F(DeviceTest, GetAndSetName) {

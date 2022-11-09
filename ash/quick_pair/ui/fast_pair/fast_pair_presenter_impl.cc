@@ -150,19 +150,14 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
   if (!device_metadata)
     return;
 
+  device->set_version(device_metadata->InferFastPairVersion());
+
   if (device->protocol == Protocol::kFastPairSubsequent) {
     ShowSubsequentDiscoveryNotification(device, callback, device_metadata);
     return;
   }
 
-  // Anti-spoofing keys were introduced in Fast Pair v2, so if this isn't
-  // available then the device is v1.
-  if (device_metadata->GetDetails()
-          .anti_spoofing_key_pair()
-          .public_key()
-          .empty()) {
-    device->SetAdditionalData(Device::AdditionalDataType::kFastPairVersion,
-                              {1});
+  if (device->version().value() == DeviceFastPairVersion::kV1) {
     RecordFastPairDiscoveredVersion(FastPairVersion::kVersion1);
   } else {
     RecordFastPairDiscoveredVersion(FastPairVersion::kVersion2);
@@ -446,6 +441,8 @@ void FastPairPresenterImpl::OnAssociateAccountMetadataRetrieved(
   if (!device_metadata) {
     return;
   }
+
+  device->set_version(device_metadata->InferFastPairVersion());
 
   signin::IdentityManager* identity_manager =
       QuickPairBrowserDelegate::Get()->GetIdentityManager();

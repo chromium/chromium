@@ -18,20 +18,20 @@
 namespace ash {
 namespace quick_pair {
 
+enum class DeviceFastPairVersion {
+  kV1,
+  kHigherThanV1,
+};
+
 // Thin class which is used by the higher level components of the Quick Pair
 // system to represent a device.
 //
 // Lower level components will use |protocol|, |metadata_id|, |ble_address| and
-// |additional_data| to fetch objects which contain more information. E.g. A
+// |account_key| to fetch objects which contain more information. E.g. A
 // Fast Pair component can use |metadata_id| to query the Service to receive a
 // full metadata object.
 struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     : public base::RefCounted<Device> {
-  enum class AdditionalDataType {
-    kAccountKey,
-    kFastPairVersion,
-  };
-
   Device(std::string metadata_id, std::string ble_address, Protocol protocol);
   Device(const Device&) = delete;
   Device& operator=(const Device&) = delete;
@@ -53,11 +53,19 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     display_name_ = display_name;
   }
 
-  absl::optional<std::vector<uint8_t>> GetAdditionalData(
-      const AdditionalDataType& type) const;
+  absl::optional<DeviceFastPairVersion> version() { return version_; }
 
-  void SetAdditionalData(const AdditionalDataType& type,
-                         const std::vector<uint8_t>& data);
+  void set_version(absl::optional<DeviceFastPairVersion> version) {
+    version_ = version;
+  }
+
+  const absl::optional<std::vector<uint8_t>> account_key() const {
+    return account_key_;
+  }
+
+  void set_account_key(std::vector<uint8_t> account_key) {
+    account_key_ = account_key;
+  }
 
   // An identifier which components can use to fetch additional metadata for
   // this device. This ID will correspond to different things depending on
@@ -85,8 +93,14 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
   // metadata instead of the display name.
   absl::optional<std::string> display_name_;
 
-  // Additional data that can be set as needed per Protocol.
-  base::flat_map<AdditionalDataType, std::vector<uint8_t>> additional_data_;
+  // Fast Pair version number, possible versions numbers are defined at the top
+  // of this file.
+  absl::optional<DeviceFastPairVersion> version_;
+
+  // Account key which will be saved to the user's account during Fast Pairing
+  // for eligible devices (V2 or higher) and used for detecting subsequent
+  // pairing scenarios.
+  absl::optional<std::vector<uint8_t>> account_key_;
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
