@@ -565,11 +565,11 @@ DownloadInterruptReason QuarantineFileResultToReason(
   return DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
 }
 
-// Given a source and a referrer, determines the "safest" URL that can be used
-// to determine the authority of the download source. Returns an empty URL if no
-// HTTP/S URL can be determined for the <|source_url|, |referrer_url|> pair.
-GURL GetEffectiveAuthorityURL(const GURL& source_url,
-                              const GURL& referrer_url) {
+}  // namespace
+
+// static
+GURL BaseFile::GetEffectiveAuthorityURL(const GURL& source_url,
+                                        const GURL& referrer_url) {
   if (source_url.is_valid()) {
     // http{,s} has an authority and are supported.
     if (source_url.SchemeIsHTTPOrHTTPS())
@@ -596,8 +596,6 @@ GURL GetEffectiveAuthorityURL(const GURL& source_url,
 
   return GURL();
 }
-
-}  // namespace
 
 void BaseFile::OnFileQuarantined(
     bool connection_error,

@@ -11,6 +11,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "components/download/public/common/base_file.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -94,17 +95,13 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   }
 #endif
 
-  const GURL* caller =
-#if BUILDFLAG(IS_CHROMEOS)
-      &download_item_->GetURL();
-#else
-      nullptr;
-#endif
+  const GURL caller = download::BaseFile::GetEffectiveAuthorityURL(
+      download_item_->GetURL(), download_item_->GetReferrerUrl());
 
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       suggested_path_, &file_type_info, 0, base::FilePath::StringType(),
-      owning_window, /*params=*/nullptr, caller);
+      owning_window, /*params=*/nullptr, &caller);
 }
 
 DownloadFilePicker::~DownloadFilePicker() {
@@ -132,8 +129,10 @@ void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
       files_controller = rules_manager->GetDlpFilesController();
 
     if (files_controller) {
+      const GURL authority_url = download::BaseFile::GetEffectiveAuthorityURL(
+          download_item_->GetURL(), download_item_->GetReferrerUrl());
       files_controller->CheckIfDownloadAllowed(
-          download_item_->GetURL(), path,
+          authority_url, path,
           base::BindOnce(&DownloadFilePicker::CompleteFileSelection,
                          base::Unretained(this), path));
     } else {
