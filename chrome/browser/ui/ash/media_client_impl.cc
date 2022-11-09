@@ -413,19 +413,9 @@ void MediaClientImpl::OnActiveClientChange(
     active_camera_client_count_--;
   }
 
-  std::vector<std::string> privacy_on_device_ids;
-  std::copy_if(
-      active_device_ids.begin(), active_device_ids.end(),
-      std::inserter(privacy_on_device_ids, privacy_on_device_ids.end()),
-      [&](const std::string& device_id) {
-        return device_id_to_camera_privacy_switch_state_[device_id] ==
-               cros::mojom::CameraPrivacySwitchState::ON;
-      });
-  if (!privacy_on_device_ids.empty()) {
-    video_source_provider_remote_->GetSourceInfos(base::BindOnce(
-        &MediaClientImpl::OnGetSourceInfosByActiveClientChanged,
-        weak_ptr_factory_.GetWeakPtr(), std::move(privacy_on_device_ids)));
-  }
+  video_source_provider_remote_->GetSourceInfos(
+      base::BindOnce(&MediaClientImpl::OnGetSourceInfosByActiveClientChanged,
+                     weak_ptr_factory_.GetWeakPtr(), active_device_ids));
 }
 
 void MediaClientImpl::EnableCustomMediaKeyHandler(
@@ -668,17 +658,27 @@ void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(
 }
 
 void MediaClientImpl::OnGetSourceInfosByActiveClientChanged(
-    const std::vector<std::string>& device_ids,
+    const base::flat_set<std::string>& active_device_ids,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& device_id : device_ids) {
-    std::string device_name = GetDeviceName(device_id, devices);
-    if (device_name.empty()) {
-      LOG(ERROR)
-          << "Could not find VideoCaptureDeviceDescriptor with device_id: "
-          << device_id;
-      continue;
+  for (const auto& device : devices) {
+    const std::string& device_id = device.descriptor.device_id;
+    const std::string& device_name = device.descriptor.display_name();
+
+    auto it = device_id_to_camera_privacy_switch_state_.find(device_id);
+    if (it != device_id_to_camera_privacy_switch_state_.end() &&
+        it->second == cros::mojom::CameraPrivacySwitchState::ON) {
+      if (active_device_ids.find(device_id) != active_device_ids.end()) {
+        // As the device is being actively used by the client, display a
+        // notification.
+        ShowCameraOffNotification(device_name);
+      } else if (active_camera_client_count_ == 0) {
+        // Clear the notification for this device as no client is trying to use
+        // this camera anymore.
+        const std::string notification_id = base::StringPrintf(
+            kCameraPrivacySwitchOnNotificationId, device_name.c_str());
+        SystemNotificationHelper::GetInstance()->Close(notification_id);
+      }
     }
-    ShowCameraOffNotification(device_name);
   }
 }

@@ -128,7 +128,7 @@ class MediaClientImpl : public ash::MediaClient,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   void OnGetSourceInfosByActiveClientChanged(
-      const std::vector<std::string>& device_ids,
+      const base::flat_set<std::string>& active_device_ids,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   ash::MediaController* media_controller_ = nullptr;
