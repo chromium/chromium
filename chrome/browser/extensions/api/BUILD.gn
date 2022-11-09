@@ -10,6 +10,15 @@ import("//tools/json_schema_compiler/json_schema_api.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
+group("api") {
+  public_deps = [ "//chrome/browser/extensions/api:api_implementations" ]
+}
+
+group("api_implementations") {
+  # TODO(crbug.com/1381603): Add more API implementations here.
+  public_deps = [ "//chrome/browser/extensions/api/scripting" ]
+}
+
 function_registration("api_registration") {
   sources = chrome_extensions_api_schema_sources +
             chrome_extensions_api_uncompiled_sources

@@ -7190,6 +7190,7 @@ static_library("browser") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",

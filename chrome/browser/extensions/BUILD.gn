@@ -42,6 +42,9 @@ static_library("extensions") {
     "activity_log/database_string_table.h",
     "activity_log/fullstream_ui_policy.cc",
     "activity_log/fullstream_ui_policy.h",
+
+    # TODO(crbug.com/1381603): Ideally, no API implementations would be included
+    # here.
     "api/activity_log_private/activity_log_private_api.cc",
     "api/activity_log_private/activity_log_private_api.h",
     "api/autofill_private/autofill_private_api.cc",
@@ -308,8 +311,6 @@ static_library("extensions") {
     "api/safe_browsing_private/safe_browsing_private_event_router_factory.h",
     "api/safe_browsing_private/safe_browsing_util.cc",
     "api/safe_browsing_private/safe_browsing_util.h",
-    "api/scripting/scripting_api.cc",
-    "api/scripting/scripting_api.h",
     "api/search/search_api.cc",
     "api/search/search_api.h",
     "api/sessions/session_id.cc",
