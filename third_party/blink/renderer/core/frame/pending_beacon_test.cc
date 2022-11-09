@@ -171,29 +171,37 @@ struct BeaconURLTestType {
   const char* name;
   const char* url_;
   bool expect_supported;
+  const char* error_msg;
   WTF::String url() const {
     return strcmp(url_, "<null>") == 0 ? WTF::String() : WTF::String(url_);
   }
 };
 
 constexpr BeaconURLTestType kBeaconURLTestCases[] = {
-    {"EMPTY_URL", "", true},
-    {"ROOT_URL", "/", true},
-    {"RELATIVE_PATH_URL", "/path/to/page", true},
-    {"NULL_STRING_URL", "null", true},
-    // TODO(github.com/WICG/pending-beacon/issues/51): Add <null> once fixed.
-    {"RANDOM_PHRASE_URL", "test", true},
-    {"HTTPS_LOCALHOST_URL", "https://localhost", true},
+    {"EMPTY_URL", "", true, ""},
+    {"ROOT_URL", "/", true, ""},
+    {"RELATIVE_PATH_URL", "/path/to/page", true, ""},
+    {"NULL_STRING_URL", "null", true, ""},
+    {"NULL_URL", "<null>", false,
+     "The URL argument is ill-formed or unsupported."},
+    {"RANDOM_PHRASE_URL", "test", true, ""},
+    {"HTTPS_LOCALHOST_URL", "https://localhost", true, ""},
     // Results in a request to https://a.test/127.0.0.1.
-    {"IP_URL", "127.0.0.1", true},
-    {"HTTP_IP_URL", "http://127.0.0.1", false},
-    {"HTTPS_IP_URL", "https://127.0.0.1", true},
-    {"HTTP_URL", "http://example.com", false},
-    {"HTTPS_URL", "https://example.com", true},
-    {"FILE_URL", "file://tmp", false},
-    {"SSH_URL", "ssh://example.com", false},
-    {"ABOUT_BLANK_URL", "about:blank", false},
-    {"JAVASCRIPT_URL", "javascript:alert('');", false},
+    {"IP_URL", "127.0.0.1", true, ""},
+    {"HTTP_IP_URL", "http://127.0.0.1", false,
+     "PendingBeacons are only supported over HTTPS."},
+    {"HTTPS_IP_URL", "https://127.0.0.1", true, ""},
+    {"HTTP_URL", "http://example.com", false,
+     "PendingBeacons are only supported over HTTPS."},
+    {"HTTPS_URL", "https://example.com", true, ""},
+    {"FILE_URL", "file://tmp", false,
+     "PendingBeacons are only supported over HTTPS."},
+    {"SSH_URL", "ssh://example.com", false,
+     "PendingBeacons are only supported over HTTPS."},
+    {"ABOUT_BLANK_URL", "about:blank", false,
+     "PendingBeacons are only supported over HTTPS."},
+    {"JAVASCRIPT_URL", "javascript:alert('');", false,
+     "PendingBeacons are only supported over HTTPS."},
 };
 
 class PendingBeaconURLTest
@@ -217,6 +225,7 @@ TEST_P(PendingBeaconURLTest, CreateWithURL) {
   const auto& method = std::get<0>(GetParam()).method;
   const auto& url = std::get<1>(GetParam()).url();
   const bool expect_supported = std::get<1>(GetParam()).expect_supported;
+  const auto* error_msg = std::get<1>(GetParam()).error_msg;
   PendingBeaconTestingScope v8_scope;
   ASSERT_THAT(v8_scope, HasSecureContext());
   ExceptionState& exception_state = v8_scope.GetExceptionState();
@@ -226,10 +235,10 @@ TEST_P(PendingBeaconURLTest, CreateWithURL) {
 
   if (expect_supported) {
     EXPECT_EQ(beacon->url(), url);
+    EXPECT_FALSE(exception_state.HadException());
   } else {
     EXPECT_EQ(beacon, nullptr);
-    EXPECT_THAT(exception_state,
-                HasTypeError("PendingBeacons are only supported over HTTPS."));
+    EXPECT_THAT(exception_state, HasTypeError(error_msg));
   }
 }
 
@@ -237,6 +246,7 @@ TEST_P(PendingBeaconURLTest, SetURL) {
   const auto& method = std::get<0>(GetParam()).method;
   const auto& url = std::get<1>(GetParam()).url();
   const bool expect_supported = std::get<1>(GetParam()).expect_supported;
+  const auto* error_msg = std::get<1>(GetParam()).error_msg;
   if (method != mojom::blink::BeaconMethod::kGet) {
     return;
   }
@@ -255,8 +265,7 @@ TEST_P(PendingBeaconURLTest, SetURL) {
   } else {
     EXPECT_NE(get_beacon->url(), url);
     EXPECT_EQ(get_beacon->url(), GetDefaultTargetURL());
-    EXPECT_THAT(exception_state,
-                HasTypeError("PendingBeacons are only supported over HTTPS."));
+    EXPECT_THAT(exception_state, HasTypeError(error_msg));
   }
 }
 

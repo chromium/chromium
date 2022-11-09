@@ -35,9 +35,9 @@
   SecureContext
 ] interface PendingGetBeacon : PendingBeacon {
   [Measure, RaisesException, CallWith = ExecutionContext] constructor(
-      USVString url, optional PendingBeaconOptions options);
+      USVString? url, optional PendingBeaconOptions options);
 
-  [Measure, RaisesException] void setURL(USVString url);
+  [Measure, RaisesException] void setURL(USVString? url);
 };
 
 // Interface for the PendingPostBeacon API.
@@ -47,7 +47,7 @@
   SecureContext
 ] interface PendingPostBeacon : PendingBeacon {
   [Measure, RaisesException, CallWith = ExecutionContext] constructor(
-      USVString url, optional PendingBeaconOptions options);
+      USVString? url, optional PendingBeaconOptions options);
 
   [Measure, RaisesException] void setData(
       (ReadableStream or XMLHttpRequestBodyInit) data);

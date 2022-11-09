@@ -9,6 +9,8 @@ test(() => {
 for (const beaconType of BeaconTypes) {
   test(() => {
     assert_throws_js(TypeError, () => new beaconType.type());
+    assert_throws_js(TypeError, () => new beaconType.type(undefined));
+    assert_throws_js(TypeError, () => new beaconType.type(null));
   }, `${beaconType.name}: constructor throws TypeError if URL is missing.`);
 
   test(() => {
@@ -64,6 +66,14 @@ for (const beaconType of BeaconTypes) {
       `${beaconType.name}: throws TypeError when mutating ` +
           `'url', 'method', 'pending'.`);
 }
+
+test(() => {
+  let beacon = new PendingGetBeacon('/');
+
+  assert_throws_js(TypeError, () => new beacon.setURL());
+  assert_throws_js(TypeError, () => new beacon.setURL(undefined));
+  assert_throws_js(TypeError, () => new beacon.setURL(null));
+}, `PendingGetBeacon: setURL() throws TypeError if URL is missing.`);
 
 test(() => {
   let beacon = new PendingGetBeacon('/');
