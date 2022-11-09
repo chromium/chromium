@@ -33,20 +33,12 @@ class PageInfoHoverButton : public HoverButton {
  public:
   METADATA_HEADER(PageInfoHoverButton);
 
-  // Creates a hoverable button that formats the string given by
-  // |title_resource_id| with |secondary_text| and displays the latter part in
-  // the secondary text color. The |subtitle_text| is shown below the title text
-  // in secondary text color. |tooltip_text| is used for the tooltip shown on
+  // Creates a hoverable button that displays the string given by
+  // |title_resource_id| and |secondary_text| and displays the latter part in
+  // the secondary text color. Optional |action_image_icon| is shown on right
+  // side. |secondary_text| is shown on right side before the
+  // |action_image_icon|. |tooltip_text| is used for the tooltip shown on
   // hovering over the button.
-  // *-------------------------------------------------------------------------*
-  // | Icon | |title_resource_id| + |secondary_text|                           |
-  // |-------------------------------------------------------------------------|
-  // |      | |subtitle_text|                                                  |
-  // *-------------------------------------------------------------------------*
-  // If flag PageInfoV2Desktop is enabled, the button will look different.
-  // Optional |action_image_icom| is shown on right side. |secondary_text| isn't
-  // concatenated with the |title_resource_id|, it is shown separately on right
-  // side before the |action_image_icon|.
   // *-------------------------------------------------------------------------*
   // | Icon | |title_resource_id|   |secondary_text| State image | Action icon |
   // |-------------------------------------------------------------------------|
