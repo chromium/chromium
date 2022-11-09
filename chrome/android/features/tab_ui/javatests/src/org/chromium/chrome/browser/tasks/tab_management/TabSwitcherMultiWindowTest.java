@@ -76,6 +76,7 @@ public class TabSwitcherMultiWindowTest {
     @Test
     @LargeTest
     @RequiresApi(Build.VERSION_CODES.N)
+    @DisabledTest(message = "https://crbug.com/1382930")
     public void testMoveTabsAcrossWindow_GTS_WithoutGroup() {
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
         // Initially, we have 4 normal tabs (including the one created at activity start) and 3
