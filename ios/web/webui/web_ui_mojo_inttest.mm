@@ -9,6 +9,7 @@
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/threading/thread_task_runner_handle.h"
+#import "base/time/time.h"
 #import "ios/web/grit/ios_web_resources.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/navigation_test_util.h"
@@ -37,9 +38,9 @@ namespace {
 // Hostname for test WebUI page.
 const char kTestWebUIURLHost[] = "testwebui";
 
-// Timeout in seconds to wait for a successful message exchange between native
-// code and a web page using Mojo.
-const NSTimeInterval kMessageTimeout = 5.0;
+// Timeout to wait for a successful message exchange between native code and
+// a web page using Mojo.
+constexpr base::TimeDelta kMessageTimeout = base::Seconds(5);
 
 // UI handler class which communicates with test WebUI page as follows:
 // - page sends "syn" message to `TestUIHandler`
