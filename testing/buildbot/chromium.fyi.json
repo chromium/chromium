@@ -19393,33 +19393,6 @@
       },
       {
         "args": [
-          "--test-arg=--disable-gpu",
-          "--test-arg=--headless",
-          "--test-arg=--ozone-platform=headless",
-          "--ram-size-mb=16384",
-          "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
@@ -20956,31 +20929,6 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
-        "args": [
-          "--test-arg=--disable-gpu",
-          "--test-arg=--headless",
-          "--test-arg=--ozone-platform=headless"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -22285,30 +22233,6 @@
         },
         "test": "compositor_unittests",
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
-      },
-      {
-        "args": [
-          "--test-arg=--disable-gpu",
-          "--test-arg=--headless",
-          "--test-arg=--ozone-platform=headless"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "kvm": "1",
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "merge": {
