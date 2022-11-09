@@ -8,7 +8,8 @@
 class Browser;
 @class LayoutGuideCenter;
 
-// Returns the layout guide center assigned to the given `browser`.
+// Returns the layout guide center assigned to the given `browser`. If there is
+// none, it returns a global shared layout guide center.
 LayoutGuideCenter* LayoutGuideCenterForBrowser(Browser* browser);
 
 #endif  // IOS_CHROME_BROWSER_UI_MAIN_LAYOUT_GUIDE_UTIL_H_
