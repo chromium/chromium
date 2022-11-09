@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -37,7 +33,6 @@ class WebstoreDomainBrowserTest : public ExtensionApiTest,
                                   public testing::WithParamInterface<GURL> {
  public:
   WebstoreDomainBrowserTest() {
-    feature_list_.InitAndEnableFeature(extensions_features::kNewWebstoreDomain);
     UseHttpsTestServer();
     // Override the test server SSL config with the webstore domain under test
     // and two other non-webstore domains used in the tests.
@@ -69,12 +64,6 @@ class WebstoreDomainBrowserTest : public ExtensionApiTest,
 
     ExtensionApiTest::SetUpCommandLine(command_line);
   }
-
- private:
-  // While some of the pieces are still being put in place, the webstore API
-  // availability is currently behind a feature and channel restriction.
-  base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
 // Tests that webstorePrivate and management are exposed to the webstore domain,

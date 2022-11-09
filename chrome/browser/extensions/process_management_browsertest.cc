@@ -20,7 +20,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -37,8 +36,6 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -87,7 +84,6 @@ class ChromeWebStoreProcessTest
       public testing::WithParamInterface<const char*> {
  public:
   ChromeWebStoreProcessTest() {
-    feature_list_.InitAndEnableFeature(extensions_features::kNewWebstoreDomain);
     // The tests need the https server to resolve the webstore domain being
     // tested and 2 related subdomains with the same eTLD+1. Add certificates
     // for each.
@@ -153,10 +149,6 @@ class ChromeWebStoreProcessTest
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  // The webstore API availability for the new domain is currently behind a
-  // feature and channel restriction.
-  base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
   GURL webstore_url_;
 };
 
