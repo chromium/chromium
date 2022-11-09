@@ -41,7 +41,7 @@ class NGAnchorQueryTest : public RenderingTest,
     if (const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(element)) {
       for (const auto& it : *anchor_query) {
         if (!it.value->is_invalid)
-          names.push_back(it.key);
+          names.push_back(it.key->GetName());
       }
     }
     return names;
@@ -53,7 +53,7 @@ struct AnchorTestData {
       const NGPhysicalAnchorQuery& anchor_query) {
     Vector<AnchorTestData> items;
     for (const auto& it : anchor_query)
-      items.push_back(AnchorTestData{it.key, it.value->rect});
+      items.push_back(AnchorTestData{it.key->GetName(), it.value->rect});
     std::sort(items.begin(), items.end(),
               [](const AnchorTestData& a, const AnchorTestData& b) {
                 return CodeUnitCompare(a.name, b.name) < 0;
@@ -195,27 +195,27 @@ TEST_F(NGAnchorQueryTest, AnchorNameValid) {
   // For `rel1`, only `--static` is valid because "if el has the same containing
   // block as the querying element, el is not absolutely positioned."
   EXPECT_THAT(ValidAnchorNames(*GetElementById("rel1")),
-              testing::ElementsAre("--static"));
+              testing::UnorderedElementsAre("--static"));
   // For `abs1`, all anchors are valid because "if el has a different containing
   // block from the querying element, the last containing block in el's
   // containing block chain before reaching the querying element's containing
   // block is not absolutely positioned." The "last containing block" is `rel1`,
   // which is not absolutely positioned (has `position: relative`.)
   EXPECT_THAT(ValidAnchorNames(*GetElementById("abs1")),
-              testing::ElementsAre("--abspos", "--static"));
+              testing::UnorderedElementsAre("--abspos", "--static"));
   // For the same reason, `rel2` has no anchors because the "last containing
   // block" is `abs1`.
   EXPECT_THAT(ValidAnchorNames(*GetElementById("rel2")),
-              testing::ElementsAre());
+              testing::UnorderedElementsAre());
   // The last containing block for `static1` is `rel2`. It's not visible to the
   // web though, as the `static1` can't be a containing block of positioned
   // objects. This is to test the internal propagation mechanism.
   EXPECT_THAT(ValidAnchorNames(*GetElementById("static1")),
-              testing::ElementsAre("--abspos", "--static"));
+              testing::UnorderedElementsAre("--abspos", "--static"));
   // For `container`, the last containing block is `static1`, which is not
   // absolutely positioned, so all anchor names are valid.
   EXPECT_THAT(ValidAnchorNames(*GetElementById("container")),
-              testing::ElementsAre("--abspos", "--static"));
+              testing::UnorderedElementsAre("--abspos", "--static"));
 }
 
 TEST_F(NGAnchorQueryTest, BlockFlow) {
@@ -245,7 +245,7 @@ TEST_F(NGAnchorQueryTest, BlockFlow) {
   const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
+              testing::UnorderedElementsAre(
                   AnchorTestData{"--div1", PhysicalRect(0, 0, 400, 20)},
                   AnchorTestData{"--div2", PhysicalRect(0, 20, 800, 0)},
                   AnchorTestData{"--div3", PhysicalRect(0, 50, 800, 0)}));
@@ -256,7 +256,7 @@ TEST_F(NGAnchorQueryTest, BlockFlow) {
   anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
+              testing::UnorderedElementsAre(
                   AnchorTestData{"--div1", PhysicalRect(0, 0, 400, 40)},
                   AnchorTestData{"--div2", PhysicalRect(0, 40, 800, 0)},
                   AnchorTestData{"--div3", PhysicalRect(0, 70, 800, 0)}));
@@ -300,7 +300,7 @@ TEST_F(NGAnchorQueryTest, Inline) {
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(
       AnchorTestData::ToList(*anchor_query),
-      testing::ElementsAre(
+      testing::UnorderedElementsAre(
           AnchorTestData{"--culled", PhysicalRect(20, 0, 20, 10)},
           AnchorTestData{"--img", PhysicalRect(110, 0, 10, 8)},
           AnchorTestData{"--inline-block", PhysicalRect(130, 0, 10, 10)},
@@ -313,7 +313,7 @@ TEST_F(NGAnchorQueryTest, Inline) {
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(
       AnchorTestData::ToList(*anchor_query),
-      testing::ElementsAre(
+      testing::UnorderedElementsAre(
           AnchorTestData{"--add", PhysicalRect(80, 0, 20, 10)},
           AnchorTestData{"--culled", PhysicalRect(20, 0, 20, 10)},
           AnchorTestData{"--img", PhysicalRect(110, 0, 10, 8)},

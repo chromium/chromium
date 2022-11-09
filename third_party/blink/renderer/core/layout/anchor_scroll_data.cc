@@ -35,9 +35,8 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!anchor_query)
     return nullptr;
 
-  // TODO(xiaochengh): Support tree-scoped anchor query.
-  if (const NGPhysicalFragment* fragment = anchor_query->Fragment(
-          layout_object->StyleRef().AnchorScroll()->GetName())) {
+  if (const NGPhysicalFragment* fragment =
+          anchor_query->Fragment(*layout_object->StyleRef().AnchorScroll())) {
     return fragment->GetLayoutObject();
   }
   return nullptr;

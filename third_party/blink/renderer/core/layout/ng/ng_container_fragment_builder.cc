@@ -80,9 +80,7 @@ void NGContainerFragmentBuilder::PropagateChildAnchors(
   if (child.IsBox() && child.Style().AnchorName()) {
     // Set the child's `anchor-name` before propagating its descendants', so
     // that ancestors have precedence over their descendants.
-    // TODO(xiaochengh): Handle tree-scoped anchor name.
-    const AtomicString& anchor_name = child.Style().AnchorName()->GetName();
-    DCHECK(anchor_name);
+    const ScopedCSSName& anchor_name = *child.Style().AnchorName();
     DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
     options = AnchorQuerySetOptions(
         child, node_, IsBlockFragmentationContextRoot() || HasItems());

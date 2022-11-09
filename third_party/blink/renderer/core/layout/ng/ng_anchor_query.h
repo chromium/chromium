@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -46,12 +47,13 @@ class CORE_EXPORT NGPhysicalAnchorQuery {
   bool IsEmpty() const { return anchor_references_.empty(); }
 
   const NGPhysicalAnchorReference* AnchorReference(
-      const AtomicString& name) const;
-  const PhysicalRect* Rect(const AtomicString& name) const;
-  const NGPhysicalFragment* Fragment(const AtomicString& name) const;
+      const ScopedCSSName& name) const;
+  const PhysicalRect* Rect(const ScopedCSSName& name) const;
+  const NGPhysicalFragment* Fragment(const ScopedCSSName& name) const;
 
   using NGPhysicalAnchorReferenceMap =
-      HeapHashMap<AtomicString, Member<NGPhysicalAnchorReference>>;
+      HeapHashMap<Member<const ScopedCSSName>,
+                  Member<NGPhysicalAnchorReference>>;
   NGPhysicalAnchorReferenceMap::const_iterator begin() const {
     return anchor_references_.begin();
   }
@@ -98,9 +100,9 @@ class CORE_EXPORT NGLogicalAnchorQuery
   bool IsEmpty() const { return anchor_references_.empty(); }
 
   const NGLogicalAnchorReference* AnchorReference(
-      const AtomicString& name) const;
-  const LogicalRect* Rect(const AtomicString& name) const;
-  const NGPhysicalFragment* Fragment(const AtomicString& name) const;
+      const ScopedCSSName& name) const;
+  const LogicalRect* Rect(const ScopedCSSName& name) const;
+  const NGPhysicalFragment* Fragment(const ScopedCSSName& name) const;
 
   enum class SetOptions {
     // A valid entry. The call order is in the tree order.
@@ -110,11 +112,11 @@ class CORE_EXPORT NGLogicalAnchorQuery
     // An invalid entry.
     kInvalid,
   };
-  void Set(const AtomicString& name,
+  void Set(const ScopedCSSName& name,
            const NGPhysicalFragment& fragment,
            const LogicalRect& rect,
            SetOptions);
-  void Set(const AtomicString& name,
+  void Set(const ScopedCSSName& name,
            NGLogicalAnchorReference* reference,
            bool maybe_out_of_order = false);
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
@@ -125,14 +127,14 @@ class CORE_EXPORT NGLogicalAnchorQuery
   // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
   // the query is invalid (e.g., no targets or wrong axis.)
   absl::optional<LayoutUnit> EvaluateAnchor(
-      const AtomicString& anchor_name,
+      const ScopedCSSName& anchor_name,
       AnchorValue anchor_value,
       LayoutUnit available_size,
       const WritingModeConverter& container_converter,
       const PhysicalOffset& offset_to_padding_box,
       bool is_y_axis,
       bool is_right_or_bottom) const;
-  absl::optional<LayoutUnit> EvaluateSize(const AtomicString& anchor_name,
+  absl::optional<LayoutUnit> EvaluateSize(const ScopedCSSName& anchor_name,
                                           AnchorSizeValue anchor_size_value,
                                           WritingMode container_writing_mode,
                                           WritingMode self_writing_mode) const;
@@ -142,7 +144,7 @@ class CORE_EXPORT NGLogicalAnchorQuery
  private:
   friend class NGPhysicalAnchorQuery;
 
-  HeapHashMap<AtomicString, Member<NGLogicalAnchorReference>>
+  HeapHashMap<Member<const ScopedCSSName>, Member<NGLogicalAnchorReference>>
       anchor_references_;
 };
 

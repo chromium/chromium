@@ -85,7 +85,7 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
   NGLogicalAnchorQuery* StitchedAnchorQuery() const {
     auto* anchor_query = MakeGarbageCollected<NGLogicalAnchorQuery>();
     for (const auto& it : references)
-      anchor_query->Set(it.key, it.value->StitchedAnchorReference());
+      anchor_query->Set(*it.key, it.value->StitchedAnchorReference());
     return anchor_query;
   }
 
@@ -104,13 +104,13 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
       return;
     for (const auto& it : *anchor_query) {
       DCHECK(it.value->fragment);
-      AddAnchorReference(it.key, *it.value->fragment,
+      AddAnchorReference(*it.key, *it.value->fragment,
                          it.value->rect + offset_from_fragmentainer,
                          fragmentainer, Conflict::kFirstInCallOrder);
     }
   }
 
-  void AddAnchorReference(const AtomicString& anchor_name,
+  void AddAnchorReference(const ScopedCSSName& anchor_name,
                           const NGPhysicalFragment& fragment,
                           const PhysicalRect& physical_rect_in_fragmentainer,
                           const FragmentainerContext& fragmentainer,
@@ -119,7 +119,7 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
         fragmentainer.converter.ToLogical(physical_rect_in_fragmentainer);
     auto* new_value = MakeGarbageCollected<NGStitchedAnchorReference>(
         fragment, rect_in_fragmentainer, fragmentainer);
-    const auto result = references.insert(anchor_name, new_value);
+    const auto result = references.insert(&anchor_name, new_value);
     if (result.is_new_entry)
       return;
 
@@ -151,7 +151,8 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
 
   void Trace(Visitor* visitor) const { visitor->Trace(references); }
 
-  HeapHashMap<AtomicString, Member<NGStitchedAnchorReference>> references;
+  HeapHashMap<Member<const ScopedCSSName>, Member<NGStitchedAnchorReference>>
+      references;
 };
 
 // This collects |NGStitchedAnchorQuery| for each containing block.
@@ -324,9 +325,8 @@ struct NGStitchedAnchorQueries {
       NGStitchedAnchorQuery& query =
           EnsureStitchedAnchorQuery(*containing_block);
       if (fragment.Style().AnchorName()) {
-        // TODO(xiaochengh): Handle tree-scoped anchor name.
         query.AddAnchorReference(
-            fragment.Style().AnchorName()->GetName(), fragment,
+            *fragment.Style().AnchorName(), fragment,
             {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
             NGStitchedAnchorQuery::Conflict::kOverwriteIfBefore);
       }

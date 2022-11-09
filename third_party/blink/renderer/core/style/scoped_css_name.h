@@ -5,10 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SCOPED_CSS_NAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SCOPED_CSS_NAME_H_
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -35,6 +38,13 @@ class CORE_EXPORT ScopedCSSName : public GarbageCollected<ScopedCSSName> {
     return !operator==(other);
   }
 
+  unsigned GetHash() const {
+    unsigned hash = WTF::AtomicStringHash::GetHash(name_);
+    WTF::AddIntToHash(
+        hash, WTF::PtrHash<const TreeScope>::GetHash(tree_scope_.Get()));
+    return hash;
+  }
+
   void Trace(Visitor* visitor) const;
 
  private:
@@ -46,5 +56,33 @@ class CORE_EXPORT ScopedCSSName : public GarbageCollected<ScopedCSSName> {
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+// Allows creating a hash table of ScopedCSSName in wrapper pointers (e.g.,
+// HeapHashSet<Member<ScopedCSSName>>) that hashes the ScopedCSSNames directly
+// instead of the wrapper pointers.
+
+template <typename ScopedCSSNameWrapperPtr>
+struct ScopedCSSNameWrapperPtrHash {
+  STATIC_ONLY(ScopedCSSNameWrapperPtrHash);
+  static unsigned GetHash(const ScopedCSSNameWrapperPtr& name) {
+    return name->GetHash();
+  }
+  static bool Equal(const ScopedCSSNameWrapperPtr& a,
+                    const ScopedCSSNameWrapperPtr& b) {
+    return base::ValuesEquivalent(a, b);
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
+};
+
+template <>
+struct DefaultHash<blink::Member<blink::ScopedCSSName>>
+    : ScopedCSSNameWrapperPtrHash<blink::Member<blink::ScopedCSSName>> {};
+template <>
+struct DefaultHash<blink::Member<const blink::ScopedCSSName>>
+    : ScopedCSSNameWrapperPtrHash<blink::Member<const blink::ScopedCSSName>> {};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SCOPED_CSS_NAME_H_
