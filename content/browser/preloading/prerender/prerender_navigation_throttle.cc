@@ -179,17 +179,30 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
   if (prerender_host->IsBrowserInitiated()) {
     // Cancel an embedder triggered prerendering if it is redirected to a URL
-    // cross-origin to the initial prerendering URL.
+    // cross-site to the initial prerendering URL.
     if (is_redirection) {
       url::Origin initial_origin =
           url::Origin::Create(prerender_host->GetInitialUrl());
-      if (initial_origin != prerendering_origin) {
+      bool is_same_site = prerender_navigation_utils::IsSameSite(
+          prerendering_url, initial_origin);
+      if (!is_same_site) {
         AnalyzeCrossOriginRedirection(
             prerendering_origin, initial_origin, prerender_host->trigger_type(),
             prerender_host->embedder_histogram_suffix());
         prerender_host_registry->CancelHost(
             frame_tree_node->frame_tree_node_id(),
-            PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected);
+            PrerenderFinalStatus::kCrossSiteRedirect);
+        return CANCEL;
+      }
+      if (!base::FeatureList::IsEnabled(
+              blink::features::
+                  kSameSiteRedirectionForEmbedderTriggeredPrerender) &&
+          !initial_origin.IsSameOriginWith(prerendering_url)) {
+        // This branch is used to enforce disable the feature. So, no need to
+        // perform analysis here.
+        prerender_host_registry->CancelHost(
+            frame_tree_node->frame_tree_node_id(),
+            PrerenderFinalStatus::kSameSiteCrossOriginRedirect);
         return CANCEL;
       }
     }
