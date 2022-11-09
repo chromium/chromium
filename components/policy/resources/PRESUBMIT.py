@@ -194,12 +194,12 @@ def CheckPolicyTestCases(input_api, output_api):
   # Finally check if any policies are missing.
   missing = policy_names - tested_policies
   extra = tested_policies - policy_names
-  error_missing = ('Policy \'%s\' was added to policy_templates.json but not '
-                   'to src/chrome/test/data/policy/policy_test_cases.json. '
-                   'Please update both files.')
-  error_extra = ('Policy \'%s\' is tested by '
-                 'src/chrome/test/data/policy/policy_test_cases.json but is not'
-                 ' defined in policy_templates.json. Please update both files.')
+  error_missing = ("Policy '%s' was added to policy_templates.json but not "
+                   "to src/chrome/test/data/policy/policy_test_cases.json. "
+                   "Please update both files.")
+  error_extra = ("Policy '%s' is tested by "
+                 "src/chrome/test/data/policy/policy_test_cases.json but is not"
+                 " defined in policy_templates.json. Please update both files.")
   results = []
   for policy in missing:
     results.append(output_api.PresubmitError(error_missing % policy))
@@ -240,17 +240,17 @@ def CheckPolicyHistograms(input_api, output_api):
   missing_ids = policy_ids - policy_enum_ids
   extra_ids = policy_enum_ids - policy_ids
 
-  error_missing = ('Policy \'%s\' (id %d) was added to '
-                   'policy_templates.json but not to '
-                   'src/tools/metrics/histograms/enums.xml. Please update '
-                   'both files. To regenerate the policy part of enums.xml, '
-                   'run:\n'
-                   'python tools/metrics/histograms/update_policies.py')
-  error_extra = ('Policy id %d was found in '
-                 'src/tools/metrics/histograms/enums.xml, but no policy with '
-                 'this id exists in policy_templates.json. To regenerate the '
-                 'policy part of enums.xml, run:\n'
-                 'python tools/metrics/histograms/update_policies.py')
+  error_missing = ("Policy '%s' (id %d) was added to "
+                   "policy_templates.json but not to "
+                   "src/tools/metrics/histograms/enums.xml. Please update "
+                   "both files. To regenerate the policy part of enums.xml, "
+                   "run:\n"
+                   "python tools/metrics/histograms/update_policies.py")
+  error_extra = ("Policy id %d was found in "
+                 "src/tools/metrics/histograms/enums.xml, but no policy with "
+                 "this id exists in policy_templates.json. To regenerate the "
+                 "policy part of enums.xml, run:\n"
+                 "python tools/metrics/histograms/update_policies.py")
   results = []
   for policy_id in missing_ids:
     results.append(
@@ -261,11 +261,20 @@ def CheckPolicyHistograms(input_api, output_api):
   return results
 
 
-def _CheckPolicyAtomicGroupsHistograms(input_api, output_api, atomic_groups):
+def CheckPolicyAtomicGroupsHistograms(input_api, output_api):
+  '''Verifies that the all policy atomic groups have a histogram entry.
+  This is ran when policies.yaml, tools/metrics/histograms/enums.xml or this
+  PRESUBMIT.py file are modified.
+  '''
+  results = []
+  if _SkipPresubmitChecks(
+      input_api,
+      [_HISTOGRAMS_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
+    return results
+
   root = input_api.change.RepositoryRoot()
-  histograms = input_api.os_path.join(
-      root, 'tools', 'metrics', 'histograms', 'enums.xml')
-  with open(histograms, encoding='utf-8') as f:
+
+  with open(os.path.join(root, _HISTOGRAMS_PATH), encoding='utf-8') as f:
     tree = minidom.parseString(f.read())
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
@@ -275,28 +284,29 @@ def _CheckPolicyAtomicGroupsHistograms(input_api, output_api, atomic_groups):
   atomic_group_enum_ids = frozenset(int(e.getAttribute('value'))
                               for e in atomic_group_enum
                                 .getElementsByTagName('int'))
-  atomic_group_id_to_name = {policy['id']: policy['name']
-                                    for policy in atomic_groups}
-  atomic_group_ids = frozenset(atomic_group_id_to_name.keys())
+  policies_yaml = _LoadYamlFile(root, _POLICIES_YAML_PATH)
+  atomic_groups = policies_yaml['atomic_groups']
+  atomic_group_ids = frozenset(
+    [id for id, name in atomic_groups.items() if name])
 
   missing_ids = atomic_group_ids - atomic_group_enum_ids
   extra_ids = atomic_group_enum_ids - atomic_group_ids
 
-  error_missing = ('Policy atomic group \'%s\' (id %d) was added to '
-                   'policy_templates.json but not to '
-                   'src/tools/metrics/histograms/enums.xml. Please update '
-                   'both files. To regenerate the policy part of enums.xml, '
-                   'run:\n'
-                   'python tools/metrics/histograms/update_policies.py')
-  error_extra = ('Policy atomic group id %d was found in '
-                 'src/tools/metrics/histograms/enums.xml, but no policy with '
-                 'this id exists in policy_templates.json. To regenerate the '
-                 'policy part of enums.xml, run:\n'
-                 'python tools/metrics/histograms/update_policies.py')
+  error_missing = ("Policy atomic group '%s' (id %d) was added to "
+                   "policy_templates.json but not to "
+                   "src/tools/metrics/histograms/enums.xml. Please update "
+                   "both files. To regenerate the policy part of enums.xml, "
+                   "run:\n"
+                   "python tools/metrics/histograms/update_policies.py")
+  error_extra = ("Policy atomic group id %d was found in "
+                 "src/tools/metrics/histograms/enums.xml, but no policy with "
+                 "this id exists in policy_templates.json. To regenerate the "
+                 "policy part of enums.xml, run:\n"
+                 "python tools/metrics/histograms/update_policies.py")
   results = []
   for atomic_group_id in missing_ids:
     results.append(output_api.PresubmitError(error_missing %
-                              (atomic_group_id_to_name[atomic_group_id],
+                              (atomic_groups[atomic_group_id],
                               atomic_group_id)))
   for atomic_group_id in extra_ids:
     results.append(output_api.PresubmitError(error_extra % atomic_group_id))
@@ -388,8 +398,8 @@ def CheckMissingPlaceholders(input_api, output_api):
 
       for child in node.childNodes:
         if child.nodeType == minidom.Node.TEXT_NODE and '$' in child.data:
-          warning = ('Character \'$\' found outside of a placeholder in "%s". '
-                     'Should it be in a placeholder ?') % item[key]
+          warning = ("Character '$' found outside of a placeholder in '%s'. "
+                     "Should it be in a placeholder ?") % item[key]
           results.append(output_api.PresubmitPromptWarning(warning))
   return results
 
@@ -437,7 +447,7 @@ def CheckDevicePolicyProtos(input_api, output_api):
     for field in fields:
       if field not in protos:
         results.append(output_api.PresubmitError(
-         f"Policy '{policy}': Expected field \'{field}\' not found in "
+         f"Policy '{policy}': Expected field '{field}' not found in "
          "chrome_device_policy.proto."))
   return results
 
