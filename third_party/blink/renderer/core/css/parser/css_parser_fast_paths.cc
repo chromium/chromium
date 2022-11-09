@@ -589,17 +589,85 @@ static inline bool ParseAlphaValue(const CharacterType*& string,
   return true;
 }
 
+// Fast for LChar, reasonable for UChar.
+template <int N>
+static inline bool MatchesLiteral(const LChar* a, const char (&b)[N]) {
+  return memcmp(a, b, N - 1) == 0;
+}
+
+template <int N>
+static inline bool MatchesLiteral(const UChar* a, const char (&b)[N]) {
+  for (int i = 0; i < N - 1; ++i) {
+    if (a[i] != b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Right-hand side must already be lowercase.
+static inline bool MatchesCaseInsensitiveLiteral4(const LChar* a,
+                                                  const char (&b)[5]) {
+  uint32_t av, bv;
+  memcpy(&av, a, sizeof(av));
+  memcpy(&bv, b, sizeof(bv));
+
+  uint32_t mask = 0;
+  if ((bv & 0xff) >= 'a' && (bv & 0xff) <= 'z') {
+    mask |= 0x20;
+  }
+  if (((bv >> 8) & 0xff) >= 'a' && ((bv >> 8) & 0xff) <= 'z') {
+    mask |= 0x2000;
+  }
+  if (((bv >> 16) & 0xff) >= 'a' && ((bv >> 16) & 0xff) <= 'z') {
+    mask |= 0x200000;
+  }
+  if ((bv >> 24) >= 'a' && (bv >> 24) <= 'z') {
+    mask |= 0x20000000;
+  }
+
+  return (av | mask) == bv;
+}
+
+static inline bool MatchesCaseInsensitiveLiteral2(const LChar* a,
+                                                  const char (&b)[3]) {
+  uint16_t av, bv;
+  memcpy(&av, a, sizeof(av));
+  memcpy(&bv, b, sizeof(bv));
+
+  uint16_t mask = 0;
+  if ((bv & 0xff) >= 'a' && (bv & 0xff) <= 'z') {
+    mask |= 0x20;
+  }
+  if ((bv >> 8) >= 'a' && (bv >> 8) <= 'z') {
+    mask |= 0x2000;
+  }
+
+  return (av | mask) == bv;
+}
+
+static inline bool MatchesCaseInsensitiveLiteral4(const UChar* a,
+                                                  const char (&b)[5]) {
+  return IsASCIIAlphaCaselessEqual(a[0], b[0]) &&
+         IsASCIIAlphaCaselessEqual(a[1], b[1]) &&
+         IsASCIIAlphaCaselessEqual(a[2], b[2]) &&
+         IsASCIIAlphaCaselessEqual(a[3], b[3]);
+}
+
+static inline bool MatchesCaseInsensitiveLiteral2(const UChar* a,
+                                                  const char (&b)[3]) {
+  return IsASCIIAlphaCaselessEqual(a[0], b[0]) &&
+         IsASCIIAlphaCaselessEqual(a[1], b[1]);
+}
+
 template <typename CharacterType>
 static inline bool MightBeRGBOrRGBA(const CharacterType* characters,
                                     unsigned length) {
   if (length < 5)
     return false;
-  return IsASCIIAlphaCaselessEqual(characters[0], 'r') &&
-         IsASCIIAlphaCaselessEqual(characters[1], 'g') &&
-         IsASCIIAlphaCaselessEqual(characters[2], 'b') &&
+  return MatchesLiteral(characters, "rgb") &&
          (characters[3] == '(' ||
-          (IsASCIIAlphaCaselessEqual(characters[3], 'a') &&
-           characters[4] == '('));
+          (characters[3] == 'a' && characters[4] == '('));
 }
 
 template <typename CharacterType>
@@ -607,12 +675,9 @@ static inline bool MightBeHSLOrHSLA(const CharacterType* characters,
                                     unsigned length) {
   if (length < 5)
     return false;
-  return IsASCIIAlphaCaselessEqual(characters[0], 'h') &&
-         IsASCIIAlphaCaselessEqual(characters[1], 's') &&
-         IsASCIIAlphaCaselessEqual(characters[2], 'l') &&
+  return MatchesLiteral(characters, "hsl") &&
          (characters[3] == '(' ||
-          (IsASCIIAlphaCaselessEqual(characters[3], 'a') &&
-           characters[4] == '('));
+          (characters[3] == 'a' && characters[4] == '('));
 }
 
 template <typename CharacterType>
@@ -630,7 +695,7 @@ static bool FastParseColorInternal(Color& color,
 
   // rgb() and rgba() have the same syntax.
   if (MightBeRGBOrRGBA(characters, length)) {
-    int length_to_add = IsASCIIAlphaCaselessEqual(characters[3], 'a') ? 5 : 4;
+    int length_to_add = (characters[3] == 'a') ? 5 : 4;
     const CharacterType* current = characters + length_to_add;
     const CharacterType* end = characters + length;
     int red;
@@ -689,7 +754,7 @@ static bool FastParseColorInternal(Color& color,
   // grammar and behavior to hsl().
 
   if (MightBeHSLOrHSLA(characters, length)) {
-    int length_to_add = IsASCIIAlphaCaselessEqual(characters[3], 'a') ? 5 : 4;
+    int length_to_add = (characters[3] == 'a') ? 5 : 4;
     const CharacterType* current = characters + length_to_add;
     const CharacterType* end = characters + length;
     bool should_have_alpha = false;
@@ -1394,10 +1459,42 @@ bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {
   return value_id >= CSSValueID::kCaption && value_id <= CSSValueID::kStatusBar;
 }
 
+template <typename CharType>
+static inline CSSValue* ParseCSSWideKeywordValue(const CharType* ptr,
+                                                 unsigned length) {
+  if (length == 7 && MatchesCaseInsensitiveLiteral4(ptr, "init") &&
+      MatchesCaseInsensitiveLiteral4(ptr + 3, "tial")) {
+    return CSSInitialValue::Create();
+  }
+  if (length == 7 && MatchesCaseInsensitiveLiteral4(ptr, "inhe") &&
+      MatchesCaseInsensitiveLiteral4(ptr + 3, "erit")) {
+    return CSSInheritedValue::Create();
+  }
+  if (length == 5 && MatchesCaseInsensitiveLiteral4(ptr, "unse") &&
+      IsASCIIAlphaCaselessEqual(ptr[4], 't')) {
+    return cssvalue::CSSUnsetValue::Create();
+  }
+  if (length == 6 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
+      MatchesCaseInsensitiveLiteral2(ptr + 4, "rt")) {
+    return cssvalue::CSSRevertValue::Create();
+  }
+  if (length == 12 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
+      MatchesCaseInsensitiveLiteral4(ptr + 4, "rt-l") &&
+      MatchesCaseInsensitiveLiteral4(ptr + 8, "ayer")) {
+    return cssvalue::CSSRevertLayerValue::Create();
+  }
+  return nullptr;
+}
+
 static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
                                    const String& string,
                                    CSSParserMode parser_mode) {
   DCHECK(!string.empty());
+
+  CSSValue* css_wide_keyword =
+      string.Is8Bit()
+          ? ParseCSSWideKeywordValue(string.Characters8(), string.length())
+          : ParseCSSWideKeywordValue(string.Characters16(), string.length());
 
   if (!CSSParserFastPaths::IsHandledByKeywordFastPath(property_id)) {
     // This isn't a property we have a fast path for, but even
@@ -1406,12 +1503,7 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
     // can run through the fast path anyway (if not, we'll return
     // nullptr, letting us fall back to the slow path).
 
-    if (!EqualIgnoringASCIICase(string, "initial") &&
-        !EqualIgnoringASCIICase(string, "inherit") &&
-        !EqualIgnoringASCIICase(string, "unset") &&
-        !EqualIgnoringASCIICase(string, "revert") &&
-        !EqualIgnoringASCIICase(string, "revert-layer")) {
-      // Not a CSS-wide keyword.
+    if (css_wide_keyword == nullptr) {
       return nullptr;
     }
 
@@ -1428,21 +1520,21 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
     // Fall through.
   }
 
+  if (css_wide_keyword != nullptr) {
+    return css_wide_keyword;
+  }
+
   CSSValueID value_id = CssValueKeywordID(string);
 
   if (!IsValidCSSValueID(value_id))
     return nullptr;
 
-  if (value_id == CSSValueID::kInherit)
-    return CSSInheritedValue::Create();
-  if (value_id == CSSValueID::kInitial)
-    return CSSInitialValue::Create();
-  if (value_id == CSSValueID::kUnset)
-    return cssvalue::CSSUnsetValue::Create();
-  if (value_id == CSSValueID::kRevert)
-    return cssvalue::CSSRevertValue::Create();
-  if (value_id == CSSValueID::kRevertLayer)
-    return cssvalue::CSSRevertLayerValue::Create();
+  DCHECK_NE(value_id, CSSValueID::kInherit);
+  DCHECK_NE(value_id, CSSValueID::kInitial);
+  DCHECK_NE(value_id, CSSValueID::kUnset);
+  DCHECK_NE(value_id, CSSValueID::kRevert);
+  DCHECK_NE(value_id, CSSValueID::kRevertLayer);
+
   if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(property_id, value_id,
                                                          parser_mode))
     return CSSIdentifierValue::Create(value_id);
@@ -1540,29 +1632,23 @@ static CSSFunctionValue* ParseSimpleTransformValue(CharType*& pos,
   // the fast path accepts some invalid lengths that the regular path
   // does not.
 
-  const bool is_translate =
-      ToASCIILower(pos[0]) == 't' && ToASCIILower(pos[1]) == 'r' &&
-      ToASCIILower(pos[2]) == 'a' && ToASCIILower(pos[3]) == 'n' &&
-      ToASCIILower(pos[4]) == 's' && ToASCIILower(pos[5]) == 'l' &&
-      ToASCIILower(pos[6]) == 'a' && ToASCIILower(pos[7]) == 't' &&
-      ToASCIILower(pos[8]) == 'e';
+  const bool is_translate = MatchesLiteral(pos, "translate");
 
   if (is_translate) {
     CSSValueID transform_type;
     unsigned expected_argument_count = 1;
     unsigned argument_start = 11;
-    CharType c9 = ToASCIILower(pos[9]);
-    if (c9 == 'x' && pos[10] == '(') {
+    if (IsASCIIAlphaCaselessEqual(pos[9], 'x') && pos[10] == '(') {
       transform_type = CSSValueID::kTranslateX;
-    } else if (c9 == 'y' && pos[10] == '(') {
+    } else if (IsASCIIAlphaCaselessEqual(pos[9], 'y') && pos[10] == '(') {
       transform_type = CSSValueID::kTranslateY;
-    } else if (c9 == 'z' && pos[10] == '(') {
+    } else if (IsASCIIAlphaCaselessEqual(pos[9], 'z') && pos[10] == '(') {
       transform_type = CSSValueID::kTranslateZ;
-    } else if (c9 == '(') {
+    } else if (pos[9] == '(') {
       transform_type = CSSValueID::kTranslate;
       expected_argument_count = 2;
       argument_start = 10;
-    } else if (c9 == '3' && ToASCIILower(pos[10]) == 'd' && pos[11] == '(') {
+    } else if (pos[9] == '3' && pos[10] == 'd' && pos[11] == '(') {
       transform_type = CSSValueID::kTranslate3d;
       expected_argument_count = 3;
       argument_start = 12;
@@ -1578,11 +1664,7 @@ static CSSFunctionValue* ParseSimpleTransformValue(CharType*& pos,
     return transform_value;
   }
 
-  const bool is_matrix3d =
-      ToASCIILower(pos[0]) == 'm' && ToASCIILower(pos[1]) == 'a' &&
-      ToASCIILower(pos[2]) == 't' && ToASCIILower(pos[3]) == 'r' &&
-      ToASCIILower(pos[4]) == 'i' && ToASCIILower(pos[5]) == 'x' &&
-      pos[6] == '3' && ToASCIILower(pos[7]) == 'd' && pos[8] == '(';
+  const bool is_matrix3d = MatchesLiteral(pos, "matrix3d(");
 
   if (is_matrix3d) {
     pos += 9;
@@ -1593,11 +1675,7 @@ static CSSFunctionValue* ParseSimpleTransformValue(CharType*& pos,
     return transform_value;
   }
 
-  const bool is_scale3d =
-      ToASCIILower(pos[0]) == 's' && ToASCIILower(pos[1]) == 'c' &&
-      ToASCIILower(pos[2]) == 'a' && ToASCIILower(pos[3]) == 'l' &&
-      ToASCIILower(pos[4]) == 'e' && pos[5] == '3' &&
-      ToASCIILower(pos[6]) == 'd' && pos[7] == '(';
+  const bool is_scale3d = MatchesLiteral(pos, "scale3d(");
 
   if (is_scale3d) {
     pos += 8;
@@ -1608,17 +1686,14 @@ static CSSFunctionValue* ParseSimpleTransformValue(CharType*& pos,
     return transform_value;
   }
 
-  const bool is_rotate =
-      ToASCIILower(pos[0]) == 'r' && ToASCIILower(pos[1]) == 'o' &&
-      ToASCIILower(pos[2]) == 't' && ToASCIILower(pos[3]) == 'a' &&
-      ToASCIILower(pos[4]) == 't' && ToASCIILower(pos[5]) == 'e';
+  const bool is_rotate = MatchesLiteral(pos, "rotate");
 
   if (is_rotate) {
     CSSValueID rotate_value_id = CSSValueID::kInvalid;
     if (pos[6] == '(') {
       pos += 7;
       rotate_value_id = CSSValueID::kRotate;
-    } else if (ToASCIILower(pos[6]) == 'z' && pos[7] == '(') {
+    } else if (IsASCIIAlphaCaselessEqual(pos[6], 'z') && pos[7] == '(') {
       pos += 8;
       rotate_value_id = CSSValueID::kRotateZ;
     } else {
@@ -1643,34 +1718,34 @@ static bool TransformCanLikelyUseFastPath(const CharType* chars,
   // run into a transform component we don't understand.
   unsigned i = 0;
   while (i < length) {
-    if (IsCSSSpace(chars[i])) {
+    if (chars[i] == ' ') {
       ++i;
       continue;
     }
     if (length - i < kShortestValidTransformStringLength)
       return false;
-    switch (ToASCIILower(chars[i])) {
+    switch ((chars[i])) {
       case 't':
         // translate, translateX, translateY, translateZ, translate3d.
-        if (ToASCIILower(chars[i + 8]) != 'e')
+        if (chars[i + 8] != 'e')
           return false;
         i += 9;
         break;
       case 'm':
         // matrix3d.
-        if (ToASCIILower(chars[i + 7]) != 'd')
+        if (chars[i + 7] != 'd')
           return false;
         i += 8;
         break;
       case 's':
         // scale3d.
-        if (ToASCIILower(chars[i + 6]) != 'd')
+        if (chars[i + 6] != 'd')
           return false;
         i += 7;
         break;
       case 'r':
         // rotate.
-        if (ToASCIILower(chars[i + 5]) != 'e')
+        if (chars[i + 5] != 'e')
           return false;
         i += 6;
         break;
@@ -1701,7 +1776,7 @@ static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
         const auto* end = pos + length;
         CSSValueList* transform_list = nullptr;
         while (pos < end) {
-          while (pos < end && IsCSSSpace(*pos))
+          while (pos < end && *pos == ' ')
             ++pos;
           if (pos >= end)
             break;

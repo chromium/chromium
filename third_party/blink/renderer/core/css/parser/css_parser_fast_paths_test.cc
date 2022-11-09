@@ -179,16 +179,6 @@ TEST(CSSParserFastPathsTest, ParseColorWithNewSyntax) {
   EXPECT_TRUE(value->IsColorValue());
   EXPECT_EQ(Color::kBlack, To<cssvalue::CSSColor>(*value).Value());
 
-  value = CSSParserFastPaths::ParseColor("RGBA(0 0 0 / 1)", kHTMLStandardMode);
-  ASSERT_NE(nullptr, value);
-  EXPECT_TRUE(value->IsColorValue());
-  EXPECT_EQ(Color::kBlack, To<cssvalue::CSSColor>(*value).Value());
-
-  value = CSSParserFastPaths::ParseColor("RGB(0 0 0 / 1)", kHTMLStandardMode);
-  ASSERT_NE(nullptr, value);
-  EXPECT_TRUE(value->IsColorValue());
-  EXPECT_EQ(Color::kBlack, To<cssvalue::CSSColor>(*value).Value());
-
   value = CSSParserFastPaths::ParseColor("rgba(0 0 0 0)", kHTMLStandardMode);
   EXPECT_EQ(nullptr, value);
 
