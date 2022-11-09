@@ -58570,6 +58570,7 @@ from previous Chrome versions.
   <int value="-1560650271" label="WasmCodeCache:disabled"/>
   <int value="-1559789642" label="RunAllFlashInAllowMode:enabled"/>
   <int value="-1559292789" label="SideSearch:disabled"/>
+  <int value="-1558734415" label="ArcHostVpn:enabled"/>
   <int value="-1557747651" label="FractionalScrollOffsets:disabled"/>
   <int value="-1557527869" label="LoadingWithMojo:disabled"/>
   <int value="-1556805396" label="ScreenshotsForAndroidV2:enabled"/>
@@ -58599,6 +58600,7 @@ from previous Chrome versions.
       label="DisplayPersistenceToggleInPermissionPrompts:disabled"/>
   <int value="-1541362086" label="NearbySharing:disabled"/>
   <int value="-1541187160" label="UsernameFirstFlow:disabled"/>
+  <int value="-1540007054" label="ArcHostVpn:disabled"/>
   <int value="-1539513973" label="ContentSettingsRedesign:disabled"/>
   <int value="-1538752676" label="IncognitoBrandConsistencyForAndroid:enabled"/>
   <int value="-1538734579"

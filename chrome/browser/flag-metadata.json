@@ -1700,6 +1700,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-arc-host-vpn",
+    "owners": [ "cassiewang", "cros-networking@google.com" ],
+    "expiry_milestone": 111
+  },
+  {
     "name": "enable-aria-element-reflection",
     "owners": [ "aleventhal", "//third_party/blink/renderer/modules/accessibility/OWNERS" ],
     "expiry_milestone": 105

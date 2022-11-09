@@ -5344,6 +5344,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSecondaryGoogleAccountUsageName,
      flag_descriptions::kSecondaryGoogleAccountUsageDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSecondaryGoogleAccountUsage)},
+    {"enable-arc-host-vpn", flag_descriptions::kEnableArcHostVpnName,
+     flag_descriptions::kEnableArcHostVpnDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(arc::kEnableArcHostVpn)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-generic-sensor-extra-classes",
      flag_descriptions::kEnableGenericSensorExtraClassesName,

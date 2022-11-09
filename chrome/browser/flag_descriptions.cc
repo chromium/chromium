@@ -5177,6 +5177,12 @@ const char kEnableAppReinstallZeroStateDescription[] =
     "Enable Zero State App Reinstall Suggestions feature in launcher, which "
     "will show app reinstall recommendations at end of zero state list.";
 
+const char kEnableArcHostVpnName[] =
+    "Enable ArcHostVpn for builtin VPN clients";
+const char kEnableArcHostVpnDescription[] =
+    "When a builtin VPN client is started, also start the ArcHostVpn service "
+    "to reflect the builtin VPN config and VPN network inside ARC.";
+
 const char kEnableAssistantRoutinesName[] = "Assistant Routines";
 const char kEnableAssistantRoutinesDescription[] = "Enable Assistant Routines.";
 

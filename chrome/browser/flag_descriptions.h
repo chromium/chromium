@@ -2964,6 +2964,9 @@ extern const char kDriveFsChromeNetworkingDescription[];
 extern const char kEnableAppReinstallZeroStateName[];
 extern const char kEnableAppReinstallZeroStateDescription[];
 
+extern const char kEnableArcHostVpnName[];
+extern const char kEnableArcHostVpnDescription[];
+
 extern const char kEnableAssistantRoutinesName[];
 extern const char kEnableAssistantRoutinesDescription[];
 

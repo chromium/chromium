@@ -28,6 +28,12 @@ BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
              "ArcDocumentsProviderUnknownSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether an Android VPN (ArcHostVpn) should be started when a host
+// VPN is started.
+BASE_FEATURE(kEnableArcHostVpn,
+             "ArcHostVpn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of the default method (through a temporary path
 // managed by file manager).
