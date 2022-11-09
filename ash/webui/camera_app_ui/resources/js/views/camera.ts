@@ -251,9 +251,21 @@ export class Camera extends View implements CameraViewUI {
       },
     });
 
+    const checkModesGroupDisabled = () => {
+      const disabled =
+          !state.get(state.State.STREAMING) || state.get(state.State.TAKING);
+      const modes =
+          dom.getAllFrom(this.modesGroup, '.mode-item>input', HTMLInputElement);
+      for (const mode of modes) {
+        mode.disabled = disabled;
+      }
+    };
+    state.addObserver(state.State.STREAMING, checkModesGroupDisabled);
+    state.addObserver(state.State.TAKING, checkModesGroupDisabled);
+
     for (const el of dom.getAll('.mode-item>input', HTMLInputElement)) {
       el.addEventListener('click', (event) => {
-        if (!this.cameraReady) {
+        if (!this.cameraReady.isSignaled()) {
           event.preventDefault();
         }
       });

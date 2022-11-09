@@ -264,8 +264,6 @@ body.doc-mode-reviewing #mode-selector {
   white-space: nowrap;
 }
 
-body:not(.streaming) #modes-group,
-body.taking #modes-group,
 body.taking:not(.video) #shutters-group,
 body.snapshotting #video-snapshot {
   opacity: 0.38;
@@ -309,6 +307,10 @@ body:is(.taking.video, .should-handle-intent-result) #modes-group {
 #modes-group .mode-item input:active {
   /* Don't scale when active to prevent twitching. See b/197583162. */
   transform: none;
+}
+
+#modes-group .mode-item:has(input:disabled) {
+  opacity: 0.38;
 }
 
 div.mode-item>input {
