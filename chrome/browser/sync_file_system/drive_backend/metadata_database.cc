@@ -1611,8 +1611,8 @@ base::Value::List MetadataDatabase::DumpFiles(const std::string& app_id) {
 
 base::Value::List MetadataDatabase::DumpDatabase() {
   base::Value::List list;
-  list.Append(base::Value::FromUniquePtrValue(DumpTrackers()));
-  list.Append(base::Value::FromUniquePtrValue(DumpMetadata()));
+  list.Append(DumpTrackers());
+  list.Append(DumpMetadata());
   return list;
 }
 
@@ -1625,23 +1625,23 @@ bool MetadataDatabase::HasNewerFileMetadata(const std::string& file_id,
   return metadata.details().change_id() >= change_id;
 }
 
-std::unique_ptr<base::ListValue> MetadataDatabase::DumpTrackers() {
-  std::unique_ptr<base::ListValue> trackers(new base::ListValue);
+base::Value::List MetadataDatabase::DumpTrackers() {
+  base::Value::List trackers;
 
   // Append the first element for metadata.
   base::Value::Dict metadata;
-  static constexpr const char* trackerKeys[] = {
+  static constexpr const char* kTrackerKeys[] = {
       "tracker_id", "path",  "file_id",        "tracker_kind", "app_id",
       "active",     "dirty", "folder_listing", "demoted",      "title",
       "kind",       "md5",   "etag",           "missing",      "change_id",
   };
   base::Value::List keys;
-  for (const char* str : trackerKeys) {
+  for (const char* str : kTrackerKeys) {
     keys.Append(str);
   }
   metadata.Set("title", "Trackers");
   metadata.Set("keys", std::move(keys));
-  trackers->Append(base::Value(std::move(metadata)));
+  trackers.Append(std::move(metadata));
 
   // Append tracker data.
   std::vector<int64_t> tracker_ids(index_->GetAllTrackerIDs());
@@ -1685,26 +1685,26 @@ std::unique_ptr<base::ListValue> MetadataDatabase::DumpTrackers() {
       dict.Set("missing", details.missing() ? "true" : "false");
       dict.Set("change_id", base::NumberToString(details.change_id()));
     }
-    trackers->Append(base::Value(std::move(dict)));
+    trackers.Append(std::move(dict));
   }
   return trackers;
 }
 
-std::unique_ptr<base::ListValue> MetadataDatabase::DumpMetadata() {
-  std::unique_ptr<base::ListValue> files(new base::ListValue);
+base::Value::List MetadataDatabase::DumpMetadata() {
+  base::Value::List files;
 
   // Append the first element for metadata.
   base::Value::Dict metadata;
-  static constexpr const char* fileKeys[] = {"file_id",   "title",  "type",
-                                             "md5",       "etag",   "missing",
-                                             "change_id", "parents"};
+  static constexpr const char* kFileKeys[] = {"file_id",   "title",  "type",
+                                              "md5",       "etag",   "missing",
+                                              "change_id", "parents"};
   base::Value::List keys;
-  for (const char* str : fileKeys) {
+  for (const char* str : kFileKeys) {
     keys.Append(str);
   }
   metadata.Set("title", "Metadata");
   metadata.Set("keys", std::move(keys));
-  files->Append(base::Value(std::move(metadata)));
+  files.Append(std::move(metadata));
 
   // Append metadata data.
   std::vector<std::string> metadata_ids(index_->GetAllMetadataIDs());
@@ -1733,7 +1733,7 @@ std::unique_ptr<base::ListValue> MetadataDatabase::DumpMetadata() {
         parents.push_back(details.parent_folder_ids(i));
       dict.Set("parents", base::JoinString(parents, ","));
     }
-    files->Append(base::Value(std::move(dict)));
+    files.Append(std::move(dict));
   }
   return files;
 }

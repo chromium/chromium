@@ -383,8 +383,8 @@ class MetadataDatabase {
 
   bool HasNewerFileMetadata(const std::string& file_id, int64_t change_id);
 
-  std::unique_ptr<base::ListValue> DumpTrackers();
-  std::unique_ptr<base::ListValue> DumpMetadata();
+  base::Value::List DumpTrackers();
+  base::Value::List DumpMetadata();
 
   void AttachSyncRoot(const google_apis::FileResource& sync_root_folder);
   void AttachInitialAppRoot(const google_apis::FileResource& app_root_folder);
