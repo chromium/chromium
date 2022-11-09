@@ -821,7 +821,7 @@ void GuestOsRegistryService::ClearApplicationList(
 
 void GuestOsRegistryService::UpdateApplicationList(
     const vm_tools::apps::ApplicationList& app_list) {
-  VLOG(1) << "Received ApplicationList : " << ToString(app_list);
+  VLOG(3) << "Received ApplicationList : " << ToString(app_list);
 
   if (app_list.vm_name().empty()) {
     LOG(WARNING) << "Received app list with missing VM name";
