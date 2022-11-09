@@ -124,6 +124,17 @@ class HostDisplayClient : public viz::HostDisplayClient {
   }
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override {
+    content::GpuProcessHost* gpu_process_host = content::GpuProcessHost::Get(
+        GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false);
+    if (!gpu_process_host) {
+      return;
+    }
+    gpu_process_host->gpu_host()->AddChildWindow(widget(), child_window);
+  }
+#endif
+
  private:
   [[maybe_unused]] const raw_ptr<ui::Compositor> compositor_;
 };

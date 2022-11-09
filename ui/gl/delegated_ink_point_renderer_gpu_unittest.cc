@@ -137,8 +137,8 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
         DirectCompositionSurfaceWin::VSyncCallback(), settings);
     EXPECT_TRUE(surface_->Initialize(GLSurfaceFormat()));
 
-    // ImageTransportSurfaceDelegate::DidCreateAcceleratedSurfaceChildWindow()
-    // is called in production code here. However, to remove dependency from
+    // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in
+    // production code here. However, to remove dependency from
     // gpu/ipc/service/image_transport_surface_delegate.h, here we directly
     // executes the required minimum code.
     if (parent_window_)

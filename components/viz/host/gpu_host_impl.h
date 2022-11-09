@@ -212,6 +212,8 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 
 #if BUILDFLAG(IS_WIN)
   mojom::InfoCollectionGpuService* info_collection_gpu_service();
+  void AddChildWindow(gpu::SurfaceHandle parent_window,
+                      gpu::SurfaceHandle child_window);
 #endif
 
  private:
@@ -258,8 +260,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 #if BUILDFLAG(IS_WIN)
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override;
   void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) override;
-  void SetChildSurface(gpu::SurfaceHandle parent,
-                       gpu::SurfaceHandle child) override;
 #endif
   void GetIsolationKey(int32_t client_id,
                        const blink::WebGPUExecutionContextToken& token,

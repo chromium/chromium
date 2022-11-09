@@ -587,6 +587,17 @@ void RootCompositorFrameSinkImpl::DisplayDidCompleteSwapWithSize(
 #endif
 }
 
+void RootCompositorFrameSinkImpl::DisplayAddChildWindowToBrowser(
+    gpu::SurfaceHandle child_window) {
+#if BUILDFLAG(IS_WIN)
+  if (display_client_) {
+    display_client_->AddChildWindowToBrowser(child_window);
+  }
+#else
+  NOTREACHED();
+#endif
+}
+
 void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
 #if BUILDFLAG(IS_ANDROID)
   if (display_client_)

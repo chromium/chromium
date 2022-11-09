@@ -25,6 +25,7 @@ class FakeOutputSurfaceClient : public viz::OutputSurfaceClient {
       const gfx::PresentationFeedback& feedback) override {}
   void DidReceiveReleasedOverlays(
       const std::vector<gpu::Mailbox>& released_overlays) override {}
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override {}
 
   int swap_count() { return swap_count_; }
 

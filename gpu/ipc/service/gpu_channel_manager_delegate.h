@@ -74,14 +74,6 @@ class GpuChannelManagerDelegate {
   // Returns GPU Scheduler
   virtual gpu::Scheduler* GetGpuScheduler() = 0;
 
-#if BUILDFLAG(IS_WIN)
-  // Tells the delegate that |child_window| was created in the GPU process and
-  // to send an IPC to make SetParent() syscall. This syscall is blocked by the
-  // GPU sandbox and must be made in the browser process.
-  virtual void SendCreatedChildWindow(SurfaceHandle parent_window,
-                                      SurfaceHandle child_window) = 0;
-#endif
-
  protected:
   virtual ~GpuChannelManagerDelegate() = default;
 };

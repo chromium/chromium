@@ -167,6 +167,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       const gfx::PresentationFeedback& feedback) override;
   void DidReceiveReleasedOverlays(
       const std::vector<gpu::Mailbox>& released_overlays) override;
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
 
   // LatestLocalSurfaceIdLookupDelegate implementation.
   LocalSurfaceId GetSurfaceAtAggregation(

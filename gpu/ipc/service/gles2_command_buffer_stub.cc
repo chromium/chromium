@@ -423,12 +423,9 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
 }
 
 #if BUILDFLAG(IS_WIN)
-void GLES2CommandBufferStub::DidCreateAcceleratedSurfaceChildWindow(
-    SurfaceHandle parent_window,
-    SurfaceHandle child_window) {
-  GpuChannelManager* gpu_channel_manager = channel_->gpu_channel_manager();
-  gpu_channel_manager->delegate()->SendCreatedChildWindow(parent_window,
-                                                          child_window);
+void GLES2CommandBufferStub::AddChildWindowToBrowser(
+    gpu::SurfaceHandle child_window) {
+  NOTREACHED();
 }
 #endif
 

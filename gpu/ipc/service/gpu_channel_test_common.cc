@@ -60,10 +60,6 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
                        GetIsolationKeyCallback cb) override {}
   void MaybeExitOnContextLost() override { is_exiting_ = true; }
   bool IsExiting() const override { return is_exiting_; }
-#if BUILDFLAG(IS_WIN)
-  void SendCreatedChildWindow(SurfaceHandle parent_window,
-                              SurfaceHandle child_window) override {}
-#endif
 
   Scheduler* GetGpuScheduler() override { return scheduler_; }
 

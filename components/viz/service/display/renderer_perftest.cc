@@ -86,6 +86,8 @@ class WaitForSwapDisplayClient : public DisplayClient {
     DCHECK(loop_);
     loop_->Quit();
   }
+  void DisplayAddChildWindowToBrowser(
+      gpu::SurfaceHandle child_window) override {}
   void SetWideColorEnabled(bool enabled) override {}
   void SetPreferredFrameInterval(base::TimeDelta interval) override {}
   base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(

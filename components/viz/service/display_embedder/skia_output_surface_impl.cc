@@ -872,13 +872,16 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
       base::BindOnce(&SkiaOutputSurfaceImpl::ContextLost, weak_ptr_);
   auto schedule_gpu_task = base::BindRepeating(
       &SkiaOutputSurfaceImpl::ScheduleOrRetainGpuTask, weak_ptr_);
+  auto add_child_window_to_browser_callback = base::BindRepeating(
+      &SkiaOutputSurfaceImpl::AddChildWindowToBrowser, weak_ptr_);
 
   impl_on_gpu_ = SkiaOutputSurfaceImplOnGpu::Create(
       dependency_, renderer_settings_, gpu_task_scheduler_->GetSequenceId(),
       display_compositor_controller_->controller_on_gpu(),
       std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
-      std::move(schedule_gpu_task), std::move(vsync_callback_runner));
+      std::move(schedule_gpu_task), std::move(vsync_callback_runner),
+      std::move(add_child_window_to_browser_callback));
   if (!impl_on_gpu_) {
     *result = false;
   } else {
@@ -1042,6 +1045,13 @@ void SkiaOutputSurfaceImpl::BufferPresented(
     // Update |refresh_interval_|, so we only update when interval is changed.
     refresh_interval_ = feedback.interval;
   }
+}
+
+void SkiaOutputSurfaceImpl::AddChildWindowToBrowser(
+    gpu::SurfaceHandle child_window) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(client_);
+  client_->AddChildWindowToBrowser(child_window);
 }
 
 void SkiaOutputSurfaceImpl::OnGpuVSync(base::TimeTicks timebase,

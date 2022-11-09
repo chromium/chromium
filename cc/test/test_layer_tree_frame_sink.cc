@@ -304,6 +304,9 @@ void TestLayerTreeFrameSink::DisplayDidReceiveCALayerParams(
 void TestLayerTreeFrameSink::DisplayDidCompleteSwapWithSize(
     const gfx::Size& pixel_Size) {}
 
+void TestLayerTreeFrameSink::DisplayAddChildWindowToBrowser(
+    gpu::SurfaceHandle child_window) {}
+
 void TestLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   support_->SetNeedsBeginFrame(needs_begin_frames);
 }

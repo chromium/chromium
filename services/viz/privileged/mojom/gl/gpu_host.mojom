@@ -67,10 +67,6 @@ interface GpuHost {
                   blink.mojom.WebGPUExecutionContextToken wgpu_context_token)
       => (string isolation_key);
 
-  [EnableIf=is_win]
-  SetChildSurface(gpu.mojom.SurfaceHandle parent,
-                  gpu.mojom.SurfaceHandle child);
-
   // Tells the GPU host to store the blob on the given cache handle.
   StoreBlobToDisk(gpu.mojom.GpuDiskCacheHandle cache_handle,
                   string key,

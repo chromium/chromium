@@ -32,6 +32,7 @@ class FakeDisplayClient : public mojom::DisplayClient {
 #if BUILDFLAG(IS_WIN)
   void CreateLayeredWindowUpdater(
       mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) override;
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
 #endif
 
 #if BUILDFLAG(IS_LINUX)

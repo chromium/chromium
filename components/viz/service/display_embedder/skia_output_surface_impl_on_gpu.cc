@@ -240,7 +240,8 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
     BufferPresentedCallback buffer_presented_callback,
     ContextLostCallback context_lost_callback,
     ScheduleGpuTaskCallback schedule_gpu_task,
-    GpuVSyncCallback gpu_vsync_callback) {
+    GpuVSyncCallback gpu_vsync_callback,
+    AddChildWindowToBrowserCallback add_child_window_to_browser_callback) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Create");
 
   auto context_state = deps->GetSharedContextState();
@@ -262,7 +263,8 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
       context_state->feature_info(), renderer_settings, sequence_id,
       shared_gpu_deps, std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
-      std::move(schedule_gpu_task), std::move(gpu_vsync_callback));
+      std::move(schedule_gpu_task), std::move(gpu_vsync_callback),
+      std::move(add_child_window_to_browser_callback));
   if (!impl_on_gpu->Initialize())
     return nullptr;
 
@@ -280,7 +282,8 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
     BufferPresentedCallback buffer_presented_callback,
     ContextLostCallback context_lost_callback,
     ScheduleGpuTaskCallback schedule_gpu_task,
-    GpuVSyncCallback gpu_vsync_callback)
+    GpuVSyncCallback gpu_vsync_callback,
+    AddChildWindowToBrowserCallback add_child_window_to_browser_callback)
     : dependency_(std::move(deps)),
       shared_gpu_deps_(shared_gpu_deps),
       feature_info_(std::move(feature_info)),
@@ -303,6 +306,8 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
       context_lost_callback_(std::move(context_lost_callback)),
       schedule_gpu_task_(std::move(schedule_gpu_task)),
       gpu_vsync_callback_(std::move(gpu_vsync_callback)),
+      add_child_window_to_browser_callback_(
+          std::move(add_child_window_to_browser_callback)),
       gpu_preferences_(dependency_->GetGpuPreferences()),
       async_read_result_lock_(base::MakeRefCounted<AsyncReadResultLock>()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1824,10 +1829,9 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     return false;
 
 #if BUILDFLAG(IS_WIN)
-  gpu::SurfaceHandle child_surface = output_device->GetChildSurfaceHandle();
-  if (child_surface != gpu::kNullSurfaceHandle) {
-    DidCreateAcceleratedSurfaceChildWindow(dependency_->GetSurfaceHandle(),
-                                           child_surface);
+  gpu::SurfaceHandle child_window = output_device->GetChildSurfaceHandle();
+  if (child_window != gpu::kNullSurfaceHandle) {
+    AddChildWindowToBrowser(child_window);
   }
 #endif  // BUILDFLAG(IS_WIN)
   output_device_ = std::move(output_device);
@@ -1863,10 +1867,9 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
             dawn_context_provider_, dependency_->GetSurfaceHandle(),
             gfx::SurfaceOrigin::kTopLeft, shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback());
-    const gpu::SurfaceHandle child_surface_handle =
+    const gpu::SurfaceHandle child_window_handle =
         output_device->GetChildSurfaceHandle();
-    DidCreateAcceleratedSurfaceChildWindow(dependency_->GetSurfaceHandle(),
-                                           child_surface_handle);
+    AddChildWindowToBrowser(child_window_handle);
     output_device_ = std::move(output_device);
 #else
     NOTREACHED();
@@ -2058,11 +2061,10 @@ bool SkiaOutputSurfaceImplOnGpu::IsDisplayedAsOverlay() {
 }
 
 #if BUILDFLAG(IS_WIN)
-void SkiaOutputSurfaceImplOnGpu::DidCreateAcceleratedSurfaceChildWindow(
-    gpu::SurfaceHandle parent_window,
+void SkiaOutputSurfaceImplOnGpu::AddChildWindowToBrowser(
     gpu::SurfaceHandle child_window) {
-  dependency_->DidCreateAcceleratedSurfaceChildWindow(parent_window,
-                                                      child_window);
+  PostTaskToClientThread(
+      base::BindOnce(add_child_window_to_browser_callback_, child_window));
 }
 #endif
 

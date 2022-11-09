@@ -618,11 +618,11 @@ void GpuHostImpl::DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
   delegate_->DidUpdateDXGIInfo(std::move(dxgi_info));
 }
 
-void GpuHostImpl::SetChildSurface(gpu::SurfaceHandle parent,
-                                  gpu::SurfaceHandle child) {
+void GpuHostImpl::AddChildWindow(gpu::SurfaceHandle parent_window,
+                                 gpu::SurfaceHandle child_window) {
   if (pid_ != base::kNullProcessId) {
     gfx::RenderingWindowManager::GetInstance()->RegisterChild(
-        parent, child, /*expected_child_process_id=*/pid_);
+        parent_window, child_window, /*expected_child_process_id=*/pid_);
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

@@ -23,6 +23,8 @@ void FakeDisplayClient::OnDisplayReceivedCALayerParams(
 #if BUILDFLAG(IS_WIN)
 void FakeDisplayClient::CreateLayeredWindowUpdater(
     mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) {}
+void FakeDisplayClient::AddChildWindowToBrowser(
+    gpu::SurfaceHandle child_window) {}
 #endif
 
 #if BUILDFLAG(IS_LINUX)

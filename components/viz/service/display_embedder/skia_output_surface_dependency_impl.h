@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 
 namespace base {
@@ -55,13 +54,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
   scoped_refptr<base::TaskRunner> GetClientTaskRunner() override;
   void ScheduleGrContextCleanup() override;
   void ScheduleDelayedGPUTaskFromGPUThread(base::OnceClosure task) override;
-
-#if BUILDFLAG(IS_WIN)
-  void DidCreateAcceleratedSurfaceChildWindow(
-      gpu::SurfaceHandle parent_window,
-      gpu::SurfaceHandle child_window) override;
-#endif
-
   void DidLoseContext(gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
 

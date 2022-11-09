@@ -1095,6 +1095,12 @@ void Display::DidReceiveReleasedOverlays(
     renderer_->DidReceiveReleasedOverlays(released_overlays);
 }
 
+void Display::AddChildWindowToBrowser(gpu::SurfaceHandle child_window) {
+  if (client_) {
+    client_->DisplayAddChildWindowToBrowser(child_window);
+  }
+}
+
 void Display::SetNeedsRedrawRect(const gfx::Rect& damage_rect) {
   aggregator_->SetFullDamageForSurface(current_surface_id_);
   damage_tracker_->SetRootSurfaceDamaged();

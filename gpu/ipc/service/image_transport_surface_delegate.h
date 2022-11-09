@@ -22,11 +22,9 @@ class FeatureInfo;
 class GPU_IPC_SERVICE_EXPORT ImageTransportSurfaceDelegate {
  public:
 #if BUILDFLAG(IS_WIN)
-  // Tells the delegate that a child window was created with the provided
-  // SurfaceHandle.
-  virtual void DidCreateAcceleratedSurfaceChildWindow(
-      SurfaceHandle parent_window,
-      SurfaceHandle child_window) = 0;
+  // Sends the created child window to the browser process so that it can be
+  // parented to the browser process window
+  virtual void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) = 0;
 #endif
 
   // Returns the features available for the ContextGroup.

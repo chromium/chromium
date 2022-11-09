@@ -48,9 +48,7 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
 
 // ImageTransportSurfaceDelegate implementation:
 #if BUILDFLAG(IS_WIN)
-  void DidCreateAcceleratedSurfaceChildWindow(
-      SurfaceHandle parent_window,
-      SurfaceHandle child_window) override;
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
 #endif
   const gles2::FeatureInfo* GetFeatureInfo() const override;
   const GpuPreferences& GetGpuPreferences() const override;

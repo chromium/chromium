@@ -262,9 +262,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   gpu::Scheduler* GetGpuScheduler() override;
 
 #if BUILDFLAG(IS_WIN)
-  void SendCreatedChildWindow(gpu::SurfaceHandle parent_window,
-                              gpu::SurfaceHandle child_window) override;
-
   // DirectCompositionOverlayCapsObserver implementation.
   // Update overlay info and HDR status on the GPU process and send the updated
   // info back to the browser process if there is a change.

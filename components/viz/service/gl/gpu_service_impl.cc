@@ -995,14 +995,6 @@ bool GpuServiceImpl::IsExiting() const {
   return is_exiting_.IsSet();
 }
 
-#if BUILDFLAG(IS_WIN)
-void GpuServiceImpl::SendCreatedChildWindow(gpu::SurfaceHandle parent_window,
-                                            gpu::SurfaceHandle child_window) {
-  // This can be called from main or display compositor thread.
-  gpu_host_->SetChildSurface(parent_window, child_window);
-}
-#endif
-
 void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
                                          uint64_t client_tracing_id,
                                          bool is_gpu_host,

@@ -96,6 +96,9 @@ class SkiaOutputSurfaceImplOnGpu
       base::RepeatingCallback<void(base::OnceClosure,
                                    std::vector<gpu::SyncToken>)>;
 
+  using AddChildWindowToBrowserCallback =
+      base::RepeatingCallback<void(gpu::SurfaceHandle child_window)>;
+
   // |gpu_vsync_callback| must be safe to call on any thread. The other
   // callbacks will only be called via |deps->PostTaskToClientThread|.
   static std::unique_ptr<SkiaOutputSurfaceImplOnGpu> Create(
@@ -107,7 +110,8 @@ class SkiaOutputSurfaceImplOnGpu
       BufferPresentedCallback buffer_presented_callback,
       ContextLostCallback context_lost_callback,
       ScheduleGpuTaskCallback schedule_gpu_task,
-      GpuVSyncCallback gpu_vsync_callback);
+      GpuVSyncCallback gpu_vsync_callback,
+      AddChildWindowToBrowserCallback parent_child_Window_to_browser_callback);
 
   SkiaOutputSurfaceImplOnGpu(
       base::PassKey<SkiaOutputSurfaceImplOnGpu> pass_key,
@@ -120,7 +124,8 @@ class SkiaOutputSurfaceImplOnGpu
       BufferPresentedCallback buffer_presented_callback,
       ContextLostCallback context_lost_callback,
       ScheduleGpuTaskCallback schedule_gpu_task,
-      GpuVSyncCallback gpu_vsync_callback);
+      GpuVSyncCallback gpu_vsync_callback,
+      AddChildWindowToBrowserCallback parent_child_window_to_browser_callback);
 
   SkiaOutputSurfaceImplOnGpu(const SkiaOutputSurfaceImplOnGpu&) = delete;
   SkiaOutputSurfaceImplOnGpu& operator=(const SkiaOutputSurfaceImplOnGpu&) =
@@ -216,9 +221,7 @@ class SkiaOutputSurfaceImplOnGpu
 
   // gpu::ImageTransportSurfaceDelegate implementation:
 #if BUILDFLAG(IS_WIN)
-  void DidCreateAcceleratedSurfaceChildWindow(
-      gpu::SurfaceHandle parent_window,
-      gpu::SurfaceHandle child_window) override;
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
 #endif
   const gpu::gles2::FeatureInfo* GetFeatureInfo() const override;
   const gpu::GpuPreferences& GetGpuPreferences() const override;
@@ -448,6 +451,7 @@ class SkiaOutputSurfaceImplOnGpu
   ContextLostCallback context_lost_callback_;
   ScheduleGpuTaskCallback schedule_gpu_task_;
   GpuVSyncCallback gpu_vsync_callback_;
+  AddChildWindowToBrowserCallback add_child_window_to_browser_callback_;
 
   // ImplOnGpu::CopyOutput can create SharedImages via ImplOnGpu's
   // SharedImageFactory. Clients can use these images via CopyOutputResult and

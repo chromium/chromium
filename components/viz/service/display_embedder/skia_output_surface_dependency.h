@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/build_config.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -99,12 +98,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   // This function schedules delayed task to be run on GPUThread. It can be
   // called only from GPU Thread.
   virtual void ScheduleDelayedGPUTaskFromGPUThread(base::OnceClosure task) = 0;
-
-#if BUILDFLAG(IS_WIN)
-  virtual void DidCreateAcceleratedSurfaceChildWindow(
-      gpu::SurfaceHandle parent_window,
-      gpu::SurfaceHandle child_window) = 0;
-#endif
 
   virtual void DidLoseContext(gpu::error::ContextLostReason reason,
                               const GURL& active_url) = 0;

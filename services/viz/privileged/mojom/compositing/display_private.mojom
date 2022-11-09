@@ -5,6 +5,7 @@
 module viz.mojom;
 
 import "gpu/ipc/common/context_result.mojom";
+import "gpu/ipc/common/surface_handle.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
 import "ui/gfx/mojom/delegated_ink_point_renderer.mojom";
@@ -104,6 +105,11 @@ interface DisplayClient {
   // window.
   [EnableIf=is_win]
   CreateLayeredWindowUpdater(pending_receiver<LayeredWindowUpdater> receiver);
+
+  // Sends the created child window to the browser process so that it can be
+  // parented to the browser process window
+  [EnableIf=is_win]
+  AddChildWindowToBrowser(gpu.mojom.SurfaceHandle child_window);
 
   // Notifies that a swap has occurred and provides information about the pixel
   // size of the swapped frame.

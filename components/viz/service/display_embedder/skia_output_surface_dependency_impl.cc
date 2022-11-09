@@ -144,14 +144,6 @@ void SkiaOutputSurfaceDependencyImpl::ScheduleDelayedGPUTaskFromGPUThread(
       FROM_HERE, std::move(task), kDelayForDelayedWork);
 }
 
-#if BUILDFLAG(IS_WIN)
-void SkiaOutputSurfaceDependencyImpl::DidCreateAcceleratedSurfaceChildWindow(
-    gpu::SurfaceHandle parent_window,
-    gpu::SurfaceHandle child_window) {
-  gpu_service_impl_->SendCreatedChildWindow(parent_window, child_window);
-}
-#endif
-
 void SkiaOutputSurfaceDependencyImpl::DidLoseContext(
     gpu::error::ContextLostReason reason,
     const GURL& active_url) {

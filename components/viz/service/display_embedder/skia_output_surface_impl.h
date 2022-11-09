@@ -197,6 +197,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                               const gfx::Size& pixel_size,
                               gfx::GpuFenceHandle release_fence);
   void BufferPresented(const gfx::PresentationFeedback& feedback);
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window);
 
   // Provided as a callback for the GPU thread.
   void OnGpuVSync(base::TimeTicks timebase, base::TimeDelta interval);
