@@ -250,6 +250,7 @@ public class FirstRunActivitySigninAndSyncTest {
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     @EnableFeatures({ChromeFeatureList.CREATE_SIGNIN_CHECKER_BEFORE_SYNC_CONSENT_FRAGMENT})
+    @DisabledTest(message = "https://crbug.com/1382901")
     public void
     continueButtonClickShowsSyncConsentPageWithChildAccountAndEarlySigninCheckerCreation() {
         mAccountManagerTestRule.addAccount(CHILD_EMAIL);
