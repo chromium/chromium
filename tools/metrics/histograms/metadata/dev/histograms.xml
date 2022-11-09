@@ -77,6 +77,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.BreakpointEditDialogRevealedFrom"
+    enum="DevToolsBreakpointEditDialogRevealedFrom" expires_after="2023-12-01">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jarin@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
+  <summary>
+    Records the ways in which the Breakpoint Edit Dialog was opened.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.BreakpointWithConditionAdded"
+    enum="DevToolsBreakpointWithConditionAdded" expires_after="2023-12-01">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jarin@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
+  <summary>
+    Records when a breakpoint with a condition was added (logpoint or
+    conditional breakpoint).
+  </summary>
+</histogram>
+
 <histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
     expires_after="2022-12-16">
   <owner>wolfi@chromium.org</owner>
