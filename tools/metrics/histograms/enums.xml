@@ -59902,6 +59902,7 @@ from previous Chrome versions.
   <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
   <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
+  <int value="-800565336" label="ArcInstantResponseWindowOpen:disabled"/>
   <int value="-800464360" label="ContextualPageActions:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
@@ -60754,6 +60755,7 @@ from previous Chrome versions.
   <int value="-284470280" label="ShelfPalmRejectionTouchArea:enabled"/>
   <int value="-284328071" label="LocalWebApprovals:enabled"/>
   <int value="-284279318" label="LacrosMoveProfileMigration:enabled"/>
+  <int value="-283706169" label="ArcInstantResponseWindowOpen:enabled"/>
   <int value="-283388027" label="ManualFallbacksFilling:disabled"/>
   <int value="-283079109" label="TouchToFillPasswordSubmission:enabled"/>
   <int value="-283024110" label="WebXRPlaneDetection:disabled"/>

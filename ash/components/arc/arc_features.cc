@@ -140,6 +140,12 @@ const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
 const base::FeatureParam<int> kGuestZramSwappiness{&kGuestZram, "swappiness",
                                                    0};
 
+// Enables/disables ghost when user launch ARC app from shelf/launcher when
+// App already ready for launch.
+BASE_FEATURE(kInstantResponseWindowOpen,
+             "ArcInstantResponseWindowOpen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables/disables mlock() of guest memory for ARCVM.
 // Often used in combination with kGuestZram.
 BASE_FEATURE(kLockGuestMemory,

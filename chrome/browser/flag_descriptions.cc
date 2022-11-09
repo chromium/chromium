@@ -4747,6 +4747,12 @@ const char kArcGameModeDescription[] =
     "ARC Fullscreen Games will request accomodation from ChromeOS for "
     "sustained performance.";
 
+extern const char kArcInstantResponseWindowOpenName[] =
+    "Enable Instance Response for ARC app window open";
+extern const char kArcInstantResponseWindowOpenDescription[] =
+    "In some devices the placeholder window will popup immediately after the "
+    "user attempts to launch apps.";
+
 const char kArcKeyboardShortcutHelperIntegrationName[] =
     "Enable keyboard shortcut helper integration for ARC";
 const char kArcKeyboardShortcutHelperIntegrationDescription[] =

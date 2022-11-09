@@ -242,6 +242,10 @@
     "owners": [ "cuicuiruan@google.com", "arc-gaming@google.com" ],
     "expiry_milestone": 120
   },
+  { "name": "arc-instant-response-window-open",
+    "owners": [ "sstan", "mduggan" ],
+    "expiry_milestone": 120
+  },
   {
     "name": "arc-keyboard-shortcut-helper-integration",
     "owners": [ "yhanada", "mduggan" ],

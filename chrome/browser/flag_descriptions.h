@@ -2728,6 +2728,9 @@ extern const char kArcGhostWindowNewStyleDescription[];
 extern const char kArcGameModeName[];
 extern const char kArcGameModeDescription[];
 
+extern const char kArcInstantResponseWindowOpenName[];
+extern const char kArcInstantResponseWindowOpenDescription[];
+
 extern const char kArcKeyboardShortcutHelperIntegrationName[];
 extern const char kArcKeyboardShortcutHelperIntegrationDescription[];
 

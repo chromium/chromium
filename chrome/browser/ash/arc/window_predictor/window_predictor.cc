@@ -158,4 +158,12 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
   return window_info;
 }
 
+bool WindowPredictor::IsAppPendingLaunch(Profile* profile,
+                                         const std::string& app_id) {
+  auto* arc_task_handler =
+      ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
+
+  return arc_task_handler && arc_task_handler->IsAppPendingRestore(app_id);
+}
+
 }  // namespace arc

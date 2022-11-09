@@ -40,6 +40,8 @@ class WindowPredictor {
       const ArcAppListPrefs::AppInfo& app_info,
       arc::mojom::WindowInfoPtr window_info);
 
+  bool IsAppPendingLaunch(Profile* profile, const std::string& app_id);
+
  private:
   friend class base::NoDestructor<WindowPredictor>;
   WindowPredictor();

@@ -208,6 +208,10 @@ bool IsFixupWindowEnabled() {
   return base::FeatureList::IsEnabled(arc::kFixupWindowFeature);
 }
 
+bool IsInstantResponseOpenEnabled() {
+  return base::FeatureList::IsEnabled(arc::kInstantResponseWindowOpen);
+}
+
 }  // namespace
 
 // Package names, kept in sorted order.
@@ -423,6 +427,16 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       launch_intent_to_send =
           AppendLaunchIntent(launch_intent_to_send.value(), extra);
     }
+  } else if (IsInstantResponseOpenEnabled() &&
+             !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
+                                                                 app_id)) {
+    // For some devices, launch ghost window and app at the same time.
+    if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
+            profile, app_id, *app_info, event_flags,
+            GhostWindowType::kAppLaunch, window_info)) {
+      return true;
+    }
+    VLOG(2) << "Failed to launch ghost window, fallback to launch directly.";
   }
 
   arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
