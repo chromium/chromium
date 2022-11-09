@@ -707,6 +707,112 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
         ->WaitForWorkletResponsesCount(2);
   }
 
+  FrameTreeNode* CreateIFrame(FrameTreeNode* root, const GURL& url) {
+    size_t initial_child_count = root->child_count();
+
+    EXPECT_TRUE(ExecJs(root,
+                       "var f = document.createElement('iframe');"
+                       "document.body.appendChild(f);"));
+
+    EXPECT_EQ(initial_child_count + 1, root->child_count());
+    FrameTreeNode* child_node = root->child_at(initial_child_count);
+
+    std::string navigate_frame_script = JsReplace("f.src = $1;", url.spec());
+
+    TestFrameNavigationObserver observer(child_node->current_frame_host());
+
+    EXPECT_EQ(url.spec(), EvalJs(root, navigate_frame_script));
+
+    observer.Wait();
+
+    return child_node;
+  }
+
+  // Create an iframe of origin `origin` inside `parent_node`, and run
+  // sharedStorage.selectURL() on 8 urls. If `parent_node` is not specified,
+  // the primary frame tree's root node will be chosen. This generates an URN
+  // associated with `origin` and 3 bits of shared storage budget.
+  GURL SelectFrom8URLsInContext(const url::Origin& origin,
+                                FrameTreeNode* parent_node = nullptr) {
+    if (!parent_node)
+      parent_node = PrimaryFrameTreeNodeRoot();
+
+    // If this is called inside a fenced frame, creating an iframe will need
+    // "Supports-Loading-Mode: fenced-frame" response header. Thus, we simply
+    // always set the path to `kFencedFramePath`.
+    GURL iframe_url = origin.GetURL().Resolve(kFencedFramePath);
+
+    FrameTreeNode* iframe = CreateIFrame(parent_node, iframe_url);
+
+    EXPECT_TRUE(ExecJs(iframe, R"(
+        sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+      )"));
+
+    std::string urn_uuid =
+        EvalJs(iframe, kSelectFrom8URLsScript).ExtractString();
+
+    // There are 2 "worklet operations": `addModule()` and `selectURL()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHostForFrame(iframe->current_frame_host())
+        ->WaitForWorkletResponsesCount(2);
+
+    return GURL(urn_uuid);
+  }
+
+  // Prerequisite: The worklet for `frame` has registered a
+  // "remaining-budget-operation" that logs the remaining budget to the console
+  // after `kRemainingBudgetPrefix`.
+  double RemainingBudgetViaJSForFrame(FrameTreeNode* frame) {
+    DCHECK(frame);
+
+    WebContentsConsoleObserver console_observer(shell()->web_contents());
+    const std::string kRemainingBudgetPrefixStr(kRemainingBudgetPrefix);
+    console_observer.SetPattern(base::StrCat({kRemainingBudgetPrefixStr, "*"}));
+
+    EXPECT_TRUE(ExecJs(frame, R"(
+      sharedStorage.run('remaining-budget-operation', {data: {}});
+    )"));
+
+    bool observed = console_observer.Wait();
+    EXPECT_TRUE(observed);
+    if (!observed) {
+      return nan("");
+    }
+
+    EXPECT_EQ(1u, console_observer.messages().size());
+    std::string console_message =
+        base::UTF16ToUTF8(console_observer.messages()[0].message);
+    EXPECT_TRUE(base::StartsWith(console_message, kRemainingBudgetPrefixStr));
+
+    std::string result_string = console_message.substr(
+        kRemainingBudgetPrefixStr.size(),
+        console_message.size() - kRemainingBudgetPrefixStr.size());
+
+    double result = 0.0;
+    EXPECT_TRUE(base::StringToDouble(result_string, &result));
+
+    // There is 1 "worklet operation": `run()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHostForFrame(frame->current_frame_host())
+        ->WaitForWorkletResponsesCount(1);
+    return result;
+  }
+
+  double RemainingBudgetViaJSForOrigin(const url::Origin& origin) {
+    FrameTreeNode* iframe =
+        CreateIFrame(PrimaryFrameTreeNodeRoot(), origin.GetURL());
+
+    EXPECT_TRUE(ExecJs(iframe, R"(
+        sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+      )"));
+
+    // There is 1 "worklet operation": `addModule()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHostForFrame(iframe->current_frame_host())
+        ->WaitForWorkletResponsesCount(1);
+    return RemainingBudgetViaJSForFrame(iframe);
+  }
+
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   TestSharedStorageWorkletHostManager& test_worklet_host_manager() {
@@ -2414,6 +2520,49 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   ExpectAccessObserved(expected_accesses);
 }
 
+class SharedStorageAllowURNsInIframesBrowserTest
+    : public SharedStorageBrowserTest {
+ public:
+  SharedStorageAllowURNsInIframesBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kAllowURNsInIframes);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedStorageAllowURNsInIframesBrowserTest,
+                       RenderSelectURLResultInIframe) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  url::Origin shared_storage_origin =
+      url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
+
+  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+
+  FrameTreeNode* iframe_node =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), urn_uuid);
+
+  EXPECT_EQ(iframe_node->current_url(),
+            https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
+
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
+
+  GURL new_page_url = https_server()->GetURL("c.test", kSimplePagePath);
+
+  TestNavigationObserver top_navigation_observer(shell()->web_contents());
+  EXPECT_TRUE(
+      ExecJs(iframe_node, JsReplace("top.location = $1", new_page_url.spec())));
+  top_navigation_observer.Wait();
+
+  // After the top navigation, log(8)=3 bits should have been withdrawn from the
+  // original shared storage origin.
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
+                   kBudgetAllowed - 3);
+}
+
 class SharedStorageFencedFrameInteractionBrowserTest
     : public SharedStorageBrowserTest,
       public ::testing::WithParamInterface<
@@ -2471,112 +2620,6 @@ class SharedStorageFencedFrameInteractionBrowserTest
 
   FrameTreeNode* CreateFencedFrame(const GURL& url) {
     return CreateFencedFrame(PrimaryFrameTreeNodeRoot(), url);
-  }
-
-  FrameTreeNode* CreateIFrame(FrameTreeNode* root, const GURL& url) {
-    size_t initial_child_count = root->child_count();
-
-    EXPECT_TRUE(ExecJs(root,
-                       "var f = document.createElement('iframe');"
-                       "document.body.appendChild(f);"));
-
-    EXPECT_EQ(initial_child_count + 1, root->child_count());
-    FrameTreeNode* child_node = root->child_at(initial_child_count);
-
-    std::string navigate_frame_script = JsReplace("f.src = $1;", url.spec());
-
-    TestFrameNavigationObserver observer(child_node->current_frame_host());
-
-    EXPECT_EQ(url.spec(), EvalJs(root, navigate_frame_script));
-
-    observer.Wait();
-
-    return child_node;
-  }
-
-  // Create an iframe of origin `origin` inside `parent_node`, and run
-  // sharedStorage.selectURL() on 8 urls. If `parent_node` is not specified,
-  // the primary frame tree's root node will be chosen. This generates an URN
-  // associated with `origin` and 3 bits of shared storage budget.
-  GURL SelectFrom8URLsInContext(const url::Origin& origin,
-                                FrameTreeNode* parent_node = nullptr) {
-    if (!parent_node)
-      parent_node = PrimaryFrameTreeNodeRoot();
-
-    // If this is called inside a fenced frame, creating an iframe will need
-    // "Supports-Loading-Mode: fenced-frame" response header. Thus, we simply
-    // always set the path to `kFencedFramePath`.
-    GURL iframe_url = origin.GetURL().Resolve(kFencedFramePath);
-
-    FrameTreeNode* iframe = CreateIFrame(parent_node, iframe_url);
-
-    EXPECT_TRUE(ExecJs(iframe, R"(
-        sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
-      )"));
-
-    std::string urn_uuid =
-        EvalJs(iframe, kSelectFrom8URLsScript).ExtractString();
-
-    // There are 2 "worklet operations": `addModule()` and `selectURL()`.
-    test_worklet_host_manager()
-        .GetAttachedWorkletHostForFrame(iframe->current_frame_host())
-        ->WaitForWorkletResponsesCount(2);
-
-    return GURL(urn_uuid);
-  }
-
-  // Prerequisite: The worklet for `frame` has registered a
-  // "remaining-budget-operation" that logs the remaining budget to the console
-  // after `kRemainingBudgetPrefix`.
-  double RemainingBudgetViaJSForFrame(FrameTreeNode* frame) {
-    DCHECK(frame);
-
-    WebContentsConsoleObserver console_observer(shell()->web_contents());
-    const std::string kRemainingBudgetPrefixStr(kRemainingBudgetPrefix);
-    console_observer.SetPattern(base::StrCat({kRemainingBudgetPrefixStr, "*"}));
-
-    EXPECT_TRUE(ExecJs(frame, R"(
-      sharedStorage.run('remaining-budget-operation', {data: {}});
-    )"));
-
-    bool observed = console_observer.Wait();
-    EXPECT_TRUE(observed);
-    if (!observed) {
-      return nan("");
-    }
-
-    EXPECT_EQ(1u, console_observer.messages().size());
-    std::string console_message =
-        base::UTF16ToUTF8(console_observer.messages()[0].message);
-    EXPECT_TRUE(base::StartsWith(console_message, kRemainingBudgetPrefixStr));
-
-    std::string result_string = console_message.substr(
-        kRemainingBudgetPrefixStr.size(),
-        console_message.size() - kRemainingBudgetPrefixStr.size());
-
-    double result = 0.0;
-    EXPECT_TRUE(base::StringToDouble(result_string, &result));
-
-    // There is 1 "worklet operation": `run()`.
-    test_worklet_host_manager()
-        .GetAttachedWorkletHostForFrame(frame->current_frame_host())
-        ->WaitForWorkletResponsesCount(1);
-    return result;
-  }
-
-  double RemainingBudgetViaJSForOrigin(const url::Origin& origin) {
-    FrameTreeNode* iframe =
-        CreateIFrame(PrimaryFrameTreeNodeRoot(), origin.GetURL());
-
-    EXPECT_TRUE(ExecJs(iframe, R"(
-        sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-      )"));
-
-    // There is 1 "worklet operation": `addModule()`.
-    test_worklet_host_manager()
-        .GetAttachedWorkletHostForFrame(iframe->current_frame_host())
-        ->WaitForWorkletResponsesCount(1);
-    return RemainingBudgetViaJSForFrame(iframe);
   }
 
  private:
