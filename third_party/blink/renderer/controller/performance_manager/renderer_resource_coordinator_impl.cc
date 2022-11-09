@@ -298,6 +298,11 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached(
 void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
     const blink::V8ContextToken& token) {
   DCHECK(service_);
+
+  // Avoid sending IPC messages at non-deterministic points.
+  if (recordreplay::AreEventsDisallowed())
+    return;
+
   // See DispatchOnV8ContextCreated for why this is both needed and safe.
   if (!IsMainThread()) {
     blink::PostCrossThreadTask(
