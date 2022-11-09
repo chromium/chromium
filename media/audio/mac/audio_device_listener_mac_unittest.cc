@@ -21,45 +21,16 @@ namespace media {
 
 class AudioDeviceListenerMacTest : public testing::Test {
  public:
-  AudioDeviceListenerMacTest() {
-    // It's important to create the device listener from the message loop in
-    // order to ensure we don't end up with unbalanced TaskObserver calls.
-    task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AudioDeviceListenerMacTest::CreateDeviceListener,
-                       base::Unretained(this)));
-    base::RunLoop().RunUntilIdle();
-  }
+  AudioDeviceListenerMacTest() = default;
 
   AudioDeviceListenerMacTest(const AudioDeviceListenerMacTest&) = delete;
   AudioDeviceListenerMacTest& operator=(const AudioDeviceListenerMacTest&) =
       delete;
 
-  ~AudioDeviceListenerMacTest() override {
-    // It's important to destroy the device listener from the message loop in
-    // order to ensure we don't end up with unbalanced TaskObserver calls.
-    task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AudioDeviceListenerMacTest::DestroyDeviceListener,
-                       base::Unretained(this)));
-    base::RunLoop().RunUntilIdle();
-  }
+  ~AudioDeviceListenerMacTest() override = default;
 
-  void CreateDeviceListener() {
-    // Force a post task using BindToCurrentLoop() to ensure device listener
-    // internals are working correctly.
-    device_listener_ = std::make_unique<AudioDeviceListenerMac>(
-        BindToCurrentLoop(
-            base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
-                                base::Unretained(this))),
-        true /* monitor_default_input */, true /* monitor_addition_removal */);
-  }
-
-  void DestroyDeviceListener() { device_listener_.reset(); }
-
-  bool ListenerIsValid() { return !device_listener_->listener_cb_.is_null(); }
-
-  bool SimulateEvent(const AudioObjectPropertyAddress& address) {
+  static bool SimulateEvent(const AudioObjectPropertyAddress& address,
+                            std::vector<void*>& contexts) {
     // Include multiple addresses to ensure only a single device change event
     // occurs.
     const AudioObjectPropertyAddress addresses[] = {
@@ -67,35 +38,35 @@ class AudioDeviceListenerMacTest : public testing::Test {
         {kAudioHardwarePropertySleepingIsAllowed,
          kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster}};
 
-    OSStatus status = device_listener_->OnEvent(
-        kAudioObjectSystemObject, 2, addresses,
-        device_listener_->default_output_listener_.get());
-    if (status != noErr)
-      return false;
-
-    device_listener_->OnEvent(kAudioObjectSystemObject, 2, addresses,
-                              device_listener_->default_input_listener_.get());
-    if (status != noErr)
-      return false;
-
-    device_listener_->OnEvent(
-        kAudioObjectSystemObject, 2, addresses,
-        device_listener_->addition_removal_listener_.get());
-    return status == noErr;
+    for (void* context : contexts) {
+      OSStatus status = AudioDeviceListenerMac::SimulateEventForTesting(
+          kAudioObjectSystemObject, 2, addresses, context);
+      if (status != noErr)
+        return false;
+    }
+    return true;
   }
 
-  bool SimulateDefaultOutputDeviceChange() {
+  static std::vector<void*> GetPropertyListeners(
+      AudioDeviceListenerMac* device_listener) {
+    return device_listener->GetPropertyListenersForTesting();
+  }
+
+  static bool SimulateDefaultOutputDeviceChange(std::vector<void*>& contexts) {
     return SimulateEvent(
-        AudioDeviceListenerMac::kDefaultOutputDeviceChangePropertyAddress);
+        AudioDeviceListenerMac::kDefaultOutputDeviceChangePropertyAddress,
+        contexts);
   }
 
-  bool SimulateDefaultInputDeviceChange() {
+  static bool SimulateDefaultInputDeviceChange(std::vector<void*>& contexts) {
     return SimulateEvent(
-        AudioDeviceListenerMac::kDefaultInputDeviceChangePropertyAddress);
+        AudioDeviceListenerMac::kDefaultInputDeviceChangePropertyAddress,
+        contexts);
   }
 
-  bool SimulateDeviceAdditionRemoval() {
-    return SimulateEvent(AudioDeviceListenerMac::kDevicesPropertyAddress);
+  static bool SimulateDeviceAdditionRemoval(std::vector<void*>& contexts) {
+    return SimulateEvent(AudioDeviceListenerMac::kDevicesPropertyAddress,
+                         contexts);
   }
 
   MOCK_METHOD0(OnDeviceChange, void());
@@ -107,18 +78,57 @@ class AudioDeviceListenerMacTest : public testing::Test {
 
 // Simulate a device change event and ensure we get the right callback.
 TEST_F(AudioDeviceListenerMacTest, Events) {
-  ASSERT_TRUE(ListenerIsValid());
-  EXPECT_CALL(*this, OnDeviceChange()).Times(1);
-  ASSERT_TRUE(SimulateDefaultOutputDeviceChange());
-  base::RunLoop().RunUntilIdle();
+  auto device_listener = std::make_unique<AudioDeviceListenerMac>(
+      base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
+                          base::Unretained(this)),
+      /*monitor_default_input=*/true, /*monitor_addition_removal=*/true);
+
+  std::vector<void*> property_listeners =
+      GetPropertyListeners(device_listener.get());
+  // Default output, default input, addition-removal.
+  EXPECT_EQ(property_listeners.size(), 3u);
 
   EXPECT_CALL(*this, OnDeviceChange()).Times(1);
-  ASSERT_TRUE(SimulateDefaultInputDeviceChange());
+  ASSERT_TRUE(SimulateDefaultOutputDeviceChange(property_listeners));
   base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(this);
 
   EXPECT_CALL(*this, OnDeviceChange()).Times(1);
-  ASSERT_TRUE(SimulateDeviceAdditionRemoval());
+  ASSERT_TRUE(SimulateDefaultInputDeviceChange(property_listeners));
   base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_CALL(*this, OnDeviceChange()).Times(1);
+  ASSERT_TRUE(SimulateDeviceAdditionRemoval(property_listeners));
+  base::RunLoop().RunUntilIdle();
+
+  device_listener.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AudioDeviceListenerMacTest, EventsNotProcessedAfterLisneterDeletion) {
+  auto device_listener = std::make_unique<AudioDeviceListenerMac>(
+      base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
+                          base::Unretained(this)),
+      /*monitor_default_input=*/true, /*monitor_addition_removal=*/true);
+
+  std::vector<void*> property_listeners =
+      GetPropertyListeners(device_listener.get());
+  // Default output, default input, addition-removal.
+  EXPECT_EQ(property_listeners.size(), 3u);
+
+  // AudioDeviceListenerMac is destroyed, but property listener destructions are
+  // delayed. Notifications on them should still work, but should not result
+  // in OnDeviceChange call.
+  device_listener.reset();
+
+  EXPECT_CALL(*this, OnDeviceChange()).Times(0);
+  ASSERT_TRUE(SimulateDefaultOutputDeviceChange(property_listeners));
+  ASSERT_TRUE(SimulateDefaultInputDeviceChange(property_listeners));
+  ASSERT_TRUE(SimulateDeviceAdditionRemoval(property_listeners));
+
+  base::RunLoop().RunUntilIdle();
+  // Now all property listeners are destroyed.
 }
 
 }  // namespace media

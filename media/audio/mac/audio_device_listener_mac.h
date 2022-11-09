@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
 
@@ -39,37 +38,43 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
  private:
   friend class AudioDeviceListenerMacTest;
   class PropertyListener;
+
+  struct PropertyListenerDeleter {
+    void operator()(PropertyListener* listener);
+  };
+
+  using PropertyListenerPtr =
+      std::unique_ptr<PropertyListener, PropertyListenerDeleter>;
+
   static const AudioObjectPropertyAddress
       kDefaultOutputDeviceChangePropertyAddress;
   static const AudioObjectPropertyAddress
       kDefaultInputDeviceChangePropertyAddress;
   static const AudioObjectPropertyAddress kDevicesPropertyAddress;
 
-  static OSStatus OnEvent(AudioObjectID object,
-                          UInt32 num_addresses,
-                          const AudioObjectPropertyAddress addresses[],
-                          void* context);
-
-  bool AddPropertyListener(PropertyListener* property_listener);
-  void RemovePropertyListener(PropertyListener* property_listener);
+  void RunCallback();
   void OnDevicesAddedOrRemoved();
   void UpdateSourceListeners();
 
-  base::RepeatingClosure listener_cb_;
-  std::unique_ptr<PropertyListener> default_output_listener_;
-  std::unique_ptr<PropertyListener> default_input_listener_;
-  std::unique_ptr<PropertyListener> addition_removal_listener_;
+  std::vector<void*> GetPropertyListenersForTesting() const;
+
+  static OSStatus SimulateEventForTesting(
+      AudioObjectID object,
+      UInt32 num_addresses,
+      const AudioObjectPropertyAddress addresses[],
+      void* context);
+
+  const base::RepeatingClosure listener_cb_;
+  PropertyListenerPtr default_output_listener_;
+  PropertyListenerPtr default_input_listener_;
+  PropertyListenerPtr addition_removal_listener_;
 
   using SourceListenerKey = std::pair<AudioObjectID, bool>;
   using SourceListenerMap =
-      base::flat_map<SourceListenerKey, std::unique_ptr<PropertyListener>>;
+      base::flat_map<SourceListenerKey, PropertyListenerPtr>;
   SourceListenerMap source_listeners_;
 
-  // AudioDeviceListenerMac must be constructed and destructed on the same
-  // thread.
   THREAD_CHECKER(thread_checker_);
-
-  base::WeakPtrFactory<AudioDeviceListenerMac> weak_factory_;
 };
 
 }  // namespace media
