@@ -11,8 +11,10 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -20,6 +22,30 @@
 #include "ui/views/style/typography.h"
 
 namespace autofill {
+
+namespace {
+// Radio button view with an associated CardUnmaskChallengeOption.
+class ChallengeOptionRadioButton : public views::RadioButton {
+ public:
+  ChallengeOptionRadioButton(
+      CardUnmaskAuthenticationSelectionDialogController* controller,
+      const CardUnmaskChallengeOption challenge_option);
+
+  ~ChallengeOptionRadioButton() override;
+
+ private:
+  // The challenge option that the radio button corresponds to in the view.
+  CardUnmaskChallengeOption challenge_option_;
+};
+
+ChallengeOptionRadioButton::ChallengeOptionRadioButton(
+    CardUnmaskAuthenticationSelectionDialogController* controller,
+    CardUnmaskChallengeOption challenge_option)
+    : challenge_option_(challenge_option) {}
+
+ChallengeOptionRadioButton::~ChallengeOptionRadioButton() = default;
+
+}  // namespace
 
 CardUnmaskAuthenticationSelectionDialogViews::
     CardUnmaskAuthenticationSelectionDialogViews(
@@ -115,35 +141,66 @@ void CardUnmaskAuthenticationSelectionDialogViews::AddHeaderText() {
 }
 
 void CardUnmaskAuthenticationSelectionDialogViews::AddChallengeOptionsViews() {
-  for (const CardUnmaskChallengeOption& challenge_option :
-       controller_->GetChallengeOptions()) {
-    // Initializes the current challenge option.
-    auto* challenge_option_container =
-        AddChildView(std::make_unique<views::BoxLayoutView>());
-    challenge_option_container->SetOrientation(
-        views::BoxLayout::Orientation::kHorizontal);
-    challenge_option_container->SetBetweenChildSpacing(
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL));
+  auto* challenge_options_section =
+      AddChildView(std::make_unique<views::View>());
+  challenge_options_section
+      ->SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+      .AddColumn(views::LayoutAlignment::kStart,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
-    // Creates the left side image of the challenge option and adds it to the
-    // current challenge option.
-    challenge_option_container->AddChildView(std::make_unique<views::ImageView>(
-        controller_->GetAuthenticationModeIcon(challenge_option)));
+  for (size_t i = 0; i < controller_->GetChallengeOptions().size(); i++) {
+    static_cast<views::TableLayout*>(
+        challenge_options_section->GetLayoutManager())
+        ->AddRows(1, views::TableLayout::kFixedSize);
+    if (controller_->GetChallengeOptions().size() > 1) {
+      // When there are multiple challenge options, provide the user with radio
+      // buttons to select.
+      challenge_options_section->AddChildView(
+          std::make_unique<ChallengeOptionRadioButton>(
+              controller_, controller_->GetChallengeOptions()[i]));
+
+      // Only add padding if it isn't the last challenge option to display.
+      if (i < controller_->GetChallengeOptions().size() - 1) {
+        static_cast<views::TableLayout*>(
+            challenge_options_section->GetLayoutManager())
+            ->AddPaddingRow(views::TableLayout::kFixedSize,
+                            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+      }
+    } else {
+      // Instead of a radio button, create the left side image of the challenge
+      // option.
+      challenge_options_section->AddChildView(
+          std::make_unique<views::ImageView>(
+              controller_->GetAuthenticationModeIcon(
+                  controller_->GetChallengeOptions()[i])));
+    }
 
     // Creates the right side of the challenge option (label and information
     // such as masked phone number, masked email, etc...) and adds it to the
     // current challenge option.
-    auto* challenge_option_details = challenge_option_container->AddChildView(
+    auto* challenge_option_details = challenge_options_section->AddChildView(
         std::make_unique<views::BoxLayoutView>());
+    challenge_option_details->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
     challenge_option_details->SetOrientation(
         views::BoxLayout::Orientation::kVertical);
     challenge_option_details->AddChildView(std::make_unique<views::Label>(
-        controller_->GetAuthenticationModeLabel(challenge_option),
+        controller_->GetAuthenticationModeLabel(
+            controller_->GetChallengeOptions()[i]),
         ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
         views::style::STYLE_PRIMARY));
     challenge_option_details->AddChildView(std::make_unique<views::Label>(
-        challenge_option.challenge_info,
+        controller_->GetChallengeOptions()[i].challenge_info,
         ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
         views::style::STYLE_SECONDARY));
   }

@@ -628,17 +628,28 @@
     </message>
   </if>
   <!-- virtual cards related strings - end -->
-
+  <message name="IDS_AUTOFILL_CARD_AUTH_SELECTION_DIALOG_TITLE_MULTIPLE_OPTIONS" desc="Title for the credit card unmasking dialog for multiple challenge options. Used in VCN authentication, and once a challenge option is selected a new dialog is rendered where the user authenticates with the selected challenge option.">
+      Choose how you'll verify it's you
+  </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
       Your bank wants to confirm it's you.
   </message>
-  <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_TEXT_MESSAGE_LABEL" desc="The label for the text message authentication mode text shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+  <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_SECURITY_CODE" desc="The label for the 3 digit security code authentication option shown in the Autofill card unmask authentication selection dialog on Desktop. Only shown when there are multiple unmask options presented to the user. If selected, the user will be prompted to enter their security code.">
+    Enter your security code
+  </message>
+  <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_GET_TEXT_MESSAGE" desc="The label for the text message authentication mode option shown in the Autofill card unmask authentication selection dialog on Desktop. Only shown when there are multiple unmask options presented to the user. If selected, the user will be prompted to enter the text message they received on their phone.">
+    Get a text message
+  </message>
+  <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_TEXT_MESSAGE" desc="The label for the text message authentication mode text shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
     Text message
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CURRENT_INFO_NOT_SEEN_TEXT" desc="The current info not seen text shown in the Autofill card unmask authentication selection dialog on Desktop. It is the footer text on the dialog, and it instructs the user on what to do if they can not see their most up to date authentication information. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
-    Not seeing your current info? Please contact your bank to update it.
+    Not seeing your current info? Contact your bank to update it.
   </message>
-  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL" desc="The ok button label shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE" desc="The continue button label shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card. This label is used when there is more than one challenge option presented.">
+    Continue
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND" desc="The ok button label shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
     Send
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CVC_CHALLENGE_INFO" desc="Text that is shown for the security code challenge option in the Card Unmask Authentication Selection Dialog. This text lets the user know where the location of the security code is on their card. If the user selects this challenge option and then accepts the dialog, the user will be prompted to enter this security code. An example of a security code is the CVC on the back of the user's credit card.">

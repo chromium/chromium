@@ -121,7 +121,10 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnOkButtonClicked(
 
 std::u16string
 CardUnmaskAuthenticationSelectionDialogControllerImpl::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_V2);
+  return l10n_util::GetStringUTF16(
+      GetChallengeOptions().size() > 1
+          ? IDS_AUTOFILL_CARD_AUTH_SELECTION_DIALOG_TITLE_MULTIPLE_OPTIONS
+          : IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_V2);
 }
 
 std::u16string
@@ -156,8 +159,12 @@ std::u16string CardUnmaskAuthenticationSelectionDialogControllerImpl::
   switch (challenge_option.type) {
     case CardUnmaskChallengeOptionType::kSmsOtp:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AUTHENTICATION_MODE_TEXT_MESSAGE_LABEL);
+          GetChallengeOptions().size() > 1
+              ? IDS_AUTOFILL_AUTHENTICATION_MODE_GET_TEXT_MESSAGE
+              : IDS_AUTOFILL_AUTHENTICATION_MODE_TEXT_MESSAGE);
     case CardUnmaskChallengeOptionType::kCvc:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AUTHENTICATION_MODE_SECURITY_CODE);
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return std::u16string();
@@ -175,7 +182,9 @@ std::u16string
 CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOkButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL);
+      GetChallengeOptions().size() > 1
+          ? IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE
+          : IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND);
 }
 
 std::u16string
