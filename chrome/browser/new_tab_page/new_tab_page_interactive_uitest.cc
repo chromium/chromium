@@ -213,7 +213,9 @@ class NewTabPageTest : public InProcessBrowserTest,
 
 // TODO(crbug.com/1250156): NewTabPageTest.LandingPagePixelTest is flaky on
 // ubsan.
-#if defined(UNDEFINED_SANITIZER) && BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1377330): NewTabPageTest.LandingPagePixelTest is failing on
+// Win11 Tests x64.
+#if (defined(UNDEFINED_SANITIZER) && BUILDFLAG(IS_LINUX)) || BUILDFLAG(IS_WIN)
 #define MAYBE_LandingPagePixelTest DISABLED_LandingPagePixelTest
 #else
 #define MAYBE_LandingPagePixelTest LandingPagePixelTest
