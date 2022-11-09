@@ -7,6 +7,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -36,17 +37,20 @@ BASE_FEATURE(kUnpremultiplyAndDitherLowBitDepthTiles,
              "UnpremultiplyAndDitherLowBitDepthTiles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// With 32 bit pixels, this would mean less than 400kb per buffer. Much less
-// than required for, say, nHD.
-static const int kSmallScreenPixelThreshold = 1e5;
-bool IsSmallScreen(const gfx::Size& size) {
-  int area = 0;
-  if (!size.GetCheckedArea().AssignIfValid(&area))
-    return false;
-  return area < kSmallScreenPixelThreshold;
-}
-#endif
+// When enabled, scrollbar fade animations' delay and duration are scaled
+// according to `kFadeDelayScalingFactor` and `kFadeDurationScalingFactor`
+// below, respectively. For more context, please see https://crbug.com/1245964.
+BASE_FEATURE(kScaleScrollbarAnimationTiming,
+             "ScaleScrollbarAnimationTiming",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<double> kFadeDelayScalingFactor{
+    &kScaleScrollbarAnimationTiming, "fade_delay_scaling_factor",
+    /*default_value=*/1.0};
+
+constexpr base::FeatureParam<double> kFadeDurationScalingFactor{
+    &kScaleScrollbarAnimationTiming, "fade_duration_scaling_factor",
+    /*default_value=*/1.0};
 
 void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
   // Default settings that may be overridden below for specific platforms.
@@ -59,7 +63,24 @@ void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
     settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  if (base::FeatureList::IsEnabled(kScaleScrollbarAnimationTiming)) {
+    settings.scrollbar_fade_delay *= kFadeDelayScalingFactor.Get();
+    settings.scrollbar_fade_duration *= kFadeDurationScalingFactor.Get();
+  }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// With 32 bit pixels, this would mean less than 400kb per buffer. Much less
+// than required for, say, nHD.
+static const int kSmallScreenPixelThreshold = 1e5;
+bool IsSmallScreen(const gfx::Size& size) {
+  int area = 0;
+  if (!size.GetCheckedArea().AssignIfValid(&area))
+    return false;
+  return area < kSmallScreenPixelThreshold;
+}
+#endif
 
 }  // namespace
 
