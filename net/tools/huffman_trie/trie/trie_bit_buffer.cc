@@ -34,19 +34,33 @@ void TrieBitBuffer::WriteBits(uint32_t bits, uint8_t number_of_bits) {
 }
 
 void TrieBitBuffer::WritePosition(uint32_t position, int32_t* last_position) {
+  // NOTE: If either of these values are changed, the corresponding values in
+  // net::extras::PreloadDecoder::Decode must also be changed.
+  constexpr uint8_t kShortOffsetMaxLength = 7;
+  constexpr uint8_t kLongOffsetLengthLength = 4;
+  // The maximum number of lengths in the long form is
+  // 2^kLongOffsetLengthLength, which added to kShortOffsetMaxLength gives the
+  // maximum bit length for |position|.
+  constexpr uint8_t kMaxBitLength =
+      kShortOffsetMaxLength + (1 << kLongOffsetLengthLength);
+
   if (*last_position != -1) {
     int32_t delta = position - *last_position;
     DCHECK(delta > 0) << "delta position is not positive.";
 
     uint8_t number_of_bits = base::bits::Log2Floor(delta) + 1;
-    DCHECK(number_of_bits <= 7 + 15) << "positive position delta too large.";
+    DCHECK(number_of_bits <= kMaxBitLength)
+        << "positive position delta too large.";
 
-    if (number_of_bits <= 7) {
+    if (number_of_bits <= kShortOffsetMaxLength) {
       WriteBits(0, 1);
-      WriteBits(delta, 7);
+      WriteBits(delta, kShortOffsetMaxLength);
     } else {
       WriteBits(1, 1);
-      WriteBits(number_of_bits - 8, 4);
+      // The smallest length written when using the long offset form is one
+      // more than kShortOffsetMaxLength, and it is written as 0.
+      WriteBits(number_of_bits - kShortOffsetMaxLength - 1,
+                kLongOffsetLengthLength);
       WriteBits(delta, number_of_bits);
     }
 
