@@ -15,6 +15,7 @@
 #include "base/test/values_test_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -934,9 +935,18 @@ IN_PROC_BROWSER_TEST_F(
   expected_report.WaitForReport();
 }
 
+// TODO(crbug.com/1382603): Re-enable this test on Fuchsia when deflaked.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_MultipleImpressionsPerConversion_ReportSentWithAttribution \
+  DISABLED_MultipleImpressionsPerConversion_ReportSentWithAttribution
+#else
+#define MAYBE_MultipleImpressionsPerConversion_ReportSentWithAttribution \
+  MultipleImpressionsPerConversion_ReportSentWithAttribution
+#endif
+
 IN_PROC_BROWSER_TEST_F(
     AttributionsBrowserTest,
-    MultipleImpressionsPerConversion_ReportSentWithAttribution) {
+    MAYBE_MultipleImpressionsPerConversion_ReportSentWithAttribution) {
   ExpectedReportWaiter expected_report(
       GURL("https://b.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
