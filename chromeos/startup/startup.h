@@ -14,6 +14,10 @@
 
 namespace chromeos {
 
+// Return true if the current process was called with post-login params FD.
+COMPONENT_EXPORT(CHROMEOS_STARTUP)
+bool IsLaunchedWithPostLoginParams();
+
 // Reads the startup data. The FD to be read for the startup data should be
 // specified via the kCrosStartupDataFD command line flag. This function
 // consumes the FD, so this must not be called twice in a process.
@@ -31,6 +35,12 @@ absl::optional<std::string> ReadPostLoginData();
 COMPONENT_EXPORT(CHROMEOS_STARTUP)
 base::ScopedFD CreateMemFDFromBrowserInitParams(
     const crosapi::mojom::BrowserInitParamsPtr& data);
+
+// Creates a memory backed file containing the serialized |params|
+// for BrowserPostLoginParams, and returns its FD.
+COMPONENT_EXPORT(CHROMEOS_STARTUP)
+base::ScopedFD CreateMemFDFromBrowserPostLoginParams(
+    const crosapi::mojom::BrowserPostLoginParamsPtr& data);
 
 }  // namespace chromeos
 

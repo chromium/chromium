@@ -16,6 +16,9 @@ extern const char kCrosStartupDataFD[];
 COMPONENT_EXPORT(CHROMEOS_STARTUP_CONSTANTS)
 extern const char kCrosPostLoginDataFD[];
 
+COMPONENT_EXPORT(CHROMEOS_STARTUP_CONSTANTS)
+extern const char kCrosPostLoginLogFile[];
+
 }  // namespace switches
 }  // namespace chromeos
 

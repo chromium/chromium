@@ -36,12 +36,14 @@ void InitChromeLogging(const base::CommandLine& command_line,
 LoggingDestination DetermineLoggingDestination(
     const base::CommandLine& command_line);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Prepare the log file. If |new_log| is true, rotate the previous log file to
 // write new logs to the latest log file. Otherwise, we reuse the existing file
 // if exists.
 base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(UNIT_TEST)
 // Expose the following methods only for tests.
 
@@ -74,12 +76,12 @@ base::FilePath GetLogFileName(const base::CommandLine& command_line);
 // otherwise.
 bool DialogsAreSuppressed();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Inserts timestamp before file extension (if any) in the form
 // "_yymmdd-hhmmss".
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace logging
 
 #endif  // CHROME_COMMON_LOGGING_CHROME_H_

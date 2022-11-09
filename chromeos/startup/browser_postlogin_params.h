@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_STARTUP_BROWSER_POSTLOGIN_PARAMS_H_
 #define CHROMEOS_STARTUP_BROWSER_POSTLOGIN_PARAMS_H_
 
+#include "base/files/platform_file.h"
 #include "base/no_destructor.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 
@@ -23,8 +24,15 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserPostLoginParams {
   static void SetPostLoginParamsForTests(
       crosapi::mojom::BrowserPostLoginParamsPtr postlogin_params);
 
+  // Create Mem FD from `postlogin_params_`. This must be called after
+  // `postlogin_params_` has initialized by calling GetInstance().
+  static base::ScopedFD CreatePostLoginData();
+
  private:
   friend base::NoDestructor<BrowserPostLoginParams>;
+
+  // Needs to access |Get()|.
+  friend class BrowserParamsProxy;
 
   // Returns BrowserPostLoginParams which is passed from ash-chrome. On
   // launching lacros-chrome from ash-chrome, ash-chrome creates an anonymous
@@ -38,7 +46,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserPostLoginParams {
 
   BrowserPostLoginParams();
   ~BrowserPostLoginParams();
-
   // Parameters passed from ash-chrome.
   crosapi::mojom::BrowserPostLoginParamsPtr postlogin_params_;
 };

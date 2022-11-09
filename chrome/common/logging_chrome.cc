@@ -18,7 +18,7 @@
 #define IPC_MESSAGE_MACROS_LOG_ENABLED
 #include "content/public/common/content_ipc_logging.h"
 #define IPC_LOG_TABLE_ADD_ENTRY(msg_id, logger) \
-    content::RegisterIPCLogger(msg_id, logger)
+  content::RegisterIPCLogger(msg_id, logger)
 #include "chrome/common/all_messages.h"
 #endif
 
@@ -29,8 +29,8 @@
 #include "chrome/common/logging_chrome.h"
 
 #include <fstream>  // NOLINT
-#include <memory>  // NOLINT
-#include <string>  // NOLINT
+#include <memory>   // NOLINT
+#include <string>   // NOLINT
 
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -96,8 +96,10 @@ constexpr char kChronosHomeDir[] = "/home/chronos/user/";
 #if BUILDFLAG(IS_WIN)
 // {7FE69228-633E-4f06-80C1-527FEA23E3A7}
 const GUID kChromeTraceProviderName = {
-    0x7fe69228, 0x633e, 0x4f06,
-        { 0x80, 0xc1, 0x52, 0x7f, 0xea, 0x23, 0xe3, 0xa7 } };
+    0x7fe69228,
+    0x633e,
+    0x4f06,
+    {0x80, 0xc1, 0x52, 0x7f, 0xea, 0x23, 0xe3, 0xa7}};
 #endif
 
 // Assertion handler for logging errors that occur when dialogs are
@@ -175,7 +177,7 @@ LoggingDestination DetermineLoggingDestination(
   return kDefaultLoggingMode;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool RotateLogFile(const base::FilePath& target_path) {
   DCHECK(!target_path.empty());
   // If the old log file doesn't exist, do nothing.
@@ -220,7 +222,9 @@ bool RotateLogFile(const base::FilePath& target_path) {
 
   return true;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 base::FilePath SetUpSymlinkIfNeeded(const base::FilePath& symlink_path,
                                     bool new_log) {
   DCHECK(!symlink_path.empty());
@@ -305,8 +309,11 @@ base::FilePath GetSessionLogFile(const base::CommandLine& command_line) {
   return GetSessionLogDir(command_line)
       .Append(GetLogFileName(command_line).BaseName());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
 base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool supports_symlinks =
       !(target_path.IsAbsolute() &&
         base::StartsWith(target_path.value(), kChronosHomeDir));
@@ -317,6 +324,7 @@ base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
     // which supports symlinks.
     return SetUpSymlinkIfNeeded(target_path, new_log);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Chrome OS doesn't support symlinks on this file system, so that it uses
   // the rotation logic which doesn't use symlinks.
@@ -340,13 +348,12 @@ base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
 
   return bare_path;
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void InitChromeLogging(const base::CommandLine& command_line,
                        OldFileDeletionState delete_old_log_file) {
-  DCHECK(!chrome_logging_initialized_) <<
-    "Attempted to initialize logging when it was already initialized.";
+  DCHECK(!chrome_logging_initialized_)
+      << "Attempted to initialize logging when it was already initialized.";
   LoggingDestination logging_dest = DetermineLoggingDestination(command_line);
   LogLockingState log_locking_state = LOCK_LOG_FILE;
   base::FilePath log_path;
@@ -391,7 +398,8 @@ void InitChromeLogging(const base::CommandLine& command_line,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!success) {
     DPLOG(ERROR) << "Unable to initialize logging to " << log_path.value()
-                << " (which should be a link to " << target_path.value() << ")";
+                 << " (which should be a link to " << target_path.value()
+                 << ")";
     RemoveSymlinkAndLog(log_path, target_path);
     chrome_logging_failed_ = true;
     return;
@@ -502,20 +510,17 @@ bool DialogsAreSuppressed() {
   return dialogs_are_suppressed_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp) {
   base::Time::Exploded time_deets;
   timestamp.UTCExplode(&time_deets);
-  std::string suffix = base::StringPrintf("_%02d%02d%02d-%02d%02d%02d",
-                                          time_deets.year,
-                                          time_deets.month,
-                                          time_deets.day_of_month,
-                                          time_deets.hour,
-                                          time_deets.minute,
-                                          time_deets.second);
+  std::string suffix =
+      base::StringPrintf("_%02d%02d%02d-%02d%02d%02d", time_deets.year,
+                         time_deets.month, time_deets.day_of_month,
+                         time_deets.hour, time_deets.minute, time_deets.second);
   return base_path.InsertBeforeExtensionASCII(suffix);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace logging

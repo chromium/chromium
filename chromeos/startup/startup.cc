@@ -43,6 +43,11 @@ absl::optional<std::string> ReadStartupDataFromCmdlineSwitch(
 
 }  // namespace
 
+bool IsLaunchedWithPostLoginParams() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(switches::kCrosPostLoginDataFD);
+}
+
 absl::optional<std::string> ReadStartupData() {
   return ReadStartupDataFromCmdlineSwitch(switches::kCrosStartupDataFD);
 }
@@ -64,6 +69,30 @@ base::ScopedFD CreateMemFDFromBrowserInitParams(
 
   if (!base::WriteFileDescriptor(fd.get(), serialized)) {
     LOG(ERROR) << "Failed to dump the serialized BrowserInitParams";
+    return base::ScopedFD();
+  }
+
+  if (lseek(fd.get(), 0, SEEK_SET) < 0) {
+    PLOG(ERROR) << "Failed to reset the FD position";
+    return base::ScopedFD();
+  }
+
+  return fd;
+}
+
+base::ScopedFD CreateMemFDFromBrowserPostLoginParams(
+    const crosapi::mojom::BrowserPostLoginParamsPtr& data) {
+  std::vector<uint8_t> serialized =
+      crosapi::mojom::BrowserPostLoginParams::Serialize(&data);
+
+  base::ScopedFD fd(memfd_create("postlogin_data", 0));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Failed to create a memory backed file";
+    return base::ScopedFD();
+  }
+
+  if (!base::WriteFileDescriptor(fd.get(), serialized)) {
+    LOG(ERROR) << "Failed to dump the serialized BrowserPostLoginParams";
     return base::ScopedFD();
   }
 

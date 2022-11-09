@@ -39,6 +39,12 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserInitParams {
  private:
   friend base::NoDestructor<BrowserInitParams>;
 
+  // Needs to access |disable_crosapi_for_testing_|.
+  friend class ScopedDisableCrosapiForTesting;
+
+  // Needs to access |Get()|.
+  friend class BrowserParamsProxy;
+
   // Returns BrowserInitParams which is passed from ash-chrome. On launching
   // lacros-chrome from ash-chrome, ash-chrome creates a memory backed file,
   // serializes the BrowserInitParams to it, and the forked/executed
@@ -51,12 +57,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserInitParams {
 
   BrowserInitParams();
   ~BrowserInitParams();
-
-  // Needs to access |disable_crosapi_for_testing_|.
-  friend class ScopedDisableCrosapiForTesting;
-
-  // Needs to access |Get()|.
-  friend class BrowserParamsProxy;
 
   // Tests will set this to |true| which will make all crosapi functionality
   // unavailable. Should be set from ScopedDisableCrosapiForTesting always.

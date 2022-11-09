@@ -902,8 +902,8 @@ enum OpenUrlFrom {
 //
 // IMPORTANT NOTE: These parameters are accessed via the BrowserParamsProxy
 // wrapper class. Please update the methods of that class when adding new
-// parameters here. If a new parameter is added and its value is only known after
-// the user has logged in, please update BrowserPostLoginParams as well.
+// parameters here. If a new parameter is added and its value is only known
+// after the user has logged in, please update BrowserPostLoginParams as well.
 //
 // Next version: 55
 // Next id: 55
