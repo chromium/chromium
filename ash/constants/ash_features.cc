@@ -1695,6 +1695,11 @@ BASE_FEATURE(kProjectorViewerUseSecondaryAccount,
              "ProjectorViewerUseSecondaryAccount",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to show toast notification when account switches.
+BASE_FEATURE(kProjectorAccountSwitchNotification,
+             "ProjectorAccountSwitchNotification",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 BASE_FEATURE(kQuickDim, "QuickDim", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2961,6 +2966,10 @@ bool IsQsRevampEnabled() {
 
 bool IsProjectorViewerUseSecondaryAccountEnabled() {
   return base::FeatureList::IsEnabled(kProjectorViewerUseSecondaryAccount);
+}
+
+bool IsProjectorAccountSwitchNotificationEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorAccountSwitchNotification);
 }
 
 bool IsQuickDimEnabled() {
