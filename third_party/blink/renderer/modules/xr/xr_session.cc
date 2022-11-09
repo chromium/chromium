@@ -62,8 +62,8 @@
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -136,7 +136,7 @@ absl::optional<device::mojom::XRSessionFeature> MapReferenceSpaceTypeToFeature(
   return absl::nullopt;
 }
 
-std::unique_ptr<TransformationMatrix> getPoseMatrix(
+std::unique_ptr<gfx::Transform> getPoseMatrix(
     const device::mojom::blink::VRPosePtr& pose) {
   if (!pose)
     return nullptr;
@@ -145,7 +145,7 @@ std::unique_ptr<TransformationMatrix> getPoseMatrix(
       device::Pose(pose->position.value_or(gfx::Point3F()),
                    pose->orientation.value_or(gfx::Quaternion()));
 
-  return std::make_unique<TransformationMatrix>(device_pose.ToTransform());
+  return std::make_unique<gfx::Transform>(device_pose.ToTransform());
 }
 
 absl::optional<device::mojom::blink::EntityTypeForHitTest>
@@ -622,7 +622,7 @@ ScriptPromise XRSession::requestReferenceSpace(
 
 ScriptPromise XRSession::CreateAnchorHelper(
     ScriptState* script_state,
-    const blink::TransformationMatrix& native_origin_from_anchor,
+    const gfx::Transform& native_origin_from_anchor,
     const device::mojom::blink::XRNativeOriginInformationPtr&
         native_origin_information,
     absl::optional<uint64_t> maybe_plane_id,
@@ -793,7 +793,7 @@ ScriptPromise XRSession::requestHitTestSource(
   // device (for example any space containing origin-offset).
   // Null checks not needed since native origin wouldn't be set if options_init
   // or space() were null.
-  TransformationMatrix native_from_offset =
+  gfx::Transform native_from_offset =
       options_init->space()->NativeFromOffsetMatrix();
 
   if (RuntimeEnabledFeatures::WebXRHitTestEntityTypesEnabled() &&
@@ -1909,7 +1909,7 @@ bool XRSession::CanEnableAntiAliasing() const {
   return enable_anti_aliasing_;
 }
 
-absl::optional<TransformationMatrix> XRSession::GetMojoFrom(
+absl::optional<gfx::Transform> XRSession::GetMojoFrom(
     device::mojom::blink::XRReferenceSpaceType space_type) const {
   if (!CanReportPoses()) {
     DVLOG(2) << __func__ << ": cannot report poses, returning nullopt";
@@ -1920,7 +1920,7 @@ absl::optional<TransformationMatrix> XRSession::GetMojoFrom(
     case device::mojom::blink::XRReferenceSpaceType::kViewer:
       if (!mojo_from_viewer_) {
         if (sensorless_session_) {
-          return TransformationMatrix();
+          return gfx::Transform();
         }
 
         return absl::nullopt;
@@ -1930,11 +1930,11 @@ absl::optional<TransformationMatrix> XRSession::GetMojoFrom(
     case device::mojom::blink::XRReferenceSpaceType::kLocal:
       // TODO(https://crbug.com/1070380): This assumes that local space is
       // equivalent to mojo space! Remove the assumption once the bug is fixed.
-      return TransformationMatrix();
+      return gfx::Transform();
     case device::mojom::blink::XRReferenceSpaceType::kUnbounded:
       // TODO(https://crbug.com/1070380): This assumes that unbounded space is
       // equivalent to mojo space! Remove the assumption once the bug is fixed.
-      return TransformationMatrix();
+      return gfx::Transform();
     case device::mojom::blink::XRReferenceSpaceType::kLocalFloor:
     case device::mojom::blink::XRReferenceSpaceType::kBoundedFloor:
       // Information about -floor spaces is currently stored elsewhere (in

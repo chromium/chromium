@@ -69,9 +69,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/view_transition_shared_element_id.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
@@ -258,7 +258,7 @@ class FragmentPaintPropertyTreeBuilder {
       bool (*needs_property)(const LayoutObject&, CompositingReasons),
       void (*compute_matrix)(const ComputedStyle& style,
                              const PhysicalSize& size,
-                             TransformationMatrix& matrix),
+                             gfx::Transform& matrix),
       CompositingReasons active_animation_reason,
       CompositingReasons compositing_reasons_for_property,
       CompositorElementIdNamespace compositor_namespace,
@@ -1105,8 +1105,8 @@ static TransformPaintPropertyNode::TransformAndOrigin TransformAndOriginState(
     bool has_transform_animation_compositing_reasons,
     void (*compute_matrix)(const ComputedStyle& style,
                            const PhysicalSize& size,
-                           TransformationMatrix& matrix)) {
-  TransformationMatrix matrix;
+                           gfx::Transform& matrix)) {
+  gfx::Transform matrix;
   compute_matrix(box.StyleRef(), size, matrix);
   // If we are running transform animation on compositor, we should
   // disable 2d translation optimization to ensure that the compositor
@@ -1125,7 +1125,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
     bool (*needs_property)(const LayoutObject&, CompositingReasons),
     void (*compute_matrix)(const ComputedStyle& style,
                            const PhysicalSize& size,
-                           TransformationMatrix& matrix),
+                           gfx::Transform& matrix),
     CompositingReasons active_animation_reason,
     CompositingReasons compositing_reasons_for_property,
     CompositorElementIdNamespace compositor_namespace,
@@ -1252,7 +1252,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTranslate() {
   UpdateIndividualTransform(
       &NeedsTranslate,
       [](const ComputedStyle& style, const PhysicalSize& size,
-         TransformationMatrix& matrix) {
+         gfx::Transform& matrix) {
         if (style.Translate())
           style.Translate()->Apply(matrix, gfx::SizeF(size));
       },
@@ -1269,7 +1269,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateRotate() {
   UpdateIndividualTransform(
       &NeedsRotate,
       [](const ComputedStyle& style, const PhysicalSize& size,
-         TransformationMatrix& matrix) {
+         gfx::Transform& matrix) {
         if (style.Rotate())
           style.Rotate()->Apply(matrix, gfx::SizeF(size));
       },
@@ -1285,7 +1285,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScale() {
   UpdateIndividualTransform(
       &NeedsScale,
       [](const ComputedStyle& style, const PhysicalSize& size,
-         TransformationMatrix& matrix) {
+         gfx::Transform& matrix) {
         if (style.Scale())
           style.Scale()->Apply(matrix, gfx::SizeF(size));
       },
@@ -1301,7 +1301,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOffset() {
   UpdateIndividualTransform(
       &NeedsOffset,
       [](const ComputedStyle& style, const PhysicalSize& size,
-         TransformationMatrix& matrix) {
+         gfx::Transform& matrix) {
         style.ApplyTransform(
             matrix, size.ToLayoutSize(),
             ComputedStyle::kExcludeTransformOperations,
@@ -1322,7 +1322,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
   UpdateIndividualTransform(
       &NeedsTransform,
       [](const ComputedStyle& style, const PhysicalSize& size,
-         TransformationMatrix& matrix) {
+         gfx::Transform& matrix) {
         style.ApplyTransform(
             matrix, size.ToLayoutSize(),
             ComputedStyle::kIncludeTransformOperations,
@@ -2266,7 +2266,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
       // The perspective node must not flatten (else nothing will get
       // perspective), but it should still extend the rendering context as
       // most transform nodes do.
-      TransformationMatrix matrix;
+      gfx::Transform matrix;
       matrix.ApplyPerspectiveDepth(style.UsedPerspective());
       TransformPaintPropertyNode::State state{
           TransformPaintPropertyNode::TransformAndOrigin(
@@ -4264,7 +4264,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
   auto transform_and_origin = TransformAndOriginState(
       box, size, transform->HasActiveTransformAnimation(),
       [](const ComputedStyle& style, const PhysicalSize& size,
-         TransformationMatrix& matrix) {
+         gfx::Transform& matrix) {
         style.ApplyTransform(
             matrix, size.ToLayoutSize(),
             ComputedStyle::kIncludeTransformOperations,

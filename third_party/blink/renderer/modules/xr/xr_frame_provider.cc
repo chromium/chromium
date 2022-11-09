@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 #include "ui/display/display.h"
 

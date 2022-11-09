@@ -4713,9 +4713,8 @@ void LocalFrameView::MapLocalToRemoteMainFrame(
   // This is the top-level frame, so no mapping necessary.
   if (frame_->IsOutermostMainFrame())
     return;
-  transform_state.ApplyTransform(
-      TransformationMatrix(GetFrame().RemoteMainFrameTransform()),
-      TransformState::kAccumulateTransform);
+  transform_state.ApplyTransform(GetFrame().RemoteMainFrameTransform(),
+                                 TransformState::kAccumulateTransform);
 }
 
 LayoutUnit LocalFrameView::CaretWidth() const {

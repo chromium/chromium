@@ -16,7 +16,7 @@ namespace blink {
 XRTargetRaySpace::XRTargetRaySpace(XRSession* session, XRInputSource* source)
     : XRSpace(session), input_source_(source) {}
 
-absl::optional<TransformationMatrix> XRTargetRaySpace::MojoFromNative() const {
+absl::optional<gfx::Transform> XRTargetRaySpace::MojoFromNative() const {
   auto mojo_from_viewer = session()->GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType::kViewer);
   switch (input_source_->TargetRayMode()) {

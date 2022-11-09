@@ -103,7 +103,7 @@ RotateAroundOriginTransformOperation::RotateAroundOriginTransformOperation(
       origin_y_(origin_y) {}
 
 void RotateAroundOriginTransformOperation::Apply(
-    TransformationMatrix& transform,
+    gfx::Transform& transform,
     const gfx::SizeF& box_size) const {
   transform.Translate(origin_x_, origin_y_);
   RotateTransformOperation::Apply(transform, box_size);

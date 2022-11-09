@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/skew_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_operations.h"
@@ -134,7 +133,7 @@ void ToGfxTransformOperations(
       }
       case TransformOperation::kRotateAroundOrigin:
       case TransformOperation::kInterpolated: {
-        TransformationMatrix m;
+        gfx::Transform m;
         operation->Apply(m, box_size);
         out_transform_operations->AppendMatrix(m);
         break;

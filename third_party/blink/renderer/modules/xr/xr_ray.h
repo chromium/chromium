@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
@@ -39,7 +39,7 @@ class XRRay final : public ScriptWrappable {
 
   // Calling |RawMatrix()| is equivalent to calling |matrix()| w.r.t. the data
   // that will be returned, the only difference is the returned type.
-  TransformationMatrix RawMatrix();
+  gfx::Transform RawMatrix();
 
   static XRRay* Create(DOMPointInit* origin,
                        XRRayDirectionInit* direction,
@@ -50,7 +50,7 @@ class XRRay final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  void Set(const TransformationMatrix& matrix, ExceptionState& exception_state);
+  void Set(const gfx::Transform& matrix, ExceptionState& exception_state);
   void Set(gfx::Point3F origin,
            gfx::Vector3dF direction,
            ExceptionState& exception_state);
@@ -58,7 +58,7 @@ class XRRay final : public ScriptWrappable {
   Member<DOMPointReadOnly> origin_;
   Member<DOMPointReadOnly> direction_;
   Member<DOMFloat32Array> matrix_;
-  std::unique_ptr<TransformationMatrix> raw_matrix_;
+  std::unique_ptr<gfx::Transform> raw_matrix_;
 };
 
 }  // namespace blink

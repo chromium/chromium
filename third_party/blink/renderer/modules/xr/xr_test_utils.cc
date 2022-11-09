@@ -6,7 +6,7 @@
 
 namespace blink {
 
-Vector<double> GetMatrixDataForTest(const TransformationMatrix& matrix) {
+Vector<double> GetMatrixDataForTest(const gfx::Transform& matrix) {
   Vector<double> data(16);
   matrix.GetColMajor(data.data());
   return data;

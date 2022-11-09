@@ -12,7 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/xr/xr_hand.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -24,7 +24,7 @@ class XRJointSpace : public XRSpace {
  public:
   XRJointSpace(XRHand* hand,
                XRSession* session,
-               std::unique_ptr<TransformationMatrix> mojo_from_joint,
+               std::unique_ptr<gfx::Transform> mojo_from_joint,
                device::mojom::blink::XRHandJoint joint,
                float radius,
                device::mojom::XRHandedness handedness);
@@ -34,13 +34,13 @@ class XRJointSpace : public XRSpace {
   const String jointName() const;
   device::mojom::XRHandedness handedness() const { return handedness_; }
 
-  absl::optional<TransformationMatrix> MojoFromNative() const override;
+  absl::optional<gfx::Transform> MojoFromNative() const override;
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override;
   bool EmulatedPosition() const override;
   XRPose* getPose(const XRSpace* other_space) const override;
 
-  void UpdateTracking(std::unique_ptr<TransformationMatrix> mojo_from_joint,
+  void UpdateTracking(std::unique_ptr<gfx::Transform> mojo_from_joint,
                       float radius);
 
   bool IsStationary() const override;
@@ -53,7 +53,7 @@ class XRJointSpace : public XRSpace {
 
  private:
   Member<XRHand> hand_;
-  std::unique_ptr<TransformationMatrix> mojo_from_joint_space_;
+  std::unique_ptr<gfx::Transform> mojo_from_joint_space_;
   const device::mojom::blink::XRHandJoint joint_;
   float radius_;
   const device::mojom::XRHandedness handedness_;

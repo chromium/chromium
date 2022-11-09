@@ -102,12 +102,12 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -322,8 +322,8 @@ void PaintLayer::UpdateLayerPositionRecursive() {
     child->UpdateLayerPositionRecursive();
 }
 
-void PaintLayer::UpdateTransformationMatrix() {
-  if (TransformationMatrix* transform = Transform()) {
+void PaintLayer::UpdateTransform() {
+  if (gfx::Transform* transform = Transform()) {
     LayoutBox* box = GetLayoutBox();
     DCHECK(box);
     transform->MakeIdentity();
@@ -335,8 +335,9 @@ void PaintLayer::UpdateTransformationMatrix() {
   }
 }
 
-void PaintLayer::UpdateTransform(const ComputedStyle* old_style,
-                                 const ComputedStyle& new_style) {
+void PaintLayer::UpdateTransformAfterStyleChange(
+    const ComputedStyle* old_style,
+    const ComputedStyle& new_style) {
   // It's possible for the old and new style transform data to be equivalent
   // while HasTransform() differs, as it checks a number of conditions aside
   // from just the matrix, including but not limited to animation state.
@@ -350,12 +351,12 @@ void PaintLayer::UpdateTransform(const ComputedStyle* old_style,
 
   if (has_transform != had_transform) {
     if (has_transform)
-      EnsureRareData().transform = std::make_unique<TransformationMatrix>();
+      EnsureRareData().transform = std::make_unique<gfx::Transform>();
     else
       rare_data_->transform.reset();
   }
 
-  UpdateTransformationMatrix();
+  UpdateTransform();
 
   if (had_3d_transform != Has3DTransform())
     MarkAncestorChainForFlagsUpdate();
@@ -364,10 +365,10 @@ void PaintLayer::UpdateTransform(const ComputedStyle* old_style,
     frame_view->SetNeedsUpdateGeometries();
 }
 
-TransformationMatrix PaintLayer::CurrentTransform() const {
-  if (TransformationMatrix* transform = Transform())
+gfx::Transform PaintLayer::CurrentTransform() const {
+  if (gfx::Transform* transform = Transform())
     return *transform;
-  return TransformationMatrix();
+  return gfx::Transform();
 }
 
 void PaintLayer::ConvertFromFlowThreadToVisualBoundingBoxInAncestor(
@@ -1638,15 +1639,13 @@ PaintLayer* PaintLayer::HitTestLayer(
   }
 
   // Check for hit test on backface if backface-visibility is 'hidden'
-  if (local_transform_state && layout_object.StyleRef().BackfaceVisibility() ==
-                                   EBackfaceVisibility::kHidden) {
-    STACK_UNINITIALIZED TransformationMatrix inverted_matrix =
-        local_transform_state->AccumulatedTransform().InverseOrIdentity();
-    // If the z-vector of the matrix is negative, the back is facing towards the
-    // viewer. TODO(crbug.com/1359528): Use something like
-    // gfx::Transform::IsBackfaceVisible().
-    if (inverted_matrix.rc(2, 2) < 0)
-      return nullptr;
+  if (local_transform_state &&
+      layout_object.StyleRef().BackfaceVisibility() ==
+          EBackfaceVisibility::kHidden &&
+      local_transform_state->AccumulatedTransform()
+          .InverseOrIdentity()
+          .IsBackFaceVisible()) {
+    return nullptr;
   }
 
   // The following are used for keeping track of the z-depth of the hit point of
@@ -2453,7 +2452,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   if (!old_style || old_style->GetPosition() != new_style.GetPosition())
     MarkAncestorChainForFlagsUpdate();
 
-  UpdateTransform(old_style, new_style);
+  UpdateTransformAfterStyleChange(old_style, new_style);
   UpdateFilters(old_style, new_style);
   UpdateBackdropFilters(old_style, new_style);
   UpdateClipPath(old_style, new_style);

@@ -280,7 +280,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return rare_data_ ? rare_data_->enclosing_pagination_layer : nullptr;
   }
 
-  void UpdateTransformationMatrix();
+  void UpdateTransform();
 
   bool HasVisibleContent() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
@@ -749,8 +749,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void SetNeedsDescendantDependentFlagsUpdate();
 
-  void UpdateTransform(const ComputedStyle* old_style,
-                       const ComputedStyle& new_style);
+  void UpdateTransformAfterStyleChange(const ComputedStyle* old_style,
+                                       const ComputedStyle& new_style);
 
   void UpdatePaginationRecursive(bool needs_pagination_update = false);
   void ClearPaginationRecursive();

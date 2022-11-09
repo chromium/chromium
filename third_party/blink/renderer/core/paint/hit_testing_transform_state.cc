@@ -53,7 +53,7 @@ void HitTestingTransformState::ApplyTransform(
 }
 
 void HitTestingTransformState::Flatten() {
-  TransformationMatrix inverse_transform;
+  gfx::Transform inverse_transform;
   if (accumulated_transform_.GetInverse(&inverse_transform)) {
     last_planar_point_ = inverse_transform.ProjectPoint(last_planar_point_);
     last_planar_quad_ = inverse_transform.ProjectQuad(last_planar_quad_);

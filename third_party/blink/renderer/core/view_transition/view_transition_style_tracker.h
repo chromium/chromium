@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/view_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 class PaintLayer;
@@ -42,8 +42,7 @@ class ViewTransitionStyleTracker
   // Properties that transition on container elements.
   struct ContainerProperties {
     ContainerProperties() = default;
-    ContainerProperties(const LayoutSize& size,
-                        const TransformationMatrix& matrix)
+    ContainerProperties(const LayoutSize& size, const gfx::Transform& matrix)
         : border_box_size_in_css_space(size), snapshot_matrix(matrix) {}
 
     bool operator==(const ContainerProperties& other) const {
@@ -59,7 +58,7 @@ class ViewTransitionStyleTracker
 
     // Transforms a point from local space into the snapshot viewport. For
     // details of the snapshot viewport, see README.md.
-    TransformationMatrix snapshot_matrix;
+    gfx::Transform snapshot_matrix;
   };
 
   explicit ViewTransitionStyleTracker(Document& document);

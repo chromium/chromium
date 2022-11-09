@@ -22,8 +22,8 @@
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 
 #include "third_party/blink/renderer/platform/geometry/blend.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "ui/gfx/geometry/quaternion.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 

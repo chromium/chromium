@@ -57,8 +57,7 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
  private:
   OperationType GetType() const override { return kInterpolated; }
 
-  void Apply(TransformationMatrix&,
-             const gfx::SizeF& border_box_size) const override;
+  void Apply(gfx::Transform&, const gfx::SizeF& border_box_size) const override;
 
   scoped_refptr<TransformOperation> Accumulate(
       const TransformOperation&) override {

@@ -10,8 +10,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -33,7 +33,7 @@ class XRPlane : public ScriptWrappable {
 
   XRSpace* planeSpace() const;
 
-  absl::optional<TransformationMatrix> MojoFromObject() const;
+  absl::optional<gfx::Transform> MojoFromObject() const;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 

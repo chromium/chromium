@@ -30,7 +30,7 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Accumulate(
   DCHECK(other_op.IsSameType(*this));
   const auto& other = To<MatrixTransformOperation>(other_op);
 
-  TransformationMatrix result = matrix_;
+  gfx::Transform result = matrix_;
   if (!result.Accumulate(other.matrix_))
     return nullptr;
 
@@ -43,11 +43,11 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Blend(
     bool blend_to_identity) {
   DCHECK(!from || CanBlendWith(*from));
 
-  TransformationMatrix from_t;
+  gfx::Transform from_t;
   if (from)
     from_t = To<MatrixTransformOperation>(from)->matrix_;
 
-  TransformationMatrix to_t = matrix_;
+  gfx::Transform to_t = matrix_;
   if (blend_to_identity)
     std::swap(from_t, to_t);
 
@@ -59,7 +59,7 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Blend(
 
 scoped_refptr<TransformOperation> MatrixTransformOperation::Zoom(
     double factor) {
-  TransformationMatrix m = matrix_;
+  gfx::Transform m = matrix_;
   m.Zoom(factor);
   return Create(m);
 }

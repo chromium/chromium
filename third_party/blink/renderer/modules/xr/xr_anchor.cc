@@ -69,7 +69,7 @@ device::mojom::blink::XRNativeOriginInformationPtr XRAnchor::NativeOrigin()
       this->id());
 }
 
-absl::optional<TransformationMatrix> XRAnchor::MojoFromObject() const {
+absl::optional<gfx::Transform> XRAnchor::MojoFromObject() const {
   DVLOG(3) << __func__ << ": id_=" << id_;
 
   if (!mojo_from_anchor_) {
@@ -77,7 +77,7 @@ absl::optional<TransformationMatrix> XRAnchor::MojoFromObject() const {
     return absl::nullopt;
   }
 
-  return TransformationMatrix(mojo_from_anchor_->ToTransform());
+  return mojo_from_anchor_->ToTransform();
 }
 
 void XRAnchor::Delete() {

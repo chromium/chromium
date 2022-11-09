@@ -1836,7 +1836,7 @@ LogicalSize NGBlockNode::GetReplacedSizeOverrideIfAny(
   return LogicalSize();
 }
 
-absl::optional<TransformationMatrix> NGBlockNode::GetTransformForChildFragment(
+absl::optional<gfx::Transform> NGBlockNode::GetTransformForChildFragment(
     const NGPhysicalBoxFragment& child_fragment,
     PhysicalSize size) const {
   const auto* child_layout_object = child_fragment.GetLayoutObject();
@@ -1845,7 +1845,7 @@ absl::optional<TransformationMatrix> NGBlockNode::GetTransformForChildFragment(
   if (!child_layout_object->ShouldUseTransformFromContainer(box_))
     return absl::nullopt;
 
-  TransformationMatrix transform;
+  gfx::Transform transform;
   child_layout_object->GetTransformFromContainer(box_, PhysicalOffset(),
                                                  transform, &size);
 

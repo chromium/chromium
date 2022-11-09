@@ -7,9 +7,9 @@
 
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -101,7 +101,7 @@ class PLATFORM_EXPORT FloatClipRect {
   // Assumes that the transform always makes the clip rect not tight. The caller
   // should use MoveBy() to keep tightness if the transform is known to be
   // identity or a 2d translation.
-  void Map(const TransformationMatrix& matrix) {
+  void Map(const gfx::Transform& matrix) {
     is_tight_ = false;
     if (is_infinite_)
       return;

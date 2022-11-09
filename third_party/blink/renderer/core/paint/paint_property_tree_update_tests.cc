@@ -690,7 +690,7 @@ TEST_P(PaintPropertyTreeUpdateTest, PerspectiveOriginUpdatesOnSizeChanges) {
   )HTML");
 
   auto* perspective = GetLayoutObjectByElementId("perspective");
-  TransformationMatrix matrix;
+  gfx::Transform matrix;
   matrix.ApplyPerspectiveDepth(100);
   EXPECT_EQ(
       matrix,
@@ -852,7 +852,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
   }
 
   // These emulate WebViewImpl::SetDeviceEmulationTransform().
-  GetChromeClient().SetDeviceEmulationTransform(TransformationMatrix());
+  GetChromeClient().SetDeviceEmulationTransform(gfx::Transform());
   visual_viewport.SetNeedsPaintPropertyUpdate();
 
   UpdateAllLifecyclePhasesForTest();
@@ -1657,7 +1657,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
       target->FirstFragment().PaintProperties()->Transform();
   ASSERT_TRUE(transform_node);
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
-  EXPECT_EQ(TransformationMatrix(), transform_node->Matrix());
+  EXPECT_EQ(gfx::Transform(), transform_node->Matrix());
   EXPECT_EQ(gfx::Point3F(50, 50, 0), transform_node->Origin());
   // Change of animation status should update PaintArtifactCompositor.
   auto* paint_artifact_compositor =

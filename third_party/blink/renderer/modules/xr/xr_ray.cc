@@ -37,7 +37,7 @@ XRRay::XRRay() {
 
 XRRay::XRRay(XRRigidTransform* transform, ExceptionState& exception_state) {
   DOMFloat32Array* m = transform->matrix();
-  Set(DOMFloat32ArrayToTransformationMatrix(m), exception_state);
+  Set(DOMFloat32ArrayToTransform(m), exception_state);
 }
 
 XRRay::XRRay(DOMPointInit* origin,
@@ -67,8 +67,7 @@ XRRay::XRRay(DOMPointInit* origin,
   Set(o, d, exception_state);
 }
 
-void XRRay::Set(const TransformationMatrix& matrix,
-                ExceptionState& exception_state) {
+void XRRay::Set(const gfx::Transform& matrix, ExceptionState& exception_state) {
   gfx::Point3F origin = matrix.MapPoint(gfx::Point3F(0, 0, 0));
   gfx::Point3F direction_point = matrix.MapPoint(gfx::Point3F(0, 0, -1));
   Set(origin, direction_point - origin, exception_state);
@@ -135,7 +134,7 @@ DOMFloat32Array* XRRay::matrix() {
     // (0,0,0) with direction (0,0,-1) into ray originating at |origin_| with
     // direction |direction_|.
 
-    TransformationMatrix matrix;
+    gfx::Transform matrix;
 
     const gfx::Vector3dF desired_ray_direction(
         static_cast<float>(direction_->x()),
@@ -180,7 +179,7 @@ DOMFloat32Array* XRRay::matrix() {
     // Step 8: Set ray’s internal matrix to matrix
     matrix_ = transformationMatrixToDOMFloat32Array(matrix);
     if (!raw_matrix_) {
-      raw_matrix_ = std::make_unique<TransformationMatrix>(matrix);
+      raw_matrix_ = std::make_unique<gfx::Transform>(matrix);
     } else {
       *raw_matrix_ = matrix;
     }
@@ -190,7 +189,7 @@ DOMFloat32Array* XRRay::matrix() {
   return matrix_;
 }
 
-TransformationMatrix XRRay::RawMatrix() {
+gfx::Transform XRRay::RawMatrix() {
   matrix();
 
   DCHECK(raw_matrix_);

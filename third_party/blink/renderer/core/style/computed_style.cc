@@ -1376,7 +1376,7 @@ void ComputedStyle::LoadDeferredImages(Document& document) const {
 }
 
 void ComputedStyle::ApplyTransform(
-    TransformationMatrix& result,
+    gfx::Transform& result,
     const LayoutSize& border_box_size,
     ApplyTransformOperations apply_operations,
     ApplyTransformOrigin apply_origin,
@@ -1389,7 +1389,7 @@ void ComputedStyle::ApplyTransform(
 }
 
 void ComputedStyle::ApplyTransform(
-    TransformationMatrix& result,
+    gfx::Transform& result,
     const gfx::RectF& bounding_box,
     ApplyTransformOperations apply_operations,
     ApplyTransformOrigin apply_origin,
@@ -1449,11 +1449,10 @@ bool ComputedStyle::HasFilters() const {
   return FilterInternal().Get() && !FilterInternal()->operations_.IsEmpty();
 }
 
-void ComputedStyle::ApplyMotionPathTransform(
-    float origin_x,
-    float origin_y,
-    const gfx::RectF& bounding_box,
-    TransformationMatrix& transform) const {
+void ComputedStyle::ApplyMotionPathTransform(float origin_x,
+                                             float origin_y,
+                                             const gfx::RectF& bounding_box,
+                                             gfx::Transform& transform) const {
   // TODO(ericwilligers): crbug.com/638055 Apply offset-position.
   if (!OffsetPath()) {
     return;

@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -28,13 +28,12 @@ XRImageTrackingResult::XRImageTrackingResult(
   }
 }
 
-absl::optional<TransformationMatrix> XRImageTrackingResult::MojoFromObject()
-    const {
+absl::optional<gfx::Transform> XRImageTrackingResult::MojoFromObject() const {
   if (!mojo_from_this_) {
     return absl::nullopt;
   }
 
-  return TransformationMatrix(mojo_from_this_->ToTransform());
+  return mojo_from_this_->ToTransform();
 }
 
 XRSpace* XRImageTrackingResult::imageSpace() const {

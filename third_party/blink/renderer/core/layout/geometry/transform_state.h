@@ -32,11 +32,11 @@
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -81,8 +81,8 @@ class CORE_EXPORT TransformState {
         direction_(mapping_direction) {}
 
   // Accumulate a transform but don't map any points directly.
-  TransformState(TransformDirection mapping_direction)
-      : accumulated_transform_(std::make_unique<TransformationMatrix>()),
+  explicit TransformState(TransformDirection mapping_direction)
+      : accumulated_transform_(std::make_unique<gfx::Transform>()),
         force_accumulating_transform_(true),
         map_point_(false),
         map_quad_(false),
@@ -108,7 +108,7 @@ class CORE_EXPORT TransformState {
             TransformAccumulation accumulate = kFlattenTransform);
   void ApplyTransform(const AffineTransform& transform_from_container,
                       TransformAccumulation = kFlattenTransform);
-  void ApplyTransform(const TransformationMatrix& transform_from_container,
+  void ApplyTransform(const gfx::Transform& transform_from_container,
                       TransformAccumulation = kFlattenTransform);
   void Flatten();
 
@@ -121,19 +121,19 @@ class CORE_EXPORT TransformState {
   gfx::QuadF MappedQuad() const;
 
   // Return the accumulated transform.
-  const TransformationMatrix& AccumulatedTransform() const;
+  const gfx::Transform& AccumulatedTransform() const;
 
  private:
   void TranslateTransform(const PhysicalOffset&);
   void TranslateMappedCoordinates(const PhysicalOffset&);
-  void FlattenWithTransform(const TransformationMatrix&);
+  void FlattenWithTransform(const gfx::Transform&);
   void ApplyAccumulatedOffset();
 
   gfx::PointF last_planar_point_;
   gfx::QuadF last_planar_quad_;
 
   // We only allocate the transform if we need to
-  std::unique_ptr<TransformationMatrix> accumulated_transform_;
+  std::unique_ptr<gfx::Transform> accumulated_transform_;
   PhysicalOffset accumulated_offset_;
   bool force_accumulating_transform_;
   bool map_point_, map_quad_;

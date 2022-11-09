@@ -30,8 +30,8 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/transform.h"
 
 #include <algorithm>
 

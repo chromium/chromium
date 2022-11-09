@@ -7,9 +7,9 @@
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 namespace {
@@ -94,8 +94,8 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           height: %3fpx;
         }
       })CSS",
-      ComputedStyleUtils::ValueForTransformationMatrix(
-          source_properties.snapshot_matrix, 1, false)
+      ComputedStyleUtils::ValueForTransform(source_properties.snapshot_matrix,
+                                            1, false)
           ->CssText()
           .Utf8()
           .c_str(),
@@ -144,8 +144,8 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
       )CSS",
       properties.border_box_size_in_css_space.Width().ToFloat(),
       properties.border_box_size_in_css_space.Height().ToFloat(),
-      ComputedStyleUtils::ValueForTransformationMatrix(
-          properties.snapshot_matrix, 1, false)
+      ComputedStyleUtils::ValueForTransform(properties.snapshot_matrix, 1,
+                                            false)
           ->CssText()
           .Utf8()
           .c_str(),

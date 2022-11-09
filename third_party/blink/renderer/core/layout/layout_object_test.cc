@@ -1408,7 +1408,7 @@ TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
   auto* ancestor = GetLayoutBoxByElementId("ancestor");
   auto* child = GetLayoutBoxByElementId("child");
 
-  TransformationMatrix transform;
+  gfx::Transform transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
   absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
@@ -1428,7 +1428,7 @@ TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
   auto* ancestor =
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("ancestor"));
 
-  TransformationMatrix transform;
+  gfx::Transform transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
   absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);

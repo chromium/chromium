@@ -27,19 +27,18 @@
 namespace blink {
 
 namespace {
-std::unique_ptr<TransformationMatrix> TryGetTransformationMatrix(
+std::unique_ptr<gfx::Transform> TryGetTransform(
     const absl::optional<gfx::Transform>& transform) {
   if (transform) {
-    return std::make_unique<TransformationMatrix>(*transform);
+    return std::make_unique<gfx::Transform>(*transform);
   }
 
   return nullptr;
 }
 
-std::unique_ptr<TransformationMatrix> TryGetTransformationMatrix(
-    const TransformationMatrix* other) {
+std::unique_ptr<gfx::Transform> TryGetTransform(const gfx::Transform* other) {
   if (other) {
-    return std::make_unique<TransformationMatrix>(*other);
+    return std::make_unique<gfx::Transform>(*other);
   }
 
   return nullptr;
@@ -93,7 +92,7 @@ XRInputSource* XRInputSource::CreateOrUpdateFrom(
 
     if (updated_source->state_.is_visible) {
       updated_source->input_from_pointer_ =
-          TryGetTransformationMatrix(desc->input_from_pointer);
+          TryGetTransform(desc->input_from_pointer);
     }
 
     updated_source->state_.profiles.clear();
@@ -103,8 +102,7 @@ XRInputSource* XRInputSource::CreateOrUpdateFrom(
   }
 
   if (updated_source->state_.is_visible) {
-    updated_source->mojo_from_input_ =
-        TryGetTransformationMatrix(state->mojo_from_input);
+    updated_source->mojo_from_input_ = TryGetTransform(state->mojo_from_input);
   }
 
   if (updated_source->state_.is_visible) {
@@ -136,10 +134,8 @@ XRInputSource::XRInputSource(const XRInputSource& other)
       grip_space_(MakeGarbageCollected<XRGripSpace>(other.session_, this)),
       gamepad_(other.gamepad_),
       hand_(other.hand_),
-      mojo_from_input_(
-          TryGetTransformationMatrix(other.mojo_from_input_.get())),
-      input_from_pointer_(
-          TryGetTransformationMatrix(other.input_from_pointer_.get())) {}
+      mojo_from_input_(TryGetTransform(other.mojo_from_input_.get())),
+      input_from_pointer_(TryGetTransform(other.input_from_pointer_.get())) {}
 
 const String XRInputSource::handedness() const {
   switch (state_.handedness) {
@@ -217,9 +213,9 @@ bool XRInputSource::InvalidatesSameObject(
 }
 
 void XRInputSource::SetInputFromPointer(
-    const TransformationMatrix* input_from_pointer) {
+    const gfx::Transform* input_from_pointer) {
   if (state_.is_visible) {
-    input_from_pointer_ = TryGetTransformationMatrix(input_from_pointer);
+    input_from_pointer_ = TryGetTransform(input_from_pointer);
   }
 }
 
@@ -258,14 +254,14 @@ void XRInputSource::UpdateHand(
   }
 }
 
-absl::optional<TransformationMatrix> XRInputSource::MojoFromInput() const {
+absl::optional<gfx::Transform> XRInputSource::MojoFromInput() const {
   if (!mojo_from_input_.get()) {
     return absl::nullopt;
   }
   return *(mojo_from_input_.get());
 }
 
-absl::optional<TransformationMatrix> XRInputSource::InputFromPointer() const {
+absl::optional<gfx::Transform> XRInputSource::InputFromPointer() const {
   if (!input_from_pointer_.get()) {
     return absl::nullopt;
   }

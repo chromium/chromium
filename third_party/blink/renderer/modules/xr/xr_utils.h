@@ -24,9 +24,9 @@ class WebGLRenderingContextBase;
 
 DOMFloat32Array* transformationMatrixToDOMFloat32Array(const gfx::Transform&);
 
-gfx::Transform DOMFloat32ArrayToTransformationMatrix(DOMFloat32Array*);
+gfx::Transform DOMFloat32ArrayToTransform(DOMFloat32Array*);
 
-gfx::Transform WTFFloatVectorToTransformationMatrix(const Vector<float>&);
+gfx::Transform WTFFloatVectorToTransform(const Vector<float>&);
 
 DOMPointReadOnly* makeNormalizedQuaternion(double x,
                                            double y,

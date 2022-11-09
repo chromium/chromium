@@ -20,8 +20,8 @@ class XRViewerPose final : public XRPose {
 
  public:
   explicit XRViewerPose(XRFrame*,
-                        const TransformationMatrix&,
-                        const TransformationMatrix&,
+                        const gfx::Transform&,
+                        const gfx::Transform&,
                         bool emulated_position);
   ~XRViewerPose() override = default;
 

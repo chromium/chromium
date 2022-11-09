@@ -10,8 +10,8 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 class PointF;
@@ -50,7 +50,7 @@ class CORE_EXPORT DevToolsEmulator final
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
   // transform to be used as a result.
-  TransformationMatrix EnableDeviceEmulation(const DeviceEmulationParams&);
+  gfx::Transform EnableDeviceEmulation(const DeviceEmulationParams&);
   // Disables emulation.
   void DisableDeviceEmulation();
 
@@ -68,17 +68,17 @@ class CORE_EXPORT DevToolsEmulator final
   // outermost main frame. Returns an updated emulation transform for a
   // viewport override, and should only be called when HasViewportOverride() is
   // true.
-  TransformationMatrix OutermostMainFrameScrollOrScaleChanged();
+  gfx::Transform OutermostMainFrameScrollOrScaleChanged();
 
   // Returns the scale used to convert incoming input events while emulating
   // device metics.
   float InputEventsScaleForEmulation();
 
-  TransformationMatrix ForceViewportForTesting(const gfx::PointF& position,
-                                               float scale) {
+  gfx::Transform ForceViewportForTesting(const gfx::PointF& position,
+                                         float scale) {
     return ForceViewport(position, scale);
   }
-  TransformationMatrix ResetViewportForTesting() { return ResetViewport(); }
+  gfx::Transform ResetViewportForTesting() { return ResetViewport(); }
 
  private:
   void EnableMobileEmulation();
@@ -87,16 +87,16 @@ class CORE_EXPORT DevToolsEmulator final
   // Enables viewport override and returns the emulation transform to be used.
   // The |position| is in CSS pixels, and |scale| is relative to a page scale of
   // 1.0.
-  TransformationMatrix ForceViewport(const gfx::PointF& position, float scale);
+  gfx::Transform ForceViewport(const gfx::PointF& position, float scale);
   // Disables viewport override and returns the emulation transform to be used.
-  TransformationMatrix ResetViewport();
+  gfx::Transform ResetViewport();
 
   // Returns the original device scale factor when overridden by DevTools, or
   // deviceScaleFactor() otherwise.
   float CompositorDeviceScaleFactor() const;
 
-  void ApplyViewportOverride(TransformationMatrix*);
-  TransformationMatrix ComputeRootLayerTransform();
+  void ApplyViewportOverride(gfx::Transform*);
+  gfx::Transform ComputeRootLayerTransform();
 
   WebViewImpl* web_view_;
 

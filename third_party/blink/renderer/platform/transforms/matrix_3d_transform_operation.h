@@ -35,11 +35,11 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
     : public TransformOperation {
  public:
   static scoped_refptr<Matrix3DTransformOperation> Create(
-      const TransformationMatrix& matrix) {
+      const gfx::Transform& matrix) {
     return base::AdoptRef(new Matrix3DTransformOperation(matrix));
   }
 
-  TransformationMatrix Matrix() const { return matrix_; }
+  gfx::Transform Matrix() const { return matrix_; }
 
   static bool IsMatchingOperationType(OperationType type) {
     return type == kMatrix3D;
@@ -55,9 +55,8 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
  private:
   OperationType GetType() const override { return kMatrix3D; }
 
-  void Apply(TransformationMatrix& transform,
-             const gfx::SizeF&) const override {
-    transform.PreConcat(TransformationMatrix(matrix_));
+  void Apply(gfx::Transform& transform, const gfx::SizeF&) const override {
+    transform.PreConcat(matrix_);
   }
 
   scoped_refptr<TransformOperation> Accumulate(
@@ -76,10 +75,10 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
     return matrix_.IsIdentityOrTranslation();
   }
 
-  explicit Matrix3DTransformOperation(const TransformationMatrix& mat)
+  explicit Matrix3DTransformOperation(const gfx::Transform& mat)
       : matrix_(mat) {}
 
-  TransformationMatrix matrix_;
+  gfx::Transform matrix_;
 };
 
 template <>

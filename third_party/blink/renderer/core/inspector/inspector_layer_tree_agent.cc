@@ -52,13 +52,13 @@
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/picture_snapshot.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -220,9 +220,7 @@ static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
 
   if (!transform.IsIdentity()) {
     auto transform_array = std::make_unique<protocol::Array<double>>(16);
-    // TODO(1359528): This conversion will disappear when we merge
-    // TransformationMatrix and gfx::Transform.
-    TransformationMatrix(transform).GetColMajor(transform_array->data());
+    transform.GetColMajor(transform_array->data());
     layer_object->setTransform(std::move(transform_array));
     // FIXME: rename these to setTransformOrigin*
     // TODO(pdr): Now that BlinkGenPropertyTrees has launched, we can remove

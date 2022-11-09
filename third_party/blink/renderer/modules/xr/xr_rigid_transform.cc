@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -26,9 +26,8 @@ bool IsComponentValid(DOMPointInit* point) {
 }  // anonymous namespace
 
 // makes a deep copy of transformationMatrix
-XRRigidTransform::XRRigidTransform(
-    const TransformationMatrix& transformationMatrix)
-    : matrix_(std::make_unique<TransformationMatrix>(transformationMatrix)) {
+XRRigidTransform::XRRigidTransform(const gfx::Transform& transformationMatrix)
+    : matrix_(std::make_unique<gfx::Transform>(transformationMatrix)) {
   DecomposeMatrix();
 }
 
@@ -128,12 +127,12 @@ XRRigidTransform* XRRigidTransform::inverse() {
   return inverse_;
 }
 
-TransformationMatrix XRRigidTransform::InverseTransformMatrix() {
+gfx::Transform XRRigidTransform::InverseTransformMatrix() {
   EnsureInverse();
   return inverse_->TransformMatrix();
 }
 
-TransformationMatrix XRRigidTransform::TransformMatrix() {
+gfx::Transform XRRigidTransform::TransformMatrix() {
   EnsureMatrix();
   return *matrix_;
 }
@@ -149,8 +148,7 @@ void XRRigidTransform::EnsureMatrix() {
     decomp.translate[1] = position_->y();
     decomp.translate[2] = position_->z();
 
-    matrix_ = std::make_unique<TransformationMatrix>(
-        TransformationMatrix::Compose(decomp));
+    matrix_ = std::make_unique<gfx::Transform>(gfx::Transform::Compose(decomp));
   }
 }
 
@@ -160,7 +158,7 @@ void XRRigidTransform::EnsureInverse() {
   // the caching is safe.
   if (!inverse_) {
     EnsureMatrix();
-    TransformationMatrix inverse;
+    gfx::Transform inverse;
     if (!matrix_->GetInverse(&inverse)) {
       DLOG(ERROR) << "Matrix was not invertible: " << matrix_->ToString();
       // TODO(https://crbug.com/1258611): Define behavior for non-invertible

@@ -165,15 +165,14 @@ class CORE_EXPORT ComputedStyleUtils {
     kUsePixelSnappedBox,
   };
 
-  // Serializes a TransformationMatrix into a matrix() or matrix3d() transform
+  // Serializes a gfx::Transform into a matrix() or matrix3d() transform
   // function value. If force_matrix3d is true, it will always give a matrix3d
   // value (for serializing a matrix3d in a transform list), otherwise it
   // will give a matrix() where possible (for serializing matrix in transform
   // lists or resolved transformation matrices).
-  static CSSFunctionValue* ValueForTransformationMatrix(
-      const TransformationMatrix&,
-      float zoom,
-      bool force_matrix3d);
+  static CSSFunctionValue* ValueForTransform(const gfx::Transform&,
+                                             float zoom,
+                                             bool force_matrix3d);
   // Values unreperesentable in CSS will be converted to an equivalent matrix()
   // value. The box_size parameter is used for deferred, layout-dependent
   // interpolations and is not needed in the absence of animations.

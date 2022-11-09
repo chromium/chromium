@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
@@ -38,6 +37,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 

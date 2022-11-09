@@ -89,14 +89,14 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
 
   session_->LogGetPose();
 
-  absl::optional<TransformationMatrix> native_from_mojo =
+  absl::optional<gfx::Transform> native_from_mojo =
       reference_space->NativeFromMojo();
   if (!native_from_mojo) {
     DVLOG(1) << __func__ << ": native_from_mojo is invalid";
     return nullptr;
   }
 
-  TransformationMatrix ref_space_from_mojo =
+  gfx::Transform ref_space_from_mojo =
       reference_space->OffsetFromNativeMatrix();
   ref_space_from_mojo.PreConcat(*native_from_mojo);
 
@@ -106,7 +106,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
     return nullptr;
   }
 
-  absl::optional<TransformationMatrix> offset_space_from_viewer =
+  absl::optional<gfx::Transform> offset_space_from_viewer =
       reference_space->OffsetFromViewer();
 
   // Can only update an XRViewerPose's views with an invertible matrix.
@@ -242,7 +242,7 @@ XRPose* XRFrame::getPose(XRSpace* space,
   // identity & we can skip the rest of the logic. The pose is not emulated.
   if (space == basespace) {
     DVLOG(3) << __func__ << ": addresses match, returning identity";
-    return MakeGarbageCollected<XRPose>(TransformationMatrix{}, false);
+    return MakeGarbageCollected<XRPose>(gfx::Transform{}, false);
   }
 
   // If the native origins match, the pose between the spaces is fixed and
@@ -375,7 +375,7 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
 
 ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
     ScriptState* script_state,
-    const blink::TransformationMatrix& native_origin_from_anchor,
+    const gfx::Transform& native_origin_from_anchor,
     XRSpace* space,
     absl::optional<uint64_t> maybe_plane_id,
     ExceptionState& exception_state) {

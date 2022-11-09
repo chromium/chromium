@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -54,7 +54,7 @@ class CORE_EXPORT IntersectionGeometry {
     float zoom;
     // The root object's content rect in the root object's own coordinate system
     PhysicalRect local_root_rect;
-    TransformationMatrix root_to_document_transform;
+    gfx::Transform root_to_document_transform;
   };
 
   struct CachedRects {

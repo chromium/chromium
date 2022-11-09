@@ -10,7 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -30,7 +30,7 @@ class XRAnchor : public ScriptWrappable {
 
   XRSpace* anchorSpace(ExceptionState& exception_state) const;
 
-  absl::optional<TransformationMatrix> MojoFromObject() const;
+  absl::optional<gfx::Transform> MojoFromObject() const;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 

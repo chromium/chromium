@@ -569,8 +569,8 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeWithOutsetForRasterEffects) {
 }
 
 TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChange) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix());
-  auto t2 = CreateTransform(*t1, TransformationMatrix());
+  auto t1 = CreateTransform(t0(), gfx::Transform());
+  auto t2 = CreateTransform(*t1, gfx::Transform());
 
   FloatRoundedRect::Radii radii(gfx::SizeF(1, 2), gfx::SizeF(2, 3),
                                 gfx::SizeF(3, 4), gfx::SizeF(4, 5));
@@ -603,8 +603,8 @@ TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChange) {
 // path by letting the clip's LocalTransformSpace be the same as the chunk's
 // transform.
 TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChangeNoInvalidation) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix());
-  auto t2 = CreateTransform(*t1, TransformationMatrix());
+  auto t1 = CreateTransform(t0(), gfx::Transform());
+  auto t2 = CreateTransform(*t1, gfx::Transform());
 
   FloatRoundedRect::Radii radii(gfx::SizeF(1, 2), gfx::SizeF(2, 3),
                                 gfx::SizeF(3, 4), gfx::SizeF(4, 5));
@@ -727,8 +727,8 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChange) {
   // Change chunk_transform by tiny difference, which should be ignored.
   invalidator_.SetTracksRasterInvalidations(true);
 
-  auto matrix_with_tiny_change = [](const TransformationMatrix matrix) {
-    TransformationMatrix m = matrix;
+  auto matrix_with_tiny_change = [](const gfx::Transform matrix) {
+    gfx::Transform m = matrix;
     m.Translate(0.0000001, -0.0000001);
     m.Scale(1.0000001);
     m.Rotate(0.0000001);
@@ -805,8 +805,8 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChangeScale) {
 }
 
 TEST_P(RasterInvalidatorTest, EffectLocalTransformSpaceChange) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix());
-  auto t2 = CreateTransform(*t1, TransformationMatrix());
+  auto t1 = CreateTransform(t0(), gfx::Transform());
+  auto t2 = CreateTransform(*t1, gfx::Transform());
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(20);
   auto e1 = CreateFilterEffect(e0(), *t1, &c0(), filter);
@@ -843,8 +843,8 @@ TEST_P(RasterInvalidatorTest, EffectLocalTransformSpaceChange) {
 // invalidation path by letting the effect's LocalTransformSpace be the same as
 // the chunk's transform.
 TEST_P(RasterInvalidatorTest, EffectLocalTransformSpaceChangeNoInvalidation) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix());
-  auto t2 = CreateTransform(*t1, TransformationMatrix());
+  auto t1 = CreateTransform(t0(), gfx::Transform());
+  auto t2 = CreateTransform(*t1, gfx::Transform());
   // This setup is different from EffectLocalTransformSpaceChange.
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(20);

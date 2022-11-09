@@ -169,7 +169,7 @@ GeometryMapper::SourceToDestinationProjectionInternal(
     if (&destination == source_cache.plane_root()) {
       return Translation2DOrMatrix(source_cache.to_plane_root());
     }
-    TransformationMatrix matrix;
+    gfx::Transform matrix;
     destination_cache.ApplyFromPlaneRoot(matrix);
     source_cache.ApplyToPlaneRoot(matrix);
     return Translation2DOrMatrix(matrix);
@@ -193,7 +193,7 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   const auto& root = TransformPaintPropertyNode::Root();
   if (&source == &root)
     return Translation2DOrMatrix(destination_cache.projection_from_screen());
-  TransformationMatrix matrix;
+  gfx::Transform matrix;
   destination_cache.ApplyProjectionFromScreen(matrix);
   source_cache.ApplyToScreen(matrix);
   matrix.Flatten();

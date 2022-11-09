@@ -8,8 +8,7 @@
 
 namespace blink {
 
-XRPose::XRPose(const TransformationMatrix& pose_model_matrix,
-               bool emulated_position)
+XRPose::XRPose(const gfx::Transform& pose_model_matrix, bool emulated_position)
     : transform_(MakeGarbageCollected<XRRigidTransform>(pose_model_matrix)),
       emulated_position_(emulated_position) {}
 

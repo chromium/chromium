@@ -12,8 +12,8 @@
 namespace blink {
 
 XRViewerPose::XRViewerPose(XRFrame* frame,
-                           const TransformationMatrix& ref_space_from_mojo,
-                           const TransformationMatrix& ref_space_from_viewer,
+                           const gfx::Transform& ref_space_from_mojo,
+                           const gfx::Transform& ref_space_from_viewer,
                            bool emulated_position)
     : XRPose(ref_space_from_viewer, emulated_position) {
   DVLOG(3) << __func__ << ": emulatedPosition()=" << emulatedPosition();

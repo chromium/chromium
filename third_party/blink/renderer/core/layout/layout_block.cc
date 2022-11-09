@@ -220,7 +220,7 @@ static bool BorderOrPaddingLogicalDimensionChanged(
 // <text>. Squared to avoid computing the square root. See
 // SVGLayoutSupport::CalculateScreenFontSizeScalingFactor().
 static double ComputeSquaredLocalFontSizeScalingFactor(
-    const TransformationMatrix* transform) {
+    const gfx::Transform* transform) {
   if (!transform)
     return 1;
   const auto affine = AffineTransform::FromTransform(*transform);

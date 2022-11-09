@@ -943,7 +943,7 @@ TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
   auto* div_properties =
       div->GetLayoutObject()->FirstFragment().PaintProperties();
   ASSERT_TRUE(div_properties);
-  EXPECT_EQ(TransformationMatrix::MakeTranslation(100, 0),
+  EXPECT_EQ(gfx::Transform::MakeTranslation(100, 0),
             div_properties->Transform()->Matrix());
   EXPECT_TRUE(div_properties->Transform()->HasActiveTransformAnimation());
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
@@ -968,7 +968,7 @@ TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
   // Continue to run the lifecycle to paint and ensure that updates are
   // performed.
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(TransformationMatrix::MakeTranslation(400, 0),
+  EXPECT_EQ(gfx::Transform::MakeTranslation(400, 0),
             div_properties->Transform()->Matrix());
   EXPECT_EQ(400.0f, transform_node->local.To2dTranslation().x());
   EXPECT_TRUE(transform_node->transform_changed);

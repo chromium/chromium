@@ -274,7 +274,7 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
   }
 
   // Apply any transforms to the overflow.
-  if (absl::optional<TransformationMatrix> transform =
+  if (absl::optional<gfx::Transform> transform =
           node_.GetTransformForChildFragment(child_fragment, size_)) {
     overflow =
         PhysicalRect::EnclosingRect(transform->MapRect(gfx::RectF(overflow)));

@@ -180,7 +180,7 @@ class PLATFORM_EXPORT AffineTransform {
     return result;
   }
 
-  // The 2d version of TransformationMatrix::Zoom().
+  // The 2d version of gfx::Transform::Zoom().
   AffineTransform& Zoom(double zoom_factor);
 
   // If |as_matrix| is true, the transform is returned as a matrix in row-major

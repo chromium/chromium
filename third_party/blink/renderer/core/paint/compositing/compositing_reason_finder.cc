@@ -107,7 +107,7 @@ CompositingReasons CompositingReasonsFor3DTransform(
     // In theory this should operate on fragment sizes, but using the box size
     // is probably good enough for a use counter.
     auto& box = To<LayoutBox>(layout_object);
-    TransformationMatrix matrix;
+    gfx::Transform matrix;
     style.ApplyTransform(matrix, box.Size(),
                          ComputedStyle::kIncludeTransformOperations,
                          ComputedStyle::kExcludeTransformOrigin,

@@ -26,8 +26,8 @@ static void AssertDOMPointsEqualForTest(const DOMPointReadOnly* a,
   ASSERT_NEAR(a->w(), b->w(), kEpsilon);
 }
 
-static void AssertMatricesEqualForTest(const TransformationMatrix& a,
-                                       const TransformationMatrix& b) {
+static void AssertMatricesEqualForTest(const gfx::Transform& a,
+                                       const gfx::Transform& b) {
   const Vector<double> a_data = GetMatrixDataForTest(a);
   const Vector<double> b_data = GetMatrixDataForTest(b);
   for (int i = 0; i < 16; ++i) {
@@ -76,8 +76,8 @@ TEST(XRRigidTransformTest, Compose) {
 
 TEST(XRRigidTransformTest, Decompose) {
   auto matrix =
-      TransformationMatrix::ColMajor(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-                                     0.0, -1.0, 0.0, 0.0, 1.0, 2.0, 3.0, 1.0);
+      gfx::Transform::ColMajor(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+                               -1.0, 0.0, 0.0, 1.0, 2.0, 3.0, 1.0);
   XRRigidTransform transform(matrix);
   const DOMPointReadOnly expected_position(1.0, 2.0, 3.0, 1.0);
   const DOMPointReadOnly expected_orientation(0.7071068, 0.0, 0.0, 0.7071068);

@@ -105,7 +105,7 @@ bool DOMMatrixReadOnly::ValidateAndFixup(DOMMatrixInit* other,
 DOMMatrixReadOnly* DOMMatrixReadOnly::Create(
     ExecutionContext* execution_context,
     ExceptionState& exception_state) {
-  return MakeGarbageCollected<DOMMatrixReadOnly>(TransformationMatrix());
+  return MakeGarbageCollected<DOMMatrixReadOnly>(gfx::Transform());
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::Create(
@@ -123,7 +123,7 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::Create(
       }
 
       DOMMatrixReadOnly* matrix =
-          MakeGarbageCollected<DOMMatrixReadOnly>(TransformationMatrix());
+          MakeGarbageCollected<DOMMatrixReadOnly>(gfx::Transform());
       matrix->SetMatrixValueFromString(execution_context, init->GetAsString(),
                                        exception_state);
       return matrix;
@@ -324,8 +324,7 @@ DOMPoint* DOMMatrixReadOnly::transformPoint(const DOMPointInit* point) {
   return DOMPoint::Create(x, y, z, w);
 }
 
-DOMMatrixReadOnly::DOMMatrixReadOnly(const TransformationMatrix& matrix,
-                                     bool is2d)
+DOMMatrixReadOnly::DOMMatrixReadOnly(const gfx::Transform& matrix, bool is2d)
     : matrix_(matrix), is2d_(is2d) {}
 
 NotShared<DOMFloat32Array> DOMMatrixReadOnly::toFloat32Array() const {

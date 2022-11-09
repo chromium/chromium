@@ -35,10 +35,10 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 namespace {
@@ -227,7 +227,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
     element_data->container_properties.emplace_back(
         LayoutSize(transition_state_element.border_box_size_in_css_space),
-        TransformationMatrix(transition_state_element.viewport_matrix));
+        transition_state_element.viewport_matrix);
     element_data->old_snapshot_id = transition_state_element.snapshot_id;
 
     element_data->element_index = transition_state_element.paint_order;
@@ -790,8 +790,7 @@ void ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       continue;
     }
 
-    TransformationMatrix snapshot_matrix =
-        layout_object->LocalToAbsoluteTransform();
+    gfx::Transform snapshot_matrix = layout_object->LocalToAbsoluteTransform();
 
     if (document_->GetLayoutView()
             ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
@@ -1382,7 +1381,7 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
             1 / document_->GetLayoutView()->StyleRef().EffectiveZoom());
         builder.AddAnimationAndBlending(
             view_transition_name,
-            ContainerProperties(layout_view_size, TransformationMatrix()));
+            ContainerProperties(layout_view_size, gfx::Transform()));
       }
     }
   }

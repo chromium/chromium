@@ -90,7 +90,7 @@ void GeometryMapperTransformCache::Update(
     root_of_2d_translation_ = &node;
     to_2d_translation_root_ = gfx::Vector2dF();
 
-    TransformationMatrix local = node.MatrixWithOriginApplied();
+    gfx::Transform local = node.MatrixWithOriginApplied();
     bool is_plane_root = !local.IsFlat() || !local.IsInvertible();
     if (is_plane_root) {
       // We don't need plane root transform because the plane root is the same

@@ -75,11 +75,11 @@ void XRHand::updateFromHandTrackingData(
   for (const auto& hand_joint : state->hand_joint_data) {
     unsigned joint_index = static_cast<unsigned>(hand_joint->joint);
 
-    std::unique_ptr<TransformationMatrix> mojo_from_joint = nullptr;
+    std::unique_ptr<gfx::Transform> mojo_from_joint = nullptr;
     if (hand_joint->mojo_from_joint) {
       new_poses = true;
       mojo_from_joint =
-          std::make_unique<TransformationMatrix>(*hand_joint->mojo_from_joint);
+          std::make_unique<gfx::Transform>(*hand_joint->mojo_from_joint);
     } else {
       new_missing_poses = true;
     }

@@ -1288,7 +1288,7 @@ void LayoutBox::UpdateAfterLayout() {
   // Transform-origin depends on box size, so we need to update the layer
   // transform after layout.
   if (HasLayer()) {
-    Layer()->UpdateTransformationMatrix();
+    Layer()->UpdateTransform();
     Layer()->UpdateSizeAndScrollingAfterLayout();
   }
 
@@ -2081,7 +2081,7 @@ bool LayoutBox::MapVisualRectToContainer(
 
   // 2. Generate transformation matrix.
   // a) Transform.
-  TransformationMatrix transform;
+  gfx::Transform transform;
   if (Layer() && Layer()->Transform())
     transform.PreConcat(Layer()->CurrentTransform());
 
@@ -2116,7 +2116,7 @@ bool LayoutBox::MapVisualRectToContainer(
     if (const auto* container_box = DynamicTo<LayoutBox>(container_object))
       perspective_origin = container_box->PerspectiveOrigin();
 
-    TransformationMatrix perspective_matrix;
+    gfx::Transform perspective_matrix;
     perspective_matrix.ApplyPerspectiveDepth(
         container_object->StyleRef().UsedPerspective());
     perspective_matrix.ApplyTransformOrigin(perspective_origin.x(),
@@ -7599,7 +7599,7 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
       container_offset = RelativePositionOffset();
 
     if (ShouldUseTransformFromContainer(container)) {
-      TransformationMatrix t;
+      gfx::Transform t;
       GetTransformFromContainer(container ? container : Container(),
                                 container_offset, t);
       rect = EnclosingLayoutRect(t.MapRect(gfx::RectF(rect)));

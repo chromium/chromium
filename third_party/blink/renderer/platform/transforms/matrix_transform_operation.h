@@ -26,8 +26,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_MATRIX_TRANSFORM_OPERATION_H_
 
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -44,11 +44,11 @@ class PLATFORM_EXPORT MatrixTransformOperation final
   }
 
   static scoped_refptr<MatrixTransformOperation> Create(
-      const TransformationMatrix& t) {
+      const gfx::Transform& t) {
     return base::AdoptRef(new MatrixTransformOperation(t));
   }
 
-  const TransformationMatrix& Matrix() const { return matrix_; }
+  const gfx::Transform& Matrix() const { return matrix_; }
 
   static bool IsMatchingOperationType(OperationType type) {
     return type == kMatrix;
@@ -62,8 +62,7 @@ class PLATFORM_EXPORT MatrixTransformOperation final
  private:
   OperationType GetType() const override { return kMatrix; }
 
-  void Apply(TransformationMatrix& transform,
-             const gfx::SizeF&) const override {
+  void Apply(gfx::Transform& transform, const gfx::SizeF&) const override {
     transform.PreConcat(Matrix());
   }
 
@@ -89,16 +88,15 @@ class PLATFORM_EXPORT MatrixTransformOperation final
                            double d,
                            double e,
                            double f)
-      : matrix_(TransformationMatrix::Affine(a, b, c, d, e, f)) {}
+      : matrix_(gfx::Transform::Affine(a, b, c, d, e, f)) {}
 
-  explicit MatrixTransformOperation(const TransformationMatrix& t)
-      : matrix_(t) {
+  explicit MatrixTransformOperation(const gfx::Transform& t) : matrix_(t) {
     DCHECK(t.Is2dTransform());
   }
 
   // TODO(wangxianzhu): Use AffineTransform when we have Decompose2dTransform()
   // in ui/gfx/geometry/transform_utils.h.
-  TransformationMatrix matrix_;
+  gfx::Transform matrix_;
 };
 
 template <>

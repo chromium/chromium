@@ -64,8 +64,8 @@ class RenderingTestChromeClient : public EmptyChromeClient {
   void SetUp() {
     // Runtime flags can affect LayerTreeHost's settings so this needs to be
     // recreated for each test.
-    layer_tree_.reset(new LayerTreeHostEmbedder());
-    device_emulation_transform_ = TransformationMatrix();
+    layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
+    device_emulation_transform_ = gfx::Transform();
   }
 
   bool HasLayer(const cc::Layer& layer) {
@@ -81,10 +81,10 @@ class RenderingTestChromeClient : public EmptyChromeClient {
     return layer_tree_->layer_tree_host();
   }
 
-  void SetDeviceEmulationTransform(const TransformationMatrix& t) {
+  void SetDeviceEmulationTransform(const gfx::Transform& t) {
     device_emulation_transform_ = t;
   }
-  TransformationMatrix GetDeviceEmulationTransform() const override {
+  gfx::Transform GetDeviceEmulationTransform() const override {
     return device_emulation_transform_;
   }
 
@@ -103,7 +103,7 @@ class RenderingTestChromeClient : public EmptyChromeClient {
 
  private:
   std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;
-  TransformationMatrix device_emulation_transform_;
+  gfx::Transform device_emulation_transform_;
   bool animation_scheduled_ = false;
 };
 

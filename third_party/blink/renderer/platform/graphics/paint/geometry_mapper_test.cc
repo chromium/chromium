@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
 
@@ -78,7 +79,7 @@ class GeometryMapperTest : public testing::Test,
   FloatClipRect expected_visual_rect;
   absl::optional<FloatClipRect> expected_visual_rect_expanded_for_compositing;
   gfx::Vector2dF expected_translation_2d;
-  absl::optional<TransformationMatrix> expected_transform;
+  absl::optional<gfx::Transform> expected_transform;
   FloatClipRect expected_clip;
   bool expected_clip_has_transform_animation = false;
   bool expected_clip_has_sticky_transform = false;
@@ -825,8 +826,8 @@ TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
   if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return;
 
-  auto above_viewport = CreateTransform(t0(), TransformationMatrix());
-  auto viewport = CreateTransform(*above_viewport, TransformationMatrix());
+  auto above_viewport = CreateTransform(t0(), gfx::Transform());
+  auto viewport = CreateTransform(*above_viewport, gfx::Transform());
   auto scroll_state = CreateCompositedScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -100, -200,
       gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
@@ -1148,7 +1149,7 @@ TEST_P(GeometryMapperTest, MightOverlapCommonClipAncestor) {
 }
 
 TEST_P(GeometryMapperTest, MightOverlapFixed) {
-  auto viewport = CreateTransform(t0(), TransformationMatrix());
+  auto viewport = CreateTransform(t0(), gfx::Transform());
   auto scroll_state1 = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
       gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
@@ -1195,7 +1196,7 @@ TEST_P(GeometryMapperTest, MightOverlapScroll) {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return;
 
-  auto viewport = CreateTransform(t0(), TransformationMatrix());
+  auto viewport = CreateTransform(t0(), gfx::Transform());
   auto scroll_state1 = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
       gfx::Rect(10, 20, 100, 200), gfx::Size(2400, 1800));

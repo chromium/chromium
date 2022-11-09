@@ -53,7 +53,7 @@ class PLATFORM_EXPORT TransformOperations {
 
   // Constructs a transformation matrix from the operations. The parameter
   // |border_box_size| is used when computing styles that are size-dependent.
-  void Apply(const gfx::SizeF& border_box_size, TransformationMatrix& t) const {
+  void Apply(const gfx::SizeF& border_box_size, gfx::Transform& t) const {
     for (auto& operation : operations_)
       operation->Apply(t, border_box_size);
   }
@@ -64,7 +64,7 @@ class PLATFORM_EXPORT TransformOperations {
   // |border_box_size| is used when computing styles that are size-dependent.
   void ApplyRemaining(const gfx::SizeF& border_box_size,
                       wtf_size_t start,
-                      TransformationMatrix& t) const;
+                      gfx::Transform& t) const;
 
   // Return true if any of the operation types are 3D operation types (even if
   // the values describe affine transforms)

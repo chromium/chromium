@@ -331,7 +331,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void SetZoomFactorOverride(float);
   void SetCompositorDeviceScaleFactorOverride(float);
-  TransformationMatrix GetDeviceEmulationTransform() const;
+  gfx::Transform GetDeviceEmulationTransform() const;
   void EnableAutoResizeMode(const gfx::Size& min_viewport_size,
                             const gfx::Size& max_viewport_size);
   void DisableAutoResizeMode();
@@ -691,7 +691,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DoComposite();
   void ReallocateRenderer();
 
-  void SetDeviceEmulationTransform(const TransformationMatrix&);
+  void SetDeviceEmulationTransform(const gfx::Transform&);
   void UpdateDeviceEmulationTransform();
 
   // Helper function: Widens the width of |source| by the specified margins
@@ -840,7 +840,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   bool fake_page_scale_animation_use_anchor_ = false;
 
   float compositor_device_scale_factor_override_ = 0.f;
-  TransformationMatrix device_emulation_transform_;
+  gfx::Transform device_emulation_transform_;
 
   // The offset of the current item in the history list.
   // The initial value is -1 since the offset should be lower than

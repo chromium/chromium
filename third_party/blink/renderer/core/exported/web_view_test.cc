@@ -5178,22 +5178,22 @@ TEST_F(WebViewTest, ForceAndResetViewport) {
   SetViewportSize(gfx::Size(100, 150));
   DevToolsEmulator* dev_tools_emulator = web_view_impl->GetDevToolsEmulator();
 
-  TransformationMatrix expected_matrix;
+  gfx::Transform expected_matrix;
   expected_matrix.MakeIdentity();
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
 
   // Override applies transform, sets visible rect, and disables
   // visual viewport clipping.
-  TransformationMatrix matrix =
+  gfx::Transform matrix =
       dev_tools_emulator->ForceViewportForTesting(gfx::PointF(50, 55), 2.f);
-  expected_matrix = TransformationMatrix::MakeScale(2.f);
+  expected_matrix = gfx::Transform::MakeScale(2.f);
   expected_matrix.Translate(-50, -55);
   EXPECT_EQ(expected_matrix, matrix);
 
   // Setting new override discards previous one.
   matrix = dev_tools_emulator->ForceViewportForTesting(gfx::PointF(5.4f, 10.5f),
                                                        1.5f);
-  expected_matrix = TransformationMatrix::MakeScale(1.5f);
+  expected_matrix = gfx::Transform::MakeScale(1.5f);
   expected_matrix.Translate(-5.4f, -10.5f);
   EXPECT_EQ(expected_matrix, matrix);
 
@@ -5210,21 +5210,21 @@ TEST_F(WebViewTest, ViewportOverrideIntegratesDeviceMetricsOffsetAndScale) {
       web_view_helper_.InitializeAndLoad(base_url_ + "200-by-300.html");
   web_view_impl->MainFrameViewWidget()->Resize(gfx::Size(100, 150));
 
-  TransformationMatrix expected_matrix;
+  gfx::Transform expected_matrix;
   expected_matrix.MakeIdentity();
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
 
   DeviceEmulationParams emulation_params;
   emulation_params.scale = 2.f;
   web_view_impl->EnableDeviceEmulation(emulation_params);
-  expected_matrix = TransformationMatrix::MakeScale(2.f);
+  expected_matrix = gfx::Transform::MakeScale(2.f);
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
 
   // Device metrics offset and scale are applied before viewport override.
   emulation_params.viewport_offset = gfx::PointF(5, 10);
   emulation_params.viewport_scale = 1.5f;
   web_view_impl->EnableDeviceEmulation(emulation_params);
-  expected_matrix = TransformationMatrix::MakeScale(1.5f);
+  expected_matrix = gfx::Transform::MakeScale(1.5f);
   expected_matrix.Translate(-5, -10);
   expected_matrix.Scale(2.f);
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
@@ -5239,7 +5239,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   LocalFrameView* frame_view =
       web_view_impl->MainFrameImpl()->GetFrame()->View();
 
-  TransformationMatrix expected_matrix;
+  gfx::Transform expected_matrix;
   expected_matrix.MakeIdentity();
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
 
@@ -5254,7 +5254,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   emulation_params.viewport_offset = gfx::PointF(50, 55);
   emulation_params.viewport_scale = 2.f;
   web_view_impl->EnableDeviceEmulation(emulation_params);
-  expected_matrix = TransformationMatrix::MakeScale(2.f);
+  expected_matrix = gfx::Transform::MakeScale(2.f);
   expected_matrix.Translate(-50, -55);
   expected_matrix.Translate(100, 150);
   expected_matrix.Scale(1. / 1.5f);
@@ -5264,7 +5264,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(50, 55), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant);
-  expected_matrix = TransformationMatrix::MakeScale(2.f);
+  expected_matrix = gfx::Transform::MakeScale(2.f);
   expected_matrix.Translate(-50, -55);
   expected_matrix.Translate(50, 55);
   expected_matrix.Scale(1. / 1.5f);
@@ -5272,7 +5272,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
 
   // Transform adapts to page scale changes.
   web_view_impl->SetPageScaleFactor(2.f);
-  expected_matrix = TransformationMatrix::MakeScale(2.f);
+  expected_matrix = gfx::Transform::MakeScale(2.f);
   expected_matrix.Translate(-50, -55);
   expected_matrix.Translate(50, 55);
   expected_matrix.Scale(1. / 2.f);

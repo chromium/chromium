@@ -52,12 +52,12 @@ XRSpace* XRPlane::planeSpace() const {
   return plane_space_;
 }
 
-absl::optional<TransformationMatrix> XRPlane::MojoFromObject() const {
+absl::optional<gfx::Transform> XRPlane::MojoFromObject() const {
   if (!mojo_from_plane_) {
     return absl::nullopt;
   }
 
-  return TransformationMatrix(mojo_from_plane_->ToTransform());
+  return mojo_from_plane_->ToTransform();
 }
 
 device::mojom::blink::XRNativeOriginInformationPtr XRPlane::NativeOrigin()

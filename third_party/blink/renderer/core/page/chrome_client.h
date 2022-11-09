@@ -53,10 +53,10 @@
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 // To avoid conflicts with the CreateWindow macro from the Windows SDK...
@@ -502,8 +502,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // Input method editor related functions.
   virtual void ShowVirtualKeyboardOnElementFocus(LocalFrame&) {}
 
-  virtual TransformationMatrix GetDeviceEmulationTransform() const {
-    return TransformationMatrix();
+  virtual gfx::Transform GetDeviceEmulationTransform() const {
+    return gfx::Transform();
   }
 
   virtual void OnMouseDown(Node&) {}

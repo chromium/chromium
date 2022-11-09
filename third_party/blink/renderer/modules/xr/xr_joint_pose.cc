@@ -7,7 +7,7 @@
 
 namespace blink {
 
-XRJointPose::XRJointPose(const TransformationMatrix& transform, float radius)
+XRJointPose::XRJointPose(const gfx::Transform& transform, float radius)
     : XRPose(transform, /* emulatedPosition */ false), radius_(radius) {}
 
 }  // namespace blink

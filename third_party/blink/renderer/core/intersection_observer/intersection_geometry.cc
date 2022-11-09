@@ -376,7 +376,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       target->GetDocument().GetLayoutView()->MapAncestorToLocal(
           nullptr, implicit_root_to_target_document_transform,
           kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
-      TransformationMatrix matrix =
+      gfx::Transform matrix =
           implicit_root_to_target_document_transform.AccumulatedTransform()
               .InverseOrIdentity();
       intersection_rect_ = PhysicalRect::EnclosingRect(

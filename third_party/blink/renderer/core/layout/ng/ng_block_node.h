@@ -159,7 +159,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   LogicalSize GetReplacedSizeOverrideIfAny(const NGConstraintSpace&) const;
 
   // Returns the transform to apply to a child (e.g. for layout-overflow).
-  absl::optional<TransformationMatrix> GetTransformForChildFragment(
+  absl::optional<gfx::Transform> GetTransformForChildFragment(
       const NGPhysicalBoxFragment& child_fragment,
       PhysicalSize size) const;
 

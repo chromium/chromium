@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
 
@@ -574,7 +575,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Perspective) {
   Element* perspective = GetDocument().getElementById("perspective");
   const ObjectPaintProperties* perspective_properties =
       perspective->GetLayoutObject()->FirstFragment().PaintProperties();
-  TransformationMatrix matrix;
+  gfx::Transform matrix;
   matrix.ApplyPerspectiveDepth(100);
   EXPECT_EQ(matrix, perspective_properties->Perspective()->Matrix());
   // The perspective origin is the center of the border box plus accumulated
@@ -599,7 +600,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Perspective) {
 
   perspective->setAttribute(html_names::kStyleAttr, "perspective: 200px");
   UpdateAllLifecyclePhasesForTest();
-  TransformationMatrix matrix1;
+  gfx::Transform matrix1;
   matrix1.ApplyPerspectiveDepth(200);
   EXPECT_EQ(matrix1, perspective_properties->Perspective()->Matrix());
   EXPECT_EQ(gfx::Point3F(250, 250, 0),
@@ -1194,7 +1195,7 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformNodesInSVG) {
       *GetLayoutObjectByElementId("rectWith2dTransform");
   const ObjectPaintProperties* rect_with2d_transform_properties =
       rect_with2d_transform.FirstFragment().PaintProperties();
-  TransformationMatrix matrix;
+  gfx::Transform matrix;
   matrix.Translate(100, 100);
   matrix.Rotate(45);
   // SVG's transform origin is baked into the transform.
@@ -7246,7 +7247,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGTransformAnimationAndOrigin) {
   auto* transform_node = properties->Transform();
   ASSERT_TRUE(transform_node);
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
-  EXPECT_EQ(TransformationMatrix(), transform_node->Matrix());
+  EXPECT_EQ(gfx::Transform(), transform_node->Matrix());
   EXPECT_EQ(gfx::Point3F(100, 100, 0), transform_node->Origin());
 }
 

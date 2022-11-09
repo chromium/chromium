@@ -621,8 +621,8 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
   auto c2b = CreateClip(scroll_clip, scroll_translation,
                         FloatRoundedRect(0, 8000, 100, 100));
   auto t2 =
-      CreateTransform(scroll_translation, TransformationMatrix(),
-                      gfx::Point3F(), CompositingReason::kWillChangeTransform);
+      CreateTransform(scroll_translation, gfx::Transform(), gfx::Point3F(),
+                      CompositingReason::kWillChangeTransform);
 
   // c2a is out of view, but in the expansion area of the composited scroll.
   CullRect cull_rect = CullRect::Infinite();

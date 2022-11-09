@@ -20,10 +20,10 @@ TransformPaintPropertyNode::TransformAndOrigin::TransformAndOrigin(
   }
 }
 
-TransformationMatrix
-TransformPaintPropertyNode::TransformAndOrigin::SlowMatrix() const {
+gfx::Transform TransformPaintPropertyNode::TransformAndOrigin::SlowMatrix()
+    const {
   return matrix_and_origin_ ? matrix_and_origin_->matrix
-                            : TransformationMatrix::MakeTranslation(
+                            : gfx::Transform::MakeTranslation(
                                   translation_2d_.x(), translation_2d_.y());
 }
 

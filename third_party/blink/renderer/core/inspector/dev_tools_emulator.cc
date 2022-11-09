@@ -267,7 +267,7 @@ void DevToolsEmulator::SetPrimaryHoverType(mojom::blink::HoverType hover_type) {
     web_view_->GetPage()->GetSettings().SetPrimaryHoverType(hover_type);
 }
 
-TransformationMatrix DevToolsEmulator::EnableDeviceEmulation(
+gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
     const DeviceEmulationParams& params) {
   if (device_metrics_enabled_ &&
       emulation_params_.view_size == params.view_size &&
@@ -331,7 +331,7 @@ void DevToolsEmulator::DisableDeviceEmulation() {
       document->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
   }
 
-  TransformationMatrix matrix = ResetViewport();
+  gfx::Transform matrix = ResetViewport();
   DCHECK(matrix.IsIdentity());
 }
 
@@ -418,9 +418,8 @@ void DevToolsEmulator::DisableMobileEmulation() {
   }
 }
 
-TransformationMatrix DevToolsEmulator::ForceViewport(
-    const gfx::PointF& position,
-    float scale) {
+gfx::Transform DevToolsEmulator::ForceViewport(const gfx::PointF& position,
+                                               float scale) {
   if (!viewport_override_)
     viewport_override_ = ViewportOverride();
 
@@ -432,20 +431,19 @@ TransformationMatrix DevToolsEmulator::ForceViewport(
   return ComputeRootLayerTransform();
 }
 
-TransformationMatrix DevToolsEmulator::ResetViewport() {
+gfx::Transform DevToolsEmulator::ResetViewport() {
   viewport_override_ = absl::nullopt;
   return ComputeRootLayerTransform();
 }
 
-TransformationMatrix
-DevToolsEmulator::OutermostMainFrameScrollOrScaleChanged() {
+gfx::Transform DevToolsEmulator::OutermostMainFrameScrollOrScaleChanged() {
   // Viewport override has to take current page scale and scroll offset into
   // account. Update the transform if override is active.
   DCHECK(viewport_override_);
   return ComputeRootLayerTransform();
 }
 
-void DevToolsEmulator::ApplyViewportOverride(TransformationMatrix* transform) {
+void DevToolsEmulator::ApplyViewportOverride(gfx::Transform* transform) {
   if (!viewport_override_)
     return;
 
@@ -470,8 +468,8 @@ void DevToolsEmulator::ApplyViewportOverride(TransformationMatrix* transform) {
   transform->Scale(1. / web_view_->PageScaleFactor());
 }
 
-TransformationMatrix DevToolsEmulator::ComputeRootLayerTransform() {
-  TransformationMatrix transform;
+gfx::Transform DevToolsEmulator::ComputeRootLayerTransform() {
+  gfx::Transform transform;
   // Apply device emulation transform first, so that it is affected by the
   // viewport override.
   ApplyViewportOverride(&transform);

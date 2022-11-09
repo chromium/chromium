@@ -414,7 +414,7 @@ void LayoutView::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   NOT_DESTROYED();
   if (!ancestor && !(mode & kIgnoreTransforms) &&
       ShouldUseTransformFromContainer(nullptr)) {
-    TransformationMatrix t;
+    gfx::Transform t;
     GetTransformFromContainer(nullptr, PhysicalOffset(), t);
     transform_state.ApplyTransform(t);
   }

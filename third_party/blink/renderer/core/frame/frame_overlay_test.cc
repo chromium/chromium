@@ -125,7 +125,7 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
                         ->GetPage()
                         ->GetVisualViewport()
                         .GetDeviceEmulationTransformNode();
-  EXPECT_EQ(TransformationMatrix::MakeScale(1.5), transform->Matrix());
+  EXPECT_EQ(gfx::Transform::MakeScale(1.5), transform->Matrix());
   const auto& state = frame_overlay->DefaultPropertyTreeState();
   EXPECT_EQ(transform, &state.Transform());
   EXPECT_EQ(&ClipPaintPropertyNode::Root(), &state.Clip());

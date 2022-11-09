@@ -660,7 +660,7 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
   const LayoutObject* container_layout_object = container.GetLayoutObject();
   DCHECK(container_layout_object);
   if (layout_object->ShouldUseTransformFromContainer(container_layout_object)) {
-    TransformationMatrix transform;
+    gfx::Transform transform;
     layout_object->GetTransformFromContainer(container_layout_object,
                                              PhysicalOffset(), transform);
     *overflow =

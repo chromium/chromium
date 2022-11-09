@@ -9,13 +9,13 @@
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -49,7 +49,7 @@ class PLATFORM_EXPORT GeometryMapper {
         : translation_2d_(translation_2d) {
       DCHECK(IsIdentityOr2DTranslation());
     }
-    explicit Translation2DOrMatrix(const TransformationMatrix& matrix)
+    explicit Translation2DOrMatrix(const gfx::Transform& matrix)
         : matrix_(matrix) {
       DCHECK(!IsIdentityOr2DTranslation());
     }
@@ -60,7 +60,7 @@ class PLATFORM_EXPORT GeometryMapper {
       DCHECK(IsIdentityOr2DTranslation());
       return translation_2d_;
     }
-    const TransformationMatrix& Matrix() const {
+    const gfx::Transform& Matrix() const {
       DCHECK(!IsIdentityOr2DTranslation());
       return *matrix_;
     }
@@ -120,7 +120,7 @@ class PLATFORM_EXPORT GeometryMapper {
 
    private:
     gfx::Vector2dF translation_2d_;
-    absl::optional<TransformationMatrix> matrix_;
+    absl::optional<gfx::Transform> matrix_;
   };
 
   // Returns the matrix that is suitable to map geometries on the source plane

@@ -10,7 +10,7 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -30,16 +30,15 @@ class XRReferenceSpace : public XRSpace {
                    device::mojom::blink::XRReferenceSpaceType type);
   ~XRReferenceSpace() override;
 
-  absl::optional<TransformationMatrix> NativeFromViewer(
-      const absl::optional<TransformationMatrix>& mojo_from_viewer)
-      const override;
+  absl::optional<gfx::Transform> NativeFromViewer(
+      const absl::optional<gfx::Transform>& mojo_from_viewer) const override;
 
-  absl::optional<TransformationMatrix> MojoFromNative() const override;
+  absl::optional<gfx::Transform> MojoFromNative() const override;
 
   bool IsStationary() const override;
 
-  TransformationMatrix NativeFromOffsetMatrix() const override;
-  TransformationMatrix OffsetFromNativeMatrix() const override;
+  gfx::Transform NativeFromOffsetMatrix() const override;
+  gfx::Transform OffsetFromNativeMatrix() const override;
 
   // We override getPose to ensure that the viewer pose in viewer space returns
   // the identity pose instead of the result of multiplying inverse matrices.
@@ -70,7 +69,7 @@ class XRReferenceSpace : public XRSpace {
   mutable uint32_t stage_parameters_id_ = 0;
 
   // Floor from mojo (aka local-floor_from_mojo) transform.
-  mutable std::unique_ptr<TransformationMatrix> mojo_from_floor_;
+  mutable std::unique_ptr<gfx::Transform> mojo_from_floor_;
   Member<XRRigidTransform> origin_offset_;
   device::mojom::blink::XRReferenceSpaceType type_;
 };

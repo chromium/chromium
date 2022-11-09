@@ -471,7 +471,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
                         y_->CurrentValue()->Value(length_context));
   } else if (mode == kScreenScope) {
     if (LayoutObject* layout_object = GetLayoutObject()) {
-      TransformationMatrix matrix;
+      gfx::Transform matrix;
       // Adjust for the zoom level factored into CSS coordinates (WK bug
       // #96361).
       matrix.Scale(1.0 / layout_object->View()->StyleRef().EffectiveZoom());

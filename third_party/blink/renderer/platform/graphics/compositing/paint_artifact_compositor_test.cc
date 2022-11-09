@@ -445,7 +445,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
     // transform node flattens the transform. This is because Blink's notion of
     // flattening determines whether content within the node's local transform
     // is flattened, while cc's notion applies in the parent's coordinate space.
-    auto transform1 = CreateTransform(t0(), TransformationMatrix());
+    auto transform1 = CreateTransform(t0(), gfx::Transform());
     auto transform2 =
         CreateTransform(*transform1, MakeRotationMatrix(0, 45, 0));
     TransformPaintPropertyNode::State transform3_state{
@@ -497,7 +497,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
     // transform node flattens the transform. This is because Blink's notion of
     // flattening determines whether content within the node's local transform
     // is flattened, while cc's notion applies in the parent's coordinate space.
-    auto real_transform1 = CreateTransform(t0(), TransformationMatrix());
+    auto real_transform1 = CreateTransform(t0(), gfx::Transform());
     auto transform1 = TransformPaintPropertyNodeAlias::Create(*real_transform1);
     auto real_transform2 =
         CreateTransform(*transform1, MakeRotationMatrix(0, 45, 0));
@@ -545,7 +545,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
 }
 TEST_P(PaintArtifactCompositorTest, SortingContextID) {
   // Has no 3D rendering context.
-  auto transform1 = CreateTransform(t0(), TransformationMatrix());
+  auto transform1 = CreateTransform(t0(), gfx::Transform());
   // Establishes a 3D rendering context.
   TransformPaintPropertyNode::State transform2_state;
   transform2_state.rendering_context_id = 1;
@@ -673,14 +673,13 @@ TEST_P(PaintArtifactCompositorTest, OneClipWithAlias) {
 }
 
 TEST_P(PaintArtifactCompositorTest, NestedClips) {
-  auto transform1 =
-      CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
-                      CompositingReason::kWillChangeTransform);
+  auto transform1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
+                                    CompositingReason::kWillChangeTransform);
   auto clip1 =
       CreateClip(c0(), *transform1, FloatRoundedRect(100, 100, 700, 700));
 
   auto transform2 =
-      CreateTransform(*transform1, TransformationMatrix(), gfx::Point3F(),
+      CreateTransform(*transform1, gfx::Transform(), gfx::Point3F(),
                       CompositingReason::kWillChangeTransform);
   auto clip2 =
       CreateClip(*clip1, *transform2, FloatRoundedRect(200, 200, 700, 700));
@@ -738,14 +737,13 @@ TEST_P(PaintArtifactCompositorTest, NestedClips) {
 }
 
 TEST_P(PaintArtifactCompositorTest, NestedClipsWithAlias) {
-  auto transform1 =
-      CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
-                      CompositingReason::kWillChangeTransform);
+  auto transform1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
+                                    CompositingReason::kWillChangeTransform);
   auto real_clip1 =
       CreateClip(c0(), *transform1, FloatRoundedRect(100, 100, 700, 700));
   auto clip1 = ClipPaintPropertyNodeAlias::Create(*real_clip1);
   auto transform2 =
-      CreateTransform(*transform1, TransformationMatrix(), gfx::Point3F(),
+      CreateTransform(*transform1, gfx::Transform(), gfx::Point3F(),
                       CompositingReason::kWillChangeTransform);
   auto real_clip2 =
       CreateClip(*clip1, *transform2, FloatRoundedRect(200, 200, 700, 700));
@@ -871,7 +869,7 @@ TEST_P(PaintArtifactCompositorTest, SiblingClipsWithAlias) {
 }
 
 TEST_P(PaintArtifactCompositorTest, SiblingClipsWithCompositedTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
+  auto t1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
                             CompositingReason::kWillChangeTransform);
   auto t2 = CreateTransform(*t1, MakeTranslationMatrix(1, 2));
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 400, 600));
@@ -921,7 +919,7 @@ TEST_P(PaintArtifactCompositorTest, SiblingTransformsWithAlias) {
 }
 
 TEST_P(PaintArtifactCompositorTest, SiblingTransformsWithComposited) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
+  auto t1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
                             CompositingReason::kWillChangeTransform);
   auto t2 = CreateTransform(*t1, MakeTranslationMatrix(1, 2));
   auto t3 = CreateTransform(t0(), MakeTranslationMatrix(3, 4));
@@ -1130,7 +1128,7 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeNonComposited) {
 TEST_P(PaintArtifactCompositorTest, TransformUnderScrollNode) {
   auto scroll_state = ScrollState1();
   auto transform =
-      CreateTransform(scroll_state.Transform(), TransformationMatrix(),
+      CreateTransform(scroll_state.Transform(), gfx::Transform(),
                       gfx::Point3F(), CompositingReason::kWillChangeTransform);
 
   TestPaintArtifact artifact;
@@ -1419,7 +1417,7 @@ TEST_P(PaintArtifactCompositorTest, Merge2DTransform) {
 }
 
 TEST_P(PaintArtifactCompositorTest, Merge2DTransformDirectAncestor) {
-  auto transform = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
+  auto transform = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
                                    CompositingReason::k3DTransform);
   auto transform2 = CreateTransform(*transform, MakeTranslationMatrix(50, 50),
                                     gfx::Point3F(100, 100, 0));
@@ -2145,12 +2143,10 @@ TEST_P(PaintArtifactCompositorTest,
        CompositedExoticBlendModeOnTwo3DTransformLayers) {
   auto masked = CreateOpacityEffect(
       e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
-  auto transform1 =
-      CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
-                      CompositingReason::k3DTransform);
-  auto transform2 =
-      CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
-                      CompositingReason::k3DTransform);
+  auto transform1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
+                                    CompositingReason::k3DTransform);
+  auto transform2 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
+                                    CompositingReason::k3DTransform);
   EffectPaintPropertyNode::State masking_state;
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
@@ -2408,7 +2404,7 @@ TEST_P(PaintArtifactCompositorTest, IndirectlyCompositedEffect) {
   // An effect node without direct compositing still needs to be composited
   // for grouping, if some chunks need to be composited.
   auto effect = CreateOpacityEffect(e0(), 0.5f);
-  auto transform = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
+  auto transform = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
                                    CompositingReason::k3DTransform);
 
   TestPaintArtifact artifact;
@@ -2444,7 +2440,7 @@ TEST_P(PaintArtifactCompositorTest, DecompositedEffectNotMergingDueToOverlap) {
   // separate backing due to overlap with a previous composited effect.
   auto effect1 = CreateOpacityEffect(e0(), 0.1f);
   auto effect2 = CreateOpacityEffect(e0(), 0.2f);
-  auto transform = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
+  auto transform = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
                                    CompositingReason::k3DTransform);
   TestPaintArtifact artifact;
   artifact.Chunk().RectDrawing(gfx::Rect(0, 0, 40, 40), Color::kGray);
@@ -2773,7 +2769,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipNested) {
   auto c1 = CreateClip(c0(), t0(), rrect);
   auto c2 = CreateClip(*c1, t0(), rrect);
   auto c3 = CreateClip(*c2, t0(), rrect);
-  auto t1 = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
+  auto t1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
                             CompositingReason::kWillChangeTransform);
   CompositorFilterOperations filter_operations;
   filter_operations.AppendBlurFilter(5);
@@ -2996,7 +2992,7 @@ TEST_P(PaintArtifactCompositorTest,
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipContiguous) {
   // This tests the case that a two back-to-back composited layers having
   // the same composited rounded clip can share the synthesized mask.
-  auto t1 = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
+  auto t1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
                             CompositingReason::kWillChangeTransform);
 
   FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
@@ -3050,7 +3046,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDiscontiguous) {
   // This tests the case that a two composited layers having the same
   // composited rounded clip cannot share the synthesized mask if there is
   // another layer in the middle.
-  auto t1 = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
+  auto t1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
                             CompositingReason::kWillChangeTransform);
 
   FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
@@ -4103,11 +4099,10 @@ TEST_P(PaintArtifactCompositorTest,
 
 TEST_P(PaintArtifactCompositorTest, OpacityIndirectlyAffectingTwoLayers) {
   auto opacity = CreateOpacityEffect(e0(), 0.5f);
-  auto child_composited_transform =
-      CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
-                      CompositingReason::k3DTransform);
+  auto child_composited_transform = CreateTransform(
+      t0(), gfx::Transform(), gfx::Point3F(), CompositingReason::k3DTransform);
   auto grandchild_composited_transform =
-      CreateTransform(*child_composited_transform, TransformationMatrix(),
+      CreateTransform(*child_composited_transform, gfx::Transform(),
                       gfx::Point3F(), CompositingReason::k3DTransform);
   auto child_effect = CreateOpacityEffect(*opacity, 1.f);
   auto grandchild_effect = CreateOpacityEffect(*child_effect, 1.f);
@@ -4134,9 +4129,8 @@ TEST_P(PaintArtifactCompositorTest, OpacityIndirectlyAffectingTwoLayers) {
 TEST_P(PaintArtifactCompositorTest, WillChangeOpacityRenderSurfaceWithLayer) {
   auto opacity =
       CreateOpacityEffect(e0(), 1.f, CompositingReason::kWillChangeOpacity);
-  auto child_composited_transform =
-      CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
-                      CompositingReason::k3DTransform);
+  auto child_composited_transform = CreateTransform(
+      t0(), gfx::Transform(), gfx::Point3F(), CompositingReason::k3DTransform);
   auto child_effect = CreateOpacityEffect(*opacity, 1.f);
 
   TestPaintArtifact artifact;
@@ -4159,11 +4153,10 @@ TEST_P(PaintArtifactCompositorTest,
        WillChangeOpacityRenderSurfaceWithoutLayer) {
   auto opacity =
       CreateOpacityEffect(e0(), 1.f, CompositingReason::kWillChangeOpacity);
-  auto child_composited_transform =
-      CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
-                      CompositingReason::k3DTransform);
+  auto child_composited_transform = CreateTransform(
+      t0(), gfx::Transform(), gfx::Point3F(), CompositingReason::k3DTransform);
   auto grandchild_composited_transform =
-      CreateTransform(*child_composited_transform, TransformationMatrix(),
+      CreateTransform(*child_composited_transform, gfx::Transform(),
                       gfx::Point3F(), CompositingReason::k3DTransform);
   auto child_effect = CreateOpacityEffect(*opacity, 1.f);
   auto grandchild_effect = CreateOpacityEffect(*child_effect, 1.f);

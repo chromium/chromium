@@ -400,7 +400,7 @@ AffineTransform SVGLayoutSupport::DeprecatedCalculateTransformToLayer(
   // Continue walking up the layer tree, accumulating CSS transforms.
   PaintLayer* layer = layout_object ? layout_object->EnclosingLayer() : nullptr;
   while (layer) {
-    if (TransformationMatrix* layer_transform = layer->Transform())
+    if (gfx::Transform* layer_transform = layer->Transform())
       transform = AffineTransform::FromTransform(*layer_transform) * transform;
     layer = layer->Parent();
   }

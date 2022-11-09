@@ -71,7 +71,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
   Document& owner_document = owner_element->GetDocument();
   gfx::Rect viewport_intersection, mainframe_intersection;
-  TransformationMatrix main_frame_transform_matrix;
+  gfx::Transform main_frame_transform_matrix;
   DocumentLifecycle::LifecycleState parent_lifecycle_state =
       owner_document.Lifecycle().GetState();
   mojom::blink::FrameOcclusionState occlusion_state =
@@ -129,7 +129,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     // child frame.
     parent_frame_to_iframe_content_transform.Move(
         owner_layout_object->PhysicalContentBoxOffset());
-    TransformationMatrix matrix =
+    gfx::Transform matrix =
         parent_frame_to_iframe_content_transform.AccumulatedTransform()
             .InverseOrIdentity();
     if (geometry.IsIntersecting()) {

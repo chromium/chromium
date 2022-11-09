@@ -13,13 +13,12 @@
 
 namespace blink {
 
-XRJointSpace::XRJointSpace(
-    XRHand* hand,
-    XRSession* session,
-    std::unique_ptr<TransformationMatrix> mojo_from_joint,
-    device::mojom::blink::XRHandJoint joint,
-    float radius,
-    device::mojom::blink::XRHandedness handedness)
+XRJointSpace::XRJointSpace(XRHand* hand,
+                           XRSession* session,
+                           std::unique_ptr<gfx::Transform> mojo_from_joint,
+                           device::mojom::blink::XRHandJoint joint,
+                           float radius,
+                           device::mojom::blink::XRHandedness handedness)
     : XRSpace(session),
       hand_(hand),
       mojo_from_joint_space_(std::move(mojo_from_joint)),
@@ -27,7 +26,7 @@ XRJointSpace::XRJointSpace(
       radius_(radius),
       handedness_(handedness) {}
 
-absl::optional<TransformationMatrix> XRJointSpace::MojoFromNative() const {
+absl::optional<gfx::Transform> XRJointSpace::MojoFromNative() const {
   return *mojo_from_joint_space_.get();
 }
 
@@ -58,7 +57,7 @@ XRPose* XRJointSpace::getPose(const XRSpace* other_space) const {
 }
 
 void XRJointSpace::UpdateTracking(
-    std::unique_ptr<TransformationMatrix> mojo_from_joint,
+    std::unique_ptr<gfx::Transform> mojo_from_joint,
     float radius) {
   mojo_from_joint_space_ = std::move(mojo_from_joint);
   radius_ = radius;

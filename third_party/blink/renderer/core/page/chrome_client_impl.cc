@@ -1268,7 +1268,7 @@ void ChromeClientImpl::JavaScriptChangedAutofilledValue(
   }
 }
 
-TransformationMatrix ChromeClientImpl::GetDeviceEmulationTransform() const {
+gfx::Transform ChromeClientImpl::GetDeviceEmulationTransform() const {
   DCHECK(web_view_);
   return web_view_->GetDeviceEmulationTransform();
 }

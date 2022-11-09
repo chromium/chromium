@@ -1058,7 +1058,7 @@ void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                                         MapCoordinatesFlags mode,
                                         bool map_to_absolute) const {
   NOT_DESTROYED();
-  absl::optional<TransformationMatrix> mapping_to_absolute;
+  absl::optional<gfx::Transform> mapping_to_absolute;
   // Set to true if the transform to absolute space depends on the point
   // being mapped (in which case we can't use LocalToAbsoluteTransform).
   bool transform_depends_on_point = false;

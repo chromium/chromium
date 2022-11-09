@@ -26,7 +26,7 @@ double RoundCloseToZero(double number) {
   return std::abs(number) < 1e-7 ? 0 : number;
 }
 
-std::unique_ptr<JSONArray> TransformAsJSONArray(const TransformationMatrix& t) {
+std::unique_ptr<JSONArray> TransformAsJSONArray(const gfx::Transform& t) {
   auto array = std::make_unique<JSONArray>();
   for (int c = 0; c < 4; c++) {
     auto col = std::make_unique<JSONArray>();

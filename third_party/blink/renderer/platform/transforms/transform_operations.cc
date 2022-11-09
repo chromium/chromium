@@ -87,7 +87,7 @@ bool TransformOperations::operator==(const TransformOperations& o) const {
 
 void TransformOperations::ApplyRemaining(const gfx::SizeF& border_box_size,
                                          wtf_size_t start,
-                                         TransformationMatrix& t) const {
+                                         gfx::Transform& t) const {
   for (wtf_size_t i = start; i < operations_.size(); i++) {
     operations_[i]->Apply(t, border_box_size);
   }
@@ -135,8 +135,8 @@ TransformOperations::BlendRemainingByUsingMatrixInterpolation(
 
   // Evaluate blended matrix here to avoid creating a nested data structure of
   // unbounded depth.
-  TransformationMatrix from_transform;
-  TransformationMatrix to_transform;
+  gfx::Transform from_transform;
+  gfx::Transform to_transform;
   from.ApplyRemaining(gfx::SizeF(), matching_prefix_length, from_transform);
   ApplyRemaining(gfx::SizeF(), matching_prefix_length, to_transform);
 
@@ -216,8 +216,8 @@ TransformOperations TransformOperations::Accumulate(
   // Then, if there are leftover non-matching functions, accumulate the
   // remaining matrices.
   if (success && matching_prefix_length < max_path_length) {
-    TransformationMatrix from_transform;
-    TransformationMatrix to_transform;
+    gfx::Transform from_transform;
+    gfx::Transform to_transform;
     ApplyRemaining(gfx::SizeF(), matching_prefix_length, from_transform);
     to.ApplyRemaining(gfx::SizeF(), matching_prefix_length, to_transform);
 
@@ -282,8 +282,8 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
   if (from_degrees > to_degrees)
     std::swap(from_degrees, to_degrees);
 
-  TransformationMatrix from_matrix;
-  TransformationMatrix to_matrix;
+  gfx::Transform from_matrix;
+  gfx::Transform to_matrix;
   from_matrix.RotateAbout(from_transform.Axis(), from_degrees);
   to_matrix.RotateAbout(from_transform.Axis(), to_degrees);
 
@@ -364,7 +364,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
     if (radians < min_radians)
       continue;
 
-    TransformationMatrix rotation;
+    gfx::Transform rotation;
     rotation.RotateAbout(axis, Rad2deg(radians));
     box.ExpandTo(rotation.MapPoint(point));
   }
@@ -423,8 +423,8 @@ bool TransformOperations::BlendedBoundsForBox(const gfx::BoxF& box,
         }
         if (!from_transform || !to_transform)
           continue;
-        TransformationMatrix from_matrix;
-        TransformationMatrix to_matrix;
+        gfx::Transform from_matrix;
+        gfx::Transform to_matrix;
         from_transform->Apply(from_matrix, gfx::SizeF());
         to_transform->Apply(to_matrix, gfx::SizeF());
         gfx::BoxF from_box = from_matrix.MapBox(*bounds);

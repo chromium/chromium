@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace {
 
@@ -53,7 +53,7 @@ float XRDepthInformation::rawValueToMeters() const {
 
 XRRigidTransform* XRDepthInformation::normDepthBufferFromNormView() const {
   return MakeGarbageCollected<XRRigidTransform>(
-      TransformationMatrix(norm_depth_buffer_from_norm_view_));
+      norm_depth_buffer_from_norm_view_);
 }
 
 bool XRDepthInformation::ValidateFrame(ExceptionState& exception_state) const {

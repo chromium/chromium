@@ -16,35 +16,30 @@
 namespace blink {
 
 TEST(ComputedStyleUtilsTest, MatrixForce3D) {
-  TransformationMatrix identity;
-  EXPECT_EQ(ComputedStyleUtils::ValueForTransformationMatrix(identity, 1, false)
-                ->CssText(),
-            "matrix(1, 0, 0, 1, 0, 0)");
-  EXPECT_EQ(ComputedStyleUtils::ValueForTransformationMatrix(identity, 1, true)
-                ->CssText(),
+  gfx::Transform identity;
+  EXPECT_EQ(
+      ComputedStyleUtils::ValueForTransform(identity, 1, false)->CssText(),
+      "matrix(1, 0, 0, 1, 0, 0)");
+  EXPECT_EQ(ComputedStyleUtils::ValueForTransform(identity, 1, true)->CssText(),
             "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)");
 }
 
 TEST(ComputedStyleUtilsTest, MatrixZoom2D) {
-  auto matrix = TransformationMatrix::Affine(1, 2, 3, 4, 5, 6);
-  EXPECT_EQ(ComputedStyleUtils::ValueForTransformationMatrix(matrix, 1, false)
-                ->CssText(),
+  auto matrix = gfx::Transform::Affine(1, 2, 3, 4, 5, 6);
+  EXPECT_EQ(ComputedStyleUtils::ValueForTransform(matrix, 1, false)->CssText(),
             "matrix(1, 2, 3, 4, 5, 6)");
   matrix.Zoom(2);
-  EXPECT_EQ(ComputedStyleUtils::ValueForTransformationMatrix(matrix, 2, false)
-                ->CssText(),
+  EXPECT_EQ(ComputedStyleUtils::ValueForTransform(matrix, 2, false)->CssText(),
             "matrix(1, 2, 3, 4, 5, 6)");
 }
 
 TEST(ComputedStyleUtilsTest, MatrixZoom3D) {
-  auto matrix = TransformationMatrix::ColMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                                               11, 12, 13, 14, 15, 16);
-  EXPECT_EQ(ComputedStyleUtils::ValueForTransformationMatrix(matrix, 1, false)
-                ->CssText(),
+  auto matrix = gfx::Transform::ColMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                         13, 14, 15, 16);
+  EXPECT_EQ(ComputedStyleUtils::ValueForTransform(matrix, 1, false)->CssText(),
             "matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)");
   matrix.Zoom(2);
-  EXPECT_EQ(ComputedStyleUtils::ValueForTransformationMatrix(matrix, 2, false)
-                ->CssText(),
+  EXPECT_EQ(ComputedStyleUtils::ValueForTransform(matrix, 2, false)->CssText(),
             "matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)");
 }
 

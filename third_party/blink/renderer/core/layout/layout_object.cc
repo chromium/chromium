@@ -3361,7 +3361,7 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           !container->IsText() && path_preserves_3d;
 
   if (use_transforms && ShouldUseTransformFromContainer(container)) {
-    TransformationMatrix t;
+    gfx::Transform t;
     GetTransformFromContainer(container, container_offset, t);
     transform_state.ApplyTransform(t, preserve3d
                                           ? TransformState::kAccumulateTransform
@@ -3412,7 +3412,7 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
 
   const bool preserve3d = use_transforms && StyleRef().Preserves3D();
   if (use_transforms && ShouldUseTransformFromContainer(container)) {
-    TransformationMatrix t;
+    gfx::Transform t;
     GetTransformFromContainer(container, container_offset, t);
     transform_state.ApplyTransform(t, preserve3d
                                           ? TransformState::kAccumulateTransform
@@ -3453,7 +3453,7 @@ bool LayoutObject::ShouldUseTransformFromContainer(
 void LayoutObject::GetTransformFromContainer(
     const LayoutObject* container_object,
     const PhysicalOffset& offset_in_container,
-    TransformationMatrix& transform,
+    gfx::Transform& transform,
     const PhysicalSize* size) const {
   NOT_DESTROYED();
   transform.MakeIdentity();
@@ -3483,7 +3483,7 @@ void LayoutObject::GetTransformFromContainer(
     if (const auto* container_box = DynamicTo<LayoutBox>(container_object))
       perspective_origin = container_box->PerspectiveOrigin(size);
 
-    TransformationMatrix perspective_matrix;
+    gfx::Transform perspective_matrix;
     perspective_matrix.ApplyPerspectiveDepth(
         container_object->StyleRef().UsedPerspective());
     perspective_matrix.ApplyTransformOrigin(perspective_origin.x(),
@@ -3556,7 +3556,7 @@ void LayoutObject::LocalToAncestorRects(
   }
 }
 
-TransformationMatrix LayoutObject::LocalToAncestorTransform(
+gfx::Transform LayoutObject::LocalToAncestorTransform(
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();

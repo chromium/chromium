@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace device {
 class Gamepad;
@@ -67,7 +67,7 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
 
   uint32_t source_id() const { return state_.source_id; }
 
-  void SetInputFromPointer(const TransformationMatrix*);
+  void SetInputFromPointer(const gfx::Transform*);
   void SetGamepadConnected(bool state);
 
   // Gamepad::Client
@@ -83,9 +83,9 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
     return state_.target_ray_mode;
   }
 
-  absl::optional<TransformationMatrix> MojoFromInput() const;
+  absl::optional<gfx::Transform> MojoFromInput() const;
 
-  absl::optional<TransformationMatrix> InputFromPointer() const;
+  absl::optional<gfx::Transform> InputFromPointer() const;
 
   void OnSelectStart();
   void OnSelectEnd();
@@ -173,12 +173,12 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
 
   // Input device pose in mojo space. This is the grip pose for
   // tracked controllers, and the viewer pose for screen input.
-  std::unique_ptr<TransformationMatrix> mojo_from_input_;
+  std::unique_ptr<gfx::Transform> mojo_from_input_;
 
   // Pointer pose in input device space, this is the transform to apply to
   // mojo_from_input_ to get the pointer matrix. In most cases it should be
   // static.
-  std::unique_ptr<TransformationMatrix> input_from_pointer_;
+  std::unique_ptr<gfx::Transform> input_from_pointer_;
 };
 
 }  // namespace blink

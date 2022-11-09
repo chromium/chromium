@@ -50,8 +50,7 @@ class PLATFORM_EXPORT ScaleTransformOperation final
   double Y() const { return y_; }
   double Z() const { return z_; }
 
-  void Apply(TransformationMatrix& transform,
-             const gfx::SizeF&) const override {
+  void Apply(gfx::Transform& transform, const gfx::SizeF&) const override {
     transform.Scale3d(x_, y_, z_);
   }
   scoped_refptr<TransformOperation> Accumulate(

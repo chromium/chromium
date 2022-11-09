@@ -24,10 +24,10 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -176,7 +176,7 @@ class XRSession final
   // plane.
   ScriptPromise CreateAnchorHelper(
       ScriptState* script_state,
-      const blink::TransformationMatrix& native_origin_from_anchor,
+      const gfx::Transform& native_origin_from_anchor,
       const device::mojom::blink::XRNativeOriginInformationPtr&
           native_origin_information,
       absl::optional<uint64_t> maybe_plane_id,
@@ -187,7 +187,7 @@ class XRSession final
   // stationary reference space.
   struct ReferenceSpaceInformation {
     device::mojom::blink::XRNativeOriginInformationPtr native_origin;
-    blink::TransformationMatrix mojo_from_space;
+    gfx::Transform mojo_from_space;
   };
 
   // Helper for anchor creation - returns information about the reference space
@@ -335,7 +335,7 @@ class XRSession final
   // Note: currently, the information about the mojo_from_-floor-type spaces is
   // stored elsewhere, this method will not work for those reference space
   // types.
-  absl::optional<TransformationMatrix> GetMojoFrom(
+  absl::optional<gfx::Transform> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
   XRCPUDepthInformation* GetCpuDepthInformation(
@@ -585,7 +585,7 @@ class XRSession final
 
   Member<XRFrameRequestCallbackCollection> callback_collection_;
   // Viewer pose in mojo space.
-  std::unique_ptr<TransformationMatrix> mojo_from_viewer_;
+  std::unique_ptr<gfx::Transform> mojo_from_viewer_;
 
   bool pending_frame_ = false;
   bool resolving_frame_ = false;

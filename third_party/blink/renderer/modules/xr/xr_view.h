@@ -10,10 +10,10 @@
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 
@@ -28,7 +28,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRView(XRFrame*, XRViewData*, const TransformationMatrix&);
+  XRView(XRFrame*, XRViewData*, const gfx::Transform&);
 
   const String& eye() const { return eye_string_; }
   device::mojom::blink::XREye EyeValue() const { return eye_; }
@@ -86,16 +86,14 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
                                         float near_depth,
                                         float far_depth);
 
-  TransformationMatrix UnprojectPointer(double x,
-                                        double y,
-                                        double canvas_width,
-                                        double canvas_height);
+  gfx::Transform UnprojectPointer(double x,
+                                  double y,
+                                  double canvas_width,
+                                  double canvas_height);
 
   device::mojom::blink::XREye Eye() const { return eye_; }
-  const TransformationMatrix& MojoFromView() const { return mojo_from_view_; }
-  const TransformationMatrix& ProjectionMatrix() const {
-    return projection_matrix_;
-  }
+  const gfx::Transform& MojoFromView() const { return mojo_from_view_; }
+  const gfx::Transform& ProjectionMatrix() const { return projection_matrix_; }
   const gfx::Rect& Viewport() const { return viewport_; }
   bool IsFirstPersonObserver() const { return is_first_person_observer_; }
 
@@ -120,9 +118,9 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
 
  private:
   const device::mojom::blink::XREye eye_;
-  TransformationMatrix mojo_from_view_;
-  TransformationMatrix projection_matrix_;
-  TransformationMatrix inv_projection_;
+  gfx::Transform mojo_from_view_;
+  gfx::Transform projection_matrix_;
+  gfx::Transform inv_projection_;
   bool inv_projection_dirty_ = true;
   gfx::Rect viewport_;
   bool is_first_person_observer_ = false;

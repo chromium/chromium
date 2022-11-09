@@ -56,8 +56,7 @@ class PLATFORM_EXPORT SkewTransformOperation final : public TransformOperation {
  private:
   OperationType GetType() const override { return type_; }
 
-  void Apply(TransformationMatrix& transform,
-             const gfx::SizeF&) const override {
+  void Apply(gfx::Transform& transform, const gfx::SizeF&) const override {
     transform.Skew(angle_x_, angle_y_);
   }
 

@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -45,17 +45,16 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
 
   DOMMatrixReadOnly() = default;
   DOMMatrixReadOnly(const String&, ExceptionState&);
-  DOMMatrixReadOnly(const TransformationMatrix&, bool is2d = true);
+  explicit DOMMatrixReadOnly(const gfx::Transform&, bool is2d = true);
 
   template <typename T>
   DOMMatrixReadOnly(T sequence, int size) {
     if (size == 6) {
-      matrix_ =
-          TransformationMatrix::Affine(sequence[0], sequence[1], sequence[2],
+      matrix_ = gfx::Transform::Affine(sequence[0], sequence[1], sequence[2],
                                        sequence[3], sequence[4], sequence[5]);
       is2d_ = true;
     } else if (size == 16) {
-      matrix_ = TransformationMatrix::ColMajor(
+      matrix_ = gfx::Transform::ColMajor(
           sequence[0], sequence[1], sequence[2], sequence[3], sequence[4],
           sequence[5], sequence[6], sequence[7], sequence[8], sequence[9],
           sequence[10], sequence[11], sequence[12], sequence[13], sequence[14],
@@ -131,7 +130,7 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 
-  const TransformationMatrix& Matrix() const { return matrix_; }
+  const gfx::Transform& Matrix() const { return matrix_; }
 
   AffineTransform GetAffineTransform() const;
 
@@ -146,7 +145,7 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
 
   static bool ValidateAndFixup2D(DOMMatrix2DInit*);
   static bool ValidateAndFixup(DOMMatrixInit*, ExceptionState&);
-  TransformationMatrix matrix_;
+  gfx::Transform matrix_;
   bool is2d_ = true;
 };
 

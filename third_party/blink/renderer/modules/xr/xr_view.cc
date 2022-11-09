@@ -32,7 +32,7 @@ const double kDegToRad = M_PI / 180.0;
 
 XRView::XRView(XRFrame* frame,
                XRViewData* view_data,
-               const TransformationMatrix& ref_space_from_mojo)
+               const gfx::Transform& ref_space_from_mojo)
     : eye_(view_data->Eye()), frame_(frame), view_data_(view_data) {
   switch (eye_) {
     case device::mojom::blink::XREye::kLeft:
@@ -100,7 +100,7 @@ void XRViewData::UpdateView(const device::mojom::blink::XRViewPtr& view,
       fov->left_degrees * kDegToRad, fov->right_degrees * kDegToRad, depth_near,
       depth_far);
 
-  mojo_from_view_ = TransformationMatrix(view->mojo_from_view);
+  mojo_from_view_ = view->mojo_from_view;
 
   viewport_ = view->viewport;
   is_first_person_observer_ = view->is_first_person_observer;
@@ -120,7 +120,7 @@ void XRViewData::UpdateProjectionMatrixFromFoV(float up_rad,
   float y_scale = 2.0f / (up_tan + down_tan);
   float inv_nf = 1.0f / (near_depth - far_depth);
 
-  projection_matrix_ = TransformationMatrix::ColMajor(
+  projection_matrix_ = gfx::Transform::ColMajor(
       x_scale, 0.0f, 0.0f, 0.0f, 0.0f, y_scale, 0.0f, 0.0f,
       -((left_tan - right_tan) * x_scale * 0.5),
       ((up_tan - down_tan) * y_scale * 0.5), (near_depth + far_depth) * inv_nf,
@@ -134,7 +134,7 @@ void XRViewData::UpdateProjectionMatrixFromAspect(float fovy,
   float f = 1.0f / tanf(fovy / 2);
   float inv_nf = 1.0f / (near_depth - far_depth);
 
-  projection_matrix_ = TransformationMatrix::ColMajor(
+  projection_matrix_ = gfx::Transform::ColMajor(
       f / aspect, 0.0f, 0.0f, 0.0f, 0.0f, f, 0.0f, 0.0f, 0.0f, 0.0f,
       (far_depth + near_depth) * inv_nf, -1.0f, 0.0f, 0.0f,
       (2.0f * far_depth * near_depth) * inv_nf, 0.0f);
@@ -142,10 +142,10 @@ void XRViewData::UpdateProjectionMatrixFromAspect(float fovy,
   inv_projection_dirty_ = true;
 }
 
-TransformationMatrix XRViewData::UnprojectPointer(double x,
-                                                  double y,
-                                                  double canvas_width,
-                                                  double canvas_height) {
+gfx::Transform XRViewData::UnprojectPointer(double x,
+                                            double y,
+                                            double canvas_width,
+                                            double canvas_height) {
   // Recompute the inverse projection matrix if needed.
   if (inv_projection_dirty_) {
     inv_projection_ = projection_matrix_.InverseOrIdentity();
@@ -175,7 +175,7 @@ TransformationMatrix XRViewData::UnprojectPointer(double x,
   y_axis.GetNormalized(&y_axis);
 
   // TODO(bajones): There's probably a more efficient way to do this?
-  auto inv_pointer = TransformationMatrix::ColMajor(
+  auto inv_pointer = gfx::Transform::ColMajor(
       x_axis.x(), y_axis.x(), z_axis.x(), 0.0, x_axis.y(), y_axis.y(),
       z_axis.y(), 0.0, x_axis.z(), y_axis.z(), z_axis.z(), 0.0, 0.0, 0.0, 0.0,
       1.0);

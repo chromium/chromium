@@ -16,7 +16,7 @@ class XRTargetRaySpace : public XRSpace {
  public:
   XRTargetRaySpace(XRSession* session, XRInputSource* input_space);
 
-  absl::optional<TransformationMatrix> MojoFromNative() const override;
+  absl::optional<gfx::Transform> MojoFromNative() const override;
   bool EmulatedPosition() const override;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()

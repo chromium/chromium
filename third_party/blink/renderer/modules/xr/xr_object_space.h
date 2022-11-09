@@ -9,7 +9,7 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -19,7 +19,7 @@ class XRSession;
 // type T (for example XRPlane, XRAnchor). The type T has to have a
 // NativeOrigin() method, returning a
 // device::mojom::blink::XRNativeOriginInformationPtr, a MojoFromObject()
-// method, returning a absl::Optional<TransformationMatrix>, and IsStationary()
+// method, returning a absl::Optional<gfx::Transform>, and IsStationary()
 // method returning true if the object is supposed to be treated as stationary
 // for the purposes of anchor creation.
 //
@@ -36,7 +36,7 @@ class XRObjectSpace final : public XRSpace {
         object_(object),
         is_stationary_(object->IsStationary()) {}
 
-  absl::optional<TransformationMatrix> MojoFromNative() const override {
+  absl::optional<gfx::Transform> MojoFromNative() const override {
     return object_->MojoFromObject();
   }
 

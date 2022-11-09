@@ -63,9 +63,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 class Cursor;
@@ -2590,11 +2590,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // system of a container, taking transforms into account (kIgnoreTransforms is
   // not allowed).
   // Passing null for |ancestor| behaves the same as LocalToAncestorRect.
-  TransformationMatrix LocalToAncestorTransform(
-      const LayoutBoxModelObject* ancestor,
-      MapCoordinatesFlags = 0) const;
-  TransformationMatrix LocalToAbsoluteTransform(
-      MapCoordinatesFlags mode = 0) const {
+  gfx::Transform LocalToAncestorTransform(const LayoutBoxModelObject* ancestor,
+                                          MapCoordinatesFlags = 0) const;
+  gfx::Transform LocalToAbsoluteTransform(MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
     return LocalToAncestorTransform(nullptr, mode);
   }
@@ -3044,7 +3042,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // correct yet.
   void GetTransformFromContainer(const LayoutObject* container,
                                  const PhysicalOffset& offset_in_container,
-                                 TransformationMatrix&,
+                                 gfx::Transform&,
                                  const PhysicalSize* size = nullptr) const;
 
   bool CreatesGroup() const {

@@ -8,13 +8,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
 constexpr double kEpsilon = 0.0001;
 
-Vector<double> GetMatrixDataForTest(const TransformationMatrix& matrix);
+Vector<double> GetMatrixDataForTest(const gfx::Transform& matrix);
 DOMPointInit* MakePointForTest(double x, double y, double z, double w);
 
 }  // namespace blink

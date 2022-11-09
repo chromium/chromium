@@ -10,7 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -22,7 +22,7 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
   XRBoundedReferenceSpace(XRSession*, XRRigidTransform*);
   ~XRBoundedReferenceSpace() override;
 
-  absl::optional<TransformationMatrix> MojoFromNative() const override;
+  absl::optional<gfx::Transform> MojoFromNative() const override;
 
   HeapVector<Member<DOMPointReadOnly>> boundsGeometry();
 
@@ -37,7 +37,7 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
   void EnsureUpdated() const;
 
   mutable HeapVector<Member<DOMPointReadOnly>> offset_bounds_geometry_;
-  mutable std::unique_ptr<TransformationMatrix> mojo_from_bounded_native_;
+  mutable std::unique_ptr<gfx::Transform> mojo_from_bounded_native_;
   mutable uint32_t stage_parameters_id_ = 0;
 };
 

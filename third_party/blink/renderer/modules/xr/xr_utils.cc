@@ -10,26 +10,25 @@
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
 DOMFloat32Array* transformationMatrixToDOMFloat32Array(
-    const TransformationMatrix& matrix) {
+    const gfx::Transform& matrix) {
   float array[16];
   matrix.GetColMajorF(array);
   return DOMFloat32Array::Create(array, 16);
 }
 
-TransformationMatrix DOMFloat32ArrayToTransformationMatrix(DOMFloat32Array* m) {
+gfx::Transform DOMFloat32ArrayToTransform(DOMFloat32Array* m) {
   DCHECK_EQ(m->length(), 16u);
-  return TransformationMatrix::ColMajorF(m->Data());
+  return gfx::Transform::ColMajorF(m->Data());
 }
 
-TransformationMatrix WTFFloatVectorToTransformationMatrix(
-    const Vector<float>& m) {
+gfx::Transform WTFFloatVectorToTransform(const Vector<float>& m) {
   DCHECK_EQ(m.size(), 16u);
-  return TransformationMatrix::ColMajorF(m.data());
+  return gfx::Transform::ColMajorF(m.data());
 }
 
 // Normalize to have length = 1.0

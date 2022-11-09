@@ -41,8 +41,8 @@
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/skew_transform_operation.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -318,7 +318,7 @@ TransformOperations TransformBuilder::CreateTransformOperations(
         break;
       }
       case TransformOperation::kMatrix3D: {
-        auto matrix = TransformationMatrix::ColMajor(
+        auto matrix = gfx::Transform::ColMajor(
             To<CSSPrimitiveValue>(transform_value->Item(0)).GetDoubleValue(),
             To<CSSPrimitiveValue>(transform_value->Item(1)).GetDoubleValue(),
             To<CSSPrimitiveValue>(transform_value->Item(2)).GetDoubleValue(),

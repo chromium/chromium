@@ -60,8 +60,8 @@ void XRBoundedReferenceSpace::EnsureUpdated() const {
 
   if (stage_parameters) {
     // Use the transform given by stage_parameters if available.
-    mojo_from_bounded_native_ = std::make_unique<TransformationMatrix>(
-        stage_parameters->mojo_from_floor);
+    mojo_from_bounded_native_ =
+        std::make_unique<gfx::Transform>(stage_parameters->mojo_from_floor);
 
     // In order to ensure that the bounds continue to line up with the user's
     // physical environment we need to transform them from native to offset.
@@ -69,7 +69,7 @@ void XRBoundedReferenceSpace::EnsureUpdated() const {
     // TODO(https://crbug.com/1008466): move originOffset to separate class? If
     // yes, that class would need to apply a transform in the boundsGeometry
     // accessor.
-    TransformationMatrix offset_from_native = OffsetFromNativeMatrix();
+    gfx::Transform offset_from_native = OffsetFromNativeMatrix();
 
     // We may not have bounds if we've lost tracking after being created.
     // Whether we have them or not, we need to clear the existing bounds.
@@ -96,8 +96,7 @@ void XRBoundedReferenceSpace::EnsureUpdated() const {
       *XRReferenceSpaceEvent::Create(event_type_names::kReset, mutable_this));
 }
 
-absl::optional<TransformationMatrix> XRBoundedReferenceSpace::MojoFromNative()
-    const {
+absl::optional<gfx::Transform> XRBoundedReferenceSpace::MojoFromNative() const {
   EnsureUpdated();
 
   if (!mojo_from_bounded_native_)

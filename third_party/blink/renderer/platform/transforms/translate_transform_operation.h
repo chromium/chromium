@@ -65,7 +65,7 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   const Length& Y() const { return y_; }
   double Z() const { return z_; }
 
-  void Apply(TransformationMatrix& transform,
+  void Apply(gfx::Transform& transform,
              const gfx::SizeF& border_box_size) const override {
     transform.Translate3d(X(border_box_size), Y(border_box_size), Z());
   }

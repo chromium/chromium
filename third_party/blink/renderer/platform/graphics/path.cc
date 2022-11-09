@@ -192,8 +192,8 @@ Path& Path::Transform(const AffineTransform& xform) {
   return *this;
 }
 
-Path& Path::Transform(const TransformationMatrix& transformation_matrix) {
-  path_.transform(gfx::TransformToFlattenedSkMatrix(transformation_matrix));
+Path& Path::Transform(const gfx::Transform& transform) {
+  path_.transform(gfx::TransformToFlattenedSkMatrix(transform));
   return *this;
 }
 

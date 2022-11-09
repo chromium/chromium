@@ -17,9 +17,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -94,7 +94,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     TransformAndOrigin() = default;
     explicit TransformAndOrigin(const AffineTransform&);
     // These constructors are not explicit so that we can use gfx::Vector2dF or
-    // TransformationMatrix directly in the initialization list of State.
+    // gfx::Transform directly in the initialization list of State.
     // NOLINTNEXTLINE(google-explicit-constructor)
     TransformAndOrigin(const gfx::Vector2dF& translation_2d)
         : translation_2d_(translation_2d) {}
@@ -102,7 +102,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     // the transform is identity or a 2d translation, the translation_2d version
     // should be used instead.
     // NOLINTNEXTLINE(google-explicit-constructor)
-    TransformAndOrigin(const TransformationMatrix& matrix,
+    TransformAndOrigin(const gfx::Transform& matrix,
                        const gfx::Point3F& origin = gfx::Point3F()) {
       matrix_and_origin_ = std::make_unique<MatrixAndOrigin>(matrix, origin);
     }
@@ -116,11 +116,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
       return translation_2d_;
     }
 
-    const TransformationMatrix& Matrix() const {
+    const gfx::Transform& Matrix() const {
       DCHECK(matrix_and_origin_);
       return matrix_and_origin_->matrix;
     }
-    TransformationMatrix SlowMatrix() const;
+    gfx::Transform SlowMatrix() const;
 
     gfx::Point3F Origin() const {
       return matrix_and_origin_ ? matrix_and_origin_->origin : gfx::Point3F();
@@ -146,9 +146,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
    private:
     struct MatrixAndOrigin {
-      MatrixAndOrigin(const TransformationMatrix& m, const gfx::Point3F& o)
+      MatrixAndOrigin(const gfx::Transform& m, const gfx::Point3F& o)
           : matrix(m), origin(o) {}
-      TransformationMatrix matrix;
+      gfx::Transform matrix;
       gfx::Point3F origin;
       USING_FAST_MALLOC(MatrixAndOrigin);
     };
@@ -269,20 +269,20 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return state_.transform_and_origin.Translation2D();
   }
   // Only available when IsIdentityOr2DTranslation() is false.
-  const TransformationMatrix& Matrix() const {
+  const gfx::Transform& Matrix() const {
     return state_.transform_and_origin.Matrix();
   }
 
-  TransformationMatrix MatrixWithOriginApplied() const {
-    TransformationMatrix result = Matrix();
+  gfx::Transform MatrixWithOriginApplied() const {
+    gfx::Transform result = Matrix();
     result.ApplyTransformOrigin(Origin().x(), Origin().y(), Origin().z());
     return result;
   }
 
-  // The slow version always return meaningful TransformationMatrix regardless
+  // The slow version always return meaningful gfx::Transform regardless
   // of IsIdentityOr2DTranslation(). Should be used only in contexts that are
   // not performance sensitive.
-  TransformationMatrix SlowMatrix() const {
+  gfx::Transform SlowMatrix() const {
     return state_.transform_and_origin.SlowMatrix();
   }
 

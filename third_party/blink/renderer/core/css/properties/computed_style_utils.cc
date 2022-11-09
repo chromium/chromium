@@ -1969,8 +1969,8 @@ CSSValue* ComputedStyleUtils::ValueForBorderRadiusCorner(
       CSSValuePair::kDropIdenticalValues);
 }
 
-CSSFunctionValue* ComputedStyleUtils::ValueForTransformationMatrix(
-    const TransformationMatrix& matrix,
+CSSFunctionValue* ComputedStyleUtils::ValueForTransform(
+    const gfx::Transform& matrix,
     float zoom,
     bool force_matrix3d) {
   if (matrix.Is2dTransform() && !force_matrix3d) {
@@ -2134,10 +2134,10 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
     case TransformOperation::kRotateAroundOrigin: {
       // TODO(https://github.com/w3c/csswg-drafts/issues/5011):
       // Update this once there is consensus.
-      TransformationMatrix matrix;
+      gfx::Transform matrix;
       operation.Apply(matrix, gfx::SizeF(0, 0));
-      return ValueForTransformationMatrix(matrix, zoom,
-                                          /*force_matrix3d=*/false);
+      return ValueForTransform(matrix, zoom,
+                               /*force_matrix3d=*/false);
     }
     case TransformOperation::kSkewX: {
       const auto& skew = To<SkewTransformOperation>(operation);
@@ -2177,14 +2177,14 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
     }
     case TransformOperation::kMatrix: {
       const auto& matrix = To<MatrixTransformOperation>(operation).Matrix();
-      return ValueForTransformationMatrix(matrix, zoom,
-                                          /*force_matrix3d=*/false);
+      return ValueForTransform(matrix, zoom,
+                               /*force_matrix3d=*/false);
     }
     case TransformOperation::kMatrix3D: {
       const auto& matrix = To<Matrix3DTransformOperation>(operation).Matrix();
       // Force matrix3d serialization
-      return ValueForTransformationMatrix(matrix, zoom,
-                                          /*force_matrix3d=*/true);
+      return ValueForTransform(matrix, zoom,
+                               /*force_matrix3d=*/true);
     }
     case TransformOperation::kInterpolated:
       // TODO(https://github.com/w3c/csswg-drafts/issues/2854):
@@ -2192,10 +2192,10 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
       // This currently converts the operation to a matrix, using box_size if
       // provided, 0x0 if not (returning all but the relative translate
       // portion of the transform). Update this once the spec is updated.
-      TransformationMatrix matrix;
+      gfx::Transform matrix;
       operation.Apply(matrix, box_size);
-      return ValueForTransformationMatrix(matrix, zoom,
-                                          /*force_matrix3d=*/false);
+      return ValueForTransform(matrix, zoom,
+                               /*force_matrix3d=*/false);
   }
 }
 
@@ -2247,7 +2247,7 @@ CSSValue* ComputedStyleUtils::ResolvedTransform(
 
   gfx::RectF reference_box = ReferenceBoxForTransform(*layout_object);
 
-  TransformationMatrix transform;
+  gfx::Transform transform;
   style.ApplyTransform(
       transform, reference_box, ComputedStyle::kIncludeTransformOperations,
       ComputedStyle::kExcludeTransformOrigin, ComputedStyle::kExcludeMotionPath,
@@ -2256,8 +2256,8 @@ CSSValue* ComputedStyleUtils::ResolvedTransform(
   // FIXME: Need to print out individual functions
   // (https://bugs.webkit.org/show_bug.cgi?id=23924)
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*ValueForTransformationMatrix(transform, style.EffectiveZoom(),
-                                             /*force_matrix3d=*/false));
+  list->Append(*ValueForTransform(transform, style.EffectiveZoom(),
+                                  /*force_matrix3d=*/false));
 
   return list;
 }

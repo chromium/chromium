@@ -43,10 +43,10 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_FALSE(GetScreenTransform(node));
 
     EXPECT_EQ(&t0(), cache.plane_root());
-    TransformationMatrix actual_to_plane_root;
+    gfx::Transform actual_to_plane_root;
     cache.ApplyToPlaneRoot(actual_to_plane_root);
     EXPECT_EQ(MakeTranslationMatrix(x, y), actual_to_plane_root);
-    TransformationMatrix actual_from_plane_root;
+    gfx::Transform actual_from_plane_root;
     cache.ApplyFromPlaneRoot(actual_from_plane_root);
     EXPECT_EQ(MakeTranslationMatrix(-x, -y), actual_from_plane_root);
   }
@@ -54,7 +54,7 @@ class GeometryMapperTransformCacheTest : public testing::Test {
   static void CheckRootAsPlaneRoot(
       const TransformPaintPropertyNode& node,
       const TransformPaintPropertyNode& root_of_2d_translation,
-      const TransformationMatrix& to_plane_root,
+      const gfx::Transform& to_plane_root,
       double translate_x,
       double translate_y) {
     const auto& cache = GetTransformCache(node);
@@ -69,17 +69,17 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_EQ(to_plane_root, cache.to_plane_root());
     EXPECT_EQ(to_plane_root.InverseOrIdentity(), cache.from_plane_root());
 
-    TransformationMatrix actual_to_screen;
+    gfx::Transform actual_to_screen;
     cache.ApplyToScreen(actual_to_screen);
     EXPECT_EQ(to_plane_root, actual_to_screen);
-    TransformationMatrix actual_projection_from_screen;
+    gfx::Transform actual_projection_from_screen;
     cache.ApplyProjectionFromScreen(actual_projection_from_screen);
     EXPECT_EQ(to_plane_root.InverseOrIdentity(), actual_projection_from_screen);
   }
 
   static void CheckPlaneRootSameAs2dTranslationRoot(
       const TransformPaintPropertyNode& node,
-      const TransformationMatrix& to_screen,
+      const gfx::Transform& to_screen,
       const TransformPaintPropertyNode& plane_root,
       double translate_x,
       double translate_y) {
@@ -103,9 +103,9 @@ class GeometryMapperTransformCacheTest : public testing::Test {
 
   static void CheckPlaneRootDifferent2dTranslationRoot(
       const TransformPaintPropertyNode& node,
-      const TransformationMatrix& to_screen,
+      const gfx::Transform& to_screen,
       const TransformPaintPropertyNode& plane_root,
-      const TransformationMatrix& to_plane_root,
+      const gfx::Transform& to_plane_root,
       const TransformPaintPropertyNode& root_of_2d_translation,
       double translate_x,
       double translate_y) {

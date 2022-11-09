@@ -1639,11 +1639,11 @@ TEST_F(MapCoordinatesTest, LocalToAbsoluteTransform) {
   )HTML");
   auto* container =
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("container"));
-  TransformationMatrix container_matrix = container->LocalToAbsoluteTransform();
+  gfx::Transform container_matrix = container->LocalToAbsoluteTransform();
   EXPECT_TRUE(container_matrix.IsIdentity());
 
   LayoutObject* child = GetLayoutObjectByElementId("child");
-  TransformationMatrix child_matrix = child->LocalToAbsoluteTransform();
+  gfx::Transform child_matrix = child->LocalToAbsoluteTransform();
   EXPECT_FALSE(child_matrix.IsIdentityOrTranslation());
   EXPECT_TRUE(child_matrix.Is2dTransform());
   EXPECT_EQ(gfx::PointF(), child_matrix.ProjectPoint(gfx::PointF()));
@@ -1670,7 +1670,7 @@ TEST_F(MapCoordinatesTest, LocalToAncestorTransform) {
   auto* rotate2 =
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("rotate2"));
   LayoutObject* child = GetLayoutObjectByElementId("child");
-  TransformationMatrix matrix;
+  gfx::Transform matrix;
 
   matrix = child->LocalToAncestorTransform(rotate2);
   EXPECT_TRUE(matrix.IsIdentity());
@@ -1713,7 +1713,7 @@ TEST_F(MapCoordinatesTest, LocalToAbsoluteTransformFlattens) {
   )HTML");
   LayoutObject* child1 = GetLayoutObjectByElementId("child1");
   LayoutObject* child2 = GetLayoutObjectByElementId("child2");
-  TransformationMatrix matrix;
+  gfx::Transform matrix;
 
   matrix = child1->LocalToAbsoluteTransform();
 
