@@ -60,6 +60,7 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
 
 WaylandOutput::Metrics::Metrics() = default;
 WaylandOutput::Metrics::Metrics(Id output_id,
+                                int64_t display_id,
                                 gfx::Point origin,
                                 gfx::Size logical_size,
                                 gfx::Size physical_size,
@@ -69,6 +70,7 @@ WaylandOutput::Metrics::Metrics(Id output_id,
                                 int32_t logical_transform,
                                 const std::string& description)
     : output_id(output_id),
+      display_id(display_id),
       origin(origin),
       logical_size(logical_size),
       physical_size(physical_size),
@@ -77,6 +79,7 @@ WaylandOutput::Metrics::Metrics(Id output_id,
       panel_transform(panel_transform),
       logical_transform(logical_transform),
       description(description) {}
+WaylandOutput::Metrics::Metrics(const Metrics& copy) = default;
 WaylandOutput::Metrics::~Metrics() = default;
 
 WaylandOutput::WaylandOutput(Id output_id,
@@ -136,9 +139,9 @@ float WaylandOutput::GetUIScaleFactor() const {
 
 WaylandOutput::Metrics WaylandOutput::GetMetrics() const {
   // TODO(aluh): Change to designated initializers once C++20 is supported.
-  return {output_id(),  origin(),       logical_size(),    physical_size(),
-          insets(),     scale_factor(), panel_transform(), logical_transform(),
-          description()};
+  return {output_id(),         display_id(), origin(),       logical_size(),
+          physical_size(),     insets(),     scale_factor(), panel_transform(),
+          logical_transform(), description()};
 }
 
 int32_t WaylandOutput::logical_transform() const {
@@ -167,8 +170,19 @@ const std::string& WaylandOutput::description() const {
   return xdg_output_ ? xdg_output_->description() : description_;
 }
 
+int64_t WaylandOutput::display_id() const {
+  return aura_output_ && aura_output_->display_id().has_value()
+             ? aura_output_->display_id().value()
+             : output_id_;
+}
+
 const std::string& WaylandOutput::name() const {
   return xdg_output_ ? xdg_output_->name() : name_;
+}
+
+bool WaylandOutput::IsReady() const {
+  return !physical_size_.IsEmpty() &&
+         (!aura_output_ || aura_output_->IsReady());
 }
 
 zaura_output* WaylandOutput::get_zaura_output() {
@@ -193,6 +207,10 @@ void WaylandOutput::TriggerDelegateNotifications() {
       scale_factor_ = max_physical_side / max_logical_side;
     }
   }
+  // Wait until the aura output receives the display id.
+  if (aura_output_ && !aura_output_->IsReady())
+    return;
+
   delegate_->OnOutputHandleMetrics(GetMetrics());
 }
 

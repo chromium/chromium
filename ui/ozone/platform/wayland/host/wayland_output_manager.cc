@@ -25,7 +25,7 @@ WaylandOutputManager::~WaylandOutputManager() = default;
 // instantiate a valid WaylandScreen when requested by the upper layer.
 bool WaylandOutputManager::IsOutputReady() const {
   for (const auto& it : output_list_) {
-    if (it.second->is_ready())
+    if (it.second->IsReady())
       return true;
   }
   return false;
@@ -54,7 +54,7 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
     wayland_output->InitializeColorManagementOutput(
         connection_->zcr_color_manager());
   }
-  DCHECK(!wayland_output->is_ready());
+  DCHECK(!wayland_output->IsReady());
 
   output_list_[output_id] = std::move(wayland_output);
 }
@@ -116,7 +116,7 @@ void WaylandOutputManager::InitWaylandScreen(WaylandScreen* screen) {
   // automatically, and the |wayland_screen_| is notified immediately about the
   // changes.
   for (const auto& output : output_list_) {
-    if (output.second->is_ready()) {
+    if (output.second->IsReady()) {
       screen->OnOutputAddedOrUpdated(output.second->GetMetrics());
     }
   }
@@ -131,8 +131,11 @@ WaylandOutput* WaylandOutputManager::GetOutput(WaylandOutput::Id id) const {
 }
 
 WaylandOutput* WaylandOutputManager::GetPrimaryOutput() const {
-  if (wayland_screen_)
-    return GetOutput(wayland_screen_->GetPrimaryDisplay().id());
+  if (wayland_screen_) {
+    auto output_id = wayland_screen_->GetOutputIdForDisplayId(
+        wayland_screen_->GetPrimaryDisplay().id());
+    return GetOutput(output_id);
+  }
   return nullptr;
 }
 

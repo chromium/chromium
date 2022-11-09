@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -44,6 +45,8 @@ class WaylandScreen : public PlatformScreen {
 
   void OnOutputAddedOrUpdated(const WaylandOutput::Metrics& metrics);
   void OnOutputRemoved(uint32_t output_id);
+
+  uint32_t GetOutputIdForDisplayId(int64_t display_id);
 
   void OnTabletStateChanged(display::TabletState tablet_state);
 
@@ -104,9 +107,9 @@ class WaylandScreen : public PlatformScreen {
   };
 
   void AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics);
-
   raw_ptr<WaylandConnection> connection_ = nullptr;
 
+  base::flat_map<WaylandOutput::Id, int64_t> display_id_map_;
   display::DisplayList display_list_;
 
   base::ObserverList<display::DisplayObserver> observers_;

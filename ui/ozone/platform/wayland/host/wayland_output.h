@@ -28,10 +28,12 @@ class WaylandZAuraOutput;
 class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
  public:
   // Instances of this class are identified by an 32-bit unsigned int value,
-  // corresponding to its global wl_output object 'name' value. It is mostly
-  // used interchangeably with WaylandScreen's display::Display::id property,
-  // which is an int64_t instead, though it is worth bearing in mind they are
-  // slightly different, under the hood.
+  // corresponding to its global wl_output object 'name' value.  On
+  // wayland-linux, it is mostly used interchangeably with WaylandScreen's
+  // `display::Display::id1` property, which is an int64_t instead, though it is
+  // worth bearing in mind they are slightly different, under the hood.
+  // On lacros, the display id sent from ash-chrome is used for
+  // `display::Display::id`.
   using Id = uint32_t;
 
   static constexpr char kInterfaceName[] = "wl_output";
@@ -51,6 +53,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
     // https://groups.google.com/a/google.com/g/chromeos-chatty-eng/c/nM1_QC6qcuA
     Metrics();
     Metrics(Id output_id,
+            int64_t display_id,
             gfx::Point origin,
             gfx::Size logical_size,
             gfx::Size physical_size,
@@ -59,9 +62,11 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
             int32_t panel_transform,
             int32_t logical_transform,
             const std::string& description);
+    Metrics(const Metrics&);
     ~Metrics();
 
     Id output_id = 0;
+    int64_t display_id = -1;
     gfx::Point origin;
     gfx::Size logical_size;
     gfx::Size physical_size;
@@ -103,15 +108,16 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   gfx::Size logical_size() const;
   gfx::Size physical_size() const { return physical_size_; }
   gfx::Insets insets() const;
+  int64_t display_id() const;
   const std::string& name() const;
   const std::string& description() const;
   WaylandZcrColorManagementOutput* color_management_output() const {
     return color_management_output_.get();
   }
 
-  // Tells if the output has already received physical screen dimensions in the
-  // global compositor space.
-  bool is_ready() const { return !physical_size_.IsEmpty(); }
+  // Tells if the output has already received necessary screen information such
+  // as physical screen dimensions in the global compositor space.
+  bool IsReady() const;
 
   wl_output* get_output() { return output_.get(); }
   zaura_output* get_zaura_output();

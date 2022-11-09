@@ -111,7 +111,6 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
     zaura_surface_set_frame(aura_surface_.get(),
                             ZAURA_SURFACE_FRAME_TYPE_SHADOW);
   }
-
   if (screen_coordinates_enabled_)
     SetBoundsInDIP(GetBoundsInDIP());
 
