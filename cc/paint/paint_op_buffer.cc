@@ -969,7 +969,7 @@ void UpdateTypeAndSkip(T* op) {
 template <typename T>
 class PaintOpDeserializer {
  public:
-  static_assert(std::is_convertible<T, PaintOp>::value, "T not a PaintOp.");
+  static_assert(std::is_base_of<PaintOp, T>::value, "T not a PaintOp.");
 
   explicit PaintOpDeserializer(const volatile void* input,
                                size_t input_size,
@@ -2771,6 +2771,8 @@ AnnotateOp::AnnotateOp(PaintCanvas::AnnotationType annotation_type,
       data(std::move(data)) {}
 
 AnnotateOp::~AnnotateOp() = default;
+AnnotateOp::AnnotateOp(const AnnotateOp&) = default;
+AnnotateOp& AnnotateOp::operator=(const AnnotateOp&) = default;
 
 DrawImageOp::DrawImageOp() : PaintOpWithFlags(kType) {}
 
@@ -2832,6 +2834,8 @@ DrawRecordOp::DrawRecordOp(sk_sp<const PaintRecord> record)
     : PaintOp(kType), record(std::move(record)) {}
 
 DrawRecordOp::~DrawRecordOp() = default;
+DrawRecordOp::DrawRecordOp(const DrawRecordOp&) = default;
+DrawRecordOp& DrawRecordOp::operator=(const DrawRecordOp&) = default;
 
 size_t DrawRecordOp::AdditionalBytesUsed() const {
   return record->bytes_used();
@@ -2858,6 +2862,8 @@ DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
 DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
 
 DrawSkottieOp::~DrawSkottieOp() = default;
+DrawSkottieOp::DrawSkottieOp(const DrawSkottieOp&) = default;
+DrawSkottieOp& DrawSkottieOp::operator=(const DrawSkottieOp&) = default;
 
 bool DrawSkottieOp::HasDiscardableImages() const {
   return !images.empty();
@@ -2887,6 +2893,8 @@ DrawTextBlobOp::DrawTextBlobOp(sk_sp<SkTextBlob> blob,
       node_id(node_id) {}
 
 DrawTextBlobOp::~DrawTextBlobOp() = default;
+DrawTextBlobOp::DrawTextBlobOp(const DrawTextBlobOp&) = default;
+DrawTextBlobOp& DrawTextBlobOp::operator=(const DrawTextBlobOp&) = default;
 
 PaintOpBuffer::CompositeIterator::CompositeIterator(
     const PaintOpBuffer* buffer,

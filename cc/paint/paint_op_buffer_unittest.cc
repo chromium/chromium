@@ -46,6 +46,7 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Key;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -4254,40 +4255,41 @@ TEST(PaintOpBufferTest, PathCaching) {
 TEST(IteratorTest, IterationTest) {
   PaintOpBuffer buffer;
   buffer.push<SaveOp>();
-  buffer.push<RestoreOp>();
+  buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
   EXPECT_THAT(PaintOpBuffer::Iterator(&buffer),
-              ElementsAre(SaveOp(), RestoreOp()));
+              ElementsAre(Eq(SaveOp()), Eq(SetMatrixOp(SkM44::Scale(1, 2)))));
 }
 
 TEST(IteratorTest, OffsetIterationTest) {
   PaintOpBuffer buffer;
   const PaintOp& op1 = buffer.push<SaveOp>();
   const PaintOp& op2 = buffer.push<RestoreOp>();
-  const PaintOp& op3 = buffer.push<NoopOp>();
+  buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
 
   std::vector<size_t> offsets = {0, static_cast<size_t>(op1.skip + op2.skip)};
   EXPECT_THAT(PaintOpBuffer::OffsetIterator(&buffer, &offsets),
-              ElementsAre(op1, op3));
+              ElementsAre(Eq(SaveOp()), Eq(SetMatrixOp(SkM44::Scale(1, 2)))));
 }
 
 TEST(IteratorTest, CompositeIterationTest) {
   PaintOpBuffer buffer;
   const PaintOp& op1 = buffer.push<SaveOp>();
   const PaintOp& op2 = buffer.push<RestoreOp>();
-  const PaintOp& op3 = buffer.push<NoopOp>();
+  buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
   std::vector<size_t> offsets = {0, static_cast<size_t>(op1.skip + op2.skip)};
 
   EXPECT_THAT(PaintOpBuffer::CompositeIterator(&buffer, /*offsets=*/nullptr),
-              ElementsAre(op1, op2, op3));
+              ElementsAre(Eq(SaveOp()), Eq(RestoreOp()),
+                          Eq(SetMatrixOp(SkM44::Scale(1, 2)))));
 
   EXPECT_THAT(PaintOpBuffer::CompositeIterator(&buffer, &offsets),
-              ElementsAre(op1, op3));
+              ElementsAre(Eq(SaveOp()), Eq(SetMatrixOp(SkM44::Scale(1, 2)))));
 }
 
 TEST(IteratorTest, EqualityTest) {
   PaintOpBuffer buffer;
   buffer.push<SaveOp>();
-  buffer.push<RestoreOp>();
+  buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
   PaintOpBuffer::Iterator iter1(&buffer);
   PaintOpBuffer::Iterator iter2(&buffer);
   EXPECT_TRUE(iter1 == iter2);
@@ -4298,7 +4300,7 @@ TEST(IteratorTest, OffsetEqualityTest) {
   PaintOpBuffer buffer;
   size_t offset = 0;
   offset += buffer.push<SaveOp>().skip;
-  offset += buffer.push<RestoreOp>().skip;
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).skip;
   buffer.push<NoopOp>();
 
   std::vector<size_t> offsets = {0, offset};
@@ -4312,7 +4314,7 @@ TEST(IteratorTest, OffsetEqualityTest) {
 TEST(IteratorTest, CompositeEqualityTest) {
   PaintOpBuffer buffer;
   buffer.push<SaveOp>();
-  buffer.push<RestoreOp>();
+  buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
 
   PaintOpBuffer::CompositeIterator iter1(&buffer, /*offsets=*/nullptr);
   PaintOpBuffer::CompositeIterator iter2(&buffer, /*offsets=*/nullptr);
@@ -4324,7 +4326,7 @@ TEST(IteratorTest, CompositeOffsetEqualityTest) {
   PaintOpBuffer buffer;
   size_t offset = 0;
   offset += buffer.push<SaveOp>().skip;
-  offset += buffer.push<RestoreOp>().skip;
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).skip;
   buffer.push<NoopOp>();
 
   std::vector<size_t> offsets = {0, offset};
@@ -4350,7 +4352,7 @@ TEST(IteratorTest, CompositeOffsetBoolCheck) {
   PaintOpBuffer buffer;
   size_t offset = 0;
   offset += buffer.push<SaveOp>().skip;
-  offset += buffer.push<RestoreOp>().skip;
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).skip;
   buffer.push<NoopOp>();
 
   PaintOpBuffer::CompositeIterator iter(&buffer, /*offsets=*/nullptr);
