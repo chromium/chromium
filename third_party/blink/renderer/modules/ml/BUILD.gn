@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/blink/renderer/modules/ml/webnn/features.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("ml") {
@@ -19,4 +20,30 @@ blink_modules_sources("ml") {
   ]
 
   deps = [ "//components/ml/mojom:mojom_blink" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ml_model_loader_test.cc",
+    "webnn/ml_graph_builder_test.cc",
+    "webnn/ml_graph_builder_test.h",
+  ]
+
+  deps = [
+    "//components/ml/mojom:mojom_blink",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+
+  if (build_webnn_with_xnnpack) {
+    sources += [ "webnn/ml_graph_xnnpack_test.cc" ]
+    deps += [ "//third_party/xnnpack" ]
+  }
 }

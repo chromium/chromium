@@ -7,7 +7,6 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
-import("//third_party/blink/renderer/modules/ml/webnn/features.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/webrtc/webrtc.gni")
 
@@ -521,8 +520,6 @@ source_set("unit_tests") {
     "mediastream/video_track_adapter_unittest.cc",
     "mediastream/webaudio_media_stream_audio_sink_test.cc",
     "mediastream/webmediaplayer_ms_test.cc",
-    "ml/webnn/ml_graph_builder_test.cc",
-    "ml/webnn/ml_graph_builder_test.h",
     "nfc/nfc_proxy_test.cc",
     "notifications/notification_data_test.cc",
     "notifications/notification_resources_loader_test.cc",
@@ -675,7 +672,7 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/modules/indexeddb:unit_tests",
     "//third_party/blink/renderer/modules/mediarecorder:buildflags",
     "//third_party/blink/renderer/modules/mediastream:test_support",
-    "//third_party/blink/renderer/modules/ml/webnn:buildflags",
+    "//third_party/blink/renderer/modules/ml:unit_tests",
     "//third_party/blink/renderer/modules/peerconnection:test_support",
     "//third_party/blink/renderer/modules/storage:unit_tests",
     "//third_party/blink/renderer/modules/webcodecs:unit_tests",
@@ -697,11 +694,6 @@ source_set("unit_tests") {
   # we need to compile in the same way as would happen when current_os="android".
   if (target_os != "android") {
     deps += [ "//third_party/blink/renderer/modules/direct_sockets:unit_tests" ]
-  }
-
-  if (build_webnn_with_xnnpack) {
-    sources += [ "ml/webnn/ml_graph_xnnpack_test.cc" ]
-    deps += [ "//third_party/xnnpack" ]
   }
 
   data_deps = [

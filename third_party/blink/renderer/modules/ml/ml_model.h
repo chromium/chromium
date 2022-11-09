@@ -23,7 +23,7 @@ namespace blink {
 class ExecutionContext;
 class ScriptState;
 
-class MLModel final : public ScriptWrappable {
+class MODULES_EXPORT MLModel final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

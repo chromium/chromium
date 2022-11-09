@@ -24,7 +24,7 @@ class MLContext;
 class ScriptState;
 class ScriptPromiseResolver;
 
-class MLModelLoader final : public ScriptWrappable {
+class MODULES_EXPORT MLModelLoader final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
