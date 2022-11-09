@@ -6,7 +6,9 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/digital_asset_links/OriginVerificationScheduler.java",
     "java/src/org/chromium/components/digital_asset_links/OriginVerifier.java",
+    "java/src/org/chromium/components/digital_asset_links/OriginVerifierHelper.java",
     "java/src/org/chromium/components/digital_asset_links/Relationship.java",
     "java/src/org/chromium/components/digital_asset_links/VerificationResultStore.java",
   ]
