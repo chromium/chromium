@@ -93,6 +93,8 @@
 
 namespace blink {
 
+extern uint64_t RecordReplayNetworkRequestId(uint64_t inspector_id);
+
 namespace {
 
 enum class RequestOutcome { kSuccess, kFail };
@@ -946,9 +948,6 @@ void ResourceLoader::DidReceiveResponse(const WebURLResponse& response) {
 
 void ResourceLoader::DidReceiveResponseInternal(
     const ResourceResponse& response) {
-  // https://linear.app/replay/issue/RUN-765
-  recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal Start");
-
   const ResourceRequestHead& request = resource_->GetResourceRequest();
 
   if (request.IsAutomaticUpgrade()) {
@@ -964,9 +963,6 @@ void ResourceLoader::DidReceiveResponseInternal(
   }
 
   if (fetcher_->GetProperties().IsDetached()) {
-    // https://linear.app/replay/issue/RUN-765
-    recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal #1");
-
     // If the fetch context is already detached, we don't need further signals,
     // so let's cancel the request.
     HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
@@ -996,9 +992,6 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   if (base::Optional<ResourceRequestBlockedReason> blocked_reason =
           CheckResponseNosniff(request_context, nosniffed_response)) {
-    // https://linear.app/replay/issue/RUN-765
-    recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal #2");
-
     HandleError(ResourceError::CancelledDueToAccessCheckError(
         response.CurrentRequestUrl(), blocked_reason.value()));
     return;
@@ -1011,9 +1004,6 @@ void ResourceLoader::DidReceiveResponseInternal(
           network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp &&
       !response.CurrentRequestUrl().ProtocolIsData() &&
       !response.CurrentRequestUrl().ProtocolIs("blob")) {
-    // https://linear.app/replay/issue/RUN-765
-    recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal #3");
-
     DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
     HandleError(ResourceError::BlockedByResponse(
         response.CurrentRequestUrl(), network::mojom::BlockedByResponseReason::
@@ -1063,9 +1053,6 @@ void ResourceLoader::DidReceiveResponseInternal(
                              response_url, options,
                              ReportingDisposition::kReport, redirect_info);
     if (blocked_reason) {
-      // https://linear.app/replay/issue/RUN-765
-      recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal #4");
-
       HandleError(ResourceError::CancelledDueToAccessCheckError(
           response_url, blocked_reason.value()));
       return;
@@ -1074,9 +1061,6 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   if (base::FeatureList::IsEnabled(
           features::kSendCnameAliasesToSubresourceFilterFromRenderer)) {
-    // https://linear.app/replay/issue/RUN-765
-    recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal #5");
-
     CnameAliasMetricInfo info;
     bool should_block = ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
         response.DnsAliases(), request.Url(), original_url, resource_type,
@@ -1093,9 +1077,6 @@ void ResourceLoader::DidReceiveResponseInternal(
       response.HttpStatusCode() == 206 && response.HasRangeRequested() &&
       !initial_request.HttpHeaderFields().Contains(
           net::HttpRequestHeaders::kRange)) {
-    // https://linear.app/replay/issue/RUN-765
-    recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal #6");
-
     HandleError(ResourceError::CancelledDueToAccessCheckError(
         response.CurrentRequestUrl(), ResourceRequestBlockedReason::kOther));
     return;
@@ -1113,12 +1094,10 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   resource_->ResponseReceived(response);
 
-  // https://linear.app/replay/issue/RUN-765
-  recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal #7");
-
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) resource_->InspectorId());
+    dict.SetDouble("identifier",
+                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
     const char* http_version = HttpVersionToString(response.HttpVersion());
     base::ListValue headers;
     for (auto header : response.HttpHeaderFields()) {
@@ -1199,7 +1178,8 @@ void ResourceLoader::DidReceiveData(const char* data, int length) {
 
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) resource_->InspectorId());
+    dict.SetDouble("identifier",
+                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
     dict.SetDouble("dataLength", (double) length);
     if (data) {
       std::string data_base64 = base::Base64Encode(
@@ -1251,7 +1231,8 @@ void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
 
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) resource_->InspectorId());
+    dict.SetDouble("identifier",
+                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
     dict.SetDouble("encodedBodySize", (double) encoded_body_length);
     dict.SetDouble("decodedBodySize", (double) decoded_body_length);
     recordreplay::BrowserEvent("Network.DidFinishLoading", dict);
@@ -1303,7 +1284,8 @@ void ResourceLoader::DidFail(const WebURLError& error,
   if (PermitRecordReplayBrowserEvents()) {
     std::string reason = net::ErrorToShortString(error.reason());
     base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) resource_->InspectorId());
+    dict.SetDouble("identifier",
+                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
     dict.SetString("requestFailedReason", std::move(reason));
     recordreplay::BrowserEvent("Network.DidFailLoading", dict);
   }

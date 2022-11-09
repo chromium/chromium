@@ -349,6 +349,13 @@ mojom::FetchCacheMode FrameFetchContext::ResourceRequestCachePolicy(
   return cache_mode;
 }
 
+uint64_t RecordReplayNetworkRequestId(uint64_t inspector_id) {
+  // Inspector identifiers can vary when replaying due to differences in inspector
+  // behavior. Make sure the identifiers we report to the recorder are consistent
+  // by manually recording/replaying the identifier.
+  return recordreplay::RecordReplayValue("NetworkRequestId", inspector_id);
+}
+
 void FrameFetchContext::PrepareRequest(
     ResourceRequest& request,
     ResourceLoaderOptions& options,
@@ -402,12 +409,7 @@ void FrameFetchContext::PrepareRequest(
     request.SetRecordReplayBookmark(bookmark);
     base::DictionaryValue dict;
     String loader_id = IdentifiersFactory::LoaderId(document_loader_);
-    uint64_t identifier = request.InspectorId();
-
-    // Inspector identifiers can vary when replaying due to differences in inspector
-    // behavior. Make sure the identifiers we report to the recorder are consistent
-    // by manually recording/replaying the identifier.
-    identifier = recordreplay::RecordReplayValue("NetworkRequestId", identifier);
+    uint64_t identifier = RecordReplayNetworkRequestId(request.InspectorId());
 
     String request_id = IdentifiersFactory::RequestId(document_loader_, identifier);
     dict.SetString("requestUrl", url_string);
