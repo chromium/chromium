@@ -1372,12 +1372,12 @@ static bool ParseRGBParameters(CSSParserTokenRange& range,
          range.Peek().FunctionId() == CSSValueID::kRgba);
   CSSParserTokenRange args = ConsumeFunction(range);
   CSSPrimitiveValue* value;
-  int color_array[3];
+  absl::optional<int> color_array[3];
   bool requires_commas = false;
   bool requires_percent = false;
   bool requires_bare_numbers = false;
   bool has_none = false;
-  for (int& color : color_array) {
+  for (absl::optional<int>& color : color_array) {
     // Commas have to be consistent
     if (ConsumeCommaIncludingWhitespace(args)) {
       requires_commas = true;
@@ -1405,7 +1405,6 @@ static bool ParseRGBParameters(CSSParserTokenRange& range,
     } else {
       if (!ConsumeIdent<CSSValueID::kNone>(args))
         return false;
-      color = 0;
       has_none = true;
     }
   }
@@ -1416,26 +1415,31 @@ static bool ParseRGBParameters(CSSParserTokenRange& range,
       (slash_consumed && requires_commas))
     return false;
   if (comma_consumed || slash_consumed) {
-    double alpha;
-    if (!ConsumeNumberRaw(args, context, alpha)) {
+    absl::optional<double> alpha;
+    if (double alpha_double; ConsumeNumberRaw(args, context, alpha_double)) {
+      alpha = alpha_double;
+    } else {
       CSSPrimitiveValue* alpha_percent =
           ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
       if (!alpha_percent) {
         if (!ConsumeIdent<CSSValueID::kNone>(args))
           return false;
-        alpha = 0.0;
         has_none = true;
       } else {
         alpha = alpha_percent->GetDoubleValue() / 100.0;
       }
     }
     // W3 standard stipulates a 2.55 alpha value multiplication factor.
-    int alpha_component =
-        static_cast<int>(lround(ClampTo<double>(alpha, 0.0, 1.0) * 255.0));
-    result = Color::FromRGBA(color_array[0], color_array[1], color_array[2],
-                             alpha_component);
+    absl::optional<int> alpha_component;
+    if (alpha) {
+      alpha_component = static_cast<int>(
+          lround(ClampTo<double>(alpha.value(), 0.0, 1.0) * 255.0));
+    }
+    result = Color::FromRGBALegacy(color_array[0], color_array[1],
+                                   color_array[2], alpha_component);
   } else {
-    result = Color::FromRGB(color_array[0], color_array[1], color_array[2]);
+    result = Color::FromRGBALegacy(color_array[0], color_array[1],
+                                   color_array[2], 255);
   }
 
   if (has_none && requires_commas)

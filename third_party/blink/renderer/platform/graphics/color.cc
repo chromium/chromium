@@ -178,6 +178,22 @@ Color::Color(int r, int g, int b, int a) {
 }
 
 // static
+Color Color::FromRGBALegacy(absl::optional<int> r,
+                            absl::optional<int> g,
+                            absl::optional<int> b,
+                            absl::optional<int> a) {
+  Color result =
+      Color(ClampInt(a.value_or(0.f)) << 24 | ClampInt(r.value_or(0.f)) << 16 |
+            ClampInt(g.value_or(0.f)) << 8 | ClampInt(b.value_or(0.f)));
+  result.param0_is_none_ = !r;
+  result.param1_is_none_ = !g;
+  result.param2_is_none_ = !b;
+  result.alpha_is_none_ = !a;
+  result.color_space_ = ColorSpace::kRGBLegacy;
+  return result;
+}
+
+// static
 Color Color::FromHSLA(absl::optional<float> h,
                       absl::optional<float> s,
                       absl::optional<float> l,

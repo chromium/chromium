@@ -118,8 +118,16 @@ class PLATFORM_EXPORT Color {
         param2_is_none_(0),
         alpha_is_none_(0) {}
 
-  // TODO(crbug.com/1351544): Replace these constructors with explicit From
-  // functions below.
+  // TODO(crbug.com/ 1333988): We have to reevaluate how we input int RGB and
+  // RGBA values into blink::color. We should remove the int inputs in the
+  // interface, to avoid callers to have the double values and convert them to
+  // int for then being converted again internally to float. We should deprecate
+  // FromRGB, FromRGBA and FromRGBAFloat methods, to only allow for
+  // FromRGBALegacy. We could also merge all the constructor methods to one
+  // CreateColor(colorSpace, components...) method, that will internally create
+  // methods depending of the color space and properly store the none-ness of
+  // the components.
+
   Color(int r, int g, int b);
   Color(int r, int g, int b, int a);
 
@@ -134,6 +142,11 @@ class PLATFORM_EXPORT Color {
     return Color(ClampInt(a) << 24 | ClampInt(r) << 16 | ClampInt(g) << 8 |
                  ClampInt(b));
   }
+
+  static Color FromRGBALegacy(absl::optional<int> r,
+                              absl::optional<int> g,
+                              absl::optional<int> b,
+                              absl::optional<int> alpha);
 
   // Create a color using the rgba() syntax, with float arguments. All
   // parameters will be clamped to the [0, 1] interval.
