@@ -9,7 +9,7 @@
 
 #include <utility>
 
-#include "components/attribution_reporting/parse.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-shared.h"

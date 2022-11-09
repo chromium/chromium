@@ -19,8 +19,8 @@ component("attribution_reporting") {
     "constants.h",
     "filters.cc",
     "filters.h",
-    "parse.cc",
-    "parse.h",
+    "os_registration.cc",
+    "os_registration.h",
     "source_registration.cc",
     "source_registration.h",
   ]
@@ -45,7 +45,7 @@ source_set("unit_tests") {
   sources = [
     "aggregation_keys_unittest.cc",
     "filters_unittest.cc",
-    "parse_unittest.cc",
+    "os_registration_unittest.cc",
     "source_registration_unittest.cc",
   ]
 

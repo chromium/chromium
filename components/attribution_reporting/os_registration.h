@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ATTRIBUTION_REPORTING_PARSE_H_
-#define COMPONENTS_ATTRIBUTION_REPORTING_PARSE_H_
+#ifndef COMPONENTS_ATTRIBUTION_REPORTING_OS_REGISTRATION_H_
+#define COMPONENTS_ATTRIBUTION_REPORTING_OS_REGISTRATION_H_
 
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
@@ -94,4 +94,4 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsSource {
 
 }  // namespace attribution_reporting
 
-#endif  // COMPONENTS_ATTRIBUTION_REPORTING_PARSE_H_
+#endif  // COMPONENTS_ATTRIBUTION_REPORTING_OS_REGISTRATION_H_

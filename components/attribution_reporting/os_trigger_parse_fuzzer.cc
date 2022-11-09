@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/strings/string_piece.h"
-#include "components/attribution_reporting/parse.h"
+#include "components/attribution_reporting/os_registration.h"
 
 namespace {
 

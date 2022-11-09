@@ -4,7 +4,7 @@
 
 #include "content/browser/attribution_reporting/os_level_attribution_manager_impl.h"
 
-#include "components/attribution_reporting/parse.h"
+#include "components/attribution_reporting/os_registration.h"
 
 namespace content {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/attribution_reporting/parse.h"
+#include "components/attribution_reporting/os_registration.h"
 
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
