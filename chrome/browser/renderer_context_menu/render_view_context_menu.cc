@@ -2217,10 +2217,6 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2;
   } else if (lens::features::UseRegionSearchMenuItemAltText3()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3;
-  } else if (lens::features::IsLensFullscreenSearchEnabled()) {
-    // Default text for fullscreen search when enabled. This is the same string
-    // as the third alternative text option.
-    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
   }
 
   TemplateURLService* service =
@@ -3655,8 +3651,7 @@ void RenderViewContextMenu::ExecRegionSearch(
   // If Lens fullscreen search is enabled, we want to send every region search
   // as a fullscreen capture.
   bool use_fullscreen_capture =
-      GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD ||
-      lens::features::IsLensFullscreenSearchEnabled();
+      GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD;
   lens_region_search_controller_->Start(use_fullscreen_capture,
                                         is_google_default_search_provider);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

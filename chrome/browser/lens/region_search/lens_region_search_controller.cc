@@ -190,17 +190,12 @@ void LensRegionSearchController::OnCaptureCompleted(
   }
 
   if (is_google_default_search_provider_) {
-    // Do not show the side panel on region searches and modify the entry point
-    // if Lens fullscreen search features are enabled.
-    lens::EntryPoint entry_point =
-        lens::features::IsLensFullscreenSearchEnabled()
-            ? lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM
-            : lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
     core_tab_helper->SearchWithLens(
-        image, captured_image.Size(), entry_point,
+        image, captured_image.Size(),
+        lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM,
         /* is_region_search_request= */ true,
         /* is_side_panel_enabled_for_feature= */
-        lens::features::IsLensSidePanelEnabledForRegionSearch());
+        lens::features::IsLensSidePanelEnabled());
   } else {
     core_tab_helper->SearchByImage(image, captured_image.Size());
   }

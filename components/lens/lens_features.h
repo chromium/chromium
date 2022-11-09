@@ -141,9 +141,6 @@ extern std::string GetHomepageURLForLens();
 // Returns whether to apply fix for HTML redirects.
 extern bool GetEnableLensHtmlRedirectFix();
 
-// Returns whether Lens fullscreen search is enabled.
-extern bool IsLensFullscreenSearchEnabled();
-
 // Returns whether to use alternative option 1 for the Region Search context
 // menu item text.
 extern bool UseRegionSearchMenuItemAltText1();
@@ -162,9 +159,6 @@ extern bool UseGoogleAsVisualSearchProvider();
 
 // Returns whether the Lens side panel is enabled for image search.
 extern bool IsLensSidePanelEnabled();
-
-// Returns whether the Lens side panel is enabled for region search.
-extern bool IsLensSidePanelEnabledForRegionSearch();
 
 // Returns whether the Search Image button in the Chrome Screenshot Sharing
 // feature is enabled

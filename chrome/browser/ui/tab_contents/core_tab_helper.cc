@@ -105,13 +105,12 @@ void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
   bool use_side_panel =
       is_side_panel_enabled_for_feature && IsSidePanelEnabled();
 
-  SearchByImageImpl(render_frame_host, src_url, kImageSearchThumbnailMinSize,
-                    lens::features::GetMaxPixelsForImageSearch(),
-                    lens::features::GetMaxPixelsForImageSearch(),
-                    lens::GetQueryParametersForLensRequest(
-                        entry_point, use_side_panel,
-                        /** is_full_screen_region_search_request **/ false),
-                    use_side_panel);
+  SearchByImageImpl(
+      render_frame_host, src_url, kImageSearchThumbnailMinSize,
+      lens::features::GetMaxPixelsForImageSearch(),
+      lens::features::GetMaxPixelsForImageSearch(),
+      lens::GetQueryParametersForLensRequest(entry_point, use_side_panel),
+      use_side_panel);
 }
 
 TemplateURLService* CoreTabHelper::GetTemplateURLService() {
@@ -152,13 +151,8 @@ void CoreTabHelper::SearchWithLens(gfx::Image image,
                                    bool is_side_panel_enabled_for_feature) {
   bool use_side_panel =
       is_side_panel_enabled_for_feature && IsSidePanelEnabled();
-  bool is_full_screen_region_search_request =
-      is_region_search_request &&
-      lens::features::IsLensFullscreenSearchEnabled();
-  auto lens_query_params = lens::GetQueryParametersForLensRequest(
-      entry_point, use_side_panel,
-      /* is_full_screen_region_search_request= */
-      is_full_screen_region_search_request);
+  auto lens_query_params =
+      lens::GetQueryParametersForLensRequest(entry_point, use_side_panel);
   SearchByImageImpl(image, image_original_size, lens_query_params,
                     use_side_panel);
 }

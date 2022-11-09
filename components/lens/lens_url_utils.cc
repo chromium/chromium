@@ -24,7 +24,6 @@ constexpr char kEntryPointQueryParameter[] = "ep";
 constexpr char kChromeRegionSearchMenuItem[] = "crs";
 constexpr char kChromeSearchWithGoogleLensContextMenuItem[] = "ccm";
 constexpr char kChromeOpenNewTabSidePanel[] = "cnts";
-constexpr char kChromeFullscreenSearchMenuItem[] = "cfs";
 constexpr char kChromeScreenshotSearch[] = "css";
 
 constexpr char kSurfaceQueryParameter[] = "s";
@@ -35,7 +34,6 @@ constexpr char kSidePanel[] = "csp";
 constexpr char kRenderingEnvironmentQueryParameter[] = "re";
 constexpr char kOneLensDesktopWebChromeSidePanel[] = "dcsp";
 constexpr char kOneLensDesktopWebFullscreen[] = "df";
-constexpr char kOneLensAmbientVisualSearchWebFullscreen[] = "avsf";
 
 void AppendQueryParam(std::string* query_string,
                       const char name[],
@@ -64,10 +62,6 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
       query_parameters.insert({kEntryPointQueryParameter,
                                kChromeSearchWithGoogleLensContextMenuItem});
       break;
-    case lens::CHROME_FULLSCREEN_SEARCH_MENU_ITEM:
-      query_parameters.insert(
-          {kEntryPointQueryParameter, kChromeFullscreenSearchMenuItem});
-      break;
     case lens::CHROME_SCREENSHOT_SEARCH:
       query_parameters.insert(
           {kEntryPointQueryParameter, kChromeScreenshotSearch});
@@ -84,10 +78,6 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
     case lens::ONELENS_DESKTOP_WEB_FULLSCREEN:
       query_parameters.insert(
           {kRenderingEnvironmentQueryParameter, kOneLensDesktopWebFullscreen});
-      break;
-    case lens::ONELENS_AMBIENT_VISUAL_SEARCH_WEB_FULLSCREEN:
-      query_parameters.insert({kRenderingEnvironmentQueryParameter,
-                               kOneLensAmbientVisualSearchWebFullscreen});
       break;
     default:
       // Empty strings are ignored when query parameters are built.
@@ -109,13 +99,7 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
   return query_parameters;
 }
 
-lens::RenderingEnvironment GetRenderingEnvironment(
-    bool is_side_panel_request,
-    bool is_full_screen_region_search_request) {
-  if (is_full_screen_region_search_request)
-    return lens::RenderingEnvironment::
-        ONELENS_AMBIENT_VISUAL_SEARCH_WEB_FULLSCREEN;
-
+lens::RenderingEnvironment GetRenderingEnvironment(bool is_side_panel_request) {
   if (is_side_panel_request)
     return lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL;
 
@@ -146,12 +130,9 @@ GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
   return modified_url;
 }
 
-std::string GetQueryParametersForLensRequest(
-    lens::EntryPoint ep,
-    bool is_side_panel_request,
-    bool is_full_screen_region_search_request) {
-  auto re = GetRenderingEnvironment(is_side_panel_request,
-                                    is_full_screen_region_search_request);
+std::string GetQueryParametersForLensRequest(lens::EntryPoint ep,
+                                             bool is_side_panel_request) {
+  auto re = GetRenderingEnvironment(is_side_panel_request);
   std::string query_string;
   for (auto const& param :
        GetLensQueryParametersMap(ep, re, is_side_panel_request))

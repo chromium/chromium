@@ -175,18 +175,9 @@ bool UseGoogleAsVisualSearchProvider() {
          kUseGoogleAsVisualSearchProvider.Get();
 }
 
-bool IsLensFullscreenSearchEnabled() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations);
-}
-
 bool IsLensSidePanelEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          kEnableSidePanelForLens.Get();
-}
-
-bool IsLensSidePanelEnabledForRegionSearch() {
-  return IsLensSidePanelEnabled() && !IsLensFullscreenSearchEnabled();
 }
 
 bool IsLensInScreenshotSharingEnabled() {
