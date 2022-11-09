@@ -1,4 +1,48 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "mac-swangle-chromium-x64",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-swangle-archive",
+              "builder_group": "chromium.swangle",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "angle_top_of_tree",
+                  "swiftshader_top_of_tree"
+                ],
+                "config": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "mac-swangle-chromium-x64",
+          "project": "chromium"
+        }
+      ],
+      "retry_failed_shards": false
+    }
+  },
   "$build/goma": {
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org"
