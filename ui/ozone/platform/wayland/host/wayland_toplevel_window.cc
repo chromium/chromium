@@ -178,6 +178,9 @@ void WaylandToplevelWindow::Hide() {
                            ZAURA_SURFACE_RELEASE_SINCE_VERSION) {
     aura_surface_.reset();
   }
+  if (gtk_surface1_)
+    gtk_surface1_.reset();
+
   shell_toplevel_.reset();
   connection()->Flush();
 }
@@ -961,7 +964,9 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     UpdateSystemModal();
   }
 
-  if (connection()->gtk_shell1()) {
+  // We must not request a new GtkSurface if we already have one, else we get a
+  // "gtk_shell::get_gtk_surface already requested" error. (crbug.com/1380419)
+  if (connection()->gtk_shell1() && !gtk_surface1_) {
     gtk_surface1_ =
         connection()->gtk_shell1()->GetGtkSurface1(root_surface()->surface());
   }
