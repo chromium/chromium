@@ -386,6 +386,7 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.
     Add({START_SURFACE_TEST_BASE_PARAMS + "hide_switch_when_no_incognito_tabs/false"})
+    @DisabledTest(message = "https://crbug.com/1382860")
     public void testCreateNewTab_OpenNTPInsteadOfStart() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
