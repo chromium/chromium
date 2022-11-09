@@ -262,14 +262,11 @@ crbug.com/1353952 [ chromeos chromeos-board-kevin ] Pixel_WebGLContextRestored [
 crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 
 # Failing on Nexus 5; haven't investigated why yet.
-crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Failure ]
-crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
 
 crbug.com/1213674 [ mac amd-0x6821 passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1213674 [ mac nvidia passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 
 # Fails on Nexus 5 - old hardware, won't fix.
-crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Failure ]
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
 crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
@@ -304,14 +301,11 @@ crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRound
 
 # Flaky hang.
 crbug.com/1218288 [ fuchsia fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Failure ]
-crbug.com/1136875 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
 
 # Flaky on Fuchsia.
 crbug.com/1368748 [ fuchsia ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
-crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
-crbug.com/1097752 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
 
 # Fails on Fuchsia emulators
 crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
