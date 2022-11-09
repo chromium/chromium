@@ -43,6 +43,8 @@
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
+      "enable_backup_ref_ptr_support": false,
+      "enable_mte_checked_ptr_support": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -55,6 +57,8 @@
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
+      "enable_backup_ref_ptr_support": false,
+      "enable_mte_checked_ptr_support": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -67,6 +71,8 @@
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
+      "enable_backup_ref_ptr_support": false,
+      "enable_mte_checked_ptr_support": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -138,6 +144,8 @@
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
+      "enable_backup_ref_ptr_support": false,
+      "enable_mte_checked_ptr_support": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,

@@ -4488,7 +4488,7 @@
     # https://crbug.com/dawn/1200: Used to disable partition alloc while we
     # investigate a crash in the mac AMD shader compiler.
     'padisabled': {
-      'gn_args': 'use_partition_alloc_as_malloc=false',
+      'gn_args': 'use_partition_alloc_as_malloc=false enable_backup_ref_ptr_support=false enable_mte_checked_ptr_support=false',
     },
 
     # Used to pass the list of files to instrument for coverage to the compile
