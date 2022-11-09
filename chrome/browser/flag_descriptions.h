@@ -487,6 +487,9 @@ extern const char kDisallowDocWrittenScriptsUiDescription[];
 extern const char kViewTransitionName[];
 extern const char kViewTransitionDescription[];
 
+extern const char kViewTransitionOnNavigationName[];
+extern const char kViewTransitionOnNavigationDescription[];
+
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 

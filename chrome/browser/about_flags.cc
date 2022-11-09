@@ -4926,6 +4926,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"view-transition", flag_descriptions::kViewTransitionName,
      flag_descriptions::kViewTransitionDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kViewTransition)},
+    {"view-transition-on-navigation",
+     flag_descriptions::kViewTransitionOnNavigationName,
+     flag_descriptions::kViewTransitionOnNavigationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kViewTransitionOnNavigation)},
 #if BUILDFLAG(IS_WIN)
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,

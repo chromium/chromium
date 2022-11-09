@@ -6989,6 +6989,11 @@
     "expiry_milestone" : 110
   },
   {
+    "name": "view-transition-on-navigation",
+    "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
+    "expiry_milestone" : 118
+  },
+  {
     "name": "vm-per-boot-shader-cache",
     "owners": [ "endlesspring", "hollingum", "cpelling", "renatopereyra", "davidriley"],
     "expiry_milestone": 111
