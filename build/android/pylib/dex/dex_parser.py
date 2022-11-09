@@ -11,7 +11,6 @@ is provided, but it does not include error handling or validation.
 """
 
 
-
 import argparse
 import collections
 import errno
@@ -318,11 +317,7 @@ class _DexReader:
         code = ((a & 0x0f) << 12) | ((b & 0x3f) << 6) | (c & 0x3f)
       else:
         raise _MUTf8DecodeError('Bad byte', string_length, offset)
-
-      try:
-        ret += unichr(code)
-      except NameError:
-        ret += chr(code)
+      ret += chr(code)
 
     if self.ReadUByte() != 0x00:
       raise _MUTf8DecodeError('Expected string termination', string_length,
@@ -542,7 +537,7 @@ def main():
         _DumpDexItems(z.read(path), path, args.item)
 
   else:
-    with open(args.input) as f:
+    with open(args.input, 'rb') as f:
       _DumpDexItems(f.read(), args.input, args.item)
 
 
