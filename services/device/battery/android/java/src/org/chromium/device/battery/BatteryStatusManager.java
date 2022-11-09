@@ -82,7 +82,8 @@ class BatteryStatusManager {
      */
     boolean start() {
         if (!mEnabled
-                && ContextUtils.getApplicationContext().registerReceiver(mReceiver, mFilter)
+                && ContextUtils.registerProtectedBroadcastReceiver(
+                           ContextUtils.getApplicationContext(), mReceiver, mFilter)
                         != null) {
             // success
             mEnabled = true;

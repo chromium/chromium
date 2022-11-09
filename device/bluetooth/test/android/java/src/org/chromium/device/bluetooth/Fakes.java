@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.os.ParcelUuid;
 import android.test.mock.MockContext;
 import android.util.SparseArray;
@@ -318,7 +319,14 @@ class Fakes {
         }
 
         @Override
-        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                String permission, Handler scheduler) {
+            return null;
+        }
+
+        @Override
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                String permission, Handler scheduler, int flags) {
             return null;
         }
 

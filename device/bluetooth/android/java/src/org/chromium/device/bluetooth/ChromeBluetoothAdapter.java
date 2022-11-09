@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
@@ -241,8 +242,8 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
 
     private void registerBroadcastReceiver() {
         if (mAdapter != null) {
-            mAdapter.getContext().registerReceiver(
-                    this, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+            ContextUtils.registerProtectedBroadcastReceiver(mAdapter.getContext(), this,
+                    new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
         }
     }
 
