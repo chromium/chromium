@@ -13,6 +13,7 @@
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -255,11 +256,11 @@ class NET_EXPORT NetLog {
       explicit GetParamsImpl(const ParametersCallback& get_params)
           : get_params_(get_params) {}
       base::Value GetParams(NetLogCaptureMode mode) const override {
-        return get_params_(mode);
+        return (*get_params_)(mode);
       }
 
      private:
-      const ParametersCallback& get_params_;
+      const raw_ref<const ParametersCallback> get_params_;
     };
 
     GetParamsImpl wrapper(get_params);

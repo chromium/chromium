@@ -7,6 +7,8 @@
 
 #include <va/va.h>
 
+#include "base/memory/raw_ref.h"
+
 namespace media {
 namespace vaapi_test {
 
@@ -32,7 +34,7 @@ class ScopedVAConfig {
 
  private:
   // Non-owned.
-  const VaapiDevice& device_;
+  const raw_ref<const VaapiDevice> device_;
 
   VAConfigID config_id_;
   const VAProfile profile_;

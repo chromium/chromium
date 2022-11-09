@@ -4,6 +4,7 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_SCENE_H_
 #define DEVICE_VR_OPENXR_OPENXR_SCENE_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/scoped_generic.h"
 #include "device/vr/openxr/openxr_extension_handle.h"
 #include "device/vr/openxr/openxr_scene_plane.h"
@@ -26,7 +27,7 @@ class OpenXrScene {
   XrSceneMSFT Handle() const { return scene_.get(); }
 
  private:
-  const device::OpenXrExtensionHelper& extensions_;
+  const raw_ref<const device::OpenXrExtensionHelper> extensions_;
   OpenXrExtensionHandle<XrSceneMSFT> scene_;
 };
 

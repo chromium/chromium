@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -273,7 +274,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // parent frame.
   PermissionsPolicyFeatureState inherited_policies_;
 
-  const PermissionsPolicyFeatureList& feature_list_;
+  const raw_ref<const PermissionsPolicyFeatureList> feature_list_;
 };
 
 }  // namespace blink

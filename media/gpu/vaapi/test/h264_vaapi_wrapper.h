@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_H264_VAAPI_WRAPPER_H_
 #define MEDIA_GPU_VAAPI_TEST_H264_VAAPI_WRAPPER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/vaapi/test/h264_dpb.h"
 #include "media/gpu/vaapi/test/scoped_va_config.h"
@@ -45,7 +46,7 @@ class H264VaapiWrapper {
   void SubmitDecode(scoped_refptr<H264Picture> pic);
 
  private:
-  const VaapiDevice& va_device_;
+  const raw_ref<const VaapiDevice> va_device_;
 
   std::unique_ptr<ScopedVAConfig> va_config_;
   std::unique_ptr<ScopedVAContext> va_context_;

@@ -128,7 +128,7 @@ bool WebRequestActionWithThreadsTest::ActionWorksOnRequest(
   WebRequestData request_data(&request_info, stage, headers.get());
   std::set<std::string> ignored_tags;
   WebRequestAction::ApplyInfo apply_info = {
-      PermissionHelper::Get(browser_context()), request_data,
+      PermissionHelper::Get(browser_context()), raw_ref(request_data),
       false /*crosses_incognito*/, &deltas, &ignored_tags};
   action_set->Apply(extension_id, base::Time(), &apply_info);
   return (1u == deltas.size() || !ignored_tags.empty());

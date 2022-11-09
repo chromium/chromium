@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ref.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/sandbox.h"
 
@@ -61,7 +62,7 @@ class CopyHelper {
   explicit CopyHelper(const T& t) : t_(t) {}
 
   // Returns the pointer to the start of the input.
-  const void* GetStart() const { return &t_; }
+  const void* GetStart() const { return &*t_; }
 
   // Update the stored value with the value in the buffer. This is not
   // supported for this type.
@@ -83,7 +84,7 @@ class CopyHelper {
   }
 
  private:
-  const T& t_;
+  const raw_ref<const T> t_;
 };
 
 // This copy helper template specialization if for the void pointer

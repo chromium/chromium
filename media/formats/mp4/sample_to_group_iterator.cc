@@ -13,9 +13,9 @@ SampleToGroupIterator::SampleToGroupIterator(
     const SampleToGroup& sample_to_group)
     : remaining_samples_(0),
       sample_to_group_table_(sample_to_group.entries),
-      iterator_(sample_to_group_table_.begin()) {
+      iterator_(sample_to_group_table_->begin()) {
   // Handle the case that the table contains an entry with sample count 0.
-  while (iterator_ != sample_to_group_table_.end()) {
+  while (iterator_ != sample_to_group_table_->end()) {
     remaining_samples_ = iterator_->sample_count;
     if (remaining_samples_ > 0)
       break;
@@ -32,7 +32,7 @@ bool SampleToGroupIterator::Advance() {
   // Handle the case that the table contains an entry with sample count 0.
   while (remaining_samples_ == 0) {
     ++iterator_;
-    if (iterator_ == sample_to_group_table_.end())
+    if (iterator_ == sample_to_group_table_->end())
       return false;
     remaining_samples_ = iterator_->sample_count;
   }

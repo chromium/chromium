@@ -40,7 +40,7 @@ XrResult OpenXrScene::GetPlanes(std::vector<OpenXrScenePlane>& out_planes) {
   // Before we get back the array of components/planes, we need to query
   // for the size of the array and has to do the allocation first.
   XrSceneComponentsMSFT scene_components{XR_TYPE_SCENE_COMPONENTS_MSFT};
-  RETURN_IF_XR_FAILED(extensions_.ExtensionMethods().xrGetSceneComponentsMSFT(
+  RETURN_IF_XR_FAILED(extensions_->ExtensionMethods().xrGetSceneComponentsMSFT(
       scene_.get(), &get_info, &scene_components));
   const uint32_t count = scene_components.componentCountOutput;
 
@@ -57,7 +57,7 @@ XrResult OpenXrScene::GetPlanes(std::vector<OpenXrScenePlane>& out_planes) {
   scenePlanes.scenePlanes = planes.data();
   device::InsertExtensionStruct(scene_components, scenePlanes);
 
-  RETURN_IF_XR_FAILED(extensions_.ExtensionMethods().xrGetSceneComponentsMSFT(
+  RETURN_IF_XR_FAILED(extensions_->ExtensionMethods().xrGetSceneComponentsMSFT(
       scene_.get(), &get_info, &scene_components));
   // The count should stay the same
   DCHECK_EQ(count, scene_components.componentCountOutput);
@@ -94,7 +94,7 @@ XrResult OpenXrScene::LocateObjects(XrSpace base_space,
   component_locations.locations = plane_locations.data();
 
   XrResult locate_result =
-      extensions_.ExtensionMethods().xrLocateSceneComponentsMSFT(
+      extensions_->ExtensionMethods().xrLocateSceneComponentsMSFT(
           scene_.get(), &locate_info, &component_locations);
 
   if (XR_SUCCEEDED(locate_result)) {

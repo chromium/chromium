@@ -147,14 +147,14 @@ QueryIterator::~QueryIterator() = default;
 base::StringPiece QueryIterator::GetKey() const {
   DCHECK(!at_end_);
   if (key_.is_nonempty())
-    return base::StringPiece(&url_.spec()[key_.begin], key_.len);
+    return base::StringPiece(&url_->spec()[key_.begin], key_.len);
   return base::StringPiece();
 }
 
 base::StringPiece QueryIterator::GetValue() const {
   DCHECK(!at_end_);
   if (value_.is_nonempty())
-    return base::StringPiece(&url_.spec()[value_.begin], value_.len);
+    return base::StringPiece(&url_->spec()[value_.begin], value_.len);
   return base::StringPiece();
 }
 
@@ -180,7 +180,7 @@ void QueryIterator::Advance() {
   value_.reset();
   unescaped_value_.clear();
   at_end_ =
-      !url::ExtractQueryKeyValue(url_.spec().c_str(), &query_, &key_, &value_);
+      !url::ExtractQueryKeyValue(url_->spec().c_str(), &query_, &key_, &value_);
 }
 
 bool GetValueForKeyInQuery(const GURL& url,

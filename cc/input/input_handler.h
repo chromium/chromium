@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
@@ -681,7 +682,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.
-  CompositorDelegateForInput& compositor_delegate_;
+  const raw_ref<CompositorDelegateForInput> compositor_delegate_;
 
   raw_ptr<InputHandlerClient> input_handler_client_ = nullptr;
 

@@ -130,9 +130,9 @@ WebRequestRulesRegistry::CreateDeltas(PermissionHelper* permission_helper,
 
     std::list<extension_web_request_api_helpers::EventResponseDelta>
         rule_result;
-    WebRequestAction::ApplyInfo apply_info = {permission_helper, request_data,
-                                              crosses_incognito, &rule_result,
-                                              &ignore_tags[extension_id]};
+    WebRequestAction::ApplyInfo apply_info = {
+        permission_helper, raw_ref(request_data), crosses_incognito,
+        &rule_result, &ignore_tags[extension_id]};
     rule->Apply(&apply_info);
     result.splice(result.begin(), std::move(rule_result));
 

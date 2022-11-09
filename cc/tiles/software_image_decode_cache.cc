@@ -14,6 +14,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/ranges/algorithm.h"
@@ -48,14 +49,14 @@ class AutoRemoveKeyFromTaskMap {
                          SoftwareImageDecodeCache::CacheKeyHash>* task_map,
       const SoftwareImageDecodeCache::CacheKey& key)
       : task_map_(task_map), key_(key) {}
-  ~AutoRemoveKeyFromTaskMap() { task_map_->erase(key_); }
+  ~AutoRemoveKeyFromTaskMap() { task_map_->erase(*key_); }
 
  private:
   raw_ptr<std::unordered_map<SoftwareImageDecodeCache::CacheKey,
                              scoped_refptr<TileTask>,
                              SoftwareImageDecodeCache::CacheKeyHash>>
       task_map_;
-  const SoftwareImageDecodeCache::CacheKey& key_;
+  const raw_ref<const SoftwareImageDecodeCache::CacheKey> key_;
 };
 
 class SoftwareImageDecodeTaskImpl : public TileTask {

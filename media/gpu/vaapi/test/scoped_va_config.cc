@@ -25,7 +25,7 @@ ScopedVAConfig::ScopedVAConfig(const VaapiDevice& device,
   attribs.push_back(
       {VAConfigAttribRTFormat, base::strict_cast<uint32_t>(va_rt_format_)});
   const VAStatus res =
-      vaCreateConfig(device_.display(), profile_, VAEntrypointVLD,
+      vaCreateConfig(device_->display(), profile_, VAEntrypointVLD,
                      attribs.data(), attribs.size(), &config_id_);
   VA_LOG_ASSERT(res, "vaCreateConfig");
   LOG_ASSERT(config_id_ != VA_INVALID_ID)
@@ -38,7 +38,7 @@ ScopedVAConfig::~ScopedVAConfig() {
   VLOG(1) << "Destroying config " << config_id_ << " with profile "
           << vaProfileStr(profile_);
   DCHECK_NE(config_id_, VA_INVALID_ID);
-  const VAStatus res = vaDestroyConfig(device_.display(), config_id_);
+  const VAStatus res = vaDestroyConfig(device_->display(), config_id_);
   VA_LOG_ASSERT(res, "vaDestroyConfig");
 }
 

@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -340,14 +341,14 @@ class CSPDirectiveToken {
                             const SecureDirectiveValueFunction& secure_function,
                             const std::string& manifest_key,
                             std::vector<InstallWarning>* warnings) {
-    if (!status->Matches(directive_.directive_name))
+    if (!status->Matches(directive_->directive_name))
       return false;
 
     bool is_duplicate_directive = status->seen_in_policy();
     status->set_seen_in_policy();
 
     secure_value_ = secure_function.Run(
-        directive_.directive_name, directive_.directive_values, manifest_key,
+        directive_->directive_name, directive_->directive_values, manifest_key,
         // Don't show any errors for duplicate CSP directives, because it will
         // be ignored by the CSP parser
         // (http://www.w3.org/TR/CSP2/#policy-parsing). Therefore, set warnings
@@ -360,11 +361,11 @@ class CSPDirectiveToken {
     if (secure_value_)
       return secure_value_.value();
     // This token didn't require modification.
-    return std::string(directive_.directive_string) + kDirectiveSeparator;
+    return std::string(directive_->directive_string) + kDirectiveSeparator;
   }
 
  private:
-  const Directive& directive_;
+  const raw_ref<const Directive> directive_;
   absl::optional<std::string> secure_value_;
 };
 

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
@@ -97,7 +98,7 @@ TEST(DeclarativeConditionTest, CreateConditionSet) {
 struct FulfillableCondition {
   struct MatchData {
     int value;
-    const std::set<base::MatcherStringPattern::ID>& url_matches;
+    const raw_ref<const std::set<base::MatcherStringPattern::ID>> url_matches;
   };
 
   scoped_refptr<URLMatcherConditionSet> condition_set;
@@ -120,7 +121,7 @@ struct FulfillableCondition {
 
   bool IsFulfilled(const MatchData& match_data) const {
     if (condition_set_id != base::MatcherStringPattern::kInvalidId &&
-        !base::Contains(match_data.url_matches, condition_set_id))
+        !base::Contains(*match_data.url_matches, condition_set_id))
       return false;
     return match_data.value <= max_value;
   }
@@ -171,7 +172,7 @@ TEST(DeclarativeConditionTest, FulfillConditionSet) {
   EXPECT_EQ(4u, result->conditions().size());
 
   std::set<base::MatcherStringPattern::ID> url_matches;
-  FulfillableCondition::MatchData match_data = { 0, url_matches };
+  FulfillableCondition::MatchData match_data = {0, raw_ref(url_matches)};
   EXPECT_FALSE(result->IsFulfilled(1, match_data))
       << "Testing an ID that's not in url_matches forwards to the Condition, "
       << "which doesn't match.";

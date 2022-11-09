@@ -16,6 +16,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/sandbox_types.h"
 
@@ -212,7 +213,7 @@ class InterceptionManager {
                                   DllInterceptionData* dll_data);
 
   // The process to intercept.
-  TargetProcess& child_;
+  const raw_ref<TargetProcess> child_;
   // Holds all interception info until the call to initialize (perform the
   // actual patch).
   std::list<InterceptionData> interceptions_;

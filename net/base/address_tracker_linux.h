@@ -6,7 +6,9 @@
 #define NET_BASE_ADDRESS_TRACKER_LINUX_H_
 
 #include <sys/socket.h>  // Needed to include netlink.
+
 // Mask superfluous definition of |struct net|. This is fixed in Linux 2.6.38.
+
 #define net net_kernel
 #include <linux/rtnetlink.h>
 #undef net
@@ -22,6 +24,7 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -105,8 +108,8 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
     ~AddressTrackerAutoLock();
 
    private:
-    const AddressTrackerLinux& tracker_;
-    base::Lock& lock_;
+    const raw_ref<const AddressTrackerLinux> tracker_;
+    const raw_ref<base::Lock> lock_;
   };
 
   // A function that returns the name of an interface given the interface index

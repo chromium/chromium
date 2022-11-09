@@ -5,6 +5,7 @@
 #ifndef SANDBOX_LINUX_SYSCALL_BROKER_BROKER_HOST_H_
 #define SANDBOX_LINUX_SYSCALL_BROKER_BROKER_HOST_H_
 
+#include "base/memory/raw_ref.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_sandbox_config.h"
@@ -30,7 +31,7 @@ class BrokerHost {
   void LoopAndHandleRequests();
 
  private:
-  const BrokerSandboxConfig& policy_;
+  const raw_ref<const BrokerSandboxConfig> policy_;
   const BrokerChannel::EndPoint ipc_channel_;
 };
 

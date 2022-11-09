@@ -121,8 +121,8 @@ void MojoVideoEncodeAcceleratorService::Initialize(
   }
 
   encoder_ = std::move(create_vea_callback_)
-                 .Run(config, this, gpu_preferences_, gpu_workarounds_,
-                      gpu_device_, media_log_->Clone());
+                 .Run(config, this, *gpu_preferences_, gpu_workarounds_,
+                      *gpu_device_, media_log_->Clone());
   if (!encoder_) {
     MEDIA_LOG(ERROR, media_log_.get())
         << __func__ << " Error creating or initializing VEA";

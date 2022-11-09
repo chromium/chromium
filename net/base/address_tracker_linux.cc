@@ -535,17 +535,17 @@ AddressTrackerLinux::AddressTrackerAutoLock::AddressTrackerAutoLock(
     const AddressTrackerLinux& tracker,
     base::Lock& lock)
     : tracker_(tracker), lock_(lock) {
-  if (tracker_.tracking_) {
-    lock_.Acquire();
+  if (tracker_->tracking_) {
+    lock_->Acquire();
   } else {
-    DCHECK(tracker_.thread_checker_.CalledOnValidThread());
+    DCHECK(tracker_->thread_checker_.CalledOnValidThread());
   }
 }
 
 AddressTrackerLinux::AddressTrackerAutoLock::~AddressTrackerAutoLock() {
-  if (tracker_.tracking_) {
-    lock_.AssertAcquired();
-    lock_.Release();
+  if (tracker_->tracking_) {
+    lock_->AssertAcquired();
+    lock_->Release();
   }
 }
 

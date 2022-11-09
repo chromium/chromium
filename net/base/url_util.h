@@ -12,6 +12,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -97,7 +98,7 @@ class NET_EXPORT QueryIterator {
   void Advance();
 
  private:
-  const GURL& url_;
+  const raw_ref<const GURL> url_;
   url::Component query_;
   bool at_end_;
   url::Component key_;

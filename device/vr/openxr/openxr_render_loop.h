@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
@@ -135,7 +136,7 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
   // Owned by OpenXrStatics
   XrInstance instance_;
-  const OpenXrExtensionHelper& extension_helper_;
+  const raw_ref<const OpenXrExtensionHelper> extension_helper_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
 

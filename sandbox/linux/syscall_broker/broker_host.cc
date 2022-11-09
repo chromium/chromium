@@ -381,8 +381,8 @@ void BrokerHost::LoopAndHandleRequests() {
 
     BrokerSimpleMessage reply;
     base::ScopedFD opened_file;
-    if (!HandleRemoteCommand(policy_.allowed_command_set,
-                             *policy_.file_permissions, &message, &reply,
+    if (!HandleRemoteCommand(policy_->allowed_command_set,
+                             *policy_->file_permissions, &message, &reply,
                              &opened_file)) {
       // Does not exit if we received a malformed message.
       LOG(ERROR) << "Received malformed message from the client";

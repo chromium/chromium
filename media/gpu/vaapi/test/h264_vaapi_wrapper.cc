@@ -124,12 +124,12 @@ scoped_refptr<H264Picture> H264VaapiWrapper::CreatePicture(const H264SPS* sps) {
   const gfx::Size size = sps->GetVisibleRect().value().size();
 
   if (!va_config_) {
-    va_config_ = std::make_unique<ScopedVAConfig>(va_device_, profile,
+    va_config_ = std::make_unique<ScopedVAConfig>(*va_device_, profile,
                                                   GetFormatForProfile(profile));
   }
   if (!va_context_) {
     va_context_ =
-        std::make_unique<ScopedVAContext>(va_device_, *va_config_, size);
+        std::make_unique<ScopedVAContext>(*va_device_, *va_config_, size);
   }
 
   VASurfaceAttrib attribute{};
@@ -139,7 +139,7 @@ scoped_refptr<H264Picture> H264VaapiWrapper::CreatePicture(const H264SPS* sps) {
   attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_DECODER;
 
   scoped_refptr<SharedVASurface> surface = SharedVASurface::Create(
-      va_device_, va_config_->va_rt_format(), size, attribute);
+      *va_device_, va_config_->va_rt_format(), size, attribute);
 
   return base::WrapRefCounted(new H264Picture(surface));
 }
@@ -252,11 +252,11 @@ void H264VaapiWrapper::SubmitFrameMetadata(
 
   VABufferID buffer_id;
   VAStatus va_res = vaCreateBuffer(
-      va_device_.display(), va_context_->id(), VAPictureParameterBufferType,
+      va_device_->display(), va_context_->id(), VAPictureParameterBufferType,
       sizeof(pic_param), 1, &pic_param, &buffer_id);
   VA_LOG_ASSERT(va_res, "vaCreateBuffer");
   buffers_.push_back(buffer_id);
-  va_res = vaCreateBuffer(va_device_.display(), va_context_->id(),
+  va_res = vaCreateBuffer(va_device_->display(), va_context_->id(),
                           VAIQMatrixBufferType, sizeof(iq_matrix_buf), 1,
                           &iq_matrix_buf, &buffer_id);
   VA_LOG_ASSERT(va_res, "vaCreateBuffer");
@@ -363,11 +363,11 @@ void H264VaapiWrapper::SubmitSlice(
 
   VABufferID buffer_id;
   VAStatus va_res = vaCreateBuffer(
-      va_device_.display(), va_context_->id(), VASliceParameterBufferType,
+      va_device_->display(), va_context_->id(), VASliceParameterBufferType,
       sizeof(slice_param), 1, &slice_param, &buffer_id);
   VA_LOG_ASSERT(va_res, "vaCreateBuffer");
   buffers_.push_back(buffer_id);
-  va_res = vaCreateBuffer(va_device_.display(), va_context_->id(),
+  va_res = vaCreateBuffer(va_device_->display(), va_context_->id(),
                           VASliceDataBufferType, size, 1,
                           pic->slice_data_buffers.back().get(), &buffer_id);
   VA_LOG_ASSERT(va_res, "vaCreateBuffer");
@@ -377,19 +377,19 @@ void H264VaapiWrapper::SubmitSlice(
 void H264VaapiWrapper::SubmitDecode(scoped_refptr<H264Picture> pic) {
   CHECK(gfx::Rect(pic->surface->size()).Contains(pic->visible_rect));
 
-  VAStatus va_res = vaBeginPicture(va_device_.display(), va_context_->id(),
+  VAStatus va_res = vaBeginPicture(va_device_->display(), va_context_->id(),
                                    pic->surface->id());
   VA_LOG_ASSERT(va_res, "vaBeginPicture");
 
-  va_res = vaRenderPicture(va_device_.display(), va_context_->id(),
+  va_res = vaRenderPicture(va_device_->display(), va_context_->id(),
                            buffers_.data(), buffers_.size());
   VA_LOG_ASSERT(va_res, "vaRenderPicture");
 
-  va_res = vaEndPicture(va_device_.display(), va_context_->id());
+  va_res = vaEndPicture(va_device_->display(), va_context_->id());
   VA_LOG_ASSERT(va_res, "vaEndPicture");
 
   for (auto id : buffers_) {
-    vaDestroyBuffer(va_device_.display(), id);
+    vaDestroyBuffer(va_device_->display(), id);
   }
   buffers_.clear();
 }

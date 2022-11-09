@@ -5,6 +5,7 @@
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -220,7 +221,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     ExtensionWebRequestEventRouter::GetInstance()->OnErrorOccurred(
         browser_context_, &info_, /*started=*/true, error_code);
 
-    proxies_.RemoveProxy(this);
+    proxies_->RemoveProxy(this);
     // `this` is deleted.
   }
 
@@ -228,14 +229,14 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     ExtensionWebRequestEventRouter::GetInstance()->OnCompleted(browser_context_,
                                                                &info_, net::OK);
     // Delete `this`.
-    proxies_.RemoveProxy(this);
+    proxies_->RemoveProxy(this);
   }
 
  private:
   mojo::PendingRemote<WebTransportHandshakeClient> handshake_client_;
   // Weak reference to the ProxySet. This is safe as `proxies_` owns this
   // object.
-  WebRequestAPI::ProxySet& proxies_;
+  const raw_ref<WebRequestAPI::ProxySet> proxies_;
   raw_ptr<content::BrowserContext> browser_context_;
   WebRequestInfo info_;
   net::HttpRequestHeaders request_headers_;

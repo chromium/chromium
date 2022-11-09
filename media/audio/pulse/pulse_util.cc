@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/branding_buildflags.h"
@@ -110,7 +111,7 @@ struct InputBusData {
       : loop_(loop), name_(name), bus_() {}
 
   const raw_ptr<pa_threaded_mainloop> loop_;
-  const std::string& name_;
+  const raw_ref<const std::string> name_;
   std::string bus_;
 };
 
@@ -120,7 +121,7 @@ struct OutputBusData {
 
   const raw_ptr<pa_threaded_mainloop> loop_;
   std::string name_;
-  const std::string& bus_;
+  const raw_ref<const std::string> bus_;
 };
 
 void InputBusCallback(pa_context* context,
@@ -135,7 +136,7 @@ void InputBusCallback(pa_context* context,
     return;
   }
 
-  if (strcmp(info->name, data->name_.c_str()) == 0 &&
+  if (strcmp(info->name, data->name_->c_str()) == 0 &&
       pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS_PATH)) {
     data->bus_ = pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH);
   }
@@ -155,7 +156,7 @@ void OutputBusCallback(pa_context* context,
 
   if (pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS_PATH) &&
       strcmp(pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH),
-             data->bus_.c_str()) == 0) {
+             data->bus_->c_str()) == 0) {
     data->name_ = info->name;
   }
 }

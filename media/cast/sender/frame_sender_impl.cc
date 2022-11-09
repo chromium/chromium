@@ -244,7 +244,7 @@ void FrameSenderImpl::RecordLatestFrameTimestamps(
 }
 
 base::TimeDelta FrameSenderImpl::GetInFlightMediaDuration() const {
-  const base::TimeDelta encoder_duration = client_.GetEncoderBacklogDuration();
+  const base::TimeDelta encoder_duration = client_->GetEncoderBacklogDuration();
   // No frames are in flight, so only look at the encoder duration.
   if (last_sent_frame_id_ == latest_acked_frame_id_) {
     return encoder_duration;
@@ -324,7 +324,7 @@ bool FrameSenderImpl::EnqueueFrame(
     std::vector<FrameId> cancel_sending_frames;
     for (FrameId id = latest_acked_frame_id_ + 1; id < frame_id; ++id) {
       cancel_sending_frames.push_back(id);
-      client_.OnFrameCanceled(id);
+      client_->OnFrameCanceled(id);
     }
     transport_sender_->CancelSendingFrames(config_.sender_ssrc,
                                            cancel_sending_frames);
@@ -488,7 +488,7 @@ void FrameSenderImpl::OnReceivedCastFeedback(
     do {
       ++latest_acked_frame_id_;
       frames_to_cancel.push_back(latest_acked_frame_id_);
-      client_.OnFrameCanceled(latest_acked_frame_id_);
+      client_->OnFrameCanceled(latest_acked_frame_id_);
       // This is a good place to match the trace for frame ids
       // since this ensures we not only track frame ids that are
       // implicitly ACKed, but also handles duplicate ACKs
@@ -512,7 +512,7 @@ bool FrameSenderImpl::ShouldDropNextFrame(
   // Check that accepting the next frame won't cause more frames to become
   // in-flight than the system's design limit.
   const int count_frames_in_flight =
-      GetUnacknowledgedFrameCount() + client_.GetNumberOfFramesInEncoder();
+      GetUnacknowledgedFrameCount() + client_->GetNumberOfFramesInEncoder();
   if (count_frames_in_flight >= kMaxUnackedFrames) {
     VLOG(1) << SENDER_SSRC << "Dropping: Too many frames would be in-flight.";
     return true;

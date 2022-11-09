@@ -16,6 +16,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "courgette/assembly_program.h"
@@ -224,8 +225,8 @@ class AssignmentProblem {
   }
 
   bool Solve() {
-    m_root_ = MakeRootNode(m_trace_);
-    p_root_ = MakeRootNode(p_trace_);
+    m_root_ = MakeRootNode(*m_trace_);
+    p_root_ = MakeRootNode(*p_trace_);
     AddToQueue(p_root_);
 
     while (!worklist_.empty()) {
@@ -250,7 +251,7 @@ class AssignmentProblem {
       return;
     }
     // just to be sure data for prioritizing is available
-    ExtendNode(node, p_trace_);
+    ExtendNode(node, *p_trace_);
     // SkipCommittedLabels(node);
     if (node->edges_in_frequency_order.empty())
       return;
@@ -259,7 +260,7 @@ class AssignmentProblem {
   }
 
   void SkipCommittedLabels(Node* node) {
-    ExtendNode(node, p_trace_);
+    ExtendNode(node, *p_trace_);
     uint32_t skipped = 0;
     while (!node->edges_in_frequency_order.empty() &&
            node->edges_in_frequency_order.front()->in_edge_->assignment_) {
@@ -289,7 +290,7 @@ class AssignmentProblem {
       unsolved_.insert(p_node);
       return;
     }
-    ExtendNode(m_node, m_trace_);
+    ExtendNode(m_node, *m_trace_);
 
     // Lets just try greedy
 
@@ -431,9 +432,9 @@ class AssignmentProblem {
     uint32_t p_pos = p_pos_start + 1;
     uint32_t m_pos = m_pos_start + 1;
 
-    while (p_pos < p_trace_.size()  &&  m_pos < m_trace_.size()) {
-      LabelInfo* p_info = p_trace_[p_pos];
-      LabelInfo* m_info = m_trace_[m_pos];
+    while (p_pos < p_trace_->size() && m_pos < m_trace_->size()) {
+      LabelInfo* p_info = (*p_trace_)[p_pos];
+      LabelInfo* m_info = (*m_trace_)[m_pos];
 
       // To match, either (1) both are assigned or (2) both are unassigned.
       if ((p_info->assignment_ == nullptr) != (m_info->assignment_ == nullptr))
@@ -471,8 +472,8 @@ class AssignmentProblem {
     uint32_t m_pos = m_pos_start - 1;
 
     while (p_pos > 0  &&  m_pos > 0) {
-      LabelInfo* p_info = p_trace_[p_pos];
-      LabelInfo* m_info = m_trace_[m_pos];
+      LabelInfo* p_info = (*p_trace_)[p_pos];
+      LabelInfo* m_info = (*m_trace_)[m_pos];
 
       if ((p_info->assignment_ == nullptr) != (m_info->assignment_ == nullptr))
         break;
@@ -508,7 +509,7 @@ class AssignmentProblem {
       return nullptr;
     }
 
-    ExtendNode(m_parent, m_trace_);
+    ExtendNode(m_parent, *m_trace_);
 
     LabelInfo* p_label = node->in_edge_;
     LabelInfo* m_label = p_label->assignment_;
@@ -557,8 +558,8 @@ class AssignmentProblem {
     node->edges_in_frequency_order.sort(OrderNodeByCountDecreasing());
   }
 
-  const Trace& m_trace_;
-  const Trace& p_trace_;
+  const raw_ref<const Trace> m_trace_;
+  const raw_ref<const Trace> p_trace_;
   raw_ptr<Node> m_root_;
   raw_ptr<Node> p_root_;
 

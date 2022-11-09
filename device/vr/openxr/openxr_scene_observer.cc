@@ -47,14 +47,14 @@ XrResult OpenXrSceneObserver::ComputeNewScene(
   compute_info.consistency =
       XR_SCENE_COMPUTE_CONSISTENCY_SNAPSHOT_COMPLETE_MSFT;
 
-  return extensions_.ExtensionMethods().xrComputeNewSceneMSFT(
+  return extensions_->ExtensionMethods().xrComputeNewSceneMSFT(
       scene_observer_.get(), &compute_info);
 }
 
 XrSceneComputeStateMSFT OpenXrSceneObserver::GetSceneComputeState() const {
   XrSceneComputeStateMSFT state{XR_SCENE_COMPUTE_STATE_NONE_MSFT};
   XrResult get_compute_state_result =
-      extensions_.ExtensionMethods().xrGetSceneComputeStateMSFT(
+      extensions_->ExtensionMethods().xrGetSceneComputeStateMSFT(
           scene_observer_.get(), &state);
   DCHECK(XR_SUCCEEDED(get_compute_state_result));
   return state;
@@ -67,7 +67,7 @@ bool OpenXrSceneObserver::IsSceneComputeCompleted() const {
 }
 
 std::unique_ptr<OpenXrScene> OpenXrSceneObserver::CreateScene() const {
-  return std::make_unique<OpenXrScene>(extensions_, scene_observer_.get());
+  return std::make_unique<OpenXrScene>(*extensions_, scene_observer_.get());
 }
 
 }  // namespace device

@@ -190,13 +190,13 @@ void PaintOpWriter::Write(const SkColor4f& color) {
 
 void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   auto id = path.getGenerationID();
-  if (!options_.for_identifiability_study)
+  if (!options_->for_identifiability_study)
     Write(id);
 
   DCHECK(use_paint_cache == UsePaintCache::kEnabled ||
-         !options_.paint_cache->Get(PaintCacheDataType::kPath, id));
+         !options_->paint_cache->Get(PaintCacheDataType::kPath, id));
   if (use_paint_cache == UsePaintCache::kEnabled &&
-      options_.paint_cache->Get(PaintCacheDataType::kPath, id)) {
+      options_->paint_cache->Get(PaintCacheDataType::kPath, id)) {
     Write(static_cast<uint32_t>(PaintCacheEntryState::kCached));
     return;
   }
@@ -224,7 +224,7 @@ void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   size_t bytes_written = path.writeToMemory(memory_);
   DCHECK_EQ(bytes_written, bytes_required);
   if (use_paint_cache == UsePaintCache::kEnabled) {
-    options_.paint_cache->Put(PaintCacheDataType::kPath, id, bytes_written);
+    options_->paint_cache->Put(PaintCacheDataType::kPath, id, bytes_written);
   }
   *bytes_to_skip = bytes_written;
   DidWrite(bytes_written);
@@ -284,7 +284,7 @@ void PaintOpWriter::Write(const DrawImage& draw_image,
   }
 
   // Default mode uses the transfer cache.
-  auto decoded_image = options_.image_provider->GetRasterContent(draw_image);
+  auto decoded_image = options_->image_provider->GetRasterContent(draw_image);
   DCHECK(!decoded_image.decoded_image().image())
       << "Use transfer cache for image serialization";
   const DecodedDrawImage& decoded_draw_image = decoded_image.decoded_image();
@@ -305,14 +305,15 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
     return;
 
   bool locked =
-      options_.transfer_cache->LockEntry(TransferCacheEntryType::kSkottie, id);
+      options_->transfer_cache->LockEntry(TransferCacheEntryType::kSkottie, id);
 
   // Add a cache entry for the skottie animation.
   uint64_t bytes_written = 0u;
   if (!locked) {
-    bytes_written = options_.transfer_cache->CreateEntry(
+    bytes_written = options_->transfer_cache->CreateEntry(
         ClientSkottieTransferCacheEntry(skottie), memory_);
-    options_.transfer_cache->AssertLocked(TransferCacheEntryType::kSkottie, id);
+    options_->transfer_cache->AssertLocked(TransferCacheEntryType::kSkottie,
+                                           id);
   }
 
   DCHECK_LE(bytes_written, remaining_bytes_);
@@ -438,21 +439,21 @@ sk_sp<PaintShader> PaintOpWriter::TransformShaderIfNecessary(
 
   if (type == PaintShader::Type::kImage) {
     if (!original->paint_image().IsPaintWorklet()) {
-      return original->CreateDecodedImage(ctm, quality, options_.image_provider,
-                                          paint_image_transfer_cache_entry_id,
-                                          &quality, paint_image_needs_mips,
-                                          mailbox_out);
+      return original->CreateDecodedImage(
+          ctm, quality, options_->image_provider,
+          paint_image_transfer_cache_entry_id, &quality, paint_image_needs_mips,
+          mailbox_out);
     }
     sk_sp<PaintShader> record_shader =
-        original->CreatePaintWorkletRecord(options_.image_provider);
+        original->CreatePaintWorkletRecord(options_->image_provider);
     if (!record_shader)
       return nullptr;
     return record_shader->CreateScaledPaintRecord(
-        ctm, options_.max_texture_size, paint_record_post_scale);
+        ctm, options_->max_texture_size, paint_record_post_scale);
   }
 
   if (type == PaintShader::Type::kPaintRecord) {
-    return original->CreateScaledPaintRecord(ctm, options_.max_texture_size,
+    return original->CreateScaledPaintRecord(ctm, options_->max_texture_size,
                                              paint_record_post_scale);
   }
 
@@ -533,7 +534,7 @@ void PaintOpWriter::Write(const PaintShader* shader,
   if (shader->record_) {
     Write(true);
     DCHECK_NE(shader->id_, PaintShader::kInvalidRecordShaderId);
-    if (!options_.for_identifiability_study)
+    if (!options_->for_identifiability_study)
       Write(shader->id_);
     const gfx::Rect playback_rect(
         gfx::ToEnclosingRect(gfx::SkRectToRectF(shader->tile())));
@@ -810,7 +811,7 @@ void PaintOpWriter::Write(const RecordPaintFilter& filter,
   // analysis (e.g. this ensures any contained text blobs will not be missing
   // from the cache).
   auto scaled_filter = filter.CreateScaledPaintRecord(
-      current_ctm.asM33(), options_.max_texture_size);
+      current_ctm.asM33(), options_->max_texture_size);
   if (!scaled_filter) {
     WriteSimple(false);
     return;
@@ -953,7 +954,7 @@ void PaintOpWriter::Write(const PaintRecord* record,
   // converted to a fixed scale mode (hence |post_scale|), which means they are
   // first rendered offscreen via SkImage::MakeFromPicture. This inherently does
   // not support lcd text, so reflect that in the serialization options.
-  PaintOp::SerializeOptions lcd_disabled_options = options_;
+  PaintOp::SerializeOptions lcd_disabled_options = *options_;
   lcd_disabled_options.can_use_lcd_text = false;
   SimpleBufferSerializer serializer(memory_, remaining_bytes_,
                                     lcd_disabled_options);

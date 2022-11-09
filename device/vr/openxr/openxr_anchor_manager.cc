@@ -100,11 +100,11 @@ AnchorId OpenXrAnchorManager::CreateAnchor(XrPosef pose,
   anchor_create_info.pose = pose;
   anchor_create_info.time = predicted_display_time;
 
-  DCHECK(extension_helper_.ExtensionMethods().xrCreateSpatialAnchorMSFT);
-  DCHECK(extension_helper_.ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT);
-  DCHECK(extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT);
+  DCHECK(extension_helper_->ExtensionMethods().xrCreateSpatialAnchorMSFT);
+  DCHECK(extension_helper_->ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT);
+  DCHECK(extension_helper_->ExtensionMethods().xrDestroySpatialAnchorMSFT);
 
-  if (XR_FAILED(extension_helper_.ExtensionMethods().xrCreateSpatialAnchorMSFT(
+  if (XR_FAILED(extension_helper_->ExtensionMethods().xrCreateSpatialAnchorMSFT(
           session_, &anchor_create_info, &xr_anchor))) {
     return kInvalidAnchorId;
   }
@@ -115,10 +115,10 @@ AnchorId OpenXrAnchorManager::CreateAnchor(XrPosef pose,
   space_create_info.anchor = xr_anchor;
   space_create_info.poseInAnchorSpace = PoseIdentity();
   if (FAILED(
-          extension_helper_.ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT(
+          extension_helper_->ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT(
               session_, &space_create_info, &anchor_space))) {
     std::ignore =
-        extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
+        extension_helper_->ExtensionMethods().xrDestroySpatialAnchorMSFT(
             xr_anchor);
     return kInvalidAnchorId;
   }
@@ -141,8 +141,9 @@ XrSpace OpenXrAnchorManager::GetAnchorSpace(AnchorId anchor_id) const {
 void OpenXrAnchorManager::DestroyAnchorData(
     const AnchorData& anchor_data) const {
   std::ignore = xrDestroySpace(anchor_data.space);
-  std::ignore = extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
-      anchor_data.anchor);
+  std::ignore =
+      extension_helper_->ExtensionMethods().xrDestroySpatialAnchorMSFT(
+          anchor_data.anchor);
 }
 
 void OpenXrAnchorManager::DetachAnchor(AnchorId anchor_id) {

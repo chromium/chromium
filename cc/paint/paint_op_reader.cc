@@ -112,11 +112,11 @@ void PaintOpReader::ReadSimple(T* val) {
 uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
   DCHECK(SkIsAlign4(reinterpret_cast<uintptr_t>(memory_)));
 
-  if (options_.scratch_buffer->size() < bytes)
-    options_.scratch_buffer->resize(bytes);
-  memcpy(options_.scratch_buffer->data(), const_cast<const char*>(memory_),
+  if (options_->scratch_buffer->size() < bytes)
+    options_->scratch_buffer->resize(bytes);
+  memcpy(options_->scratch_buffer->data(), const_cast<const char*>(memory_),
          bytes);
-  return options_.scratch_buffer->data();
+  return options_->scratch_buffer->data();
 }
 
 template <typename T>
@@ -223,7 +223,7 @@ void PaintOpReader::Read(SkPath* path) {
     case PaintCacheEntryState::kEmpty:
       return;
     case PaintCacheEntryState::kCached:
-      if (!options_.paint_cache->GetPath(path_id, path))
+      if (!options_->paint_cache->GetPath(path_id, path))
         SetInvalid(DeserializationError::kMissingPaintCachePathEntry);
       return;
     case PaintCacheEntryState::kInlined:
@@ -245,7 +245,7 @@ void PaintOpReader::Read(SkPath* path) {
         return;
       }
       if (entry_state == PaintCacheEntryState::kInlined) {
-        options_.paint_cache->PutPath(path_id, *path);
+        options_->paint_cache->PutPath(path_id, *path);
       } else {
         // If we know that this path will only be drawn once, which is
         // implied by kInlinedDoNotCache, we signal to skia that it should not
@@ -352,7 +352,7 @@ void PaintOpReader::Read(PaintImage* image) {
   }
 
   if (serialized_type == PaintOp::SerializedImageType::kMailbox) {
-    if (!options_.shared_image_provider) {
+    if (!options_->shared_image_provider) {
       SetInvalid(DeserializationError::kMissingSharedImageProvider);
       return;
     }
@@ -366,7 +366,7 @@ void PaintOpReader::Read(PaintImage* image) {
 
     SharedImageProvider::Error error;
     sk_sp<SkImage> sk_image =
-        options_.shared_image_provider->OpenSharedImageForRead(mailbox, error);
+        options_->shared_image_provider->OpenSharedImageForRead(mailbox, error);
     if (error != SharedImageProvider::Error::kNoError) {
       switch (error) {
         case SharedImageProvider::Error::kNoAccess:
@@ -418,7 +418,7 @@ void PaintOpReader::Read(PaintImage* image) {
 
   // The transfer cache entry for an image may not exist if the upload fails.
   if (auto* entry =
-          options_.transfer_cache->GetEntryAs<ServiceImageTransferCacheEntry>(
+          options_->transfer_cache->GetEntryAs<ServiceImageTransferCacheEntry>(
               transfer_cache_entry_id)) {
     if (needs_mips)
       entry->EnsureMips();
@@ -485,7 +485,7 @@ void PaintOpReader::Read(sk_sp<GrSlug>* slug) {
   }
 
   *slug = GrSlug::Deserialize(const_cast<const char*>(memory_), data_bytes,
-                              options_.strike_client);
+                              options_->strike_client);
   DidRead(data_bytes);
 
   if (!*slug) {
@@ -551,9 +551,9 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
 
     // Track dependent transfer cache entries to make cached shader size
     // more realistic.
-    size_t pre_size = options_.transfer_cache->GetTotalEntrySizes();
+    size_t pre_size = options_->transfer_cache->GetTotalEntrySizes();
     size_t record_size = Read(&ref.record_);
-    size_t post_size = options_.transfer_cache->GetTotalEntrySizes();
+    size_t post_size = options_->transfer_cache->GetTotalEntrySizes();
     shader_size = post_size - pre_size + record_size;
 
     ref.id_ = shader_id;
@@ -613,7 +613,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   // transfer cache entries from needing to depend on other transfer cache
   // entries.
   auto* entry =
-      options_.transfer_cache->GetEntryAs<ServiceShaderTransferCacheEntry>(
+      options_->transfer_cache->GetEntryAs<ServiceShaderTransferCacheEntry>(
           shader_id);
   // Only consider entries that use the same scale.  This limits the service
   // side transfer cache to only having one entry per shader but this will hit
@@ -624,7 +624,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   } else {
     ref.ResolveSkObjects();
     DCHECK(ref.sk_cached_picture_);
-    options_.transfer_cache->CreateLocalEntry(
+    options_->transfer_cache->CreateLocalEntry(
         shader_id, std::make_unique<ServiceShaderTransferCacheEntry>(
                        *shader, shader_size));
   }
@@ -700,7 +700,7 @@ void PaintOpReader::Read(gpu::Mailbox* mailbox) {
 }
 
 void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
-  if (!options_.is_privileged) {
+  if (!options_->is_privileged) {
     valid_ = false;
     return;
   }
@@ -710,7 +710,7 @@ void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
   if (!valid_)
     return;
   auto* entry =
-      options_.transfer_cache->GetEntryAs<ServiceSkottieTransferCacheEntry>(
+      options_->transfer_cache->GetEntryAs<ServiceSkottieTransferCacheEntry>(
           transfer_cache_entry_id);
   if (entry) {
     *skottie = entry->skottie();
@@ -744,7 +744,7 @@ NOINLINE void PaintOpReader::SetInvalid(DeserializationError error) {
       "PaintOpReader deserialization error");
   base::UmaHistogramEnumeration("GPU.PaintOpReader.DeserializationError",
                                 error);
-  if (valid_ && options_.crash_dump_on_failure && base::RandInt(1, 10) == 1) {
+  if (valid_ && options_->crash_dump_on_failure && base::RandInt(1, 10) == 1) {
     crash_reporter::ScopedCrashKeyString crash_key_scope(
         &deserialization_error_crash_key,
         base::NumberToString(static_cast<int>(error)));
@@ -1408,7 +1408,7 @@ size_t PaintOpReader::Read(sk_sp<PaintRecord>* record) {
   if (!valid_)
     return 0;
 
-  *record = PaintOpBuffer::MakeFromMemory(memory_, size_bytes, options_);
+  *record = PaintOpBuffer::MakeFromMemory(memory_, size_bytes, *options_);
   if (!*record) {
     SetInvalid(DeserializationError::kPaintOpBufferMakeFromMemoryFailure);
     return 0;

@@ -432,7 +432,7 @@ bool WebRequestAction::Equals(const WebRequestAction* other) const {
 bool WebRequestAction::HasPermission(ApplyInfo* apply_info,
                                      const std::string& extension_id) const {
   PermissionHelper* permission_helper = apply_info->permission_helper;
-  const WebRequestInfo* request = apply_info->request_data.request;
+  const WebRequestInfo* request = apply_info->request_data->request;
   if (WebRequestPermissions::HideRequest(permission_helper, *request))
     return false;
 
@@ -493,9 +493,9 @@ void WebRequestAction::Apply(const std::string& extension_id,
                              ApplyInfo* apply_info) const {
   if (!HasPermission(apply_info, extension_id))
     return;
-  if (stages() & apply_info->request_data.stage) {
+  if (stages() & apply_info->request_data->stage) {
     absl::optional<EventResponseDelta> delta = CreateDelta(
-        apply_info->request_data, extension_id, extension_install_time);
+        *apply_info->request_data, extension_id, extension_install_time);
     if (delta.has_value())
       apply_info->deltas->push_back(std::move(delta.value()));
     if (type() == WebRequestAction::ACTION_IGNORE_RULES) {

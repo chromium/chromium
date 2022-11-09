@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 
@@ -90,7 +91,7 @@ class COMPONENT_EXPORT(SQL) Transaction {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  Database& database_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<Database> database_ GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if DCHECK_IS_ON()
   bool begin_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

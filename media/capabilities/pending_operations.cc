@@ -48,7 +48,7 @@ PendingOperations::PendingOperation::~PendingOperation() {
 void PendingOperations::PendingOperation::UmaHistogramOpTime(
     const std::string& op_name,
     base::TimeDelta duration) {
-  base::UmaHistogramCustomMicrosecondsTimes(uma_prefix_ + op_name, duration,
+  base::UmaHistogramCustomMicrosecondsTimes(*uma_prefix_ + op_name, duration,
                                             base::Milliseconds(1),
                                             kPendingOpTimeout, 50);
 }

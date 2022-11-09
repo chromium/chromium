@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -103,9 +104,9 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   void NotifyEncoderInfoChange(const ::media::VideoEncoderInfo& info) override;
 
   CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
-  const gpu::GpuPreferences& gpu_preferences_;
+  const raw_ref<const gpu::GpuPreferences> gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
-  const gpu::GPUInfo::GPUDevice& gpu_device_;
+  const raw_ref<const gpu::GPUInfo::GPUDevice> gpu_device_;
 
   // Owned pointer to the underlying VideoEncodeAccelerator.
   std::unique_ptr<::media::VideoEncodeAccelerator> encoder_;

@@ -7,6 +7,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -42,7 +43,7 @@ class MEDIA_EXPORT PendingOperations {
    private:
     friend class VideoDecodeStatsDBImplTest;
     friend class WebrtcVideoStatsDBImplTest;
-    const std::string& uma_prefix_;
+    const raw_ref<const std::string> uma_prefix_;
     const std::string uma_str_;
     std::unique_ptr<base::CancelableOnceClosure> timeout_closure_;
     const base::TimeTicks start_ticks_;

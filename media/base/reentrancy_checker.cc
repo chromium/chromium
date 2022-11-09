@@ -7,7 +7,7 @@
 namespace media {
 
 NonReentrantScope::NonReentrantScope(base::Lock& lock) : lock_(lock) {
-  is_lock_holder_ = lock_.Try();
+  is_lock_holder_ = lock_->Try();
 
   // TODO(sandersd): Allow the caller to provide the message? The macro knows
   // the name of the scope.
@@ -19,8 +19,8 @@ NonReentrantScope::~NonReentrantScope() {
   if (!is_lock_holder_)
     return;
 
-  lock_.AssertAcquired();
-  lock_.Release();
+  lock_->AssertAcquired();
+  lock_->Release();
 }
 
 }  // namespace media

@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -96,7 +97,7 @@ class OpenscreenFrameSender : public FrameSender,
   std::unique_ptr<openscreen::cast::Sender> const sender_;
 
   // The frame sender client.
-  Client& client_;
+  const raw_ref<Client> client_;
 
   // The method for getting the recommended bitrate.
   GetSuggestedVideoBitrateCB get_bitrate_cb_;

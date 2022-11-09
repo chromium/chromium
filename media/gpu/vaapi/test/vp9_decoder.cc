@@ -129,7 +129,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   // https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/vp9_decoder.cc;l=249-285;drc=3893688a88eb1b4cf39e346fd8f8c743ad255469
   if (!va_config_ || va_config_->profile() != profile) {
     va_context_.reset();
-    va_config_ = std::make_unique<ScopedVAConfig>(va_device_, profile,
+    va_config_ = std::make_unique<ScopedVAConfig>(*va_device_, profile,
                                                   GetFormatForProfile(profile));
   }
 
@@ -142,7 +142,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
                        (va_context_->size().width() < size.width() ||
                         va_context_->size().height() < size.height()))) {
     va_context_ =
-        std::make_unique<ScopedVAContext>(va_device_, *va_config_, size);
+        std::make_unique<ScopedVAContext>(*va_device_, *va_config_, size);
   }
 
   // Create surfaces for decode.
@@ -152,7 +152,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   attribute.value.type = VAGenericValueTypeInteger;
   attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_DECODER;
   scoped_refptr<SharedVASurface> surface = SharedVASurface::Create(
-      va_device_, va_config_->va_rt_format(), size, attribute);
+      *va_device_, va_config_->va_rt_format(), size, attribute);
 
   const Vp9Parser::Context& context = vp9_parser_->context();
   const Vp9SegmentationParams& seg = context.segmentation();
@@ -218,7 +218,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   std::vector<VABufferID> buffers;
   VABufferID buffer_id;
   VAStatus res = vaCreateBuffer(
-      va_device_.display(), va_context_->id(), VAPictureParameterBufferType,
+      va_device_->display(), va_context_->id(), VAPictureParameterBufferType,
       sizeof(VADecPictureParameterBufferVP9), 1u, &pic_param, &buffer_id);
   VA_LOG_ASSERT(res, "vaCreateBuffer");
   buffers.push_back(buffer_id);
@@ -250,26 +250,26 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   }
 
   res = vaCreateBuffer(
-      va_device_.display(), va_context_->id(), VASliceParameterBufferType,
+      va_device_->display(), va_context_->id(), VASliceParameterBufferType,
       sizeof(VASliceParameterBufferVP9), 1u, &slice_param, &buffer_id);
   VA_LOG_ASSERT(res, "vaCreateBuffer");
   buffers.push_back(buffer_id);
 
   // Set up buffer for frame header.
-  res = vaCreateBuffer(va_device_.display(), va_context_->id(),
+  res = vaCreateBuffer(va_device_->display(), va_context_->id(),
                        VASliceDataBufferType, frame_hdr.frame_size, 1u,
                        const_cast<uint8_t*>(frame_hdr.data), &buffer_id);
   VA_LOG_ASSERT(res, "vaCreateBuffer");
   buffers.push_back(buffer_id);
 
-  res = vaBeginPicture(va_device_.display(), va_context_->id(), surface->id());
+  res = vaBeginPicture(va_device_->display(), va_context_->id(), surface->id());
   VA_LOG_ASSERT(res, "vaBeginPicture");
 
-  res = vaRenderPicture(va_device_.display(), va_context_->id(), buffers.data(),
-                        buffers.size());
+  res = vaRenderPicture(va_device_->display(), va_context_->id(),
+                        buffers.data(), buffers.size());
   VA_LOG_ASSERT(res, "vaRenderPicture");
 
-  res = vaEndPicture(va_device_.display(), va_context_->id());
+  res = vaEndPicture(va_device_->display(), va_context_->id());
   VA_LOG_ASSERT(res, "vaEndPicture");
 
   last_decoded_surface_ = surface;
@@ -277,7 +277,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   RefreshReferenceSlots(frame_hdr.refresh_frame_flags, surface);
 
   for (auto id : buffers)
-    vaDestroyBuffer(va_device_.display(), id);
+    vaDestroyBuffer(va_device_->display(), id);
   buffers.clear();
 
   return VideoDecoder::kOk;

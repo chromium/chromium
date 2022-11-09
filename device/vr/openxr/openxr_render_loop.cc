@@ -76,7 +76,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   if (openxr_->HasFrameState()) {
     if (IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
       OpenXrAnchorManager* anchor_manager =
-          openxr_->GetOrCreateAnchorManager(extension_helper_);
+          openxr_->GetOrCreateAnchorManager(*extension_helper_);
 
       if (anchor_manager) {
         frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
@@ -91,7 +91,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
       frame_data->mojo_from_viewer->position &&
       frame_data->mojo_from_viewer->orientation) {
     OpenXRSceneUnderstandingManager* scene_understanding_manager =
-        openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
+        openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
     if (scene_understanding_manager) {
       device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
                                     *frame_data->mojo_from_viewer->orientation);
@@ -134,11 +134,11 @@ void OpenXrRenderLoop::StartRuntime(
 
   texture_helper_.SetUseBGRA(true);
   LUID luid;
-  if (XR_FAILED(openxr_->GetLuid(extension_helper_, luid)) ||
+  if (XR_FAILED(openxr_->GetLuid(*extension_helper_, luid)) ||
       !texture_helper_.SetAdapterLUID(luid) ||
       !texture_helper_.EnsureInitialized() ||
       XR_FAILED(openxr_->InitSession(
-          enabled_features_, texture_helper_.GetDevice(), extension_helper_,
+          enabled_features_, texture_helper_.GetDevice(), *extension_helper_,
           std::move(on_session_started_callback),
           std::move(on_session_ended_callback),
           std::move(on_visibility_state_changed)))) {
@@ -174,7 +174,7 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
     const std::vector<device::mojom::XRSessionFeature>& required_features,
     const std::vector<device::mojom::XRSessionFeature>& optional_features) {
   const OpenXrExtensionEnumeration* extension_enumeration =
-      extension_helper_.ExtensionEnumeration();
+      extension_helper_->ExtensionEnumeration();
 
   // Filter out features that are requested but not supported
   auto openxr_extension_enabled_filter =
@@ -373,7 +373,7 @@ void OpenXrRenderLoop::SubscribeToHitTest(
            << ", ray direction=" << ray->direction.ToString();
 
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
+      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
 
   if (!scene_understanding_manager) {
     std::move(callback).Run(
@@ -400,7 +400,7 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
            << ", ray direction=" << ray->direction.ToString();
 
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
+      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
 
   if (!scene_understanding_manager) {
     std::move(callback).Run(
@@ -420,7 +420,7 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
 void OpenXrRenderLoop::UnsubscribeFromHitTest(uint64_t subscription_id) {
   DVLOG(2) << __func__;
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
+      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
   if (scene_understanding_manager)
     scene_understanding_manager->UnsubscribeFromHitTest(
         HitTestSubscriptionId(subscription_id));
@@ -431,7 +431,7 @@ void OpenXrRenderLoop::CreateAnchor(
     const device::Pose& native_origin_from_anchor,
     CreateAnchorCallback callback) {
   OpenXrAnchorManager* anchor_manager =
-      openxr_->GetOrCreateAnchorManager(extension_helper_);
+      openxr_->GetOrCreateAnchorManager(*extension_helper_);
   if (!anchor_manager) {
     return;
   }
@@ -451,7 +451,7 @@ void OpenXrRenderLoop::CreatePlaneAnchor(
 
 void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {
   OpenXrAnchorManager* anchor_manager =
-      openxr_->GetOrCreateAnchorManager(extension_helper_);
+      openxr_->GetOrCreateAnchorManager(*extension_helper_);
   if (!anchor_manager) {
     return;
   }

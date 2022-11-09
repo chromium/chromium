@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
@@ -57,7 +58,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
   const dbus::ObjectPath& object_path() const { return object_path_; }
 
   // Returns the UUID of the profile
-  const device::BluetoothUUID& uuid() const { return uuid_; }
+  const device::BluetoothUUID& uuid() const { return *uuid_; }
 
   // Add a delegate for a device associated with this profile.
   // An empty |device_path| indicates a local listening service.
@@ -98,7 +99,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
       delegates_;
 
   // The UUID that this profile represents.
-  const device::BluetoothUUID& uuid_;
+  const raw_ref<const device::BluetoothUUID> uuid_;
 
   // Registered dbus object path for this profile.
   dbus::ObjectPath object_path_;

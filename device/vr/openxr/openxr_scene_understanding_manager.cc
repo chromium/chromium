@@ -42,7 +42,7 @@ void OpenXRSceneUnderstandingManager::EnableSceneCompute() {
   if (scene_compute_state_ == SceneComputeState::Off) {
     if (!scene_observer_) {
       scene_observer_ =
-          std::make_unique<OpenXrSceneObserver>(extension_helper_, session_);
+          std::make_unique<OpenXrSceneObserver>(*extension_helper_, session_);
       scene_compute_state_ = SceneComputeState::Idle;
     }
   }

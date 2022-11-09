@@ -5,6 +5,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_SCENE_OBSERVER_H_
 
 #include "base/check.h"
+#include "base/memory/raw_ref.h"
 #include "device/vr/openxr/openxr_extension_handle.h"
 #include "device/vr/openxr/openxr_scene.h"
 #include "device/vr/openxr/openxr_scene_bounds.h"
@@ -32,7 +33,7 @@ class OpenXrSceneObserver {
   XrSceneObserverMSFT Handle() const { return scene_observer_.get(); }
 
  private:
-  const device::OpenXrExtensionHelper& extensions_;
+  const raw_ref<const device::OpenXrExtensionHelper> extensions_;
   OpenXrExtensionHandle<XrSceneObserverMSFT> scene_observer_;
 };
 

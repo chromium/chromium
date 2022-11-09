@@ -147,7 +147,7 @@ ResultCode InterceptionManager::InitializeInterceptions() {
     return SBOX_ERROR_CANNOT_SETUP_INTERCEPTION_CONFIG_BUFFER;
 
   void* remote_buffer;
-  if (!CopyToChildMemory(child_.Process(), local_buffer.get(), buffer_bytes,
+  if (!CopyToChildMemory(child_->Process(), local_buffer.get(), buffer_bytes,
                          &remote_buffer))
     return SBOX_ERROR_CANNOT_COPY_DATA_TO_CHILD;
 
@@ -158,8 +158,8 @@ ResultCode InterceptionManager::InitializeInterceptions() {
     return rc;
 
   g_interceptions = reinterpret_cast<SharedMemory*>(remote_buffer);
-  rc = child_.TransferVariable("g_interceptions", &g_interceptions,
-                               sizeof(g_interceptions));
+  rc = child_->TransferVariable("g_interceptions", &g_interceptions,
+                                sizeof(g_interceptions));
   return rc;
 }
 
@@ -212,7 +212,8 @@ bool InterceptionManager::SetupConfigBuffer(void* buffer, size_t buffer_bytes) {
   DllPatchInfo* dll_info = shared_memory->dll_list;
   int num_dlls = 0;
 
-  shared_memory->interceptor_base = names_used_ ? child_.MainModule() : nullptr;
+  shared_memory->interceptor_base =
+      names_used_ ? child_->MainModule() : nullptr;
 
   buffer_bytes -= offsetof(SharedMemory, dll_list);
   buffer = dll_info;
@@ -365,7 +366,7 @@ ResultCode InterceptionManager::PatchNtdll(bool hot_patch_needed) {
   }
 
   // Reserve a full 64k memory range in the child process.
-  HANDLE child = child_.Process();
+  HANDLE child = child_->Process();
   BYTE* thunk_base = reinterpret_cast<BYTE*>(::VirtualAllocEx(
       child, nullptr, kAllocGranularity, MEM_RESERVE, PAGE_NOACCESS));
 
@@ -416,7 +417,7 @@ ResultCode InterceptionManager::PatchNtdll(bool hot_patch_needed) {
                      &old_protection);
 
   ResultCode ret =
-      child_.TransferVariable("g_originals", g_originals, sizeof(g_originals));
+      child_->TransferVariable("g_originals", g_originals, sizeof(g_originals));
   return ret;
 }
 
@@ -433,21 +434,21 @@ ResultCode InterceptionManager::PatchClientFunctions(
 
   std::unique_ptr<ServiceResolverThunk> thunk;
 #if defined(_WIN64)
-  thunk = std::make_unique<ServiceResolverThunk>(child_.Process(), true);
+  thunk = std::make_unique<ServiceResolverThunk>(child_->Process(), true);
 #else
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
   base::win::Version real_os_version = os_info->Kernel32Version();
   if (os_info->IsWowX86OnAMD64()) {
     if (real_os_version >= base::win::Version::WIN10)
-      thunk.reset(new Wow64W10ResolverThunk(child_.Process(), true));
+      thunk.reset(new Wow64W10ResolverThunk(child_->Process(), true));
     else if (real_os_version >= base::win::Version::WIN8)
-      thunk.reset(new Wow64W8ResolverThunk(child_.Process(), true));
+      thunk.reset(new Wow64W8ResolverThunk(child_->Process(), true));
     else
-      thunk.reset(new Wow64ResolverThunk(child_.Process(), true));
+      thunk.reset(new Wow64ResolverThunk(child_->Process(), true));
   } else if (real_os_version >= base::win::Version::WIN8) {
-    thunk.reset(new Win8ResolverThunk(child_.Process(), true));
+    thunk.reset(new Win8ResolverThunk(child_->Process(), true));
   } else {
-    thunk.reset(new ServiceResolverThunk(child_.Process(), true));
+    thunk.reset(new ServiceResolverThunk(child_->Process(), true));
   }
 #endif
 

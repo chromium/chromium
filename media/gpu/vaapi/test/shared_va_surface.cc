@@ -125,7 +125,7 @@ scoped_refptr<SharedVASurface> SharedVASurface::Create(
 }
 
 SharedVASurface::~SharedVASurface() {
-  VAStatus res = vaDestroySurfaces(va_device_.display(),
+  VAStatus res = vaDestroySurfaces(va_device_->display(),
                                    const_cast<VASurfaceID*>(&id_), 1u);
   VA_LOG_ASSERT(res, "vaDestroySurfaces");
   VLOG(1) << "destroyed surface " << id_;
@@ -137,14 +137,14 @@ void SharedVASurface::FetchData(FetchPolicy fetch_policy,
                                 uint8_t** image_data) const {
   if (fetch_policy == FetchPolicy::kDeriveImage ||
       fetch_policy == FetchPolicy::kAny) {
-    const bool res = DeriveImage(va_device_.display(), id_, image, image_data);
+    const bool res = DeriveImage(va_device_->display(), id_, image, image_data);
     if (fetch_policy != FetchPolicy::kAny)
       LOG_ASSERT(res) << "Failed to vaDeriveImage.";
     if (res)
       return;
   }
 
-  GetSurfaceImage(va_device_.display(), id_, format, size_, image, image_data);
+  GetSurfaceImage(va_device_->display(), id_, format, size_, image, image_data);
 }
 
 void SharedVASurface::SaveAsPNG(FetchPolicy fetch_policy,
@@ -213,10 +213,10 @@ void SharedVASurface::SaveAsPNG(FetchPolicy fetch_policy,
   LOG_ASSERT(base::WriteFile(base::FilePath(path), image_buffer));
 
   // Clean up VA handles.
-  VAStatus res = vaUnmapBuffer(va_device_.display(), image.buf);
+  VAStatus res = vaUnmapBuffer(va_device_->display(), image.buf);
   VA_LOG_ASSERT(res, "vaUnmapBuffer");
 
-  res = vaDestroyImage(va_device_.display(), image.image_id);
+  res = vaDestroyImage(va_device_->display(), image.image_id);
   VA_LOG_ASSERT(res, "vaDestroyImage");
 }
 
@@ -272,10 +272,10 @@ std::string SharedVASurface::GetMD5Sum(FetchPolicy fetch_policy) const {
       << " to packed I420.";
 
   // Clean up VA handles.
-  VAStatus res = vaUnmapBuffer(va_device_.display(), image.buf);
+  VAStatus res = vaUnmapBuffer(va_device_->display(), image.buf);
   VA_LOG_ASSERT(res, "vaUnmapBuffer");
 
-  res = vaDestroyImage(va_device_.display(), image.image_id);
+  res = vaDestroyImage(va_device_->display(), image.image_id);
   VA_LOG_ASSERT(res, "vaDestroyImage");
 
   base::MD5Digest md5_digest;

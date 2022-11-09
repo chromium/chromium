@@ -104,7 +104,7 @@ base::TimeDelta OpenscreenFrameSender::GetTargetPlayoutDelay() const {
 
 void OpenscreenFrameSender::OnFrameCanceled(
     openscreen::cast::FrameId frame_id) {
-  client_.OnFrameCanceled(frame_id);
+  client_->OnFrameCanceled(frame_id);
 }
 
 void OpenscreenFrameSender::OnPictureLost() {
@@ -120,7 +120,7 @@ void OpenscreenFrameSender::RecordLatestFrameTimestamps(
 }
 
 base::TimeDelta OpenscreenFrameSender::GetInFlightMediaDuration() const {
-  base::TimeDelta duration = client_.GetEncoderBacklogDuration();
+  base::TimeDelta duration = client_->GetEncoderBacklogDuration();
   if (!last_enqueued_frame_id_.is_null()) {
     const RtpTimeTicks newest_timestamp =
         GetRecordedRtpTimestamp(last_enqueued_frame_id_);
@@ -277,7 +277,7 @@ bool OpenscreenFrameSender::ShouldDropNextFrame(
   // Check that accepting the next frame won't cause more frames to become
   // in-flight than the system's design limit.
   const int count_frames_in_flight =
-      GetUnacknowledgedFrameCount() + client_.GetNumberOfFramesInEncoder();
+      GetUnacknowledgedFrameCount() + client_->GetNumberOfFramesInEncoder();
   if (count_frames_in_flight >= kMaxUnackedFrames) {
     VLOG_WITH_SSRC(1) << "Dropping: Too many frames would be in-flight.";
     return true;

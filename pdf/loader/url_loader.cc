@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "net/base/net_errors.h"
@@ -44,16 +45,16 @@ class HeadersToString final : public blink::WebHTTPHeaderVisitor {
 
   void VisitHeader(const blink::WebString& name,
                    const blink::WebString& value) override {
-    if (!buffer_ref_.empty())
-      buffer_ref_.append("\n");
-    buffer_ref_.append(name.Utf8());
-    buffer_ref_.append(": ");
-    buffer_ref_.append(value.Utf8());
+    if (!buffer_ref_->empty())
+      buffer_ref_->append("\n");
+    buffer_ref_->append(name.Utf8());
+    buffer_ref_->append(": ");
+    buffer_ref_->append(value.Utf8());
   }
 
  private:
   // Reference allows writing directly into `UrlResponse::headers`.
-  std::string& buffer_ref_;
+  const raw_ref<std::string> buffer_ref_;
 };
 
 }  // namespace

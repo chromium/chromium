@@ -143,7 +143,7 @@ bool PermissionsPolicy::IsFeatureEnabled(
 bool PermissionsPolicy::IsFeatureEnabledForOrigin(
     mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) const {
-  DCHECK(base::Contains(feature_list_, feature));
+  DCHECK(base::Contains(*feature_list_, feature));
   DCHECK(base::Contains(inherited_policies_, feature));
 
   auto inherited_value = inherited_policies_.at(feature);
@@ -155,7 +155,7 @@ bool PermissionsPolicy::IsFeatureEnabledForOrigin(
 
   // If no "allowlist" is specified, return default feature value.
   const PermissionsPolicyFeatureDefault default_policy =
-      feature_list_.at(feature);
+      feature_list_->at(feature);
   if (default_policy == PermissionsPolicyFeatureDefault::EnableForSelf &&
       !origin_.IsSameOriginWith(origin))
     return false;
@@ -166,7 +166,7 @@ bool PermissionsPolicy::IsFeatureEnabledForOrigin(
 bool PermissionsPolicy::GetFeatureValueForOrigin(
     mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) const {
-  DCHECK(base::Contains(feature_list_, feature));
+  DCHECK(base::Contains(*feature_list_, feature));
   DCHECK(base::Contains(inherited_policies_, feature));
 
   auto inherited_value = inherited_policies_.at(feature);
@@ -203,7 +203,7 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
 // calculation method.
 const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
     mojom::PermissionsPolicyFeature feature) const {
-  DCHECK(base::Contains(feature_list_, feature));
+  DCHECK(base::Contains(*feature_list_, feature));
   // Return an empty allowlist when disabled through inheritance.
   if (!IsFeatureEnabledByInheritedPolicy(feature))
     return PermissionsPolicy::Allowlist();
@@ -214,7 +214,7 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
     return maybe_allow_list.value();
 
   const PermissionsPolicyFeatureDefault default_policy =
-      feature_list_.at(feature);
+      feature_list_->at(feature);
   PermissionsPolicy::Allowlist default_allowlist;
 
   if (default_policy == PermissionsPolicyFeatureDefault::EnableForAll) {
@@ -253,7 +253,7 @@ void PermissionsPolicy::SetHeaderPolicy(
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
     allowlists_.emplace(
-        feature, AllowlistFromDeclaration(parsed_declaration, feature_list_));
+        feature, AllowlistFromDeclaration(parsed_declaration, *feature_list_));
   }
 }
 
@@ -265,7 +265,7 @@ void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
     const auto header_allowlist =
-        AllowlistFromDeclaration(parsed_declaration, feature_list_);
+        AllowlistFromDeclaration(parsed_declaration, *feature_list_);
     auto& isolated_app_allowlist = allowlists_.at(feature);
 
     // If the header does not specify further restrictions we do not need to
@@ -305,7 +305,7 @@ void PermissionsPolicy::OverwriteHeaderPolicyForClientHints(
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(GetPolicyFeatureToClientHintMap().contains(feature));
     allowlists_[feature] =
-        AllowlistFromDeclaration(parsed_declaration, feature_list_);
+        AllowlistFromDeclaration(parsed_declaration, *feature_list_);
   }
 }
 
@@ -404,7 +404,7 @@ bool PermissionsPolicy::InheritedValueForFeature(
       // 9.8 5.1: If the allowlist for feature in container policy matches
       // origin, return "Enabled".
       // 9.8 5.2: Otherwise return "Disabled".
-      return AllowlistFromDeclaration(decl, feature_list_).Contains(origin_);
+      return AllowlistFromDeclaration(decl, *feature_list_).Contains(origin_);
     }
   }
   // 9.8 6: If feature’s default allowlist is *, return "Enabled".
@@ -418,7 +418,7 @@ bool PermissionsPolicy::InheritedValueForFeature(
 }
 
 const PermissionsPolicyFeatureList& PermissionsPolicy::GetFeatureList() const {
-  return feature_list_;
+  return *feature_list_;
 }
 
 }  // namespace blink

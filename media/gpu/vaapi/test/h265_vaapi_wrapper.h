@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_H265_VAAPI_WRAPPER_H_
 #define MEDIA_GPU_VAAPI_TEST_H265_VAAPI_WRAPPER_H_
 
+#include "base/memory/raw_ref.h"
 #include "media/gpu/vaapi/test/h265_dpb.h"
 #include "media/gpu/vaapi/test/scoped_va_config.h"
 #include "media/gpu/vaapi/test/scoped_va_context.h"
@@ -111,7 +112,7 @@ class H265VaapiWrapper {
   // execution.
   std::vector<VABufferID> pending_buffers_;
 
-  const VaapiDevice& va_device_;
+  const raw_ref<const VaapiDevice> va_device_;
   std::unique_ptr<ScopedVAConfig> va_config_;
   std::unique_ptr<ScopedVAContext> va_context_;
 };

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "courgette/adjustment_method.h"
 
 #include <stddef.h>
@@ -397,7 +398,7 @@ class Shingle {
     return shingle;
   }
 
-  LabelInfo* at(size_t i) const { return trace_[exemplar_position_ + i]; }
+  LabelInfo* at(size_t i) const { return (*trace_)[exemplar_position_ + i]; }
   void add_position(size_t position) {
     positions_.push_back(static_cast<uint32_t>(position));
   }
@@ -422,7 +423,7 @@ class Shingle {
         exemplar_position_(exemplar_position),
         pattern_(nullptr) {}
 
-  const Trace& trace_;             // The shingle lives inside trace_.
+  const raw_ref<const Trace> trace_;  // The shingle lives inside trace_.
   size_t exemplar_position_;       // At this position (and other positions).
   std::vector<uint32_t> positions_;  // Includes exemplar_position_.
 
@@ -819,13 +820,13 @@ class AssignmentProblem {
 
   bool Solve() {
     if (model_end_ < Shingle::kWidth ||
-        trace_.size() - model_end_ < Shingle::kWidth) {
+        trace_->size() - model_end_ < Shingle::kWidth) {
       // Nothing much we can do with such a short problem.
       return true;
     }
-    instances_.resize(trace_.size() - Shingle::kWidth + 1, nullptr);
+    instances_.resize(trace_->size() - Shingle::kWidth + 1, nullptr);
     AddShingles(0, model_end_);
-    AddShingles(model_end_, trace_.size());
+    AddShingles(model_end_, trace_->size());
     InitialClassify();
     AddPatternsNeedingUpdatesToQueues();
 
@@ -857,9 +858,8 @@ class AssignmentProblem {
       SingleUsePatternQueue;
 
   void PrintPatternsHeader() const {
-    VLOG(2) << shingle_instances_.size() << " instances  "
-            << trace_.size() << " trace length  "
-            << patterns_.size() << " shingle indexes  "
+    VLOG(2) << shingle_instances_.size() << " instances  " << trace_->size()
+            << " trace length  " << patterns_.size() << " shingle indexes  "
             << single_use_pattern_queue_.size() << " single use patterns  "
             << active_non_single_use_patterns_.size() << " active patterns";
   }
@@ -901,7 +901,7 @@ class AssignmentProblem {
 
   void AddShingles(size_t begin, size_t end) {
     for (size_t i = begin; i + Shingle::kWidth - 1 < end; ++i) {
-      instances_[i] = Shingle::Find(trace_, i, &shingle_instances_);
+      instances_[i] = Shingle::Find(*trace_, i, &shingle_instances_);
     }
   }
 
@@ -958,7 +958,7 @@ class AssignmentProblem {
       size_t position = info->positions_[i];
       // Find bounds to the subrange of |trace_| we are in.
       size_t start = position < model_end_ ? 0 : model_end_;
-      size_t end = position < model_end_ ? model_end_ : trace_.size();
+      size_t end = position < model_end_ ? model_end_ : trace_->size();
 
       // Clip [position-kWidth+1, position+1)
       size_t low =
@@ -1206,7 +1206,7 @@ class AssignmentProblem {
  private:
   // The trace vector contains the model sequence [0, model_end_) followed by
   // the program sequence [model_end_, trace.end())
-  const Trace& trace_;
+  const raw_ref<const Trace> trace_;
   size_t model_end_;
 
   // |shingle_instances_| is the set of 'interned' shingles.

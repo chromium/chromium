@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -192,10 +193,10 @@ class NavigationEntryIterator {
   explicit NavigationEntryIterator(Tab* tab)
       : controller_(
             static_cast<TabImpl*>(tab)->web_contents()->GetController()),
-        at_pending_(controller_.GetPendingEntry() != nullptr &&
-                    controller_.GetPendingEntryIndex() != -1),
-        entry_index_(at_pending_ ? controller_.GetPendingEntryIndex()
-                                 : controller_.GetCurrentEntryIndex()) {
+        at_pending_(controller_->GetPendingEntry() != nullptr &&
+                    controller_->GetPendingEntryIndex() != -1),
+        entry_index_(at_pending_ ? controller_->GetPendingEntryIndex()
+                                 : controller_->GetCurrentEntryIndex()) {
     // GetPendingEntryIndex() returns -1 for new entries, which this implicitly
     // skips (Chrome's persistence code does the same).
 
@@ -216,9 +217,9 @@ class NavigationEntryIterator {
   // Returns the current entry.
   content::NavigationEntry* entry() const {
     if (at_pending_)
-      return controller_.GetPendingEntry();
+      return controller_->GetPendingEntry();
     return entry_index_ == -1 ? nullptr
-                              : controller_.GetEntryAtIndex(entry_index_);
+                              : controller_->GetEntryAtIndex(entry_index_);
   }
 
   // Returns true if the end has been reached.
@@ -230,15 +231,16 @@ class NavigationEntryIterator {
       return false;
     if (at_pending_) {
       at_pending_ = false;
-      entry_index_ = controller_.GetCurrentEntryIndex();
-      if (entry_index_ == controller_.GetPendingEntryIndex())
+      entry_index_ = controller_->GetCurrentEntryIndex();
+      if (entry_index_ == controller_->GetPendingEntryIndex())
         --entry_index_;
     } else if (entry_index_ != -1) {
       --entry_index_;
     }
 
     // Skip over the initial NavigationEntry as it shouldn't be persisted.
-    content::NavigationEntry* entry = controller_.GetEntryAtIndex(entry_index_);
+    content::NavigationEntry* entry =
+        controller_->GetEntryAtIndex(entry_index_);
     if (entry && entry->IsInitialEntry()) {
       DCHECK_EQ(0, entry_index_);
       entry_index_ = -1;
@@ -247,7 +249,7 @@ class NavigationEntryIterator {
   }
 
  private:
-  content::NavigationController& controller_;
+  const raw_ref<content::NavigationController> controller_;
   bool at_pending_;
   int entry_index_ = -1;
 };

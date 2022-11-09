@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "media/formats/mp4/box_definitions.h"
 
 namespace media {
@@ -43,7 +44,7 @@ class MEDIA_EXPORT SampleToGroupIterator {
  private:
   // Track how many samples remaining for current table entry.
   uint32_t remaining_samples_;
-  const std::vector<SampleToGroupEntry>& sample_to_group_table_;
+  const raw_ref<const std::vector<SampleToGroupEntry>> sample_to_group_table_;
   std::vector<SampleToGroupEntry>::const_iterator iterator_;
 };
 

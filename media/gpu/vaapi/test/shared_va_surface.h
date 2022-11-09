@@ -7,6 +7,7 @@
 
 #include <va/va.h>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -75,7 +76,7 @@ class SharedVASurface : public base::RefCounted<SharedVASurface> {
                  uint8_t** image_data) const;
 
   // Non-owned.
-  const VaapiDevice& va_device_;
+  const raw_ref<const VaapiDevice> va_device_;
 
   const VASurfaceID id_;
   const gfx::Size size_;

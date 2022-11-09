@@ -6,6 +6,7 @@
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
@@ -192,7 +193,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   raw_ptr<char> memory_ = nullptr;
   size_t size_ = 0u;
   size_t remaining_bytes_ = 0u;
-  const PaintOp::SerializeOptions& options_;
+  const raw_ref<const PaintOp::SerializeOptions> options_;
   bool valid_ = true;
 
   // Indicates that the following security constraints must be applied during

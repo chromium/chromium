@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "base/memory/raw_ref.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_filter.h"
@@ -27,8 +28,8 @@ struct State {
   State(const State&) = delete;
   State& operator=(const State&) = delete;
 
-  const std::vector<struct sock_filter>& program;
-  const struct arch_seccomp_data& data;
+  const raw_ref<const std::vector<struct sock_filter>> program;
+  const raw_ref<const struct arch_seccomp_data> data;
   unsigned int ip;
   uint32_t accumulator;
   bool acc_is_valid;
@@ -43,7 +44,7 @@ void Ld(State* state, const struct sock_filter& insn, const char** err) {
   if (insn.k < sizeof(struct arch_seccomp_data) && (insn.k & 3) == 0) {
     // We only allow loading of properly aligned 32bit quantities.
     memcpy(&state->accumulator,
-           reinterpret_cast<const char*>(&state->data) + insn.k, 4);
+           reinterpret_cast<const char*>(&*state->data) + insn.k, 4);
   } else {
     *err = "Invalid operand in BPF_LD instruction";
     return;
@@ -54,7 +55,7 @@ void Ld(State* state, const struct sock_filter& insn, const char** err) {
 
 void Jmp(State* state, const struct sock_filter& insn, const char** err) {
   if (BPF_OP(insn.code) == BPF_JA) {
-    if (state->ip + insn.k + 1 >= state->program.size() ||
+    if (state->ip + insn.k + 1 >= state->program->size() ||
         state->ip + insn.k + 1 <= state->ip) {
     compilation_failure:
       *err = "Invalid BPF_JMP instruction";
@@ -63,8 +64,8 @@ void Jmp(State* state, const struct sock_filter& insn, const char** err) {
     state->ip += insn.k;
   } else {
     if (BPF_SRC(insn.code) != BPF_K || !state->acc_is_valid ||
-        state->ip + insn.jt + 1 >= state->program.size() ||
-        state->ip + insn.jf + 1 >= state->program.size()) {
+        state->ip + insn.jt + 1 >= state->program->size() ||
+        state->ip + insn.jf + 1 >= state->program->size()) {
       goto compilation_failure;
     }
     switch (BPF_OP(insn.code)) {

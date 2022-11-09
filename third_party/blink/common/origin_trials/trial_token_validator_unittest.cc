@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
@@ -409,7 +410,7 @@ class ValidateTokenWrapper {
   virtual TrialTokenResult Validate(base::StringPiece token,
                                     const url::Origin& origin,
                                     base::Time timestamp) const {
-    return validator_.ValidateToken(token, origin, timestamp);
+    return validator_->ValidateToken(token, origin, timestamp);
   }
 
   virtual TrialTokenResult Validate(
@@ -417,11 +418,11 @@ class ValidateTokenWrapper {
       const url::Origin& origin,
       base::span<const url::Origin> script_origins,
       base::Time timestamp) const {
-    return validator_.ValidateToken(token, origin, script_origins, timestamp);
+    return validator_->ValidateToken(token, origin, script_origins, timestamp);
   }
 
  protected:
-  const blink::TrialTokenValidator& validator_;
+  const raw_ref<const blink::TrialTokenValidator> validator_;
 };
 
 class ValidateTokenAndTrialWrapper : public ValidateTokenWrapper {
@@ -434,15 +435,15 @@ class ValidateTokenAndTrialWrapper : public ValidateTokenWrapper {
   TrialTokenResult Validate(base::StringPiece token,
                             const url::Origin& origin,
                             base::Time timestamp) const override {
-    return validator_.ValidateTokenAndTrial(token, origin, timestamp);
+    return validator_->ValidateTokenAndTrial(token, origin, timestamp);
   }
 
   TrialTokenResult Validate(base::StringPiece token,
                             const url::Origin& origin,
                             base::span<const url::Origin> script_origins,
                             base::Time timestamp) const override {
-    return validator_.ValidateTokenAndTrial(token, origin, script_origins,
-                                            timestamp);
+    return validator_->ValidateTokenAndTrial(token, origin, script_origins,
+                                             timestamp);
   }
 };
 
@@ -456,7 +457,7 @@ class ValidateTokenAndTrialWithOriginInfoWrapper : public ValidateTokenWrapper {
   TrialTokenResult Validate(base::StringPiece token,
                             const url::Origin& origin,
                             base::Time timestamp) const override {
-    return validator_.ValidateTokenAndTrialWithOriginInfo(
+    return validator_->ValidateTokenAndTrialWithOriginInfo(
         token, TrialTokenValidator::OriginInfo(origin), {}, timestamp);
   }
 
@@ -468,7 +469,7 @@ class ValidateTokenAndTrialWithOriginInfoWrapper : public ValidateTokenWrapper {
     for (const url::Origin& script_origin : script_origins) {
       info.emplace_back(script_origin);
     }
-    return validator_.ValidateTokenAndTrialWithOriginInfo(
+    return validator_->ValidateTokenAndTrialWithOriginInfo(
         token, TrialTokenValidator::OriginInfo(origin), info, timestamp);
   }
 };

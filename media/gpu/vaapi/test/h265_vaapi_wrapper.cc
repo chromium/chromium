@@ -51,12 +51,12 @@ scoped_refptr<H265Picture> H265VaapiWrapper::CreateH265Picture(
   const gfx::Size size = sps->GetVisibleRect().size();
 
   if (!va_config_) {
-    va_config_ = std::make_unique<ScopedVAConfig>(va_device_, profile,
+    va_config_ = std::make_unique<ScopedVAConfig>(*va_device_, profile,
                                                   GetFormatForProfile(profile));
   }
   if (!va_context_) {
     va_context_ =
-        std::make_unique<ScopedVAContext>(va_device_, *va_config_, size);
+        std::make_unique<ScopedVAContext>(*va_device_, *va_config_, size);
   }
 
   VASurfaceAttrib attribute{};
@@ -67,7 +67,7 @@ scoped_refptr<H265Picture> H265VaapiWrapper::CreateH265Picture(
   attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_DECODER;
 
   scoped_refptr<SharedVASurface> surface = SharedVASurface::Create(
-      va_device_, va_config_->va_rt_format(), size, attribute);
+      *va_device_, va_config_->va_rt_format(), size, attribute);
   return base::WrapRefCounted(new vaapi_test::H265Picture(surface));
 }
 
@@ -529,7 +529,7 @@ bool H265VaapiWrapper::SubmitBuffer(VABufferType va_buffer_type,
   VABufferID buffer_id;
   {
     const VAStatus va_res =
-        vaCreateBuffer(va_device_.display(), va_context_->id(), va_buffer_type,
+        vaCreateBuffer(va_device_->display(), va_context_->id(), va_buffer_type,
                        size, 1, const_cast<void*>(data), &buffer_id);
     VA_LOG_ASSERT(va_res, "vaCreateBuffer");
   }
@@ -548,7 +548,7 @@ bool H265VaapiWrapper::SubmitBuffers(
 
 void H265VaapiWrapper::DestroyPendingBuffers() {
   for (const auto& pending_va_buf : pending_buffers_) {
-    vaDestroyBuffer(va_device_.display(), pending_va_buf);
+    vaDestroyBuffer(va_device_->display(), pending_va_buf);
   }
   pending_buffers_.clear();
 }
@@ -560,14 +560,14 @@ bool H265VaapiWrapper::ExecuteAndDestroyPendingBuffers(
 
   // Get ready to execute for given surface.
   VAStatus va_res =
-      vaBeginPicture(va_device_.display(), va_context_->id(), va_surface_id);
+      vaBeginPicture(va_device_->display(), va_context_->id(), va_surface_id);
   VA_LOG_ASSERT(va_res, "vaBeginPicture");
 
   if (!pending_buffers_.empty()) {
     // vaRenderPicture() needs a non-const pointer, possibly unnecessarily.
     VABufferID* va_buffers_data =
         const_cast<VABufferID*>(pending_buffers_.data());
-    va_res = vaRenderPicture(va_device_.display(), va_context_->id(),
+    va_res = vaRenderPicture(va_device_->display(), va_context_->id(),
                              va_buffers_data,
                              base::checked_cast<int>(pending_buffers_.size()));
     VA_LOG_ASSERT(va_res, "vaRenderPicture_VABuffers");
@@ -576,7 +576,7 @@ bool H265VaapiWrapper::ExecuteAndDestroyPendingBuffers(
   // Instruct HW codec to start processing the submitted commands. In theory,
   // this shouldn't be blocking, relying on vaSyncSurface() instead, however
   // evidence points to it actually waiting for the job to be done.
-  va_res = vaEndPicture(va_device_.display(), va_context_->id());
+  va_res = vaEndPicture(va_device_->display(), va_context_->id());
   VA_LOG_ASSERT(va_res, "vaEndPicture");
   // Destroy the pending buffers after job is complete.
   DestroyPendingBuffers();

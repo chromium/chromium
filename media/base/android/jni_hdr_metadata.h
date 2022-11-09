@@ -6,6 +6,7 @@
 #define MEDIA_BASE_ANDROID_JNI_HDR_METADATA_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ref.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace media {
@@ -62,8 +63,8 @@ class JniHdrMetadata {
       const base::android::JavaParamRef<jobject>& obj);
 
  private:
-  const VideoColorSpace& color_space_;
-  const gfx::HDRMetadata& hdr_metadata_;
+  const raw_ref<const VideoColorSpace> color_space_;
+  const raw_ref<const gfx::HDRMetadata> hdr_metadata_;
   base::android::ScopedJavaLocalRef<jobject> jobject_;
 };
 
