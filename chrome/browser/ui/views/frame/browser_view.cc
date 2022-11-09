@@ -3499,8 +3499,15 @@ views::View* BrowserView::CreateMacOverlayView() {
   overlay_widget_->Init(std::move(params));
   overlay_widget_->SetNativeWindowProperty(kBrowserViewKey, this);
 
+  // Create a new TopContainerOverlayView. The tab strip, omnibox, bookmarks
+  // etc. will be contained within this view. Right clicking on the blank space
+  // that is not taken up by the child views should show the context menu. Set
+  // the BrowserFrame as the context menu controller to handle displaying the
+  // top container context menu.
   std::unique_ptr<TopContainerOverlayView> overlay_view =
       std::make_unique<TopContainerOverlayView>(weak_ptr_factory_.GetWeakPtr());
+  overlay_view->set_context_menu_controller(frame());
+
   overlay_view_targeter_ = std::make_unique<OverlayViewTargeterDelegate>();
   overlay_view->SetEventTargeter(
       std::make_unique<views::ViewTargeter>(overlay_view_targeter_.get()));
