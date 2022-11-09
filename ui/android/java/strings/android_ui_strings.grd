@@ -181,7 +181,7 @@
       <message name="IDS_OPENING_ANDROID_MEDIA_PICKER" desc="Toast when the browser is unable to open the Android Media picker (when uploading files). [CHAR_LIMIT=32]">
         Unable to open the photo picker
       </message>
-      <message name="IDS_PERMISSION_DENIED_ERROR" desc="Toast when the browser is unable to open a file for upload due to missing permission. [CHAR_LIMIT=32]">
+      <message name="IDS_PERMISSION_DENIED_ERROR" desc="Toast when the browser is unable to open a file for upload due to missing permission. [CHAR_LIMIT=NONE]">
         Unable to select media due to denied permissions
       </message>
 
