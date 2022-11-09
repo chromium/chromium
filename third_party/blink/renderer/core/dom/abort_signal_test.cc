@@ -104,7 +104,7 @@ TEST_P(AbortSignalTest, AbortAlgorithmHandleGCed) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   SignalAbort();
-  EXPECT_EQ(count, 1);
+  EXPECT_EQ(count, GetParam() == TestType::kRemoveEnabled ? 0 : 1);
 }
 
 TEST_P(AbortSignalTest, RegisteredSignalAlgorithmRuns) {
@@ -138,7 +138,7 @@ TEST_P(AbortSignalTest, RegisteredSignalAlgorithmListenerGCed) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   SignalAbort();
-  EXPECT_EQ(count, 1);
+  EXPECT_EQ(count, GetParam() == TestType::kRemoveEnabled ? 0 : 1);
 }
 
 INSTANTIATE_TEST_CASE_P(,

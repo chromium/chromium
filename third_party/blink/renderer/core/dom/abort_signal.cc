@@ -106,9 +106,7 @@ class RemovableAbortAlgorithmCollection final
   }
 
  private:
-  // TODO(crbug.com/1296280): Change this to WeakMember after all callsites have
-  // been converted.
-  HeapLinkedHashSet<Member<AbortSignal::AlgorithmHandle>> abort_algorithms_;
+  HeapLinkedHashSet<WeakMember<AbortSignal::AlgorithmHandle>> abort_algorithms_;
 };
 
 // Variant of `AbortAlgorithmCollection` that does not implement removal. This

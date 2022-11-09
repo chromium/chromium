@@ -90,17 +90,11 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   // The "add an algorithm" algorithm from the standard:
   // https://dom.spec.whatwg.org/#abortsignal-add for dependent features to call
   // to be notified when abort has been signalled.
-  //
-  // TODO(crbug.com/1296280): Make this [[nodiscard]] after all call sites have
-  // been converted.
-  AlgorithmHandle* AddAlgorithm(Algorithm* algorithm);
+  [[nodiscard]] AlgorithmHandle* AddAlgorithm(Algorithm* algorithm);
 
   // Same with above but with a base::OnceClosure. Use this only when you're
   // sure the objects attached to the callback don't form a reference cycle.
-  //
-  // TODO(crbug.com/1296280): Make this [[nodiscard]] after all call sites have
-  // been converted.
-  AlgorithmHandle* AddAlgorithm(base::OnceClosure algorithm);
+  [[nodiscard]] AlgorithmHandle* AddAlgorithm(base::OnceClosure algorithm);
 
   // The "remove an algorithm" algorithm from the standard:
   // https://dom.spec.whatwg.org/#abortsignal-remove.
