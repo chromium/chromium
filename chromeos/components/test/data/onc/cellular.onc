@@ -9,6 +9,29 @@
       "Username": "test-username",
       "Password": "test-password"
     },
-    "AutoConnect": true
+    "AutoConnect": true,
+    "UserAPNList": [
+      {
+        "AccessPointName": "test-apn-1",
+        "Authentication": "chap",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled"
+      },
+      {
+        "AccessPointName": "test-apn-2",
+        "Authentication": "chap",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Disabled"
+      },
+      {
+        "AccessPointName": "test-apn-3",
+        "Authentication": "chap",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled"
+      }
+    ]
   }
 }

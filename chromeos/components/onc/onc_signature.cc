@@ -320,6 +320,7 @@ const OncFieldSignature cellular_fields[] = {
     {::onc::cellular::kAutoConnect, &kBoolSignature},
     {::onc::cellular::kICCID, &kStringSignature},
     {::onc::cellular::kSMDPAddress, &kStringSignature},
+    {::onc::cellular::kUserAPNList, &kCellularApnListSignature},
     {nullptr}};
 
 const OncFieldSignature cellular_with_state_fields[] = {

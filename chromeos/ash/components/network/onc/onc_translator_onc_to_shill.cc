@@ -36,6 +36,9 @@ namespace ash::onc {
 
 namespace {
 
+// TODO(b/162365553) Remove when shill constants are added.
+constexpr char kShillCellularUserApnList[] = "Cellular.UserAPNList";
+
 // Converts values to JSON strings. This will turn booleans into "true" or
 // "false" which is what Shill expects for VPN values (including L2TP).
 base::Value ConvertVpnValueToString(const base::Value& value) {
@@ -111,6 +114,7 @@ class LocalTranslator {
   void TranslateEAP();
   void TranslateStaticIPConfig();
   void TranslateNetworkConfiguration();
+  void TranslateCellular();
 
   // Copies all entries from |onc_object_| to |shill_dictionary_| for which a
   // translation (shill_property_name) is defined by the translation table for
@@ -144,6 +148,8 @@ class LocalTranslator {
 void LocalTranslator::TranslateFields() {
   if (onc_signature_ == &chromeos::onc::kNetworkConfigurationSignature)
     TranslateNetworkConfiguration();
+  else if (onc_signature_ == &chromeos::onc::kCellularSignature)
+    TranslateCellular();
   else if (onc_signature_ == &chromeos::onc::kEthernetSignature)
     TranslateEthernet();
   else if (onc_signature_ == &chromeos::onc::kVPNSignature)
@@ -474,6 +480,31 @@ void LocalTranslator::TranslateNetworkConfiguration() {
     base::JSONWriter::Write(proxy_config, &proxy_config_str);
     shill_dictionary_->SetKey(shill::kProxyConfigProperty,
                               base::Value(proxy_config_str));
+  }
+
+  CopyFieldsAccordingToSignature();
+}
+
+void LocalTranslator::TranslateCellular() {
+  // User APNs for a Cellular network can be enabled/disabled by the user.
+  // Shill should only get enabled user APNs to create the data connection.
+  if (const base::Value::List* user_apn_list =
+          onc_object_->GetDict().FindList(::onc::cellular::kUserAPNList)) {
+    base::Value::List enabled_apns;
+    for (const base::Value& apn : *user_apn_list) {
+      const std::string& state =
+          FindStringKeyOrEmpty(&apn, ::onc::cellular_apn::kState);
+      if (state != ::onc::cellular_apn::kStateEnabled)
+        continue;
+
+      base::Value shill_apn(base::Value::Type::DICTIONARY);
+      LocalTranslator translator(chromeos::onc::kCellularApnSignature, apn,
+                                 &shill_apn);
+      translator.TranslateFields();
+      enabled_apns.Append(std::move(shill_apn));
+    }
+    shill_dictionary_->GetDict().Set(kShillCellularUserApnList,
+                                     base::Value(std::move(enabled_apns)));
   }
 
   CopyFieldsAccordingToSignature();

@@ -147,6 +147,7 @@ const char kTechnologyLte[] = "LTE";
 const char kTechnologyLteAdvanced[] = "LTEAdvanced";
 const char kTechnologyUmts[] = "UMTS";
 const char kTechnology5gNr[] = "5GNR";
+const char kUserAPNList[] = "UserAPNList";
 }  // namespace cellular
 
 namespace cellular_provider {

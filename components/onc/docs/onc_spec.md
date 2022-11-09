@@ -1598,6 +1598,9 @@ ONC configuration of of **Cellular** networks is not yet supported.
     * (optional, read-only) - **boolean**
     * True if the cellular network supports scanning.
 
+* **UserAPNList**
+    * (optional) - [array of APN](#APN-type)
+    * List of user APN configurations.
 
 ### APN type
 
