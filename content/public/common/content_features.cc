@@ -5,6 +5,7 @@
 #include "content/public/common/content_features.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/buildflags.h"
@@ -406,6 +407,15 @@ const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
 // ccTLD aliases).
 const base::FeatureParam<int> kFirstPartySetsMaxAssociatedSites{
     &kFirstPartySets, "FirstPartySetsMaxAssociatedSites", 3};
+
+// Controls the maximum time duration an outermost frame navigation should be
+// deferred by FPS initialization.
+// Using 2s as the starting default timeout. This is based on the UMA metric
+// `History.ClearBrowsingData.Duration.OriginDeletion`.
+const base::FeatureParam<base::TimeDelta>
+    kFirstPartySetsNavigationThrottleTimeout{
+        &kFirstPartySets, "FirstPartySetsNavigationThrottleTimeout",
+        base::Seconds(2)};
 
 // Whether to initialize the font manager when the renderer starts on a
 // background thread.

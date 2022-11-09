@@ -9,6 +9,9 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -31,6 +34,7 @@ class FirstPartySetsNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   const char* GetNameForLogging() override;
+  void Resume() override;
 
   // Only create throttle if FPS initialization has not completed and FPS
   // clearing is enabled and this is the outermost frame navigation; returns
@@ -38,10 +42,33 @@ class FirstPartySetsNavigationThrottle : public content::NavigationThrottle {
   static std::unique_ptr<FirstPartySetsNavigationThrottle>
   MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
 
- private:
-  raw_ref<FirstPartySetsPolicyService> service_;
+  base::OneShotTimer& GetTimerForTesting() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return resume_navigation_timer_;
+  }
 
-  base::WeakPtrFactory<FirstPartySetsNavigationThrottle> weak_factory_{this};
+ private:
+  // Resume the navigation.
+  void OnTimeOut();
+
+  // Stop `resume_navigation_timer_` and resume the navigation.
+  void OnReadyToResume();
+
+  raw_ref<FirstPartySetsPolicyService> service_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The timer used to resume the navigation on timeout.
+  base::OneShotTimer resume_navigation_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Stores the state of whether the navigation has been resumed, to make sure
+  // the navigation is only resumed once.
+  bool resumed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<FirstPartySetsNavigationThrottle> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace first_party_sets

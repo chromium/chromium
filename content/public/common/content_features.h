@@ -89,6 +89,8 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
 CONTENT_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFirstPartySetsMaxAssociatedSites;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kFirstPartySetsNavigationThrottleTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontManagerEarlyInit);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
 #if !BUILDFLAG(IS_ANDROID)

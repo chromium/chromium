@@ -4,8 +4,11 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
@@ -24,7 +27,9 @@ namespace first_party_sets {
 class FirstPartySetsNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  FirstPartySetsNavigationThrottleTest() {
+  FirstPartySetsNavigationThrottleTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     features_.InitAndEnableFeatureWithParameters(
         features::kFirstPartySets,
         {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"}});
@@ -156,6 +161,37 @@ TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Proceed) {
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnReady) {
+  base::HistogramTester histograms;
+
+  // Create throttle for main frames.
+  content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
+  ASSERT_TRUE(handle.IsInOutermostMainFrame());
+  auto throttle =
+      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
+  EXPECT_TRUE(throttle);
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle->WillStartRequest().action());
+  EXPECT_TRUE(throttle->GetTimerForTesting().IsRunning());
+
+  // Verify that the throttle will be resumed once ready.
+  base::RunLoop run_loop;
+  throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
+  service()->InitForTesting();
+
+  run_loop.Run();
+
+  EXPECT_FALSE(throttle->GetTimerForTesting().IsRunning());
+  histograms.ExpectUniqueSample(
+      "FirstPartySets.NavigationThrottle.ResumeOnTimeout", false,
+      /*expected_bucket_count=*/1);
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillStartRequest().action());
+}
+
+TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnTimeout) {
+  base::HistogramTester histograms;
+
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
@@ -165,15 +201,18 @@ TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnReady) {
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillStartRequest().action());
 
-  // Verify that the throttle will be resumed once ready.
-  base::RunLoop run_loop;
-  throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
+  throttle->set_resume_callback_for_testing(base::DoNothing());
+  // Verify that the throttle will be resumed due to timeout.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  histograms.ExpectUniqueSample(
+      "FirstPartySets.NavigationThrottle.ResumeOnTimeout", true,
+      /*expected_bucket_count=*/1);
+
+  // Verify that resume on service ready is no-op.
   service()->InitForTesting();
-
-  run_loop.Run();
-
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillStartRequest().action());
+  histograms.ExpectBucketCount(
+      "FirstPartySets.NavigationThrottle.ResumeOnTimeout", false,
+      /*expected_count=*/0);
 }
 
 }  // namespace first_party_sets
