@@ -769,6 +769,7 @@ if (is_mac) {
   skia_source_set("skia_metal") {
     defines = [ "SK_METAL" ]
     sources = skia_metal_sources
+    sources += skia_shared_mtl_sources
     cflags_objcc = [
       "-Wno-unguarded-availability",
       "-fobjc-arc",
