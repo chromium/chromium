@@ -1247,7 +1247,7 @@ void ArcNetHostImpl::TranslatePasspointCredentialsToDictWithEapTranslated(
 base::Value::Dict ArcNetHostImpl::TranslateProxyConfiguration(
     const arc::mojom::ArcProxyInfoPtr& http_proxy) {
   base::Value::Dict proxy_dict;
-  if (http_proxy->get_pac_url_proxy()) {
+  if (http_proxy->is_pac_url_proxy()) {
     proxy_dict.Set(onc::proxy::kType, onc::proxy::kPAC);
     proxy_dict.Set(onc::proxy::kPAC,
                    http_proxy->get_pac_url_proxy()->pac_url.spec());
