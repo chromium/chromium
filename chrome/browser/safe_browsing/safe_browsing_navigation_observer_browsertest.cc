@@ -3359,14 +3359,14 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append(initial_url.host());
   allowlist.Append(multi_frame_test_url.host());
   allowlist.Append(iframe_url.host());
   allowlist.Append(iframe_retargeting_url.host());
   allowlist.Append(download_url.host());
-  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                        allowlist);
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   ReferrerChain referrer_chain;
   IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
@@ -3433,12 +3433,12 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append(initial_url.host());
   allowlist.Append(download_url.host());
   allowlist.Append(request_url.host());
-  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                        allowlist);
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   ReferrerChain referrer_chain;
   IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
@@ -3468,11 +3468,11 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append(initial_url.host());
   allowlist.Append(download_url.host());
-  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                        allowlist);
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   ReferrerChain referrer_chain;
   AppendRecentNavigations(/*recent_navigation_count=*/2, &referrer_chain);

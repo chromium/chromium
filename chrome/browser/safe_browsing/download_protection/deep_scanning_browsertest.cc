@@ -1015,10 +1015,10 @@ class AllowlistedUrlDeepScanningBrowserTest
   void SetUpOnMainThread() override {
     DownloadDeepScanningBrowserTestBase::SetUpOnMainThread();
 
-    base::ListValue domain_list;
+    base::Value::List domain_list;
     domain_list.Append(embedded_test_server()->base_url().host_piece());
-    browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                          domain_list);
+    browser()->profile()->GetPrefs()->SetList(
+        prefs::kSafeBrowsingAllowlistDomains, std::move(domain_list));
   }
 };
 

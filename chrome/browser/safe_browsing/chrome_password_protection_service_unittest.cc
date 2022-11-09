@@ -1,9 +1,11 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -561,10 +563,11 @@ TEST_F(ChromePasswordProtectionServiceTest,
       GURL("https://www.mydomain.com")));
 
   // Verify if match enterprise allowlist.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append("mydomain.com");
   allowlist.Append("mydomain.net");
-  profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains, allowlist);
+  profile()->GetPrefs()->SetList(prefs::kSafeBrowsingAllowlistDomains,
+                                 std::move(allowlist));
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
@@ -583,9 +586,10 @@ TEST_F(ChromePasswordProtectionServiceTest,
   profile()->GetPrefs()->ClearPref(prefs::kPasswordProtectionChangePasswordURL);
   EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
-  base::ListValue login_urls;
+  base::Value::List login_urls;
   login_urls.Append("https://mydomain.com/login.html");
-  profile()->GetPrefs()->Set(prefs::kPasswordProtectionLoginURLs, login_urls);
+  profile()->GetPrefs()->SetList(prefs::kPasswordProtectionLoginURLs,
+                                 std::move(login_urls));
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://mydomain.com/login.html#ref?user_name=alice")));
 }
@@ -1379,10 +1383,10 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyCanShowInterstitial) {
   EXPECT_TRUE(service_->CanShowInterstitial(reused_password_type, trigger_url));
 
   // Add |trigger_url| to enterprise allowlist.
-  base::ListValue allowlisted_domains;
+  base::Value::List allowlisted_domains;
   allowlisted_domains.Append(trigger_url.host());
-  profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                             allowlisted_domains);
+  profile()->GetPrefs()->SetList(prefs::kSafeBrowsingAllowlistDomains,
+                                 std::move(allowlisted_domains));
   reused_password_type.set_account_type(
       ReusedPasswordAccountType::SAVED_PASSWORD);
   reused_password_type.set_is_account_syncing(false);
@@ -1447,10 +1451,11 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
     profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                       PHISHING_REUSE);
-    base::ListValue allowlist;
+    base::Value::List allowlist;
     allowlist.Append("mydomain.com");
     allowlist.Append("mydomain.net");
-    profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains, allowlist);
+    profile()->GetPrefs()->SetList(prefs::kSafeBrowsingAllowlistDomains,
+                                   std::move(allowlist));
     EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::PASSWORD_REUSE_EVENT,

@@ -1772,10 +1772,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        VerifyEnterpriseAllowlist) {
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
   // Add test server domain into the enterprise allowlist.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append(url.host());
-  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                        allowlist);
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   SetURLThreatType(url, GetThreatType());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1794,10 +1794,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   GURL url = embedded_test_server()->GetURL(kMaliciousJsPage);
   GURL js_url = embedded_test_server()->GetURL(kMaliciousJs);
   // Add test server domain into the enterprise allowlist.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append(url.host());
-  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                        allowlist);
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   SetURLThreatType(js_url, GetThreatType());
   // Open a new tab to rebind the allowlist to the renderer.
