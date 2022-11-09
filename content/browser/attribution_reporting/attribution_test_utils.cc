@@ -447,7 +447,8 @@ SourceBuilder::SourceBuilder(base::Time time)
     : source_time_(time),
       expiry_(base::Milliseconds(kExpiryTime)),
       source_origin_(url::Origin::Create(GURL(kDefaultSourceOrigin))),
-      destination_origin_(url::Origin::Create(GURL(kDefaultDestinationOrigin))),
+      destination_origins_(
+          {url::Origin::Create(GURL(kDefaultDestinationOrigin))}),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
 
 SourceBuilder::~SourceBuilder() = default;
@@ -487,7 +488,13 @@ SourceBuilder& SourceBuilder::SetSourceOrigin(url::Origin origin) {
 }
 
 SourceBuilder& SourceBuilder::SetDestinationOrigin(url::Origin origin) {
-  destination_origin_ = std::move(origin);
+  return SetDestinationOrigins({std::move(origin)});
+}
+
+SourceBuilder& SourceBuilder::SetDestinationOrigins(
+    base::flat_set<url::Origin> origins) {
+  DCHECK(!origins.empty());
+  destination_origins_ = std::move(origins);
   return *this;
 }
 
@@ -570,7 +577,7 @@ SourceBuilder& SourceBuilder::SetDebugReporting(bool debug_reporting) {
 
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
   return CommonSourceInfo(
-      source_event_id_, source_origin_, destination_origin_, reporting_origin_,
+      source_event_id_, source_origin_, destination_origins_, reporting_origin_,
       source_time_,
       /*expiry_time=*/source_time_ + expiry_,
       /*event_report_window_time=*/

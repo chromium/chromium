@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -441,6 +442,8 @@ class SourceBuilder {
 
   SourceBuilder& SetDestinationOrigin(url::Origin origin);
 
+  SourceBuilder& SetDestinationOrigins(base::flat_set<url::Origin>);
+
   SourceBuilder& SetReportingOrigin(url::Origin origin);
 
   SourceBuilder& SetSourceType(AttributionSourceType source_type);
@@ -486,7 +489,7 @@ class SourceBuilder {
   absl::optional<base::TimeDelta> event_report_window_;
   absl::optional<base::TimeDelta> aggregatable_report_window_;
   url::Origin source_origin_;
-  url::Origin destination_origin_;
+  base::flat_set<url::Origin> destination_origins_;
   url::Origin reporting_origin_;
   AttributionSourceType source_type_ = AttributionSourceType::kNavigation;
   int64_t priority_ = 0;

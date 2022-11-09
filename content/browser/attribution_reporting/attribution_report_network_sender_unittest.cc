@@ -189,6 +189,60 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
 }
 
 TEST_F(AttributionReportNetworkSenderTest,
+       MultiDestination_ReportBodySetCorrectly) {
+  const struct {
+    base::flat_set<url::Origin> destination_origins;
+    const char* expected_report;
+  } kTestCases[] = {
+      {
+          {
+              url::Origin::Create(GURL("https://a.b.test")),
+              url::Origin::Create(GURL("https://c1.d.test")),
+              url::Origin::Create(GURL("https://c2.d.test")),
+          },
+          R"({"attribution_destination":["https://b.test","https://d.test"],)"
+          R"("randomized_trigger_rate":0.0,)"
+          R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+          R"("source_event_id":"123",)"
+          R"("source_type":"navigation",)"
+          R"("trigger_data":"0"})",
+      },
+      {
+          {
+              url::Origin::Create(GURL("https://c1.d.test")),
+              url::Origin::Create(GURL("https://c2.d.test")),
+          },
+          R"({"attribution_destination":"https://d.test",)"
+          R"("randomized_trigger_rate":0.0,)"
+          R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+          R"("source_event_id":"123",)"
+          R"("source_type":"navigation",)"
+          R"("trigger_data":"0"})",
+      }};
+
+  for (const auto& test_case : kTestCases) {
+    auto source = SourceBuilder(base::Time())
+                      .SetDestinationOrigins(test_case.destination_origins)
+                      .BuildStored();
+    AttributionReport report =
+        ReportBuilder(AttributionInfoBuilder(std::move(source)).Build())
+            .Build();
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
+
+    const network::ResourceRequest* pending_request;
+    EXPECT_TRUE(test_url_loader_factory_.IsPending(kEventLevelReportUrl,
+                                                   &pending_request));
+
+    EXPECT_EQ(test_case.expected_report,
+              network::GetUploadData(*pending_request));
+
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kEventLevelReportUrl, ""));
+  }
+}
+
+TEST_F(AttributionReportNetworkSenderTest,
        DebugReportSent_ReportUrlAndBodySetCorrectly) {
   static constexpr char kExpectedReportBody[] =
       R"({"attribution_destination":"https://conversion.test",)"
