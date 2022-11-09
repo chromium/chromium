@@ -463,7 +463,9 @@ void MediaItemUIDeviceSelectorView::OnModelUpdated(
   has_cast_device_ = false;
   for (auto sink : model.media_sinks()) {
     if (!base::Contains(sink.cast_modes,
-                        media_router::MediaCastMode::PRESENTATION)) {
+                        media_router::MediaCastMode::PRESENTATION) &&
+        !base::Contains(sink.cast_modes,
+                        media_router::MediaCastMode::REMOTE_PLAYBACK)) {
       continue;
     }
     has_cast_device_ = true;
@@ -593,10 +595,18 @@ void MediaItemUIDeviceSelectorView::StartCastSession(
 
 void MediaItemUIDeviceSelectorView::DoStartCastSession(
     media_router::UIMediaSink sink) {
-  DCHECK(base::Contains(sink.cast_modes,
-                        media_router::MediaCastMode::PRESENTATION));
-  cast_controller_->StartCasting(sink.id,
-                                 media_router::MediaCastMode::PRESENTATION);
+  if (base::Contains(sink.cast_modes,
+                     media_router::MediaCastMode::PRESENTATION)) {
+    cast_controller_->StartCasting(sink.id,
+                                   media_router::MediaCastMode::PRESENTATION);
+  } else if (base::Contains(sink.cast_modes,
+                            media_router::MediaCastMode::REMOTE_PLAYBACK)) {
+    cast_controller_->StartCasting(
+        sink.id, media_router::MediaCastMode::REMOTE_PLAYBACK);
+    delegate_->OnMediaRemotingRequested(item_id_);
+  } else {
+    NOTREACHED() << "Cast mode is not supported.";
+  }
   RecordStartCastingMetrics(sink.icon_type);
 }
 

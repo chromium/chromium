@@ -63,6 +63,7 @@ class MediaNotificationService
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback) override;
+  bool OnMediaRemotingRequested(const std::string& item_id) override;
 
   // global_media_controls::MediaSessionItemProducerObserver:
   void OnMediaSessionActionButtonPressed(

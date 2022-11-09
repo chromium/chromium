@@ -161,6 +161,16 @@ MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
           id, std::move(callback));
 }
 
+bool MediaNotificationService::OnMediaRemotingRequested(
+    const std::string& item_id) {
+  auto item = media_session_item_producer_->GetMediaItem(item_id);
+  if (!item) {
+    return false;
+  }
+  item->RequestMediaRemoting();
+  return true;
+}
+
 void MediaNotificationService::OnMediaSessionActionButtonPressed(
     const std::string& id,
     media_session::mojom::MediaSessionAction action) {

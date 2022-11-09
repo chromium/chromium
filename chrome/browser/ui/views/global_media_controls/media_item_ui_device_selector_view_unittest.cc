@@ -111,6 +111,10 @@ class MockMediaItemUIDeviceSelectorDelegate
               OnAudioSinkChosen,
               (const std::string& item_id, const std::string& sink_id),
               (override));
+  MOCK_METHOD(bool,
+              OnMediaRemotingRequested,
+              (const std::string& item_id),
+              (override));
 
   base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
       MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
@@ -326,7 +330,8 @@ TEST_F(MediaItemUIDeviceSelectorViewTest,
   }
 }
 
-TEST_F(MediaItemUIDeviceSelectorViewTest, CastDeviceButtonClickStartsCasting) {
+TEST_F(MediaItemUIDeviceSelectorViewTest,
+       CastDeviceButtonClickStartsCasting_Presentation) {
   NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   auto cast_controller = std::make_unique<NiceMock<MockCastDialogController>>();
   auto* cast_controller_ptr = cast_controller.get();
@@ -345,11 +350,16 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, CastDeviceButtonClickStartsCasting) {
   auto cast_connected_sink = CreateMediaSink(UIMediaSinkState::CONNECTED);
   cast_connected_sink.provider =
       media_router::mojom::MediaRouteProviderId::CAST;
-  view_->OnModelUpdated(
-      CreateModelWithSinks({CreateMediaSink(), cast_connected_sink}));
+  auto cast_remote_playback_sink = CreateMediaSink();
+  cast_remote_playback_sink.cast_modes = {
+      media_router::MediaCastMode::REMOTE_PLAYBACK};
+  view_->OnModelUpdated(CreateModelWithSinks(
+      {CreateMediaSink(), cast_connected_sink, cast_remote_playback_sink}));
   EXPECT_CALL(*cast_controller_ptr,
               StartCasting(_, media_router::MediaCastMode::PRESENTATION))
       .Times(2);
+  EXPECT_CALL(*cast_controller_ptr,
+              StartCasting(_, media_router::MediaCastMode::REMOTE_PLAYBACK));
   for (views::View* child : GetDeviceEntryViewsContainer()->children()) {
     SimulateButtonClick(child);
   }

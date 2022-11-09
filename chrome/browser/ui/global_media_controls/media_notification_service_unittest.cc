@@ -482,3 +482,10 @@ TEST_F(MediaNotificationServiceCastTest,
       media_router::MediaCastMode::REMOTE_PLAYBACK};
   EXPECT_EQ(mode, query_result_manager->GetSupportedCastModes());
 }
+
+TEST_F(MediaNotificationServiceCastTest, RequestMediaRemoting) {
+  EXPECT_FALSE(service()->OnMediaRemotingRequested("invalid_item_id"));
+  auto id = base::UnguessableToken::Create();
+  SimulatePlayingControllableMedia(id);
+  EXPECT_TRUE(service()->OnMediaRemotingRequested(id.ToString()));
+}

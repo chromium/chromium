@@ -211,6 +211,11 @@ void MediaSessionNotificationItem::SetMute(bool mute) {
     media_controller_remote_->SetMute(mute);
 }
 
+void MediaSessionNotificationItem::RequestMediaRemoting() {
+  // TODO(muyaoxu@google.com): Implement this method to send commands to
+  // `media_controller_remote_`.
+}
+
 void MediaSessionNotificationItem::SetController(
     mojo::Remote<media_session::mojom::MediaController> controller,
     media_session::mojom::MediaSessionInfoPtr session_info) {

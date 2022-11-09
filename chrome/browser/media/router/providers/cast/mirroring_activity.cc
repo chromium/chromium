@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -101,6 +102,12 @@ absl::optional<MirroringActivity::MirroringType> GetMirroringType(
   if (source.IsDesktopMirroringSource())
     return MirroringActivity::MirroringType::kDesktop;
 
+  if (base::FeatureList::IsEnabled(
+          media_router::kMediaRemotingWithoutFullscreen) &&
+      source.IsRemotePlaybackSource()) {
+    return MirroringActivity::MirroringType::kTab;
+  }
+
   if (!source.url().is_valid()) {
     NOTREACHED() << "Invalid source: " << source;
     return absl::nullopt;
@@ -109,7 +116,7 @@ absl::optional<MirroringActivity::MirroringType> GetMirroringType(
   if (source.IsCastPresentationUrl()) {
     const auto cast_source = CastMediaSource::FromMediaSource(source);
     if (cast_source && cast_source->ContainsStreamingApp()) {
-      // Site-initiated Mirroring has a Cast Presentatino URL and contains
+      // Site-initiated Mirroring has a Cast Presentation URL and contains
       // StreamingApp. We should return Tab Mirroring here.
       return MirroringActivity::MirroringType::kTab;
     } else {

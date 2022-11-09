@@ -58,6 +58,7 @@ class CastMediaNotificationItem
   media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override;
   void SetMute(bool mute) override;
+  void RequestMediaRemoting() override {}
 
   // media_router::mojom::MediaStatusObserver:
   void OnMediaStatusUpdated(

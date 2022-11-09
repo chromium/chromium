@@ -101,6 +101,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override {}
   void SetMute(bool mute) override;
+  void RequestMediaRemoting() override;
 
   // Stops the media session.
   void Stop();
@@ -129,11 +130,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   media_session::mojom::RemotePlaybackMetadataPtr GetRemotePlaybackMetadata();
 
   void FlushForTesting();
-
-  void SetMediaControllerForTesting(
-      mojo::Remote<media_session::mojom::MediaController> controller) {
-    media_controller_remote_ = std::move(controller);
-  }
 
  private:
   media_session::MediaMetadata GetSessionMetadata() const;
