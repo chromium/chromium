@@ -272,5 +272,20 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesInvalidDimensions) {
                     Eq(absl::nullopt)))));
 }
 
+TEST_F(SkottieMRUResourceProviderTest, GracefullyHandlesInvalidJson) {
+  // No expectations needed. Just make sure the code doesn't crash.
+  Init("invalid-json");
+  // Lottie animation json is expected to be a dictionary.
+  Init(R"(["valid", "json", "list"])");
+  // Assets are expected to be a list.
+  Init(R"({"assets": "invalid-asset-set"})");
+  // Each asset is expected to be a dictionary.
+  Init(R"({
+      "assets": [
+        "invalid-asset-value"
+      ]
+    })");
+}
+
 }  // namespace
 }  // namespace cc

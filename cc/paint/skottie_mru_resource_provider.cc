@@ -32,7 +32,7 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
 
   absl::optional<base::Value> animation_dict =
       base::JSONReader::Read(animation_json);
-  if (!animation_dict) {
+  if (!animation_dict || !animation_dict->is_dict()) {
     LOG(ERROR) << "Failed to parse Lottie animation json";
     return image_asset_sizes;
   }
@@ -43,6 +43,12 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
     return image_asset_sizes;
 
   for (const base::Value& asset : assets->GetListDeprecated()) {
+    if (!asset.is_dict()) {
+      LOG(ERROR) << "Found invalid asset in animation with type "
+                 << base::Value::GetTypeName(asset.type());
+      continue;
+    }
+
     const std::string* id = asset.FindStringKey(kIdKey);
     absl::optional<int> width = asset.FindIntKey(kWidthKey);
     absl::optional<int> height = asset.FindIntKey(kHeightKey);
