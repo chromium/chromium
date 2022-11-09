@@ -7,7 +7,6 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
-#include "base/process/process.h"
 
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
 // allocator/partition_allocator/ to be built.
@@ -18,7 +17,6 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/dcheck_is_on.h"
 
 namespace base::internal {
 
@@ -123,6 +121,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
+#include "base/process/process.h"
 
 namespace base::internal {
 
