@@ -258,12 +258,23 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   base::WeakPtrFactory<ScreenCaptureKitDeviceMac> weak_factory_{this};
 };
 
+// Desktop capture is not working in macOS < 13, see https:://crbug.com/1352441.
+bool IsScreenCaptureKitDesktopWorking(void) {
+  if (@available(macOS 13.0, *)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
     const DesktopMediaID& source) {
   switch (source.type) {
     case DesktopMediaID::TYPE_SCREEN:
+      if (!IsScreenCaptureKitDesktopWorking())
+        return nullptr;
       // ScreenCaptureKitDeviceMac only supports a single display at a time. It
       // will not stitch desktops together.
       // https://crbug.com/1178360
@@ -280,12 +291,14 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
       return nullptr;
   }
 
-  IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
-  IncrementDesktopCaptureCounter(source.audio_share
-                                     ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
-                                     : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
-  if (@available(macos 12.3, *))
+  if (@available(macOS 12.3, *)) {
+    IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
+    IncrementDesktopCaptureCounter(source.audio_share
+                                       ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
+                                       : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
+
     return std::make_unique<ScreenCaptureKitDeviceMac>(source);
+  }
   return nullptr;
 }
 
