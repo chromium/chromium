@@ -161,7 +161,8 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {23, prefs::kGoogleServicesAccountId, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
     // This is being migrated to `kGoogleServicesLastGaiaId` since 2022/10, and
-    // can be removed when the migration is complete.
+    // should move to `CleanupDeprecatedTrackedPreferences()` in
+    // pref_hash_filter.cc when that migration completes.
     {24, prefs::kGoogleServicesLastAccountIdDeprecated,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::PERSONAL},
