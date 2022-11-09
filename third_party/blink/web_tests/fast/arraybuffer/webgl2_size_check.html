@@ -145,6 +145,31 @@ test(() => {
 
   const kTooBigInWords = kMemSizeInWords - 32;
 
+  gl.uniform1fv(overflow, fData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform2fv(overflow, fData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform3fv(overflow, fData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform4fv(overflow, fData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.uniform1iv(overflow, iData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform2iv(overflow, iData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform3iv(overflow, iData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform4iv(overflow, iData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.uniformMatrix2fv(overflow, false, fData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix3fv(overflow, false, fData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix4fv(overflow, false, fData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
   gl.uniform1fv(overflow, fData, 16, kTooBigInWords);
   assert_equals(gl.getError(), gl.INVALID_VALUE);
   gl.uniform2fv(overflow, fData, 16, kTooBigInWords);
