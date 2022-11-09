@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 #define ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 
-#include <map>
-
 #include "ash/ash_export.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "base/memory/weak_ptr.h"
@@ -14,6 +12,7 @@
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
+#include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -88,10 +87,9 @@ class ASH_EXPORT MediaNotificationProviderImpl
   std::unique_ptr<global_media_controls::MediaSessionItemProducer>
       media_session_item_producer_;
 
-  std::map<const std::string, global_media_controls::MediaItemUI*>
-      observed_item_uis_;
-
   absl::optional<media_message_center::NotificationTheme> color_theme_;
+
+  global_media_controls::MediaItemUIObserverSet item_ui_observer_set_{this};
 };
 
 }  // namespace ash

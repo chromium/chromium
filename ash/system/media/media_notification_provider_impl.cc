@@ -54,9 +54,6 @@ MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {
   MediaNotificationProvider::Set(nullptr);
 
   item_manager_->RemoveObserver(this);
-
-  for (auto item_ui_pair : observed_item_uis_)
-    item_ui_pair.second->RemoveObserver(this);
 }
 
 void MediaNotificationProviderImpl::AddObserver(
@@ -123,8 +120,7 @@ MediaNotificationProviderImpl::ShowMediaItem(
       id, item, /*footer_view=*/nullptr, /*device_selector_view=*/nullptr,
       color_theme_);
   auto* item_ui_ptr = item_ui.get();
-  item_ui_ptr->AddObserver(this);
-  observed_item_uis_[id] = item_ui_ptr;
+  item_ui_observer_set_.Observe(id, item_ui_ptr);
 
   active_session_view_->ShowItem(id, std::move(item_ui));
   for (auto& observer : observers_)
@@ -154,11 +150,7 @@ void MediaNotificationProviderImpl::OnMediaItemUISizeChanged() {
 
 void MediaNotificationProviderImpl::OnMediaItemUIDestroyed(
     const std::string& id) {
-  auto iter = observed_item_uis_.find(id);
-  DCHECK(iter != observed_item_uis_.end());
-
-  iter->second->RemoveObserver(this);
-  observed_item_uis_.erase(iter);
+  item_ui_observer_set_.StopObserving(id);
 }
 
 }  // namespace ash
