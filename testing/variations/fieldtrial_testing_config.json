@@ -10066,6 +10066,21 @@
             ]
         }
     ],
+    "SharedSandboxPoliciesWindows": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SharedSandboxPoliciesWindows"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharingHubDesktopScreenshots": [
         {
             "platforms": [
