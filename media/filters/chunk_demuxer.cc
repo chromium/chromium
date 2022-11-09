@@ -639,8 +639,10 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(
   if (!audio_config->IsValidConfig())
     return ChunkDemuxer::kNotSupported;
 
-  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) || IsValidId(id))
+  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) ||
+      IsValidId_Locked(id)) {
     return kReachedIdLimit;
+  }
 
   DCHECK(init_cb_);
 
@@ -665,8 +667,10 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(
   if (!video_config->IsValidConfig())
     return ChunkDemuxer::kNotSupported;
 
-  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) || IsValidId(id))
+  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) ||
+      IsValidId_Locked(id)) {
     return kReachedIdLimit;
+  }
 
   DCHECK(init_cb_);
 
@@ -685,8 +689,10 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
            << " codecs=" << codecs;
   base::AutoLock auto_lock(lock_);
 
-  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) || IsValidId(id))
+  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) ||
+      IsValidId_Locked(id)) {
     return kReachedIdLimit;
+  }
 
   // TODO(wolenetz): Change to DCHECK once less verification in release build is
   // needed. See https://crbug.com/786975.
@@ -741,16 +747,16 @@ ChunkDemuxer::Status ChunkDemuxer::AddIdInternal(
 
   // TODO(wolenetz): Change to DCHECKs once less verification in release build
   // is needed. See https://crbug.com/786975.
-  CHECK(!IsValidId(id));
+  CHECK(!IsValidId_Locked(id));
   source_state_map_[id] = std::move(source_state);
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
   return kOk;
 }
 
 void ChunkDemuxer::SetTracksWatcher(const std::string& id,
                                     MediaTracksUpdatedCB tracks_updated_cb) {
   base::AutoLock auto_lock(lock_);
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
   source_state_map_[id]->SetTracksWatcher(std::move(tracks_updated_cb));
 }
 
@@ -758,14 +764,14 @@ void ChunkDemuxer::SetParseWarningCallback(
     const std::string& id,
     SourceBufferParseWarningCB parse_warning_cb) {
   base::AutoLock auto_lock(lock_);
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
   source_state_map_[id]->SetParseWarningCallback(std::move(parse_warning_cb));
 }
 
 void ChunkDemuxer::RemoveId(const std::string& id) {
   DVLOG(1) << __func__ << " id=" << id;
   base::AutoLock auto_lock(lock_);
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
 
   source_state_map_.erase(id);
   pending_source_init_ids_.erase(id);
@@ -931,7 +937,7 @@ bool ChunkDemuxer::AppendToParseBuffer(const std::string& id,
     switch (state_) {
       case INITIALIZING:
       case INITIALIZED:
-        DCHECK(IsValidId(id));
+        DCHECK(IsValidId_Locked(id));
         if (!source_state_map_[id]->AppendToParseBuffer(data, length)) {
           ReportError_Locked(CHUNK_DEMUXER_ERROR_APPEND_FAILED);
           return false;
@@ -986,7 +992,7 @@ StreamParser::ParseStatus ChunkDemuxer::RunSegmentParserLoop(
     switch (state_) {
       case INITIALIZING:
       case INITIALIZED:
-        DCHECK(IsValidId(id));
+        DCHECK(IsValidId_Locked(id));
         result = source_state_map_[id]->RunSegmentParserLoop(
             append_window_start, append_window_end, timestamp_offset);
         if (result == StreamParser::ParseStatus::kFailed) {
@@ -1049,7 +1055,7 @@ bool ChunkDemuxer::AppendChunks(
     switch (state_) {
       case INITIALIZING:
       case INITIALIZED:
-        DCHECK(IsValidId(id));
+        DCHECK(IsValidId_Locked(id));
         if (!source_state_map_[id]->AppendChunks(
                 std::move(buffer_queue), append_window_start, append_window_end,
                 timestamp_offset)) {
@@ -1087,7 +1093,7 @@ void ChunkDemuxer::ResetParserState(const std::string& id,
   DVLOG(1) << "ResetParserState(" << id << ")";
   base::AutoLock auto_lock(lock_);
   DCHECK(!id.empty());
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
   bool old_waiting_for_data = IsSeekWaitingForData_Locked();
   source_state_map_[id]->ResetParserState(append_window_start,
                                           append_window_end,
@@ -1106,7 +1112,7 @@ void ChunkDemuxer::Remove(const std::string& id,
   base::AutoLock auto_lock(lock_);
 
   DCHECK(!id.empty());
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
   DCHECK(start >= base::TimeDelta()) << start.InSecondsF();
   DCHECK(start < end) << "start " << start.InSecondsF()
                       << " end " << end.InSecondsF();
@@ -1137,7 +1143,7 @@ bool ChunkDemuxer::CanChangeType(const std::string& id,
            << " codecs=" << codecs;
   base::AutoLock auto_lock(lock_);
 
-  DCHECK(IsValidId(id));
+  DCHECK(IsValidId_Locked(id));
 
   // CanChangeType() doesn't care if there has or hasn't been received a first
   // initialization segment for the source buffer corresponding to |id|.
@@ -1156,7 +1162,7 @@ void ChunkDemuxer::ChangeType(const std::string& id,
   base::AutoLock auto_lock(lock_);
 
   DCHECK(state_ == INITIALIZING || state_ == INITIALIZED) << state_;
-  DCHECK(IsValidId(id));
+  DCHECK(IsValidId_Locked(id));
 
   std::unique_ptr<media::StreamParser> stream_parser(
       CreateParserForTypeAndCodecs(content_type, codecs, media_log_));
@@ -1233,7 +1239,7 @@ void ChunkDemuxer::SetDuration(double duration) {
 bool ChunkDemuxer::IsParsingMediaSegment(const std::string& id) {
   base::AutoLock auto_lock(lock_);
   DVLOG(1) << "IsParsingMediaSegment(" << id << ")";
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
 
   return source_state_map_[id]->parsing_media_segment();
 }
@@ -1241,7 +1247,7 @@ bool ChunkDemuxer::IsParsingMediaSegment(const std::string& id) {
 bool ChunkDemuxer::GetGenerateTimestampsFlag(const std::string& id) {
   base::AutoLock auto_lock(lock_);
   DVLOG(1) << "GetGenerateTimestampsFlag(" << id << ")";
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
 
   return source_state_map_[id]->generate_timestamps_flag();
 }
@@ -1250,7 +1256,7 @@ void ChunkDemuxer::SetSequenceMode(const std::string& id,
                                    bool sequence_mode) {
   base::AutoLock auto_lock(lock_);
   DVLOG(1) << "SetSequenceMode(" << id << ", " << sequence_mode << ")";
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
   DCHECK_NE(state_, ENDED);
 
   source_state_map_[id]->SetSequenceMode(sequence_mode);
@@ -1262,7 +1268,7 @@ void ChunkDemuxer::SetGroupStartTimestampIfInSequenceMode(
   base::AutoLock auto_lock(lock_);
   DVLOG(1) << "SetGroupStartTimestampIfInSequenceMode(" << id << ", "
            << timestamp_offset.InSecondsF() << ")";
-  CHECK(IsValidId(id));
+  CHECK(IsValidId_Locked(id));
   DCHECK_NE(state_, ENDED);
 
   source_state_map_[id]->SetGroupStartTimestampIfInSequenceMode(
@@ -1414,7 +1420,7 @@ void ChunkDemuxer::OnSourceInitDone(
   // TODO(wolenetz): Change these to DCHECKs once less verification in release
   // build is needed. See https://crbug.com/786975.
   CHECK(!pending_source_init_ids_.empty());
-  CHECK(IsValidId(source_id));
+  CHECK(IsValidId_Locked(source_id));
   CHECK(pending_source_init_ids_.find(source_id) !=
         pending_source_init_ids_.end());
   CHECK(init_cb_);
@@ -1511,7 +1517,7 @@ ChunkDemuxerStream* ChunkDemuxer::CreateDemuxerStream(
   return owning_vector->back().get();
 }
 
-bool ChunkDemuxer::IsValidId(const std::string& source_id) const {
+bool ChunkDemuxer::IsValidId_Locked(const std::string& source_id) const {
   lock_.AssertAcquired();
   return source_state_map_.count(source_id) > 0u;
 }

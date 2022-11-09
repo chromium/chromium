@@ -493,7 +493,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                       const TextTrackConfig& config);
 
   // Returns true if |source_id| is valid, false otherwise.
-  bool IsValidId(const std::string& source_id) const;
+  bool IsValidId_Locked(const std::string& source_id) const;
 
   // Increases |duration_| to |new_duration|, if |new_duration| is higher.
   void IncreaseDurationIfNecessary(base::TimeDelta new_duration);
