@@ -1713,6 +1713,9 @@
     'privacy_budget': {
       'filepath': 'privacy_budget',
     },
+    'privacy_sandbox': {
+      'filepath': 'privacy_sandbox|PrivacySandbox',
+    },
     'profile_keyed_service': {
       'filepath': 'chrome/browser/profiles/profile_keyed_service_browsertest.cc',
     },
@@ -2902,6 +2905,12 @@
     'preview_features': ['chrome-lite-pages+watch@google.com'],
     'print_preview': ['print-reviews+preview@chromium.org'],
     'privacy_budget': ['antoniosartori+watch-privacy_budget@chromium.org'],
+    'privacy_sandbox': [
+      'alimariam+watch-privacy-sandbox@google.com',
+      'dullweber+watch-privacy-sandbox@chromium.org',
+      'tommasin+watch-privacy-sandbox@chromium.org',
+      'olesiamarukhno+watch-privacy-sandbox@google.com'
+    ],
     'profile_keyed_service': ['rsult@google.com'],
     'psm_libs': ['amraboelkher+watch@chromium.org'],
     'push_messaging': ['peter@chromium.org'],
