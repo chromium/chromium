@@ -145,8 +145,8 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | sync_turn_on |  |  | 42 | Implemented | Turn chrome sync on for "Apps": chrome://settings/syncSetup/advanced |  |
 | switch_incognito_profile |  |  | 73 | Implemented | Switch to using incognito mode | P2 |
 | # File handling |
-| check_site_handles_file | Site, FileExtension |  | 118 | Not Implemented |  |  |
-| check_site_not_handles_file | Site, FileExtension |  | 122 | Not Implemented |  |  |
+| check_site_handles_file | Site, FileExtension |  | 118 | Implemented |  |  |
+| check_site_not_handles_file | Site, FileExtension |  | 122 | Implemented |  |  |
 | check_file_handling_dialog | IsShown |  | 119 | Not Implemented |  |  |
 | launch_file | FilesOptions |  | 120 | Not Implemented |  |  |
 | file_handling_dialog | AllowDenyOptions, AskAgainOptions |  | 121 | Not Implemented |  |  |
