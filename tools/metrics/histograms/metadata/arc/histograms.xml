@@ -994,7 +994,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-27">
   <owner>hashimoto@chromium.org</owner>
   <owner>yuholong@chromium.org</owner>
-  <owner>yusukes@chromium.org</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
     True if ARC is going to be activated later in an on-demand manner on a
@@ -1007,7 +1006,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-27">
   <owner>hashimoto@chromium.org</owner>
   <owner>yuholong@chromium.org</owner>
-  <owner>yusukes@chromium.org</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
     Elapsed time from when the ARC is enabled to ARC activation on a regular
