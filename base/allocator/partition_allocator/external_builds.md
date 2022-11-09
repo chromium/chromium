@@ -29,10 +29,19 @@ the PA build system.
 
 The `use_partition_alloc` GN arg, described in
 [`build_config.md`](./build_config.md), provides a GN-level seam that
-embedders should observe to conditionally pull in PartitionAlloc.
-I.E. please gate PartitionAlloc compilation on the truth of
-`use_partition_alloc` and avoid pulling in PartitionAlloc headers when
-the corresponding buildflag is false.
+embedders
+
+1.  can set in their GN args and
+2.  should  observe in their GN recipes to conditionally pull in
+    PartitionAlloc.
+
+I.E. if you have any reason to disable PartitionAlloc, you should do so
+with this GN arg. Avoid pulling in PartitionAlloc headers when the
+corresponding buildflag is false.
+
+Setting `use_partition_alloc` false will also implicitly disable other
+features, e.g. nixing the compilation of BackupRefPtr as the
+implementation of `raw_ptr<T>`.
 
 ## Periodic Memory Reduction Routines
 
