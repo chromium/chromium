@@ -46,9 +46,42 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private Tab mOldTab;
+    private final Callback<BottomControlsCoordinator> mBottomControlsCoordinatorAvailableCallback;
     @Nullable
     private WebContentsObserver mWebContentsBackPressObserver;
-    private final Callback<BottomControlsCoordinator> mBottomControlsCoordinatorAvailableCallback;
+    private final TabObserver mTabBackPressObserver = new EmptyTabObserver() {
+        @Override
+        public void webContentsWillSwap(Tab tab) {
+            if (tab.getWebContents() != null) {
+                removeWebContentsBackPressObserver(tab.getWebContents());
+            }
+            onBackPressedChanged();
+        }
+
+        @Override
+        public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
+            if (tab.getWebContents() != null) {
+                addWebContentsBackPressObserver(tab.getWebContents());
+            }
+            onBackPressedChanged();
+        }
+
+        @Override
+        public void onDestroyed(Tab tab) {
+            if (tab.getWebContents() != null) {
+                removeWebContentsBackPressObserver(tab.getWebContents());
+            }
+            onBackPressedChanged();
+        }
+
+        @Override
+        public void onContentChanged(Tab tab) {
+            if (tab.getWebContents() != null) {
+                addWebContentsBackPressObserver(tab.getWebContents());
+            }
+            onBackPressedChanged();
+        }
+    };
 
     /**
      *
@@ -186,42 +219,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     }
 
     private void onActivityTabChanged(@Nullable Tab tab) {
-        final TabObserver tabObserver = new EmptyTabObserver() {
-            @Override
-            public void webContentsWillSwap(Tab tab) {
-                if (tab.getWebContents() != null) {
-                    removeWebContentsBackPressObserver(tab.getWebContents());
-                }
-                onBackPressedChanged();
-            }
-
-            @Override
-            public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                if (tab.getWebContents() != null) {
-                    addWebContentsBackPressObserver(tab.getWebContents());
-                }
-                onBackPressedChanged();
-            }
-
-            @Override
-            public void onDestroyed(Tab tab) {
-                if (tab.getWebContents() != null) {
-                    removeWebContentsBackPressObserver(tab.getWebContents());
-                }
-                onBackPressedChanged();
-            }
-
-            @Override
-            public void onContentChanged(Tab tab) {
-                if (tab.getWebContents() != null) {
-                    addWebContentsBackPressObserver(tab.getWebContents());
-                }
-                onBackPressedChanged();
-            }
-        };
-
         if (mOldTab != null) {
-            mOldTab.removeObserver(tabObserver);
+            mOldTab.removeObserver(mTabBackPressObserver);
             if (mOldTab.getWebContents() != null) {
                 removeWebContentsBackPressObserver(mOldTab.getWebContents());
             }
@@ -230,7 +229,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (tab.getWebContents() != null) {
                 addWebContentsBackPressObserver(tab.getWebContents());
             }
-            tab.addObserver(tabObserver);
+            tab.addObserver(mTabBackPressObserver);
             mOldTab = tab;
         }
         onBackPressedChanged();
