@@ -151,6 +151,7 @@ void KAnonymityTrustTokenGetter::OnAccessTokenRequestCompleted(
     RecordTrustTokenGetterAction(
         KAnonymityTrustTokenGetterAction::kAccessTokenRequestFailed);
     FailAllCallbacks();
+    return;
   }
 
   access_token_ = access_token_info;
