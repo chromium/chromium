@@ -945,10 +945,8 @@ TEST_F(VisibleUnitsTest, FirstRectForRangeHorizontal) {
   InsertStyleElement("div { font:20px/20px Ahem;}");
   const SelectionInDOMTree selection =
       SetSelectionTextToBody("<div>^abcdef|</div>");
-  gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
-  constexpr int kFontSize = 20;
-  EXPECT_GT(rect.width(), kFontSize * 5);
-  EXPECT_EQ(kFontSize, rect.height());
+  const gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
+  EXPECT_EQ(gfx::Rect(8, 8, 120, 20), rect);
 }
 
 TEST_F(VisibleUnitsTest, FirstRectForRangeHorizontalWrap) {
@@ -956,10 +954,8 @@ TEST_F(VisibleUnitsTest, FirstRectForRangeHorizontalWrap) {
   InsertStyleElement("div { font:20px/20px Ahem; inline-size:60px;}");
   const SelectionInDOMTree selection =
       SetSelectionTextToBody("<div>^abc def|</div>");
-  gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
-  constexpr int kFontSize = 20;
-  EXPECT_LT(rect.width(), kFontSize * 5);
-  EXPECT_EQ(kFontSize, rect.height());
+  const gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
+  EXPECT_EQ(gfx::Rect(8, 8, 59, 20), rect);
 }
 
 TEST_F(VisibleUnitsTest, FirstRectForRangeVertical) {
@@ -967,10 +963,8 @@ TEST_F(VisibleUnitsTest, FirstRectForRangeVertical) {
   InsertStyleElement("div { writing-mode:vertical-rl; font:20px/20px Ahem;}");
   const SelectionInDOMTree selection =
       SetSelectionTextToBody("<div>^abcdef|</div>");
-  gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
-  constexpr int kFontSize = 20;
-  EXPECT_GT(rect.height(), kFontSize * 5);
-  EXPECT_EQ(kFontSize, rect.width());
+  const gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
+  EXPECT_EQ(gfx::Rect(8, 8, 20, 119), rect);
 }
 
 TEST_F(VisibleUnitsTest, FirstRectForRangeVerticalWrap) {
@@ -980,10 +974,8 @@ TEST_F(VisibleUnitsTest, FirstRectForRangeVerticalWrap) {
       "inline-size:60px;}");
   const SelectionInDOMTree selection =
       SetSelectionTextToBody("<div>^abc def|</div>");
-  gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
-  constexpr int kFontSize = 20;
-  EXPECT_LT(rect.height(), kFontSize * 5);
-  EXPECT_EQ(kFontSize, rect.width());
+  const gfx::Rect rect = FirstRectForRange(selection.ComputeRange());
+  EXPECT_EQ(gfx::Rect(28, 8, 20, 59), rect);
 }
 
 }  // namespace visible_units_test
