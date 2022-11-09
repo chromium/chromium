@@ -195,42 +195,48 @@ struct AutocompleteMatch {
     ScoringSignals();
 
     // Number of times the suggestion was typed in the Omnibox.
-    int typed_count;
+    int typed_count = 0;
     // Number of times the suggestion was visited in general.
-    int visit_count;
+    int visit_count = 0;
     // Number of times the suggestion was visited with the current input or
     // prefix of it.
-    int shortcut_visit_count;
+    int shortcut_visit_count = 0;
 
     // Elapsed time since last visit.
-    base::TimeDelta elapsed_time_last_visit;
+    base::TimeDelta elapsed_time_last_visit = base::TimeDelta::FiniteMax();
 
     // URL only contains the host name, i.e., no query, path, or reference.
-    bool is_host_only;
+    bool is_host_only = false;
 
     // Number of bookmarks with this URL.
-    int num_bookmarks;
+    int num_bookmarks = 0;
     // Position of the first matched bookmark title term.
     // E.g. 4 for input 'x' and title '0123x56'.
-    int first_bookmark_title_match_position;
+    // Set to -1 when there is no match in the bookmark title.
+    int first_bookmark_title_match_position = -1;
     // Total length of matched strings in the bookmark title.
     // E.g. 2 for input 'xy' and title 'ab xyz'.
-    int total_bookmark_title_match_length;
+    int total_bookmark_title_match_length = 0;
 
     // Position of the first matched URL substring.
-    int first_url_match_position;
-    int total_url_match_length;
+    // Set to -1 when there is no URL match.
+    int first_url_match_position = -1;
+    int total_url_match_length = 0;
 
     // Host match is at the word boundary.
-    bool host_match_at_word_boundary;
+    // E.g., true for 'h' in '[h]ost.com'.
+    bool host_match_at_word_boundary = false;
     // Total length of the matched host substrings.
-    int total_host_match_length;
+    int total_host_match_length = 0;
 
-    // Total lengths of the matched substrings in the path, query_or_ref, and
-    // page title at word boundary.
-    int total_path_match_length;
-    int total_query_or_ref_match_length;
-    int total_title_match_length;
+    // Total lengths of the matched substrings in the path at word boundary.
+    // E.g. 1 for 'p' in 'a.com/[p]ath'.
+    int total_path_match_length = 0;
+    // Total lengths of the matched substrings in query_or_ref at word boundary.
+    // E.g., 2 for 'qu' in 'a.com/a?[qu]ery'.
+    int total_query_or_ref_match_length = 0;
+    // Total lengths of the matched substrings in page title at word boundary.
+    int total_title_match_length = 0;
   };
 
   static const char* const kDocumentTypeStrings[];
