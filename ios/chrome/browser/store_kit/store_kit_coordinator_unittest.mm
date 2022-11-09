@@ -236,7 +236,7 @@ TEST_F(StoreKitCoordinatorTest, StopAfterDismissingPresentedViewController) {
 
   // Make sure that base view controller is not dismissed (crbug.com.1027058).
   [coordinator_ stop];
-  EXPECT_FALSE(base::test::ios::WaitUntilConditionOrTimeout(1.0, ^{
+  EXPECT_FALSE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), ^{
     return !root_view_controller_.presentedViewController;
   }));
 }
