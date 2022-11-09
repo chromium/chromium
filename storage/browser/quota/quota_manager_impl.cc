@@ -2338,6 +2338,7 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
 
   base::UmaHistogramCounts100000("Quota.TotalBucketCount", entries.size());
 
+  int nonce_count = 0;
   std::map<StorageKey, int64_t> usage_map =
       GetUsageTracker(StorageType::kTemporary)->GetCachedStorageKeysUsage();
   base::Time now = QuotaDatabase::GetNow();
@@ -2347,22 +2348,26 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
 
     absl::optional<StorageKey> storage_key =
         StorageKey::Deserialize(info->storage_key);
+    if (!storage_key.has_value())
+      continue;
 
-    // Ignore stale database entries. If there is no map entry, the storage
-    // key's data has been deleted.
+    if (storage_key.value().nonce().has_value())
+      nonce_count += 1;
+
     auto it = usage_map.find(*storage_key);
     if (it == usage_map.end() || it->second == 0)
       continue;
 
     base::TimeDelta age =
         now - std::max(info->last_accessed, info->last_modified);
-    UMA_HISTOGRAM_COUNTS_1000("Quota.AgeOfOriginInDays", age.InDays());
+    base::UmaHistogramCounts1000("Quota.AgeOfOriginInDays", age.InDays());
 
     int64_t kilobytes = std::max(it->second / int64_t{1024}, int64_t{1});
     base::Histogram::FactoryGet("Quota.AgeOfDataInDays", 1, 1000, 50,
                                 base::HistogramBase::kUmaTargetedHistogramFlag)
         ->AddCount(age.InDays(), base::saturated_cast<int>(kilobytes));
   }
+  base::UmaHistogramCounts100000("Quota.StorageKeyNonceCount", nonce_count);
 }
 
 std::set<BucketId> QuotaManagerImpl::GetEvictionBucketExceptions() {

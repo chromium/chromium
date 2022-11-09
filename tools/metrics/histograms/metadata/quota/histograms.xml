@@ -239,6 +239,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Quota.StorageKeyNonceCount" units="buckets"
+    expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Number of buckets in the QuotaDatabase buckets table with nonce in the
+    StorageKey to inform better eviction logic. Logged hourly. These will
+    typically be used by anonymous iframes, fenced frames, etc.
+  </summary>
+</histogram>
+
 <histogram name="Quota.TimeDeltaOfEvictionRounds" units="units"
     expires_after="2023-05-07">
   <owner>ayui@chromium.org</owner>
