@@ -14,10 +14,24 @@
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_utils.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos {
+
+class AssistantOptInUI;
+
+// WebUIConfig for chrome://assistant-optin
+class AssistantOptInUIConfig
+    : public content::DefaultWebUIConfig<AssistantOptInUI> {
+ public:
+  AssistantOptInUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIAssistantOptInHost) {}
+};
 
 // Controller for chrome://assistant-optin/ page.
 class AssistantOptInUI : public ui::WebDialogUI {
