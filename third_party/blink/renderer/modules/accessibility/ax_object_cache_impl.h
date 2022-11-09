@@ -433,7 +433,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void ResetSerializer() override { ax_tree_serializer_->Reset(); }
 
-  void MarkAXObjectDirty(
+  void MarkAXObjectDirtyWithDetails(
       AXObject* obj,
       bool subtree,
       ax::mojom::blink::EventFrom event_from,

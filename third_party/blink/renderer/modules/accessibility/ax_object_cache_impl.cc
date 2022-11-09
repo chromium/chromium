@@ -3723,7 +3723,8 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
     client->NotifyWebAXObjectMarkedDirty(WebAXObject(obj));
 
   std::vector<ui::AXEventIntent> event_intents;
-  MarkAXObjectDirty(obj, subtree, event_from, event_from_action, event_intents);
+  MarkAXObjectDirtyWithDetails(obj, subtree, event_from, event_from_action,
+                               event_intents);
 
   obj->UpdateCachedAttributeValuesIfNeeded(true);
   for (auto agent : agents_)
@@ -3984,7 +3985,7 @@ bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
   return result;
 }
 
-void AXObjectCacheImpl::MarkAXObjectDirty(
+void AXObjectCacheImpl::MarkAXObjectDirtyWithDetails(
     AXObject* obj,
     bool subtree,
     ax::mojom::blink::EventFrom event_from,

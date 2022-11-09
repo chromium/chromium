@@ -331,10 +331,11 @@ class BLINK_EXPORT WebAXObject {
 
   // Marks ths object as dirty (needing serialization). If subtree is true,
   // the entire AX subtree should be invalidated as well.
-  void MarkDirty(bool subtree,
-                 ax::mojom::EventFrom event_from,
-                 ax::mojom::Action event_from_action,
-                 std::vector<ui::AXEventIntent> event_intents) const;
+  void MarkAXObjectDirtyWithDetails(
+      bool subtree,
+      ax::mojom::EventFrom event_from,
+      ax::mojom::Action event_from_action,
+      std::vector<ui::AXEventIntent> event_intents) const;
 
   // Exchanges a WebAXObject with another.
   void Swap(WebAXObject& other);

@@ -501,7 +501,8 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
   DCHECK(obj.AccessibilityIsIncludedInTree())
       << "Cannot serialize unincluded object: " << obj.ToString(true).Utf8();
 
-  obj.MarkDirty(subtree, event_from, event_from_action, event_intents);
+  obj.MarkAXObjectDirtyWithDetails(subtree, event_from, event_from_action,
+                                   event_intents);
 
   NotifyWebAXObjectMarkedDirty(obj, event_type);
 }
