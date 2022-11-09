@@ -76,9 +76,9 @@ CORE_EXPORT bool ParseEventTriggerData(
 // }
 //
 // Returns whether parsing was successful.
-CORE_EXPORT bool ParseAttributionFilterData(
+CORE_EXPORT bool ParseFilterValues(
     const JSONValue* json,
-    mojom::blink::AttributionFilterData& filter_data);
+    WTF::HashMap<String, WTF::Vector<String>>& filter_values);
 
 // Example JSON schema:
 // [{

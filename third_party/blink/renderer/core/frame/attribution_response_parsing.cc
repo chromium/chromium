@@ -84,9 +84,9 @@ absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(const String& s) {
 
 }  // namespace
 
-bool ParseAttributionFilterData(
+bool ParseFilterValues(
     const JSONValue* value,
-    mojom::blink::AttributionFilterData& filter_data) {
+    WTF::HashMap<String, WTF::Vector<String>>& filter_values) {
   if (!value)
     return true;
 
@@ -146,7 +146,7 @@ bool ParseAttributionFilterData(
       values.push_back(std::move(value_str));
     }
 
-    filter_data.filter_values.insert(entry.first, std::move(values));
+    filter_values.insert(entry.first, std::move(values));
   }
 
   return true;
@@ -261,8 +261,8 @@ bool ParseSourceRegistrationHeader(
     source_data.debug_key = ParseUint64(s);
 
   source_data.filter_data = mojom::blink::AttributionFilterData::New();
-  if (!ParseAttributionFilterData(object->Get("filter_data"),
-                                  *source_data.filter_data)) {
+  if (!ParseFilterValues(object->Get("filter_data"),
+                         source_data.filter_data->filter_values)) {
     return false;
   }
 
@@ -333,15 +333,15 @@ bool ParseEventTriggerData(
     if (String s; object_val->GetString("deduplication_key", &s))
       event_trigger->dedup_key = ParseUint64(s);
 
-    event_trigger->filters = mojom::blink::AttributionFilterData::New();
-    if (!ParseAttributionFilterData(object_val->Get("filters"),
-                                    *event_trigger->filters)) {
+    event_trigger->filters = mojom::blink::AttributionFilters::New();
+    if (!ParseFilterValues(object_val->Get("filters"),
+                           event_trigger->filters->filter_values)) {
       return false;
     }
 
-    event_trigger->not_filters = mojom::blink::AttributionFilterData::New();
-    if (!ParseAttributionFilterData(object_val->Get("not_filters"),
-                                    *event_trigger->not_filters)) {
+    event_trigger->not_filters = mojom::blink::AttributionFilters::New();
+    if (!ParseFilterValues(object_val->Get("not_filters"),
+                           event_trigger->not_filters->filter_values)) {
       return false;
     }
 
@@ -418,14 +418,15 @@ bool ParseAttributionAggregatableTriggerData(
       data->source_keys.push_back(std::move(source_key));
     }
 
-    data->filters = mojom::blink::AttributionFilterData::New();
-    if (!ParseAttributionFilterData(object->Get("filters"), *data->filters)) {
+    data->filters = mojom::blink::AttributionFilters::New();
+    if (!ParseFilterValues(object->Get("filters"),
+                           data->filters->filter_values)) {
       return false;
     }
 
-    data->not_filters = mojom::blink::AttributionFilterData::New();
-    if (!ParseAttributionFilterData(object->Get("not_filters"),
-                                    *data->not_filters)) {
+    data->not_filters = mojom::blink::AttributionFilters::New();
+    if (!ParseFilterValues(object->Get("not_filters"),
+                           data->not_filters->filter_values)) {
       return false;
     }
 
@@ -491,17 +492,17 @@ bool ParseTriggerRegistrationHeader(
     return false;
   }
 
-  trigger_data.filters = mojom::blink::AttributionFilterData::New();
+  trigger_data.filters = mojom::blink::AttributionFilters::New();
 
-  if (!ParseAttributionFilterData(object->Get("filters"),
-                                  *trigger_data.filters)) {
+  if (!ParseFilterValues(object->Get("filters"),
+                         trigger_data.filters->filter_values)) {
     return false;
   }
 
-  trigger_data.not_filters = mojom::blink::AttributionFilterData::New();
+  trigger_data.not_filters = mojom::blink::AttributionFilters::New();
 
-  if (!ParseAttributionFilterData(object->Get("not_filters"),
-                                  *trigger_data.not_filters)) {
+  if (!ParseFilterValues(object->Get("not_filters"),
+                         trigger_data.not_filters->filter_values)) {
     return false;
   }
 
