@@ -274,8 +274,8 @@ void ShadowController::Impl::HandlePossibleShadowVisibilityChange(
 
 void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   DCHECK(!window->IsRootWindow());
-  ui::Shadow* shadow = new ui::Shadow();
-  window->SetProperty(kShadowLayerKey, shadow);
+  ui::Shadow* shadow =
+      window->SetProperty(kShadowLayerKey, std::make_unique<ui::Shadow>());
 
   int corner_radius = window->GetProperty(aura::client::kWindowCornerRadiusKey);
   if (corner_radius >= 0)
