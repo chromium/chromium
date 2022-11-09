@@ -42,7 +42,8 @@ public class IdleDetector extends BroadcastReceiver {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
-        ContextUtils.getApplicationContext().registerReceiver(this, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), this, filter);
     }
 
     @CalledByNative
