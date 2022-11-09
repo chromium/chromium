@@ -234,7 +234,7 @@ BASE_FEATURE(kSaveRawFilesOnTracing,
 // Controls whether to update the O4C list via A2C2.
 BASE_FEATURE(kArcUpdateO4CListViaA2C2,
              "ArcUpdateO4CListViaA2C2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, unclaimed USB device will be attached to ARCVM by default.
 BASE_FEATURE(kUsbDeviceDefaultAttachToArcVm,
