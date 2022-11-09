@@ -297,6 +297,10 @@ namespace mojo {
   }
 }
 
+namespace recordreplay {
+  extern void RecordReplayString(const char* why, std::string& str);
+}
+
 namespace content {
 
 namespace {
@@ -5832,9 +5836,17 @@ void RenderFrameImpl::BeginNavigationInternal(
 
   int load_flags = info->url_request.GetLoadFlagsForWebUrlRequest();
   std::unique_ptr<base::DictionaryValue> initiator;
-  if (!info->devtools_initiator_info.IsNull()) {
+
+  // Devtools behavior can vary when replaying, so record/replay the contents
+  // of the initiator.
+  std::string initiator_string = info->devtools_initiator_info.IsNull()
+      ? std::string()
+      : info->devtools_initiator_info.Utf8();
+  recordreplay::RecordReplayString("devtools_initiator_info", initiator_string);
+
+  if (initiator_string.length()) {
     initiator = base::DictionaryValue::From(
-        base::JSONReader::ReadDeprecated(info->devtools_initiator_info.Utf8()));
+        base::JSONReader::ReadDeprecated(initiator_string));
   }
 
   base::Optional<network::ResourceRequest::WebBundleTokenParams>

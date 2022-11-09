@@ -260,4 +260,12 @@ int NewIdAnyThread(const char* name) {
   return 0;
 }
 
+void RecordReplayString(const char* why, std::string& str) {
+  size_t length = RecordReplayValue(why, str.length());
+  str.resize(length);
+  if (length) {
+    RecordReplayBytes(why, &str[0], length);
+  }
+}
+
 } // namespace recordreplay
