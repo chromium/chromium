@@ -643,7 +643,7 @@ int RenderAccessibilityImpl::GetDeferredEventsDelay() {
   // The amount of time, in milliseconds, to wait before sending non-interactive
   // events that are deferred after the initial page load.
   // Shync with same constant in CrossPlatformAccessibilityBrowserTest.
-  constexpr int kDelayForDeferredUpdatesAfterPageLoad = 0;
+  constexpr int kDelayForDeferredUpdatesAfterPageLoad = 150;
 
   // Prefer WebDocument::IsLoaded() over WebAXObject::IsLoaded() as the
   // latter could trigger a layout update while retrieving the root
