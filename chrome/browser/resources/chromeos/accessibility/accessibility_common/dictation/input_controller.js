@@ -131,7 +131,6 @@ export class InputController {
     this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
     chrome.inputMethodPrivate.setCurrentInputMethod(this.previousImeEngineId_);
     this.previousImeEngineId_ = '';
-    this.surroundingInfo_ = null;
   }
 
   /**

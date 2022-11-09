@@ -274,10 +274,6 @@ export class EditingUtil {
     }
 
     const leftOfCaret = value.substring(0, caretIndex).trim();
-    if (!leftOfCaret) {
-      return EditingUtil.capitalize_(commitText);
-    }
-
     return EditingUtil.ENDS_WITH_END_OF_SENTENCE_REGEX_.test(leftOfCaret) ?
         EditingUtil.capitalize_(commitText) :
         EditingUtil.lowercase_(commitText);

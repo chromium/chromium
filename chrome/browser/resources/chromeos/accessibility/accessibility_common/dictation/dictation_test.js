@@ -296,23 +296,3 @@ AX_TEST_F(
       assertEquals(
           0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
     });
-
-AX_TEST_F(
-    'DictationE2ETest', 'SurroundingInfoResetsAfterToggleOff',
-    async function() {
-      assertEquals(null, this.getInputController().surroundingInfo_);
-      this.toggleDictationOn();
-      const value = 'This is a test';
-      this.sendFinalSpeechResult(value);
-      // A surroundingTextChanged event is fired whenever the editable value
-      // or the caret index is changed.
-      this.mockInputIme.callOnSurroundingTextChanged({
-        anchor: value.length,
-        focus: value.length,
-        offset: 0,
-        text: value,
-      });
-      assertNotNullNorUndefined(this.getInputController().surroundingInfo_);
-      this.toggleDictationOff();
-      assertEquals(null, this.getInputController().surroundingInfo_);
-    });

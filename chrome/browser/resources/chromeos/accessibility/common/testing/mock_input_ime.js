@@ -26,16 +26,6 @@ let MockImeCompositionParameters;
  */
 let MockImeCommitParameters;
 
-/**
- * @typedef {{
- * anchor: number,
- * focus: number,
- * offset: number,
- * text: string,
- * }}
- */
-let SurroundingInfo;
-
 /*
  * A mock chrome.input.ime API for tests.
  */
@@ -165,18 +155,6 @@ var MockInputIme = {
   callOnBlur(contextID) {
     if (MockInputIme.onBlurListener_) {
       MockInputIme.onBlurListener_(contextID);
-    }
-  },
-
-  /**
-   * Calls listeners for chrome.input.ime.onSurroundingTextChanged with the
-   * given surroundingInfo object.
-   * @param {!SurroundingInfo} surroundingInfo
-   */
-  callOnSurroundingTextChanged(surroundingInfo) {
-    if (MockInputIme.onSurroundingTextChangedListener_) {
-      MockInputIme.onSurroundingTextChangedListener_(
-          'dictation', surroundingInfo);
     }
   },
 

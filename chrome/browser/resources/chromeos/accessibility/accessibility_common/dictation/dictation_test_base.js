@@ -263,11 +263,6 @@ DictationE2ETestBase = class extends E2ETestBase {
     return accessibilityCommon.dictation_.speechParser_.pumpkinParseStrategy_;
   }
 
-  /** @return {InputController} */
-  getInputController() {
-    return accessibilityCommon.dictation_.inputController_;
-  }
-
   // Speech recognition methods.
 
   /** @param {string} transcript */

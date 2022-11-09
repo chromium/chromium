@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, StopListening) {
 IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForEditableValue("this", "This");
+  SendFinalResultAndWaitForEditableValue("This", "This");
   SendFinalResultAndWaitForEditableValue("Is", "This is");
   SendFinalResultAndWaitForEditableValue("a test.", "This is a test.");
   SendFinalResultAndWaitForEditableValue("you passed!",
