@@ -384,7 +384,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 // but the HTTPS URL serves a slow loading response. The upgrade should timeout
 // and the navigation should fall back to HTTP.
 - (void)DISABLED_test_HTTPWithSlowHTTPS_ShouldFallBack {
-  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowServer->port()
                                       useFakeHTTPS:true];
   [HttpsUpgradeAppInterface
       setFallbackHttpPortForTesting:self.testServer->port()];
@@ -414,6 +414,44 @@ std::string GetURLWithoutScheme(const GURL& url) {
   // URL and navigate directly to it. Histograms shouldn't change.
   // TODO(crbug.com/1169564): We should try the https URL after a certain
   // time has passed.
+  [self typeTextAndPressEnter:text];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  [self assertTimedOutUpgrade:1];
+}
+
+// Regression test for crbug.com/1379605: This test checks that the fallback
+// logic can handle redirects from HTTPS to HTTP. The test steps are:
+// 1. Type a hostname. This loads an HTTPS URL that redirects to a slow loading
+//    HTTP URL.
+// 2. Navigation upgrade times out while on the HTTP URL. This initiates a
+//    fallback navigation using the HTTP version of the URL in step 1.
+// 3. The fallback HTTP URL immediately responds without redirecting, even
+//    though it has a ?redirect parameter.
+- (void)test_HTTPSRedirectsToSlowHTTP_ShouldFallback {
+  // Use the faux good HTTPS server and standard HTTP server for the test.
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                      useFakeHTTPS:true];
+  [HttpsUpgradeAppInterface
+      setFallbackHttpPortForTesting:self.testServer->port()];
+
+  // Set the fallback delay to zero. This will immediately stop the HTTPS
+  // upgrade attempt.
+  [HttpsUpgradeAppInterface setFallbackDelayForTesting:0];
+
+  // Go to a web page to have a normal location bar.
+  [ChromeEarlGrey loadURL:GURL("data:text/html,Blank Page")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Blank Page"];
+
+  GURL slowHTTPURL = self.slowServer->GetURL("/");
+  // Upgraded HTTPS URL is a redirect to the slow HTTP URL.
+  GURL upgradedURL =
+      self.goodHTTPSServer->GetURL("/?redirect=" + slowHTTPURL.spec());
+  std::string text = GetURLWithoutScheme(upgradedURL);
+
+  // Type the URL in the omnibox without a scheme and navigate.
+  // Navigation will upgrade to HTTPS, then redirect to slow HTTP, then
+  // timeout, then fallback to normal HTTP.
+  // The fallback HTTP URL will immediately show a response.
   [self typeTextAndPressEnter:text];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertTimedOutUpgrade:1];
