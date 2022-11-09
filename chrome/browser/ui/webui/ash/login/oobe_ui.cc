@@ -156,10 +156,10 @@ const char* kKnownDisplayTypes[] = {OobeUI::kAppLaunchSplashDisplay,
                                     OobeUI::kOobeDisplay};
 
 // Sorted
-constexpr char kArcOverlayCSSPath[] = "overlay.css";
-constexpr char kArcPlaystoreCSSPath[] = "playstore.css";
-constexpr char kArcPlaystoreJSPath[] = "playstore.js";
-constexpr char kArcPlaystoreLogoPath[] = "playstore.svg";
+constexpr char kArcOverlayCSSPath[] = "arc_support/overlay.css";
+constexpr char kArcPlaystoreCSSPath[] = "arc_support/playstore.css";
+constexpr char kArcPlaystoreJSPath[] = "arc_support/playstore.js";
+constexpr char kArcPlaystoreLogoPath[] = "arc_support/icon/playstore.svg";
 constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
 constexpr char kDebuggerMJSPath[] = "debug/debug.m.js";
 constexpr char kDebuggerUtilJSPath[] = "debug/debug_util.js";

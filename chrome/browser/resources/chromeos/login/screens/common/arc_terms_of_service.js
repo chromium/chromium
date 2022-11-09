@@ -378,8 +378,8 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     termsView.addContentScripts([{
       name: 'postProcess',
       matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
-      css: {files: ['playstore.css']},
-      js: {files: ['playstore.js']},
+      css: {files: ['arc_support/playstore.css']},
+      js: {files: ['arc_support/playstore.js']},
       run_at: 'document_end',
     }]);
 
@@ -387,7 +387,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     overlayUrl.addContentScripts([{
       name: 'postProcess',
       matches: ['https://support.google.com/*'],
-      css: {files: ['overlay.css']},
+      css: {files: ['arc_support/overlay.css']},
       run_at: 'document_end',
     }]);
   }
@@ -545,15 +545,15 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     this.termsOfServiceHostName_ = hostname;
     this.reloadsLeftForTesting_ = 1;
 
-    // Enable loading content script 'playstore.js' when fetching ToS from
-    // the test server.
+    // Enable loading content script 'arc_support/playstore.js' when fetching
+    // ToS from the test server.
     var termsView = this.$.arcTosView;
     termsView.removeContentScripts(['postProcess']);
     termsView.addContentScripts([{
       name: 'postProcess',
       matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
-      css: {files: ['playstore.css']},
-      js: {files: ['playstore.js']},
+      css: {files: ['arc_support/playstore.css']},
+      js: {files: ['arc_support/playstore.js']},
       run_at: 'document_end',
     }]);
   }
@@ -681,7 +681,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
               'Set parameteters failed: ' + chrome.runtime.lastError.message);
         }
       });
-      termsView.insertCSS({file: 'playstore.css'});
+      termsView.insertCSS({file: 'arc_support/playstore.css'});
       this.setTermsViewContentLoadedState_();
     } else {
       // Process online ToS.
