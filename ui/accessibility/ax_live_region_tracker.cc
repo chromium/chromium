@@ -60,7 +60,7 @@ AXNode* AXLiveRegionTracker::GetLiveRoot(const AXNode& node) const {
   if (deleted_node_ids_.find(id) != deleted_node_ids_.end())
     return nullptr;
 
-  return tree_.GetFromId(id);
+  return tree_->GetFromId(id);
 }
 
 AXNode* AXLiveRegionTracker::GetLiveRootIfNotBusy(const AXNode& node) const {

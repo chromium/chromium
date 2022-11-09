@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/gl_utils.h"
@@ -749,7 +750,7 @@ class GPU_GLES2_EXPORT ProgramManager {
   uint32_t max_dual_source_draw_buffers_;
   uint32_t max_vertex_attribs_;
 
-  const GpuPreferences& gpu_preferences_;
+  const raw_ref<const GpuPreferences> gpu_preferences_;
   scoped_refptr<FeatureInfo> feature_info_;
 
   // Used to notify the watchdog thread of progress during destruction,

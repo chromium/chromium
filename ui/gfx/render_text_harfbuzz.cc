@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -433,8 +434,8 @@ class HarfBuzzLineBreaker {
 
   // Constructs a single line for |text_| using |run_list_|.
   void ConstructSingleLine() {
-    for (size_t i = 0; i < run_list_.size(); i++) {
-      const internal::TextRunHarfBuzz& run = *(run_list_.runs()[i]);
+    for (size_t i = 0; i < run_list_->size(); i++) {
+      const internal::TextRunHarfBuzz& run = *(run_list_->runs()[i]);
       internal::LineSegment segment;
       segment.run = i;
       segment.char_range = run.range;
@@ -448,7 +449,7 @@ class HarfBuzzLineBreaker {
   void ConstructMultiLines() {
     // Get an iterator that pass through valid line breaking positions.
     // See https://www.unicode.org/reports/tr14/tr14-11.html for lines breaking.
-    base::i18n::BreakIterator words(text_,
+    base::i18n::BreakIterator words(*text_,
                                     base::i18n::BreakIterator::BREAK_LINE);
     const bool success = words.Init();
     DCHECK(success);
@@ -464,7 +465,7 @@ class HarfBuzzLineBreaker {
       // the word to the current line.
       bool new_line = false;
       if (!word_segments.empty() &&
-          IsNewlineSegment(text_, word_segments.back())) {
+          IsNewlineSegment(*text_, word_segments.back())) {
         new_line = true;
 
         // Subtract the width of newline segments, they are not drawn.
@@ -493,7 +494,7 @@ class HarfBuzzLineBreaker {
     // the final line.
     internal::Line* line = &lines_.back();
     if (line->display_text_index == 0)
-      line->display_text_index = text_.size();
+      line->display_text_index = text_->size();
     // Add an empty line to finish the line size calculation and remove it.
     AdvanceLine();
     lines_.pop_back();
@@ -522,8 +523,8 @@ class HarfBuzzLineBreaker {
       std::sort(line->segments.begin(), line->segments.end(),
                 [this](const internal::LineSegment& s1,
                        const internal::LineSegment& s2) -> bool {
-                  return run_list_.logical_to_visual(s1.run) <
-                         run_list_.logical_to_visual(s2.run);
+                  return run_list_->logical_to_visual(s1.run) <
+                         run_list_->logical_to_visual(s2.run);
                 });
 
       line->size.set_height(
@@ -537,11 +538,11 @@ class HarfBuzzLineBreaker {
       // drawn.
       float line_width = line->size.width();
       if (!line->segments.empty() &&
-          IsNewlineSegment(text_, line->segments.back())) {
+          IsNewlineSegment(*text_, line->segments.back())) {
         line_width -= line->segments.back().width();
       }
       if (line->segments.size() > 1 &&
-          IsNewlineSegment(text_, line->segments.front())) {
+          IsNewlineSegment(*text_, line->segments.front())) {
         line_width -= line->segments.front().width();
       }
       total_size_.set_height(total_size_.height() + line->size.height());
@@ -565,7 +566,7 @@ class HarfBuzzLineBreaker {
       if (has_truncated)
         break;
 
-      if (IsNewlineSegment(text_, segment) ||
+      if (IsNewlineSegment(*text_, segment) ||
           segment.width() <= available_width_ ||
           word_wrap_behavior_ == IGNORE_LONG_WORDS) {
         AddLineSegment(segment, true);
@@ -574,7 +575,8 @@ class HarfBuzzLineBreaker {
                word_wrap_behavior_ == WRAP_LONG_WORDS);
         has_truncated = (word_wrap_behavior_ == TRUNCATE_LONG_WORDS);
 
-        const internal::TextRunHarfBuzz& run = *(run_list_.runs()[segment.run]);
+        const internal::TextRunHarfBuzz& run =
+            *(run_list_->runs()[segment.run]);
         internal::LineSegment remaining_segment = segment;
         while (!remaining_segment.char_range.is_empty()) {
           size_t cutoff_pos = GetCutoffPos(remaining_segment);
@@ -607,7 +609,7 @@ class HarfBuzzLineBreaker {
   void AddLineSegment(const internal::LineSegment& segment, bool multiline) {
     DCHECK(!lines_.empty());
     internal::Line* line = &lines_.back();
-    const internal::TextRunHarfBuzz& run = *(run_list_.runs()[segment.run]);
+    const internal::TextRunHarfBuzz& run = *(run_list_->runs()[segment.run]);
     if (!line->segments.empty()) {
       internal::LineSegment& last_segment = line->segments.back();
       // Merge segments that belong to the same run.
@@ -633,7 +635,7 @@ class HarfBuzzLineBreaker {
     line->size.set_width(line->size.width() + segment.width());
 
     // Newline characters are not drawn for multi-line, ignore their metrics.
-    if (!multiline || !IsNewlineSegment(text_, segment)) {
+    if (!multiline || !IsNewlineSegment(*text_, segment)) {
       SkFont font(run.font_params.skia_face, run.font_params.font_size);
       font.setEdging(run.font_params.render_params.antialiasing
                          ? SkFont::Edging::kAntiAlias
@@ -666,7 +668,7 @@ class HarfBuzzLineBreaker {
   size_t GetCutoffPos(const internal::LineSegment& segment) const {
     DCHECK(!segment.char_range.is_empty());
     const internal::TextRunHarfBuzz& run =
-        *(run_list_.runs()[segment.run]).get();
+        *(run_list_->runs()[segment.run]).get();
     size_t end_pos = segment.char_range.start();
     SkScalar width = 0;
     while (end_pos < segment.char_range.end()) {
@@ -679,7 +681,7 @@ class HarfBuzzLineBreaker {
     }
 
     const size_t valid_end_pos = std::max(
-        segment.char_range.start(), FindValidBoundaryBefore(text_, end_pos));
+        segment.char_range.start(), FindValidBoundaryBefore(*text_, end_pos));
     if (end_pos != valid_end_pos) {
       end_pos = valid_end_pos;
       width = run.GetGlyphWidthForCharRange(
@@ -693,7 +695,7 @@ class HarfBuzzLineBreaker {
     if (width == 0 && available_width_ == max_width_ &&
         end_pos < segment.char_range.end()) {
       end_pos = std::min(segment.char_range.end(),
-                         FindValidBoundaryAfter(text_, end_pos + 1));
+                         FindValidBoundaryAfter(*text_, end_pos + 1));
     }
 
     return end_pos;
@@ -705,11 +707,11 @@ class HarfBuzzLineBreaker {
                         std::vector<internal::LineSegment>* segments) const {
     if (word_range.is_empty() || segments == nullptr)
       return 0;
-    size_t run_start_index = run_list_.GetRunIndexAt(word_range.start());
-    size_t run_end_index = run_list_.GetRunIndexAt(word_range.end() - 1);
+    size_t run_start_index = run_list_->GetRunIndexAt(word_range.start());
+    size_t run_end_index = run_list_->GetRunIndexAt(word_range.end() - 1);
     SkScalar width = 0;
     for (size_t i = run_start_index; i <= run_end_index; i++) {
-      const internal::TextRunHarfBuzz& run = *(run_list_.runs()[i]);
+      const internal::TextRunHarfBuzz& run = *(run_list_->runs()[i]);
       const Range char_range = run.range.Intersect(word_range);
       DCHECK(!char_range.is_empty());
       const SkScalar char_width = run.GetGlyphWidthForCharRange(char_range);
@@ -747,8 +749,8 @@ class HarfBuzzLineBreaker {
   const float min_height_;
   const float glyph_height_for_test_;
   const WordWrapBehavior word_wrap_behavior_;
-  const std::u16string& text_;
-  const internal::TextRunList& run_list_;
+  const raw_ref<const std::u16string> text_;
+  const raw_ref<const internal::TextRunList> run_list_;
 
   // Stores the resulting lines.
   std::vector<internal::Line> lines_;

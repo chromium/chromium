@@ -820,7 +820,7 @@ void Program::Update() {
       attrib_location_to_index_map_[info.location + j] = ii;
   }
 
-  if (manager_->gpu_preferences_.enable_gpu_service_logging_gpu) {
+  if (manager_->gpu_preferences_->enable_gpu_service_logging_gpu) {
     DVLOG(1) << "----: attribs for service_id: " << service_id();
     for (size_t ii = 0; ii < attrib_infos_.size(); ++ii) {
       const VertexAttrib& info = attrib_infos_[ii];
@@ -834,7 +834,7 @@ void Program::Update() {
   if (!UpdateUniforms())
     return;
 
-  if (manager_->gpu_preferences_.enable_gpu_service_logging_gpu) {
+  if (manager_->gpu_preferences_->enable_gpu_service_logging_gpu) {
     DVLOG(1) << "----: uniforms for service_id: " << service_id();
     size_t ii = 0;
     for (const UniformInfo& info : uniform_infos_) {

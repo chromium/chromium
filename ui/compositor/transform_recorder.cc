@@ -19,9 +19,9 @@ TransformRecorder::~TransformRecorder() {
   if (!transformed_)
     return;
 
-  context_.list_->StartPaint();
-  context_.list_->push<cc::RestoreOp>();
-  context_.list_->EndPaintOfPairedEnd();
+  context_->list_->StartPaint();
+  context_->list_->push<cc::RestoreOp>();
+  context_->list_->EndPaintOfPairedEnd();
 }
 
 void TransformRecorder::Transform(const gfx::Transform& transform) {
@@ -29,10 +29,10 @@ void TransformRecorder::Transform(const gfx::Transform& transform) {
   if (transform.IsIdentity())
     return;
 
-  context_.list_->StartPaint();
-  context_.list_->push<cc::SaveOp>();
-  context_.list_->push<cc::ConcatOp>(gfx::TransformToSkM44(transform));
-  context_.list_->EndPaintOfPairedBegin();
+  context_->list_->StartPaint();
+  context_->list_->push<cc::SaveOp>();
+  context_->list_->push<cc::ConcatOp>(gfx::TransformToSkM44(transform));
+  context_->list_->EndPaintOfPairedBegin();
 
   transformed_ = true;
 }

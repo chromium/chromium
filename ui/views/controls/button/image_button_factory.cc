@@ -6,6 +6,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -37,12 +38,12 @@ class ColorTrackingVectorImageButton : public ImageButton {
     const ui::ColorProvider* cp = GetColorProvider();
     const SkColor color = cp->GetColor(ui::kColorIcon);
     const SkColor disabled_color = cp->GetColor(ui::kColorIconDisabled);
-    SetImageFromVectorIconWithColor(this, icon_, dip_size_, color,
+    SetImageFromVectorIconWithColor(this, *icon_, dip_size_, color,
                                     disabled_color);
   }
 
  private:
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
   int dip_size_;
 };
 

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -47,12 +48,12 @@ class TestGpuChannelHost : public GpuChannelHost {
                            mojo::MessagePipeHandle(mojo::kInvalidHandleValue))),
         gpu_channel_(gpu_channel) {}
 
-  mojom::GpuChannel& GetGpuChannel() override { return gpu_channel_; }
+  mojom::GpuChannel& GetGpuChannel() override { return *gpu_channel_; }
 
  protected:
   ~TestGpuChannelHost() override = default;
 
-  mojom::GpuChannel& gpu_channel_;
+  const raw_ref<mojom::GpuChannel> gpu_channel_;
 };
 
 class MockGpuControlClient : public GpuControlClient {

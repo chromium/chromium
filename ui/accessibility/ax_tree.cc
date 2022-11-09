@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -580,7 +581,7 @@ struct AXTreeUpdateState {
   // Keep track of the pending tree update to help create useful error messages.
   // TODO(crbug.com/1156601) Revert this once we have the crash data we need
   // (crrev.com/c/2892259).
-  const AXTreeUpdate& pending_tree_update;
+  const raw_ref<const AXTreeUpdate> pending_tree_update;
 
  private:
   PendingStructureChanges* GetPendingStructureChanges(AXNodeID node_id) const {
@@ -593,7 +594,7 @@ struct AXTreeUpdateState {
       AXNodeID node_id) {
     auto iter = node_id_to_pending_data.find(node_id);
     if (iter == node_id_to_pending_data.cend()) {
-      const AXNode* node = tree.GetFromId(node_id);
+      const AXNode* node = tree->GetFromId(node_id);
       iter = node_id_to_pending_data
                  .emplace(std::make_pair(
                      node_id, std::make_unique<PendingStructureChanges>(node)))
@@ -604,7 +605,7 @@ struct AXTreeUpdateState {
 
   // We need to hold onto a reference to the AXTree so that we can
   // lazily initialize |PendingStructureChanges| objects.
-  const AXTree& tree;
+  const raw_ref<const AXTree> tree;
 };
 
 AXTree::NodeSetSizePosInSetInfo::NodeSetSizePosInSetInfo() = default;
@@ -2215,7 +2216,7 @@ bool AXTree::CreateNewChildVector(AXNode* node,
                         ? *update_state->pending_root_id
                         : kInvalidAXNodeID)
                 << "\nTree update: "
-                << update_state->pending_tree_update.ToString();
+                << update_state->pending_tree_update->ToString();
 
           // Add a crash key so we can figure out why this is happening.
           static crash_reporter::CrashKeyString<256> ax_tree_error(
@@ -2704,7 +2705,7 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   // Log additional crash keys so we can debug bad tree updates.
   base::debug::SetCrashKeyString(ax_tree_error_key, new_error);
   base::debug::SetCrashKeyString(ax_tree_update_key,
-                                 update_state.pending_tree_update.ToString());
+                                 update_state.pending_tree_update->ToString());
   base::debug::SetCrashKeyString(ax_tree_key, TreeToStringHelper(root_, 1));
   base::debug::SetCrashKeyString(ax_tree_data_key, data().ToString());
 
@@ -2712,7 +2713,7 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   // rely on AccessibilityFatalError(), which will not crash until multiple
   // errors occur.
   SANITIZER_NOTREACHED() << new_error << "\n"
-                         << update_state.pending_tree_update.ToString() << "\n"
+                         << update_state.pending_tree_update->ToString() << "\n"
                          << ToString();
 }
 

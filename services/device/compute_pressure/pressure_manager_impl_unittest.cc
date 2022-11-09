@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -39,7 +40,7 @@ class PressureManagerImplSync {
 
   bool AddClient(mojo::PendingRemote<mojom::PressureClient> client) {
     base::test::TestFuture<bool> future;
-    manager_.AddClient(std::move(client), future.GetCallback());
+    manager_->AddClient(std::move(client), future.GetCallback());
     return future.Get();
   }
 
@@ -47,7 +48,7 @@ class PressureManagerImplSync {
   // The reference is immutable, so accessing it is thread-safe. The referenced
   // device::mojom::PressureManager implementation is called synchronously,
   // so it's acceptable to rely on its own thread-safety checks.
-  mojom::PressureManager& manager_;
+  const raw_ref<mojom::PressureManager> manager_;
 };
 
 class FakePressureClient : public mojom::PressureClient {

@@ -25,7 +25,7 @@ DropTargetEvent::DropTargetEvent(const OSExchangeData& data,
 
 DropTargetEvent::DropTargetEvent(const DropTargetEvent& other)
     : LocatedEvent(other),
-      data_(other.data_),
+      data_(*other.data_),
       source_operations_(other.source_operations_) {}
 
 std::unique_ptr<Event> DropTargetEvent::Clone() const {

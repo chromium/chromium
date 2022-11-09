@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
+#include "base/memory/raw_ref.h"
 
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <wayland-client-protocol.h>
@@ -84,12 +85,12 @@ class WaylandWindowDragController::ExtendedDragSource {
     auto* surface = window ? window->root_surface()->surface() : nullptr;
     zcr_extended_drag_source_v1_drag(source_.get(), surface, offset.x(),
                                      offset.y());
-    connection_.Flush();
+    connection_->Flush();
   }
 
  private:
   wl::Object<zcr_extended_drag_source_v1> source_;
-  WaylandConnection& connection_;
+  const raw_ref<WaylandConnection> connection_;
 };
 
 WaylandWindowDragController::WaylandWindowDragController(

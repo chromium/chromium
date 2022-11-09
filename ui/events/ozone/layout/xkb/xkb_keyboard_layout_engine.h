@@ -17,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/task_runner.h"
@@ -118,7 +119,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   virtual void SetKeymap(xkb_keymap* keymap);
 
   // Maps DomCode to xkb_keycode_t.
-  const XkbKeyCodeConverter& key_code_converter_;
+  const raw_ref<const XkbKeyCodeConverter> key_code_converter_;
 
   // libxkbcommon uses explicit reference counting for its structures,
   // so we need to trigger its cleanup.

@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ref.h"
 #include "base/win/windows_types.h"
 
 namespace display {
@@ -37,7 +38,7 @@ class BaseWindowFinderWin {
   virtual bool ShouldStopIterating(HWND window) = 0;
 
  private:
-  const std::set<HWND>& ignore_;
+  const raw_ref<const std::set<HWND>> ignore_;
 };
 
 }  // namespace win

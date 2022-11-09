@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
@@ -1248,37 +1249,37 @@ TEST(ContentSecurityPolicy, NavigateToChecks) {
 
   struct TestCase {
     mojom::CSPSourceListPtr navigate_to_list;
-    const GURL& url;
+    const raw_ref<const GURL> url;
     bool is_response_check;
     bool is_form_submission;
     mojom::CSPSourceListPtr form_action_list;
     bool expected;
   } cases[] = {
       // Basic source matching.
-      {allow_none(), url_a, false, false, {}, false},
-      {allow_a(), url_a, false, false, {}, true},
-      {allow_a(), url_b, false, false, {}, false},
-      {allow_self(), url_a, false, false, {}, true},
+      {allow_none(), raw_ref(url_a), false, false, {}, false},
+      {allow_a(), raw_ref(url_a), false, false, {}, true},
+      {allow_a(), raw_ref(url_b), false, false, {}, false},
+      {allow_self(), raw_ref(url_a), false, false, {}, true},
 
       // Checking allow_redirect flag interactions.
-      {allow_redirect(), url_a, false, false, {}, true},
-      {allow_redirect(), url_a, true, false, {}, false},
-      {allow_redirect_a(), url_a, false, false, {}, true},
-      {allow_redirect_a(), url_a, true, false, {}, true},
+      {allow_redirect(), raw_ref(url_a), false, false, {}, true},
+      {allow_redirect(), raw_ref(url_a), true, false, {}, false},
+      {allow_redirect_a(), raw_ref(url_a), false, false, {}, true},
+      {allow_redirect_a(), raw_ref(url_a), true, false, {}, true},
 
       // Interaction with form-action:
 
       // Form submission without form-action present.
-      {allow_none(), url_a, false, true, {}, false},
-      {allow_a(), url_a, false, true, {}, true},
-      {allow_a(), url_b, false, true, {}, false},
-      {allow_self(), url_a, false, true, {}, true},
+      {allow_none(), raw_ref(url_a), false, true, {}, false},
+      {allow_a(), raw_ref(url_a), false, true, {}, true},
+      {allow_a(), raw_ref(url_b), false, true, {}, false},
+      {allow_self(), raw_ref(url_a), false, true, {}, true},
 
       // Form submission with form-action present.
-      {allow_none(), url_a, false, true, allow_a(), true},
-      {allow_a(), url_a, false, true, allow_a(), true},
-      {allow_a(), url_b, false, true, allow_a(), true},
-      {allow_self(), url_a, false, true, allow_a(), true},
+      {allow_none(), raw_ref(url_a), false, true, allow_a(), true},
+      {allow_a(), raw_ref(url_a), false, true, allow_a(), true},
+      {allow_a(), raw_ref(url_b), false, true, allow_a(), true},
+      {allow_self(), raw_ref(url_a), false, true, allow_a(), true},
   };
 
   for (auto& test : cases) {
@@ -1292,14 +1293,15 @@ TEST(ContentSecurityPolicy, NavigateToChecks) {
           std::move(test.form_action_list);
     }
 
-    EXPECT_EQ(test.expected, CheckContentSecurityPolicy(
-                                 policy, CSPDirectiveName::NavigateTo, test.url,
-                                 GURL(), true, test.is_response_check, &context,
-                                 SourceLocation(), test.is_form_submission));
     EXPECT_EQ(test.expected,
               CheckContentSecurityPolicy(
-                  policy, CSPDirectiveName::NavigateTo, test.url, GURL(), false,
+                  policy, CSPDirectiveName::NavigateTo, *test.url, GURL(), true,
                   test.is_response_check, &context, SourceLocation(),
+                  test.is_form_submission));
+    EXPECT_EQ(test.expected,
+              CheckContentSecurityPolicy(
+                  policy, CSPDirectiveName::NavigateTo, *test.url, GURL(),
+                  false, test.is_response_check, &context, SourceLocation(),
                   test.is_form_submission));
   }
 }

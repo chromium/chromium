@@ -5,6 +5,7 @@
 #ifndef UI_COMPOSITOR_TRANSFORM_RECORDER_H_
 #define UI_COMPOSITOR_TRANSFORM_RECORDER_H_
 
+#include "base/memory/raw_ref.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace cc {
@@ -34,7 +35,7 @@ class COMPOSITOR_EXPORT TransformRecorder {
   void Transform(const gfx::Transform& transform);
 
  private:
-  const PaintContext& context_;
+  const raw_ref<const PaintContext> context_;
   bool transformed_;
 };
 

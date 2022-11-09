@@ -5,6 +5,7 @@
 #ifndef UI_GFX_PAINT_VECTOR_ICON_H_
 #define UI_GFX_PAINT_VECTOR_ICON_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/gfx_export.h"
@@ -29,10 +30,10 @@ struct GFX_EXPORT IconDescription {
 
   ~IconDescription();
 
-  const VectorIcon& icon;
+  const raw_ref<const VectorIcon> icon;
   int dip_size;
   SkColor color;
-  const VectorIcon& badge_icon;
+  const raw_ref<const VectorIcon> badge_icon;
 };
 
 GFX_EXPORT extern const VectorIcon kNoneIcon;

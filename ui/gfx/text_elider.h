@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gfx_export.h"
@@ -61,10 +62,10 @@ class GFX_EXPORT StringSlicer {
 
  private:
   // The text to be sliced.
-  const std::u16string& text_;
+  const raw_ref<const std::u16string> text_;
 
   // Ellipsis string to use.
-  const std::u16string& ellipsis_;
+  const raw_ref<const std::u16string> ellipsis_;
 
   // If true, the middle of the string will be elided.
   const bool elide_in_middle_;

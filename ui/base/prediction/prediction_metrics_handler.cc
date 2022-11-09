@@ -194,26 +194,26 @@ void PredictionMetricsHandler::ComputeMetrics() {
 
   double score = ComputeOverUnderPredictionMetric();
   if (score >= 0) {
-    over_prediction_histogram_.Add(score);
+    over_prediction_histogram_->Add(score);
   } else {
-    under_prediction_histogram_.Add(-score);
+    under_prediction_histogram_->Add(-score);
   }
-  prediction_score_histogram_.Add(std::abs(score));
+  prediction_score_histogram_->Add(std::abs(score));
 
   double frame_score = ComputeFrameOverUnderPredictionMetric();
   if (frame_score >= 0) {
-    frame_over_prediction_histogram_.Add(frame_score);
+    frame_over_prediction_histogram_->Add(frame_score);
   } else {
-    frame_under_prediction_histogram_.Add(-frame_score);
+    frame_under_prediction_histogram_->Add(-frame_score);
   }
-  frame_prediction_score_histogram_.Add(std::abs(frame_score));
+  frame_prediction_score_histogram_->Add(std::abs(frame_score));
 
   // Need |last_predicted_| to compute Jitter metrics.
   if (!last_predicted_.has_value())
     return;
 
-  prediction_jitter_histogram_.Add(ComputePredictionJitterMetric());
-  visual_jitter_histogram_.Add(ComputeVisualJitterMetric());
+  prediction_jitter_histogram_->Add(ComputePredictionJitterMetric());
+  visual_jitter_histogram_->Add(ComputeVisualJitterMetric());
 }
 
 double PredictionMetricsHandler::ComputeOverUnderPredictionMetric() const {

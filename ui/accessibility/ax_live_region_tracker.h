@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ref.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -44,7 +45,7 @@ class AXLiveRegionTracker {
                                          const AXNode* current_root);
   void QueueChangeEventForDeletedNode(const AXNode& root);
 
-  const AXTree& tree_;
+  const raw_ref<const AXTree> tree_;
 
   // Map from live region node to its live region root ID.
   std::map<const AXNodeID, AXNodeID> live_region_node_to_root_id_;

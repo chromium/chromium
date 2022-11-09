@@ -10,6 +10,7 @@
 #include "base/android/android_image_reader_compat.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/texture_owner.h"
@@ -138,7 +139,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
 
   // reference to the class instance which is used to dynamically
   // load the functions in android libraries at runtime.
-  base::android::AndroidImageReader& loader_;
+  const raw_ref<base::android::AndroidImageReader> loader_;
 
   // The context and surface that were used to create |texture_id_|.
   scoped_refptr<gl::GLContext> context_;

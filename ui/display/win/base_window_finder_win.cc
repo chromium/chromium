@@ -20,7 +20,7 @@ BOOL CALLBACK BaseWindowFinderWin::WindowCallbackProc(HWND hwnd,
                                                       LPARAM lParam) {
   // Cast must match that in as_lparam().
   BaseWindowFinderWin* finder = reinterpret_cast<BaseWindowFinderWin*>(lParam);
-  if (finder->ignore_.find(hwnd) != finder->ignore_.end())
+  if (finder->ignore_->find(hwnd) != finder->ignore_->end())
     return TRUE;
 
   return finder->ShouldStopIterating(hwnd) ? FALSE : TRUE;

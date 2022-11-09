@@ -61,7 +61,7 @@ bool SchedulerTaskRunner::PostNonNestableDelayedTask(
     return false;
 
   CHECK(delay.is_zero());
-  scheduler_.ScheduleTask(Scheduler::Task(
+  scheduler_->ScheduleTask(Scheduler::Task(
       sequence_id_,
       base::BindOnce(&SchedulerTaskRunner::RunTask, this, std::move(task)),
       std::vector<SyncToken>()));

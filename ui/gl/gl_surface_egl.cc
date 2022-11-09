@@ -15,6 +15,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
@@ -91,7 +92,7 @@ struct TraceSwapEventsInitializer {
   TraceSwapEventsInitializer()
       : value(*TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
             kSwapEventTraceCategories)) {}
-  const unsigned char& value;
+  const raw_ref<const unsigned char> value;
 };
 
 static base::LazyInstance<TraceSwapEventsInitializer>::Leaky
@@ -664,7 +665,7 @@ void NativeViewGLSurfaceEGL::UpdateSwapEvents(EGLuint64KHR newFrameId,
   // If we weren't able to get a valid frame id before the swap, we can't get
   // its timestamps now.
   const SwapInfo& old_swap_info = swap_info_queue_.front();
-  if (old_swap_info.frame_id_is_valid && g_trace_swap_enabled.Get().value)
+  if (old_swap_info.frame_id_is_valid && *g_trace_swap_enabled.Get().value)
     TraceSwapEvents(old_swap_info.frame_id);
 
   swap_info_queue_.pop();

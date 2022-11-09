@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/guid.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
@@ -34,7 +35,7 @@ class HidBlocklistTest : public testing::Test {
   HidBlocklistTest(HidBlocklistTest&) = delete;
   HidBlocklistTest& operator=(HidBlocklistTest&) = delete;
 
-  const HidBlocklist& list() { return blocklist_; }
+  const HidBlocklist& list() { return *blocklist_; }
 
   void SetDynamicBlocklist(base::StringPiece list) {
     feature_list_.Reset();
@@ -44,7 +45,7 @@ class HidBlocklistTest : public testing::Test {
     feature_list_.InitWithFeaturesAndParameters({{kWebHidBlocklist, params}},
                                                 /*disabled_features=*/{});
 
-    blocklist_.ResetToDefaultValuesForTest();
+    blocklist_->ResetToDefaultValuesForTest();
   }
 
   mojom::HidDeviceInfoPtr CreateTestDeviceWithOneReport(
@@ -76,17 +77,17 @@ class HidBlocklistTest : public testing::Test {
     device->product_id = product_id;
     device->has_report_id = has_report_id;
     device->collections.push_back(std::move(collection));
-    device->protected_input_report_ids = blocklist_.GetProtectedReportIds(
+    device->protected_input_report_ids = blocklist_->GetProtectedReportIds(
         HidBlocklist::kReportTypeInput, vendor_id, product_id,
         device->collections);
-    device->protected_output_report_ids = blocklist_.GetProtectedReportIds(
+    device->protected_output_report_ids = blocklist_->GetProtectedReportIds(
         HidBlocklist::kReportTypeOutput, vendor_id, product_id,
         device->collections);
-    device->protected_feature_report_ids = blocklist_.GetProtectedReportIds(
+    device->protected_feature_report_ids = blocklist_->GetProtectedReportIds(
         HidBlocklist::kReportTypeFeature, vendor_id, product_id,
         device->collections);
     device->is_excluded_by_blocklist =
-        blocklist_.IsVendorProductBlocked(vendor_id, product_id);
+        blocklist_->IsVendorProductBlocked(vendor_id, product_id);
     return device;
   }
 
@@ -129,17 +130,17 @@ class HidBlocklistTest : public testing::Test {
     device->product_id = product_id;
     device->has_report_id = true;
     device->collections = std::move(collections);
-    device->protected_input_report_ids = blocklist_.GetProtectedReportIds(
+    device->protected_input_report_ids = blocklist_->GetProtectedReportIds(
         HidBlocklist::kReportTypeInput, vendor_id, product_id,
         device->collections);
-    device->protected_output_report_ids = blocklist_.GetProtectedReportIds(
+    device->protected_output_report_ids = blocklist_->GetProtectedReportIds(
         HidBlocklist::kReportTypeOutput, vendor_id, product_id,
         device->collections);
-    device->protected_feature_report_ids = blocklist_.GetProtectedReportIds(
+    device->protected_feature_report_ids = blocklist_->GetProtectedReportIds(
         HidBlocklist::kReportTypeFeature, vendor_id, product_id,
         device->collections);
     device->is_excluded_by_blocklist =
-        blocklist_.IsVendorProductBlocked(vendor_id, product_id);
+        blocklist_->IsVendorProductBlocked(vendor_id, product_id);
     return device;
   }
 
@@ -148,11 +149,11 @@ class HidBlocklistTest : public testing::Test {
     // Because HidBlocklist is a singleton it must be cleared after tests run
     // to prevent leakage between tests.
     feature_list_.Reset();
-    blocklist_.ResetToDefaultValuesForTest();
+    blocklist_->ResetToDefaultValuesForTest();
   }
 
   base::test::ScopedFeatureList feature_list_;
-  HidBlocklist& blocklist_;
+  const raw_ref<HidBlocklist> blocklist_;
 };
 
 }  // namespace

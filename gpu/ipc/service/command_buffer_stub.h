@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -204,7 +205,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
     bool is_context_current() const { return cache_use_.has_value(); }
 
    private:
-    CommandBufferStub& stub_;
+    const raw_ref<CommandBufferStub> stub_;
     bool have_context_ = false;
     absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use_;
   };

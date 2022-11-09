@@ -5,6 +5,7 @@
 #include "services/network/trust_tokens/local_trust_token_operation_delegate_impl.h"
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -47,14 +48,14 @@ class RequestCapturingNetworkContextClient : public TestNetworkContextClient {
   void OnTrustTokenIssuanceDivertedToSystem(
       mojom::FulfillTrustTokenIssuanceRequestPtr request,
       OnTrustTokenIssuanceDivertedToSystemCallback callback) override {
-    request_out_ = std::move(request);
+    *request_out_ = std::move(request);
     std::move(callback).Run(mojom::FulfillTrustTokenIssuanceAnswer::New(
         mojom::FulfillTrustTokenIssuanceAnswer::Status::kOk,
         "Here's your answer"));
   }
 
  private:
-  mojom::FulfillTrustTokenIssuanceRequestPtr& request_out_;
+  const raw_ref<mojom::FulfillTrustTokenIssuanceRequestPtr> request_out_;
 };
 
 TEST(LocalTrustTokenOperationDelegateImpl, RelaysRequestAndAnswer) {

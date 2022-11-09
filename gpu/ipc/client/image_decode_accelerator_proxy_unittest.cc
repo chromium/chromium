@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/test/task_environment.h"
 #include "cc/paint/paint_image.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -46,13 +47,13 @@ class TestGpuChannelHost : public GpuChannelHost {
                            mojo::MessagePipeHandle(mojo::kInvalidHandleValue))),
         gpu_channel_(gpu_channel) {}
 
-  mojom::GpuChannel& GetGpuChannel() override { return gpu_channel_; }
+  mojom::GpuChannel& GetGpuChannel() override { return *gpu_channel_; }
 
  protected:
   ~TestGpuChannelHost() override = default;
 
  private:
-  mojom::GpuChannel& gpu_channel_;
+  const raw_ref<mojom::GpuChannel> gpu_channel_;
 };
 
 class ImageDecodeAcceleratorProxyTest : public ::testing::Test {

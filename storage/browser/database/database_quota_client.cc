@@ -56,7 +56,7 @@ void DatabaseQuotaClient::GetBucketUsage(const BucketLocator& bucket,
   }
 
   OriginInfo info;
-  if (db_tracker_.GetOriginInfo(
+  if (db_tracker_->GetOriginInfo(
           GetIdentifierFromOrigin(bucket.storage_key.origin()), &info)) {
     std::move(callback).Run(info.TotalSize());
   } else {
@@ -73,7 +73,7 @@ void DatabaseQuotaClient::GetStorageKeysForType(
 
   std::vector<StorageKey> all_storage_keys;
   std::vector<std::string> origin_identifiers;
-  if (db_tracker_.GetAllOriginIdentifiers(&origin_identifiers)) {
+  if (db_tracker_->GetAllOriginIdentifiers(&origin_identifiers)) {
     all_storage_keys.reserve(origin_identifiers.size());
     for (const auto& identifier : origin_identifiers)
       all_storage_keys.emplace_back(
@@ -95,7 +95,7 @@ void DatabaseQuotaClient::DeleteBucketData(const BucketLocator& bucket,
     return;
   }
 
-  db_tracker_.DeleteDataForOrigin(
+  db_tracker_->DeleteDataForOrigin(
       bucket.storage_key.origin(),
       base::BindOnce(
           [](DeleteBucketDataCallback callback, int result) {

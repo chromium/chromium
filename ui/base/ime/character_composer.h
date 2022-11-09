@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
@@ -125,7 +126,7 @@ class TreeComposeChecker : public ComposeChecker {
 
  private:
   bool Find(uint16_t index, uint16_t size, uint16_t key, uint16_t* value) const;
-  const CompositionData& data_;
+  const raw_ref<const CompositionData> data_;
 };
 
 }  // namespace ui

@@ -39,7 +39,7 @@ std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
       new_location + (screen_location() - location());
   JNIEnv* env = AttachCurrentThread();
   return std::make_unique<DragEventAndroid>(env, action_, new_location,
-                                            new_screen_location, mime_types_,
+                                            new_screen_location, *mime_types_,
                                             content_.obj());
 }
 

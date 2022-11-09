@@ -21,6 +21,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -228,12 +229,12 @@ class CopyOrMoveRecordAndSecurityDelegate : public CopyOrMoveHookDelegate {
     record.dest_url = dest_url;
     record.size = size;
     record.error = error;
-    records_.push_back(record);
+    records_->push_back(record);
   }
 
   // Raw ptr safe here, because the records will be destructed at end of test,
   // i.e., after the CopyOrMove operation has finished.
-  std::vector<ProgressRecord>& records_;
+  const raw_ref<std::vector<ProgressRecord>> records_;
 
   ShouldBlockCallback should_block_callback_;
 };

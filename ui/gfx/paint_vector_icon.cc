@@ -73,10 +73,10 @@ const VectorIconRep* GetRepForPxSize(const VectorIcon& icon, int icon_size_px) {
 
 struct CompareIconDescription {
   bool operator()(const IconDescription& a, const IconDescription& b) const {
-    const VectorIcon* a_icon = &a.icon;
-    const VectorIcon* b_icon = &b.icon;
-    const VectorIcon* a_badge = &a.badge_icon;
-    const VectorIcon* b_badge = &b.badge_icon;
+    const VectorIcon* a_icon = &*a.icon;
+    const VectorIcon* b_icon = &*b.icon;
+    const VectorIcon* a_badge = &*a.badge_icon;
+    const VectorIcon* b_badge = &*b.badge_icon;
     return std::tie(a_icon, a.dip_size, a.color, a_badge) <
            std::tie(b_icon, b.dip_size, b.color, b_badge);
   }
@@ -489,14 +489,14 @@ class VectorIconSource : public CanvasImageSource {
 
   // CanvasImageSource:
   bool HasRepresentationAtAllScales() const override {
-    return !data_.icon.is_empty();
+    return !data_.icon->is_empty();
   }
 
   void Draw(Canvas* canvas) override {
     if (path_.empty()) {
-      PaintVectorIcon(canvas, data_.icon, size_.width(), data_.color);
-      if (!data_.badge_icon.is_empty())
-        PaintVectorIcon(canvas, data_.badge_icon, size_.width(), data_.color);
+      PaintVectorIcon(canvas, *data_.icon, size_.width(), data_.color);
+      if (!data_.badge_icon->is_empty())
+        PaintVectorIcon(canvas, *data_.badge_icon, size_.width(), data_.color);
     } else {
       PaintPath(canvas, path_.data(), path_.size(), size_.width(), data_.color);
     }
@@ -574,7 +574,7 @@ void PaintVectorIcon(Canvas* canvas,
 }
 
 ImageSkia CreateVectorIcon(const IconDescription& params) {
-  if (params.icon.is_empty())
+  if (params.icon->is_empty())
     return ImageSkia();
 
   return g_icon_cache.Get().GetOrCreateIcon(params);

@@ -28,7 +28,7 @@ PaintRecorder::PaintRecorder(const PaintContext& context,
       local_list_(cache ? base::MakeRefCounted<cc::DisplayItemList>(
                               cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)
                         : nullptr),
-      record_canvas_(cache ? local_list_.get() : context_.list_.get(),
+      record_canvas_(cache ? local_list_.get() : context_->list_.get(),
                      gfx::RectToSkRect(gfx::Rect(recording_size))),
       canvas_(&record_canvas_, context.device_scale_factor_),
       cache_(cache),
@@ -36,14 +36,14 @@ PaintRecorder::PaintRecorder(const PaintContext& context,
   if (cache) {
     local_list_->StartPaint();
   } else {
-    context_.list_->StartPaint();
+    context_->list_->StartPaint();
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(!context_.inside_paint_recorder_);
-  context_.inside_paint_recorder_ = true;
+  DCHECK(!context_->inside_paint_recorder_);
+  context_->inside_paint_recorder_ = true;
 #endif
-  if (context_.is_pixel_canvas()) {
+  if (context_->is_pixel_canvas()) {
     canvas()->Save();
     canvas()->Scale(recording_scale_x, recording_scale_y);
   }
@@ -64,9 +64,9 @@ PaintRecorder::PaintRecorder(const PaintContext& context,
 
 PaintRecorder::~PaintRecorder() {
 #if DCHECK_IS_ON()
-  context_.inside_paint_recorder_ = false;
+  context_->inside_paint_recorder_ = false;
 #endif
-  if (context_.is_pixel_canvas())
+  if (context_->is_pixel_canvas())
     canvas()->Restore();
   // If using cache, append what we've saved there to the PaintContext.
   // Otherwise, the content is already stored in the PaintContext, and we can
@@ -75,11 +75,11 @@ PaintRecorder::~PaintRecorder() {
     local_list_->EndPaintOfUnpaired(gfx::Rect());
     local_list_->Finalize();
     cache_->SetPaintOpBuffer(local_list_->ReleaseAsRecord(),
-                             context_.device_scale_factor());
-    cache_->UseCache(context_, recording_size_);
+                             context_->device_scale_factor());
+    cache_->UseCache(*context_, recording_size_);
   } else {
-    gfx::Rect bounds_in_layer = context_.ToLayerSpaceBounds(recording_size_);
-    context_.list_->EndPaintOfUnpaired(bounds_in_layer);
+    gfx::Rect bounds_in_layer = context_->ToLayerSpaceBounds(recording_size_);
+    context_->list_->EndPaintOfUnpaired(bounds_in_layer);
   }
 }
 

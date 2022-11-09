@@ -6,6 +6,7 @@
 #define UI_BASE_DRAGDROP_DROP_TARGET_EVENT_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ref.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/event.h"
 
@@ -21,7 +22,7 @@ class COMPONENT_EXPORT(UI_BASE) DropTargetEvent : public LocatedEvent {
                   int source_operations);
   DropTargetEvent(const DropTargetEvent& other);
 
-  const OSExchangeData& data() const { return data_; }
+  const OSExchangeData& data() const { return *data_; }
   int source_operations() const { return source_operations_; }
 
   // Event:
@@ -29,7 +30,7 @@ class COMPONENT_EXPORT(UI_BASE) DropTargetEvent : public LocatedEvent {
 
  private:
   // Data associated with the drag/drop session.
-  const OSExchangeData& data_;
+  const raw_ref<const OSExchangeData> data_;
 
   // Bitmask of supported DragDropTypes::DragOperation by the source.
   int source_operations_;

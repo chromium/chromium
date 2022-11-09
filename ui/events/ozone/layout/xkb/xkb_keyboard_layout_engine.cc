@@ -757,8 +757,9 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
   if (dom_code == DomCode::NONE)
     return false;
   // Convert DOM physical key to XKB representation.
-  xkb_keycode_t xkb_keycode = key_code_converter_.DomCodeToXkbKeyCode(dom_code);
-  if (xkb_keycode == key_code_converter_.InvalidXkbKeyCode()) {
+  xkb_keycode_t xkb_keycode =
+      key_code_converter_->DomCodeToXkbKeyCode(dom_code);
+  if (xkb_keycode == key_code_converter_->InvalidXkbKeyCode()) {
     LOG(ERROR) << "No XKB keycode for DomCode 0x" << std::hex
                << static_cast<int>(dom_code) << " '"
                << KeycodeConverter::DomCodeToCodeString(dom_code) << "'";
