@@ -20,7 +20,7 @@ namespace ash {
 class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
  public:
   LoginErrorBubble();
-  explicit LoginErrorBubble(views::View* anchor_view);
+  explicit LoginErrorBubble(base::WeakPtr<views::View> anchor_view);
 
   LoginErrorBubble(const LoginErrorBubble&) = delete;
   LoginErrorBubble& operator=(const LoginErrorBubble&) = delete;

@@ -27,8 +27,8 @@ constexpr int kAlertIconSizeDp = 20;
 LoginErrorBubble::LoginErrorBubble()
     : LoginErrorBubble(nullptr /*anchor_view*/) {}
 
-LoginErrorBubble::LoginErrorBubble(views::View* anchor_view)
-    : LoginBaseBubbleView(anchor_view) {
+LoginErrorBubble::LoginErrorBubble(base::WeakPtr<views::View> anchor_view)
+    : LoginBaseBubbleView(std::move(anchor_view)) {
   alert_icon_ = AddChildView(std::make_unique<views::ImageView>());
   alert_icon_->SetPreferredSize(gfx::Size(kAlertIconSizeDp, kAlertIconSizeDp));
 }

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_button.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -35,8 +36,8 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
 
   // Without specifying a parent_window, the bubble will default to being in the
   // same container as anchor_view.
-  explicit LoginBaseBubbleView(views::View* anchor_view);
-  explicit LoginBaseBubbleView(views::View* anchor_view,
+  explicit LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view);
+  explicit LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
                                gfx::NativeView parent_window);
   ~LoginBaseBubbleView() override;
   LoginBaseBubbleView(const LoginBaseBubbleView&) = delete;
@@ -53,8 +54,7 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   // Change the persistence of the bubble.
   void set_persistent(bool is_persistent) { is_persistent_ = is_persistent; }
 
-  void SetAnchorView(views::View* anchor_view);
-  views::View* GetAnchorView() const { return anchor_view_; }
+  void SetAnchorView(base::WeakPtr<views::View> anchor_view);
 
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
@@ -86,6 +86,9 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   // Create a layer for this view if doesn't exist.
   void EnsureLayer();
 
+  // Returns the anchor view. May be `nullptr`.
+  views::View* GetAnchorView() const;
+
   // Return bounds of the anchors root view. This bounds excludes virtual
   // keyboard.
   gfx::Rect GetRootViewBounds() const;
@@ -96,7 +99,7 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   // Determine the position of the bubble prior to showing.
   virtual gfx::Point CalculatePosition();
 
-  views::View* anchor_view_;
+  base::WeakPtr<views::View> anchor_view_;
 
   std::unique_ptr<LoginBubbleHandler> bubble_handler_;
 

@@ -6,6 +6,7 @@
 #define ASH_LOGIN_UI_BOTTOM_STATUS_INDICATOR_H_
 
 #include "ash/style/ash_color_provider.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
@@ -16,7 +17,9 @@ struct VectorIcon;
 
 namespace ash {
 
-class BottomStatusIndicator : public views::LabelButton {
+class BottomStatusIndicator
+    : public views::LabelButton,
+      public base::SupportsWeakPtr<BottomStatusIndicator> {
  public:
   using TappedCallback = base::RepeatingClosure;
 

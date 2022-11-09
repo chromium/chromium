@@ -391,8 +391,9 @@ class LockContentsView::AuthErrorBubble : public LoginErrorBubble {
 
 class LockContentsView::ManagementBubble : public LoginTooltipView {
  public:
-  ManagementBubble(const std::u16string& message, views::View* anchor_view)
-      : LoginTooltipView(message, anchor_view) {
+  ManagementBubble(const std::u16string& message,
+                   base::WeakPtr<views::View> anchor_view)
+      : LoginTooltipView(message, std::move(anchor_view)) {
     views::BoxLayout* layout_manager =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
@@ -687,7 +688,9 @@ LockContentsView::LockContentsView(
       l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_ENTERPRISE_MANAGED_POP_UP,
                                  ui::GetChromeOSDeviceName(),
                                  base::UTF8ToUTF16(enterprise_domain_manager)),
-      bottom_status_indicator_));
+      bottom_status_indicator_ != nullptr
+          ? bottom_status_indicator_->AsWeakPtr()
+          : nullptr));
 
   warning_banner_bubble_ = AddChildView(std::make_unique<LoginErrorBubble>());
   warning_banner_bubble_->set_persistent(true);

@@ -41,7 +41,7 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
   };
 
   LoginRemoveAccountDialog(const LoginUserInfo& user,
-                           views::View* anchor_view,
+                           base::WeakPtr<views::View> anchor_view,
                            LoginButton* bubble_opener,
                            base::RepeatingClosure on_remove_user_warning_shown,
                            base::RepeatingClosure on_remove_user_requested);

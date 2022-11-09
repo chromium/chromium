@@ -209,7 +209,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
 
   // Provides the view that should be the anchor to message bubbles. Either the
   // password field, or the PIN field.
-  views::View* GetActiveInputView();
+  base::WeakPtr<views::View> GetActiveInputView();
   LoginPasswordView* password_view() { return password_view_; }
   LoginUserView* user_view() { return user_view_; }
 

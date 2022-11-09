@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/debug/dump_without_crashing.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -119,12 +120,12 @@ class LoginBubbleHandler : public ui::EventHandler {
   LoginBaseBubbleView* bubble_;
 };
 
-LoginBaseBubbleView::LoginBaseBubbleView(views::View* anchor_view)
-    : LoginBaseBubbleView(anchor_view, nullptr) {}
+LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view)
+    : LoginBaseBubbleView(std::move(anchor_view), nullptr) {}
 
-LoginBaseBubbleView::LoginBaseBubbleView(views::View* anchor_view,
+LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
                                          aura::Window* parent_window)
-    : anchor_view_(anchor_view),
+    : anchor_view_(std::move(anchor_view)),
       bubble_handler_(std::make_unique<LoginBubbleHandler>(this)) {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -176,8 +177,9 @@ LoginButton* LoginBaseBubbleView::GetBubbleOpener() const {
 }
 
 gfx::Point LoginBaseBubbleView::CalculatePosition() {
-  if (!GetAnchorView())
+  if (!GetAnchorView()) {
     return gfx::Point();
+  }
 
   // Views' positions are defined in the parents' coordinate system. Therefore,
   // the position of the bubble needs to be returned in its parent's coordinate
@@ -236,8 +238,9 @@ gfx::Point LoginBaseBubbleView::CalculatePosition() {
   return result;
 }
 
-void LoginBaseBubbleView::SetAnchorView(views::View* anchor_view) {
-  anchor_view_ = anchor_view;
+void LoginBaseBubbleView::SetAnchorView(
+    base::WeakPtr<views::View> anchor_view) {
+  anchor_view_ = std::move(anchor_view);
 }
 
 void LoginBaseBubbleView::OnLayerAnimationEnded(
@@ -298,11 +301,30 @@ gfx::Rect LoginBaseBubbleView::GetBoundsAvailableToShowBubble() const {
   return bounds;
 }
 
+views::View* LoginBaseBubbleView::GetAnchorView() const {
+  if (anchor_view_.WasInvalidated()) {
+    // TODO(crbug.com/1171827): This is to detect dangling anchor_view_
+    // pointers. This should not cause a crash, but is still indicative of UI
+    // bugs.
+    base::debug::DumpWithoutCrashing();
+    NOTREACHED();
+  }
+  return anchor_view_.get();
+}
+
 gfx::Rect LoginBaseBubbleView::GetRootViewBounds() const {
+  if (!GetAnchorView()) {
+    return gfx::Rect();
+  }
+
   return GetAnchorView()->GetWidget()->GetRootView()->GetLocalBounds();
 }
 
 gfx::Rect LoginBaseBubbleView::GetWorkArea() const {
+  if (!GetAnchorView()) {
+    return gfx::Rect();
+  }
+
   return display::Screen::GetScreen()
       ->GetDisplayNearestWindow(GetAnchorView()->GetWidget()->GetNativeWindow())
       .work_area();

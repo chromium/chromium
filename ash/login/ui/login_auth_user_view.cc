@@ -1669,11 +1669,11 @@ const LoginUserInfo& LoginAuthUserView::current_user() const {
   return user_view_->current_user();
 }
 
-views::View* LoginAuthUserView::GetActiveInputView() {
+base::WeakPtr<views::View> LoginAuthUserView::GetActiveInputView() {
   if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE)
-    return pin_input_view_;
+    return pin_input_view_ != nullptr ? pin_input_view_->AsWeakPtr() : nullptr;
 
-  return password_view_;
+  return password_view_ != nullptr ? password_view_->AsWeakPtr() : nullptr;
 }
 
 gfx::Size LoginAuthUserView::CalculatePreferredSize() const {

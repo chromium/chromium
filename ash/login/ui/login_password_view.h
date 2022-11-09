@@ -12,6 +12,7 @@
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "ash/login/ui/login_palette.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/button/button.h"
@@ -53,10 +54,12 @@ enum class EasyUnlockIconState;
 //
 //  1 2 3 4 5 6    (o)  (=>)
 //  ------------------
-class ASH_EXPORT LoginPasswordView : public views::View,
-                                     public views::TextfieldController,
-                                     public ImeControllerImpl::Observer,
-                                     public ui::ImplicitAnimationObserver {
+class ASH_EXPORT LoginPasswordView
+    : public views::View,
+      public views::TextfieldController,
+      public ImeControllerImpl::Observer,
+      public ui::ImplicitAnimationObserver,
+      public base::SupportsWeakPtr<LoginPasswordView> {
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {

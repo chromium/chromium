@@ -125,11 +125,11 @@ views::Label* LoginRemoveAccountDialog::TestApi::management_disclosure_label() {
 
 LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     const LoginUserInfo& user,
-    views::View* anchor_view,
+    base::WeakPtr<views::View> anchor_view,
     LoginButton* bubble_opener,
     base::RepeatingClosure on_remove_user_warning_shown,
     base::RepeatingClosure on_remove_user_requested)
-    : LoginBaseBubbleView(anchor_view),
+    : LoginBaseBubbleView(std::move(anchor_view)),
       bubble_opener_(bubble_opener),
       on_remove_user_warning_shown_(on_remove_user_warning_shown),
       on_remove_user_requested_(on_remove_user_requested) {

@@ -9,6 +9,7 @@
 #include "ash/login/ui/access_code_input.h"
 #include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -30,7 +31,9 @@ class LoginPinInput;
 // When the length changes (e.g.: selecting a user with a different pin length)
 // the internal view `code_input_` is destroyed and a new one is inserted.
 //
-class ASH_EXPORT LoginPinInputView : public views::View {
+class ASH_EXPORT LoginPinInputView
+    : public views::View,
+      public base::SupportsWeakPtr<LoginPinInputView> {
  public:
   using OnPinSubmit = base::RepeatingCallback<void(const std::u16string& pin)>;
   using OnPinChanged = base::RepeatingCallback<void(bool is_empty)>;

@@ -17,7 +17,8 @@ namespace ash {
 
 class LoginTooltipView : public LoginBaseBubbleView {
  public:
-  LoginTooltipView(const std::u16string& message, views::View* anchor_view);
+  LoginTooltipView(const std::u16string& message,
+                   base::WeakPtr<views::View> anchor_view);
 
   LoginTooltipView(const LoginTooltipView&) = delete;
   LoginTooltipView& operator=(const LoginTooltipView&) = delete;

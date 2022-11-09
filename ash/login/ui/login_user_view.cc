@@ -494,8 +494,9 @@ void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
   DeleteDialog();
 
   remove_account_dialog_ = new LoginRemoveAccountDialog(
-      current_user_, dropdown_ /*anchor_view*/, dropdown_ /*bubble_opener*/,
-      on_remove_warning_shown_, on_remove_);
+      current_user_,
+      dropdown_ != nullptr ? dropdown_->AsWeakPtr() : nullptr /*anchor_view*/,
+      dropdown_ /*bubble_opener*/, on_remove_warning_shown_, on_remove_);
   remove_account_dialog_->SetVisible(false);
 
   if (animate) {
