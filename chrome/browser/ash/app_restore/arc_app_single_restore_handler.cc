@@ -114,7 +114,7 @@ void ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp(
 
 bool ArcAppSingleRestoreHandler::IsAppPendingRestore(
     const std::string& app_id) const {
-  return app_id_ && app_id == app_id_.value();
+  return app_id_ && app_id == app_id_.value() && !is_cancelled_;
 }
 
 void ArcAppSingleRestoreHandler::OnShelfReady() {
@@ -128,7 +128,7 @@ void ArcAppSingleRestoreHandler::OnShelfReady() {
 void ArcAppSingleRestoreHandler::OnWindowCloseRequested(int window_id) {
   if (window_id != window_id_)
     return;
-  is_cancelled = true;
+  is_cancelled_ = true;
 }
 
 void ArcAppSingleRestoreHandler::OnAppStatesUpdate(const std::string& app_id,
@@ -138,7 +138,7 @@ void ArcAppSingleRestoreHandler::OnAppStatesUpdate(const std::string& app_id,
     return;
   // Update ARC app states immediately, since the app states may already
   // changed from original state.
-  if (!is_cancelled && ready && !need_fixup)
+  if (!is_cancelled_ && ready && !need_fixup)
     SendAppLaunchRequestToARC();
 }
 

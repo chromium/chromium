@@ -62,7 +62,7 @@ class ArcAppSingleRestoreHandler
 
   Profile* profile_;
   absl::optional<std::string> app_id_;
-  bool is_cancelled = false;
+  bool is_cancelled_ = false;
 
   int32_t event_flags_;
   int32_t window_id_;
