@@ -53,7 +53,7 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     sources += [
-      "app_browser_controller_browsertest.cc",
+      "app_browser_controller_browsertest_chromeos.cc",
       "web_app_guest_session_browsertest_chromeos.cc",
     ]
   }
