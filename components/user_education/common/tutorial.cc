@@ -132,6 +132,9 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
       interaction_sequence_step_builder =
           std::make_unique<ui::InteractionSequence::StepBuilder>();
 
+  interaction_sequence_step_builder->SetFindElementInAnyContext(
+      step_.in_any_context);
+
   if (step_.element_id)
     interaction_sequence_step_builder->SetElementID(step_.element_id);
 

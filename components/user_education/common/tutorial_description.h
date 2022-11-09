@@ -142,7 +142,8 @@ struct TutorialDescription {
          ui::CustomElementEventType event_type_ = ui::CustomElementEventType(),
          absl::optional<bool> must_remain_visible_ = absl::nullopt,
          bool transition_only_on_event_ = false,
-         NameElementsCallback name_elements_callback_ = NameElementsCallback());
+         NameElementsCallback name_elements_callback_ = NameElementsCallback(),
+         bool in_any_context = false);
     Step(const Step& other);
     Step& operator=(const Step& other);
     ~Step();
@@ -190,6 +191,9 @@ struct TutorialDescription {
     // the Interaction Sequence should continue or not. If false is returned
     // the tutorial will abort
     NameElementsCallback name_elements_callback;
+
+    // Search for element in any context
+    bool in_any_context = false;
 
     // returns true iff all of the required parameters exist to display a
     // bubble.
