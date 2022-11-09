@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -56,7 +57,7 @@ void LaunchAppWithParams(
       } else {
         apps::AppServiceProxyFactory::GetForProfile(profile)
             ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(params_copy));
+            ->LaunchAppWithParams(std::move(params_copy), base::DoNothing());
       }
     }
     return;
@@ -67,7 +68,7 @@ void LaunchAppWithParams(
   } else {
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params));
+        ->LaunchAppWithParams(std::move(params), base::DoNothing());
   }
 }
 

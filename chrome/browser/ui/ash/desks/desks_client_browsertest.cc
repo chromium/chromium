@@ -40,6 +40,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_test_helper.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
@@ -241,8 +242,13 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
   params.restore_id = app_type == ash::SystemWebAppType::SETTINGS
                           ? kSettingsWindowId
                           : kHelpWindowId;
+
+  base::RunLoop launch_wait;
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-      std::move(params));
+      std::move(params),
+      base::BindLambdaForTesting(
+          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
+  launch_wait.Run();
   return app_id;
 }
 
@@ -353,6 +359,32 @@ class MockDesksTemplatesAppLaunchHandler
               (override));
 };
 
+class BrowsersAddedObserver : public BrowserListObserver {
+ public:
+  explicit BrowsersAddedObserver(int num_browser_expected)
+      : num_browser_adds_left_(num_browser_expected) {
+    BrowserList::AddObserver(this);
+  }
+  BrowsersAddedObserver(const BrowsersAddedObserver&) = delete;
+  BrowsersAddedObserver& operator=(const BrowsersAddedObserver&) = delete;
+  ~BrowsersAddedObserver() override { BrowserList::RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    --num_browser_adds_left_;
+    if (num_browser_adds_left_ == 0)
+      run_loop_.Quit();
+  }
+
+  void OnBrowserRemoved(Browser* browser) override {}
+
+ private:
+  int num_browser_adds_left_;
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 // Scoped class that temporarily sets a new app launch handler for testing
@@ -411,7 +443,13 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
   }
 
   void LaunchTemplate(const base::GUID& uuid) {
-    DesksClient::Get()->LaunchDeskTemplate(uuid, base::DoNothing());
+    base::RunLoop waiter;
+    DesksClient::Get()->LaunchDeskTemplate(
+        uuid, base::BindLambdaForTesting(
+                  [&](std::string error, const base::GUID& desk_uuid) {
+                    waiter.Quit();
+                  }));
+    waiter.Run();
   }
 
   void SetAndLaunchTemplate(std::unique_ptr<ash::DeskTemplate> desk_template) {
@@ -817,7 +855,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   // Set the template we created as the template we want to launch.
+  BrowsersAddedObserver browsers_added(/*num_browser_expected=*/2);
   SetAndLaunchTemplate(std::move(desk_template));
+  browsers_added.Wait();
 
   // Verify that the settings window has been launched on the new desk (desk B).
   // TODO(sammiequon): Right now the app just launches, so verify the title
@@ -870,7 +910,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   // Set the template we created as the template we want to launch.
+  BrowsersAddedObserver browsers_added(/*num_browser_expected=*/1);
   SetAndLaunchTemplate(std::move(desk_template));
+  browsers_added.Wait();
 
   // We launch a new browser window, but not a new settings app. Verify that the
   // window has been moved to the right place and stacked at the bottom.
@@ -1611,8 +1653,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::WaitForOverviewEnterAnimation();
 
   ClickZeroStateTemplatesButton();
-  ClickFirstTemplateItem();
 
+  BrowsersAddedObserver browsers_added(/*num_browser_expected=*/3);
+  ClickFirstTemplateItem();
+  browsers_added.Wait();
+
+  settings_window = nullptr;
+  help_window = nullptr;
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     const std::u16string title = window->GetTitle();

@@ -433,9 +433,11 @@ void BackgroundModeManager::LaunchBackgroundApplication(
 #if !BUILDFLAG(IS_CHROMEOS)
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(CreateAppLaunchParamsUserContainer(
-          profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::LaunchSource::kFromBackgroundMode));
+      ->LaunchAppWithParams(
+          CreateAppLaunchParamsUserContainer(
+              profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              apps::LaunchSource::kFromBackgroundMode),
+          base::DoNothing());
 #else
   // background mode is not used in Chrome OS platform.
   // TODO(crbug.com/1291803): Remove the background mode manager from Chrome OS

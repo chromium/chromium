@@ -407,11 +407,12 @@ void AppServiceProxyBase::LaunchAppWithUrl(const std::string& app_id,
                                            int32_t event_flags,
                                            GURL url,
                                            LaunchSource launch_source,
-                                           WindowInfoPtr window_info) {
+                                           WindowInfoPtr window_info,
+                                           LaunchCallback callback) {
   LaunchAppWithIntent(
       app_id, event_flags,
       std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
-      launch_source, std::move(window_info), base::DoNothing());
+      launch_source, std::move(window_info), std::move(callback));
 }
 
 void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,

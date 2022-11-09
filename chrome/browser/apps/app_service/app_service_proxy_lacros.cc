@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
@@ -212,11 +213,13 @@ void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
                                              int32_t event_flags,
                                              GURL url,
                                              LaunchSource launch_source,
-                                             WindowInfoPtr window_info) {
+                                             WindowInfoPtr window_info,
+                                             LaunchCallback callback) {
   LaunchAppWithIntent(
       app_id, event_flags,
       std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
-      launch_source, std::move(window_info), base::DoNothing());
+      launch_source, std::move(window_info),
+      base::BindOnce(ConvertBoolToLaunchResult).Then(std::move(callback)));
 }
 
 void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,

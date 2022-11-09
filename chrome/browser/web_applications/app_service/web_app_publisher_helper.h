@@ -211,10 +211,11 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                 apps::IconEffects icon_effects,
                 LoadIconCallback callback);
 
-  content::WebContents* Launch(const std::string& app_id,
-                               int32_t event_flags,
-                               apps::LaunchSource launch_source,
-                               apps::WindowInfoPtr window_info);
+  void Launch(const std::string& app_id,
+              int32_t event_flags,
+              apps::LaunchSource launch_source,
+              apps::WindowInfoPtr window_info,
+              base::OnceCallback<void(content::WebContents*)> on_complete);
 
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
@@ -228,7 +229,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                            apps::WindowInfoPtr window_info,
                            apps::LaunchCallback callback);
 
-  content::WebContents* LaunchAppWithParams(apps::AppLaunchParams params);
+  void LaunchAppWithParams(
+      apps::AppLaunchParams params,
+      base::OnceCallback<void(content::WebContents*)> on_complete);
 
   void SetPermission(const std::string& app_id, apps::PermissionPtr permission);
 
@@ -265,10 +268,11 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   // The |app_id| represent the app that user selected, the |shortcut_id|
   // represents which shortcut item that user selected. The |display_id|
   // represent where to display the app.
-  content::WebContents* ExecuteContextMenuCommand(
+  void ExecuteContextMenuCommand(
       const std::string& app_id,
       const std::string& shortcut_id,
-      int64_t display_id);
+      int64_t display_id,
+      base::OnceCallback<void(content::WebContents*)> on_complete);
 
   // Checks that the user permits the app launch (possibly presenting a blocking
   // user choice dialog). Launches the app with read access to the files in

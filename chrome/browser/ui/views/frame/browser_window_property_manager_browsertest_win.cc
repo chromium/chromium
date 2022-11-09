@@ -11,8 +11,10 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/win/scoped_propvariant.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -203,12 +205,16 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
       LoadExtension(test_data_dir_.AppendASCII("app/"));
   EXPECT_TRUE(extension);
 
+  base::RunLoop done;
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::LaunchSource::kFromTest));
+      ->LaunchAppWithParams(
+          apps::AppLaunchParams(extension->id(),
+                                apps::LaunchContainer::kLaunchContainerWindow,
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                apps::LaunchSource::kFromTest),
+          base::IgnoreArgs<content::WebContents*>(done.QuitClosure()));
+  done.Run();
 
   // Check that the new browser has an app name.
   // The launch should have created a new browser.

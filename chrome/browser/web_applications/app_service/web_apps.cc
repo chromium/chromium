@@ -9,6 +9,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -125,7 +127,7 @@ void WebApps::Launch(const std::string& app_id,
                      apps::LaunchSource launch_source,
                      apps::WindowInfoPtr window_info) {
   publisher_helper().Launch(app_id, event_flags, launch_source,
-                            std::move(window_info));
+                            std::move(window_info), base::DoNothing());
 }
 
 void WebApps::LaunchAppWithFiles(const std::string& app_id,
@@ -149,15 +151,24 @@ void WebApps::LaunchAppWithIntent(const std::string& app_id,
 
 void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
                                   apps::LaunchCallback callback) {
-  publisher_helper().LaunchAppWithParams(std::move(params));
-  // TODO(crbug.com/1244506): Add launch return value.
-  std::move(callback).Run(apps::LaunchResult());
+  publisher_helper().LaunchAppWithParams(
+      std::move(params),
+      base::BindOnce(
+          [](apps::LaunchCallback callback,
+             content::WebContents* web_contents) {
+            apps::LaunchResult::State result = web_contents
+                                                   ? apps::LaunchResult::SUCCESS
+                                                   : apps::LaunchResult::FAILED;
+            std::move(callback).Run(apps::LaunchResult(result));
+          },
+          std::move(callback)));
 }
 
 void WebApps::LaunchShortcut(const std::string& app_id,
                              const std::string& shortcut_id,
                              int64_t display_id) {
-  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id);
+  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id,
+                                               base::DoNothing());
 }
 
 void WebApps::SetPermission(const std::string& app_id,
@@ -261,7 +272,7 @@ void WebApps::Launch(const std::string& app_id,
   publisher_helper().Launch(
       app_id, event_flags,
       apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
-      apps::ConvertMojomWindowInfoToWindowInfo(window_info));
+      apps::ConvertMojomWindowInfoToWindowInfo(window_info), base::DoNothing());
 }
 
 void WebApps::OpenNativeSettings(const std::string& app_id) {
@@ -521,7 +532,8 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
       return;
     }
   }
-  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id);
+  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id,
+                                               base::DoNothing());
 }
 
 #endif

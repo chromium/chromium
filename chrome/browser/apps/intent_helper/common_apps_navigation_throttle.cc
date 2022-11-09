@@ -4,13 +4,19 @@
 
 #include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
 
+#include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/values_equivalent.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -23,6 +29,8 @@
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -31,6 +39,8 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -246,12 +256,29 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   if (handle->IsInPrerenderedMainFrame())
     return true;
 
+  // Browser & profile keep-alives must be used to keep the browser & profile
+  // alive because the old window is required to be closed before the new app is
+  // launched, which will destroy the profile & browser if it is the last
+  // window.
+  // Why close the tab first? The way web contents currently work, closing a tab
+  // in a window will re-activate that window if there are more tabs there. So
+  // if we wait until after the launch completes to close the tab, then it will
+  // cause the old window to come to the front hiding the newly launched app
+  // window.
+  std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
   if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
       // After clicking a link in various apps (eg gchat), a blank redirect page
       // is left behind. Remove it to clean up. WasInitiatedByLinkClick()
       // returns false for links clicked from apps.
       !handle->WasInitiatedByLinkClick()) {
+    browser_keep_alive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::APP_LAUNCH, KeepAliveRestartOption::ENABLED);
+    if (!profile->IsOffTheRecord()) {
+      profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+          profile, ProfileKeepAliveOrigin::kAppWindow);
+    }
     web_contents->ClosePage();
   }
 
@@ -265,12 +292,21 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   // inactivated.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&AppServiceProxy::LaunchAppWithUrl, proxy->GetWeakPtr(),
-                     preferred_app_id.value(),
-                     GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                                   /*prefer_container=*/true),
-                     redirected_url, launch_source,
-                     std::make_unique<WindowInfo>(display::kDefaultDisplayId)));
+      base::BindOnce(
+          &AppServiceProxy::LaunchAppWithUrl, proxy->GetWeakPtr(),
+          preferred_app_id.value(),
+          GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                        /*prefer_container=*/true),
+          redirected_url, launch_source,
+          std::make_unique<WindowInfo>(display::kDefaultDisplayId),
+          base::BindOnce(
+              [](std::unique_ptr<ScopedKeepAlive> browser_keep_alive,
+                 std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+                 LaunchResult&&) {
+                // Note: This function currently only serves to own the "keep
+                // alive" objects until the launch is complete.
+              },
+              std::move(browser_keep_alive), std::move(profile_keep_alive))));
 
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
       GetMetricsPlatform(app_type));

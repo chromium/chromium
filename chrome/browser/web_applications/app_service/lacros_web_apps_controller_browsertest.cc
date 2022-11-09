@@ -653,8 +653,14 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
 
   auto id = *menu_items->items[5]->id;
 
-  lacros_web_apps_controller.ExecuteContextMenuCommand(app_id, id,
-                                                       base::DoNothing());
+  {
+    base::RunLoop loop;
+    lacros_web_apps_controller.ExecuteContextMenuCommand(
+        app_id, id,
+        base::BindLambdaForTesting(
+            [&](::crosapi::mojom::LaunchResultPtr) { loop.Quit(); }));
+    loop.Run();
+  }
 
   EXPECT_EQ(BrowserList::GetInstance()
                 ->GetLastActive()

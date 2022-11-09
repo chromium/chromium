@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "url/gurl.h"
@@ -124,10 +125,11 @@ BrowserAppLauncher::BrowserAppLauncher(Profile* profile)
 BrowserAppLauncher::~BrowserAppLauncher() = default;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
-    AppLaunchParams params) {
-  return LaunchAppWithParamsImpl(std::move(params), profile_,
-                                 &web_app_launch_manager_);
+void BrowserAppLauncher::LaunchAppWithParams(
+    AppLaunchParams params,
+    base::OnceCallback<void(content::WebContents*)> callback) {
+  std::move(callback).Run(LaunchAppWithParamsImpl(std::move(params), profile_,
+                                                  &web_app_launch_manager_));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

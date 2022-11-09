@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -945,18 +946,21 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
                      icon_effects, std::move(callback));
 }
 
-content::WebContents* WebAppPublisherHelper::Launch(
+void WebAppPublisherHelper::Launch(
     const std::string& app_id,
     int32_t event_flags,
     apps::LaunchSource launch_source,
-    apps::WindowInfoPtr window_info) {
+    apps::WindowInfoPtr window_info,
+    base::OnceCallback<void(content::WebContents*)> on_complete) {
   if (IsShuttingDown()) {
-    return nullptr;
+    std::move(on_complete).Run(nullptr);
+    return;
   }
 
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
-    return nullptr;
+    std::move(on_complete).Run(nullptr);
+    return;
   }
 
   switch (launch_source) {
@@ -1015,7 +1019,7 @@ content::WebContents* WebAppPublisherHelper::Launch(
       ConvertDisplayModeToAppLaunchContainer(display_mode));
 
   // The app will be launched for the currently active profile.
-  return LaunchAppWithParams(std::move(params));
+  LaunchAppWithParams(std::move(params), std::move(on_complete));
 }
 
 void WebAppPublisherHelper::LaunchAppWithFiles(
@@ -1094,17 +1098,20 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
           std::move(callback), launch_source));
 }
 
-content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
-    apps::AppLaunchParams params) {
+void WebAppPublisherHelper::LaunchAppWithParams(
+    apps::AppLaunchParams params,
+    base::OnceCallback<void(content::WebContents*)> on_complete) {
   if (IsShuttingDown()) {
-    return nullptr;
+    std::move(on_complete).Run(nullptr);
+    return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Terminal SWA has custom launch code and manages its own restore data.
   if (params.app_id == guest_os::kTerminalSystemAppId) {
     guest_os::LaunchTerminalHome(profile_, params.display_id);
-    return nullptr;
+    std::move(on_complete).Run(nullptr);
+    return;
   }
 
   apps::AppLaunchParams params_for_restore(
@@ -1154,7 +1161,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
   }
 #endif
 
-  return web_contents;
+  std::move(on_complete).Run(web_contents);
 }
 
 void WebAppPublisherHelper::SetPermission(const std::string& app_id,
@@ -1337,13 +1344,15 @@ void WebAppPublisherHelper::StoreShortcutId(
   shortcut_id_map_.emplace(shortcut_id, std::move(menu_item_info));
 }
 
-content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
+void WebAppPublisherHelper::ExecuteContextMenuCommand(
     const std::string& app_id,
     const std::string& shortcut_id,
-    int64_t display_id) {
+    int64_t display_id,
+    base::OnceCallback<void(content::WebContents*)> on_complete) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
-    return nullptr;
+    std::move(on_complete).Run(nullptr);
+    return;
   }
 
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
@@ -1358,7 +1367,7 @@ content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
     params.override_url = menu_item->second.url;
   }
 
-  return LaunchAppWithParams(std::move(params));
+  LaunchAppWithParams(std::move(params), std::move(on_complete));
 }
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
@@ -1732,7 +1741,15 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     return;
   }
 
-  std::move(callback).Run({LaunchAppWithParams(std::move(params))});
+  LaunchAppWithParams(
+      std::move(params),
+      base::BindOnce(
+          [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+                 callback,
+             content::WebContents* contents) {
+            std::move(callback).Run({contents});
+          },
+          std::move(callback)));
 }
 
 std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
@@ -1957,19 +1974,28 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
   // system apps.
   const WebApp* web_app = GetWebApp(params.app_id);
   bool can_multilaunch = !(web_app && web_app->IsSystemApp());
-  std::vector<content::WebContents*> web_contentses;
+
+  size_t num_launches = 1;
+  WebAppFileHandlerManager::LaunchInfos file_launch_infos;
   if (can_multilaunch) {
-    WebAppFileHandlerManager::LaunchInfos file_launch_infos =
+    file_launch_infos =
         provider_->os_integration_manager()
             .file_handler_manager()
             .GetMatchingFileHandlerUrls(app_id, params.launch_files);
+    num_launches = file_launch_infos.size();
+  }
+
+  auto launch_complete_barrier = base::BarrierCallback<content::WebContents*>(
+      num_launches, std::move(callback));
+
+  if (can_multilaunch) {
     for (const auto& [url, files] : file_launch_infos) {
       apps::AppLaunchParams params_for_file_launch(
           app_id, params.container, params.disposition, params.launch_source,
           params.display_id, files, nullptr);
       params_for_file_launch.override_url = url;
-      web_contentses.push_back(
-          LaunchAppWithParams(std::move(params_for_file_launch)));
+      LaunchAppWithParams(std::move(params_for_file_launch),
+                          launch_complete_barrier);
     }
   } else {
     apps::AppLaunchParams params_for_file_launch(
@@ -1982,10 +2008,9 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
     if (params.intent) {
       params_for_file_launch.override_url = GURL(*params.intent->activity_name);
     }
-    web_contentses.push_back(
-        LaunchAppWithParams(std::move(params_for_file_launch)));
+    LaunchAppWithParams(std::move(params_for_file_launch),
+                        launch_complete_barrier);
   }
-  std::move(callback).Run(web_contentses);
 }
 
 }  // namespace web_app

@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -882,15 +883,21 @@ void AppLauncherHandler::LaunchApp(
     params.override_url = override_url;
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params));
+        ->LaunchAppWithParams(std::move(params), base::DoNothing());
   } else {
     // To give a more "launchy" experience when using the NTP launcher, we close
-    // it automatically.
+    // it automatically. However, if the chrome://apps page is the LAST page in
+    // the browser window, then we don't close it.
     Browser* browser =
         chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+    base::WeakPtr<Browser> browser_ptr;
     WebContents* old_contents = nullptr;
-    if (browser)
+    base::WeakPtr<WebContents> old_contents_ptr;
+    if (browser) {
+      browser_ptr = browser->AsWeakPtr();
       old_contents = browser->tab_strip_model()->GetActiveWebContents();
+      old_contents_ptr = old_contents->GetWeakPtr();
+    }
 
     apps::AppLaunchParams params(
         extension_id, launch_container,
@@ -898,16 +905,26 @@ void AppLauncherHandler::LaunchApp(
                      : WindowOpenDisposition::NEW_FOREGROUND_TAB,
         apps::LaunchSource::kFromNewTabPage);
     params.override_url = override_url;
-    WebContents* new_contents =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(params));
-
-    // This will also destroy the handler, so do not perform any actions after.
-    if (new_contents != old_contents && browser &&
-        browser->tab_strip_model()->count() > 1) {
-      chrome::CloseWebContents(browser, old_contents, true);
-    }
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->BrowserAppLauncher()
+        ->LaunchAppWithParams(
+            std::move(params),
+            base::BindOnce(
+                [](base::WeakPtr<Browser> apps_page_browser,
+                   base::WeakPtr<WebContents> old_contents,
+                   content::WebContents* new_web_contents) {
+                  if (!apps_page_browser || !old_contents)
+                    return;
+                  if (new_web_contents != old_contents.get() &&
+                      apps_page_browser->tab_strip_model()->count() > 1) {
+                    // This will also destroy the handler, so do not perform
+                    // any actions after.
+                    chrome::CloseWebContents(apps_page_browser.get(),
+                                             old_contents.get(),
+                                             /*add_to_history=*/true);
+                  }
+                },
+                browser_ptr, old_contents_ptr));
   }
 }
 

@@ -180,7 +180,8 @@ class AppServiceProxyBase : public KeyedService,
                         int32_t event_flags,
                         GURL url,
                         LaunchSource launch_source,
-                        WindowInfoPtr window_info = nullptr);
+                        WindowInfoPtr window_info = nullptr,
+                        LaunchCallback callback = base::DoNothing());
 
   // Launches an app for the given |params.app_id|. The |params| can also
   // contain other param such as launch container, window diposition, etc.

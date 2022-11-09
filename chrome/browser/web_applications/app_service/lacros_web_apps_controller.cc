@@ -230,10 +230,17 @@ void LacrosWebAppsController::ExecuteContextMenuCommandInternal(
     const std::string& app_id,
     const std::string& id,
     CommandFinishedCallback callback) {
-  content::WebContents* web_contents =
-      publisher_helper().ExecuteContextMenuCommand(app_id, id,
-                                                   display::kDefaultDisplayId);
-  std::move(callback).Run({web_contents});
+  // CommandFinishedCallback needs a vector, so this lambda is an adapter to
+  // transform a single WebContents into a vector.
+  publisher_helper().ExecuteContextMenuCommand(
+      app_id, id, display::kDefaultDisplayId,
+      base::BindOnce(
+          [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+                 callback,
+             content::WebContents* contents) {
+            std::move(callback).Run({contents});
+          },
+          std::move(callback)));
 }
 
 void LacrosWebAppsController::StopApp(const std::string& app_id) {
@@ -292,9 +299,17 @@ void LacrosWebAppsController::LaunchInternal(const std::string& app_id,
     return;
   }
 
-  content::WebContents* web_contents =
-      publisher_helper().LaunchAppWithParams(std::move(params));
-  std::move(callback).Run({web_contents});
+  // CommandFinishedCallback needs a vector, so this lambda is an adapter to
+  // transform a single WebContents into a vector.
+  publisher_helper().LaunchAppWithParams(
+      std::move(params),
+      base::BindOnce(
+          [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+                 callback,
+             content::WebContents* contents) {
+            std::move(callback).Run({contents});
+          },
+          std::move(callback)));
 }
 
 void LacrosWebAppsController::ReturnLaunchResults(
