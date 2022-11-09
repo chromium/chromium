@@ -60,7 +60,7 @@ sync_pb::EncryptedData MakeEncryptedData(
   const std::string unencrypted = "test";
   sync_pb::EncryptedData encrypted;
   encrypted.set_key_name(nigori_name);
-  EXPECT_TRUE(nigori->Encrypt(unencrypted, encrypted.mutable_blob()));
+  encrypted.set_blob(nigori->Encrypt(unencrypted));
   return encrypted;
 }
 

@@ -60,9 +60,8 @@ class Nigori {
   // Base64 encoded.
   bool Permute(Type type, const std::string& name, std::string* permuted) const;
 
-  // Encrypts |value|. Note that on success, |encrypted| will be Base64
-  // encoded.
-  bool Encrypt(const std::string& value, std::string* encrypted) const;
+  // Encrypts |value|. Note that the returned value is Base64 encoded.
+  std::string Encrypt(const std::string& value) const;
 
   // Decrypts |value| into |decrypted|. It is assumed that |value| is Base64
   // encoded.
