@@ -29878,6 +29878,13 @@ Called by update_document_policy_enum.py.-->
              protection keychain"/>
 </enum>
 
+<enum name="DTSynchronizationError">
+  <int value="0" label="Missing Key Pair"/>
+  <int value="1" label="Invalid DM Token"/>
+  <int value="2" label="Invalid Server URL"/>
+  <int value="3" label="Cannot Build Request"/>
+</enum>
+
 <enum name="DumpOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

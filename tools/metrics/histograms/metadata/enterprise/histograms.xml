@@ -1002,6 +1002,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.SyncSigningKey.ClientError"
+    enum="DTSynchronizationError" expires_after="2023-07-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures any client-side errors that caused a key synchronization flow to
+    fail.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.SyncSigningKey.UploadCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    HTTP status code of the key upload request recorded when a device issues a
+    key synchronization request.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.ActiveFileEventsCount" units="entries"
     expires_after="2023-06-01">
   <owner>accorsi@google.com</owner>

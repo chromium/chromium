@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -24,8 +25,12 @@ class DeviceManagementService;
 
 namespace enterprise_connectors {
 
+class SigningKeyPair;
+
 class KeyRotationLauncher {
  public:
+  using SynchronizationCallback = base::OnceCallback<void(absl::optional<int>)>;
+
   static std::unique_ptr<KeyRotationLauncher> Create(
       policy::BrowserDMTokenStorage* dm_token_storage,
       policy::DeviceManagementService* device_management_service,
@@ -38,6 +43,11 @@ class KeyRotationLauncher {
   // rotation command.
   virtual void LaunchKeyRotation(const std::string& nonce,
                                  KeyRotationCommand::Callback callback) = 0;
+
+  // Verifies if `key_pair`'s public key is known by the management server.
+  // Invokes `callback` with the upload code if a request was made.
+  virtual void SynchronizePublicKey(const SigningKeyPair& key_pair,
+                                    SynchronizationCallback callback) = 0;
 };
 
 }  // namespace enterprise_connectors

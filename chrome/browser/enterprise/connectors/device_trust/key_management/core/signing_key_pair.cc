@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 
-#include "base/check.h"
-
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
 namespace enterprise_connectors {
@@ -13,9 +11,7 @@ namespace enterprise_connectors {
 SigningKeyPair::SigningKeyPair(
     std::unique_ptr<crypto::UnexportableSigningKey> signing_key,
     KeyTrustLevel trust_level)
-    : signing_key_(std::move(signing_key)), trust_level_(trust_level) {
-  DCHECK(signing_key_);
-}
+    : signing_key_(std::move(signing_key)), trust_level_(trust_level) {}
 
 SigningKeyPair::~SigningKeyPair() = default;
 

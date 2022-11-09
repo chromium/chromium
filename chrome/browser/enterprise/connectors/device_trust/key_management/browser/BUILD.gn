@@ -20,6 +20,7 @@ source_set("browser") {
   public_deps = [
     "//base",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
     "//components/enterprise",
     "//third_party/abseil-cpp:absl",
   ]
@@ -50,6 +51,7 @@ source_set("test_support") {
 
   public_deps = [
     ":browser",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//components/enterprise",
     "//components/policy/proto",
     "//testing/gmock",
@@ -63,10 +65,11 @@ source_set("unit_tests") {
     "key_rotation_launcher_unittest.cc",
   ]
 
-  public_deps = [
+  deps = [
     ":browser",
     ":test_support",
     "//base/test:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",

@@ -6,11 +6,13 @@ source_set("network") {
   public = [
     "key_network_delegate.h",
     "key_upload_request.h",
+    "mojo_key_network_delegate.h",
     "util.h",
   ]
 
   sources = [
     "key_upload_request.cc",
+    "mojo_key_network_delegate.cc",
     "util.cc",
   ]
 
@@ -21,9 +23,15 @@ source_set("network") {
 
   deps = [
     "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//components/policy/proto",
     "//crypto",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
   ]
 
   if (is_win) {
@@ -36,21 +44,6 @@ source_set("network") {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher",
       "//net",
-      "//url",
-    ]
-  }
-
-  if (is_linux || is_mac) {
-    public += [ "mojo_key_network_delegate.h" ]
-
-    sources += [ "mojo_key_network_delegate.cc" ]
-
-    deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/common",
-      "//mojo/public/cpp/bindings",
-      "//mojo/public/cpp/platform",
-      "//services/network/public/cpp",
-      "//services/network/public/mojom",
       "//url",
     ]
   }
@@ -71,34 +64,22 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  sources = [ "mojo_key_network_delegate_unittest.cc" ]
+
+  deps = [
+    ":network",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
 
   if (is_win) {
-    sources = [ "win_key_network_delegate_unittest.cc" ]
+    sources += [ "win_key_network_delegate_unittest.cc" ]
 
-    deps = [
-      ":network",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher:test_support",
-      "//net",
-      "//services/network:test_support",
-      "//testing/gtest",
-    ]
-  }
-
-  if (is_linux || is_mac) {
-    sources = [ "mojo_key_network_delegate_unittest.cc" ]
-
-    deps = [
-      ":network",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//mojo/public/cpp/bindings",
-      "//net",
-      "//services/network:test_support",
-      "//testing/gtest",
-    ]
+    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher:test_support" ]
   }
 }

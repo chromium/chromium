@@ -80,4 +80,10 @@ void LogKeyRotationResult(bool had_nonce, KeyRotationCommand::Status status) {
       ResultFromStatus(status));
 }
 
+void LogSynchronizationError(DTSynchronizationError error) {
+  static constexpr char kSynchronizationErrorHistogram[] =
+      "Enterprise.DeviceTrust.SyncSigningKey.ClientError";
+  base::UmaHistogramEnumeration(kSynchronizationErrorHistogram, error);
+}
+
 }  // namespace enterprise_connectors

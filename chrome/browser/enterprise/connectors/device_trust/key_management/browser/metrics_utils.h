@@ -43,6 +43,17 @@ enum class DTKeyRotationResult {
   kMaxValue = kFailedOSRestriction,
 };
 
+// Possible client errors that can happen during key synchronization.
+// Please update DTSynchronizationError enum in enums.xml when adding a new
+// value here.
+enum class DTSynchronizationError {
+  kMissingKeyPair = 0,
+  kInvalidDmToken = 1,
+  kInvalidServerUrl = 2,
+  kCannotBuildRequest = 3,
+  kMaxValue = kCannotBuildRequest
+};
+
 // Logs the `key_metadata` trust level and type. If it is not defined
 // (i.e. absl::nullopt), nothing is logged.
 void LogKeyLoadingResult(
@@ -51,6 +62,9 @@ void LogKeyLoadingResult(
 // Logs the key rotation result based on the value of `status`. Also, if
 // `had_nonce` is false, it will be logged as a key creation flow.
 void LogKeyRotationResult(bool had_nonce, KeyRotationCommand::Status status);
+
+// Logs the key synchronization `error`.
+void LogSynchronizationError(DTSynchronizationError error);
 
 }  // namespace enterprise_connectors
 
