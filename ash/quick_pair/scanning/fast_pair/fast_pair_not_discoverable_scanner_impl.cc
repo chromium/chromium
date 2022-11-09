@@ -246,18 +246,6 @@ void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
   device->set_account_key(metadata->account_key);
   device->set_version(metadata->device_metadata->InferFastPairVersion());
 
-  device::BluetoothDevice* classic_device =
-      device->classic_address()
-          ? adapter_->GetDevice(device->classic_address().value())
-          : nullptr;
-
-  if (classic_device && classic_device->IsPaired()) {
-    QP_LOG(ERROR) << __func__
-                  << ": A discoverable advertisement "
-                     "was notified for a paired classic device.";
-    return;
-  }
-
   device::BluetoothDevice* ble_device =
       adapter_->GetDevice(device->ble_address);
 
