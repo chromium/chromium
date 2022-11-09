@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -21,6 +22,12 @@
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
+
+bool LockScreenStartReauthUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return ash::ProfileHelper::IsLockScreenProfile(
+      Profile::FromBrowserContext(browser_context));
+}
 
 LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {

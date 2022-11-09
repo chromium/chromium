@@ -38,6 +38,12 @@
 
 namespace ash {
 
+bool LockScreenNetworkUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return ash::ProfileHelper::IsLockScreenProfile(
+      Profile::FromBrowserContext(browser_context));
+}
+
 // static
 base::Value::Dict LockScreenNetworkUI::GetLocalizedStrings() {
   base::Value::Dict localized_strings;

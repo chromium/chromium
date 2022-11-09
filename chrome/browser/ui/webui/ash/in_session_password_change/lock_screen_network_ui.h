@@ -7,12 +7,28 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_handler.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
+
+class LockScreenNetworkUI;
+
+// WebUIConfig for chrome://lock-network
+class LockScreenNetworkUIConfig
+    : public content::DefaultWebUIConfig<LockScreenNetworkUI> {
+ public:
+  LockScreenNetworkUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUILockScreenNetworkHost) {}
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // WebUI controller for chrome://lock-network dialog.
 class LockScreenNetworkUI : public ui::MojoWebDialogUI {

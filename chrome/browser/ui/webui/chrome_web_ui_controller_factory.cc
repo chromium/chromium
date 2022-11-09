@@ -945,18 +945,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == ash::kChromeUIOSFeedbackHost)
       return &NewWebUI<ash::OSFeedbackUI>;
   }
-  if (url.host_piece() == chrome::kChromeUILockScreenStartReauthHost) {
-    if (!ash::ProfileHelper::IsLockScreenProfile(profile)) {
-      return nullptr;
-    }
-    return &NewWebUI<ash::LockScreenStartReauthUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUILockScreenNetworkHost) {
-    if (!ash::ProfileHelper::IsLockScreenProfile(profile)) {
-      return nullptr;
-    }
-    return &NewWebUI<ash::LockScreenNetworkUI>;
-  }
   if (url.host_piece() == ash::kChromeUIFaceMLAppHost) {
     if (!ash::features::IsFaceMLSwaEnabled()) {
       return nullptr;

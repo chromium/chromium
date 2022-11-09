@@ -7,9 +7,25 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash {
+
+class LockScreenStartReauthUI;
+
+// WebUIConfig for chrome://lock-reauth
+class LockScreenStartReauthUIConfig
+    : public content::DefaultWebUIConfig<LockScreenStartReauthUI> {
+ public:
+  LockScreenStartReauthUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUILockScreenStartReauthHost) {}
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // For chrome:://lock-reauth
 class LockScreenStartReauthUI : public ui::WebDialogUI {
