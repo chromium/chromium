@@ -1076,6 +1076,8 @@ domain Browser
       durableStorage
       flash
       geolocation
+      idleDetection
+      localFonts
       midi
       midiSysex
       nfc
@@ -1084,11 +1086,12 @@ domain Browser
       periodicBackgroundSync
       protectedMediaIdentifier
       sensors
+      storageAccess
       videoCapture
       videoCapturePanTiltZoom
-      idleDetection
       wakeLockScreen
       wakeLockSystem
+      windowManagement
 
   experimental type PermissionSetting extends string
     enum

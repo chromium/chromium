@@ -212,6 +212,8 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::LOCAL_FONTS;
   } else if (name == "display-capture") {
     *permission_type = PermissionType::DISPLAY_CAPTURE;
+  } else if (name == "storage-access") {
+    *permission_type = PermissionType::STORAGE_ACCESS_GRANT;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);
@@ -271,8 +273,14 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::WAKE_LOCK_SYSTEM;
   } else if (type == protocol::Browser::PermissionTypeEnum::Nfc) {
     *out_type = PermissionType::NFC;
+  } else if (type == protocol::Browser::PermissionTypeEnum::WindowManagement) {
+    *out_type = PermissionType::WINDOW_MANAGEMENT;
+  } else if (type == protocol::Browser::PermissionTypeEnum::LocalFonts) {
+    *out_type = PermissionType::LOCAL_FONTS;
   } else if (type == protocol::Browser::PermissionTypeEnum::DisplayCapture) {
     *out_type = PermissionType::DISPLAY_CAPTURE;
+  } else if (type == protocol::Browser::PermissionTypeEnum::StorageAccess) {
+    *out_type = PermissionType::STORAGE_ACCESS_GRANT;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }
