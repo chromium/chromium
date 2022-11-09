@@ -377,6 +377,7 @@ void LocalBinaryUploadService::ProcessRequest(RequestKey key) {
   DVLOG(1) << "ProcessRequest key=" << key;
   DCHECK_GT(active_requests_.count(key), 0u);
   const auto& info = active_requests_.at(key);
+  info.request->StartRequest();
   info.request->GetRequestData(
       base::BindOnce(&LocalBinaryUploadService::DoLocalContentAnalysis,
                      factory_.GetWeakPtr(), key));

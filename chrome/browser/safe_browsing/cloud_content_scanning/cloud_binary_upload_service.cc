@@ -255,6 +255,7 @@ void CloudBinaryUploadService::UploadForDeepScanning(
 
   bool is_auth_request = request->IsAuthRequest();
   Request* raw_request = request.get();
+  raw_request->StartRequest();
   active_requests_[raw_request] = std::move(request);
   start_times_[raw_request] = base::TimeTicks::Now();
 

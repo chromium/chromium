@@ -104,6 +104,14 @@ BinaryUploadService::Request::Request(
     : content_analysis_callback_(std::move(callback)),
       cloud_or_local_settings_(std::move(settings)) {}
 
+BinaryUploadService::Request::Request(
+    ContentAnalysisCallback content_analysis_callback,
+    enterprise_connectors::CloudOrLocalAnalysisSettings settings,
+    Request::RequestStartCallback start_callback)
+    : content_analysis_callback_(std::move(content_analysis_callback)),
+      request_start_callback_(std::move(start_callback)),
+      cloud_or_local_settings_(std::move(settings)) {}
+
 BinaryUploadService::Request::~Request() = default;
 
 void BinaryUploadService::Request::set_per_profile_request(
@@ -249,6 +257,11 @@ GURL BinaryUploadService::Request::tab_url() const {
   if (!content_analysis_request_.has_request_data())
     return GURL();
   return GURL(content_analysis_request_.request_data().tab_url());
+}
+
+void BinaryUploadService::Request::StartRequest() {
+  if (!request_start_callback_.is_null())
+    std::move(request_start_callback_).Run(*this);
 }
 
 void BinaryUploadService::Request::FinishRequest(

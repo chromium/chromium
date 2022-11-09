@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_UPLOAD_SERVICE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_UPLOAD_SERVICE_H_
 
+#include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -63,7 +64,7 @@ class BinaryUploadService : public KeyedService {
   static std::string ResultToString(Result result);
 
   // Callbacks used to pass along the results of scanning. The response protos
-  // will only be populated if the result is SUCCESS.
+  // will only be populated if the result is SUCCESS. Will run on UI thread.
   using ContentAnalysisCallback =
       base::OnceCallback<void(Result,
                               enterprise_connectors::ContentAnalysisResponse)>;
@@ -74,8 +75,18 @@ class BinaryUploadService : public KeyedService {
   // page or string).
   class Request {
    public:
+    // RequestStartCallback: Optional callback, called on the UI thread before
+    // authentication attempts or upload. Useful for tracking individual
+    // uploads.
+    using RequestStartCallback = base::OnceCallback<void(const Request&)>;
+
     Request(ContentAnalysisCallback,
             enterprise_connectors::CloudOrLocalAnalysisSettings settings);
+    // Optional constructor which accepts RequestStartCallback. Will be called
+    // before request attempts upload.
+    Request(ContentAnalysisCallback,
+            enterprise_connectors::CloudOrLocalAnalysisSettings settings,
+            RequestStartCallback);
     virtual ~Request();
     Request(const Request&) = delete;
     Request& operator=(const Request&) = delete;
@@ -170,6 +181,9 @@ class BinaryUploadService : public KeyedService {
     uint64_t user_action_requests_count() const;
     GURL tab_url() const;
 
+    // Called when beginning to try upload.
+    void StartRequest();
+
     // Finish the request, with the given `result` and `response` from the
     // server.
     void FinishRequest(Result result,
@@ -188,6 +202,7 @@ class BinaryUploadService : public KeyedService {
    private:
     enterprise_connectors::ContentAnalysisRequest content_analysis_request_;
     ContentAnalysisCallback content_analysis_callback_;
+    RequestStartCallback request_start_callback_;
 
     // Settings used to determine how the request is used in the cloud or
     // locally.
