@@ -409,6 +409,8 @@ WebContentRunner::WebInstanceConfig CastRunner::GetCommonWebInstanceConfig() {
   constexpr char const* kSwitchesToCopy[] = {
       // Must match the value in `content/public/common/content_switches.cc`.
       "enable-logging",
+      // Must match the value in `ui/ozone/public/ozone_switches.cc`.
+      "ozone-platform",
   };
   config.extra_args.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                      kSwitchesToCopy,

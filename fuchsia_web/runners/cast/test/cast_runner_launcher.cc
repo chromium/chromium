@@ -47,8 +47,11 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
   static constexpr char kCastRunnerService[] = "cast_runner";
   realm_builder.AddChild(kCastRunnerService, "#meta/cast_runner.cm");
 
-  AppendCommandLineArguments(realm_builder, kCastRunnerService,
-                             CommandLineFromFeatures(runner_features_));
+  base::CommandLine command_line = CommandLineFromFeatures(runner_features_);
+  constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
+  command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
+                                kSwitchesToCopy, std::size(kSwitchesToCopy));
+  AppendCommandLineArguments(realm_builder, kCastRunnerService, command_line);
 
   // Run the fake fuchsia.feedback service; plumbing its protocols to
   // cast_runner.

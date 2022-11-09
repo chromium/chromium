@@ -8,6 +8,7 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
@@ -35,6 +36,13 @@ class WebRunnerSmokeTest : public testing::Test {
   WebRunnerSmokeTest& operator=(const WebRunnerSmokeTest&) = delete;
 
   void SetUp() final {
+    // TODO(crbug.com/1309100) Update WebRunner to support headless mode.
+    if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            "ozone-platform") == "headless") {
+      GTEST_SKIP() << "Headless mode is not supported in WebRunner. "
+                      "Skipping the test.";
+    }
+
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &WebRunnerSmokeTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
@@ -147,14 +155,7 @@ class WebRunnerSmokeTest : public testing::Test {
 };
 
 // Verify that the Component loads and fetches the desired page.
-// TODO(https://crbug.com/1073823): Flakes due to raciness between test
-// completion and GPU process failure on bots which lack GPU emulation.
-#if defined(ARCH_CPU_ARM64)
-#define MAYBE_RequestHtmlAndImage DISABLED_RequestHtmlAndImage
-#else
-#define MAYBE_RequestHtmlAndImage RequestHtmlAndImage
-#endif
-TEST_F(WebRunnerSmokeTest, MAYBE_RequestHtmlAndImage) {
+TEST_F(WebRunnerSmokeTest, RequestHtmlAndImage) {
   fuchsia::sys::LaunchInfo launch_info = LaunchInfoWithServices();
   launch_info.url = test_server_.GetURL("/test.html").spec();
 

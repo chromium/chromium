@@ -245,9 +245,10 @@ def main():
     # TODO(crbug.com/1261646) Remove once Vulkan is enabled by default.
     child_args.append('--use-vulkan=native')
   else:
-    # Use swiftshader on arm64 by default because arm64 bots currently
+    # Use swiftshader on arm64 by default because most arm64 bots currently
     # don't support Vulkan emulation.
     child_args.append('--use-vulkan=swiftshader')
+    child_args.append('--ozone-platform=headless')
 
   try:
     with GetDeploymentTargetForArgs(args) as target, \

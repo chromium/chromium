@@ -33,8 +33,13 @@ constexpr char kTestNameSwitch[] = "test-name";
 fidl::InterfaceHandle<fuchsia::io::Directory> StartWebEngineForTestsInternal(
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         component_controller_request,
-    const base::CommandLine& command_line) {
-  DCHECK(command_line.argv()[0].empty()) << "Must use NO_PROGRAM.";
+    const base::CommandLine& base_command_line) {
+  DCHECK(base_command_line.argv()[0].empty()) << "Must use NO_PROGRAM.";
+
+  base::CommandLine command_line = base_command_line;
+  constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
+  command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
+                                kSwitchesToCopy, std::size(kSwitchesToCopy));
 
   fuchsia::sys::LaunchInfo launch_info;
   launch_info.url =

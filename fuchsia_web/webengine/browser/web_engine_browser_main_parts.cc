@@ -160,10 +160,6 @@ void MaybeSetOzonePlatformArg(base::CommandLine* launch_args) {
   if (launch_args->HasSwitch(switches::kOzonePlatform))
     return;
 
-// TODO(crbug.com/1309100): Emulator on ARM hangs at the Scenic call because
-// there is no GPU emulation. We should add HEADLESS to those test
-// configurations and remove this.
-#if !defined(ARCH_CPU_ARM64)
   fuchsia::ui::scenic::ScenicSyncPtr scenic;
   zx_status_t status =
       base::ComponentContextForProcess()->svc()->Connect(scenic.NewRequest());
@@ -174,7 +170,6 @@ void MaybeSetOzonePlatformArg(base::CommandLine* launch_args) {
   ZX_CHECK(status == ZX_OK, status) << "UsesFlatland()";
   launch_args->AppendSwitchNative(switches::kOzonePlatform,
                                   scenic_uses_flatland ? "flatland" : "scenic");
-#endif
 }
 
 }  // namespace
