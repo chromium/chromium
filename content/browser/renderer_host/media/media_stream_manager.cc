@@ -966,6 +966,15 @@ class MediaStreamManager::DeviceRequest {
 
   void SetLabel(const std::string& label) { label_ = label; }
 
+  void DisableAudioSharing() {
+    SetAudioType(MediaStreamType::NO_SERVICE);
+    stream_controls_.audio.stream_type = MediaStreamType::NO_SERVICE;
+    stream_controls_.hotword_enabled = false;
+    stream_controls_.disable_local_echo = false;
+    stream_controls_.suppress_local_audio_playback = false;
+    stream_controls_.exclude_system_audio = false;
+  }
+
   // The render process id that requested this stream to be generated and that
   // will receive a handle to the MediaStream. This may be different from
   // MediaStreamRequest::render_process_id which in the tab capture case
@@ -1085,7 +1094,7 @@ class MediaStreamManager::DeviceRequest {
   // |MediaStreamType| type.
   std::vector<TransferMap> transfer_status_map_;
   MediaStreamRequestType request_type_;
-  const StreamControls stream_controls_;
+  StreamControls stream_controls_;
   MediaStreamType audio_type_;
   MediaStreamType video_type_;
   int target_process_id_;
@@ -3182,6 +3191,14 @@ void MediaStreamManager::HandleAccessRequestResponse(
                              label.c_str(), device.id.c_str(),
                              device.session_id().ToString().c_str()));
     }
+  }
+
+  // If the user does not choose to share audio, the audio device is not
+  // added. In this case the audio type needs to be set to NO_SERVICE so that no
+  // audio device is added if a change-source is requested (i.e., if the
+  // share-this-tab-instead button is clicked). (Resolves crbug.com/1378910)
+  if (!found_audio) {
+    request->DisableAudioSharing();
   }
 
   // Check whether we've received all stream types requested.

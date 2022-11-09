@@ -150,6 +150,7 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   void SetAvailableDevices(const blink::MediaStreamDevices& devices);
   void SetMicAccess(bool access);
   void SetCameraAccess(bool access);
+  void SetAudioShare(bool audio_share);
 
   // MediaStreamUIProxy overrides.
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request,
@@ -175,8 +176,9 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   blink::MediaStreamDevices devices_;
 
   // These are used for CheckAccess().
-  bool mic_access_;
-  bool camera_access_;
+  bool mic_access_ = true;
+  bool camera_access_ = true;
+  bool audio_share_ = true;
 };
 
 }  // namespace content

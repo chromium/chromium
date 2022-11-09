@@ -138,6 +138,16 @@
       returnToTest("ended");
     }
   }
+
+  function stopAllTracks() {
+    if (audio_track) {
+      audio_track.stop();
+    }
+    if (video_track) {
+      video_track.stop();
+    }
+    returnToTest("stopped");
+  }
   </script>
 </head>
 <body>

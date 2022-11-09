@@ -160,6 +160,13 @@ void RunGetDisplayMedia(content::WebContents* tab,
                                              : "expected-error");
 }
 
+void StopAllTracks(content::WebContents* tab) {
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "stopAllTracks();", &result));
+  EXPECT_EQ(result, "stopped");
+}
+
 void UpdateWebContentsTitle(content::WebContents* contents,
                             const std::u16string& title) {
   content::NavigationEntry* entry =
@@ -1223,6 +1230,36 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
           url_formatter::FormatOriginForSecurityDisplay(
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+}
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
+                       ChangeSourceThenStopTracksRemovesIndicators) {
+  if (!ShouldShowShareThisTabInsteadButton()) {
+    GTEST_SKIP();
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  RunGetDisplayMedia(capturing_tab, GetConstraints(), /*is_fake_ui=*/false,
+                     /*expect_success=*/true,
+                     /*is_tab_capture=*/true);
+
+  // Click the secondary button, i.e., the "Share this tab instead" button
+  GetDelegate(other_tab)->Cancel();
+
+  // Wait until the capture of the other tab has started.
+  while (!other_tab->IsBeingCaptured()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  ASSERT_EQ(GetInfoBarManager(capturing_tab)->infobar_count(), 1u);
+  StopAllTracks(capturing_tab);
+  do {
+    base::RunLoop().RunUntilIdle();
+  } while (GetInfoBarManager(capturing_tab)->infobar_count() > 0u);
 }
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,

@@ -59,6 +59,7 @@
 #include "media/audio/fake_audio_manager.h"
 #endif
 
+using blink::mojom::MediaStreamType;
 using blink::mojom::StreamSelectionInfo;
 using blink::mojom::StreamSelectionInfoPtr;
 using blink::mojom::StreamSelectionStrategy;
@@ -352,18 +353,24 @@ class MediaStreamManagerTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void RequestAndStopGetDisplayMedia(bool request_audio) {
-    media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
-      return std::make_unique<FakeMediaStreamUIProxy>(
-          true
-          /*tests_use_fake_render_frame_hosts=*/);
-    }));
+  void RequestAndStopGetDisplayMedia(bool app_requested_audio,
+                                     bool user_shared_audio) {
+    DCHECK(app_requested_audio || !user_shared_audio);
+    media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating(
+        [](bool user_shared_audio) {
+          auto fake_ui = std::make_unique<FakeMediaStreamUIProxy>(
+              /*tests_use_fake_render_frame_hosts=*/true);
+          fake_ui->SetAudioShare(user_shared_audio);
+          return std::unique_ptr<FakeMediaStreamUIProxy>(std::move(fake_ui));
+        },
+        user_shared_audio));
 
-    blink::StreamControls controls(request_audio /* request_audio */,
-                                   true /* request_video */);
+    blink::StreamControls controls(
+        app_requested_audio /* app_requested_audio */,
+        true /* request_video */);
     controls.video.stream_type =
         blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
-    if (request_audio)
+    if (app_requested_audio)
       controls.audio.stream_type =
           blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
     const int render_process_id = 1;
@@ -374,8 +381,9 @@ class MediaStreamManagerTest : public ::testing::Test {
     blink::MediaStreamDevice video_device;
     blink::MediaStreamDevice audio_device;
     MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
-        base::BindOnce(GenerateStreamsCallback, &run_loop_, request_audio,
-                       true /* request_video */, &audio_device, &video_device);
+        base::BindOnce(GenerateStreamsCallback, &run_loop_, app_requested_audio,
+                       /*requst_video=*/true, &audio_device, &video_device,
+                       user_shared_audio);
     base::MockCallback<MediaStreamManager::DeviceStoppedCallback>
         stopped_callback;
     MediaStreamManager::DeviceChangedCallback changed_callback;
@@ -384,22 +392,33 @@ class MediaStreamManagerTest : public ::testing::Test {
     MediaStreamManager::DeviceCaptureHandleChangeCallback
         capture_handle_change_callback;
 
-    std::vector<blink::mojom::MediaStreamType> expected_types;
-    expected_types.push_back(
-        blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE);
-    if (request_audio)
-      expected_types.push_back(
-          blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE);
-    for (blink::mojom::MediaStreamType expected_type : expected_types) {
-      EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(
-                                        _, _, _, _, expected_type,
-                                        MEDIA_REQUEST_STATE_PENDING_APPROVAL));
+    EXPECT_CALL(*media_observer_,
+                OnMediaRequestStateChanged(
+                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                    MEDIA_REQUEST_STATE_PENDING_APPROVAL));
+    EXPECT_CALL(*media_observer_,
+                OnMediaRequestStateChanged(
+                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                    MEDIA_REQUEST_STATE_OPENING));
+    EXPECT_CALL(*media_observer_,
+                OnMediaRequestStateChanged(
+                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                    MEDIA_REQUEST_STATE_DONE));
+    if (app_requested_audio) {
       EXPECT_CALL(*media_observer_,
-                  OnMediaRequestStateChanged(_, _, _, _, expected_type,
-                                             MEDIA_REQUEST_STATE_OPENING));
-      EXPECT_CALL(*media_observer_,
-                  OnMediaRequestStateChanged(_, _, _, _, expected_type,
-                                             MEDIA_REQUEST_STATE_DONE));
+                  OnMediaRequestStateChanged(
+                      _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                      MEDIA_REQUEST_STATE_PENDING_APPROVAL));
+      if (user_shared_audio) {
+        EXPECT_CALL(*media_observer_,
+                    OnMediaRequestStateChanged(
+                        _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                        MEDIA_REQUEST_STATE_OPENING));
+        EXPECT_CALL(*media_observer_,
+                    OnMediaRequestStateChanged(
+                        _, _, _, _, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                        MEDIA_REQUEST_STATE_DONE));
+      }
     }
     media_stream_manager_->GenerateStreams(
         render_process_id, render_frame_id, requester_id, page_request_id,
@@ -414,9 +433,12 @@ class MediaStreamManagerTest : public ::testing::Test {
 
     EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
               video_device.type);
-    if (request_audio)
+    if (app_requested_audio && user_shared_audio) {
       EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
                 audio_device.type);
+    } else {
+      EXPECT_EQ(blink::mojom::MediaStreamType::NO_SERVICE, audio_device.type);
+    }
 
     EXPECT_CALL(
         *media_observer_,
@@ -426,21 +448,23 @@ class MediaStreamManagerTest : public ::testing::Test {
     media_stream_manager_->StopStreamDevice(render_process_id, render_frame_id,
                                             requester_id, video_device.id,
                                             video_device.session_id());
-    if (request_audio) {
+    blink::MediaStreamDevice device;
+    if (app_requested_audio && user_shared_audio) {
       EXPECT_CALL(
           *media_observer_,
           OnMediaRequestStateChanged(
               _, _, _, _, blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
               MEDIA_REQUEST_STATE_CLOSING));
-      blink::MediaStreamDevice device;
       EXPECT_CALL(stopped_callback, Run(_, _))
           .WillOnce(testing::SaveArg<1>(&device));
-      media_stream_manager_->StopStreamDevice(
-          render_process_id, render_frame_id, requester_id, audio_device.id,
-          audio_device.session_id());
-      EXPECT_EQ(device.type,
-                blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE);
     }
+    media_stream_manager_->StopStreamDevice(render_process_id, render_frame_id,
+                                            requester_id, audio_device.id,
+                                            audio_device.session_id());
+    EXPECT_EQ(device.type,
+              app_requested_audio && user_shared_audio
+                  ? blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE
+                  : blink::mojom::MediaStreamType::NO_SERVICE);
   }
 
   static void GenerateStreamsCallback(
@@ -449,13 +473,14 @@ class MediaStreamManagerTest : public ::testing::Test {
       bool request_video,
       blink::MediaStreamDevice* audio_device,
       blink::MediaStreamDevice* video_device,
+      bool audio_share,
       blink::mojom::MediaStreamRequestResult result,
       const std::string& label,
       blink::mojom::StreamDevicesSetPtr stream_devices_set,
       bool pan_tilt_zoom_allowed) {
     // TODO(crbug.com/1300883): Generalize to multiple streams.
     DCHECK_EQ(stream_devices_set->stream_devices.size(), 1u);
-    if (request_audio) {
+    if (request_audio && audio_share) {
       ASSERT_TRUE(
           stream_devices_set->stream_devices[0]->audio_device.has_value());
       *audio_device =
@@ -492,8 +517,11 @@ class MediaStreamManagerTest : public ::testing::Test {
     blink::MediaStreamDevice audio_device;
 
     MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
-        base::BindOnce(GenerateStreamsCallback, &run_loop, true, false,
-                       &audio_device, nullptr);
+        base::BindOnce(GenerateStreamsCallback, &run_loop,
+                       /*request_audio=*/true,
+                       /*request_video=*/false, &audio_device,
+                       /*audio_device=*/nullptr,
+                       /*audio_share=*/true);
     MediaStreamManager::DeviceStoppedCallback stopped_callback;
     MediaStreamManager::DeviceChangedCallback changed_callback;
     MediaStreamManager::DeviceRequestStateChangeCallback
@@ -825,11 +853,20 @@ TEST_F(MediaStreamManagerTest, GenerateAndReuseStreamForAudioDevice) {
 }
 
 TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestVideoOnly) {
-  RequestAndStopGetDisplayMedia(false /* request_audio */);
+  RequestAndStopGetDisplayMedia(/*app_requested_audio=*/false,
+                                /*user_shared_audio=*/false);
 }
 
 TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestAudioAndVideo) {
-  RequestAndStopGetDisplayMedia(true /* request_audio */);
+  RequestAndStopGetDisplayMedia(/*app_requested_audio=*/true,
+                                /*user_shared_audio=*/true);
+}
+
+// The application requested audio, but the user deselected sharing of audio.
+TEST_F(MediaStreamManagerTest,
+       GetDisplayMediaRequestAudioAndVideoNoAudioShare) {
+  RequestAndStopGetDisplayMedia(/*app_requested_audio=*/true,
+                                /*user_shared_audio=*/false);
 }
 
 TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
@@ -903,8 +940,10 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceStopped) {
   blink::MediaStreamDevice video_device;
   MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
       base::BindOnce(GenerateStreamsCallback, &run_loop_,
-                     false /* request_audio */, true /* request_video */,
-                     nullptr, &video_device);
+                     /*request_audio=*/false,
+                     /*request_video=*/true, /*audio_device=*/nullptr,
+                     &video_device,
+                     /*audio_share=*/true);
   MediaStreamManager::DeviceStoppedCallback stopped_callback =
       base::BindRepeating(
           [](const std::string& label, const blink::MediaStreamDevice& device) {
@@ -962,8 +1001,10 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
   blink::MediaStreamDevice video_device;
   MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
       base::BindOnce(GenerateStreamsCallback, &run_loop_,
-                     false /* request_audio */, true /* request_video */,
-                     nullptr, &video_device);
+                     /*request_audio=*/false,
+                     /*request_video=*/true, /*audio_device=*/nullptr,
+                     &video_device,
+                     /*audio_share=*/true);
   MediaStreamManager::DeviceStoppedCallback stopped_callback;
   MediaStreamManager::DeviceChangedCallback changed_callback =
       base::BindRepeating(
@@ -1199,7 +1240,8 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
     blink::MediaStreamDevice audio_device;
     MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
         base::BindOnce(GenerateStreamsCallback, &run_loop, request_audio,
-                       request_video, &audio_device, &video_device);
+                       request_video, &audio_device, &video_device,
+                       /*audio_share=*/true);
 
     media_stream_manager_->GenerateStreams(
         render_process_id_, render_frame_id_, requester_id_,

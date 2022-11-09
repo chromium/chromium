@@ -487,7 +487,7 @@ void MediaStreamUIProxy::OnWindowId(WindowIdCallback window_id_callback,
 
 FakeMediaStreamUIProxy::FakeMediaStreamUIProxy(
     bool tests_use_fake_render_frame_hosts)
-    : MediaStreamUIProxy(nullptr), mic_access_(true), camera_access_(true) {
+    : MediaStreamUIProxy(nullptr) {
   core_->tests_use_fake_render_frame_hosts_ = tests_use_fake_render_frame_hosts;
 }
 
@@ -504,6 +504,10 @@ void FakeMediaStreamUIProxy::SetMicAccess(bool access) {
 
 void FakeMediaStreamUIProxy::SetCameraAccess(bool access) {
   camera_access_ = access;
+}
+
+void FakeMediaStreamUIProxy::SetAudioShare(bool audio_share) {
+  audio_share_ = audio_share;
 }
 
 void FakeMediaStreamUIProxy::RequestAccess(
@@ -559,6 +563,9 @@ void FakeMediaStreamUIProxy::RequestAccess(
     devices_to_use = blink::mojom::StreamDevices();
   }
 
+  if (!audio_share_) {
+    devices_to_use.audio_device = absl::nullopt;
+  }
   const bool is_devices_empty = !devices_to_use.audio_device.has_value() &&
                                 !devices_to_use.video_device.has_value();
   if (is_devices_empty) {
