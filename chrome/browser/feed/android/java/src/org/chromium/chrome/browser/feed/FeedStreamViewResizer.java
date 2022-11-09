@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
@@ -25,7 +26,6 @@ public class FeedStreamViewResizer extends ViewResizer {
     private static final float FEED_IMAGE_OR_VIDEO_ASPECT_RATIO = 1.778f;
 
     private final Activity mActivity;
-    private final int mMinWidePaddingPixels;
 
     /**
      * @param activity The activity displays the view.
@@ -39,7 +39,6 @@ public class FeedStreamViewResizer extends ViewResizer {
             int defaultPaddingPixels, int minWidePaddingPixels) {
         super(view, config, defaultPaddingPixels, minWidePaddingPixels);
         mActivity = activity;
-        mMinWidePaddingPixels = minWidePaddingPixels;
     }
 
     /**
@@ -72,7 +71,8 @@ public class FeedStreamViewResizer extends ViewResizer {
      */
     @Override
     protected int computePadding() {
-        if (FeedFeatures.isMultiColumnFeedEnabled(mUiConfig.getContext())) {
+        if (FeedFeatures.isMultiColumnFeedEnabled(mUiConfig.getContext())
+                && isCurrentDisplayWide()) {
             return computePaddingWide();
         } else {
             return computePaddingNarrow();
@@ -118,7 +118,7 @@ public class FeedStreamViewResizer extends ViewResizer {
                                 org.chromium.chrome.browser.feed.R.dimen.ntp_wide_card_width_max))
                         / 2);
         // (d) Return max of computed padding and min allowed margin.
-        return Math.max(customPadding, mMinWidePaddingPixels);
+        return Math.max(customPadding, getMinWidePaddingPixels());
     }
 
     private float getScreenWidth() {
