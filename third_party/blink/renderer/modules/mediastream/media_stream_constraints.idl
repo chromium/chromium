@@ -27,6 +27,8 @@ enum SurfaceSwitchingPreferenceEnum {
 dictionary UserMediaStreamConstraints {
     (boolean or MediaTrackConstraints) video = false;
     (boolean or MediaTrackConstraints) audio = false;
+    // TODO(crbug.com/1382520): Remove the controller.
+    [RuntimeEnabled = CaptureController] CaptureController controller;
 };
 
 // https://www.w3.org/TR/screen-capture/#dom-displaymediastreamoptions

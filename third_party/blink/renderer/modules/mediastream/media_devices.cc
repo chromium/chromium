@@ -225,12 +225,41 @@ bool IsExtensionScreenSharingFunctionCall(const MediaStreamConstraints* options,
 #endif
 
 MediaStreamConstraints* ToMediaStreamConstraints(
-    const UserMediaStreamConstraints* source) {
+    const UserMediaStreamConstraints* source,
+    ExceptionState& exception_state) {
+  DCHECK(source);
+  DCHECK(!exception_state.HadException());
+
   MediaStreamConstraints* const constraints = MediaStreamConstraints::Create();
-  if (source->hasAudio())
+
+  if (source->hasAudio()) {
     constraints->setAudio(source->audio());
-  if (source->hasVideo())
+  }
+
+  if (source->hasVideo()) {
     constraints->setVideo(source->video());
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (source->hasController()) {
+    const bool is_screen_sharing =
+        IsExtensionScreenSharingFunctionCall(constraints, exception_state);
+
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+
+    if (!is_screen_sharing) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "CaptureController supplied for a non-screen-capture call.");
+      return nullptr;
+    }
+
+    constraints->setController(source->controller());
+  }
+#endif
+
   return constraints;
 }
 
@@ -311,9 +340,18 @@ ScriptPromise MediaDevices::getUserMedia(
     ScriptState* script_state,
     const UserMediaStreamConstraints* options,
     ExceptionState& exception_state) {
+  DCHECK(options);  // Guaranteed by the default value in the IDL.
+  DCHECK(!exception_state.HadException());
+
+  MediaStreamConstraints* const constraints =
+      ToMediaStreamConstraints(options, exception_state);
+  if (!constraints) {
+    DCHECK(exception_state.HadException());
+    return ScriptPromise();
+  }
+
   return SendUserMediaRequest(script_state, UserMediaRequestType::kUserMedia,
-                              ToMediaStreamConstraints(options),
-                              exception_state);
+                              constraints, exception_state);
 }
 
 ScriptPromise MediaDevices::SendUserMediaRequest(
