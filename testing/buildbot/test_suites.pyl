@@ -5501,6 +5501,30 @@
         'experiment_percentage': 100,
       },
     },
+
+    'wpt_web_tests_layout_ng_disabled': {
+      'wpt_tests_suite_layout_ng_disabled': {
+        'args': [
+          '--child-processes=8',
+          '--log-wptreport',
+          '--xvfb',
+          '--flag-specific',
+          'disable-layout-ng',
+        ],
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'isolate_name': 'wpt_tests_isolate_content_shell',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 12,
+        },
+        'experiment_percentage': 100,
+      },
+    },
   },
 
   ##############################################################################
@@ -6414,6 +6438,7 @@
 
     'wpt_web_tests_content_shell_multiple_flags': [
       'wpt_web_tests_content_shell',
+      'wpt_web_tests_layout_ng_disabled',
       'wpt_web_tests_highdpi',
     ],
   },
