@@ -42654,6 +42654,33 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="FailedOrigin"/>
 </enum>
 
+<enum name="FedCmIdpSigninMatchStatus">
+  <int value="0"
+      label="Match. Browser has signed-in IDP status, accounts endpoint
+             returned accounts."/>
+  <int value="1"
+      label="Match. Browser has signed-out IDP status, accounts endpoint
+             returned no accounts."/>
+  <int value="2"
+      label="Browser has no IDP sign-in status, accounts endpoint returned
+             accounts."/>
+  <int value="3"
+      label="Match. Browser has no IDP sign-in status, accounts endpoint
+             returned no accounts."/>
+  <int value="4"
+      label="Browser has signed-in IDP status, accounts endpoint returned
+             network error."/>
+  <int value="5"
+      label="Browser has signed-in IDP status, accounts endpoint returned no
+             content."/>
+  <int value="6"
+      label="Browser has signed-in IDP status, accounts endpoint returned
+             invalid response."/>
+  <int value="7"
+      label="Browser has signed-out IDP status, accounts endpoint returned
+             accounts."/>
+</enum>
+
 <enum name="FedCmRequestIdTokenStatus">
   <int value="0" label="Success"/>
   <int value="1" label="TooManyRequests"/>

@@ -154,6 +154,45 @@ void FedCmMetrics::RecordSignInStateMatchStatus(
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.SignInStateMatch", status);
 }
 
+void FedCmMetrics::RecordIdpSigninMatchStatus(
+    absl::optional<bool> idp_signin_status,
+    IdpNetworkRequestManager::ParseStatus accounts_endpoint_status) {
+  if (is_disabled_)
+    return;
+
+  FedCmIdpSigninMatchStatus match_status = FedCmIdpSigninMatchStatus::kMaxValue;
+  if (!idp_signin_status.has_value()) {
+    match_status =
+        (accounts_endpoint_status ==
+         IdpNetworkRequestManager::ParseStatus::kSuccess)
+            ? FedCmIdpSigninMatchStatus::kUnknownStatusWithAccounts
+            : FedCmIdpSigninMatchStatus::kUnknownStatusWithoutAccounts;
+  } else if (idp_signin_status.value()) {
+    switch (accounts_endpoint_status) {
+      case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError:
+        match_status = FedCmIdpSigninMatchStatus::kMismatchWithNetworkError;
+        break;
+      case IdpNetworkRequestManager::ParseStatus::kNoResponseError:
+        match_status = FedCmIdpSigninMatchStatus::kMismatchWithNoContent;
+        break;
+      case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError:
+        match_status = FedCmIdpSigninMatchStatus::kMismatchWithInvalidResponse;
+        break;
+      case IdpNetworkRequestManager::ParseStatus::kSuccess:
+        match_status = FedCmIdpSigninMatchStatus::kMatchWithAccounts;
+        break;
+    }
+  } else {
+    match_status =
+        (accounts_endpoint_status ==
+         IdpNetworkRequestManager::ParseStatus::kSuccess)
+            ? FedCmIdpSigninMatchStatus::kMismatchWithUnexpectedAccounts
+            : FedCmIdpSigninMatchStatus::kMatchWithoutAccounts;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.IdpSigninMatch", match_status);
+}
+
 void FedCmMetrics::RecordIsSignInUser(bool is_sign_in) {
   if (is_disabled_)
     return;

@@ -899,7 +899,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog(
 }
 
 void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
-    const GURL& idp_url,
+    const url::Origin& idp_origin,
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status) {
   if (!IsFedCmIdpSigninStatusEnabled()) {
@@ -908,7 +908,6 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     return;
   }
 
-  const url::Origin idp_origin = url::Origin::Create(idp_url);
   const absl::optional<bool> idp_signin_status =
       sharing_permission_delegate_->GetIdpSigninStatus(idp_origin);
   // Ensures that we only fetch accounts unconditionally once.
@@ -929,7 +928,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
 
   request_dialog_controller_->ShowFailureDialog(
       rp_web_contents, FormatOriginForDisplay(GetEmbeddingOrigin()),
-      FormatUrlForDisplay(idp_url),
+      FormatOriginForDisplay(idp_origin),
       base::BindOnce(
           &FederatedAuthRequestImpl::OnDismissFailureDialog,
           weak_ptr_factory_.GetWeakPtr(), FederatedAuthRequestResult::kError,
@@ -940,12 +939,20 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     const IdentityProviderInfo& idp_info,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::AccountList accounts) {
+  url::Origin idp_origin = url::Origin::Create(idp_info.provider.config_url);
+
+  // Record metrics on effect of IDP sign-in status API.
+  const absl::optional<bool> idp_signin_status =
+      sharing_permission_delegate_->GetIdpSigninStatus(idp_origin);
+  fedcm_metrics_->RecordIdpSigninMatchStatus(idp_signin_status,
+                                             status.parse_status);
+
   constexpr char kAccountsUrl[] = "accounts endpoint";
   switch (status.parse_status) {
     case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
       MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
-          idp_info.provider.config_url,
+          idp_origin,
           FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound,
           TokenStatus::kAccountsHttpNotFound);
       return;
@@ -953,7 +960,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
       MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
-          idp_info.provider.config_url,
+          idp_origin,
           FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
           TokenStatus::kAccountsNoResponse);
       return;
@@ -961,7 +968,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
       MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
-          idp_info.provider.config_url,
+          idp_origin,
           FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
           TokenStatus::kAccountsInvalidResponse);
       return;
@@ -969,8 +976,6 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       ComputeLoginStateAndReorderAccounts(idp_info.provider, accounts);
 
-      const url::Origin idp_origin =
-          url::Origin::Create(idp_info.provider.config_url);
       sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, true);
 
       bool need_client_metadata = false;

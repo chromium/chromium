@@ -138,7 +138,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
   void HandleAccountsFetchFailure(
-      const GURL& idp_url,
+      const url::Origin& idp_origin,
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status);
 
