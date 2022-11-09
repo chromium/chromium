@@ -18,6 +18,11 @@ export class ChromeVoxBackground {
   constructor() {
     this.addBridgeListener();
 
+    this.injectContentScriptForGoogleDocs_();
+  }
+
+  /** @private */
+  injectContentScriptForGoogleDocs_() {
     // Build a regexp to match all allowed urls.
     let matches = [];
     try {
@@ -28,14 +33,14 @@ export class ChromeVoxBackground {
     }
 
     // Build one large regexp.
-    const matchesRe = new RegExp(matches.join('|'));
+    const docsRe = new RegExp(matches.join('|'));
 
     // Inject the content script into all running tabs allowed by the
     // manifest. This block is still necessary because the extension system
     // doesn't re-inject content scripts into already running tabs.
     chrome.windows.getAll({'populate': true}, windows => {
       for (let i = 0; i < windows.length; i++) {
-        const tabs = windows[i].tabs.filter(tab => matchesRe.test(tab.url));
+        const tabs = windows[i].tabs.filter(tab => docsRe.test(tab.url));
         InjectedScriptLoader.injectContentScript(tabs);
       }
     });
