@@ -157,7 +157,6 @@ crbug.com/1284424 [ mac ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ R
 crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 
 # Failing on android N5
-crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
 
 # Flaking on Linux FYI Release
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
