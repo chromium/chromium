@@ -5,8 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_FEATURES_H_
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_FEATURES_H_
 
-#include <string>
-
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -15,18 +13,6 @@ namespace app_list_features {
 
 // Please keep these features sorted.
 // TODO(newcomer|weidongg): Sort these features.
-
-// Enable app ranking models.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableAppRanker);
-
-// Enable a model that ranks zero-state apps search result.
-// TODO(crbug.com/989350): This flag can be removed once the
-// AppSearchResultRanker is removed. Same with the
-// AppSearchResultRankerPredictorName.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableZeroStateAppsRanker);
-
-// Enable a model that ranks zero-state files and recent queries.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableZeroStateMixedTypesRanker);
 
 // Enables the feature to include a single reinstallation candidate in
 // zero-state.
@@ -64,9 +50,6 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kLauncherPlayStoreSearch);
 // instead of slide up/down).
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kAnimateScaleOnTabletModeTransition);
 
-ASH_PUBLIC_EXPORT bool IsAppRankerEnabled();
-ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
-ASH_PUBLIC_EXPORT bool IsZeroStateMixedTypesRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
@@ -80,8 +63,6 @@ ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 ASH_PUBLIC_EXPORT bool IsCompactBubbleLauncherEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAnimateScaleOnTabletModeTransitionEnabled();
-
-ASH_PUBLIC_EXPORT std::string AppSearchResultRankerPredictorName();
 
 }  // namespace app_list_features
 

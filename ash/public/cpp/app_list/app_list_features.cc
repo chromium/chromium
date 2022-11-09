@@ -10,15 +10,6 @@
 
 namespace app_list_features {
 
-BASE_FEATURE(kEnableAppRanker,
-             "EnableAppRanker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableZeroStateAppsRanker,
-             "EnableZeroStateAppsRanker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableZeroStateMixedTypesRanker,
-             "EnableZeroStateMixedTypesRanker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableAppReinstallZeroState,
              "EnableAppReinstallZeroState",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -51,32 +42,12 @@ BASE_FEATURE(kAnimateScaleOnTabletModeTransition,
              "AnimateScaleOnTabletModeTransition",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool IsAppRankerEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAppRanker);
-}
-
-bool IsZeroStateAppsRankerEnabled() {
-  return base::FeatureList::IsEnabled(kEnableZeroStateAppsRanker);
-}
-
-bool IsZeroStateMixedTypesRankerEnabled() {
-  return base::FeatureList::IsEnabled(kEnableZeroStateMixedTypesRanker);
-}
-
 bool IsAppReinstallZeroStateEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppReinstallZeroState);
 }
 
 bool IsExactMatchForNonLatinLocaleEnabled() {
   return base::FeatureList::IsEnabled(kEnableExactMatchForNonLatinLocale);
-}
-
-std::string AppSearchResultRankerPredictorName() {
-  const std::string predictor_name = base::GetFieldTrialParamValueByFeature(
-      kEnableZeroStateAppsRanker, "app_search_result_ranker_predictor_name");
-  if (!predictor_name.empty())
-    return predictor_name;
-  return std::string("MrfuAppLaunchPredictor");
 }
 
 bool IsAppListLaunchRecordingEnabled() {
