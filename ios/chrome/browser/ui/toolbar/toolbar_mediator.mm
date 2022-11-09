@@ -342,10 +342,10 @@
       title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
       if (UseSymbols()) {
         if (@available(iOS 15, *)) {
-          image = SymbolWithPalette(
-              CustomSymbolWithPointSize(kIncognitoCircleFillSymbol,
-                                        kInfobarSymbolPointSize),
-              SmallIncognitoPalette());
+          image =
+              SymbolWithPalette(CustomSymbolWithPointSize(
+                                    kIncognitoSymbol, kInfobarSymbolPointSize),
+                                @[ UIColor.whiteColor ]);
         } else {
           image = [UIImage imageNamed:@"incognito_badge_ios14"];
         }
