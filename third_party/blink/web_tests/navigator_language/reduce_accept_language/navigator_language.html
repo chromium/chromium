@@ -36,6 +36,9 @@ promise_test(async () => {
 
         assert_equals(navigator.languages.length, 1);
         assert_equals(navigator.language, data.languages[0]);
+        // Verify usage count metric records.
+        var ReduceAcceptLanguage = 4386; // From UseCounter.h
+        assert_true(internals.isUseCounted(document, ReduceAcceptLanguage));
         for (var j = 0; j < navigator.languages.length; ++j) {
             console.log(j);
             assert_equals(data.languages[j], navigator.languages[j]);
