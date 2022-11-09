@@ -1227,6 +1227,9 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Network error"/>
   <int value="4" label="Unexpected response"/>
   <int value="5" label="Blocked by policy"/>
+  <int value="6" label="Mojo remote disconnected"/>
+  <int value="7"
+      label="Incompatible Mojo versions between remote and receiver"/>
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">

@@ -379,15 +379,23 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
     AccountAdditionSource source,
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback) {
-  if (!account_manager_remote_ ||
-      remote_version_ < RemoteMinVersions::kShowAddAccountDialogMinVersion) {
+  if (!account_manager_remote_) {
+    LOG(WARNING) << "Account Manager remote disconnected";
+    FinishAddAccount(
+        std::move(callback),
+        AccountAdditionResult::FromStatus(
+            AccountAdditionResult::Status::kMojoRemoteDisconnected));
+    return;
+  }
+
+  if (remote_version_ < RemoteMinVersions::kShowAddAccountDialogMinVersion) {
     LOG(WARNING) << "Found remote at: " << remote_version_ << ", expected: "
                  << RemoteMinVersions::kShowAddAccountDialogMinVersion
                  << " for ShowAddAccountDialog.";
-    FinishAddAccount(std::move(callback),
-                     account_manager::AccountAdditionResult::FromStatus(
-                         account_manager::AccountAdditionResult::Status::
-                             kUnexpectedResponse));
+    FinishAddAccount(
+        std::move(callback),
+        AccountAdditionResult::FromStatus(
+            AccountAdditionResult::Status::kIncompatibleMojoVersions));
     return;
   }
 
@@ -521,9 +529,8 @@ void AccountManagerFacadeImpl::OnShowAddAccountDialogFinished(
       account_manager::FromMojoAccountAdditionResult(mojo_result);
   if (!result.has_value()) {
     FinishAddAccount(std::move(callback),
-                     account_manager::AccountAdditionResult::FromStatus(
-                         account_manager::AccountAdditionResult::Status::
-                             kUnexpectedResponse));
+                     AccountAdditionResult::FromStatus(
+                         AccountAdditionResult::Status::kUnexpectedResponse));
     return;
   }
   FinishAddAccount(std::move(callback), result.value());
