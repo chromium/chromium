@@ -60,8 +60,8 @@ const SkScalar kBorderWidth = 1.f;
 const SkScalar kSliderTrackHeight = 8.f;
 const SkScalar kSliderThumbBorderWidth = 1.f;
 const SkScalar kSliderThumbBorderHoveredWidth = 1.f;
-// Default height for progress is 16px and the track is 8px.
-const SkScalar kTrackHeightRatio = 8.0f / 16;
+// Default block size for progress is 16px and the track is 8px.
+const SkScalar kTrackBlockRatio = 8.0f / 16;
 const SkScalar kMenuListArrowStrokeWidth = 2.f;
 const int kSliderThumbSize = 16;
 
@@ -1170,9 +1170,16 @@ void NativeThemeBase::PaintProgressBar(
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(GetControlColor(kFill, color_scheme, color_provider));
   SliderExtraParams slider;
-  slider.vertical = false;
-  float track_height = rect.height() * kTrackHeightRatio;
-  SkRect track_rect = AlignSliderTrack(rect, slider, false, track_height);
+  float track_block_thickness = rect.height();
+  if (progress_bar.is_horizontal) {
+    slider.vertical = false;
+    track_block_thickness = rect.height() * kTrackBlockRatio;
+  } else {
+    slider.vertical = true;
+    track_block_thickness = rect.width() * kTrackBlockRatio;
+  }
+  SkRect track_rect =
+      AlignSliderTrack(rect, slider, false, track_block_thickness);
   float border_radius =
       GetBorderRadiusForPart(kProgressBar, rect.width(), rect.height());
   canvas->drawRoundRect(track_rect, border_radius, border_radius, flags);
@@ -1183,15 +1190,23 @@ void NativeThemeBase::PaintProgressBar(
   canvas->clipRRect(rounded_rect, SkClipOp::kIntersect, true);
 
   // Paint the progress value bar.
-  const SkScalar kMinimumProgressValueWidth = 2;
+  const SkScalar kMinimumProgressInlineValue = 2;
+  SkScalar adjusted_height = progress_bar.value_rect_height;
   SkScalar adjusted_width = progress_bar.value_rect_width;
-  if (adjusted_width > 0 && adjusted_width < kMinimumProgressValueWidth)
-    adjusted_width = kMinimumProgressValueWidth;
+  // If adjusted thickness is not zero, make sure it is equal or larger than
+  // kMinimumProgressInlineValue.
+  if (slider.vertical) {
+    if (adjusted_height > 0)
+      adjusted_height = std::max(kMinimumProgressInlineValue, adjusted_height);
+  } else {
+    if (adjusted_width > 0)
+      adjusted_width = std::max(kMinimumProgressInlineValue, adjusted_width);
+  }
   gfx::Rect original_value_rect(progress_bar.value_rect_x,
                                 progress_bar.value_rect_y, adjusted_width,
-                                progress_bar.value_rect_height);
-  SkRect value_rect =
-      AlignSliderTrack(original_value_rect, slider, false, track_height);
+                                adjusted_height);
+  SkRect value_rect = AlignSliderTrack(original_value_rect, slider, false,
+                                       track_block_thickness);
   if (accent_color) {
     flags.setColor(*accent_color);
   } else {
@@ -1773,8 +1788,8 @@ SkRect NativeThemeBase::AlignSliderTrack(
     const gfx::Rect& slider_rect,
     const NativeTheme::SliderExtraParams& slider,
     bool is_value,
-    float track_height) const {
-  const float kAlignment = track_height / 2;
+    float track_block_thickness) const {
+  const float kAlignment = track_block_thickness / 2;
   const float mid_x = slider_rect.x() + slider_rect.width() / 2.0f;
   const float mid_y = slider_rect.y() + slider_rect.height() / 2.0f;
   SkRect aligned_rect;

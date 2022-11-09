@@ -245,6 +245,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     int value_rect_width;
     int value_rect_height;
     float zoom;
+    bool is_horizontal;
   };
 
   struct ScrollbarArrowExtraParams {

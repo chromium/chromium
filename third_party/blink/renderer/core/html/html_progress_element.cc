@@ -40,6 +40,7 @@ HTMLProgressElement::HTMLProgressElement(Document& document)
     : HTMLElement(html_names::kProgressTag, document), value_(nullptr) {
   UseCounter::Count(document, WebFeature::kProgressElement);
   EnsureUserAgentShadowRoot();
+  SetHasCustomStyleCallbacks();
 }
 
 HTMLProgressElement::~HTMLProgressElement() = default;
@@ -119,7 +120,7 @@ bool HTMLProgressElement::IsDeterminate() const {
 }
 
 void HTMLProgressElement::DidElementStateChange() {
-  SetValueWidthPercentage(position() * 100);
+  SetInlineSizePercentage(position() * 100);
   if (LayoutProgress* layout_progress = GetLayoutProgress())
     layout_progress->UpdateFromElement();
 }
@@ -135,7 +136,7 @@ void HTMLProgressElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   bar->SetShadowPseudoId(AtomicString("-webkit-progress-bar"));
   value_ = MakeGarbageCollected<ProgressShadowElement>(GetDocument());
   value_->SetShadowPseudoId(AtomicString("-webkit-progress-value"));
-  SetValueWidthPercentage(HTMLProgressElement::kIndeterminatePosition * 100);
+  SetInlineSizePercentage(HTMLProgressElement::kIndeterminatePosition * 100);
   bar->AppendChild(value_);
 
   inner->AppendChild(bar);
@@ -150,9 +151,25 @@ void HTMLProgressElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-void HTMLProgressElement::SetValueWidthPercentage(double width) const {
-  value_->SetInlineStyleProperty(CSSPropertyID::kWidth, width,
+void HTMLProgressElement::SetInlineSizePercentage(double position) const {
+  value_->SetInlineStyleProperty(CSSPropertyID::kInlineSize, position,
                                  CSSPrimitiveValue::UnitType::kPercentage);
+  value_->SetInlineStyleProperty(CSSPropertyID::kBlockSize, 100,
+                                 CSSPrimitiveValue::UnitType::kPercentage);
+}
+
+scoped_refptr<ComputedStyle> HTMLProgressElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
+  // For vertical writing-mode, we need to set the direction to rtl so that
+  // the progress value bar is rendered bottom up.
+  if (!IsHorizontalWritingMode(style->GetWritingMode())) {
+    ComputedStyleBuilder builder(*style);
+    builder.SetDirection(TextDirection::kRtl);
+    style = builder.TakeStyle();
+  }
+  return style;
 }
 
 }  // namespace blink

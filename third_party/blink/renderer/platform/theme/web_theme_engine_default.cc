@@ -138,6 +138,8 @@ static void GetNativeThemeExtraParams(
           extra_params->progress_bar.value_rect_height;
       native_theme_extra_params->progress_bar.zoom =
           extra_params->progress_bar.zoom;
+      native_theme_extra_params->progress_bar.is_horizontal =
+          extra_params->progress_bar.is_horizontal;
       break;
     case WebThemeEngine::kPartScrollbarHorizontalThumb:
     case WebThemeEngine::kPartScrollbarVerticalThumb:

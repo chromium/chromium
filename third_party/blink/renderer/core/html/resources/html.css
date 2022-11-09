@@ -398,7 +398,7 @@ button {
 }
 
 /* Form controls don't go vertical. */
-input, textarea, select, button, meter, progress {
+input, textarea, select, button, meter {
     writing-mode: horizontal-tb !important;
 }
 
@@ -1062,8 +1062,8 @@ progress {
     appearance: auto;
     box-sizing: border-box;
     display: inline-block;
-    height: 1em;
-    width: 10em;
+    block-size: 1em;
+    inline-size: 10em;
     vertical-align: -0.2em;
 }
 

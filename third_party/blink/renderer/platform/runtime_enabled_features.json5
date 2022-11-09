@@ -1377,6 +1377,11 @@
       status: "experimental",
     },
     {
+      name: "FormControlsVerticalWritingModeSupport",
+      status: "experimental",
+      base_feature: "FormControlsVerticalWritingModeSupport",
+    },
+    {
       name: "FormRelAttribute",
       status: "stable",
       base_feature: "FormRelAttribute",

@@ -15,6 +15,6 @@ Test that WebKit does not crash when we apply style to atomic elements and that 
 |           shadow:pseudoId="-webkit-progress-bar"
 |           <div>
 |             pseudo="-webkit-progress-value"
-|             style="width: -100%;"
+|             style="inline-size: -100%; block-size: 100%;"
 |             shadow:pseudoId="-webkit-progress-value"
 |   <#selection-focus>

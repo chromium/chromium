@@ -68,7 +68,9 @@ class CORE_EXPORT HTMLProgressElement final : public HTMLElement {
   void DidElementStateChange();
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   bool IsDeterminate() const;
-  void SetValueWidthPercentage(double) const;
+  void SetInlineSizePercentage(double) const;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) override;
 
   Member<Element> value_;
 };

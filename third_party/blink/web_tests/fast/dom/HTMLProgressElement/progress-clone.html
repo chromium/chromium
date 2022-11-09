@@ -9,7 +9,7 @@
     target = document.getElementById("target");
     cloned = target.cloneNode();
     document.body.insertBefore(cloned, target.nextSibling);
-    
+
     if (!window.internals) {
         debug("You need internals to run this test.");
         return;
@@ -21,11 +21,11 @@
     shouldBe("cloned.value", "target.value");
     shouldBe("internals.shadowPseudoId(clonedShadowRoot.firstChild.firstChild)", "internals.shadowPseudoId(targetShadowRoot.firstChild.firstChild)");
     shouldBe("internals.shadowPseudoId(clonedShadowRoot.firstChild.firstChild.firstChild)", "internals.shadowPseudoId(targetShadowRoot.firstChild.firstChild.firstChild)");
-    
+
     cloned.value = 70;
-    shouldBe("clonedShadowRoot.firstChild.firstChild.firstChild.style.width", '"70%"');
-    shouldBe("targetShadowRoot.firstChild.firstChild.firstChild.style.width", '"50%"');
-    
+    shouldBe("clonedShadowRoot.firstChild.firstChild.firstChild.style.inlineSize", '"70%"');
+    shouldBe("targetShadowRoot.firstChild.firstChild.firstChild.style.inlineSize", '"50%"');
+
 })();
 </script>
 </body>
