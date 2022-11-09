@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
@@ -50,7 +51,7 @@ class NGramExtractor {
     Iterator(const NGramExtractor& extractor,
              base::StringPiece::const_iterator head)
         : extractor_(extractor), head_(head), end_(extractor.string_.end()) {
-      DCHECK_GE(head, extractor_.string_.begin());
+      DCHECK_GE(head, extractor_->string_.begin());
       DCHECK_LE(head, end_);
 
       CompleteNGramFrom(0);
@@ -90,7 +91,7 @@ class NGramExtractor {
     // length of N. Leaves |head_| pointing to the last character consumed.
     void CompleteNGramFrom(size_t current_length) {
       for (; head_ != end_; ++head_) {
-        if (extractor_.is_separator_(*head_)) {
+        if (extractor_->is_separator_(*head_)) {
           current_length = 0;
           ngram_ = 0;
         } else {
@@ -101,7 +102,7 @@ class NGramExtractor {
       }
     }
 
-    const NGramExtractor& extractor_;
+    const raw_ref<const NGramExtractor> extractor_;
 
     // Always points to the last character included in the current |ngram_|.
     base::StringPiece::const_iterator head_;

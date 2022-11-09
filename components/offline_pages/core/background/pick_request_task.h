@@ -11,6 +11,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/background/device_conditions.h"
@@ -105,7 +106,7 @@ class PickRequestTask : public Task {
   RequestNotPickedCallback not_picked_callback_;
   RequestCountCallback request_count_callback_;
   DeviceConditions device_conditions_;
-  const std::set<int64_t>& disabled_requests_;
+  const raw_ref<const std::set<int64_t>> disabled_requests_;
   // TODO(harringtond): This object is owned by the caller, and mutating it
   // directly here seems dangerous.
   raw_ptr<base::circular_deque<int64_t>> prioritized_requests_;

@@ -131,7 +131,7 @@ bool CapabilityAccessUpdate::MicrophoneChanged() const {
 }
 
 const ::AccountId& CapabilityAccessUpdate::AccountId() const {
-  return account_id_;
+  return *account_id_;
 }
 
 bool CapabilityAccessUpdate::ShouldUseNonMojomStruct() const {

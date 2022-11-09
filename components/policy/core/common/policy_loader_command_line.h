@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_COMMAND_LINE_H_
 
 #include "base/command_line.h"
+#include "base/memory/raw_ref.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
@@ -26,7 +27,7 @@ class POLICY_EXPORT PolicyLoaderCommandLine {
   PolicyBundle Load();
 
  private:
-  const base::CommandLine& command_line_;
+  const raw_ref<const base::CommandLine> command_line_;
 };
 
 }  // namespace policy

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -116,12 +117,12 @@ class AppPrefs {
     DCHECK(dict_);
     dict_ = nullptr;
     settings_->SetWebsiteSettingDefaultScope(
-        origin_, GURL(), ContentSettingsType::APP_BANNER,
+        *origin_, GURL(), ContentSettingsType::APP_BANNER,
         base::Value(std::move(origin_dict_)));
   }
 
  private:
-  const GURL& origin_;
+  const raw_ref<const GURL> origin_;
   raw_ptr<HostContentSettingsMap> settings_ = nullptr;
   base::Value::Dict origin_dict_;
   raw_ptr<base::Value::Dict> dict_ = nullptr;

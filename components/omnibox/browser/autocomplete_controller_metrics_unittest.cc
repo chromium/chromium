@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -53,11 +54,11 @@ class AutocompleteControllerMetricsTest : public testing::Test {
       int sync_milliseconds,
       std::vector<AutocompleteResult::MatchDedupComparator> old_results,
       std::vector<AutocompleteResult::MatchDedupComparator> sync_results) {
-    metrics_.OnStart();
+    metrics_->OnStart();
     controller_.in_start_ = true;
     controller_.done_ = sync_results_only;
     task_environment_.FastForwardBy(base::Milliseconds(sync_milliseconds));
-    metrics_.OnNotifyChanged(old_results, sync_results);
+    metrics_->OnNotifyChanged(old_results, sync_results);
     controller_.in_start_ = false;
   }
 
@@ -75,7 +76,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // logged. Does not check provider or cross stability metrics.
   void StopAndExpectNoSuggestionFinalizationMetrics() {
     ResetHistogramTester();
-    metrics_.OnStop();
+    metrics_->OnStop();
     ExpectNoSuggestionFinalizationMetrics();
   }
 
@@ -148,7 +149,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // metrics.
   FakeAutocompleteController controller_;
   // A convenience reference to `controller_.metrics_`.
-  AutocompleteControllerMetrics& metrics_;
+  const raw_ref<AutocompleteControllerMetrics> metrics_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
@@ -156,7 +157,7 @@ TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_SyncInput) {
   // Sync inputs should not log metrics.
   SetInputSync(true);
   SimulateStart(true, 1, {}, {{}});
-  metrics_.OnStop();
+  metrics_->OnStop();
   ExpectNoSuggestionFinalizationMetrics();
 }
 
@@ -182,14 +183,14 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({}, {{}});
+  metrics_->OnNotifyChanged({}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({}, {{}});
+  metrics_->OnNotifyChanged({}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnNotifyChanged({}, {{}});
+  metrics_->OnNotifyChanged({}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 4, 4, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -200,14 +201,14 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {{}}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 0, 0, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -219,14 +220,14 @@ TEST_F(
   SimulateStart(false, 1, {{}}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnNotifyChanged({}, {{}});
+  metrics_->OnNotifyChanged({}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 4, 4, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -238,14 +239,14 @@ TEST_F(
   SimulateStart(false, 1, {{}}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({}, {{}});
+  metrics_->OnNotifyChanged({}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 2, 2, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -256,14 +257,14 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 1, 1, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -277,10 +278,10 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   // Stop timer.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnStop();
+  metrics_->OnStop();
   ExpectSingleCountSuggestionFinalizationMetrics(3, 1, 1, false);
   controller_.done_ = true;
   StopAndExpectNoSuggestionFinalizationMetrics();
@@ -291,7 +292,7 @@ TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_Interrupted) {
   SimulateStart(false, 1, {}, {{}});
   // 1 async update for 1st input.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({}, {{}});
+  metrics_->OnNotifyChanged({}, {{}});
   ExpectNoSuggestionFinalizationMetrics();
   // Interrupted by 2nd input. The log should include the time until
   // interruption.
@@ -306,12 +307,12 @@ TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_Interrupted) {
   // 1 async update for 3rd input. Controller completes with the 2nd update.
   ResetHistogramTester();
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({}, {{}});
+  metrics_->OnNotifyChanged({}, {{}});
   ExpectNoSuggestionFinalizationMetrics();
   // 2nd and last async update for 3rd input.
   controller_.done_ = true;
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({}, {{}});
+  metrics_->OnNotifyChanged({}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(3, 3, 3, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -322,11 +323,11 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {}, {{}});
   // 1st async update with non-default match changed.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}, {}});
+  metrics_->OnNotifyChanged({{}}, {{}, {}});
   // 2nd async update with no matches changed.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(3, 2, 1, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -340,31 +341,31 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BUILTIN);
 
   // Sync update with `async_provider_done_sync` completing.
-  metrics_.OnStart();
+  metrics_->OnStart();
   controller_.in_start_ = true;
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnProviderUpdate(*async_provider_done_sync);
+  metrics_->OnProviderUpdate(*async_provider_done_sync);
   ExpectProviderMetrics(async_provider_done_sync->GetName(), 1, true);
   controller_.done_ = false;
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   controller_.in_start_ = false;
   ExpectNoSuggestionFinalizationMetrics();
   ResetHistogramTester();
 
   // 1st async update with `async_provider_done_not_last` completing.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnProviderUpdate(*async_provider_done_not_last);
+  metrics_->OnProviderUpdate(*async_provider_done_not_last);
   ExpectProviderMetrics(async_provider_done_not_last->GetName(), 2, true);
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   ExpectNoSuggestionFinalizationMetrics();
   ResetHistogramTester();
 
   // Last async update with `async_provider_done_last` completing.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnProviderUpdate(*async_provider_done_last);
+  metrics_->OnProviderUpdate(*async_provider_done_last);
   controller_.done_ = true;
   ExpectProviderMetrics(async_provider_done_last->GetName(), 3, true);
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(3, 0, 0, true);
 
   StopAndExpectNoSuggestionFinalizationMetrics();
@@ -379,26 +380,26 @@ TEST_F(AutocompleteControllerMetricsTest,
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
 
   // Sync update without completion.
-  metrics_.OnStart();
+  metrics_->OnStart();
   controller_.in_start_ = true;
   provider->done_ = false;
-  metrics_.OnProviderUpdate(*provider);
+  metrics_->OnProviderUpdate(*provider);
   controller_.done_ = false;
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnNotifyChanged({{}}, {{}});
   controller_.in_start_ = false;
 
   // 1st async update without completion.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnProviderUpdate(*provider);
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnProviderUpdate(*provider);
+  metrics_->OnNotifyChanged({{}}, {{}});
 
   // Last async update with completion.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   provider->done_ = true;
   controller_.done_ = true;
-  metrics_.OnProviderUpdate(*provider);
-  metrics_.OnNotifyChanged({{}}, {{}});
+  metrics_->OnProviderUpdate(*provider);
+  metrics_->OnNotifyChanged({{}}, {{}});
 
   ExpectProviderMetrics(provider->GetName(), 3, true);
   ExpectSingleCountSuggestionFinalizationMetrics(3, 0, 0, true);
@@ -420,7 +421,7 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_Interrupted) {
   // Simulate stopping while `provider_started` is still ongoing.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   provider_started->done_ = false;
-  metrics_.OnStop();
+  metrics_->OnStop();
   provider_started->done_ = true;
   controller_.done_ = true;
 
@@ -451,7 +452,7 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
 
   // Verify logging to the Async* histograms.
   controller_.in_start_ = false;
-  metrics_.OnNotifyChanged(first_result, second_result);
+  metrics_->OnNotifyChanged(first_result, second_result);
   // Expect the default match, third match, and last two matches to be logged
   // as changed, and nothing else.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
@@ -482,7 +483,7 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
 
   // Verify logging to the CrossInput* histograms.
   controller_.in_start_ = true;
-  metrics_.OnNotifyChanged(first_result, second_result);
+  metrics_->OnNotifyChanged(first_result, second_result);
   // Expect the default match, third match, and last two matches to be logged
   // as changed, and nothing else.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
@@ -514,9 +515,9 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
 
   // Verify no logging when appending matches.
   controller_.in_start_ = false;
-  metrics_.OnNotifyChanged(second_result, third_result);
+  metrics_->OnNotifyChanged(second_result, third_result);
   controller_.in_start_ = true;
-  metrics_.OnNotifyChanged(second_result, third_result);
+  metrics_->OnNotifyChanged(second_result, third_result);
   // Expect no changes logged; expect 1 false logged to
   // *MatchChangedInAnyPosition.
   EXPECT_THAT(histogram_tester_->GetAllSamples(

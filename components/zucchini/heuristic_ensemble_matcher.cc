@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/zucchini/binary_data_histogram.h"
@@ -142,8 +143,8 @@ class MatchingInfoOutVerbose : public MatchingInfoOut {
 
   // Outputs sizes and initializes |text_grid_|.
   void InitSizes(size_t old_size, size_t new_size) override {
-    out_ << "Comparing old (" << old_size << " elements) and new (" << new_size
-         << " elements)" << std::endl;
+    *out_ << "Comparing old (" << old_size << " elements) and new (" << new_size
+          << " elements)" << std::endl;
     text_grid_.assign(new_size, std::string(old_size, '-'));
     best_dist_.assign(new_size, -1.0);
   }
@@ -175,8 +176,8 @@ class MatchingInfoOutVerbose : public MatchingInfoOut {
   void OutputCompare(const Element& old_element,
                      const Element& new_element,
                      double dist) override {
-    out_ << "Compare old" << old_element << " to new" << new_element << " --> "
-         << base::StringPrintf("%.5f", dist) << std::endl;
+    *out_ << "Compare old" << old_element << " to new" << new_element << " --> "
+          << base::StringPrintf("%.5f", dist) << std::endl;
   }
 
   void OutputMatch(const Element& best_old_element,
@@ -184,42 +185,42 @@ class MatchingInfoOutVerbose : public MatchingInfoOut {
                    bool is_identical,
                    double best_dist) override {
     if (is_identical) {
-      out_ << "Skipped old" << best_old_element << " - identical to new"
-           << new_element;
+      *out_ << "Skipped old" << best_old_element << " - identical to new"
+            << new_element;
     } else {
-      out_ << "Matched old" << best_old_element << " to new" << new_element
-           << " --> " << base::StringPrintf("%.5f", best_dist);
+      *out_ << "Matched old" << best_old_element << " to new" << new_element
+            << " --> " << base::StringPrintf("%.5f", best_dist);
     }
-    out_ << std::endl;
+    *out_ << std::endl;
   }
 
   void OutputScores(const std::string& stats) override {
-    out_ << "Best dists: " << stats << std::endl;
+    *out_ << "Best dists: " << stats << std::endl;
   }
 
   void OutputTextGrid() override {
     int new_size = static_cast<int>(text_grid_.size());
     for (int inew = 0; inew < new_size; ++inew) {
       const std::string& line = text_grid_[inew];
-      out_ << "  ";
+      *out_ << "  ";
       for (char ch : line) {
         char prefix = (ch == 'I' || ch == 'M') ? '(' : ' ';
         char suffix = (ch == 'I' || ch == 'M') ? ')' : ' ';
-        out_ << prefix << ch << suffix;
+        *out_ << prefix << ch << suffix;
       }
       if (best_dist_[inew] >= 0)
-        out_ << "   " << base::StringPrintf("%.5f", best_dist_[inew]);
-      out_ << std::endl;
+        *out_ << "   " << base::StringPrintf("%.5f", best_dist_[inew]);
+      *out_ << std::endl;
     }
     if (!text_grid_.empty()) {
-      out_ << "  Legend: I = identical, M = matched, T = type mismatch, "
-              "U = unsafe distance, C = candidate, O = outlier, - = skipped."
-           << std::endl;
+      *out_ << "  Legend: I = identical, M = matched, T = type mismatch, "
+               "U = unsafe distance, C = candidate, O = outlier, - = skipped."
+            << std::endl;
     }
   }
 
  private:
-  std::ostream& out_;
+  const raw_ref<std::ostream> out_;
 
   // Text grid representation of matches. Rows correspond to "old" and columns
   // correspond to "new".

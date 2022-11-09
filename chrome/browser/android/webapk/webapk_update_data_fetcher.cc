@@ -159,38 +159,38 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // observing too. It is based on our assumption that it is invalid for
   // web developers to change the Web Manifest location. When it does
   // change, we will treat the new Web Manifest as the one of another WebAPK.
-  if (!data.NoBlockingErrors() || blink::IsEmptyManifest(data.manifest) ||
+  if (!data.NoBlockingErrors() || blink::IsEmptyManifest(*data.manifest) ||
       !webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
-          data.manifest)) {
+          *data.manifest)) {
     return;
   }
 
   if (!base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId) &&
-      web_manifest_url_ != data.manifest_url) {
+      web_manifest_url_ != *data.manifest_url) {
     return;
   }
 
-  GURL new_manifest_id(blink::GetIdFromManifest(data.manifest));
+  GURL new_manifest_id(blink::GetIdFromManifest(*data.manifest));
   // If the fetched manifest id is different from the current one, we also
   // continue observing as the id is the identity for the application. We
   // will treat the manifest with different id as the one of another WebAPK.
   if (base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId) &&
       !web_manifest_id_.is_empty() && web_manifest_id_ != new_manifest_id) {
     UMA_HISTOGRAM_BOOLEAN("WebApk.Update.UniqueIdDifferent.ManifestUrl",
-                          web_manifest_url_ == data.manifest_url);
+                          web_manifest_url_ == *data.manifest_url);
     UMA_HISTOGRAM_BOOLEAN("WebApk.Update.UniqueIdDifferent.StartUrl",
-                          start_url_ == data.manifest.start_url);
+                          start_url_ == data.manifest->start_url);
     return;
   }
 
-  info_.UpdateFromManifest(data.manifest);
-  info_.manifest_url = data.manifest_url;
-  info_.best_primary_icon_url = data.primary_icon_url;
+  info_.UpdateFromManifest(*data.manifest);
+  info_.manifest_url = *data.manifest_url;
+  info_.best_primary_icon_url = *data.primary_icon_url;
   primary_icon_ = *data.primary_icon;
   is_primary_icon_maskable_ = data.has_maskable_primary_icon;
 
   if (data.splash_icon && !data.splash_icon->drawsNothing()) {
-    info_.splash_image_url = data.splash_icon_url;
+    info_.splash_image_url = *data.splash_icon_url;
     splash_icon_ = *data.splash_icon;
     is_splash_icon_maskable_ = data.has_maskable_splash_icon;
   }

@@ -16,19 +16,19 @@ EncodedView::EncodedView(const ImageIndex& image_index)
 EncodedView::~EncodedView() = default;
 
 EncodedView::value_type EncodedView::Projection(offset_t location) const {
-  DCHECK_LT(location, image_index_.size());
+  DCHECK_LT(location, image_index_->size());
 
   // Find out what lies at |location|.
-  TypeTag type = image_index_.LookupType(location);
+  TypeTag type = image_index_->LookupType(location);
 
   // |location| points into raw data.
   if (type == kNoTypeTag) {
     // The projection is the identity function on raw content.
-    return image_index_.GetRawValue(location);
+    return image_index_->GetRawValue(location);
   }
 
   // |location| points into a Reference.
-  const ReferenceSet& ref_set = image_index_.refs(type);
+  const ReferenceSet& ref_set = image_index_->refs(type);
   Reference ref = ref_set.at(location);
   DCHECK_GE(location, ref.location);
   DCHECK_LT(location, ref.location + ref_set.width());
@@ -50,7 +50,7 @@ EncodedView::value_type EncodedView::Projection(offset_t location) const {
   // Projection is done on (|target|, |type|), shifted by
   // kBaseReferenceProjection to avoid collisions with raw content.
   value_type projection = label;
-  projection *= image_index_.TypeCount();
+  projection *= image_index_->TypeCount();
   projection += type.value();
   return projection + kBaseReferenceProjection;
 }
@@ -59,13 +59,13 @@ size_t EncodedView::Cardinality() const {
   size_t max_width = 0;
   for (const auto& pool_info : pool_infos_)
     max_width = std::max(max_width, pool_info.bound);
-  return max_width * image_index_.TypeCount() + kBaseReferenceProjection;
+  return max_width * image_index_->TypeCount() + kBaseReferenceProjection;
 }
 
 void EncodedView::SetLabels(PoolTag pool,
                             std::vector<uint32_t>&& labels,
                             size_t bound) {
-  DCHECK_EQ(labels.size(), image_index_.pool(pool).size());
+  DCHECK_EQ(labels.size(), image_index_->pool(pool).size());
   DCHECK(labels.empty() || *max_element(labels.begin(), labels.end()) < bound);
   pool_infos_[pool.value()].labels = std::move(labels);
   pool_infos_[pool.value()].bound = bound;

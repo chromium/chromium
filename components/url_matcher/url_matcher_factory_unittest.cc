@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/format_macros.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
@@ -211,18 +212,18 @@ class UrlConditionCaseTest {
 
   const char* condition_key_;
   const bool use_list_of_strings_;
-  const std::string& expected_value_;
-  const std::string& incorrect_case_value_;
+  const raw_ref<const std::string> expected_value_;
+  const raw_ref<const std::string> incorrect_case_value_;
   const ResultType expected_result_for_wrong_case_;
-  const GURL& url_;
+  const raw_ref<const GURL> url_;
 
   // Allow implicit copy and assign, because a public copy constructor is
   // needed, but never used (!), for the definition of arrays of this class.
 };
 
 void UrlConditionCaseTest::Test() const {
-  CheckCondition(expected_value_, OK);
-  CheckCondition(incorrect_case_value_, expected_result_for_wrong_case_);
+  CheckCondition(*expected_value_, OK);
+  CheckCondition(*incorrect_case_value_, expected_result_for_wrong_case_);
 }
 
 void UrlConditionCaseTest::CheckCondition(
@@ -255,9 +256,9 @@ void UrlConditionCaseTest::CheckCondition(
   URLMatcherConditionSet::Vector conditions;
   conditions.push_back(result);
   matcher.AddConditionSets(conditions);
-  EXPECT_EQ((expected_result == OK ? 1u : 0u), matcher.MatchURL(url_).size())
+  EXPECT_EQ((expected_result == OK ? 1u : 0u), matcher.MatchURL(*url_).size())
       << "while matching condition " << condition_key_ << " with value "
-      << value  << " against url " << url_;
+      << value << " against url " << *url_;
 }
 
 // This tests that the UrlFilter handles case sensitivity on various parts of

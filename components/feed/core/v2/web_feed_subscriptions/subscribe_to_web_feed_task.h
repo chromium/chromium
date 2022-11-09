@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_SUBSCRIBE_TO_WEB_FEED_TASK_H_
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_SUBSCRIBE_TO_WEB_FEED_TASK_H_
 
+#include "base/memory/raw_ref.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
@@ -57,7 +58,7 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
   void ReadFeedDataComplete(FeedStore::WebFeedStartupData startup_data);
   void Done(WebFeedSubscriptionRequestStatus status);
 
-  FeedStream& stream_;
+  const raw_ref<FeedStream> stream_;
   OperationToken operation_token_;
   Request request_;
   feedstore::WebFeedInfo subscribed_web_feed_info_;

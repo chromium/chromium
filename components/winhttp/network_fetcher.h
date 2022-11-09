@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -114,7 +115,8 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
-  const HINTERNET& session_handle_;  // Owned by NetworkFetcherFactory.
+  const raw_ref<const HINTERNET>
+      session_handle_;  // Owned by NetworkFetcherFactory.
   scoped_refptr<ProxyConfiguration> proxy_configuration_;
   ScopedHInternet connect_handle_;
   ScopedHInternet request_handle_;

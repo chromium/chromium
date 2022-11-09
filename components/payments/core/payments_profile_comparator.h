@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 // Utility functions used for processing and filtering address profiles
@@ -125,7 +126,7 @@ class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
       const autofill::AutofillProfile& profile) const;
 
   mutable std::map<std::string, ProfileFields> cache_;
-  const PaymentOptionsProvider& options_;
+  const raw_ref<const PaymentOptionsProvider> options_;
 };
 
 }  // namespace payments

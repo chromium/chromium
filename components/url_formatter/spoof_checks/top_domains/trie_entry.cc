@@ -55,9 +55,9 @@ bool TopDomainTrieEntry::WriteEntry(
   }
 
   for (const auto& c : top_domain) {
-    writer->WriteChar(c, huffman_table_, huffman_builder_);
+    writer->WriteChar(c, *huffman_table_, huffman_builder_);
   }
-  writer->WriteChar(net::huffman_trie::kEndOfTableValue, huffman_table_,
+  writer->WriteChar(net::huffman_trie::kEndOfTableValue, *huffman_table_,
                     huffman_builder_);
   return true;
 }

@@ -31,8 +31,8 @@ RelocReaderElf::RelocReaderElf(
 
   // Find the relocation section at or right before |lo|.
   cur_section_dimensions_ = std::upper_bound(
-      reloc_section_dimensions_.begin(), reloc_section_dimensions_.end(), lo);
-  if (cur_section_dimensions_ != reloc_section_dimensions_.begin())
+      reloc_section_dimensions_->begin(), reloc_section_dimensions_->end(), lo);
+  if (cur_section_dimensions_ != reloc_section_dimensions_->begin())
     --cur_section_dimensions_;
 
   // |lo| and |hi_| do not cut across a reloc reference (e.g.,
@@ -51,9 +51,9 @@ RelocReaderElf::RelocReaderElf(
     cursor_ +=
         AlignCeil<offset_t>(lo - cursor_, cur_section_dimensions_->entry_size);
 
-  auto end_section = std::upper_bound(reloc_section_dimensions_.begin(),
-                                      reloc_section_dimensions_.end(), hi_);
-  if (end_section != reloc_section_dimensions_.begin()) {
+  auto end_section = std::upper_bound(reloc_section_dimensions_->begin(),
+                                      reloc_section_dimensions_->end(), hi_);
+  if (end_section != reloc_section_dimensions_->begin()) {
     --end_section;
     if (hi_ - end_section->region.offset < end_section->region.size) {
       offset_t end_region_offset =
@@ -97,7 +97,7 @@ absl::optional<Reference> RelocReaderElf::GetNext() {
   for (; cursor_ + cur_entry_size <= hi_; cursor_ += cur_entry_size) {
     while (cursor_ >= cur_section_dimensions_end) {
       ++cur_section_dimensions_;
-      if (cur_section_dimensions_ == reloc_section_dimensions_.end())
+      if (cur_section_dimensions_ == reloc_section_dimensions_->end())
         return absl::nullopt;
       cur_entry_size = cur_section_dimensions_->entry_size;
       cursor_ =

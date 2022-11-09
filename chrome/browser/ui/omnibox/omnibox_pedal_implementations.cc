@@ -82,7 +82,7 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
 
   void Execute(ExecutionContext& context) const override {
     if (incognito_) {
-      context.client_.OpenIncognitoClearBrowsingDataDialog();
+      context.client_->OpenIncognitoClearBrowsingDataDialog();
     } else {
       OmniboxPedal::Execute(context);
     }
@@ -251,7 +251,7 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
   }
 
   void Execute(ExecutionContext& context) const override {
-    context.client_.NewIncognitoWindow();
+    context.client_->NewIncognitoWindow();
   }
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
@@ -310,7 +310,7 @@ class OmniboxPedalTranslate : public OmniboxPedal {
   }
 
   void Execute(ExecutionContext& context) const override {
-    context.client_.PromptPageTranslation();
+    context.client_->PromptPageTranslation();
   }
 
   bool IsReadyToTrigger(
@@ -1306,7 +1306,7 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
   }
 
   void Execute(ExecutionContext& context) const override {
-    context.client_.CloseIncognitoWindows();
+    context.client_->CloseIncognitoWindows();
   }
 
  protected:
@@ -1644,7 +1644,7 @@ class OmniboxPedalShareThisPage : public OmniboxPedal {
   }
 
   void Execute(ExecutionContext& context) const override {
-    context.client_.OpenSharingHub();
+    context.client_->OpenSharingHub();
   }
 
  protected:

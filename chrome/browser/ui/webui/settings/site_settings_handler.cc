@@ -2053,15 +2053,15 @@ void SiteSettingsHandler::GetOriginStorage(
   }
 
   for (const auto& entry : *browsing_data_model_) {
-    if (entry.data_details.storage_size == 0)
+    if (entry.data_details->storage_size == 0)
       continue;
 
     // Convert the primary host to an HTTPS url to match expecations for this
     // code.
     GURL host_url(std::string(url::kHttpsScheme) +
-                  url::kStandardSchemeSeparator + entry.primary_host + "/");
+                  url::kStandardSchemeSeparator + *entry.primary_host + "/");
     UpdateDataFromModel(all_sites_map, origin_size_map, host_url,
-                        entry.data_details.storage_size);
+                        entry.data_details->storage_size);
   }
 }
 

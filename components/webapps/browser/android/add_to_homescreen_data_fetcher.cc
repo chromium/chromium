@@ -235,15 +235,15 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 
   is_waiting_for_manifest_ = false;
 
-  if (!blink::IsEmptyManifest(data.manifest)) {
+  if (!blink::IsEmptyManifest(*data.manifest)) {
     base::RecordAction(base::UserMetricsAction("webapps.AddShortcut.Manifest"));
-    shortcut_info_.UpdateFromManifest(data.manifest);
-    shortcut_info_.manifest_url = data.manifest_url;
+    shortcut_info_.UpdateFromManifest(*data.manifest);
+    shortcut_info_.manifest_url = (*data.manifest_url);
   }
 
   // Do this after updating from the manifest for the case where a site has
   // a manifest with name and standalone specified, but no icons.
-  if (blink::IsEmptyManifest(data.manifest) || !data.primary_icon) {
+  if (blink::IsEmptyManifest(*data.manifest) || !data.primary_icon) {
     DCHECK_GT(data.errors.size(), 0u);
     if (!data.errors.empty())
       installable_status_code_ = data.errors[0];
@@ -257,10 +257,10 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 
   raw_primary_icon_ = *data.primary_icon;
   has_maskable_primary_icon_ = data.has_maskable_primary_icon;
-  shortcut_info_.best_primary_icon_url = data.primary_icon_url;
+  shortcut_info_.best_primary_icon_url = (*data.primary_icon_url);
 
   // Save the splash screen URL for the later download.
-  shortcut_info_.UpdateBestSplashIcon(data.manifest);
+  shortcut_info_.UpdateBestSplashIcon(*data.manifest);
 
   installable_manager_->GetData(
       ParamsToPerformInstallableCheck(),
@@ -278,7 +278,7 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
   bool webapk_compatible =
       (data.NoBlockingErrors() && data.valid_manifest &&
        data.worker_check_passed &&
-       WebappsUtils::AreWebManifestUrlsWebApkCompatible(data.manifest));
+       WebappsUtils::AreWebManifestUrlsWebApkCompatible(*data.manifest));
   if (!webapk_compatible && !data.errors.empty()) {
     installable_status_code_ = data.errors[0];
   }

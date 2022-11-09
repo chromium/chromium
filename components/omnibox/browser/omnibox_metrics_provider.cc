@@ -185,7 +185,7 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
   omnibox_event->set_is_popup_open(log.is_popup_open && !log.is_paste_and_go);
   omnibox_event->set_is_paste_and_go(log.is_paste_and_go);
 
-  for (auto i(log.result.begin()); i != log.result.end(); ++i) {
+  for (auto i(log.result->begin()); i != log.result->end(); ++i) {
     OmniboxEventProto::Suggestion* suggestion = omnibox_event->add_suggestion();
     const auto provider_type = i->provider->AsOmniboxEventProviderType();
     suggestion->set_provider(provider_type);
@@ -220,10 +220,10 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
 
 void OmniboxMetricsProvider::RecordOmniboxOpenedURLClientSummarizedResultType(
     const OmniboxLog& log) {
-  if (log.selected_index < 0 || log.selected_index >= log.result.size())
+  if (log.selected_index < 0 || log.selected_index >= log.result->size())
     return;
 
-  auto autocomplete_match = log.result.match_at(log.selected_index);
+  auto autocomplete_match = log.result->match_at(log.selected_index);
   auto omnibox_event_result_type =
       autocomplete_match.AsOmniboxEventResultType();
   auto client_summarized_result_type =

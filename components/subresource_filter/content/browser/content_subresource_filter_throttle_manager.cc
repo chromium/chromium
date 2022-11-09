@@ -153,7 +153,7 @@ ContentSubresourceFilterThrottleManager::
 
 ContentSubresourceFilterThrottleManager::
     ~ContentSubresourceFilterThrottleManager() {
-  web_contents_helper_.WillDestroyThrottleManager(this);
+  web_contents_helper_->WillDestroyThrottleManager(this);
 }
 
 void ContentSubresourceFilterThrottleManager::RenderFrameDeleted(

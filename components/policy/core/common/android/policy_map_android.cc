@@ -74,8 +74,8 @@ jboolean PolicyMapAndroid::Equals(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& caller,
     jlong other) const {
-  return policy_map_.Equals(
-      reinterpret_cast<PolicyMapAndroid*>(other)->policy_map_);
+  return policy_map_->Equals(
+      *reinterpret_cast<PolicyMapAndroid*>(other)->policy_map_);
 }
 
 base::android::ScopedJavaLocalRef<jobject> PolicyMapAndroid::GetJavaObject() {
@@ -109,7 +109,7 @@ const base::Value* PolicyMapAndroid::GetValue(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& policy) const {
   // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
-  return policy_map_.GetValueUnsafe(
+  return policy_map_->GetValueUnsafe(
       base::android::ConvertJavaStringToUTF8(env, policy));
 }
 

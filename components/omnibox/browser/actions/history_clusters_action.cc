@@ -158,7 +158,7 @@ void HistoryClustersAction::RecordActionShown(size_t position,
 }
 
 void HistoryClustersAction::Execute(ExecutionContext& context) const {
-  if (context.client_.OpenJourneys(query_)) {
+  if (context.client_->OpenJourneys(query_)) {
     // If the client opens Journeys in the Side Panel, we are done.
     return;
   }

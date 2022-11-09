@@ -11,6 +11,7 @@
 #include <iterator>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "components/zucchini/image_index.h"
 #include "components/zucchini/image_utils.h"
 
@@ -144,7 +145,7 @@ class EncodedView {
   value_type Projection(offset_t location) const;
 
   bool IsToken(offset_t location) const {
-    return image_index_.IsToken(location);
+    return image_index_->IsToken(location);
   }
 
   // Returns the cardinality of the projection, i.e., the upper bound on
@@ -154,10 +155,10 @@ class EncodedView {
   // Associates |labels| to targets for a given |pool|, replacing previous
   // association. Values in |labels| must be smaller than |bound|.
   void SetLabels(PoolTag pool, std::vector<uint32_t>&& labels, size_t bound);
-  const ImageIndex& image_index() const { return image_index_; }
+  const ImageIndex& image_index() const { return *image_index_; }
 
   // Range functions.
-  size_type size() const { return size_type(image_index_.size()); }
+  size_type size() const { return size_type(image_index_->size()); }
   const_iterator begin() const {
     return const_iterator{this, difference_type(0)};
   }
@@ -176,7 +177,7 @@ class EncodedView {
     size_t bound = 0;
   };
 
-  const ImageIndex& image_index_;
+  const raw_ref<const ImageIndex> image_index_;
   std::vector<PoolInfo> pool_infos_;
 };
 

@@ -31,11 +31,11 @@ void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
 
   // Set the origin.
   get_updates->set_get_updates_origin(sync_pb::SyncEnums::GU_TRIGGER);
-  get_updates->set_is_retry(nudge_tracker_.IsRetryRequired());
+  get_updates->set_is_retry(nudge_tracker_->IsRetryRequired());
 
   // Special case: A GU performed for no other reason than retry will have its
   // origin set to RETRY.
-  if (nudge_tracker_.GetOrigin() == sync_pb::SyncEnums::RETRY)
+  if (nudge_tracker_->GetOrigin() == sync_pb::SyncEnums::RETRY)
     get_updates->set_get_updates_origin(sync_pb::SyncEnums::RETRY);
 
   // Fill in the notification hints.
@@ -45,10 +45,10 @@ void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
     ModelType type =
         GetModelTypeFromSpecificsFieldNumber(progress_marker->data_type_id());
 
-    DCHECK(!nudge_tracker_.IsTypeBlocked(type))
+    DCHECK(!nudge_tracker_->IsTypeBlocked(type))
         << "Throttled types should have been removed from the request_types.";
 
-    nudge_tracker_.FillProtoMessage(
+    nudge_tracker_->FillProtoMessage(
         type, progress_marker->mutable_get_update_triggers());
   }
 }
@@ -57,7 +57,7 @@ std::unique_ptr<ProtocolEvent> NormalGetUpdatesDelegate::GetNetworkRequestEvent(
     base::Time timestamp,
     const sync_pb::ClientToServerMessage& request) const {
   return std::unique_ptr<ProtocolEvent>(
-      new NormalGetUpdatesRequestEvent(timestamp, nudge_tracker_, request));
+      new NormalGetUpdatesRequestEvent(timestamp, *nudge_tracker_, request));
 }
 
 bool NormalGetUpdatesDelegate::IsNotificationInfoRequired() const {

@@ -360,7 +360,7 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(
     return;
   const GURL& opened_url = log->final_destination_url;
 
-  auto& match = log->result.match_at(log->selected_index);
+  auto& match = log->result->match_at(log->selected_index);
   if (match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED) {
     bool has_search_suggest = false;
     bool has_history_search = false;

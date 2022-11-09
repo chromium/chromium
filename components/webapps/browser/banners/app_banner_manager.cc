@@ -374,11 +374,11 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
     return;
   }
 
-  DCHECK(!data.manifest_url.is_empty());
-  DCHECK(!blink::IsEmptyManifest(data.manifest));
+  DCHECK(!data.manifest_url->is_empty());
+  DCHECK(!blink::IsEmptyManifest(*data.manifest));
 
-  manifest_url_ = data.manifest_url;
-  manifest_ = data.manifest.Clone();
+  manifest_url_ = *(data.manifest_url);
+  manifest_ = data.manifest->Clone();
   manifest_id_ = blink::GetIdFromManifest(manifest());
 
   PerformInstallableChecks();
@@ -451,13 +451,13 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   }
 
   DCHECK(data.valid_manifest);
-  DCHECK(!data.primary_icon_url.is_empty());
+  DCHECK(!data.primary_icon_url->is_empty());
   DCHECK(data.primary_icon);
 
-  primary_icon_url_ = data.primary_icon_url;
+  primary_icon_url_ = *data.primary_icon_url;
   primary_icon_ = *data.primary_icon;
   has_maskable_primary_icon_ = data.has_maskable_primary_icon;
-  screenshots_ = data.screenshots;
+  screenshots_ = *(data.screenshots);
 
   if (features::SkipInstallServiceWorkerCheck() ||
       base::FeatureList::IsEnabled(features::kCreateShortcutIgnoresManifest)) {

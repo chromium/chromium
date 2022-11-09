@@ -93,7 +93,7 @@ PaymentsProfileComparator::FilterProfilesForContact(
 bool PaymentsProfileComparator::IsContactEqualOrSuperset(
     const autofill::AutofillProfile& super,
     const autofill::AutofillProfile& sub) const {
-  if (options_.request_payer_name()) {
+  if (options_->request_payer_name()) {
     if (sub.HasInfo(autofill::NAME_FULL) &&
         !super.HasInfo(autofill::NAME_FULL)) {
       return false;
@@ -101,7 +101,7 @@ bool PaymentsProfileComparator::IsContactEqualOrSuperset(
     if (!HaveMergeableNames(super, sub))
       return false;
   }
-  if (options_.request_payer_phone()) {
+  if (options_->request_payer_phone()) {
     if (sub.HasInfo(autofill::PHONE_HOME_WHOLE_NUMBER) &&
         !super.HasInfo(autofill::PHONE_HOME_WHOLE_NUMBER)) {
       return false;
@@ -109,7 +109,7 @@ bool PaymentsProfileComparator::IsContactEqualOrSuperset(
     if (!HaveMergeablePhoneNumbers(super, sub))
       return false;
   }
-  if (options_.request_payer_email()) {
+  if (options_->request_payer_email()) {
     if (sub.HasInfo(autofill::EMAIL_ADDRESS) &&
         !super.HasInfo(autofill::EMAIL_ADDRESS)) {
       return false;
@@ -244,18 +244,18 @@ PaymentsProfileComparator::ComputeMissingFields(
 PaymentsProfileComparator::ProfileFields
 PaymentsProfileComparator::GetRequiredProfileFieldsForContact() const {
   ProfileFields required = kNone;
-  if (options_.request_payer_name())
+  if (options_->request_payer_name())
     required |= kName;
-  if (options_.request_payer_phone())
+  if (options_->request_payer_phone())
     required |= kPhone;
-  if (options_.request_payer_email())
+  if (options_->request_payer_email())
     required |= kEmail;
   return required;
 }
 
 PaymentsProfileComparator::ProfileFields
 PaymentsProfileComparator::GetRequiredProfileFieldsForShipping() const {
-  return options_.request_shipping() ? (kAddress | kName | kPhone) : kNone;
+  return options_->request_shipping() ? (kAddress | kName | kPhone) : kNone;
 }
 
 std::u16string PaymentsProfileComparator::GetStringForMissingFields(

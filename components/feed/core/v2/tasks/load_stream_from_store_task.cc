@@ -70,7 +70,7 @@ void LoadStreamFromStoreTask::LoadStreamDone(
   }
   if (!ignore_account_) {
     if (result.stream_data.signed_in()) {
-      const AccountInfo& account_info = feed_stream_.GetAccountInfo();
+      const AccountInfo& account_info = feed_stream_->GetAccountInfo();
       if (result.stream_data.gaia() != account_info.gaia ||
           result.stream_data.email() != account_info.email) {
         Complete(LoadStreamStatus::kDataInStoreIsForAnotherUser,
@@ -85,7 +85,7 @@ void LoadStreamFromStoreTask::LoadStreamDone(
     content_age_ =
         base::Time::Now() - feedstore::GetLastAddedTime(result.stream_data);
 
-    const feedstore::Metadata& metadata = feed_stream_.GetMetadata();
+    const feedstore::Metadata& metadata = feed_stream_->GetMetadata();
 
     if (ContentInvalidFromAge(metadata, result.stream_type, content_age_,
                               is_web_feed_subscriber_)) {

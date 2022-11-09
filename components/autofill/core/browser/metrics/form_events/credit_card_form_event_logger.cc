@@ -118,12 +118,12 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
       /*is_for_credit_card=*/true, form, field);
 
   AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
-      {.event_logger = *this,
-       .form = form,
-       .field = field,
-       .newly_filled_fields = newly_filled_fields,
-       .safe_fields = safe_fields,
-       .builder = builder});
+      {.event_logger = raw_ref(*this),
+       .form = raw_ref(form),
+       .field = raw_ref(field),
+       .newly_filled_fields = raw_ref(newly_filled_fields),
+       .safe_fields = raw_ref(safe_fields),
+       .builder = raw_ref(builder)});
 
   switch (record_type) {
     case CreditCard::LOCAL_CARD:

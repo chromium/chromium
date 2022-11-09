@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dom_distiller/core/article_distillation_update.h"
@@ -156,7 +157,8 @@ class DistillerImpl : public Distiller {
   // state.
   const ArticleDistillationUpdate CreateDistillationUpdate() const;
 
-  const DistillerURLFetcherFactory& distiller_url_fetcher_factory_;
+  const raw_ref<const DistillerURLFetcherFactory>
+      distiller_url_fetcher_factory_;
   std::unique_ptr<DistillerPage> distiller_page_;
 
   dom_distiller::proto::DomDistillerOptions dom_distiller_options_;

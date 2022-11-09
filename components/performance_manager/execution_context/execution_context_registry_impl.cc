@@ -5,6 +5,7 @@
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 
 #include "base/check.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
@@ -35,7 +36,7 @@ class DummyExecutionContextForLookup : public ExecutionContext {
     return ExecutionContextType::kFrameNode;
   }
 
-  blink::ExecutionContextToken GetToken() const override { return token_; }
+  blink::ExecutionContextToken GetToken() const override { return *token_; }
 
   Graph* GetGraph() const override {
     NOTREACHED();
@@ -70,7 +71,7 @@ class DummyExecutionContextForLookup : public ExecutionContext {
   }
 
  private:
-  const blink::ExecutionContextToken& token_;
+  const raw_ref<const blink::ExecutionContextToken> token_;
 };
 
 }  // namespace

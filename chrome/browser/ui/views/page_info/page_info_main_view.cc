@@ -266,7 +266,7 @@ void PageInfoMainView::SetPermissionInfo(
     // The view takes ownership of the object info.
     auto object_view = std::make_unique<ChosenObjectView>(
         std::move(object),
-        presenter_->GetChooserContextFromUIInfo(object->ui_info)
+        presenter_->GetChooserContextFromUIInfo(*object->ui_info)
             ->GetObjectDisplayName(object->chooser_object->value));
     object_view->AddObserver(this);
     chosen_object_rows_.push_back(
@@ -486,7 +486,7 @@ void PageInfoMainView::OnPermissionChanged(
 
 void PageInfoMainView::OnChosenObjectDeleted(
     const PageInfoUI::ChosenObjectInfo& info) {
-  presenter_->OnSiteChosenObjectDeleted(info.ui_info,
+  presenter_->OnSiteChosenObjectDeleted(*info.ui_info,
                                         info.chooser_object->value);
   PreferredSizeChanged();
 }

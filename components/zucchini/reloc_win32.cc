@@ -180,8 +180,8 @@ RelocWriterWin32::~RelocWriterWin32() = default;
 void RelocWriterWin32::PutNext(Reference ref) {
   DCHECK_GE(ref.location, reloc_region_.lo());
   DCHECK_LT(ref.location, reloc_region_.hi());
-  auto block_it = std::upper_bound(reloc_block_offsets_.begin(),
-                                   reloc_block_offsets_.end(), ref.location);
+  auto block_it = std::upper_bound(reloc_block_offsets_->begin(),
+                                   reloc_block_offsets_->end(), ref.location);
   --block_it;
   rva_t rva_hi_bits = image_.read<pe::RelocHeader>(*block_it).rva_hi;
   rva_t target_rva = target_offset_to_rva_.Convert(ref.target);

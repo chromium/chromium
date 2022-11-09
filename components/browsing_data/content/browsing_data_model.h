@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/enum_set.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -74,13 +75,13 @@ class BrowsingDataModel {
 
     // The primary host for this browsing data. This is the host which this
     // information will be most strongly associated with in UX surfaces.
-    const std::string& primary_host;
+    const raw_ref<const std::string> primary_host;
 
     // The unique identifier for the data represented by this entry.
-    const DataKey& data_key;
+    const raw_ref<const DataKey> data_key;
 
     // Information about the data represented by this entry.
-    const DataDetails& data_details;
+    const raw_ref<const DataDetails> data_details;
 
    private:
     friend class BrowsingDataModel;

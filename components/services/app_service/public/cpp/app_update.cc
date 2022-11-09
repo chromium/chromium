@@ -567,7 +567,7 @@ bool AppUpdate::ShortcutsChanged() const {
 }
 
 const ::AccountId& AppUpdate::AccountId() const {
-  return account_id_;
+  return *account_id_;
 }
 
 absl::optional<uint64_t> AppUpdate::AppSizeInBytes() const {

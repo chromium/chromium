@@ -35,7 +35,7 @@ void WaitForDocumentOperation::Run() {
       base::BindOnce(&WaitForDocumentOperation::OnTimeout,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   script_executor_delegate_->GetWebController()->WaitForDocumentReadyState(
-      optional_frame_element_, min_ready_state_,
+      *optional_frame_element_, min_ready_state_,
       base::BindOnce(&WaitForDocumentOperation::OnWaitForState,
                      weak_ptr_factory_.GetWeakPtr()));
 }

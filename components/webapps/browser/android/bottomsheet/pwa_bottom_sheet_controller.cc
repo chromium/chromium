@@ -174,7 +174,7 @@ void PwaBottomSheetController::ShowBottomSheetInstaller(
   // is still shown.
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
-               start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+               *start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
   ScopedJavaLocalRef<jstring> j_description =
       ConvertUTF16ToJavaString(env, description_);
 
@@ -185,7 +185,7 @@ void PwaBottomSheetController::ShowBottomSheetInstaller(
       env, reinterpret_cast<intptr_t>(this), web_contents->GetJavaWebContents(),
       j_bitmap, is_primary_icon_maskable_, j_user_title, j_url, j_description);
 
-  for (const auto& screenshot : screenshots_) {
+  for (const auto& screenshot : *screenshots_) {
     if (!screenshot.image.isNull())
       UpdateScreenshot(screenshot.image, web_contents);
   }

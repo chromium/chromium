@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -145,7 +146,7 @@ class UrlRuleFlatBufferConverter {
     if (!is_convertible_)
       return UrlRuleOffset();
 
-    DCHECK_NE(rule_.url_pattern_type(), proto::URL_PATTERN_TYPE_REGEXP);
+    DCHECK_NE(rule_->url_pattern_type(), proto::URL_PATTERN_TYPE_REGEXP);
 
     FlatDomainsOffset initiator_domains_included_offset;
     FlatDomainsOffset initiator_domains_excluded_offset;
@@ -153,26 +154,26 @@ class UrlRuleFlatBufferConverter {
     FlatDomainsOffset request_domains_excluded_offset;
 
     if (!PopulateIncludedAndExcludedDomains(
-            rule_.initiator_domains_size(), rule_.initiator_domains(), builder,
-            domain_map, &initiator_domains_included_offset,
+            rule_->initiator_domains_size(), rule_->initiator_domains(),
+            builder, domain_map, &initiator_domains_included_offset,
             &initiator_domains_excluded_offset)) {
       return UrlRuleOffset();
     }
 
     if (!PopulateIncludedAndExcludedDomains(
-            rule_.request_domains_size(), rule_.request_domains(), builder,
+            rule_->request_domains_size(), rule_->request_domains(), builder,
             domain_map, &request_domains_included_offset,
             &request_domains_excluded_offset)) {
       return UrlRuleOffset();
     }
 
     // Non-ascii characters in patterns are unsupported.
-    if (!base::IsStringASCII(rule_.url_pattern()))
+    if (!base::IsStringASCII(rule_->url_pattern()))
       return UrlRuleOffset();
 
     // TODO(crbug.com/884063): Lower case case-insensitive patterns here if we
     // want to support case-insensitive rules for subresource filter.
-    auto url_pattern_offset = builder->CreateSharedString(rule_.url_pattern());
+    auto url_pattern_offset = builder->CreateSharedString(rule_->url_pattern());
 
     return flat::CreateUrlRule(
         *builder, options_, element_types_, flat::RequestMethod_ANY,
@@ -279,13 +280,13 @@ class UrlRuleFlatBufferConverter {
         flat::RequestMethod_ANY <= std::numeric_limits<uint16_t>::max(),
         "Request methods can not be stored in uint16_t.");
 
-    if (rule_.semantics() == proto::RULE_SEMANTICS_ALLOWLIST) {
+    if (rule_->semantics() == proto::RULE_SEMANTICS_ALLOWLIST) {
       options_ |= flat::OptionFlag_IS_ALLOWLIST;
-    } else if (rule_.semantics() != proto::RULE_SEMANTICS_BLOCKLIST) {
+    } else if (rule_->semantics() != proto::RULE_SEMANTICS_BLOCKLIST) {
       return false;  // Unsupported semantics.
     }
 
-    switch (rule_.source_type()) {
+    switch (rule_->source_type()) {
       case proto::SOURCE_TYPE_ANY:
         options_ |= flat::OptionFlag_APPLIES_TO_THIRD_PARTY;
         [[fallthrough]];
@@ -315,7 +316,7 @@ class UrlRuleFlatBufferConverter {
     // in practice since subresource_filter does not do matching on CSP reports
     // currently. If subresource_filter started to do so, add support for CSP
     // reports in proto::ElementType.
-    if (rule_.element_types() == kDefaultProtoElementTypesMask) {
+    if (rule_->element_types() == kDefaultProtoElementTypesMask) {
       element_types_ = kDefaultFlatElementTypesMask;
       return true;
     }
@@ -327,7 +328,7 @@ class UrlRuleFlatBufferConverter {
     element_types_ = flat::ElementType_NONE;
 
     for (const auto& pair : element_type_map)
-      if (rule_.element_types() & pair.first)
+      if (rule_->element_types() & pair.first)
         element_types_ |= pair.second;
 
     // Normally we can not distinguish between the main plugin resource and any
@@ -352,14 +353,14 @@ class UrlRuleFlatBufferConverter {
     activation_types_ = flat::ActivationType_NONE;
 
     for (const auto& pair : activation_type_map)
-      if (rule_.activation_types() & pair.first)
+      if (rule_->activation_types() & pair.first)
         activation_types_ |= pair.second;
 
     return true;
   }
 
   bool InitializeUrlPattern() {
-    switch (rule_.url_pattern_type()) {
+    switch (rule_->url_pattern_type()) {
       case proto::URL_PATTERN_TYPE_SUBSTRING:
         url_pattern_type_ = flat::UrlPatternType_SUBSTRING;
         break;
@@ -373,8 +374,8 @@ class UrlRuleFlatBufferConverter {
         return false;  // Unsupported URL pattern type.
     }
 
-    if (!ConvertAnchorType(rule_.anchor_left(), &anchor_left_) ||
-        !ConvertAnchorType(rule_.anchor_right(), &anchor_right_)) {
+    if (!ConvertAnchorType(rule_->anchor_left(), &anchor_left_) ||
+        !ConvertAnchorType(rule_->anchor_right(), &anchor_right_)) {
       return false;
     }
     if (anchor_right_ == flat::AnchorType_SUBDOMAIN)
@@ -383,7 +384,8 @@ class UrlRuleFlatBufferConverter {
     // We disallow patterns like "||*xyz" because it isn't clear how to match
     // them.
     if (anchor_left_ == flat::AnchorType_SUBDOMAIN &&
-        (!rule_.url_pattern().empty() && rule_.url_pattern().front() == '*')) {
+        (!rule_->url_pattern().empty() &&
+         rule_->url_pattern().front() == '*')) {
       return false;
     }
 
@@ -393,7 +395,7 @@ class UrlRuleFlatBufferConverter {
   // Returns whether the rule is not a no-op after all the modifications above.
   bool IsMeaningful() const { return element_types_ || activation_types_; }
 
-  const proto::UrlRule& rule_;
+  const raw_ref<const proto::UrlRule> rule_;
 
   uint8_t options_ = 0;
   uint16_t element_types_ = 0;

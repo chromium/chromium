@@ -9,6 +9,7 @@
 #include <vector>
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_action.pb.h"
@@ -105,7 +106,7 @@ class UploadActionsTask : public offline_pages::Task {
   void BatchComplete(UploadActionsBatchStatus status);
   void Done(UploadActionsStatus status);
 
-  FeedStream& stream_;
+  const raw_ref<FeedStream> stream_;
   bool upload_now_ = false;
   bool read_pending_actions_ = false;
   LoggingParameters logging_parameters_;

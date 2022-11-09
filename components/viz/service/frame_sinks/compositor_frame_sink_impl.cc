@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
@@ -78,10 +79,10 @@ class BundleClientProxy : public mojom::CompositorFrameSinkClient {
 
  private:
   FrameSinkBundleImpl* GetBundle() {
-    return manager_.GetFrameSinkBundle(bundle_id_);
+    return manager_->GetFrameSinkBundle(bundle_id_);
   }
 
-  FrameSinkManagerImpl& manager_;
+  const raw_ref<FrameSinkManagerImpl> manager_;
   const FrameSinkId frame_sink_id_;
   const FrameSinkBundleId bundle_id_;
 };

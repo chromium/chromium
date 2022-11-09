@@ -467,15 +467,15 @@ Component::Component(const UpdateContext& update_context, const std::string& id)
 Component::~Component() = default;
 
 scoped_refptr<Configurator> Component::config() const {
-  return update_context_.config;
+  return update_context_->config;
 }
 
 std::string Component::session_id() const {
-  return update_context_.session_id;
+  return update_context_->session_id;
 }
 
 bool Component::is_foreground() const {
-  return update_context_.is_foreground;
+  return update_context_->is_foreground;
 }
 
 void Component::Handle(CallbackHandleComplete callback_handle_complete) {
@@ -616,7 +616,7 @@ bool Component::CanDoBackgroundDownload() const {
   // Foreground component updates are always downloaded in foreground.
   return !is_foreground() &&
          (crx_component() && crx_component()->allows_background_download) &&
-         update_context_.config->EnabledBackgroundDownloader();
+         update_context_->config->EnabledBackgroundDownloader();
 }
 
 void Component::AppendEvent(base::Value event) {
@@ -627,14 +627,14 @@ void Component::NotifyObservers(UpdateClient::Observer::Events event) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // There is no corresponding component state for the COMPONENT_WAIT event.
-  if (update_context_.crx_state_change_callback &&
+  if (update_context_->crx_state_change_callback &&
       event != UpdateClient::Observer::Events::COMPONENT_WAIT) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindRepeating(update_context_.crx_state_change_callback,
+        base::BindRepeating(update_context_->crx_state_change_callback,
                             GetCrxUpdateItem()));
   }
-  update_context_.notify_observers_callback.Run(event, id_);
+  update_context_->notify_observers_callback.Run(event, id_);
 }
 
 base::TimeDelta Component::GetUpdateDuration() const {
@@ -646,13 +646,13 @@ base::TimeDelta Component::GetUpdateDuration() const {
   const base::TimeDelta update_cost(base::TimeTicks::Now() - update_begin_);
   DCHECK_GE(update_cost, base::TimeDelta());
   const base::TimeDelta max_update_delay =
-      base::Seconds(update_context_.config->UpdateDelay());
+      base::Seconds(update_context_->config->UpdateDelay());
   return std::min(update_cost, max_update_delay);
 }
 
 base::Value Component::MakeEventUpdateComplete() const {
   base::Value event(base::Value::Type::DICTIONARY);
-  event.SetKey("eventtype", base::Value(update_context_.is_install ? 2 : 3));
+  event.SetKey("eventtype", base::Value(update_context_->is_install ? 2 : 3));
   event.SetKey(
       "eventresult",
       base::Value(static_cast<int>(state() == ComponentState::kUpdated)));
@@ -853,7 +853,7 @@ void Component::StateChecking::DoHandle() {
     return;
   }
 
-  if (component.update_context_.is_cancelled) {
+  if (component.update_context_->is_cancelled) {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
@@ -924,7 +924,7 @@ void Component::StateCanUpdate::DoHandle() {
     return;
   }
 
-  if (component.update_context_.is_cancelled) {
+  if (component.update_context_->is_cancelled) {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
@@ -945,7 +945,7 @@ void Component::StateCanUpdate::DoHandle() {
 bool Component::StateCanUpdate::CanTryDiffUpdate() const {
   const auto& component = Component::State::component();
   return HasDiffUpdate(component) && !component.diff_error_code_ &&
-         component.update_context_.config->EnabledDeltas();
+         component.update_context_->config->EnabledDeltas();
 }
 
 Component::StateUpToDate::StateUpToDate(Component* component)
@@ -1021,7 +1021,7 @@ void Component::StateDownloadingDiff::DownloadComplete(
 
   crx_downloader_ = nullptr;
 
-  if (component.update_context_.is_cancelled) {
+  if (component.update_context_->is_cancelled) {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
@@ -1098,7 +1098,7 @@ void Component::StateDownloading::DownloadComplete(
 
   crx_downloader_ = nullptr;
 
-  if (component.update_context_.is_cancelled) {
+  if (component.update_context_->is_cancelled) {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
@@ -1130,7 +1130,7 @@ void Component::StateUpdatingDiff::DoHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
-  const auto& update_context = component.update_context_;
+  const auto& update_context = *component.update_context_;
 
   DCHECK(component.crx_component());
 
@@ -1245,7 +1245,7 @@ void Component::StateUpdating::DoHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
-  const auto& update_context = component.update_context_;
+  const auto& update_context = *component.update_context_;
 
   DCHECK(component.crx_component());
 
@@ -1347,9 +1347,9 @@ void Component::StateUpdated::DoHandle() {
   component.crx_component_->version = component.next_version_;
   component.crx_component_->fingerprint = component.next_fp_;
 
-  component.update_context_.persisted_data->SetProductVersion(
+  component.update_context_->persisted_data->SetProductVersion(
       component.id(), component.crx_component_->version);
-  component.update_context_.persisted_data->SetFingerprint(
+  component.update_context_->persisted_data->SetFingerprint(
       component.id(), component.crx_component_->fingerprint);
 
   component.AppendEvent(component.MakeEventUpdateComplete());

@@ -28,9 +28,9 @@ ActionRunner::~ActionRunner() {
 void ActionRunner::Run(Callback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  auto action_handler = component_.crx_component()->action_handler;
+  auto action_handler = component_->crx_component()->action_handler;
   if (!action_handler) {
-    DVLOG(1) << component_.action_run() << " is missing an action handler";
+    DVLOG(1) << component_->action_run() << " is missing an action handler";
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false, -1, 0));
     return;
@@ -48,17 +48,17 @@ void ActionRunner::Run(Callback callback) {
                 component->action_run(), &crx_path);
             return crx_path;
           },
-          base::Unretained(&component_)),
+          base::Unretained(&*component_)),
       base::BindOnce(&ActionRunner::Handle, base::Unretained(this)));
 }
 
 void ActionRunner::Handle(const base::FilePath& crx_path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  auto action_handler = component_.crx_component()->action_handler;
+  auto action_handler = component_->crx_component()->action_handler;
   DCHECK(action_handler);
 
-  action_handler->Handle(crx_path, component_.session_id(),
+  action_handler->Handle(crx_path, component_->session_id(),
                          std::move(callback_));
 }
 

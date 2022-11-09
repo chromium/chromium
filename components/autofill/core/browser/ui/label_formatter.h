@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -65,7 +66,7 @@ class LabelFormatter {
   // It is safe to store a reference here because the LabelFormatter is
   // destroyed when the suggestions for which the labels are constructed are
   // returned.
-  const std::vector<AutofillProfile*>& profiles_;
+  const raw_ref<const std::vector<AutofillProfile*>> profiles_;
 
   // The locale for which to generate labels. This reflects the language and
   // country for which the application is translated, e.g. en-AU for Australian

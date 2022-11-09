@@ -19,9 +19,9 @@ BrowsingDataEntry::BrowsingDataEntry(
 
 BrowsingDataEntry::BrowsingDataEntry(
     const BrowsingDataModel::BrowsingDataEntryView& view)
-    : primary_host(view.primary_host),
-      data_key(view.data_key),
-      data_details(view.data_details) {}
+    : primary_host(*view.primary_host),
+      data_key(*view.data_key),
+      data_details(*view.data_details) {}
 
 BrowsingDataEntry::~BrowsingDataEntry() = default;
 BrowsingDataEntry::BrowsingDataEntry(const BrowsingDataEntry& other) = default;

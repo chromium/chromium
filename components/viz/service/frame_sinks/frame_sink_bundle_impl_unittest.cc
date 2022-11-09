@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -102,14 +103,14 @@ struct TestRootFrameSink {
     params->display_private = display_private.BindNewEndpointAndPassReceiver();
     params->display_client = display_client.BindRemote();
 
-    manager_.RegisterFrameSinkId(kRootFrame, /*report_activation=*/true);
-    manager_.RegisterBeginFrameSource(&begin_frame_source, kRootFrame);
-    manager_.CreateRootCompositorFrameSink(std::move(params));
+    manager_->RegisterFrameSinkId(kRootFrame, /*report_activation=*/true);
+    manager_->RegisterBeginFrameSource(&begin_frame_source, kRootFrame);
+    manager_->CreateRootCompositorFrameSink(std::move(params));
   }
 
-  ~TestRootFrameSink() { manager_.InvalidateFrameSinkId(kRootFrame); }
+  ~TestRootFrameSink() { manager_->InvalidateFrameSinkId(kRootFrame); }
 
-  FrameSinkManagerImpl& manager_;
+  const raw_ref<FrameSinkManagerImpl> manager_;
   mojo::AssociatedRemote<mojom::CompositorFrameSink> compositor_frame_sink;
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::AssociatedRemote<mojom::DisplayPrivate> display_private;
@@ -124,23 +125,23 @@ struct TestFrameSink {
       const FrameSinkId& parent_id,
       const absl::optional<FrameSinkBundleId>& bundle_id = absl::nullopt)
       : manager_(manager), id_(id) {
-    manager_.RegisterFrameSinkId(id, /*report_activation=*/true);
+    manager_->RegisterFrameSinkId(id, /*report_activation=*/true);
     if (parent_id.is_valid()) {
-      manager_.RegisterFrameSinkHierarchy(parent_id, id);
+      manager_->RegisterFrameSinkHierarchy(parent_id, id);
     }
-    manager_.CreateCompositorFrameSink(
+    manager_->CreateCompositorFrameSink(
         id, bundle_id, frame_sink.BindNewPipeAndPassReceiver(),
         client_receiver_.BindNewPipeAndPassRemote());
-    manager_.GetFrameSinkForId(id)->SetNeedsBeginFrame(true);
+    manager_->GetFrameSinkForId(id)->SetNeedsBeginFrame(true);
   }
 
   ~TestFrameSink() {
     base::RunLoop loop;
-    manager_.DestroyCompositorFrameSink(id_, loop.QuitClosure());
+    manager_->DestroyCompositorFrameSink(id_, loop.QuitClosure());
     loop.Run();
   }
 
-  FrameSinkManagerImpl& manager_;
+  const raw_ref<FrameSinkManagerImpl> manager_;
   const FrameSinkId id_;
   MockCompositorFrameSinkClient mock_client_;
   mojo::Receiver<mojom::CompositorFrameSinkClient> client_receiver_{

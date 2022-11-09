@@ -72,7 +72,7 @@ LabelFormatter::~LabelFormatter() = default;
 
 std::vector<std::u16string> LabelFormatter::GetLabels() const {
   std::vector<std::u16string> labels;
-  for (const AutofillProfile* profile : profiles_) {
+  for (const AutofillProfile* profile : *profiles_) {
     labels.push_back(GetLabelForProfile(
         *profile, AutofillType(focused_field_type_).group()));
   }

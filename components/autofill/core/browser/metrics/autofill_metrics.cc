@@ -2229,11 +2229,11 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
                               bool only_after_security_policy,
                               bool only_visible_fields) {
     ServerFieldTypeSet autofilled_types;
-    for (const auto& field : p.form) {
+    for (const auto& field : *p.form) {
       FieldGlobalId id = field->global_id();
-      if (only_newly_filled_fields && !p.newly_filled_fields.contains(id))
+      if (only_newly_filled_fields && !p.newly_filled_fields->contains(id))
         continue;
-      if (only_after_security_policy && !p.safe_fields.contains(id))
+      if (only_after_security_policy && !p.safe_fields->contains(id))
         continue;
       if (only_visible_fields && !field->is_visible)
         continue;
@@ -2251,49 +2251,50 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
 
   if (auto s = GetSeamlessness(false, false, false)) {
     RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy", s);
-    p.builder.SetFillable_BeforeSecurity_Bitmask(s.BitmaskMetric());
-    p.builder.SetFillable_BeforeSecurity_Qualitative(
+    p.builder->SetFillable_BeforeSecurity_Bitmask(s.BitmaskMetric());
+    p.builder->SetFillable_BeforeSecurity_Qualitative(
         s.QualitativeMetricAsInt());
-    p.event_logger.Log(s.QualitativeFillableFormEvent(), p.form);
+    p.event_logger->Log(s.QualitativeFillableFormEvent(), *p.form);
   }
   if (auto s = GetSeamlessness(false, true, false)) {
     RecordUma("Fillable.AtFillTimeAfterSecurityPolicy", s);
-    p.builder.SetFillable_AfterSecurity_Bitmask(s.BitmaskMetric());
-    p.builder.SetFillable_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
+    p.builder->SetFillable_AfterSecurity_Bitmask(s.BitmaskMetric());
+    p.builder->SetFillable_AfterSecurity_Qualitative(
+        s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, false, false)) {
     RecordUma("Fills.AtFillTimeBeforeSecurityPolicy", s);
-    p.builder.SetFilled_BeforeSecurity_Bitmask(s.BitmaskMetric());
-    p.builder.SetFilled_BeforeSecurity_Qualitative(s.QualitativeMetricAsInt());
+    p.builder->SetFilled_BeforeSecurity_Bitmask(s.BitmaskMetric());
+    p.builder->SetFilled_BeforeSecurity_Qualitative(s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, true, false)) {
     RecordUma("Fills.AtFillTimeAfterSecurityPolicy", s);
-    p.builder.SetFilled_AfterSecurity_Bitmask(s.BitmaskMetric());
-    p.builder.SetFilled_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
-    p.event_logger.Log(s.QualitativeFillFormEvent(), p.form);
+    p.builder->SetFilled_AfterSecurity_Bitmask(s.BitmaskMetric());
+    p.builder->SetFilled_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
+    p.event_logger->Log(s.QualitativeFillFormEvent(), *p.form);
   }
   if (auto s = GetSeamlessness(false, false, true)) {
     RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy.Visible", s);
-    p.builder.SetFillable_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
-    p.builder.SetFillable_BeforeSecurity_Visible_Qualitative(
+    p.builder->SetFillable_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
+    p.builder->SetFillable_BeforeSecurity_Visible_Qualitative(
         s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(false, true, true)) {
     RecordUma("Fillable.AtFillTimeAfterSecurityPolicy.Visible", s);
-    p.builder.SetFillable_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
-    p.builder.SetFillable_AfterSecurity_Visible_Qualitative(
+    p.builder->SetFillable_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
+    p.builder->SetFillable_AfterSecurity_Visible_Qualitative(
         s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, false, true)) {
     RecordUma("Fills.AtFillTimeBeforeSecurityPolicy.Visible", s);
-    p.builder.SetFilled_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
-    p.builder.SetFilled_BeforeSecurity_Visible_Qualitative(
+    p.builder->SetFilled_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
+    p.builder->SetFilled_BeforeSecurity_Visible_Qualitative(
         s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, true, true)) {
     RecordUma("Fills.AtFillTimeAfterSecurityPolicy.Visible", s);
-    p.builder.SetFilled_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
-    p.builder.SetFilled_AfterSecurity_Visible_Qualitative(
+    p.builder->SetFilled_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
+    p.builder->SetFilled_AfterSecurity_Visible_Qualitative(
         s.QualitativeMetricAsInt());
   }
 
@@ -2324,8 +2325,8 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
           return true;
       }
     };
-    const url::Origin& main_origin = p.form.main_frame_origin();
-    const url::Origin& triggered_origin = p.field.origin;
+    const url::Origin& main_origin = p.form->main_frame_origin();
+    const url::Origin& triggered_origin = p.field->origin;
     return field.origin != triggered_origin &&
            (field.origin != main_origin ||
             IsSensitiveFieldType(field.Type().GetStorableType())) &&
@@ -2335,10 +2336,10 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
 
   bool some_field_needs_shared_autofill = false;
   bool some_field_has_shared_autofill = false;
-  for (const auto& field : p.form) {
+  for (const auto& field : *p.form) {
     if (RequiresSharedAutofill(*field) &&
-        p.newly_filled_fields.contains(field->global_id())) {
-      if (!p.safe_fields.contains(field->global_id())) {
+        p.newly_filled_fields->contains(field->global_id())) {
+      if (!p.safe_fields->contains(field->global_id())) {
         some_field_needs_shared_autofill = true;
       } else {
         some_field_has_shared_autofill = true;
@@ -2352,12 +2353,13 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     kSharedAutofillDidHelp = 2,
   };
   if (some_field_needs_shared_autofill) {
-    p.builder.SetSharedAutofill(kSharedAutofillWouldHelp);
-    p.event_logger.Log(FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL, p.form);
+    p.builder->SetSharedAutofill(kSharedAutofillWouldHelp);
+    p.event_logger->Log(FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL,
+                        *p.form);
   } else if (some_field_has_shared_autofill) {
-    p.builder.SetSharedAutofill(kSharedAutofillDidHelp);
+    p.builder->SetSharedAutofill(kSharedAutofillDidHelp);
   } else {
-    p.builder.SetSharedAutofill(kSharedAutofillIsIrrelevant);
+    p.builder->SetSharedAutofill(kSharedAutofillIsIrrelevant);
   }
 }
 

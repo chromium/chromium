@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -98,7 +99,7 @@ class ContentSettingsPref {
   raw_ptr<PrefChangeRegistrar, DanglingUntriaged> registrar_;
 
   // Name of the dictionary preference managed by this class.
-  const std::string& pref_name_;
+  const raw_ref<const std::string> pref_name_;
 
   bool off_the_record_;
 

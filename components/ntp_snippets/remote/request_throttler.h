@@ -6,6 +6,7 @@
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REQUEST_THROTTLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -79,7 +80,7 @@ class RequestThrottler {
   bool HasDay() const;
 
   raw_ptr<PrefService> pref_service_;
-  const RequestTypeInfo& type_info_;
+  const raw_ref<const RequestTypeInfo> type_info_;
 
   // The quotas are hardcoded, but can be overridden by variation params.
   int quota_;

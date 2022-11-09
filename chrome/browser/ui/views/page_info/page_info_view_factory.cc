@@ -360,7 +360,7 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
   // TODO(https://crbug.com/1048860): Check the connected status of devices and
   // change the icon to one that reflects that status.
   const gfx::VectorIcon* icon = &gfx::kNoneIcon;
-  switch (object.ui_info.content_settings_type) {
+  switch (object.ui_info->content_settings_type) {
     case ContentSettingsType::USB_CHOOSER_DATA:
       icon = &vector_icons::kUsbIcon;
       break;

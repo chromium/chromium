@@ -18,13 +18,13 @@ AddressTranslator::OffsetToRvaCache::OffsetToRvaCache(
     : translator_(translator) {}
 
 rva_t AddressTranslator::OffsetToRvaCache::Convert(offset_t offset) const {
-  if (offset >= translator_.fake_offset_begin_) {
+  if (offset >= translator_->fake_offset_begin_) {
     // Rely on |translator_| to handle this special case.
-    return translator_.OffsetToRva(offset);
+    return translator_->OffsetToRva(offset);
   }
   if (cached_unit_ && cached_unit_->CoversOffset(offset))
     return cached_unit_->OffsetToRvaUnsafe(offset);
-  const AddressTranslator::Unit* unit = translator_.OffsetToUnit(offset);
+  const AddressTranslator::Unit* unit = translator_->OffsetToUnit(offset);
   if (!unit)
     return kInvalidRva;
   cached_unit_ = unit;
@@ -41,7 +41,7 @@ bool AddressTranslator::RvaToOffsetCache::IsValid(rva_t rva) const {
   if (rva == kInvalidRva)
     return false;
   if (!cached_unit_ || !cached_unit_->CoversRva(rva)) {
-    const AddressTranslator::Unit* unit = translator_.RvaToUnit(rva);
+    const AddressTranslator::Unit* unit = translator_->RvaToUnit(rva);
     if (!unit)
       return false;
     cached_unit_ = unit;
@@ -51,12 +51,12 @@ bool AddressTranslator::RvaToOffsetCache::IsValid(rva_t rva) const {
 
 offset_t AddressTranslator::RvaToOffsetCache::Convert(rva_t rva) const {
   if (!cached_unit_ || !cached_unit_->CoversRva(rva)) {
-    const AddressTranslator::Unit* unit = translator_.RvaToUnit(rva);
+    const AddressTranslator::Unit* unit = translator_->RvaToUnit(rva);
     if (!unit)
       return kInvalidOffset;
     cached_unit_ = unit;
   }
-  return cached_unit_->RvaToOffsetUnsafe(rva, translator_.fake_offset_begin_);
+  return cached_unit_->RvaToOffsetUnsafe(rva, translator_->fake_offset_begin_);
 }
 
 /******** AddressTranslator ********/

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
@@ -102,7 +103,7 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
 
   void OnDisconnect();
 
-  FrameSinkManagerImpl& manager_;
+  const raw_ref<FrameSinkManagerImpl> manager_;
   const FrameSinkBundleId id_;
 
   mojo::Receiver<mojom::FrameSinkBundle> receiver_;

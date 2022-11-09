@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/model_type_registry.h"
@@ -87,7 +88,7 @@ class GetUpdatesProcessor {
   // that problem is to initialize this map in set_routing_info().
   raw_ptr<UpdateHandlerMap> update_handler_map_;
 
-  const GetUpdatesDelegate& delegate_;
+  const raw_ref<const GetUpdatesDelegate> delegate_;
 };
 
 }  // namespace syncer

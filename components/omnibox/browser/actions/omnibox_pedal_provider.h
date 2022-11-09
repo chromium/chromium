@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/values.h"
@@ -92,7 +93,7 @@ class OmniboxPedalProvider {
       bool match_once,
       std::u16string synonyms_csv);
 
-  AutocompleteProviderClient& client_;
+  const raw_ref<AutocompleteProviderClient> client_;
 
   // Contains mapping from well-known identifier to Pedal implementation.
   // Note: since the set is small, we use one map here for simplicity; but if

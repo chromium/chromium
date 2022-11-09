@@ -29,7 +29,7 @@ void AutocompleteControllerMetrics::OnNotifyChanged(
     std::vector<AutocompleteResult::MatchDedupComparator> last_result,
     std::vector<AutocompleteResult::MatchDedupComparator> new_result) {
   // Only log metrics for async requests.
-  if (controller_.input().omit_asynchronous_matches())
+  if (controller_->input().omit_asynchronous_matches())
     return;
 
   // If results are empty then the omnibox is likely closed, and clearing old
@@ -85,7 +85,7 @@ void AutocompleteControllerMetrics::OnProviderUpdate(
   // `OnProviderUpdate()` is only called by async providers (but not necessarily
   // async'ly, see the comments in
   // `AutocompleteController::OnProviderUpdate()`).
-  if (controller_.input().omit_asynchronous_matches())
+  if (controller_->input().omit_asynchronous_matches())
     return;
 
   // Some async providers may produce multiple updates. Only log the final async
@@ -96,13 +96,13 @@ void AutocompleteControllerMetrics::OnProviderUpdate(
 
 void AutocompleteControllerMetrics::OnStop() {
   // Only log metrics for async requests.
-  if (controller_.input().omit_asynchronous_matches())
+  if (controller_->input().omit_asynchronous_matches())
     return;
 
   // Done providers should already be logged by `OnProviderUpdate()`.
-  for (const auto& provider : controller_.providers()) {
+  for (const auto& provider : controller_->providers()) {
     if (!provider->done()) {
-      DCHECK(!controller_.done() || controller_.in_start());
+      DCHECK(!controller_->done() || controller_->in_start());
       LogProviderTimeMetrics(*provider);
     }
   }
@@ -118,7 +118,7 @@ void AutocompleteControllerMetrics::OnStop() {
 }
 
 bool AutocompleteControllerMetrics::ControllerIdle() {
-  return controller_.done() && controller_.expire_timer_done();
+  return controller_->done() && controller_->expire_timer_done();
 }
 
 void AutocompleteControllerMetrics::LogSuggestionFinalizationMetrics() {
@@ -162,7 +162,7 @@ void AutocompleteControllerMetrics::LogSuggestionChangeIndexMetrics(
   size_t max = AutocompleteResult::kMaxAutocompletePositionValue;
   // These metrics are logged up to about 50 times per omnibox keystroke, so use
   // UMA macros for efficiency.
-  if (controller_.in_start())
+  if (controller_->in_start())
     UMA_HISTOGRAM_EXACT_LINEAR(name + ".CrossInput", change_index, max);
   else
     UMA_HISTOGRAM_EXACT_LINEAR(name + ".Async", change_index, max);
@@ -174,7 +174,7 @@ void AutocompleteControllerMetrics::LogSuggestionChangeInAnyPositionMetrics(
   std::string name = "Omnibox.MatchStability2.MatchChangeInAnyPosition";
   // These metrics are logged up to about 5 times per omnibox keystroke, so
   // use UMA macros for efficiency.
-  if (controller_.in_start())
+  if (controller_->in_start())
     UMA_HISTOGRAM_BOOLEAN(name + ".CrossInput", changed);
   else
     UMA_HISTOGRAM_BOOLEAN(name + ".Async", changed);

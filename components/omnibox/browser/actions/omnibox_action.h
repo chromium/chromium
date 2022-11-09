@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -119,7 +120,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
                      base::TimeTicks match_selection_timestamp,
                      WindowOpenDisposition disposition);
     ~ExecutionContext();
-    Client& client_;
+    const raw_ref<Client> client_;
     OpenUrlCallback open_url_callback_;
     base::TimeTicks match_selection_timestamp_;
     WindowOpenDisposition disposition_;

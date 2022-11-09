@@ -45,7 +45,7 @@ ChosenObjectView::ChosenObjectView(
           &ChosenObjectView::ExecuteDeleteCommand, base::Unretained(this)));
   delete_button->SetRequestFocusOnPress(true);
   delete_button->SetTooltipText(
-      l10n_util::GetStringUTF16(info_->ui_info.delete_tooltip_string_id));
+      l10n_util::GetStringUTF16(info_->ui_info->delete_tooltip_string_id));
   views::InstallCircleHighlightPathGenerator(delete_button.get());
 
   // Disable the delete button for policy controlled objects and display the
@@ -55,10 +55,10 @@ ChosenObjectView::ChosenObjectView(
       content_settings::SettingSource::SETTING_SOURCE_POLICY) {
     delete_button->SetEnabled(false);
     row_view_->AddSecondaryLabel(l10n_util::GetStringUTF16(
-        info_->ui_info.allowed_by_policy_description_string_id));
+        info_->ui_info->allowed_by_policy_description_string_id));
   } else {
     row_view_->AddSecondaryLabel(
-        l10n_util::GetStringUTF16(info_->ui_info.description_string_id));
+        l10n_util::GetStringUTF16(info_->ui_info->description_string_id));
   }
 
   delete_button_ = row_view_->AddControl(std::move(delete_button));

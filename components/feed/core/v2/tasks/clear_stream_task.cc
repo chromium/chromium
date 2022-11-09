@@ -20,14 +20,14 @@ ClearStreamTask::ClearStreamTask(FeedStream* stream,
 ClearStreamTask::~ClearStreamTask() = default;
 
 void ClearStreamTask::Run() {
-  stream_.GetStore().ClearStreamData(
+  stream_->GetStore().ClearStreamData(
       stream_type_,
       base::BindOnce(&ClearStreamTask::StoreClearComplete, GetWeakPtr()));
 }
 
 void ClearStreamTask::StoreClearComplete(bool ok) {
   DLOG_IF(ERROR, !ok) << "FeedStore::ClearStream failed";
-  stream_.FinishClearStream(stream_type_);
+  stream_->FinishClearStream(stream_type_);
   TaskComplete();
 }
 

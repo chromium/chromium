@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -420,7 +421,7 @@ class ContentSubresourceFilterThrottleManager
   // The helper class is attached to the WebContents so it is guaranteed to
   // outlive this class which is owned by either a Page or NavigationHandle in
   // the WebContents.
-  ContentSubresourceFilterWebContentsHelper& web_contents_helper_;
+  const raw_ref<ContentSubresourceFilterWebContentsHelper> web_contents_helper_;
 
   base::WeakPtrFactory<ContentSubresourceFilterThrottleManager>
       weak_ptr_factory_{this};

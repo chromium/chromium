@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -131,7 +132,7 @@ class PageInfoUI {
             chooser_object);
     ~ChosenObjectInfo();
     // |ui_info| for this chosen object type.
-    const PageInfo::ChooserUIInfo& ui_info;
+    const raw_ref<const PageInfo::ChooserUIInfo> ui_info;
     // The opaque |chooser_object| representing the thing the user selected.
     std::unique_ptr<permissions::ObjectPermissionContextBase::Object>
         chooser_object;

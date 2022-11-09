@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -1464,12 +1465,12 @@ class AutofillMetrics {
       size_t num_frames);
 
   struct LogCreditCardSeamlessnessParam {
-    const FormEventLoggerBase& event_logger;
-    const FormStructure& form;
-    const AutofillField& field;
-    const base::flat_set<FieldGlobalId>& newly_filled_fields;
-    const base::flat_set<FieldGlobalId>& safe_fields;
-    ukm::builders::Autofill_CreditCardFill& builder;
+    const raw_ref<const FormEventLoggerBase> event_logger;
+    const raw_ref<const FormStructure> form;
+    const raw_ref<const AutofillField> field;
+    const raw_ref<const base::flat_set<FieldGlobalId>> newly_filled_fields;
+    const raw_ref<const base::flat_set<FieldGlobalId>> safe_fields;
+    const raw_ref<ukm::builders::Autofill_CreditCardFill> builder;
   };
 
   // Logs several metrics about seamlessness. These are qualitative and bitmask

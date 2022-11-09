@@ -42,23 +42,23 @@ void UnsubscribeFromWebFeedTask::Run() {
   }
 
   WebFeedSubscriptionInfo info =
-      stream_.subscriptions().FindSubscriptionInfoById(web_feed_name_);
+      stream_->subscriptions().FindSubscriptionInfoById(web_feed_name_);
   if (info.status != WebFeedSubscriptionStatus::kSubscribed) {
     Done(WebFeedSubscriptionRequestStatus::kSuccess);
     return;
   }
 
-  if (stream_.IsOffline()) {
+  if (stream_->IsOffline()) {
     Done(WebFeedSubscriptionRequestStatus::kFailedOffline);
     return;
   }
 
   feedwire::webfeed::UnfollowWebFeedRequest request;
-  SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
+  SetConsistencyToken(request, stream_->GetMetadata().consistency_token());
   request.set_name(web_feed_name_);
   request.set_change_reason(change_reason_);
-  stream_.GetNetwork().SendApiRequest<UnfollowWebFeedDiscoverApi>(
-      request, stream_.GetAccountInfo(), stream_.GetSignedInRequestMetadata(),
+  stream_->GetNetwork().SendApiRequest<UnfollowWebFeedDiscoverApi>(
+      request, stream_->GetAccountInfo(), stream_->GetSignedInRequestMetadata(),
       base::BindOnce(&UnsubscribeFromWebFeedTask::RequestComplete,
                      base::Unretained(this)));
 }
@@ -73,8 +73,8 @@ void UnsubscribeFromWebFeedTask::RequestComplete(
     return;
   }
 
-  stream_.SetMetadata(feedstore::MaybeUpdateConsistencyToken(
-      stream_.GetMetadata(), result.response_body->consistency_token()));
+  stream_->SetMetadata(feedstore::MaybeUpdateConsistencyToken(
+      stream_->GetMetadata(), result.response_body->consistency_token()));
 
   result_.unsubscribed_feed_name = web_feed_name_;
   Done(WebFeedSubscriptionRequestStatus::kSuccess);

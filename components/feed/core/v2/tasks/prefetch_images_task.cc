@@ -40,22 +40,22 @@ PrefetchImagesTask::PrefetchImagesTask(FeedStream* stream) : stream_(*stream) {
 PrefetchImagesTask::~PrefetchImagesTask() = default;
 
 void PrefetchImagesTask::Run() {
-  if (stream_.ClearAllInProgress()) {
+  if (stream_->ClearAllInProgress()) {
     // Abort if ClearAll is in progress.
     TaskComplete();
     return;
   }
   StreamType for_you_stream = StreamType(StreamKind::kForYou);
-  if (stream_.GetModel(for_you_stream)) {
-    PrefetchImagesFromModel(*stream_.GetModel(for_you_stream));
+  if (stream_->GetModel(for_you_stream)) {
+    PrefetchImagesFromModel(*stream_->GetModel(for_you_stream));
     return;
   }
 
   // Web feed subscriber is set to true so we don't use the less restrictive
   // staleness number for when there are no subscriptions.
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, &stream_, for_you_stream,
-      &stream_.GetStore(),
+      LoadStreamFromStoreTask::LoadType::kFullLoad, &*stream_, for_you_stream,
+      &stream_->GetStore(),
       /*missed_last_refresh=*/false,
       /*is_web_feed_subscriber=*/true,
       base::BindOnce(&PrefetchImagesTask::LoadStreamComplete,
@@ -107,7 +107,7 @@ void PrefetchImagesTask::MaybePrefetchImage(const GURL& gurl) {
       previously_fetched_.size() >= max_images_per_refresh_)
     return;
   previously_fetched_.insert(gurl.spec());
-  stream_.PrefetchImage(gurl);
+  stream_->PrefetchImage(gurl);
 }
 
 }  // namespace feed

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -91,7 +92,7 @@ class TransactionalLevelDBIterator {
   // WeakPtr to allow lazy destruction order. This is assumed to be valid for
   // all other Iterator operations.
   base::WeakPtr<TransactionalLevelDBDatabase> db_;
-  const std::vector<uint8_t>& scopes_metadata_prefix_;
+  const raw_ref<const std::vector<uint8_t>> scopes_metadata_prefix_;
   base::WeakPtr<TransactionalLevelDBTransaction> txn_;
 
   // State used to facilitate memory purging.

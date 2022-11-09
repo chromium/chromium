@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_TASKS_CLEAR_STREAM_TASK_H_
 #define COMPONENTS_FEED_CORE_V2_TASKS_CLEAR_STREAM_TASK_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/offline_pages/task/task.h"
@@ -32,7 +33,7 @@ class ClearStreamTask : public offline_pages::Task {
 
   void StoreClearComplete(bool ok);
 
-  FeedStream& stream_;
+  const raw_ref<FeedStream> stream_;
   StreamType stream_type_;
   base::WeakPtrFactory<ClearStreamTask> weak_ptr_factory_{this};
 };

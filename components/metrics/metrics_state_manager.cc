@@ -20,6 +20,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -194,7 +195,7 @@ class MetricsStateMetricsProvider : public MetricsProvider {
 
   void ProvideCurrentSessionData(
       ChromeUserMetricsExtension* uma_proto) override {
-    if (cloned_install_detector_.ClonedInstallDetectedInCurrentSession())
+    if (cloned_install_detector_->ClonedInstallDetectedInCurrentSession())
       LogClonedInstall();
     log_normal_metric_state_.LogArtificialNonUniformity();
   }
@@ -213,7 +214,7 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   // The client id that was used to randomize field trials. An empty string if
   // the low entropy source was used to do randomization.
   const std::string initial_client_id_;
-  const ClonedInstallDetector& cloned_install_detector_;
+  const raw_ref<const ClonedInstallDetector> cloned_install_detector_;
   LogNormalMetricState log_normal_metric_state_;
 };
 

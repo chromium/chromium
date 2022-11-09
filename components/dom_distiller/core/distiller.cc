@@ -313,7 +313,7 @@ void DistillerImpl::MaybeFetchImage(int page_num,
   }
 
   DistillerURLFetcher* fetcher =
-      distiller_url_fetcher_factory_.CreateDistillerURLFetcher();
+      distiller_url_fetcher_factory_->CreateDistillerURLFetcher();
   page_data->image_fetchers_.push_back(base::WrapUnique(fetcher));
 
   // TODO(gilmanmh): Investigate whether this needs to be base::BindRepeating()

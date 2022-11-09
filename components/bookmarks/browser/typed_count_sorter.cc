@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 
@@ -36,11 +37,11 @@ class UrlTypedCountPairNodeLookupFunctor {
       : url_node_map_(url_node_map) {}
 
   const TitledUrlNode* operator()(const UrlTypedCountPair& pair) const {
-    return url_node_map_[pair.first];
+    return (*url_node_map_)[pair.first];
   }
 
  private:
-  UrlNodeMap& url_node_map_;
+  const raw_ref<UrlNodeMap> url_node_map_;
 };
 
 }  // namespace

@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -108,7 +109,7 @@ struct OmniboxLog {
   base::TimeDelta elapsed_time_since_last_change_to_default_match;
 
   // Result set.
-  const AutocompleteResult& result;
+  const raw_ref<const AutocompleteResult> result;
 
   // Diagnostic information from providers.  See
   // AutocompleteController::AddProviderAndTriggeringLogs() and

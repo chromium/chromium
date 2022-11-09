@@ -139,7 +139,7 @@ OmniboxPedal* OmniboxPedalProvider::FindReadyPedalMatch(
     const AutocompleteInput& input,
     const std::u16string& match_text) {
   OmniboxPedal* const found = FindPedalMatch(match_text);
-  if (found == nullptr || !found->IsReadyToTrigger(input, client_)) {
+  if (found == nullptr || !found->IsReadyToTrigger(input, *client_)) {
     return nullptr;
   }
 

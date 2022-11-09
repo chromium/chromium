@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "components/zucchini/zucchini.h"
 
 // Zucchini commands and tools that can be invoked from command-line.
@@ -21,10 +22,10 @@ class CommandLine;
 
 // Aggregated parameter for Main*() functions, to simplify interface.
 struct MainParams {
-  const base::CommandLine& command_line;
-  const std::vector<base::FilePath>& file_paths;
-  std::ostream& out;
-  std::ostream& err;
+  const raw_ref<const base::CommandLine> command_line;
+  const raw_ref<const std::vector<base::FilePath>> file_paths;
+  const raw_ref<std::ostream> out;
+  const raw_ref<std::ostream> err;
 };
 
 // Signature of a Zucchini Command Function.

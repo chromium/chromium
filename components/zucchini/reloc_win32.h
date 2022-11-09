@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_source.h"
 #include "components/zucchini/buffer_view.h"
@@ -131,7 +132,7 @@ class RelocWriterWin32 : public ReferenceWriter {
   const uint16_t reloc_type_;
   MutableBufferView image_;
   BufferRegion reloc_region_;
-  const std::vector<offset_t>& reloc_block_offsets_;
+  const raw_ref<const std::vector<offset_t>> reloc_block_offsets_;
   AddressTranslator::OffsetToRvaCache target_offset_to_rva_;
 };
 

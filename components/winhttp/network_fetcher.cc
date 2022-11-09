@@ -197,7 +197,7 @@ HRESULT NetworkFetcher::BeginFetch(
     return HRESULTFromLastError();
 
   absl::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =
-      proxy_configuration_->GetProxyForUrl(session_handle_, url_);
+      proxy_configuration_->GetProxyForUrl(*session_handle_, url_);
 
   request_handle_ = OpenRequest();
   if (!request_handle_.get())
@@ -248,7 +248,7 @@ HRESULT NetworkFetcher::BeginFetch(
 ScopedHInternet NetworkFetcher::Connect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ScopedHInternet(::WinHttpConnect(
-      session_handle_, base::SysUTF8ToWide(host_).c_str(), port_, 0));
+      *session_handle_, base::SysUTF8ToWide(host_).c_str(), port_, 0));
 }
 
 ScopedHInternet NetworkFetcher::OpenRequest() {

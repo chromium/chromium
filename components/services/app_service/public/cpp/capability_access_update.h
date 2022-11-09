@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -84,7 +85,7 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
   raw_ptr<const CapabilityAccess> state_ = nullptr;
   raw_ptr<const CapabilityAccess, DanglingUntriaged> delta_ = nullptr;
 
-  const ::AccountId& account_id_;
+  const raw_ref<const ::AccountId> account_id_;
 };
 
 }  // namespace apps

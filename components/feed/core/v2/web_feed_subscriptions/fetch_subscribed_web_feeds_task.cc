@@ -35,15 +35,15 @@ void FetchSubscribedWebFeedsTask::Run() {
     Done(WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll);
     return;
   }
-  if (!stream_.GetRequestThrottler().RequestQuota(
+  if (!stream_->GetRequestThrottler().RequestQuota(
           ListWebFeedsDiscoverApi::kRequestType)) {
     Done(WebFeedRefreshStatus::kNetworkRequestThrottled);
     return;
   }
   feedwire::webfeed::ListWebFeedsRequest request;
-  SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
-  stream_.GetNetwork().SendApiRequest<ListWebFeedsDiscoverApi>(
-      request, stream_.GetAccountInfo(), stream_.GetSignedInRequestMetadata(),
+  SetConsistencyToken(request, stream_->GetMetadata().consistency_token());
+  stream_->GetNetwork().SendApiRequest<ListWebFeedsDiscoverApi>(
+      request, stream_->GetAccountInfo(), stream_->GetSignedInRequestMetadata(),
       base::BindOnce(&FetchSubscribedWebFeedsTask::RequestComplete,
                      base::Unretained(this)));
 }

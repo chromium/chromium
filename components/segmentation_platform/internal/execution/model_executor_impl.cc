@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
@@ -29,7 +30,7 @@ struct ModelExecutorImpl::ModelExecutionTraceEvent {
                            const ModelExecutorImpl::ExecutionState& state);
   ~ModelExecutionTraceEvent();
 
-  const ModelExecutorImpl::ExecutionState& state;
+  const raw_ref<const ModelExecutorImpl::ExecutionState> state;
 };
 
 struct ModelExecutorImpl::ExecutionState {
@@ -81,7 +82,7 @@ ModelExecutorImpl::ModelExecutionTraceEvent::ModelExecutionTraceEvent(
 
 ModelExecutorImpl::ModelExecutionTraceEvent::~ModelExecutionTraceEvent() {
   TRACE_EVENT_END("segmentation_platform",
-                  perfetto::Track::FromPointer(&state));
+                  perfetto::Track::FromPointer(&*state));
 }
 
 ModelExecutorImpl::ModelExecutorImpl(

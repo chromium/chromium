@@ -34,7 +34,7 @@ void BspWalkActionDrawPolygon::operator()(DrawPolygon* item) {
   }
 
   item->TransformToLayerSpace(inverse_transform);
-  renderer_->DoDrawPolygon(*item, render_pass_scissor_,
+  renderer_->DoDrawPolygon(*item, *render_pass_scissor_,
                            using_scissor_as_optimization_);
 }
 

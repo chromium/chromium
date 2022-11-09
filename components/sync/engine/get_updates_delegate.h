@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "components/sync/engine/cycle/nudge_tracker.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/events/protocol_event.h"
@@ -65,7 +66,7 @@ class NormalGetUpdatesDelegate : public GetUpdatesDelegate {
   bool IsNotificationInfoRequired() const override;
 
  private:
-  const NudgeTracker& nudge_tracker_;
+  const raw_ref<const NudgeTracker> nudge_tracker_;
 };
 
 // Functionality specific to the configure GetUpdate request.

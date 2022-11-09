@@ -26,11 +26,11 @@ int LimitedOutputStream::StreamBuf::sync() {
     str("");
     return 0;
   }
-  os_ << str();
+  *os_ << str();
   str("");
   if (++counter_ >= limit_)
-    os_ << "(Additional output suppressed)\n";
-  os_.flush();
+    *os_ << "(Additional output suppressed)\n";
+  os_->flush();
   return 0;
 }
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -52,7 +53,7 @@ class RequestAdapterWrapper {
   RequestAdapter* adapter() { return &adapter_; }
 
   net::HttpRequestHeaders GetFinalHeaders() {
-    net::HttpRequestHeaders final_headers(original_headers_);
+    net::HttpRequestHeaders final_headers(*original_headers_);
     final_headers.MergeFrom(modified_request_headers_);
     for (const std::string& name : to_be_removed_request_headers_)
       final_headers.RemoveHeader(name);
@@ -61,7 +62,7 @@ class RequestAdapterWrapper {
 
  private:
   RequestAdapter adapter_;
-  const net::HttpRequestHeaders& original_headers_;
+  const raw_ref<const net::HttpRequestHeaders> original_headers_;
   net::HttpRequestHeaders modified_request_headers_;
   std::vector<std::string> to_be_removed_request_headers_;
 };

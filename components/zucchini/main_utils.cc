@@ -256,5 +256,6 @@ zucchini::status::Code RunZucchiniCommand(const base::CommandLine& command_line,
   }
 
   ScopedResourceUsageTracker resource_usage_tracker;
-  return command_use->command_function({command_line, paths, out, err});
+  return command_use->command_function(
+      {raw_ref(command_line), raw_ref(paths), raw_ref(out), raw_ref(err)});
 }

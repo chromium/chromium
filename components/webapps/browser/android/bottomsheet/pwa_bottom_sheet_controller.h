@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
@@ -98,8 +99,8 @@ class PwaBottomSheetController {
   const std::u16string app_name_;
   const SkBitmap primary_icon_;
   const bool is_primary_icon_maskable_ = false;
-  const GURL& start_url_;
-  const std::vector<Screenshot>& screenshots_;
+  const raw_ref<const GURL> start_url_;
+  const raw_ref<const std::vector<Screenshot>> screenshots_;
   const std::u16string description_;
   // Contains app parameters such as its type and the install source used that
   // will be passed to |a2hs_event_callback_| eventually.

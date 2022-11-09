@@ -72,6 +72,7 @@
 #define COMPONENTS_INVALIDATION_IMPL_INVALIDATION_SERVICE_TEST_TEMPLATE_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ref.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/impl/topic_invalidation_map_test_util.h"
 #include "components/invalidation/public/ack_handle.h"
@@ -349,7 +350,7 @@ class BoundFakeInvalidationHandler : public FakeInvalidationHandler {
   void OnInvalidatorStateChange(InvalidatorState state) override;
 
  private:
-  const InvalidationService& invalidator_;
+  const raw_ref<const InvalidationService> invalidator_;
   InvalidatorState last_retrieved_state_;
 };
 

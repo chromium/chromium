@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 
 class AutocompleteController;
@@ -110,7 +111,7 @@ class AutocompleteControllerMetrics {
   // '*.CrossInput' or '*.Async' depending on `controller_.in_start()`.
   void LogSuggestionChangeInAnyPositionMetrics(bool changed) const;
 
-  const AutocompleteController& controller_;
+  const raw_ref<const AutocompleteController> controller_;
 
   // When `OnStart()` was last invoked. Used for measuring latency. Valid even
   // if `controller_.in_start_` is false.

@@ -205,12 +205,12 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   const bool is_installable = data.NoBlockingErrors();
   DCHECK(!is_installable || data.valid_manifest);
   blink::mojom::ManifestPtr opt_manifest;
-  if (!blink::IsEmptyManifest(data.manifest))
-    opt_manifest = data.manifest.Clone();
+  if (!blink::IsEmptyManifest(*data.manifest))
+    opt_manifest = data.manifest->Clone();
 
   DCHECK(!check_installability_callback_.is_null());
   std::move(check_installability_callback_)
-      .Run(std::move(opt_manifest), data.manifest_url, data.valid_manifest,
+      .Run(std::move(opt_manifest), *data.manifest_url, data.valid_manifest,
            is_installable);
 }
 

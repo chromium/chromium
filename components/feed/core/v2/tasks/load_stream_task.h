@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -121,7 +122,7 @@ class LoadStreamTask : public offline_pages::Task {
   void Done(LaunchResult result);
 
   Options options_;
-  FeedStream& stream_;  // Unowned.
+  const raw_ref<FeedStream> stream_;  // Unowned.
   std::unique_ptr<LoadStreamFromStoreTask> load_from_store_task_;
   std::unique_ptr<StreamModelUpdateRequest> stale_store_state_;
 
@@ -143,7 +144,7 @@ class LoadStreamTask : public offline_pages::Task {
   base::OnceCallback<void(Result)> done_callback_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;
   std::unique_ptr<UploadActionsTask::Result> upload_actions_result_;
-  LaunchReliabilityLogger& launch_reliability_logger_;
+  const raw_ref<LaunchReliabilityLogger> launch_reliability_logger_;
   int64_t server_receive_timestamp_ns_ = 0l;
   int64_t server_send_timestamp_ns_ = 0l;
   bool is_web_feed_subscriber_ = false;

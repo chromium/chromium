@@ -246,8 +246,8 @@ void TransactionalLevelDBIterator::NextPastScopesMetadata() {
   DCHECK(db_);
   DCHECK(iterator_);
   auto prefix_slice = leveldb::Slice(
-      reinterpret_cast<const char*>(scopes_metadata_prefix_.data()),
-      scopes_metadata_prefix_.size());
+      reinterpret_cast<const char*>(scopes_metadata_prefix_->data()),
+      scopes_metadata_prefix_->size());
   while (iterator_->Valid() && iterator_->key().starts_with(prefix_slice)) {
     iterator_->Next();
   }
@@ -257,8 +257,8 @@ void TransactionalLevelDBIterator::PrevPastScopesMetadata() {
   DCHECK(db_);
   DCHECK(iterator_);
   auto prefix_slice = leveldb::Slice(
-      reinterpret_cast<const char*>(scopes_metadata_prefix_.data()),
-      scopes_metadata_prefix_.size());
+      reinterpret_cast<const char*>(scopes_metadata_prefix_->data()),
+      scopes_metadata_prefix_->size());
   while (iterator_->Valid() && iterator_->key().starts_with(prefix_slice)) {
     iterator_->Prev();
   }

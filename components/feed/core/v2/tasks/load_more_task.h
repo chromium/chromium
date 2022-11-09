@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -66,7 +67,7 @@ class LoadMoreTask : public offline_pages::Task {
   void Done(LoadStreamStatus status);
 
   StreamType stream_type_;
-  FeedStream& stream_;  // Unowned.
+  const raw_ref<FeedStream> stream_;  // Unowned.
   base::TimeTicks fetch_start_time_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;
 

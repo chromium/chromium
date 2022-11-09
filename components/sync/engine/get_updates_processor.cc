@@ -212,13 +212,13 @@ void GetUpdatesProcessor::PrepareGetUpdates(
     sync_pb::DataTypeContext context = handler_it->second->GetDataTypeContext();
     if (!context.context().empty())
       *get_updates->add_client_contexts() = std::move(context);
-    if (delegate_.IsNotificationInfoRequired()) {
+    if (delegate_->IsNotificationInfoRequired()) {
       handler_it->second->CollectPendingInvalidations(
           progress_marker->mutable_get_update_triggers());
     }
   }
 
-  delegate_.HelpPopulateGuMessage(get_updates);
+  delegate_->HelpPopulateGuMessage(get_updates);
 }
 
 SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
@@ -237,7 +237,7 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
   SyncerProtoUtil::AddRequiredFieldsToClientToServerMessage(cycle, msg);
 
   cycle->SendProtocolEvent(
-      *(delegate_.GetNetworkRequestEvent(base::Time::Now(), *msg)));
+      *(delegate_->GetNetworkRequestEvent(base::Time::Now(), *msg)));
 
   ModelTypeSet partial_failure_data_types;
 

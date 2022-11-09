@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_view.h"
@@ -74,7 +75,8 @@ class RelocReaderElf : public ReferenceReader {
   const ConstBufferView image_;
   const Bitness bitness_;
   const uint32_t rel_type_;
-  const std::vector<SectionDimensionsElf>& reloc_section_dimensions_;
+  const raw_ref<const std::vector<SectionDimensionsElf>>
+      reloc_section_dimensions_;
   std::vector<SectionDimensionsElf>::const_iterator cur_section_dimensions_;
   offset_t hi_;
   offset_t cursor_;

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/embedder_support/origin_trials/features.h"

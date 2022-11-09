@@ -21,11 +21,11 @@ PolicyLoaderCommandLine::~PolicyLoaderCommandLine() = default;
 
 PolicyBundle PolicyLoaderCommandLine::Load() {
   PolicyBundle bundle;
-  if (!command_line_.HasSwitch(switches::kChromePolicy))
+  if (!command_line_->HasSwitch(switches::kChromePolicy))
     return bundle;
 
   auto policies = base::JSONReader::ReadAndReturnValueWithError(
-      command_line_.GetSwitchValueASCII(switches::kChromePolicy),
+      command_line_->GetSwitchValueASCII(switches::kChromePolicy),
       base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
   if (!policies.has_value()) {

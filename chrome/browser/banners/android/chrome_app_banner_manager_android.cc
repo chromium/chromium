@@ -64,7 +64,7 @@ ChromeAppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
 void ChromeAppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
     const InstallableData& data) {
   if (data.NoBlockingErrors())
-    WebApkUkmRecorder::RecordWebApkableVisit(data.manifest_url);
+    WebApkUkmRecorder::RecordWebApkableVisit(*data.manifest_url);
 
   AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(data);
 }

@@ -83,7 +83,7 @@ RequestThrottler::RequestThrottler(PrefService* pref_service, RequestType type)
   if (!base::StringToInt(quota, &quota_)) {
     LOG_IF(WARNING, !quota.empty())
         << "Invalid variation parameter for quota for " << GetRequestTypeName();
-    quota_ = type_info_.default_quota;
+    quota_ = type_info_->default_quota;
   }
 
   std::string interactive_quota = variations::GetVariationParamValueByFeature(
@@ -93,7 +93,7 @@ RequestThrottler::RequestThrottler(PrefService* pref_service, RequestType type)
     LOG_IF(WARNING, !interactive_quota.empty())
         << "Invalid variation parameter for interactive quota for "
         << GetRequestTypeName();
-    interactive_quota_ = type_info_.default_interactive_quota;
+    interactive_quota_ = type_info_->default_interactive_quota;
   }
 
   // Since the histogram names are dynamic, we cannot use the standard macros
@@ -174,7 +174,7 @@ void RequestThrottler::ResetCounterIfDayChanged() {
 }
 
 const char* RequestThrottler::GetRequestTypeName() const {
-  return type_info_.name;
+  return type_info_->name;
 }
 
 // TODO(jkrcal): turn RequestTypeInfo into a proper class, move those methods
@@ -185,27 +185,27 @@ int RequestThrottler::GetQuota(bool interactive_request) const {
 
 int RequestThrottler::GetCount(bool interactive_request) const {
   return pref_service_->GetInteger(interactive_request
-                                       ? type_info_.interactive_count_pref
-                                       : type_info_.count_pref);
+                                       ? type_info_->interactive_count_pref
+                                       : type_info_->count_pref);
 }
 
 void RequestThrottler::SetCount(bool interactive_request, int count) {
   pref_service_->SetInteger(interactive_request
-                                ? type_info_.interactive_count_pref
-                                : type_info_.count_pref,
+                                ? type_info_->interactive_count_pref
+                                : type_info_->count_pref,
                             count);
 }
 
 int RequestThrottler::GetDay() const {
-  return pref_service_->GetInteger(type_info_.day_pref);
+  return pref_service_->GetInteger(type_info_->day_pref);
 }
 
 void RequestThrottler::SetDay(int day) {
-  pref_service_->SetInteger(type_info_.day_pref, day);
+  pref_service_->SetInteger(type_info_->day_pref, day);
 }
 
 bool RequestThrottler::HasDay() const {
-  return pref_service_->HasPrefPath(type_info_.day_pref);
+  return pref_service_->HasPrefPath(type_info_->day_pref);
 }
 
 }  // namespace ntp_snippets

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
@@ -52,7 +53,7 @@ class InstallableAmbientBadgeInfoBarDelegate
   const std::u16string GetMessageText() const;
   const SkBitmap& GetPrimaryIcon() const;
   bool GetIsPrimaryIconMaskable() const;
-  const GURL& GetUrl() const { return start_url_; }
+  const GURL& GetUrl() const { return *start_url_; }
 
  private:
   InstallableAmbientBadgeInfoBarDelegate(
@@ -70,7 +71,7 @@ class InstallableAmbientBadgeInfoBarDelegate
   const std::u16string app_name_;
   const SkBitmap primary_icon_;
   const bool is_primary_icon_maskable_;
-  const GURL& start_url_;
+  const raw_ref<const GURL> start_url_;
 };
 
 }  // namespace webapps

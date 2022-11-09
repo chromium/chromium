@@ -85,7 +85,7 @@ const GURL& RequestAdapter::GetUrl() {
 }
 
 bool RequestAdapter::HasHeader(const std::string& name) {
-  return (original_headers_.HasHeader(name) ||
+  return (original_headers_->HasHeader(name) ||
           modified_headers_->HasHeader(name)) &&
          !base::Contains(*headers_to_remove_, name);
 }

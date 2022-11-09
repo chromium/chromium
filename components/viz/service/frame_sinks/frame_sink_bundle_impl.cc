@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -38,7 +39,7 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
 
   ~SinkGroup() override {
     if (is_observing_begin_frame_) {
-      source_.RemoveObserver(this);
+      source_->RemoveObserver(this);
     }
   }
 
@@ -47,8 +48,8 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
   void AddFrameSink(uint32_t sink_id) {
     frame_sinks_.insert(sink_id);
 
-    FrameSinkId id(bundle_.id().client_id(), sink_id);
-    if (auto* support = manager_.GetFrameSinkForId(id)) {
+    FrameSinkId id(bundle_->id().client_id(), sink_id);
+    if (auto* support = manager_->GetFrameSinkForId(id)) {
       if (support->needs_begin_frame()) {
         frame_sinks_needing_begin_frame_.insert(sink_id);
         UpdateBeginFrameObservation();
@@ -129,8 +130,8 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
     // real remote client.
     defer_on_begin_frames_ = true;
     for (const auto sink_id : frame_sinks_) {
-      FrameSinkId id(bundle_.id().client_id(), sink_id);
-      if (BeginFrameObserver* observer = manager_.GetFrameSinkForId(id)) {
+      FrameSinkId id(bundle_->id().client_id(), sink_id);
+      if (BeginFrameObserver* observer = manager_->GetFrameSinkForId(id)) {
         observer->OnBeginFrame(args);
       }
     }
@@ -159,9 +160,9 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
     if (!pending_received_frame_acks.empty() ||
         !pending_on_begin_frames.empty() ||
         !pending_reclaimed_resources.empty()) {
-      client_.FlushNotifications(std::move(pending_received_frame_acks),
-                                 std::move(pending_on_begin_frames),
-                                 std::move(pending_reclaimed_resources));
+      client_->FlushNotifications(std::move(pending_received_frame_acks),
+                                  std::move(pending_on_begin_frames),
+                                  std::move(pending_reclaimed_resources));
     }
   }
 
@@ -173,20 +174,20 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
       // because AddObserver() can synchronously enter CFSS::OnBeginFrame(),
       // which can in turn re-enter this method.
       is_observing_begin_frame_ = true;
-      source_.AddObserver(this);
+      source_->AddObserver(this);
       return;
     }
 
     if (is_observing_begin_frame_ && !should_observe_begin_frame) {
-      source_.RemoveObserver(this);
+      source_->RemoveObserver(this);
       is_observing_begin_frame_ = false;
     }
   }
 
-  FrameSinkManagerImpl& manager_;
-  FrameSinkBundleImpl& bundle_;
-  BeginFrameSource& source_;
-  mojom::FrameSinkBundleClient& client_;
+  const raw_ref<FrameSinkManagerImpl> manager_;
+  const raw_ref<FrameSinkBundleImpl> bundle_;
+  const raw_ref<BeginFrameSource> source_;
+  const raw_ref<mojom::FrameSinkBundleClient> client_;
 
   bool defer_on_begin_frames_ = false;
   std::vector<mojom::BundledReturnedResourcesPtr> pending_received_frame_acks_;
@@ -236,7 +237,7 @@ void FrameSinkBundleImpl::AddFrameSink(CompositorFrameSinkSupport* support) {
   auto& group = sink_groups_[source];
   if (!group) {
     group =
-        std::make_unique<SinkGroup>(manager_, *this, *source, *client_.get());
+        std::make_unique<SinkGroup>(*manager_, *this, *source, *client_.get());
   }
   group->AddFrameSink(sink_id);
 }
@@ -414,12 +415,12 @@ void FrameSinkBundleImpl::RemoveFrameSinkImpl(BeginFrameSource* source,
 
 CompositorFrameSinkImpl* FrameSinkBundleImpl::GetFrameSink(
     uint32_t sink_id) const {
-  return manager_.GetFrameSinkImpl(FrameSinkId(id_.client_id(), sink_id));
+  return manager_->GetFrameSinkImpl(FrameSinkId(id_.client_id(), sink_id));
 }
 
 CompositorFrameSinkSupport* FrameSinkBundleImpl::GetFrameSinkSupport(
     uint32_t sink_id) const {
-  return manager_.GetFrameSinkForId(FrameSinkId(id_.client_id(), sink_id));
+  return manager_->GetFrameSinkForId(FrameSinkId(id_.client_id(), sink_id));
 }
 
 FrameSinkBundleImpl::SinkGroup* FrameSinkBundleImpl::GetSinkGroup(
@@ -438,7 +439,7 @@ FrameSinkBundleImpl::SinkGroup* FrameSinkBundleImpl::GetSinkGroup(
 }
 
 void FrameSinkBundleImpl::OnDisconnect() {
-  manager_.DestroyFrameSinkBundle(id_);
+  manager_->DestroyFrameSinkBundle(id_);
 }
 
 }  // namespace viz

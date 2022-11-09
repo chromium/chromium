@@ -190,13 +190,13 @@ void PageInfoControllerAndroid::SetPermissionInfo(
 
   for (const auto& chosen_object : chosen_object_info_list) {
     std::u16string object_title =
-        presenter_->GetChooserContextFromUIInfo(chosen_object->ui_info)
+        presenter_->GetChooserContextFromUIInfo(*chosen_object->ui_info)
             ->GetObjectDisplayName(chosen_object->chooser_object->value);
 
     Java_PageInfoController_addPermissionSection(
         env, controller_jobject_, ConvertUTF16ToJavaString(env, object_title),
         ConvertUTF16ToJavaString(env, object_title),
-        static_cast<jint>(chosen_object->ui_info.content_settings_type),
+        static_cast<jint>(chosen_object->ui_info->content_settings_type),
         static_cast<jint>(CONTENT_SETTING_ALLOW));
   }
 

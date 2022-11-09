@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -118,7 +119,7 @@ class FormStructureRationalizer {
 
   // A vector of all the input fields in the form. The reference is const but
   // the fields are mutable by design.
-  const std::vector<std::unique_ptr<AutofillField>>& fields_;
+  const raw_ref<const std::vector<std::unique_ptr<AutofillField>>> fields_;
 
   // Signature for the rationalized form. Required for logging.
   const FormSignature form_signature_;

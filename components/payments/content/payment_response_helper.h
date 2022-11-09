@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/payments/content/payment_app.h"
@@ -65,7 +66,7 @@ class PaymentResponseHelper
   void OnAddressNormalized(bool success,
                            const autofill::AutofillProfile& normalized_profile);
 
-  const std::string& app_locale_;
+  const raw_ref<const std::string> app_locale_;
   bool is_waiting_for_shipping_address_normalization_;
   bool is_waiting_for_instrument_details_;
 

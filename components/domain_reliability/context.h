@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/beacon.h"
@@ -112,7 +113,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
 
   std::unique_ptr<const DomainReliabilityConfig> config_;
   raw_ptr<const MockableTime> time_;
-  const std::string& upload_reporter_string_;
+  const raw_ref<const std::string> upload_reporter_string_;
   DomainReliabilityScheduler scheduler_;
   raw_ptr<DomainReliabilityDispatcher> dispatcher_;
   raw_ptr<DomainReliabilityUploader> uploader_;
@@ -132,7 +133,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   // The last network change time is not tracked per-context, so this is a
   // pointer to that value in a wider (e.g. per-Monitor or unittest) scope.
   raw_ptr<const base::TimeTicks> last_network_change_time_;
-  const UploadAllowedCallback& upload_allowed_callback_;
+  const raw_ref<const UploadAllowedCallback> upload_allowed_callback_;
 
   base::WeakPtrFactory<DomainReliabilityContext> weak_factory_{this};
 };

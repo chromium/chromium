@@ -102,7 +102,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   bool cc_cvc_found = false;
   size_t num_months_found = 0;
   size_t num_other_fields_found = 0;
-  for (const auto& field : fields_) {
+  for (const auto& field : *fields_) {
     ServerFieldType current_field_type =
         field->ComputedType().GetStorableType();
     switch (current_field_type) {
@@ -183,7 +183,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   // fields are not to be retained. Some special handling is given to expiry
   // dates if the full date is not found or multiple expiry date fields are
   // found. See comments inline below.
-  for (auto it = fields_.begin(); it != fields_.end(); ++it) {
+  for (auto it = fields_->begin(); it != fields_->end(); ++it) {
     auto& field = *it;
     ServerFieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
@@ -228,7 +228,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
         } else if (num_months_found > 1) {
           auto it2 = it + 1;
-          if (it2 == fields_.end()) {
+          if (it2 == fields_->end()) {
             LOG_AF(log_manager)
                 << LoggingScope::kRationalization
                 << LogMessage::kRationalization
@@ -272,9 +272,9 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
 
 void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
     LogManager* log_manager) {
-  if (fields_.size() < 2)
+  if (fields_->size() < 2)
     return;
-  for (auto field = fields_.begin() + 1; field != fields_.end(); ++field) {
+  for (auto field = fields_->begin() + 1; field != fields_->end(); ++field) {
     if ((*field)->ComputedType().GetStorableType() != ADDRESS_HOME_LINE2)
       continue;
     // Rationalize a preceding street address belonging to the same section
@@ -296,9 +296,9 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
 
 void FormStructureRationalizer::RationalizeStreetAddressAndHouseNumber(
     LogManager* log_manager) {
-  if (fields_.size() < 2)
+  if (fields_->size() < 2)
     return;
-  for (auto field = fields_.begin() + 1; field != fields_.end(); ++field) {
+  for (auto field = fields_->begin() + 1; field != fields_->end(); ++field) {
     if ((*field)->ComputedType().GetStorableType() != ADDRESS_HOME_HOUSE_NUMBER)
       continue;
     // Rationalize a preceding street address belonging to the same section
@@ -337,7 +337,7 @@ void FormStructureRationalizer::RationalizeStreetAddressAndHouseNumber(
 void FormStructureRationalizer::RationalizePhoneNumbersInSection(
     const Section& section) {
   std::vector<AutofillField*> fields;
-  for (const auto& field : fields_) {
+  for (const auto& field : *fields_) {
     if (field->section != section)
       continue;
     fields.push_back(field.get());
@@ -349,13 +349,13 @@ void FormStructureRationalizer::ApplyRationalizationsToFieldAndLog(
     size_t field_index,
     ServerFieldType new_type,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  if (field_index >= fields_.size())
+  if (field_index >= fields_->size())
     return;
-  auto old_type = fields_[field_index]->Type().GetStorableType();
-  fields_[field_index]->SetTypeTo(AutofillType(new_type));
+  auto old_type = (*fields_)[field_index]->Type().GetStorableType();
+  (*fields_)[field_index]->SetTypeTo(AutofillType(new_type));
   if (form_interactions_ukm_logger) {
     form_interactions_ukm_logger->LogRepeatedServerTypePredictionRationalized(
-        form_signature_, *fields_[field_index], old_type);
+        form_signature_, *(*fields_)[field_index], old_type);
   }
 }
 
@@ -416,17 +416,17 @@ void FormStructureRationalizer::ApplyRationalizationsToHiddenSelects(
     size_t field_index,
     ServerFieldType new_type,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  ServerFieldType old_type = fields_[field_index]->Type().GetStorableType();
+  ServerFieldType old_type = (*fields_)[field_index]->Type().GetStorableType();
 
   // Walk on the unfocusable select fields right after the field_index which
   // share the same type with the field_index, and apply the rationalization to
   // them as well. These fields, if any, function as one field with the
   // field_index.
-  for (auto current_index = field_index + 1; current_index < fields_.size();
+  for (auto current_index = field_index + 1; current_index < fields_->size();
        current_index++) {
-    if (fields_[current_index]->IsFocusable() ||
-        fields_[current_index]->form_control_type != "select-one" ||
-        fields_[current_index]->Type().GetStorableType() != old_type)
+    if ((*fields_)[current_index]->IsFocusable() ||
+        (*fields_)[current_index]->form_control_type != "select-one" ||
+        (*fields_)[current_index]->Type().GetStorableType() != old_type)
       break;
     ApplyRationalizationsToFieldAndLog(current_index, new_type,
                                        form_interactions_ukm_logger);
@@ -437,9 +437,9 @@ void FormStructureRationalizer::ApplyRationalizationsToHiddenSelects(
   if (field_index == 0)
     return;
   for (auto current_index = field_index - 1;; current_index--) {
-    if (fields_[current_index]->IsFocusable() ||
-        fields_[current_index]->form_control_type != "select-one" ||
-        fields_[current_index]->Type().GetStorableType() != old_type)
+    if ((*fields_)[current_index]->IsFocusable() ||
+        (*fields_)[current_index]->form_control_type != "select-one" ||
+        (*fields_)[current_index]->Type().GetStorableType() != old_type)
       break;
     ApplyRationalizationsToFieldAndLog(current_index, new_type,
                                        form_interactions_ukm_logger);
@@ -455,13 +455,13 @@ bool FormStructureRationalizer::HeuristicsPredictionsAreApplicable(
     ServerFieldType second_type) {
   // The predictions are applicable if one field has one of the two types, and
   // the other has the other type.
-  if (fields_[upper_index]->heuristic_type() ==
-      fields_[lower_index]->heuristic_type())
+  if ((*fields_)[upper_index]->heuristic_type() ==
+      (*fields_)[lower_index]->heuristic_type())
     return false;
-  if ((fields_[upper_index]->heuristic_type() == first_type ||
-       fields_[upper_index]->heuristic_type() == second_type) &&
-      (fields_[lower_index]->heuristic_type() == first_type ||
-       fields_[lower_index]->heuristic_type() == second_type))
+  if (((*fields_)[upper_index]->heuristic_type() == first_type ||
+       (*fields_)[upper_index]->heuristic_type() == second_type) &&
+      ((*fields_)[lower_index]->heuristic_type() == first_type ||
+       (*fields_)[lower_index]->heuristic_type() == second_type))
     return true;
   return false;
 }
@@ -494,10 +494,10 @@ bool FormStructureRationalizer::FieldShouldBeRationalizedToCountry(
   // in its section. Otherwise, the upper field is a state, and the lower one
   // is a country.
   for (int field_index = upper_index - 1; field_index >= 0; --field_index) {
-    if (fields_[field_index]->IsFocusable() &&
-        AutofillType(fields_[field_index]->Type().GetStorableType()).group() ==
-            FieldTypeGroup::kAddressHome &&
-        fields_[field_index]->section == fields_[upper_index]->section) {
+    if ((*fields_)[field_index]->IsFocusable() &&
+        AutofillType((*fields_)[field_index]->Type().GetStorableType())
+                .group() == FieldTypeGroup::kAddressHome &&
+        (*fields_)[field_index]->section == (*fields_)[upper_index]->section) {
       return false;
     }
   }
@@ -527,8 +527,8 @@ void FormStructureRationalizer::RationalizeAddressStateCountry(
     // state and country. No rationalization needed.
     if (!sections_of_state_indexes->IsFinished() &&
         !sections_of_country_indexes->IsFinished() &&
-        fields_[sections_of_state_indexes->CurrentIndex()]->section ==
-            fields_[sections_of_country_indexes->CurrentIndex()]->section) {
+        (*fields_)[sections_of_state_indexes->CurrentIndex()]->section ==
+            (*fields_)[sections_of_country_indexes->CurrentIndex()]->section) {
       sections_of_state_indexes->WalkForwardToTheNextSection();
       sections_of_country_indexes->WalkForwardToTheNextSection();
       continue;
@@ -574,9 +574,10 @@ void FormStructureRationalizer::RationalizeAddressStateCountry(
     if (HeuristicsPredictionsAreApplicable(upper_index, lower_index,
                                            ADDRESS_HOME_STATE,
                                            ADDRESS_HOME_COUNTRY)) {
-      ApplyRationalizationsToFields(
-          upper_index, lower_index, fields_[upper_index]->heuristic_type(),
-          fields_[lower_index]->heuristic_type(), form_interactions_ukm_logger);
+      ApplyRationalizationsToFields(upper_index, lower_index,
+                                    (*fields_)[upper_index]->heuristic_type(),
+                                    (*fields_)[lower_index]->heuristic_type(),
+                                    form_interactions_ukm_logger);
       LOG_AF(log_manager)
           << LoggingScope::kRationalization << LogMessage::kRationalization
           << "RationalizeAddressStateCountry: Heuristics are applicable";
@@ -612,8 +613,8 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
   // indexes of fields whose types are predicted as FULL_NAME by the server.
   SectionedFieldsIndexes sectioned_field_indexes_by_type[MAX_VALID_FIELD_TYPE];
 
-  for (size_t i = 0; i < fields_.size(); ++i) {
-    const AutofillField& field = *fields_[i];
+  for (size_t i = 0; i < fields_->size(); ++i) {
+    const AutofillField& field = *(*fields_)[i];
     // The unfocusable fields are considered invisible and therefore not
     // considered when rationalizing.
     if (!field.IsFocusable())
@@ -629,8 +630,8 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
           i,
           /*is_new_section*/ sectioned_field_indexes_by_type[current_type]
                   .Empty() ||
-              fields_[sectioned_field_indexes_by_type[current_type]
-                          .LastFieldIndex()]
+              (*fields_)[sectioned_field_indexes_by_type[current_type]
+                             .LastFieldIndex()]
                       ->section != field.section);
     }
   }
@@ -649,7 +650,7 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizeStreetAddressAndHouseNumber(log_manager);
-  for (const auto& field : fields_)
+  for (const auto& field : *fields_)
     field->SetTypeTo(field->Type());
   RationalizeTypeRelationships(log_manager);
 }
@@ -658,11 +659,11 @@ void FormStructureRationalizer::RationalizeTypeRelationships(
     LogManager* log_manager) {
   // Create a local set of all the types for faster lookup.
   ServerFieldTypeSet types;
-  for (const auto& field : fields_) {
+  for (const auto& field : *fields_) {
     types.insert(field->Type().GetStorableType());
   }
 
-  for (const auto& field : fields_) {
+  for (const auto& field : *fields_) {
     ServerFieldType field_type = field->Type().GetStorableType();
     ServerFieldTypeSet necessary_types = GetNecessaryTypesFor(field_type);
     if (!necessary_types.empty() && !types.contains_any(necessary_types)) {

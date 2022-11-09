@@ -22,7 +22,7 @@ InvalidatorState BoundFakeInvalidationHandler::GetLastRetrievedState() const {
 void BoundFakeInvalidationHandler::OnInvalidatorStateChange(
     InvalidatorState state) {
   FakeInvalidationHandler::OnInvalidatorStateChange(state);
-  last_retrieved_state_ = invalidator_.GetInvalidatorState();
+  last_retrieved_state_ = invalidator_->GetInvalidatorState();
 }
 
 // This suite is instantiated in binaries that use

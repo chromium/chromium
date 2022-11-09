@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -191,7 +192,7 @@ class RequestAdapter {
 
  private:
   const GURL url_;
-  const net::HttpRequestHeaders& original_headers_;
+  const raw_ref<const net::HttpRequestHeaders> original_headers_;
   const raw_ptr<net::HttpRequestHeaders> modified_headers_;
   const raw_ptr<std::vector<std::string>> headers_to_remove_;
 };

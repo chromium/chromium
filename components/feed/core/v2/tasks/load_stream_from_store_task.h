@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -85,7 +86,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
 
   LoadStreamStatus stale_reason_ = LoadStreamStatus::kNoStatus;
   LoadType load_type_;
-  FeedStream& feed_stream_;
+  const raw_ref<FeedStream> feed_stream_;
   StreamType stream_type_;
   raw_ptr<FeedStore> store_;  // Unowned.
   bool ignore_staleness_ = false;
