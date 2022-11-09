@@ -23,7 +23,8 @@ deps = {
   'partition_allocator/buildtools':
       Var('chromium_git') + '/chromium/src/buildtools.git',
   'partition_allocator/buildtools/clang_format/script':
-      Var('chromium_git') + '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git',
+      Var('chromium_git') +
+      '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git',
   'partition_allocator/buildtools/linux64': {
     'packages': [
       {
@@ -56,7 +57,76 @@ deps = {
   },
   'partition_allocator/buildtools/third_party/libc++/trunk':
       Var('chromium_git') + '/external/github.com/llvm/llvm-project/libcxx.git',
+  'partition_allocator/buildtools/third_party/libc++abi/trunk':
+      Var('chromium_git') +
+      '/external/github.com/llvm/llvm-project/libcxxabi.git',
+  'partition_allocator/tools/clang':
+      Var('chromium_git') + '/chromium/src/tools/clang.git',
 }
+
+hooks = [
+  {
+    'name': 'sysroot_arm',
+    'pattern': '.',
+    'condition': 'checkout_linux and checkout_arm',
+    'action': [
+        'python3',
+        'partition_allocator/build/linux/sysroot_scripts/install-sysroot.py',
+        '--arch=arm'],
+  },
+  {
+    'name': 'sysroot_arm64',
+    'pattern': '.',
+    'condition': 'checkout_linux and checkout_arm64',
+    'action': [
+        'python3',
+        'partition_allocator/build/linux/sysroot_scripts/install-sysroot.py',
+        '--arch=arm64'],
+  },
+  {
+    'name': 'sysroot_x86',
+    'pattern': '.',
+    'condition': 'checkout_linux and (checkout_x86 or checkout_x64)',
+    'action': [
+        'python3',
+        'partition_allocator/build/linux/sysroot_scripts/install-sysroot.py',
+        '--arch=x86'],
+  },
+  {
+    'name': 'sysroot_mips',
+    'pattern': '.',
+    'condition': 'checkout_linux and checkout_mips',
+    'action': [
+        'python3',
+        'partition_allocator/build/linux/sysroot_scripts/install-sysroot.py',
+        '--arch=mips'],
+  },
+  {
+    'name': 'sysroot_mips64',
+    'pattern': '.',
+    'condition': 'checkout_linux and checkout_mips64',
+    'action': [
+        'python3',
+        'partition_allocator/build/linux/sysroot_scripts/install-sysroot.py',
+        '--arch=mips64el'],
+  },
+  {
+    'name': 'sysroot_x64',
+    'pattern': '.',
+    'condition': 'checkout_linux and checkout_x64',
+    'action': [
+        'python3',
+        'partition_allocator/build/linux/sysroot_scripts/install-sysroot.py',
+        '--arch=x64'],
+  },
+  {
+    # Update the prebuilt clang toolchain.
+    # Note: On Win, this should run after win_toolchain, as it may use it.
+    'name': 'clang',
+    'pattern': '.',
+    'action': ['python3', 'partition_allocator/tools/clang/scripts/update.py'],
+  },
+]
 
 noparent = True
 
