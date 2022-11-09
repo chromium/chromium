@@ -9,11 +9,14 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/update_client/protocol_parser.h"
+#include "components/update_client/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
 
 TEST(ManifestUtil, ReadInstallCommandFromManifest) {
+  update_client::ProtocolParser::Results results;
   base::FilePath installer_path;
   std::string install_args;
   std::string install_data;
@@ -24,7 +27,7 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
 
   ReadInstallCommandFromManifest(
       offline_dir, "{CDABE316-39CD-43BA-8440-6D1E0547AEE6}", "verboselogging",
-      installer_path, install_args, install_data);
+      results, installer_path, install_args, install_data);
   EXPECT_EQ(installer_path, offline_dir.AppendASCII("my_installer.exe"));
   EXPECT_EQ(install_args, "-baz");
   EXPECT_EQ(install_data,
@@ -33,6 +36,38 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
             "          \"verbose_logging\": true\n"
             "        }\n"
             "      }");
+}
+
+TEST(ManifestUtil, IsArchCompatible_ArchEmpty) {
+  EXPECT_TRUE(IsArchCompatible({}));
+}
+
+TEST(ManifestUtil, IsArchCompatible_ArchUnknown) {
+  EXPECT_FALSE(IsArchCompatible("unknown"));
+}
+
+TEST(ManifestUtil, IsArchCompatible_Archx86) {
+  EXPECT_TRUE(IsArchCompatible("x86"));
+}
+
+TEST(ManifestUtil, IsArchCompatible_Archx64) {
+  EXPECT_EQ(update_client::GetArchitecture() == update_client::kArchAmd64,
+            IsArchCompatible("x64"));
+}
+
+TEST(ManifestUtil, IsArchCompatible_NotArchx64) {
+  EXPECT_EQ(update_client::GetArchitecture() != update_client::kArchAmd64,
+            IsArchCompatible("-x64"));
+}
+
+TEST(ManifestUtil, IsArchCompatible_Archx86Notx64) {
+  EXPECT_EQ(update_client::GetArchitecture() != update_client::kArchAmd64,
+            IsArchCompatible("x86,-x64"));
+}
+
+TEST(ManifestUtil, IsArchCompatible_Archx86x64NotArm64) {
+  EXPECT_EQ(update_client::GetArchitecture() != update_client::kArchArm64,
+            IsArchCompatible("x86,x64,-arm64"));
 }
 
 }  // namespace updater

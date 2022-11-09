@@ -59,6 +59,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
+
+const char kArchAmd64Omaha3[] = "x64";
+
 namespace {
 
 HResultOr<bool> IsUserRunningSplitToken() {
@@ -991,8 +994,6 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
 }
 
 bool IsArchitectureSupported(const std::string& arch) {
-  constexpr char kArchAmd64Omaha3[] = "x64";
-
   if (arch.empty())
     return true;
 

@@ -372,6 +372,27 @@ event that Omaha listens to, so that Omaha processes can shut down gracefully.
 The updater then proceeds to overinstall the Omaha binaries with the updater
 binaries.
 
+### Offline installs
+
+The updater supports offline installations, for which no update check or file
+download is performed against the server during installation. All data is read
+from the files in the directory instead.
+
+Offline installs include:
+* an offline manifest file, which contains the update check response in XML
+  format.
+* app installer.
+
+The `arch` attribute in the offline update response is used to determine
+compatibility of the app being installed with the host processor architecture.
+
+Omaha 3 offline manifests have `arch` as "x64", but the Chromium functions
+return "x86_64" as the architecture for amd64. The updater accounts for this by
+treating "x64" the same as "x86_64".
+
+For more information, see the
+[protocol document](protocol_3_1.md#update-checks-body-update-check-response-objects-update-check-response-3).
+
 ### Enterprise Enrollment
 The updater may be enrolled with a particular enterprise. Enrollment is
 coordinated with a device management server by means of an enrollment token and

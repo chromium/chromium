@@ -13,8 +13,12 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/updater/win/protocol_parser_xml.h"
+#include "chrome/updater/win/win_util.h"
+#include "components/update_client/protocol_parser.h"
+#include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -74,12 +78,14 @@ std::unique_ptr<ProtocolParserXML> ParseOfflineManifest(
 
 }  // namespace
 
-void ReadInstallCommandFromManifest(const base::FilePath& offline_dir,
-                                    const std::string& app_id,
-                                    const std::string& install_data_index,
-                                    base::FilePath& installer_path,
-                                    std::string& install_args,
-                                    std::string& install_data) {
+void ReadInstallCommandFromManifest(
+    const base::FilePath& offline_dir,
+    const std::string& app_id,
+    const std::string& install_data_index,
+    update_client::ProtocolParser::Results& results,
+    base::FilePath& installer_path,
+    std::string& install_args,
+    std::string& install_data) {
   if (offline_dir.empty()) {
     VLOG(1) << "Unexpected: offline install without an offline directory.";
     return;
@@ -91,13 +97,14 @@ void ReadInstallCommandFromManifest(const base::FilePath& offline_dir,
     return;
   }
 
-  const std::vector<update_client::ProtocolParser::Result>& results =
+  results = manifest_parser->results();
+  const std::vector<update_client::ProtocolParser::Result>& app_list =
       manifest_parser->results().list;
   auto it = base::ranges::find_if(
-      results, [&app_id](const update_client::ProtocolParser::Result& result) {
+      app_list, [&app_id](const update_client::ProtocolParser::Result& result) {
         return base::EqualsCaseInsensitiveASCII(result.extension_id, app_id);
       });
-  if (it == std::end(results)) {
+  if (it == std::end(app_list)) {
     VLOG(2) << "No manifest data for app: " << app_id;
     return;
   }
@@ -114,6 +121,31 @@ void ReadInstallCommandFromManifest(const base::FilePath& offline_dir,
     }
     install_data = data_iter->text;
   }
+}
+
+bool IsArchCompatible(const std::string& arch_list) {
+  std::vector<std::string> architectures = base::SplitString(
+      arch_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (architectures.empty()) {
+    return true;
+  }
+
+  const std::string arch = update_client::GetArchitecture();
+
+  // This code accounts for Omaha 3 Offline manifests having `arch` as "x64",
+  // but `GetArchitecture` returning "x86_64" for amd64.
+  const std::string current_architecture =
+      arch == update_client::kArchAmd64 ? kArchAmd64Omaha3 : arch;
+
+  base::ranges::sort(architectures);
+  if (base::ranges::find(architectures, '-' + current_architecture) !=
+      architectures.end()) {
+    return false;
+  }
+
+  return base::ranges::find_if(architectures, IsArchitectureSupported) !=
+         architectures.end();
 }
 
 }  // namespace updater

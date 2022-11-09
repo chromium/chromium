@@ -43,6 +43,8 @@ struct std::hash<IID> {
 
 namespace updater {
 
+extern const char kArchAmd64Omaha3[];
+
 // Helper for methods which perform system operations which may fail. The
 // failure reason is returned as an HRESULT.
 // TODO(crbug.com/1369769): Remove the following warning once resolved in

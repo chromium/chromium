@@ -555,6 +555,7 @@ class AppInstallControllerImpl : public AppInstallController,
   void DoInstallAppOffline(const base::FilePath& installer_path,
                            const std::string& install_args,
                            const std::string& install_data);
+  void HandleArchNotCompatible();
   void InstallComplete(UpdateService::Result result);
 
   [[nodiscard]] static ObserverCompletionInfo HandleInstallResult(
@@ -692,6 +693,7 @@ void AppInstallControllerImpl::InstallAppOffline(
                           GetCommandLineLegacyCompatible();
                       // Parse the offline manifest to get the install
                       // command and install data.
+                      update_client::ProtocolParser::Results results;
                       base::FilePath installer_path;
                       std::string install_args;
                       std::string install_data;
@@ -700,25 +702,33 @@ void AppInstallControllerImpl::InstallAppOffline(
                           app_id,
                           GetInstallDataIndexFromAppArgsForCommandLine(cmd_line,
                                                                        app_id),
-                          installer_path, install_args, install_data);
+                          results, installer_path, install_args, install_data);
 
                       const std::string client_install_data =
                           GetDecodedInstallDataFromAppArgsForCommandLine(
                               cmd_line, app_id);
-                      return std::make_tuple(installer_path, install_args,
-                                             client_install_data.empty()
-                                                 ? install_data
-                                                 : client_install_data);
+                      return std::make_tuple(
+                          results, installer_path, install_args,
+                          client_install_data.empty() ? install_data
+                                                      : client_install_data);
                     },
                     self->app_id_),
                 base::BindOnce(
                     [](scoped_refptr<AppInstallControllerImpl> self,
-                       const std::tuple<base::FilePath /*installer_path*/,
-                                        std::string /*arguments*/,
-                                        std::string /*install_data*/>& result) {
-                      self->DoInstallAppOffline(std::get<0>(result),
-                                                std::get<1>(result),
-                                                std::get<2>(result));
+                       const std::tuple<
+                           update_client::ProtocolParser::Results /*results*/,
+                           base::FilePath /*installer_path*/,
+                           std::string /*arguments*/,
+                           std::string /*install_data*/>& result) {
+                      if (!IsArchCompatible(
+                              std::get<0>(result).system_requirements.arch)) {
+                        self->HandleArchNotCompatible();
+                        return;
+                      }
+
+                      self->DoInstallAppOffline(std::get<1>(result),
+                                                std::get<2>(result),
+                                                std::get<3>(result));
                     },
                     self));
           },
@@ -798,6 +808,18 @@ void AppInstallControllerImpl::DoInstallAppOffline(
               },
               base::WrapRefCounted(this), installer_path, install_args,
               install_data, install_settings)));
+}
+
+void AppInstallControllerImpl::HandleArchNotCompatible() {
+  UpdateService::UpdateState update_state;
+  update_state.app_id = app_id_;
+  update_state.state = UpdateService::UpdateState::State::kUpdateError;
+  update_state.error_category = UpdateService::ErrorCategory::kInstall;
+  update_state.error_code = UNSUPPORTED_WINDOWS_VERSION;
+  observer_completion_info_ = HandleInstallResult(update_state);
+  observer_completion_info_->completion_text =
+      GetLocalizedString(IDS_INSTALL_OS_NOT_SUPPORTED_BASE);
+  InstallComplete(UpdateService::Result::kInstallFailed);
 }
 
 // TODO(crbug.com/1218219) - propagate error code in case of errors.
