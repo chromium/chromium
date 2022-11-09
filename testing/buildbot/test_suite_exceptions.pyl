@@ -1590,6 +1590,12 @@
   'content_browsertests': {
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
+      # TODO(crbug.com/1371630): Enable on Fuchsia dbg/asan/clang builders.
+      'fuchsia-fyi-arm64-dbg',
+      'fuchsia-fyi-x64-asan',
+      'fuchsia-fyi-x64-dbg',
+      'ToTFuchsia x64',
+      'ToTFuchsiaOfficial arm64',
     ],
     'modifications': {
       'Cast Audio Linux': {
@@ -1743,6 +1749,33 @@
           # Flaking with only 20 shards with 40-60 minute runs.
           # https://crbug.com/1230118
           'shards': 30,
+        },
+      },
+      'fuchsia-arm64-cast-receiver-rel': {
+        # Temporarily only run this on CI due to resource and naming
+        # constraints.
+        # TODO(crbug.com/1371630): Remove this when resource requirements are
+        # lower.
+        'ci_only': True,
+      },
+      'fuchsia-arm64-rel': {
+        # Temporarily only run this on CI due to resource and naming
+        # constraints.
+        # TODO(crbug.com/1371630): Remove this when resource requirements are
+        # lower.
+        'ci_only': True,
+      },
+      'fuchsia-x64-cast-receiver-rel': {
+        # Temporarily only run this on CI due to resource requirements.
+        # TODO(crbug.com/1374125): Remove this once resources are available.
+        'ci_only': True,
+        'swarming': {
+          'shards': 41,
+        },
+      },
+      'fuchsia-x64-rel': {
+        'swarming': {
+          'shards': 41,
         },
       },
       'linux-chromeos-code-coverage': {
@@ -2632,7 +2665,7 @@
     },
   },
   'mediapipe_validating_tests': {
-    'modifications': { 
+    'modifications': {
       # TODO(crbug.com/1372213): Remove once tests are stable.
       'fuchsia-x64-chrome-rel': {
         'experiment_percentage': 100,
