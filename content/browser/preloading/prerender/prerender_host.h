@@ -135,7 +135,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   bool IsPortal() override;
 
   // NavigationControllerDelegate
-  void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override {}
+  void NotifyNavigationStateChangedFromController(
+      InvalidateTypes changed_flags) override {}
   void NotifyBeforeFormRepostWarningShow() override {}
   void NotifyNavigationEntryCommitted(
       const LoadCommittedDetails& load_details) override {}

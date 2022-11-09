@@ -78,7 +78,8 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
 
  private:
   // NavigationControllerDelegate
-  void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override;
+  void NotifyNavigationStateChangedFromController(
+      InvalidateTypes changed_flags) override {}
   void NotifyBeforeFormRepostWarningShow() override;
   void NotifyNavigationEntryCommitted(
       const LoadCommittedDetails& load_details) override;

@@ -22,8 +22,8 @@ class NavigationControllerDelegate {
  public:
   virtual ~NavigationControllerDelegate() {}
 
-  // TODO(https://crbug.com/1224294): Remove duplicates of WebContents methods.
-  virtual void NotifyNavigationStateChanged(InvalidateTypes changed_flags) = 0;
+  virtual void NotifyNavigationStateChangedFromController(
+      InvalidateTypes changed_flags) = 0;
 
   // Methods from WebContentsImpl that NavigationControllerImpl needs to
   // call. NavigationControllerImpl cannot call them directly because

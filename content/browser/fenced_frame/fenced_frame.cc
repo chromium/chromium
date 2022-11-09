@@ -243,8 +243,6 @@ const base::UnguessableToken& FencedFrame::GetDevToolsFrameToken() const {
   return frame_tree_->GetMainFrame()->GetDevToolsFrameToken();
 }
 
-void FencedFrame::NotifyNavigationStateChanged(InvalidateTypes changed_flags) {}
-
 void FencedFrame::NotifyBeforeFormRepostWarningShow() {}
 
 void FencedFrame::NotifyNavigationEntryCommitted(

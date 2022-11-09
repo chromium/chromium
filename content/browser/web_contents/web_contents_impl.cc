@@ -5848,6 +5848,11 @@ bool WebContentsImpl::ShouldPreserveAbortedURLs() {
   return delegate_->ShouldPreserveAbortedURLs(this);
 }
 
+void WebContentsImpl::NotifyNavigationStateChangedFromController(
+    InvalidateTypes changed_flags) {
+  NotifyNavigationStateChanged(changed_flags);
+}
+
 void WebContentsImpl::DidNavigateMainFramePreCommit(
     FrameTreeNode* frame_tree_node,
     bool navigation_is_within_page) {

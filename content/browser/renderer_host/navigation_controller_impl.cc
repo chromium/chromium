@@ -4090,7 +4090,7 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
   // when it wants to draw.  See http://crbug.com/11157
   ssl_manager_.DidCommitProvisionalLoad(*details);
 
-  delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_ALL);
+  delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
   delegate_->NotifyNavigationEntryCommitted(*details);
 
   // TODO(avi): Remove. http://crbug.com/170921
@@ -4250,7 +4250,7 @@ void NavigationControllerImpl::DiscardNonCommittedEntriesWithCommitDetails(
 
   if (!delegate_)
     return;
-  delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_ALL);
+  delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
 }
 
 int NavigationControllerImpl::GetEntryIndexWithUniqueID(
@@ -4371,7 +4371,7 @@ void NavigationControllerImpl::PendingEntryRefDeleted(PendingEntryRef* ref) {
     return;
 
   DiscardPendingEntry(true);
-  delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
+  delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_URL);
 }
 
 std::unique_ptr<PolicyContainerPolicies>
@@ -4430,7 +4430,7 @@ void NavigationControllerImpl::DidAccessInitialMainDocument() {
     DiscardPendingEntry(false);
 
   // Update the URL display.
-  delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
+  delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_URL);
 }
 
 void NavigationControllerImpl::UpdateStateForFrame(
