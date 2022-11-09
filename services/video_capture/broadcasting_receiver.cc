@@ -80,25 +80,17 @@ BroadcastingReceiver::BufferContext::BufferContext(
   buffer_context_id_ = next_buffer_context_id++;
 }
 
-BroadcastingReceiver::BufferContext::~BufferContext() {
-  // Signal that the buffer is no longer in use, if we haven't already.
-  if (consumer_hold_count_ != 0) {
-    DCHECK(frame_access_handler_remote_);
-    (*frame_access_handler_remote_)->OnFinishedConsumingBuffer(buffer_id_);
-  }
-}
+BroadcastingReceiver::BufferContext::~BufferContext() = default;
 
 BroadcastingReceiver::BufferContext::BufferContext(
     BroadcastingReceiver::BufferContext&& other)
     : buffer_context_id_(other.buffer_context_id_),
       buffer_id_(other.buffer_id_),
-      frame_access_handler_remote_(other.frame_access_handler_remote_),
       buffer_handle_(std::move(other.buffer_handle_)),
       consumer_hold_count_(other.consumer_hold_count_),
       is_retired_(other.is_retired_) {
   // The consumer hold was moved from |other|.
   other.consumer_hold_count_ = 0;
-  other.frame_access_handler_remote_ = nullptr;
 }
 
 BroadcastingReceiver::BufferContext&
@@ -106,34 +98,20 @@ BroadcastingReceiver::BufferContext::operator=(
     BroadcastingReceiver::BufferContext&& other) {
   buffer_context_id_ = other.buffer_context_id_;
   buffer_id_ = other.buffer_id_;
-  frame_access_handler_remote_ = other.frame_access_handler_remote_;
   buffer_handle_ = std::move(other.buffer_handle_);
   consumer_hold_count_ = other.consumer_hold_count_;
   is_retired_ = other.is_retired_;
   // The consumer hold was moved from |other|.
   other.consumer_hold_count_ = 0;
-  other.frame_access_handler_remote_ = nullptr;
   return *this;
 }
 
-void BroadcastingReceiver::BufferContext::SetFrameAccessHandlerRemote(
-    scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote) {
-  frame_access_handler_remote_ = frame_access_handler_remote;
-}
-
 void BroadcastingReceiver::BufferContext::IncreaseConsumerCount() {
-  // The access handler should be ready if we have a consumer since it is needed
-  // when the consumer decreases the consumer count.
-  DCHECK(frame_access_handler_remote_);
   consumer_hold_count_++;
 }
 
 void BroadcastingReceiver::BufferContext::DecreaseConsumerCount() {
-  DCHECK(frame_access_handler_remote_);
   consumer_hold_count_--;
-  if (consumer_hold_count_ == 0) {
-    (*frame_access_handler_remote_)->OnFinishedConsumingBuffer(buffer_id_);
-  }
 }
 
 bool BroadcastingReceiver::BufferContext::IsStillBeingConsumed() const {
@@ -192,6 +170,10 @@ BroadcastingReceiver::BroadcastingReceiver()
 
 BroadcastingReceiver::~BroadcastingReceiver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+base::WeakPtr<media::VideoFrameReceiver> BroadcastingReceiver::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void BroadcastingReceiver::HideSourceRestartFromClients(
@@ -273,20 +255,9 @@ void BroadcastingReceiver::OnNewBuffer(
   }
 }
 
-void BroadcastingReceiver::OnFrameAccessHandlerReady(
-    mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
-        pending_frame_access_handler) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!frame_access_handler_remote_);
-  frame_access_handler_remote_ =
-      base::MakeRefCounted<VideoFrameAccessHandlerRemote>(
-          mojo::Remote<video_capture::mojom::VideoFrameAccessHandler>(
-              std::move(pending_frame_access_handler)));
-}
-
 void BroadcastingReceiver::OnFrameReadyInBuffer(
-    mojom::ReadyFrameInBufferPtr buffer,
-    std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+    media::ReadyFrameInBuffer frame,
+    std::vector<media::ReadyFrameInBuffer> scaled_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool has_consumers = false;
   for (auto& client : clients_) {
@@ -297,27 +268,26 @@ void BroadcastingReceiver::OnFrameReadyInBuffer(
   }
   // If we don't have any consumers to forward the frame to, signal to finish
   // consuming the buffers immediately.
-  if (!has_consumers) {
-    if (frame_access_handler_remote_) {
-      (*frame_access_handler_remote_)
-          ->OnFinishedConsumingBuffer(buffer->buffer_id);
-      for (const auto& scaled_buffer : scaled_buffers) {
-        (*frame_access_handler_remote_)
-            ->OnFinishedConsumingBuffer(scaled_buffer->buffer_id);
-      }
-    }
+  if (!has_consumers)
     return;
-  }
 
   // Obtain buffer contexts for all frame representations.
-  auto it = FindUnretiredBufferContextFromBufferId(buffer->buffer_id);
+  auto it = FindUnretiredBufferContextFromBufferId(frame.buffer_id);
   CHECK(it != buffer_contexts_.end());
   BufferContext* buffer_context = &(*it);
+  auto result = scoped_access_permissions_by_buffer_context_id_.insert(
+      std::make_pair(buffer_context->buffer_context_id(),
+                     std::move(frame.buffer_read_permission)));
+  DCHECK(result.second);
   std::vector<BufferContext*> scaled_buffer_contexts;
-  scaled_buffer_contexts.reserve(scaled_buffers.size());
-  for (const auto& scaled_buffer : scaled_buffers) {
-    it = FindUnretiredBufferContextFromBufferId(scaled_buffer->buffer_id);
+  scaled_buffer_contexts.reserve(scaled_frames.size());
+  for (auto& scaled_frame : scaled_frames) {
+    it = FindUnretiredBufferContextFromBufferId(scaled_frame.buffer_id);
     CHECK(it != buffer_contexts_.end());
+    result = scoped_access_permissions_by_buffer_context_id_.insert(
+        std::make_pair(it->buffer_context_id(),
+                       std::move(scaled_frame.buffer_read_permission)));
+    DCHECK(result.second);
     scaled_buffer_contexts.push_back(&(*it));
   }
   // Broadcast to all clients.
@@ -339,22 +309,19 @@ void BroadcastingReceiver::OnFrameReadyInBuffer(
       client.second.set_has_client_frame_access_handler_remote();
     }
 
-    buffer_context->SetFrameAccessHandlerRemote(frame_access_handler_remote_);
     buffer_context->IncreaseConsumerCount();
     mojom::ReadyFrameInBufferPtr ready_buffer = mojom::ReadyFrameInBuffer::New(
-        buffer_context->buffer_context_id(), buffer->frame_feedback_id,
-        buffer->frame_info.Clone());
+        buffer_context->buffer_context_id(), frame.frame_feedback_id,
+        frame.frame_info.Clone());
 
     std::vector<mojom::ReadyFrameInBufferPtr> scaled_ready_buffers;
-    scaled_ready_buffers.reserve(scaled_buffers.size());
-    for (size_t i = 0; i < scaled_buffers.size(); ++i) {
-      scaled_buffer_contexts[i]->SetFrameAccessHandlerRemote(
-          frame_access_handler_remote_);
+    scaled_ready_buffers.reserve(scaled_frames.size());
+    for (size_t i = 0; i < scaled_frames.size(); ++i) {
       scaled_buffer_contexts[i]->IncreaseConsumerCount();
       scaled_ready_buffers.push_back(mojom::ReadyFrameInBuffer::New(
           scaled_buffer_contexts[i]->buffer_context_id(),
-          scaled_buffers[i]->frame_feedback_id,
-          scaled_buffers[i]->frame_info.Clone()));
+          scaled_frames[i].frame_feedback_id,
+          scaled_frames[i].frame_info.Clone()));
     }
     client.second.client()->OnFrameReadyInBuffer(
         std::move(ready_buffer), std::move(scaled_ready_buffers));
@@ -459,6 +426,17 @@ void BroadcastingReceiver::OnClientFinishedConsumingFrame(
       buffer_contexts_, buffer_context_id, &BufferContext::buffer_context_id);
   CHECK(buffer_context_iter != buffer_contexts_.end());
   buffer_context_iter->DecreaseConsumerCount();
+
+  if (!buffer_context_iter->IsStillBeingConsumed()) {
+    auto it =
+        scoped_access_permissions_by_buffer_context_id_.find(buffer_context_id);
+    if (it == scoped_access_permissions_by_buffer_context_id_.end()) {
+      NOTREACHED();
+      return;
+    }
+    scoped_access_permissions_by_buffer_context_id_.erase(it);
+  }
+
   if (buffer_context_iter->is_retired() &&
       !buffer_context_iter->IsStillBeingConsumed()) {
     buffer_contexts_.erase(buffer_context_iter);

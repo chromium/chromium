@@ -71,6 +71,8 @@ void SharedMemoryVirtualDeviceMojoAdapter::RequestFrameBuffer(
         producer_->OnBufferRetired(buffer_id_to_drop);
       if (video_frame_handler_.is_bound()) {
         video_frame_handler_->OnBufferRetired(buffer_id_to_drop);
+      } else if (video_frame_handler_in_process_) {
+        video_frame_handler_in_process_->OnBufferRetired(buffer_id_to_drop);
       }
     }
   }
@@ -87,6 +89,12 @@ void SharedMemoryVirtualDeviceMojoAdapter::RequestFrameBuffer(
           media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
               buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
       video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
+    } else if (video_frame_handler_in_process_) {
+      media::mojom::VideoBufferHandlePtr buffer_handle =
+          media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+              buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
+      video_frame_handler_in_process_->OnNewBuffer(buffer_id,
+                                                   std::move(buffer_handle));
     }
     known_buffer_ids_.push_back(buffer_id);
 
@@ -133,6 +141,15 @@ void SharedMemoryVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
         mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
                                        std::move(frame_info)),
         {});
+  } else if (video_frame_handler_in_process_) {
+    buffer_pool_->HoldForConsumers(buffer_id, 1 /* num_clients */);
+    video_frame_handler_in_process_->OnFrameReadyInBuffer(
+        media::ReadyFrameInBuffer(
+            buffer_id, 0 /* frame_feedback_id */,
+            std::make_unique<media::ScopedBufferPoolReservation<
+                media::ConsumerReleaseTraits>>(buffer_pool_, buffer_id),
+            std::move(frame_info)),
+        {});
   }
   buffer_pool_->RelinquishProducerReservation(buffer_id);
 }
@@ -153,6 +170,23 @@ void SharedMemoryVirtualDeviceMojoAdapter::Start(
         media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
             buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
     video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
+  }
+}
+
+void SharedMemoryVirtualDeviceMojoAdapter::StartInProcess(
+    const media::VideoCaptureParams& requested_settings,
+    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  video_frame_handler_in_process_ = std::move(frame_handler);
+  video_frame_handler_in_process_->OnStarted();
+
+  // Notify receiver of known buffers */
+  for (auto buffer_id : known_buffer_ids_) {
+    media::mojom::VideoBufferHandlePtr buffer_handle =
+        media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+            buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
+    video_frame_handler_in_process_->OnNewBuffer(buffer_id,
+                                                 std::move(buffer_handle));
   }
 }
 
@@ -192,15 +226,21 @@ void SharedMemoryVirtualDeviceMojoAdapter::RequestRefreshFrame() {
 
 void SharedMemoryVirtualDeviceMojoAdapter::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!video_frame_handler_.is_bound())
-    return;
-  // Unsubscribe from connection error callbacks.
-  video_frame_handler_.set_disconnect_handler(base::OnceClosure());
-  // Send out OnBufferRetired events and OnStopped.
-  for (auto buffer_id : known_buffer_ids_)
-    video_frame_handler_->OnBufferRetired(buffer_id);
-  video_frame_handler_->OnStopped();
-  video_frame_handler_.reset();
+  if (video_frame_handler_.is_bound()) {
+    // Unsubscribe from connection error callbacks.
+    video_frame_handler_.set_disconnect_handler(base::OnceClosure());
+    // Send out OnBufferRetired events and OnStopped.
+    for (auto buffer_id : known_buffer_ids_)
+      video_frame_handler_->OnBufferRetired(buffer_id);
+    video_frame_handler_->OnStopped();
+    video_frame_handler_.reset();
+  } else if (video_frame_handler_in_process_) {
+    // Send out OnBufferRetired events and OnStopped.
+    for (auto buffer_id : known_buffer_ids_)
+      video_frame_handler_in_process_->OnBufferRetired(buffer_id);
+    video_frame_handler_in_process_->OnStopped();
+    video_frame_handler_in_process_ = nullptr;
+  }
 }
 
 void SharedMemoryVirtualDeviceMojoAdapter::OnReceiverConnectionErrorOrClose() {

@@ -53,6 +53,9 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
   void CreateDevice(const std::string& device_id,
                     mojo::PendingReceiver<mojom::Device> device_receiver,
                     CreateDeviceCallback callback) override;
+  void CreateDeviceInProcess(const std::string& device_id,
+                             CreateDeviceInProcessCallback callback) override;
+  void StopDeviceInProcess(const std::string device_id) override;
   void AddSharedMemoryVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,
@@ -88,10 +91,19 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
     std::unique_ptr<mojo::Receiver<mojom::Device>> receiver;
   };
 
+  void CreateDeviceInternal(
+      const std::string& device_id,
+      absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
+      absl::optional<CreateDeviceCallback> create_callback,
+      absl::optional<CreateDeviceInProcessCallback> create_in_process_callback,
+      bool create_in_process);
   void CreateAndAddNewDevice(
       const std::string& device_id,
-      mojo::PendingReceiver<mojom::Device> device_receiver,
-      CreateDeviceCallback callback);
+      absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
+      absl::optional<CreateDeviceCallback> create_callback,
+      absl::optional<CreateDeviceInProcessCallback> create_in_process_callback,
+      bool create_in_process);
+
   void OnClientConnectionErrorOrClose(const std::string& device_id);
 
   const std::unique_ptr<media::VideoCaptureSystem> capture_system_;

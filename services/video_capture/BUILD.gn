@@ -9,6 +9,7 @@ source_set("lib") {
   sources = [
     "broadcasting_receiver.cc",
     "broadcasting_receiver.h",
+    "device.h",
     "device_factory_media_to_mojo_adapter.cc",
     "device_factory_media_to_mojo_adapter.h",
     "device_media_to_mojo_adapter.cc",

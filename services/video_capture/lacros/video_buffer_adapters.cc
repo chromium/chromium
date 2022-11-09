@@ -5,6 +5,7 @@
 #include "services/video_capture/lacros/video_buffer_adapters.h"
 
 #include "base/notreached.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/mojom/buffer_types.mojom.h"
@@ -40,6 +41,20 @@ gfx::GpuMemoryBufferHandle ToGfxGpuMemoryBufferHandle(
     }
   }
   return gfx_buffer_handle;
+}
+
+void OnFrameDone(mojo::Remote<crosapi::mojom::ScopedAccessPermission>
+                     remote_access_permission) {
+  // There's nothing to do here, except to serve as a keep-alive for the
+  // remote until the callback is run. So just let it be destroyed now.
+}
+
+std::unique_ptr<media::ScopedFrameDoneHelper> GetAccessPermissionHelper(
+    mojo::PendingRemote<crosapi::mojom::ScopedAccessPermission>
+        pending_remote_access_permission) {
+  return std::make_unique<media::ScopedFrameDoneHelper>(base::BindOnce(
+      &OnFrameDone, mojo::Remote<crosapi::mojom::ScopedAccessPermission>(
+                        std::move(pending_remote_access_permission))));
 }
 
 }  // namespace
@@ -100,6 +115,14 @@ media::mojom::VideoFrameInfoPtr ConvertToMediaVideoFrameInfo(
   video_capture_buffer_info->metadata = std::move(media_frame_metadata);
 
   return video_capture_buffer_info;
+}
+
+media::ReadyFrameInBuffer ConvertToMediaReadyFrame(
+    crosapi::mojom::ReadyFrameInBufferPtr buffer) {
+  return media::ReadyFrameInBuffer(
+      buffer->buffer_id, buffer->frame_feedback_id,
+      GetAccessPermissionHelper(std::move(buffer->access_permission)),
+      ConvertToMediaVideoFrameInfo(std::move(buffer->frame_info)));
 }
 
 }  // namespace video_capture

@@ -10,8 +10,8 @@
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_capture/device.h"
 #include "services/video_capture/public/cpp/video_frame_access_handler.h"
-#include "services/video_capture/public/mojom/device.mojom.h"
 #include "services/video_capture/public/mojom/producer.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/virtual_device.mojom.h"
@@ -20,7 +20,7 @@ namespace video_capture {
 
 class SharedMemoryVirtualDeviceMojoAdapter
     : public mojom::SharedMemoryVirtualDevice,
-      public mojom::Device {
+      public Device {
  public:
   explicit SharedMemoryVirtualDeviceMojoAdapter(
       mojo::Remote<mojom::Producer> producer);
@@ -41,9 +41,12 @@ class SharedMemoryVirtualDeviceMojoAdapter
       int32_t buffer_id,
       ::media::mojom::VideoFrameInfoPtr frame_info) override;
 
-  // mojom::Device implementation.
+  // Device implementation.
   void Start(const media::VideoCaptureParams& requested_settings,
              mojo::PendingRemote<mojom::VideoFrameHandler> receiver) override;
+  void StartInProcess(
+      const media::VideoCaptureParams& requested_settings,
+      const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) override;
   void MaybeSuspend() override;
   void Resume() override;
   void GetPhotoState(GetPhotoStateCallback callback) override;
@@ -63,6 +66,8 @@ class SharedMemoryVirtualDeviceMojoAdapter
   void OnReceiverConnectionErrorOrClose();
 
   mojo::Remote<mojom::VideoFrameHandler> video_frame_handler_;
+  // Used when this device is started in process.
+  base::WeakPtr<media::VideoFrameReceiver> video_frame_handler_in_process_;
   mojo::Remote<mojom::Producer> producer_;
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool_;
   std::vector<int> known_buffer_ids_;

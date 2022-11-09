@@ -112,25 +112,63 @@ void DeviceFactoryMediaToMojoAdapter::CreateDevice(
     const std::string& device_id,
     mojo::PendingReceiver<mojom::Device> device_receiver,
     CreateDeviceCallback callback) {
+  CreateDeviceInternal(device_id, std::move(device_receiver),
+                       std::move(callback),
+                       /*create_in_process_callback=*/absl::nullopt,
+                       /*create_in_process=*/false);
+}
+
+void DeviceFactoryMediaToMojoAdapter::CreateDeviceInProcess(
+    const std::string& device_id,
+    CreateDeviceInProcessCallback callback) {
+  CreateDeviceInternal(device_id, /*device_receiver=*/absl::nullopt,
+                       /*create_callback=*/absl::nullopt, std::move(callback),
+                       /*create_in_process=*/true);
+}
+
+void DeviceFactoryMediaToMojoAdapter::CreateDeviceInternal(
+    const std::string& device_id,
+    absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
+    absl::optional<CreateDeviceCallback> create_callback,
+    absl::optional<CreateDeviceInProcessCallback> create_in_process_callback,
+    bool create_in_process) {
   auto active_device_iter = active_devices_by_id_.find(device_id);
   if (active_device_iter != active_devices_by_id_.end()) {
     // The requested device is already in use.
-    // Revoke the access and close the device, then bind to the new receiver.
+    // Revoke the access and close the device, then callback the device or bind
+    // to the new receiver.
     ActiveDeviceEntry& device_entry = active_device_iter->second;
-    device_entry.receiver->reset();
     device_entry.device->Stop();
-    device_entry.receiver->Bind(std::move(device_receiver));
-    device_entry.receiver->set_disconnect_handler(base::BindOnce(
-        &DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose,
-        base::Unretained(this), device_id));
-    std::move(callback).Run(media::VideoCaptureError::kNone);
-    return;
+    if (create_in_process) {
+      DCHECK(create_in_process_callback);
+      DeviceInProcessInfo info{device_entry.device.get(),
+                               media::VideoCaptureError::kNone};
+      std::move(*create_in_process_callback).Run(std::move(info));
+      return;
+    } else {
+      // |device_entry.receiver| could be nullptr when this device is created in
+      // process.
+      if (!device_entry.receiver) {
+        OnClientConnectionErrorOrClose(device_id);
+      } else {
+        DCHECK(device_receiver);
+        DCHECK(create_callback);
+        device_entry.receiver->reset();
+        device_entry.receiver->Bind(std::move(*device_receiver));
+        device_entry.receiver->set_disconnect_handler(base::BindOnce(
+            &DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose,
+            base::Unretained(this), device_id));
+        std::move(*create_callback).Run(media::VideoCaptureError::kNone);
+        return;
+      }
+    }
   }
 
   auto create_and_add_new_device_cb =
       base::BindOnce(&DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice,
                      weak_factory_.GetWeakPtr(), device_id,
-                     std::move(device_receiver), std::move(callback));
+                     std::move(device_receiver), std::move(create_callback),
+                     std::move(create_in_process_callback), create_in_process);
 
   if (has_called_get_device_infos_) {
     std::move(create_and_add_new_device_cb).Run();
@@ -141,6 +179,11 @@ void DeviceFactoryMediaToMojoAdapter::CreateDevice(
       base::BindOnce(&DiscardDeviceInfosAndCallContinuation,
                      std::move(create_and_add_new_device_cb)));
   has_called_get_device_infos_ = true;
+}
+
+void DeviceFactoryMediaToMojoAdapter::StopDeviceInProcess(
+    const std::string device_id) {
+  OnClientConnectionErrorOrClose(device_id);
 }
 
 void DeviceFactoryMediaToMojoAdapter::AddSharedMemoryVirtualDevice(
@@ -173,16 +216,25 @@ void DeviceFactoryMediaToMojoAdapter::RegisterVirtualDevicesChangedObserver(
 
 void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
     const std::string& device_id,
-    mojo::PendingReceiver<mojom::Device> device_receiver,
-    CreateDeviceCallback callback) {
+    absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
+    absl::optional<CreateDeviceCallback> create_callback,
+    absl::optional<CreateDeviceInProcessCallback> create_in_process_callback,
+    bool create_in_process) {
   media::VideoCaptureErrorOrDevice device_status =
       capture_system_->CreateDevice(device_id);
   if (!device_status.ok()) {
-    std::move(callback).Run(device_status.error());
+    if (create_in_process) {
+      DCHECK(create_in_process_callback);
+      DeviceInProcessInfo info{nullptr, device_status.error()};
+      std::move(*create_in_process_callback).Run(std::move(info));
+    } else {
+      DCHECK(create_callback);
+      std::move(*create_callback).Run(device_status.error());
+    }
     return;
   }
 
-  // Add entry to active_devices to keep track of it
+  // Add entry to active_devices to keep track of it.
   ActiveDeviceEntry device_entry;
   std::unique_ptr<media::VideoCaptureDevice> media_device =
       device_status.ReleaseDevice();
@@ -191,21 +243,32 @@ void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
   device_entry.device = std::make_unique<DeviceMediaToMojoAdapter>(
       std::move(media_device), jpeg_decoder_factory_callback_,
       jpeg_decoder_task_runner_);
-#elif BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN)  // BUILDFLAG(IS_CHROMEOS_ASH)
   device_entry.device = std::make_unique<DeviceMediaToMojoAdapter>(
       std::move(media_device), capture_system_->GetFactory());
-#else
+#else                    // BUILDFLAG(IS_WIN)
   device_entry.device =
       std::make_unique<DeviceMediaToMojoAdapter>(std::move(media_device));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  device_entry.receiver = std::make_unique<mojo::Receiver<mojom::Device>>(
-      device_entry.device.get(), std::move(device_receiver));
-  device_entry.receiver->set_disconnect_handler(base::BindOnce(
-      &DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose,
-      base::Unretained(this), device_id));
-  active_devices_by_id_[device_id] = std::move(device_entry);
+#endif                   // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_WIN)
 
-  std::move(callback).Run(media::VideoCaptureError::kNone);
+  if (create_in_process) {
+    DCHECK(create_in_process_callback);
+    DeviceInProcessInfo info{device_entry.device.get(),
+                             media::VideoCaptureError::kNone};
+    std::move(*create_in_process_callback).Run(std::move(info));
+  } else {
+    DCHECK(device_receiver);
+    DCHECK(create_callback);
+    device_entry.receiver = std::make_unique<mojo::Receiver<mojom::Device>>(
+        device_entry.device.get(), std::move(*device_receiver));
+    device_entry.receiver->set_disconnect_handler(base::BindOnce(
+        &DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose,
+        base::Unretained(this), device_id));
+
+    std::move(*create_callback).Run(media::VideoCaptureError::kNone);
+  }
+
+  active_devices_by_id_[device_id] = std::move(device_entry);
 }
 
 void DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose(
@@ -213,8 +276,11 @@ void DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose(
   video_capture::uma::LogVideoCaptureServiceEvent(
       video_capture::uma::SERVICE_LOST_CONNECTION_TO_BROWSER);
 
-  active_devices_by_id_[device_id].device->Stop();
-  active_devices_by_id_.erase(device_id);
+  auto active_device_iter = active_devices_by_id_.find(device_id);
+  if (active_device_iter != active_devices_by_id_.end()) {
+    active_device_iter->second.device->Stop();
+    active_devices_by_id_.erase(device_id);
+  }
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/public/mojom/device.mojom.h"
+#include "services/video_capture/device.h"
 
 namespace video_capture {
 
@@ -20,10 +20,10 @@ class VideoFrameHandlerProxyLacros;
 
 // A proxy which is used for communication between the client on Lacros-Chrome
 // and the actual video_capture::Device in Ash-Chrome.
-class DeviceProxyLacros : public mojom::Device {
+class DeviceProxyLacros : public video_capture::Device {
  public:
   DeviceProxyLacros(
-      mojo::PendingReceiver<mojom::Device> device_receiver,
+      absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
       mojo::PendingRemote<crosapi::mojom::VideoCaptureDevice> proxy_remote,
       base::OnceClosure cleanup_callback);
   DeviceProxyLacros(const DeviceProxyLacros&) = delete;
@@ -31,9 +31,12 @@ class DeviceProxyLacros : public mojom::Device {
   ~DeviceProxyLacros() override;
 
  private:
-  // mojom::Device implementation.
+  // video_capture::Device implementation.
   void Start(const media::VideoCaptureParams& requested_settings,
              mojo::PendingRemote<mojom::VideoFrameHandler> handler) override;
+  void StartInProcess(
+      const media::VideoCaptureParams& requested_settings,
+      const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) override;
   void MaybeSuspend() override;
   void Resume() override;
   void GetPhotoState(GetPhotoStateCallback callback) override;
