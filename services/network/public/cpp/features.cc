@@ -313,7 +313,7 @@ BASE_FEATURE(kReduceAcceptLanguage,
 // issues when exposed codes cause impacts.
 BASE_FEATURE(kReduceAcceptLanguageOriginTrial,
              "ReduceAcceptLanguageOriginTrial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Disable ResourceScheduler.
 BASE_FEATURE(kDisableResourceScheduler,
