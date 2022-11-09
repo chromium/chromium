@@ -26,10 +26,7 @@
 #include "ui/ozone/platform/scenic/scenic_window_canvas.h"
 #include "ui/ozone/platform/scenic/scenic_window_manager.h"
 #include "ui/ozone/platform/scenic/sysmem_buffer_collection.h"
-
-#if BUILDFLAG(ENABLE_VULKAN)
 #include "ui/ozone/platform/scenic/vulkan_implementation_scenic.h"
-#endif
 
 namespace ui {
 
@@ -214,14 +211,12 @@ ScenicSurfaceFactory::CreateNativePixmapFromHandle(
   return collection->CreateNativePixmap(std::move(handle), size);
 }
 
-#if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 ScenicSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
                                                  bool allow_protected_memory) {
   return std::make_unique<ui::VulkanImplementationScenic>(
       this, &sysmem_buffer_manager_, use_swiftshader, allow_protected_memory);
 }
-#endif
 
 void ScenicSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
                                       ScenicSurface* surface) {
