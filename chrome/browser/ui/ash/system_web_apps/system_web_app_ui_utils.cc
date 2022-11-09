@@ -270,16 +270,20 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   if (!provider->registrar().IsInstalled(app_id.value()))
     return nullptr;
 
-  Browser* browser_to_return = nullptr;
-  // Look through all the windows, find a browser for this app. Prefer the app
-  // window that's currently active if there is one.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  // Look through all the windows, find a browser for this app. Prefer the most
+  // recently active app window.
+  BrowserList* const browser_list = BrowserList::GetInstance();
+  const auto end = browser_list->end_browsers_ordered_by_activation();
+  for (auto iter = browser_list->begin_browsers_ordered_by_activation();
+       iter != end; ++iter) {
+    Browser* const browser = *iter;
     if (browser->profile() != profile || browser->type() != browser_type)
       continue;
 
     if (web_app::GetAppIdFromApplicationName(browser->app_name()) !=
-        app_id.value())
+        app_id.value()) {
       continue;
+    }
 
     if (!url.is_empty()) {
       // In case a URL is provided, only allow a browser which shows it.
@@ -289,14 +293,10 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
         continue;
     }
 
-    if (browser->window()->IsActive()) {
-      return browser;
-    }
-
-    browser_to_return = browser;
+    return browser;
   }
 
-  return browser_to_return;
+  return nullptr;
 }
 
 bool IsSystemWebApp(Browser* browser) {
