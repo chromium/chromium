@@ -28,6 +28,8 @@
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -59,6 +61,7 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -85,7 +88,16 @@ ChromeOmniboxClient::ChromeOmniboxClient(OmniboxEditController* controller,
                          ServiceAccessType::EXPLICIT_ACCESS),
                      HistoryServiceFactory::GetForProfile(
                          profile,
-                         ServiceAccessType::EXPLICIT_ACCESS)) {}
+                         ServiceAccessType::EXPLICIT_ACCESS)) {
+  if (OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled()) {
+    optimization_guide::OptimizationGuideModelProvider* opt_guide =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+    if (opt_guide) {
+      tail_model_observer_ =
+          std::make_unique<OnDeviceTailModelObserver>(opt_guide);
+    }
+  }
+}
 
 ChromeOmniboxClient::~ChromeOmniboxClient() {
   BitmapFetcherService* bitmap_fetcher_service =

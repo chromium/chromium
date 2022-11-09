@@ -21,6 +21,7 @@ include_rules = [
   "+components/navigation_metrics",
   "+components/open_from_clipboard",
   "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
   "+components/pref_registry",
   "+components/prefs",
   "+components/query_parser",

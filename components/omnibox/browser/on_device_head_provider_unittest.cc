@@ -58,7 +58,7 @@ class OnDeviceHeadProviderTest : public testing::Test,
     ASSERT_TRUE(base::PathExists(file_path));
     auto* update_listener = OnDeviceModelUpdateListener::GetInstance();
     if (update_listener)
-      update_listener->OnModelUpdate(file_path);
+      update_listener->OnHeadModelUpdate(file_path);
     task_environment_.RunUntilIdle();
   }
 

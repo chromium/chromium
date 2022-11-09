@@ -279,6 +279,6 @@ void OnDeviceHeadProvider::SearchDone(
 std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {
   auto* model_update_listener = OnDeviceModelUpdateListener::GetInstance();
   return model_update_listener != nullptr
-             ? model_update_listener->model_filename()
+             ? model_update_listener->head_model_filename()
              : "";
 }

@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/on_device_tail_model_observer.h"
 
 class ChromeOmniboxEditController;
 class GURL;
@@ -112,6 +113,7 @@ class ChromeOmniboxClient : public OmniboxClient {
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::vector<BitmapFetcherService::RequestId> request_ids_;
   FaviconCache favicon_cache_;
+  std::unique_ptr<OnDeviceTailModelObserver> tail_model_observer_;
 
   base::WeakPtrFactory<ChromeOmniboxClient> weak_factory_{this};
 };

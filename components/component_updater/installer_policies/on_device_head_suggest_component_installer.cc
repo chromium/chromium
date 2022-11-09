@@ -107,7 +107,7 @@ void OnDeviceHeadSuggestInstallerPolicy::ComponentReady(
     base::Value manifest) {
   auto* listener = OnDeviceModelUpdateListener::GetInstance();
   if (listener)
-    listener->OnModelUpdate(install_dir);
+    listener->OnHeadModelUpdate(install_dir);
 }
 
 base::FilePath OnDeviceHeadSuggestInstallerPolicy::GetRelativeInstallDir()
