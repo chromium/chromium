@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,14 +36,6 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ppapi/buildflags/buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/power/power_manager_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
@@ -67,12 +60,8 @@ bool IsPepperPlugin(const base::FilePath& plugin_path) {
 #endif
 
 void RebootDevice() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "kiosk app session");
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  KioskSessionServiceLacros::Get()->RestartDevice("kiosk app session");
-#endif
 }
 
 // Sends a SIGFPE signal to plugin subprocesses that matches |child_ids|

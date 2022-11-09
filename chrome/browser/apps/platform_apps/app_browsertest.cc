@@ -43,6 +43,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -1355,7 +1356,6 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
   void TearDownOnMainThread() override {
     PlatformAppBrowserTest::TearDownOnMainThread();
     user_manager_enabler_.reset();
-    fake_user_manager_ = nullptr;
   }
 
  protected:
@@ -1364,18 +1364,12 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
   }
 
   void EnterKioskSession() {
-    fake_user_manager_ = new ash::FakeChromeUserManager();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
-
-    const AccountId kiosk_account_id(
-        AccountId::FromUserEmail("kiosk@foobar.com"));
-    fake_user_manager_->AddKioskAppUser(kiosk_account_id);
-    fake_user_manager_->LoginUser(kiosk_account_id);
+    chromeos::LoginState::Get()->SetLoggedInState(
+        chromeos::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+        chromeos::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
   }
 
  private:
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 

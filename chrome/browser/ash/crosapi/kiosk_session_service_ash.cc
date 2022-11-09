@@ -22,16 +22,10 @@ void KioskSessionServiceAsh::AttemptUserExit() {
   chrome::AttemptUserExit();
 }
 
-void KioskSessionServiceAsh::RestartDevice(const std::string& description,
-                                           RestartDeviceCallback callback) {
-  if (user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
-      user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()) {
-    chromeos::PowerManagerClient::Get()->RequestRestart(
-        power_manager::REQUEST_RESTART_OTHER, description);
-    std::move(callback).Run(true);
-  } else {
-    std::move(callback).Run(false);
-  }
+void KioskSessionServiceAsh::RestartDeviceDeprecated(
+    const std::string& description,
+    RestartDeviceDeprecatedCallback callback) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace crosapi

@@ -16,7 +16,9 @@ interface KioskSessionService {
   // to start actual exit process.
   AttemptUserExit@0();
 
+  // Deprecated.
+  // Lacros can call `PowerManagerClient::RequestRestart` directly instead.
   // Triggers a device restart initiated by extension runtime API
   [MinVersion=1]
-  RestartDevice@1(string description) => (bool status);
+  RestartDeviceDeprecated@1(string description) => (bool status);
 };

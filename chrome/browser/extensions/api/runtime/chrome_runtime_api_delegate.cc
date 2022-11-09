@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -38,14 +39,9 @@
 #include "extensions/common/manifest.h"
 #include "net/base/backoff_entry.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #endif
 
 using extensions::Extension;
@@ -332,19 +328,14 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
 }
 
 bool ChromeRuntimeAPIDelegate::RestartDevice(std::string* error_message) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
-      user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (profiles::IsKioskSession()) {
     chromeos::PowerManagerClient::Get()->RequestRestart(
         power_manager::REQUEST_RESTART_API, "chrome.runtime API");
     return true;
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (KioskSessionServiceLacros::Get()->RestartDevice("chrome.runtime API")) {
-    return true;
-  }
-#endif
+
   *error_message = "Function available only for ChromeOS kiosk mode.";
   return false;
 }

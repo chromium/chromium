@@ -53,9 +53,6 @@ class KioskSessionServiceLacros {
     return app_session_.get();
   }
 
-  // Tell the ash-chrome to restart device
-  virtual bool RestartDevice(const std::string& description);
-
  protected:
   // Tell the ash-chrome to end the kiosk session and return the current user
   // to the login screen by calling the API provided by
