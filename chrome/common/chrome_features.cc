@@ -273,7 +273,12 @@ BASE_FEATURE(kPreinstalledWebAppDuplicationFixer,
 // offline if no custom page is provided by developer.
 BASE_FEATURE(kPWAsDefaultOfflinePage,
              "PWAsDefaultOfflinePage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // API that allows PWAs manually minimizing, maximizing and restoring windows.
 BASE_FEATURE(kDesktopPWAsAdditionalWindowingControls,
