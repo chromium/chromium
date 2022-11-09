@@ -280,6 +280,9 @@ BASE_FEATURE(kVulkanFromANGLE,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultANGLEVulkan() {
+#if defined(MEMORY_SANITIZER)
+  return false;
+#else
 #if BUILDFLAG(IS_ANDROID)
   // No support for devices before Q -- exit before checking feature flags
   // so that devices are not counted in finch trials.
@@ -309,6 +312,7 @@ bool IsDefaultANGLEVulkan() {
     return false;
 #endif
   return base::FeatureList::IsEnabled(kDefaultANGLEVulkan);
+#endif  // defined(MEMORY_SANITIZER)
 }
 
 // Use waitable swap chain on Windows to reduce display latency.
