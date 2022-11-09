@@ -5027,9 +5027,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_081722",
+                    "name": "Enabled_110422",
                     "params": {
                         "enableCameraAssistedSearchOnTablet": "true",
+                        "enableCameraAssistedSearchOnTabletWidget": "true",
                         "enableContextMenuSearchOnTablet": "true"
                     },
                     "enable_features": [
