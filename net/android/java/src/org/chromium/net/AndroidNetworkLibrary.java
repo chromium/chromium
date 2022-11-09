@@ -244,8 +244,9 @@ class AndroidNetworkLibrary {
         } else {
             // If we do not have permission to access the WiFi state, then try to get the WifiInfo
             // through broadcast. Note that this approach does not work on Android P+.
-            final Intent intent = ContextUtils.getApplicationContext().registerReceiver(
-                    null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+            final Intent intent = ContextUtils.registerProtectedBroadcastReceiver(
+                    ContextUtils.getApplicationContext(), null,
+                    new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
             if (intent != null) {
                 return intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
             }
@@ -316,8 +317,9 @@ class AndroidNetworkLibrary {
         } else {
             Intent intent = null;
             try {
-                intent = ContextUtils.getApplicationContext().registerReceiver(
-                        null, new IntentFilter(WifiManager.RSSI_CHANGED_ACTION));
+                intent = ContextUtils.registerProtectedBroadcastReceiver(
+                        ContextUtils.getApplicationContext(), null,
+                        new IntentFilter(WifiManager.RSSI_CHANGED_ACTION));
             } catch (IllegalArgumentException e) {
                 // Some devices unexpectedly throw IllegalArgumentException when registering
                 // the broadcast receiver. See https://crbug.com/984179.

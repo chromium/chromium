@@ -448,10 +448,17 @@ public class NetworkChangeNotifierTest {
                                                      .getApplicationContext()) {
             // Mock out to avoid unintended system interaction.
             @Override
-            public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+            public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                    String permission, Handler scheduler, int flags) {
                 // Should not be used starting with Pie.
                 Assert.assertFalse(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
                 return null;
+            }
+
+            @Override
+            public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                    String permission, Handler scheduler) {
+                return registerReceiver(receiver, filter, permission, scheduler, 0);
             }
 
             @Override
