@@ -275,7 +275,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
   TransformationMatrix MatrixWithOriginApplied() const {
     TransformationMatrix result = Matrix();
-    result.ApplyTransformOrigin(Origin());
+    result.ApplyTransformOrigin(Origin().x(), Origin().y(), Origin().z());
     return result;
   }
 

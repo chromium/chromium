@@ -49,14 +49,11 @@ bool IsCompositedScrollbar(const DisplayItem& item) {
 
 // Snap |bounds| if within floating-point numeric limits of an integral rect.
 void PreserveNearIntegralBounds(gfx::RectF& bounds) {
-  if (std::abs(std::round(bounds.x()) - bounds.x()) <=
-          std::numeric_limits<float>::epsilon() &&
-      std::abs(std::round(bounds.y()) - bounds.y()) <=
-          std::numeric_limits<float>::epsilon() &&
-      std::abs(std::round(bounds.right()) - bounds.right()) <=
-          std::numeric_limits<float>::epsilon() &&
-      std::abs(std::round(bounds.bottom()) - bounds.bottom()) <=
-          std::numeric_limits<float>::epsilon()) {
+  constexpr float kTolerance = 1e-5f;
+  if (std::abs(std::round(bounds.x()) - bounds.x()) <= kTolerance &&
+      std::abs(std::round(bounds.y()) - bounds.y()) <= kTolerance &&
+      std::abs(std::round(bounds.right()) - bounds.right()) <= kTolerance &&
+      std::abs(std::round(bounds.bottom()) - bounds.bottom()) <= kTolerance) {
     bounds = gfx::RectF(gfx::ToRoundedRect(bounds));
   }
 }

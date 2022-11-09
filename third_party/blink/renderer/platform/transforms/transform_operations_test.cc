@@ -60,8 +60,7 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     TransformOperations operations = from.Blend(to, t);
     TransformationMatrix matrix;
     operations.Apply(gfx::SizeF(0, 0), matrix);
-    gfx::BoxF transformed = box;
-    matrix.TransformBox(transformed);
+    gfx::BoxF transformed = matrix.MapBox(box);
 
     if (first_time)
       empirical_bounds = transformed;
@@ -525,7 +524,7 @@ TEST(TransformOperationsTest, ZoomTest) {
   zoomed_ops.Apply(gfx::SizeF(0, 0), zoomed_matrix);
   gfx::Point3F result2 = zoomed_matrix.MapPoint(zoomed_point);
 
-  EXPECT_EQ(result1, result2);
+  EXPECT_POINT3F_EQ(result1, result2);
 }
 
 TEST(TransformOperationsTest, PerspectiveOpsTest) {
@@ -729,7 +728,7 @@ TEST(TransformOperationsTest, OutOfRangePercentage) {
 
   // There should not be inf or nan in the transformation result.
   for (int i = 0; i < 16; i++)
-    EXPECT_TRUE(std::isfinite(mat.ColMajorData()[i]));
+    EXPECT_TRUE(std::isfinite(mat.ColMajorData(i)));
 }
 
 }  // namespace blink

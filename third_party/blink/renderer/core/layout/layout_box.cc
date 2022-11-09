@@ -2102,7 +2102,7 @@ bool LayoutBox::MapVisualRectToContainer(
   if (has_perspective && container_object != NearestAncestorForElement()) {
     has_perspective = false;
 
-    if (StyleRef().Preserves3D() || transform.Creates3D()) {
+    if (StyleRef().Preserves3D() || transform.Creates3d()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kDifferentPerspectiveCBOrParent);
     }

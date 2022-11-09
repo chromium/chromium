@@ -2004,7 +2004,7 @@ bool LayoutObject::HasDistortingVisualEffects() const {
           paint_properties.Transform(), root_properties.Transform());
   if (!translation_2d_or_matrix.IsIdentityOr2DTranslation() &&
       !translation_2d_or_matrix.Matrix()
-           .Is2DProportionalUpscaleAndOr2DTranslation())
+           .Is2dProportionalUpscaleAndOr2dTranslation())
     return true;
 
   return false;
@@ -3470,7 +3470,7 @@ void LayoutObject::GetTransformFromContainer(
   if (has_perspective && container_object != NearestAncestorForElement()) {
     has_perspective = false;
 
-    if (StyleRef().Preserves3D() || transform.Creates3D()) {
+    if (StyleRef().Preserves3D() || transform.Creates3d()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kDifferentPerspectiveCBOrParent);
     }

@@ -1115,7 +1115,7 @@ static TransformPaintPropertyNode::TransformAndOrigin TransformAndOriginState(
   // style.IsRunningTransformAnimationOnCompositor() etc. here.
   if (!has_transform_animation_compositing_reasons &&
       matrix.IsIdentityOr2DTranslation()) {
-    return {matrix.To2DTranslation()};
+    return {matrix.To2dTranslation()};
   }
   return {matrix, GetTransformOrigin(box, size)};
 }

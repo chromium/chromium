@@ -111,9 +111,9 @@ void TransformState::ApplyTransform(
 void TransformState::ApplyTransform(
     const TransformationMatrix& transform_from_container,
     TransformAccumulation accumulate) {
-  if (transform_from_container.IsInteger2DTranslation()) {
+  if (transform_from_container.IsIdentityOrInteger2dTranslation()) {
     Move(PhysicalOffset::FromVector2dFRound(
-             transform_from_container.To2DTranslation()),
+             transform_from_container.To2dTranslation()),
          accumulate);
     return;
   }

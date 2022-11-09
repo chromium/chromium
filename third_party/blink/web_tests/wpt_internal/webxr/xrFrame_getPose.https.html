@@ -25,7 +25,7 @@ let testFunction = function(session, fakeDeviceController, t) {
       // estimated eye height into account.
       let floor_level = spaces[1];
       let eye_level_from_floor_level = xrFrame.getPose(eye_level, floor_level);
-      assert_equals(eye_level_from_floor_level.transform.position.y, 1.6);
+      assert_approx_equals(eye_level_from_floor_level.transform.position.y, 1.6, 1e-7);
 
       // Finished test.
       resolve();

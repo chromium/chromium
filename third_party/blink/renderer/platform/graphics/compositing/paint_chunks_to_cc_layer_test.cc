@@ -125,7 +125,7 @@ class PaintRecordMatcher
   do {                                                                       \
     const auto* concat = (op_buffer).GetOpAtForTesting<cc::ConcatOp>(index); \
     ASSERT_NE(nullptr, concat);                                              \
-    EXPECT_EQ((transform).ToSkM44(), concat->matrix);                        \
+    EXPECT_EQ(gfx::TransformToSkM44(transform), concat->matrix);             \
   } while (false)
 
 #define EXPECT_TRANSLATE(x, y, op_buffer, index)               \

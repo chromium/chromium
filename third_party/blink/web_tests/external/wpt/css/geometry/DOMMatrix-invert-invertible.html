@@ -39,18 +39,18 @@ test(function() {
 }, "translate3d");
 
 test(function() {
-  var m = new DOMMatrix().scale(10, -0.5);
+  var m = new DOMMatrix().scale(4, -0.5);
   var m1 = m.inverse();
-  checkMatrix(m1, new DOMMatrix().scale(0.1, -2.0));
+  checkMatrix(m1, new DOMMatrix().scale(0.25, -2.0));
   checkMatrix(m1.multiply(m), new DOMMatrix());
   m.invertSelf();
   checkMatrix(m, m1);
 }, "scale");
 
 test(function() {
-  var m = new DOMMatrix().scale(10, -0.5, 2.5);
+  var m = new DOMMatrix().scale(4, -0.5, 2);
   var m1 = m.inverse();
-  checkMatrix(m1, new DOMMatrix().scale(0.1, -2.0, 0.4));
+  checkMatrix(m1, new DOMMatrix().scale(0.25, -2.0, 0.5));
   checkMatrix(m1.multiply(m), identity());
   m.invertSelf();
   checkMatrix(m, m1);

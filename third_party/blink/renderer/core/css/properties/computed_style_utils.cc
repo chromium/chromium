@@ -1991,7 +1991,7 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformationMatrix(
     unzoomed.Zoom(1.f / zoom);
     for (int i = 0; i < 16; i++) {
       result->Append(*CSSNumericLiteralValue::Create(
-          unzoomed.ColMajorData()[i], CSSPrimitiveValue::UnitType::kNumber));
+          unzoomed.ColMajorData(i), CSSPrimitiveValue::UnitType::kNumber));
     }
     return result;
   }

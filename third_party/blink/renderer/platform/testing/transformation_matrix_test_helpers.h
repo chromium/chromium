@@ -16,10 +16,9 @@ namespace blink {
 // accommodate precision errors.
 constexpr double kFloatingPointErrorTolerance = 1e-6;
 
-#define EXPECT_TRANSFORMATION_MATRIX(expected, actual)                  \
-  do {                                                                  \
-    EXPECT_TRANSFORM_NEAR(expected.ToTransform(), actual.ToTransform(), \
-                          kFloatingPointErrorTolerance);                \
+#define EXPECT_TRANSFORMATION_MATRIX(expected, actual)                     \
+  do {                                                                     \
+    EXPECT_TRANSFORM_NEAR(expected, actual, kFloatingPointErrorTolerance); \
   } while (false)
 
 #define EXPECT_FLOAT(expected, actual) \

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 
 namespace blink {
 
@@ -1409,9 +1410,9 @@ TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
 
   TransformationMatrix transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
-  TransformationMatrix::DecomposedType decomposed;
-  EXPECT_TRUE(transform.Decompose(decomposed));
-  EXPECT_EQ(0, decomposed.perspective_z);
+  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_EQ(0, decomp->perspective[2]);
 }
 
 TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
@@ -1429,9 +1430,9 @@ TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
 
   TransformationMatrix transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
-  TransformationMatrix::DecomposedType decomposed;
-  EXPECT_TRUE(transform.Decompose(decomposed));
-  EXPECT_EQ(-0.01, decomposed.perspective_z);
+  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_EQ(-0.01, decomp->perspective[2]);
 }
 
 TEST_F(LayoutObjectTest, LocalToAncestoRectIgnoreAncestorScroll) {
