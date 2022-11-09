@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<div id=targetparent>
+  <button disabled>
+    <div id=target style="width: 100vw; height: 100vh">hello world</div>
+  </button>
+</div>
+<script>
+window.loadDonePromise = new Promise(resolve => {
+  window.onload = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(resolve);
+    });
+  };
+});
+
+window.testDonePromise = new Promise(resolve => {
+  target.onmousedown = () => {
+    requestAnimationFrame(resolve);
+  }
+
+  window.targetparentGotClick = false;
+  targetparent.onmousedown = () => window.targetparentGotClick = true;
+});
+</script>
