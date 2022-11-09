@@ -69,8 +69,8 @@ class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
   ~WebContentsCanGoBackObserverTest() override = default;
 };
 
-// crbug.com/1240655: flaky on Lacros
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// crbug.com/1240655: flaky on Lacros and ASAN.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(ADDRESS_SANITIZER)
 #define MAYBE_CanGoBack_ServerSide DISABLED_CanGoBack_ServerSide
 #else
 #define MAYBE_CanGoBack_ServerSide CanGoBack_ServerSide
