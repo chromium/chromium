@@ -7788,6 +7788,33 @@
             ]
         }
     ],
+    "OpaqueResponseBlockingV01": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OpaqueResponseBlockingV01"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "OpaqueResponseBlockingV01"
+                    ]
+                }
+            ]
+        }
+    ],
     "OpenLinkAsProfileStudy": [
         {
             "platforms": [
