@@ -715,14 +715,9 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   EXPECT_TRUE(WaitForUpdaterExit());
 }
 
-// TODO(crbug.com/1382284): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RotateLog DISABLED_RotateLog
-#else
-#define MAYBE_RotateLog RotateLog
-#endif
-TEST_F(IntegrationTest, MAYBE_RotateLog) {
+TEST_F(IntegrationTest, RotateLog) {
   Install();
+  EXPECT_TRUE(WaitForUpdaterExit());
   FillLog();
   RunWake(0);
   EXPECT_TRUE(WaitForUpdaterExit());
