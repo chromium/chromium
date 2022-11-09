@@ -624,6 +624,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1382929")
     public void testProgressSpinnerOnContinueButtonPress() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
