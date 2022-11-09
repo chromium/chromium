@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 
 namespace ash {
@@ -15,6 +16,7 @@ namespace ash {
 // Generates the cryptohome user key label for the given challenge-response key
 // information. Currently the constraint is that |challenge_response_keys| must
 // contain exactly one item.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 std::string GenerateChallengeResponseKeyLabel(
     const std::vector<ChallengeResponseKey>& challenge_response_keys);
 

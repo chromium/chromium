@@ -47,8 +47,10 @@
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -87,10 +89,6 @@ constexpr char16_t kPinDialogNoAttemptsLeftTitle[] =
     u"Maximum allowed attempts exceeded.";
 
 constexpr char kChallengeData[] = "challenge";
-
-constexpr char kCryptohomeKeyLabel[] =
-    "challenge-response-"
-    "53EF7D3AF4DAB73A0E26E05492310CE0319D45A2CDF4FDE0B6B269B06E6C5A8C";
 
 // Returns the profile into which login-screen extensions are force-installed.
 Profile* GetOriginalSigninProfile() {
@@ -386,9 +384,11 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
     cryptohome::Key cryptohome_key;
     cryptohome_key.mutable_data()->set_type(
         cryptohome::KeyData_KeyType_KEY_TYPE_CHALLENGE_RESPONSE);
-    // Label is temporary hardcoded, but we should probably
-    // reorganize code and reuse `GenerateChallengeResponseKeyLabel()` here.
-    cryptohome_key.mutable_data()->set_label(kCryptohomeKeyLabel);
+    ChallengeResponseKey challenge_response_key;
+    challenge_response_key.set_public_key_spki_der(
+        certificate_provider_extension()->GetCertificateSpki());
+    cryptohome_key.mutable_data()->set_label(
+        GenerateChallengeResponseKeyLabel({challenge_response_key}));
     cryptohome_key.mutable_data()
         ->add_challenge_response_key()
         ->set_public_key_spki_der(

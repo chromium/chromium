@@ -37,13 +37,20 @@ struct TestKey {
   const char* cert_file;
   const char* key_file;
   int type;
+  bool is_rsa_1024;
 };
 
 const TestKey kTestKeys[] = {
-    {"RSA", "client_1.pem", "client_1.pk8", EVP_PKEY_RSA},
-    {"ECDSA_P256", "client_4.pem", "client_4.pk8", EVP_PKEY_EC},
-    {"ECDSA_P384", "client_5.pem", "client_5.pk8", EVP_PKEY_EC},
-    {"ECDSA_P521", "client_6.pem", "client_6.pk8", EVP_PKEY_EC},
+    {"RSA", "client_1.pem", "client_1.pk8", EVP_PKEY_RSA,
+     /*is_rsa_1024=*/false},
+    {"P256", "client_4.pem", "client_4.pk8", EVP_PKEY_EC,
+     /*is_rsa_1024=*/false},
+    {"P384", "client_5.pem", "client_5.pk8", EVP_PKEY_EC,
+     /*is_rsa_1024=*/false},
+    {"P521", "client_6.pem", "client_6.pk8", EVP_PKEY_EC,
+     /*is_rsa_1024=*/false},
+    {"RSA1024", "client_7.pem", "client_7.pk8", EVP_PKEY_RSA,
+     /*is_rsa_1024=*/true},
 };
 
 std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {
@@ -221,10 +228,10 @@ bool PKCS8ToBLOBForCNG(const std::string& pkcs8,
 
 }  // namespace
 
-class SSLPlatformKeyCNGTest : public testing::TestWithParam<TestKey>,
+class SSLPlatformKeyWinTest : public testing::TestWithParam<TestKey>,
                               public WithTaskEnvironment {};
 
-TEST_P(SSLPlatformKeyCNGTest, KeyMatches) {
+TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
   const TestKey& test_key = GetParam();
 
   // Load test data.
@@ -262,29 +269,37 @@ TEST_P(SSLPlatformKeyCNGTest, KeyMatches) {
       WrapCNGPrivateKey(cert.get(), std::move(ncrypt_key));
   ASSERT_TRUE(key);
 
-  EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
-                                                       /*supports_pss=*/true),
-            key->GetAlgorithmPreferences());
+  if (test_key.is_rsa_1024) {
+    // For RSA-1024 and below, we conservatively prefer to sign SHA-1 hashes.
+    // See https://crbug.com/278370.
+    std::vector<uint16_t> expected = {
+        SSL_SIGN_RSA_PKCS1_SHA1,   SSL_SIGN_RSA_PKCS1_SHA256,
+        SSL_SIGN_RSA_PKCS1_SHA384, SSL_SIGN_RSA_PKCS1_SHA512,
+        SSL_SIGN_RSA_PSS_SHA256,   SSL_SIGN_RSA_PSS_SHA384};
+    EXPECT_EQ(expected, key->GetAlgorithmPreferences());
+  } else {
+    EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
+                                                         /*supports_pss=*/true),
+              key->GetAlgorithmPreferences());
+  }
 
   TestSSLPrivateKeyMatches(key.get(), pkcs8);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SSLPlatformKeyCNGTest,
-                         testing::ValuesIn(kTestKeys),
-                         TestKeyToString);
-
-TEST(SSLPlatformKeyCAPITest, KeyMatches) {
-  base::test::TaskEnvironment task_environment;
+TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
+  const TestKey& test_key = GetParam();
+  if (test_key.type != EVP_PKEY_RSA) {
+    GTEST_SKIP() << "CAPI only supports RSA keys";
+  }
 
   // Load test data.
   scoped_refptr<X509Certificate> cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "client_1.pem");
+      ImportCertFromFile(GetTestCertsDirectory(), test_key.cert_file);
   ASSERT_TRUE(cert);
 
   std::string pkcs8;
   base::FilePath pkcs8_path =
-      GetTestCertsDirectory().AppendASCII("client_1.pk8");
+      GetTestCertsDirectory().AppendASCII(test_key.key_file);
   ASSERT_TRUE(base::ReadFileToString(pkcs8_path, &pkcs8));
 
   // Import the key into CAPI. Use CRYPT_VERIFYCONTEXT for an ephemeral key.
@@ -319,5 +334,10 @@ TEST(SSLPlatformKeyCAPITest, KeyMatches) {
 
   TestSSLPrivateKeyMatches(key.get(), pkcs8);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SSLPlatformKeyWinTest,
+                         testing::ValuesIn(kTestKeys),
+                         TestKeyToString);
 
 }  // namespace net

@@ -66,7 +66,7 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
     // If the key is in CAPI, assume conservatively that the CAPI service
     // provider may only be able to sign pre-TLS-1.2 and SHA-1 hashes.
     // Prioritize SHA-1, but if the server doesn't advertise it, leave the other
-    // algorithms enabled to try.
+    // algorithms enabled to try. See https://crbug.com/278370.
     return {
         SSL_SIGN_RSA_PKCS1_SHA1,
         SSL_SIGN_RSA_PKCS1_SHA256,
@@ -235,10 +235,10 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
         supports_pss = false;
       }
     }
-    // If this is an under 1024-bit RSA key, conservatively prefer to sign SHA-1
-    // hashes. Older Estonian ID cards can only sign SHA-1 hashes.  Prioritize
-    // SHA-1, but if the server doesn't advertise it, leave the other algorithms
-    // enabled to try.
+    // If this is a 1024-bit RSA key or below, conservatively prefer to sign
+    // SHA-1 hashes. Older Estonian ID cards can only sign SHA-1 hashes.
+    // Prioritize SHA-1, but if the server doesn't advertise it, leave the other
+    // algorithms enabled to try. See https://crbug.com/278370.
     if (type_ == EVP_PKEY_RSA && max_length_ <= 1024 / 8) {
       std::vector<uint16_t> ret = {
           SSL_SIGN_RSA_PKCS1_SHA1,
