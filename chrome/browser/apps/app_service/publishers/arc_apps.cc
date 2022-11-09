@@ -1639,8 +1639,8 @@ void ArcApps::LoadPlayStoreIcon(apps::IconType icon_type,
   constexpr bool quantize_to_supported_scale_factor = true;
   int size_hint_in_px = apps_util::ConvertDipToPx(
       size_hint_in_dip, quantize_to_supported_scale_factor);
-  int resource_id = (size_hint_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32
-                                            : IDR_ARC_SUPPORT_ICON_192;
+  int resource_id = (size_hint_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32_PNG
+                                            : IDR_ARC_SUPPORT_ICON_192_PNG;
   constexpr bool is_placeholder_icon = false;
   LoadIconFromResource(icon_type, size_hint_in_dip, resource_id,
                        is_placeholder_icon, icon_effects, std::move(callback));

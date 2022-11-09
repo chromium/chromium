@@ -68,8 +68,8 @@
         <include name="IDR_ARC_SUPPORT_FOCUS_MANAGER_JS" file="chromeos/arc_support/focus_manager.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_LAYOUT_STYLE" file="chromeos/arc_support/layout_style.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN" file="chromeos/arc_support/main.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_ARC_SUPPORT_ICON_32" file="chromeos/arc_support/icon/32.png" type="BINDATA" />
-        <include name="IDR_ARC_SUPPORT_ICON_192" file="chromeos/arc_support/icon/192.png" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_ICON_32_PNG" file="chromeos/arc_support/icon/32.png" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_ICON_192_PNG" file="chromeos/arc_support/icon/192.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_ERROER_IMAGE" file="chromeos/arc_support/images/error_image.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_HEADER" file="chromeos/arc_support/images/header.png" type="BINDATA" />
         <!-- TODO(crbug.com/1261902): Remove. -->
