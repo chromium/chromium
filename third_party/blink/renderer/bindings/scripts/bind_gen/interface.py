@@ -864,53 +864,26 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
         SymbolNode("return_value", definition_constructor=create_definition))
 
 
-def get_js_api_identifier(cg_context):
+def _make_bindings_logging_id(cg_context):
     assert isinstance(cg_context, CodeGenContext)
-    js_identifier = "{}.{}".format(cg_context.class_like.identifier,
-                                   cg_context.property_.identifier)
-    if cg_context.attribute_get:
-        js_identifier = "{}.{}".format(js_identifier, "get")
-    elif cg_context.attribute_set:
-        js_identifier = "{}.{}".format(js_identifier, "set")
-    elif cg_context.constructor_group and not cg_context.is_named_constructor:
-        js_identifier = "{}.{}".format(cg_context.class_like.identifier,
-                                       "constructor")
 
-    return js_identifier
+    logging_id = "{}.{}".format(cg_context.class_like.identifier,
+                                cg_context.property_.identifier)
+    if cg_context.attribute_get:
+        logging_id = "{}.{}".format(logging_id, "get")
+    elif cg_context.attribute_set:
+        logging_id = "{}.{}".format(logging_id, "set")
+    elif cg_context.constructor_group and not cg_context.is_named_constructor:
+        logging_id = "{}.{}".format(cg_context.class_like.identifier,
+                                    "constructor")
+    return logging_id
 
 
 def make_bindings_trace_event(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
     return TextNode("BLINK_BINDINGS_TRACE_EVENT(\"{}\");".format(
-        get_js_api_identifier(cg_context)))
-
-
-def get_high_entropy_checked_ext_attrs(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-    target = cg_context.member_like or cg_context.property_
-    ext_attrs = target.extended_attributes
-    if cg_context.attribute_set or "HighEntropy" not in ext_attrs:
-        return None
-
-    return ext_attrs
-
-
-def make_high_entropy_trace_event(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-    if get_high_entropy_checked_ext_attrs(cg_context) == None:
-        return None
-
-    text = _format(
-        "// [HighEntropy]\n"
-        "const Dactyloscoper::HighEntropyTracer"
-        "  high_entropy_tracer(\"{js_api_id}\", ${info});",
-        js_api_id=get_js_api_identifier(cg_context))
-
-    node = TextNode(text)
-    node.accumulate(
-        CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/core/frame/dactyloscoper.h",
-        ]))
-    return node
+        _make_bindings_logging_id(cg_context)))
 
 
 def make_check_argument_length(cg_context):
@@ -1068,8 +1041,7 @@ def make_cooperative_scheduling_safepoint(cg_context):
 def make_log_activity(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    target = cg_context.member_like or cg_context.property_
-    ext_attrs = target.extended_attributes
+    ext_attrs = cg_context.logging_target.extended_attributes
     if "LogActivity" not in ext_attrs:
         return None
     target = ext_attrs.value_of("LogActivity")
@@ -1395,8 +1367,8 @@ def make_report_coop_access(cg_context):
 def make_report_deprecate_as(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    target = cg_context.member_like or cg_context.property_
-    name = target.extended_attributes.value_of("DeprecateAs")
+    name = cg_context.logging_target.extended_attributes.value_of(
+        "DeprecateAs")
     if not name:
         return None
 
@@ -1415,8 +1387,7 @@ def make_report_deprecate_as(cg_context):
 def _make_measure_web_feature_constant(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    target = cg_context.member_like or cg_context.property_
-    ext_attrs = target.extended_attributes
+    ext_attrs = cg_context.logging_target.extended_attributes
 
     suffix = ""
     if cg_context.attribute_get:
@@ -1447,11 +1418,33 @@ def _make_measure_web_feature_constant(cg_context):
 def make_report_high_entropy(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    ext_attrs = get_high_entropy_checked_ext_attrs(cg_context)
-    if ext_attrs is None:
+    ext_attrs = cg_context.logging_target.extended_attributes
+    if "HighEntropy" not in ext_attrs:
+        return None
+    if cg_context.attribute_set:
         return None
 
+    node = SequenceNode([
+        TextNode("// [HighEntropy]"),
+        FormatNode(
+            "const Dactyloscoper::HighEntropyTracer"
+            "  high_entropy_tracer(\"{logging_id}\", ${info});",
+            logging_id=_make_bindings_logging_id(cg_context)),
+    ])
+    node.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/core/frame/dactyloscoper.h",
+        ]))
+    return node
+
+
+def make_report_high_entropy_direct(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    ext_attrs = cg_context.logging_target.extended_attributes
     if not ext_attrs.value_of("HighEntropy") == "Direct":
+        return None
+    if cg_context.attribute_set:
         return None
 
     assert "Measure" in ext_attrs or "MeasureAs" in ext_attrs, "{}: {}".format(
@@ -1459,14 +1452,14 @@ def make_report_high_entropy(cg_context):
         "[HighEntropy=Direct] must be specified with either [Measure] or "
         "[MeasureAs].")
 
-    text = _format(
-        "// [HighEntropy=Direct]\n"
-        "Dactyloscoper::RecordDirectSurface("
-        "${current_execution_context}, {measure_constant}, "
-        "${return_value});",
-        measure_constant=_make_measure_web_feature_constant(cg_context))
-
-    node = TextNode(text)
+    node = SequenceNode([
+        TextNode("// [HighEntropy=Direct]"),
+        FormatNode(
+            "Dactyloscoper::RecordDirectSurface("
+            "${current_execution_context}, {measure_constant}, "
+            "${return_value});",
+            measure_constant=_make_measure_web_feature_constant(cg_context)),
+    ])
     node.accumulate(
         CodeGenAccumulator.require_include_headers(
             ["third_party/blink/renderer/core/frame/dactyloscoper.h"]))
@@ -1476,8 +1469,7 @@ def make_report_high_entropy(cg_context):
 def make_report_measure_as(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    target = cg_context.member_like or cg_context.property_
-    ext_attrs = target.extended_attributes
+    ext_attrs = cg_context.logging_target.extended_attributes
     if not ("Measure" in ext_attrs or "MeasureAs" in ext_attrs):
         return None
 
@@ -1554,7 +1546,7 @@ def make_runtime_call_timer_scope(cg_context, overriding_name=None):
     assert isinstance(cg_context, CodeGenContext)
     assert _is_none_or_str(overriding_name)
 
-    target = cg_context.member_like or cg_context.property_
+    target = cg_context.logging_target
 
     suffix = ""
     if cg_context.attribute_get:
@@ -1844,9 +1836,9 @@ def make_attribute_get_callback_def(cg_context, function_name):
         EmptyNode(),
         make_runtime_call_timer_scope(cg_context),
         make_bindings_trace_event(cg_context),
-        make_high_entropy_trace_event(cg_context),
         make_report_coop_access(cg_context),
         make_report_deprecate_as(cg_context),
+        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -1864,7 +1856,7 @@ def make_attribute_get_callback_def(cg_context, function_name):
         EmptyNode(),
         make_check_security_of_return_value(cg_context),
         make_v8_set_return_value(cg_context),
-        make_report_high_entropy(cg_context),
+        make_report_high_entropy_direct(cg_context),
         make_return_value_cache_update_value(cg_context),
     ])
 
@@ -2034,6 +2026,7 @@ def make_constant_callback_def(cg_context, function_name):
 
     logging_nodes = SequenceNode([
         make_report_deprecate_as(cg_context),
+        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
     ])
@@ -2049,11 +2042,9 @@ def make_constant_callback_def(cg_context, function_name):
     body.extend([
         make_runtime_call_timer_scope(cg_context),
         make_bindings_trace_event(cg_context),
-        make_high_entropy_trace_event(cg_context),
         logging_nodes,
         EmptyNode(),
         TextNode(v8_set_return_value),
-        make_report_high_entropy(cg_context),
     ])
 
     return func_def
@@ -2648,9 +2639,9 @@ def make_operation_function_def(cg_context, function_name):
     body.extend([
         make_check_receiver(cg_context),
         EmptyNode(),
-        make_high_entropy_trace_event(cg_context),
         make_report_coop_access(cg_context),
         make_report_deprecate_as(cg_context),
+        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -2673,7 +2664,7 @@ def make_operation_function_def(cg_context, function_name):
         EmptyNode(),
         make_check_security_of_return_value(cg_context),
         make_v8_set_return_value(cg_context),
-        make_report_high_entropy(cg_context),
+        make_report_high_entropy_direct(cg_context),
     ])
 
     return func_def

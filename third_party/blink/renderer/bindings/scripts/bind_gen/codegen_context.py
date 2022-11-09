@@ -286,6 +286,15 @@ class CodeGenContext(object):
         return False
 
     @property
+    def logging_target(self):
+        return (self.attribute or self.constant or self.constructor
+                or self.constructor_group or self.dict_member
+                or (self.legacy_window_alias or self.exposed_construct)
+                or self.operation or self.operation_group
+                or (self.stringifier and self.stringifier.operation)
+                or self._indexed_or_named_property)
+
+    @property
     def may_throw_exception(self):
         if not self.member_like:
             return False
