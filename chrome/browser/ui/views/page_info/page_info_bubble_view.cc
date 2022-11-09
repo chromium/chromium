@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
+#include <memory>
+
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -12,10 +14,10 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/controls/page_switcher_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "chrome/browser/ui/views/page_info/page_switcher_view.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/page_info/core/features.h"
@@ -165,8 +167,11 @@ PageInfoBubbleView::PageInfoBubbleView(
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  page_container_ = AddChildView(std::make_unique<PageSwitcherView>(
-      view_factory_->CreateMainPageView(std::move(initialized_callback))));
+  std::unique_ptr<views::View> main_page_view =
+      view_factory_->CreateMainPageView(std::move(initialized_callback));
+  main_page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_ = AddChildView(
+      std::make_unique<PageSwitcherView>(std::move(main_page_view)));
 
   views::BubbleDialogDelegateView::CreateBubble(this);
 }
@@ -198,14 +203,20 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
 }
 
 void PageInfoBubbleView::OpenMainPage(base::OnceClosure initialized_callback) {
-  page_container_->SwitchToPage(
-      view_factory_->CreateMainPageView(std::move(initialized_callback)));
+  std::unique_ptr<views::View> main_page_view =
+      view_factory_->CreateMainPageView(std::move(initialized_callback));
+  main_page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(main_page_view));
 }
 
 void PageInfoBubbleView::OpenSecurityPage() {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_SECURITY_DETAILS_OPENED);
-  page_container_->SwitchToPage(view_factory_->CreateSecurityPageView());
+  std::unique_ptr<views::View> security_page_view =
+      view_factory_->CreateSecurityPageView();
+  security_page_view->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(security_page_view));
   AnnouncePageOpened(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER));
 }
@@ -213,7 +224,11 @@ void PageInfoBubbleView::OpenSecurityPage() {
 void PageInfoBubbleView::OpenPermissionPage(ContentSettingsType type) {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_PERMISSION_DIALOG_OPENED);
-  page_container_->SwitchToPage(view_factory_->CreatePermissionPageView(type));
+  std::unique_ptr<views::View> permissions_page_view =
+      view_factory_->CreatePermissionPageView(type);
+  permissions_page_view->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(permissions_page_view));
   AnnouncePageOpened(PageInfoUI::PermissionTypeToUIString(type));
 }
 
@@ -221,8 +236,11 @@ void PageInfoBubbleView::OpenAboutThisSitePage(
     const page_info::proto::SiteInfo& info) {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
-  page_container_->SwitchToPage(
-      view_factory_->CreateAboutThisSitePageView(info));
+  std::unique_ptr<views::View> about_this_site_page_view =
+      view_factory_->CreateAboutThisSitePageView(info);
+  about_this_site_page_view->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(about_this_site_page_view));
   AnnouncePageOpened(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER));
 }
@@ -230,8 +248,11 @@ void PageInfoBubbleView::OpenAboutThisSitePage(
 void PageInfoBubbleView::OpenAdPersonalizationPage() {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
-  page_container_->SwitchToPage(
-      view_factory_->CreateAdPersonalizationPageView());
+  std::unique_ptr<views::View> ad_personalization_page_view =
+      view_factory_->CreateAdPersonalizationPageView();
+  ad_personalization_page_view->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(ad_personalization_page_view));
   AnnouncePageOpened(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER));
 }
@@ -239,7 +260,10 @@ void PageInfoBubbleView::OpenAdPersonalizationPage() {
 void PageInfoBubbleView::OpenCookiesPage() {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_COOKIES_PAGE_OPENED);
-  page_container_->SwitchToPage(view_factory_->CreateCookiesPageView());
+  std::unique_ptr<views::View> cookies_page_view =
+      view_factory_->CreateCookiesPageView();
+  cookies_page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(cookies_page_view));
   AnnouncePageOpened(l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
 }
 
