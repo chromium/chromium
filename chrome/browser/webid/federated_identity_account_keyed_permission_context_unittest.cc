@@ -253,3 +253,21 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   EXPECT_EQ(1u, granted_objects2.size());
   EXPECT_EQ(granted_objects1[0]->value, granted_objects2[0]->value);
 }
+
+// Test that FederatedIdentityAccountKeyedPermissionContext can recover from
+// crbug.com/1381130
+TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RecoverFrom1381130) {
+  // crbug.com/1381130 only occurred when RP=IDP.
+  const url::Origin site = url::Origin::Create(GURL("https://example.com"));
+  std::string account{"conestogo"};
+
+  // Storing data not associated with a signed-in account is bad because it
+  // makes the expected behaviour of RevokePermission() unclear.
+  base::Value::Dict new_object;
+  new_object.Set(kTestIdpOriginKey, site.Serialize());
+  new_object.Set("bug", base::Value("wrong"));
+  context()->GrantObjectPermission(site, base::Value(std::move(new_object)));
+
+  context()->GrantPermission(site, site, site, account);
+  EXPECT_TRUE(context()->HasPermission(site, site, site, account));
+}

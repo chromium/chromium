@@ -18,8 +18,16 @@ const char kAccountIdsKey[] = "account-ids";
 const char kRpRequesterKey[] = "rp-requester";
 const char kRpEmbedderKey[] = "rp-embedder";
 
-base::Value::List* ExtractAccountList(base::Value& value) {
-  return value.GetDict().FindList(kAccountIdsKey);
+void AddToAccountList(base::Value::Dict& dict, const std::string& account_id) {
+  base::Value::List* account_list = dict.FindList(kAccountIdsKey);
+  if (account_list) {
+    account_list->Append(account_id);
+    return;
+  }
+
+  base::Value::List new_list;
+  new_list.Append(account_id);
+  dict.Set(kAccountIdsKey, base::Value(std::move(new_list)));
 }
 
 std::string BuildKey(const absl::optional<std::string>& relying_party_requester,
@@ -75,7 +83,10 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     return false;
 
   const base::Value::List* account_list =
-      ExtractAccountList(granted_object->value);
+      granted_object->value.GetDict().FindList(kAccountIdsKey);
+  if (!account_list)
+    return false;
+
   for (auto& account_id_value : *account_list) {
     if (account_id_value.GetString() == account_id)
       return true;
@@ -97,11 +108,8 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
                              identity_provider);
   const auto granted_object = GetGrantedObject(relying_party_requester, key);
   if (granted_object) {
-    // There is an existing account so update its account list rather than
-    // creating a new entry.
     base::Value new_object = granted_object->value.Clone();
-    base::Value::List* new_object_list = ExtractAccountList(new_object);
-    new_object_list->Append(account_id);
+    AddToAccountList(new_object.GetDict(), account_id);
     UpdateObjectPermission(relying_party_requester, granted_object->value,
                            std::move(new_object));
   } else {
@@ -109,9 +117,7 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
     new_object.Set(kRpRequesterKey, relying_party_requester.Serialize());
     new_object.Set(kRpEmbedderKey, relying_party_embedder.Serialize());
     new_object.Set(idp_origin_key_, identity_provider.Serialize());
-    base::Value::List account_list;
-    account_list.Append(account_id);
-    new_object.Set(kAccountIdsKey, base::Value(std::move(account_list)));
+    AddToAccountList(new_object, account_id);
     GrantObjectPermission(relying_party_requester,
                           base::Value(std::move(new_object)));
   }
@@ -132,12 +138,13 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
     return;
 
   base::Value new_object = object->value.Clone();
-  base::Value::List& account_ids =
-      new_object.FindListKey(kAccountIdsKey)->GetList();
-  account_ids.EraseValue(base::Value(account_id));
+  base::Value::List* account_ids =
+      new_object.GetDict().FindList(kAccountIdsKey);
+  if (account_ids)
+    account_ids->EraseValue(base::Value(account_id));
 
   // Remove the permission object if there is no account left.
-  if (account_ids.size() == 0) {
+  if (!account_ids || account_ids->size() == 0) {
     RevokeObjectPermission(relying_party_requester, key);
   } else {
     UpdateObjectPermission(relying_party_requester, object->value,
