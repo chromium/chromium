@@ -15,6 +15,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/whats_new/resources:whats_new_icon_tile",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
@@ -36,6 +37,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
   ]

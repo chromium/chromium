@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -25,6 +26,8 @@ const CGFloat kImageViewHeight = 220.0;
 const CGFloat kImageViewWidth = 343.0;
 // The size of the space between each items in the stack view.
 const CGFloat kStackViewVerticalSpacings = 10.0;
+// The size of the margin between the stack view and the content top view.
+const CGFloat kTopMargin = 24.0;
 
 }  // namespace
 
@@ -107,35 +110,24 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
     // Text label.
     _textLabel = [[UILabel alloc] init];
     _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    UIFont* textLabelFont = [UIFont systemFontOfSize:28
-                                              weight:UIFontWeightBold];
-    UIFontMetrics* textLabelfontMetrics =
-        [UIFontMetrics metricsForTextStyle:UIFontTextStyleTitle1];
-    _textLabel.font = [textLabelfontMetrics scaledFontForFont:textLabelFont];
+    _textLabel.font =
+        CreateDynamicFont(UIFontTextStyleTitle1, UIFontWeightBold);
     _textLabel.numberOfLines = 2;
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Detail text label.
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    UIFont* detailLabelFont = [UIFont systemFontOfSize:15
-                                                weight:UIFontWeightRegular];
-    UIFontMetrics* detailLabelFontMetrics =
-        [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
     _detailTextLabel.font =
-        [detailLabelFontMetrics scaledFontForFont:detailLabelFont];
+        CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
     _detailTextLabel.numberOfLines = 5;
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Section text label.
     _sectionTextLabel = [[UILabel alloc] init];
     _sectionTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    UIFont* sectionLabelFont = [UIFont systemFontOfSize:15
-                                                 weight:UIFontWeightSemibold];
-    UIFontMetrics* sectionLabelfontMetrics =
-        [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
     _sectionTextLabel.font =
-        [sectionLabelfontMetrics scaledFontForFont:sectionLabelFont];
+        CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
     _sectionTextLabel.numberOfLines = 1;
     _sectionTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -150,6 +142,7 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
     _stackView.alignment = UIStackViewAlignmentFill;
     _stackView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_stackView];
+    [_stackView setCustomSpacing:kTopMargin afterView:self.bannerView];
 
     // Stack view top and bottom anchor constraint.
     _stackViewTopAnchorConstraint = [_stackView.topAnchor
@@ -217,7 +210,7 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
 
   // Update stack view constraints to remove margin at the bottom and add margin
   // at the top of the content view.
-  self.stackViewTopAnchorConstraint.constant = kStackViewMargin;
+  self.stackViewTopAnchorConstraint.constant = kTopMargin;
   self.stackViewBottomAnchorConstraint.constant = 0.0;
   self.isBannerAtBottom = YES;
 }
@@ -228,13 +221,14 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
   // Update stack view constraints to add margin at the bottom and remove margin
   // at the top of the content view.
   self.stackViewTopAnchorConstraint.constant = 0.0;
+  [self.stackView setCustomSpacing:kTopMargin afterView:self.bannerView];
   self.stackViewBottomAnchorConstraint.constant = -kStackViewMargin;
   self.isBannerAtBottom = NO;
 }
 
 - (void)setEmptyBannerImage {
   // Add margin at the top and bottom of the stack view.
-  self.stackViewTopAnchorConstraint.constant = kStackViewMargin;
+  self.stackViewTopAnchorConstraint.constant = kTopMargin;
   self.stackViewBottomAnchorConstraint.constant = -kStackViewMargin;
 }
 

@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -48,23 +49,18 @@ TEST_F(WhatsNewTableViewBannerItemTest, ItemProperties) {
   EXPECT_EQ(
       NO,
       banner_cell.sectionTextLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* sectionLabelFont = [UIFont systemFontOfSize:15
-                                               weight:UIFontWeightSemibold];
-  UIFontMetrics* sectionLabelfontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
-  EXPECT_EQ([sectionLabelfontMetrics scaledFontForFont:sectionLabelFont],
-            banner_cell.sectionTextLabel.font);
+  UIFont* sectionLabelFont =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  EXPECT_EQ(sectionLabelFont, banner_cell.sectionTextLabel.font);
   EXPECT_EQ(1, banner_cell.sectionTextLabel.numberOfLines);
 
   // Check text label (title).
   EXPECT_NSEQ(title, banner_cell.textLabel.text);
   EXPECT_EQ(NO,
             banner_cell.textLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* textLabelFont = [UIFont systemFontOfSize:28 weight:UIFontWeightBold];
-  UIFontMetrics* textLabelfontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleTitle1];
-  EXPECT_EQ([textLabelfontMetrics scaledFontForFont:textLabelFont],
-            banner_cell.textLabel.font);
+  UIFont* textLabelFont =
+      CreateDynamicFont(UIFontTextStyleTitle1, UIFontWeightBold);
+  EXPECT_EQ(textLabelFont, banner_cell.textLabel.font);
   EXPECT_EQ(2, banner_cell.textLabel.numberOfLines);
 
   // Check detail text label.
@@ -72,13 +68,9 @@ TEST_F(WhatsNewTableViewBannerItemTest, ItemProperties) {
   EXPECT_EQ(
       NO,
       banner_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-
-  UIFont* detailLabelFont = [UIFont systemFontOfSize:15
-                                              weight:UIFontWeightRegular];
-  UIFontMetrics* detailLabelFontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
-  EXPECT_EQ([detailLabelFontMetrics scaledFontForFont:detailLabelFont],
-            banner_cell.detailTextLabel.font);
+  UIFont* detailLabelFont =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
+  EXPECT_EQ(detailLabelFont, banner_cell.detailTextLabel.font);
   EXPECT_EQ(5, banner_cell.detailTextLabel.numberOfLines);
 
   // Check that the banner image is at the top of the stack view.
@@ -120,23 +112,18 @@ TEST_F(WhatsNewTableViewBannerItemTest, ItemPropertiesBannerAtBottom) {
   EXPECT_EQ(
       NO,
       banner_cell.sectionTextLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* sectionLabelFont = [UIFont systemFontOfSize:15
-                                               weight:UIFontWeightSemibold];
-  UIFontMetrics* sectionLabelfontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
-  EXPECT_EQ([sectionLabelfontMetrics scaledFontForFont:sectionLabelFont],
-            banner_cell.sectionTextLabel.font);
+  UIFont* sectionLabelFont =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  EXPECT_EQ(sectionLabelFont, banner_cell.sectionTextLabel.font);
   EXPECT_EQ(1, banner_cell.sectionTextLabel.numberOfLines);
 
   // Check text label (title).
   EXPECT_NSEQ(title, banner_cell.textLabel.text);
   EXPECT_EQ(NO,
             banner_cell.textLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* textLabelFont = [UIFont systemFontOfSize:28 weight:UIFontWeightBold];
-  UIFontMetrics* textLabelfontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleTitle1];
-  EXPECT_EQ([textLabelfontMetrics scaledFontForFont:textLabelFont],
-            banner_cell.textLabel.font);
+  UIFont* textLabelFont =
+      CreateDynamicFont(UIFontTextStyleTitle1, UIFontWeightBold);
+  EXPECT_EQ(textLabelFont, banner_cell.textLabel.font);
   EXPECT_EQ(2, banner_cell.textLabel.numberOfLines);
 
   // Check detail text label.
@@ -144,12 +131,9 @@ TEST_F(WhatsNewTableViewBannerItemTest, ItemPropertiesBannerAtBottom) {
   EXPECT_EQ(
       NO,
       banner_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* detailLabelFont = [UIFont systemFontOfSize:15
-                                              weight:UIFontWeightRegular];
-  UIFontMetrics* detailLabelFontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
-  EXPECT_EQ([detailLabelFontMetrics scaledFontForFont:detailLabelFont],
-            banner_cell.detailTextLabel.font);
+  UIFont* detailLabelFont =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
+  EXPECT_EQ(detailLabelFont, banner_cell.detailTextLabel.font);
   EXPECT_EQ(5, banner_cell.detailTextLabel.numberOfLines);
 
   // Check that the banner image is at the top of the stack view.
