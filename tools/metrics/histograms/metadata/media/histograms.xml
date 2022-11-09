@@ -2523,6 +2523,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.Widevine.HardwareSecure.ClearLeadSupport.{VideoCodec}"
+    enum="BooleanSupported" expires_after="2024-08-05">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Record for whether clear lead content is supported by the platform for
+    hardware security. This is reported only on Windows devices, only when codec
+    is supported for hardware security, per codec, and once per browser session
+    lifetime.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
 <histogram name="Media.EME.Widevine.HardwareSecure.Pref" enum="BooleanEnabled"
     expires_after="2023-03-19">
   <owner>xhwang@chromium.org</owner>
