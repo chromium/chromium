@@ -20,12 +20,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/decompression.h"
+#include "components/reporting/compression/test_compression_module.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_interface.h"
@@ -92,6 +94,7 @@ class StorageQueueTest
           testing::tuple<size_t /*file_size*/, std::string /*dm_token*/>> {
  protected:
   void SetUp() override {
+    test_clock_.SetNowTicks(base::TimeTicks::Now());
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     dm_token_ = testing::get<1>(GetParam());
     options_.set_directory(base::FilePath(location_.GetPath()));
@@ -593,6 +596,9 @@ class StorageQueueTest
   // and returns the corresponding result of the operation.
   StatusOr<scoped_refptr<StorageQueue>> CreateTestStorageQueue(
       const QueueOptions& options) {
+    // Move time forward by 1 hour to trigger all potential timers.
+    test_clock_.Advance(base::Hours(1));
+
     // Handle and reject PERIODIC (optionally), as long as there is no explicit
     // expectation set.
     EXPECT_CALL(set_mock_uploader_expectations_,
@@ -744,12 +750,13 @@ class StorageQueueTest
   std::string dm_token_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::SimpleTestTickClock test_clock_;
   // Sequenced task runner where all EXPECTs will happen.
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_{
       base::SequencedTaskRunnerHandle::Get()};
 
   base::ScopedTempDir location_;
-  StorageOptions options_;
+  StorageOptions options_{&test_clock_};
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
   scoped_refptr<StorageQueue> storage_queue_;
   absl::optional<int64_t> last_upload_generation_id_;
@@ -814,7 +821,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  test_clock_.Advance(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
@@ -840,7 +847,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  test_clock_.Advance(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
@@ -874,7 +881,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  test_clock_.Advance(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest,
@@ -917,7 +924,7 @@ TEST_P(StorageQueueTest,
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  test_clock_.Advance(base::Seconds(1));
 }
 
 TEST_P(
@@ -974,7 +981,7 @@ TEST_P(
       .RetiresOnSaturation();
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  test_clock_.Advance(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest,
@@ -1061,7 +1068,7 @@ TEST_P(StorageQueueTest,
   }
 
   // Trigger upload.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  test_clock_.Advance(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
@@ -1171,7 +1178,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
   // Confirm #0 and forward time again, removing record #0
   ConfirmOrDie(/*sequencing_id=*/0);
@@ -1189,7 +1196,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, removing record #1
@@ -1207,7 +1214,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Add more data and verify that #2 and new data are returned.
@@ -1230,7 +1237,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #2 and forward time again, removing record #2
@@ -1250,7 +1257,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 }
 
@@ -1277,7 +1284,7 @@ TEST_P(StorageQueueTest, WriteAndUploadWithBadConfirmation) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #0 with bad generation.
@@ -1314,7 +1321,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #0 and forward time again, removing record #0
@@ -1333,7 +1340,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, removing record #1
@@ -1351,7 +1358,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   ResetTestStorageQueue();
@@ -1379,7 +1386,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
                   .Complete();
             }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #2 and forward time again, removing record #2
@@ -1399,7 +1406,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
                   .Complete();
             }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 }
 
@@ -1427,7 +1434,7 @@ TEST_P(StorageQueueTest,
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #0 and forward time again, removing record #0
@@ -1446,7 +1453,7 @@ TEST_P(StorageQueueTest,
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, removing record #1
@@ -1464,7 +1471,7 @@ TEST_P(StorageQueueTest,
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   ResetTestStorageQueue();
@@ -1497,7 +1504,7 @@ TEST_P(StorageQueueTest,
                   .Complete();
             }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #2 and forward time again, removing record #2
@@ -1520,7 +1527,7 @@ TEST_P(StorageQueueTest,
                   .Complete();
             }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 }
 
@@ -1711,10 +1718,19 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithFailure) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    // Ignore INCOMPLETE RETRYs, if any.
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INCOMPLETE_RETRY)))
+        .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason) {
+          return Status(
+              error::UNAVAILABLE,
+              base::StrCat({"Ignored by the test, reason=",
+                            UploaderInterface::ReasonToString(reason)}));
+        }));
     WriteStringOrDie(kData[0]);  // Immediately uploads and fails.
 
     // Let it retry upload and verify.
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 }
 
@@ -1751,7 +1767,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
                   .Complete();
             }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::Seconds(5));
+    test_clock_.Advance(base::Seconds(5));
   }
 
   // Confirm 0 and make sure no retry happens (since everything is confirmed).
@@ -1760,7 +1776,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
       .Times(0);
 
   ConfirmOrDie(/*sequencing_id=*/0);
-  task_environment_.FastForwardBy(base::Seconds(10));
+  test_clock_.Advance(base::Seconds(10));
 }
 
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
@@ -1799,7 +1815,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Confirm #1 and forward time again, possibly removing records #0 and #1
@@ -1818,7 +1834,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Now force confirm the very beginning and forward time again.
@@ -1847,7 +1863,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   // Force confirm #0 and forward time again.
@@ -1873,7 +1889,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
             }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 }
 
@@ -1958,34 +1974,42 @@ TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
 
   const auto original_total_memory = options_.memory_resource()->GetTotal();
 
-  // Set uploader expectations.
-  test::TestCallbackAutoWaiter waiter;
-  EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-        // First attempt - update total memory to a low amount.
-        options_.memory_resource()->Test_SetTotal(100u);
-        return TestUploader::SetUp(&waiter, this)
-            .Complete(Status(error::RESOURCE_EXHAUSTED,
-                             "Insufficient memory for upload"));
-      }))
-      .RetiresOnSaturation();
-  EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::UploadReason::FAILURE_RETRY)))
-      .WillOnce(Invoke([&waiter, &original_total_memory,
-                        this](UploaderInterface::UploadReason reason) {
-        // Reset after running upload so it does not affect other tests.
-        options_.memory_resource()->Test_SetTotal(original_total_memory);
-        return TestUploader::SetUp(&waiter, this)
-            .Required(0, kData[0])
-            .Complete();
-      }))
-      .RetiresOnSaturation();
+  {
+    // Set uploader expectations.
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              // First attempt - update total memory to a low amount.
+              options_.memory_resource()->Test_SetTotal(100u);
+              return TestUploader::SetUp(&waiter, this)
+                  .Complete(Status(error::RESOURCE_EXHAUSTED,
+                                   "Insufficient memory for upload"));
+            }))
+        .RetiresOnSaturation();
+    // Trigger upload which will experience insufficient memory.
+    test_clock_.Advance(base::Seconds(5));
+  }
 
-  // Trigger upload which will experience insufficient memory.
-  task_environment_.FastForwardBy(base::Seconds(5));
-  // Trigger another (failure retry) upload resetting the memory resource.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  {
+    // Set uploader expectations.
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::FAILURE_RETRY)))
+        .WillOnce(Invoke([&waiter, &original_total_memory,
+                          this](UploaderInterface::UploadReason reason) {
+          // Reset after running upload so it does not affect other tests.
+          options_.memory_resource()->Test_SetTotal(original_total_memory);
+          return TestUploader::SetUp(&waiter, this)
+              .Required(0, kData[0])
+              .Complete();
+        }))
+        .RetiresOnSaturation();
+
+    // Trigger another (failure retry) upload resetting the memory resource.
+    test_clock_.Advance(base::Seconds(1));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

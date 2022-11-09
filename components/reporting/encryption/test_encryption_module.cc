@@ -9,6 +9,8 @@
 
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/statusor.h"
 
@@ -17,7 +19,9 @@ using ::testing::Invoke;
 namespace reporting {
 namespace test {
 
-TestEncryptionModuleStrict::TestEncryptionModuleStrict() {
+TestEncryptionModuleStrict::TestEncryptionModuleStrict()
+    : EncryptionModuleInterface(/*renew_encryption_key_period=*/base::Days(1),
+                                base::DefaultTickClock::GetInstance()) {
   ON_CALL(*this, EncryptRecordImpl)
       .WillByDefault(
           Invoke([](base::StringPiece record,

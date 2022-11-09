@@ -59,12 +59,12 @@ constexpr base::TimeDelta kFailedUploadRetryDelay = base::Seconds(1);
 
 }  // namespace
 
-StorageOptions::StorageOptions()
+StorageOptions::StorageOptions(const base::TickClock* clock)
     : memory_resource_(base::MakeRefCounted<MemoryResourceImpl>(
           4u * 1024uLL * 1024uLL)),  // 4 MiB by default
       disk_space_resource_(base::MakeRefCounted<DiskResourceImpl>(
-          64u * 1024uLL * 1024uLL))  // 64 MiB by default.
-{}
+          64u * 1024uLL * 1024uLL)),  // 64 MiB by default.
+      clock_(clock) {}
 StorageOptions::StorageOptions(const StorageOptions& options) = default;
 StorageOptions::~StorageOptions() = default;
 

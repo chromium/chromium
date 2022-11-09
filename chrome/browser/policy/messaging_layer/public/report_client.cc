@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
@@ -67,11 +68,13 @@ void ReportingClient::CreateLocalStorageModule(
   LOG(WARNING) << "Store reporting data locally";
   DCHECK(!StorageSelector::is_use_missive())
       << "Can only be used in local mode";
+  StorageOptions options;
+  options.set_directory(local_reporting_path);
+  options.set_signature_verification_public_key(verification_key);
   StorageModule::Create(
-      StorageOptions()
-          .set_directory(local_reporting_path)
-          .set_signature_verification_public_key(verification_key),
-      std::move(async_start_upload_cb), EncryptionModule::Create(),
+      options, std::move(async_start_upload_cb),
+      EncryptionModule::Create(
+          /*renew_encryption_key_period=*/base::Days(1), options.clock()),
       CompressionModule::Create(512, compression_algorithm),
       // Callback wrapper changes result type from `StorageModule` to
       // `StorageModuleInterface`.
