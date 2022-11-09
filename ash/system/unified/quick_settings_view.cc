@@ -191,6 +191,12 @@ void QuickSettingsView::SetDetailedView(views::View* detailed_view) {
   detailed_view_container_->AddChildView(detailed_view);
   system_tray_container_->SetVisible(false);
   detailed_view_container_->SetVisible(true);
+
+  // We need to enforce a manual `Layout()` here to make sure that
+  // `CalendarView` is notified that it can be initialized through
+  // `OnViewBoundsChanged`. The `CalendarView` depends on `OnViewsBoundsChanged`
+  // to check if it can `ScrollToToday`.
+  Layout();
 }
 
 void QuickSettingsView::ResetDetailedView() {

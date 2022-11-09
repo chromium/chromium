@@ -53,12 +53,15 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
+
+  // Max height calculated from the maximum available height of the screen.
   int max_height = CalculateMaxHeight();
 
   if (features::IsQsRevampEnabled()) {
     auto quick_settings_view = controller_->CreateQuickSettingsView();
     quick_settings_view->SetMaxHeight(max_height);
-    bubble_view_->SetMaxHeight(max_height);
+    bubble_view_->SetMaxHeight(
+        std::min(max_height, kRevampedTrayMenuMaxHeight));
     quick_settings_view_ =
         bubble_view_->AddChildView(std::move(quick_settings_view));
     time_to_click_recorder_ = std::make_unique<TimeToClickRecorder>(
