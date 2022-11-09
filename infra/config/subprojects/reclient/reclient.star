@@ -309,7 +309,7 @@ fyi_reclient_test_builder(
     os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -335,7 +335,7 @@ fyi_reclient_staging_builder(
     os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
