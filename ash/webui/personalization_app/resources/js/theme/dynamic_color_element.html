@@ -20,7 +20,7 @@
   }
 
   /* Buttons */
-  #buttons {
+  iron-selector {
     display: flex;
     justify-content: space-between;
     margin: 16px 0;
@@ -53,22 +53,33 @@
     <cr-toggle checked="{{automaticSeedColorEnabled}}">
     </cr-toggle>
   </div>
-  <div id="buttons">
-    <template is="dom-if" if="[[automaticSeedColorEnabled]]">
-      <template is="dom-repeat" items="[[schemes_]]" as="scheme">
-        <cr-button>
-          <color-scheme-icon-svg scheme="[[scheme]]"></color-scheme-icon-svg>
-        </cr-button>
-      </template>
+  <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
+  </iron-a11y-keys>
+  <iron-selector 
+      id="colorSchemeSelector"
+      selected="0"
+      selected-item="{{colorSchemeSelectedButton_}}"
+      hidden="[[!automaticSeedColorEnabled]]">
+    <template is="dom-repeat" items="[[schemes_]]" as="scheme">
+      <cr-button tabindex$="[[getTabIndex_(scheme.id)]]">
+        <!-- TODO(b/254481177): Replace with the real SVG. -->
+        <svg>
+          <circle style$="fill: [[scheme.primaryColor]]" cx="24" cy="24" r="24"></circle>
+        </svg>
+      </cr-button>
     </template>
-    <template is="dom-if" if="[[!automaticSeedColorEnabled]]">
-      <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
-        <cr-button>
-          <svg>
-            <circle style$="fill: [[staticColor]]" cx="24" cy="24" r="24"></circle>
-          </svg>
-        </cr-button>
-      </template>
+  </iron-selector>
+  <iron-selector
+      id="staticColorSelector"
+      selected="0"
+      selected-item="{{staticColorSelectedButton_}}"
+      hidden="[[automaticSeedColorEnabled]]">
+    <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
+      <cr-button tabindex$="[[getTabIndex_(staticColor)]]">
+        <svg>
+          <circle style$="fill: [[staticColor]]" cx="24" cy="24" r="24"></circle>
+        </svg>
+      </cr-button>
     </template>
-  </div>
+  </iron-selector>
 </div>
