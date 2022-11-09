@@ -814,14 +814,19 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
   }
 }
 
+// kRegionCaptureExperimentalSubtypes is default-enabled,
+// functioning as a killswitch in case a regression is discovered
+// when cropping to an element other than a <div> or <iframe>,
+// in which case we can *partially* disable Region Capture.
+// This test ensures the continued viability of this killswitch.
 TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfUnsupportedElementType) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
 
-  // Currently if the experimental subtypes feature is not enabled, only
-  // <div> and <iframe> are supported.
   scoped_feature_list().Reset();
+  scoped_feature_list().InitAndDisableFeature(
+      blink::features::kRegionCaptureExperimentalSubtypes);
   SetBodyContent(R"HTML(
     <button id='test-button'>Click!</button>
   )HTML");

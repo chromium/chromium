@@ -1342,9 +1342,10 @@ BASE_FEATURE(kReportFCPOnlyOnSuccessfulCommit,
              "ReportFCPOnlyOnSuccessfulCommit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/1382005): Deprecate this flag.
 BASE_FEATURE(kRegionCaptureExperimentalSubtypes,
              "RegionCaptureExperimentalSubtypes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUserAgentOverrideExperiment,
              "UserAgentOverrideExperiment",

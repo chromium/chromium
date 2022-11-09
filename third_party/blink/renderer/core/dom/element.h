@@ -648,7 +648,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   const RegionCaptureCropId* GetRegionCaptureCropId() const;
 
   // Support for all elements with region capture is currently experimental.
-  // TODO(crbug.com/1332641): Remove this after support is stable.
   virtual bool IsSupportedByRegionCapture() const;
 
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
