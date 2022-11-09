@@ -7,9 +7,15 @@
 
 #import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 
+class PrefRegistrySimple;
+
 // The agent that manages the init stage transition for InitStageVariationsSeed.
 // See comment for InitStageVariationsSeed for more information.
 @interface VariationsAppStateAgent : SceneObservingAppAgent
+
+// Registers the prefs required for this agent.
++ (void)registerLocalState:(PrefRegistrySimple*)registry;
+
 @end
 
 #endif  // IOS_CHROME_APP_VARIATIONS_APP_STATE_AGENT_H_

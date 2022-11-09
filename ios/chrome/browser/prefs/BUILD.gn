@@ -82,6 +82,7 @@ source_set("browser_prefs") {
     "//components/update_client",
     "//components/variations/service",
     "//components/web_resource",
+    "//ios/chrome/app:variations_app_state_agent",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/geolocation",

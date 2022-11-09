@@ -6,9 +6,14 @@
 #import "ios/chrome/app/variations_app_state_agent+testing.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/metrics/field_trial.h"
+#import "base/rand_util.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service_utils.h"
 #import "components/variations/variations_seed_store.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
@@ -16,24 +21,66 @@
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
+#import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+// Name of trial and experiment groups.
+const char kIOSChromeVariationsTrialName[] = "kIOSChromeVariationsTrial";
+const char kIOSChromeVariationsTrialDefaultGroup[] = "Default";
+const char kIOSChromeVariationsTrialControlGroup[] = "Control-v1";
+const char kIOSChromeVariationsTrialEnabledGroup[] = "Enabled-v1";
 
 namespace {
 
 // The NSUserDefault key to store the time the last seed is fetched.
 NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
 
+// Local state key of experiment group assigned, persisted for subsequent runs.
+const char kFirstRunSeedFetchExperimentGroupPref[] = "ios.variations.first_run";
+
+// Experiment group for the iOS variations trial. It will correspond to the
+// trial group activated in the respective FieldTrial object, once the latter is
+// setup.
+enum class IOSChromeVariationsGroup {
+  kNotAssigned = 0,
+  kNotFirstRun,
+  kDefault,
+  kControl,
+  kEnabled,
+};
+
+#pragma mark - Helpers
+
+// Group weight for both enabled and control experiment groups.
+// NOTE: The value will be updated during the incremental rollout period.
+int GetGroupWeight() {
+  switch (GetChannel()) {
+    case version_info::Channel::UNKNOWN:
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+    case version_info::Channel::BETA:
+      return 0;
+    case version_info::Channel::STABLE:
+      return 0;
+  }
+}
+
+// Returns the fetch time of the variations seed store fetched by a previous
+// run, and null if such seed doesn't exist.
+base::Time GetLastVariationsSeedFetchTime() {
+  double timestamp = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:kLastVariationsSeedFetchTimeKey];
+  return base::Time::FromDoubleT(timestamp);
+}
+
 // Record Variations.SeedFreshness metric according whether there is a seed in
 // the variations seed store fetched by a previous run, and if there is, whether
 // it is expired.
 // TODO(crbug.com/1380164): Implement this method.
-void RecordSeedFreshness() {
-  double timestamp = [[NSUserDefaults standardUserDefaults]
-      doubleForKey:kLastVariationsSeedFetchTimeKey];
-  base::Time time = base::Time::FromDoubleT(timestamp);
+void RecordSeedFreshness(base::Time time) {
   if (time.is_null()) {
     // TODO(crbug.com/1380164): Seed doesn't exist. Log metric.
   } else if (variations::HasSeedExpiredSinceTime(time)) {
@@ -43,27 +90,87 @@ void RecordSeedFreshness() {
   }
 }
 
+// Creates and returns a one-time randomized trial group assignment with regards
+// to given group weights.
+// NOTE: `enabled_weight` and `control_weight` should be the same unless
+// overriden by test cases.
+IOSChromeVariationsGroup CreateOneTimeExperimentGroupAssignment(
+    int enabled_weight,
+    int control_weight) {
+  DCHECK_LE(enabled_weight + control_weight, 100);
+  double rand = base::RandDouble() * 100;
+  if (rand < enabled_weight) {
+    return IOSChromeVariationsGroup::kEnabled;
+  } else if (rand < enabled_weight + control_weight) {
+    return IOSChromeVariationsGroup::kControl;
+  } else {
+    return IOSChromeVariationsGroup::kDefault;
+  }
+}
+
+// Creates and activates the client side field trial. First run users would be
+// assigned to a group that corresponds to the parameter `group`, while others
+// would be assigned to their previous groups in the same version of the
+// experiment, if exists, or be excluded out of the experiment. This is called
+// when local state is ready, and will save the field trial group name in the
+// local state as well.
+void ActivateFieldTrialForGroup(IOSChromeVariationsGroup group) {
+  // Check if the group name exists in the local state.
+  // This is to cover the scenario when the app has been previously installed
+  // but crashes before first run experience completes. In this case, the seed
+  // would be fetched but not used by variations service, and so the field trial
+  // group would be assigned to the previous one.
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  std::string group_name =
+      local_state->GetString(kFirstRunSeedFetchExperimentGroupPref);
+  if (group_name.empty()) {
+    switch (group) {
+      case IOSChromeVariationsGroup::kNotAssigned:
+        NOTREACHED();
+        break;
+      case IOSChromeVariationsGroup::kNotFirstRun:
+        // First run completed before the experiment is setup.
+        break;
+      case IOSChromeVariationsGroup::kEnabled:
+        group_name = kIOSChromeVariationsTrialEnabledGroup;
+        break;
+      case IOSChromeVariationsGroup::kControl:
+        group_name = kIOSChromeVariationsTrialControlGroup;
+        break;
+      case IOSChromeVariationsGroup::kDefault:
+        group_name = kIOSChromeVariationsTrialDefaultGroup;
+        break;
+    }
+  }
+  local_state->SetString(kFirstRunSeedFetchExperimentGroupPref, group_name);
+  if (!group_name.empty()) {
+    base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
+        kIOSChromeVariationsTrialName, group_name);
+    trial->Activate();
+  }
+}
+
 // Retrieves the time the last variations seed is fetched from local state, and
 // stores it into NSUserDefaults. It should be executed every time before the
 // app shuts down, so the value could be used for the next startup, before
 // PrefService is instantiated.
 void SaveFetchTimeOfLatestSeedInLocalState() {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  const base::Time seedDate =
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  const base::Time seed_fetch_time =
       variations::VariationsSeedStore::GetLastFetchTimeFromPrefService(
-          localState);
-  if (!seedDate.is_null()) {
+          local_state);
+  if (!seed_fetch_time.is_null()) {
     [[NSUserDefaults standardUserDefaults]
-        setDouble:seedDate.ToDoubleT()
+        setDouble:seed_fetch_time.ToDoubleT()
            forKey:kLastVariationsSeedFetchTimeKey];
   }
 }
 
 }  // namespace
 
+#pragma mark - VariationsAppStateAgent
+
 @interface VariationsAppStateAgent () <IOSChromeVariationsSeedFetcherDelegate> {
-  // Whether the app is running the first time after launch.
-  BOOL _firstRun;
   // Caches the previous activation level.
   SceneActivationLevel _previousActivationLevel;
   // Whether the variations seed fetch has completed.
@@ -72,9 +179,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
   BOOL _extendedLaunchScreenShown;
   // The fetcher object used to fetch the seed.
   IOSChromeVariationsSeedFetcher* _fetcher;
-  // Whether finch seed should be fetched on first run.
-  // TODO(crbug.com/1380164): rewrite with field trial group assignment.
-  BOOL _featureEnabled;
+  // Group assignment of the iOS variations trial.
+  IOSChromeVariationsGroup _group;
 }
 
 @end
@@ -82,30 +188,62 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 @implementation VariationsAppStateAgent
 
 - (instancetype)init {
-  return [self initWithFirstRunStatus:ShouldPresentFirstRunExperience()
-                              fetcher:nil
-                       featureEnabled:NO];
+  int groupWeight = GetGroupWeight();
+  DCHECK_LE(groupWeight, 50);
+  // Note: `ShouldPresentFirstRunExperience()` will return YES as long as the
+  // user has not completed a first run experience.
+  return [self
+      initWithFirstRunExperience:ShouldPresentFirstRunExperience()
+               lastSeedFetchTime:GetLastVariationsSeedFetchTime()
+                         fetcher:[[IOSChromeVariationsSeedFetcher alloc] init]
+              enabledGroupWeight:groupWeight
+              controlGroupWeight:groupWeight];
 }
 
-- (instancetype)initWithFirstRunStatus:(BOOL)firstRun
-                               fetcher:(IOSChromeVariationsSeedFetcher*)fetcher
-                        featureEnabled:(BOOL)enabled {
+- (instancetype)initWithFirstRunExperience:(BOOL)shouldPresentFRE
+                         lastSeedFetchTime:(base::Time)lastSeedFetchTime
+                                   fetcher:
+                                       (IOSChromeVariationsSeedFetcher*)fetcher
+                        enabledGroupWeight:(int)enabledGroupWeight
+                        controlGroupWeight:(int)controlGroupWeight {
+  DCHECK_LE(enabledGroupWeight + controlGroupWeight, 100);
   self = [super init];
   if (self) {
-    _firstRun = firstRun;
-    _featureEnabled = enabled;
     _previousActivationLevel = SceneActivationLevelUnattached;
     _seedFetchCompleted = NO;
     _extendedLaunchScreenShown = NO;
-    RecordSeedFreshness();
-    if ([self shouldFetchVariationsSeed]) {
-      _fetcher =
-          fetcher ? fetcher : [[IOSChromeVariationsSeedFetcher alloc] init];
+    // By checking last fetch time from NSUserDefaults, `firstRunStatus` covers
+    // the scenario when a user relaunches after existing the app during FRE;
+    // however, if the app crashes during FRE, the value will still be YES in
+    // the subsequent launch.
+    // TODO(crbug.com/1372180): Import crash helper and take into account
+    // previous crash statistics into account.
+    BOOL firstRun = shouldPresentFRE && lastSeedFetchTime.is_null();
+    _group = firstRun ? CreateOneTimeExperimentGroupAssignment(
+                            enabledGroupWeight, controlGroupWeight)
+                      : IOSChromeVariationsGroup::kNotFirstRun;
+    RecordSeedFreshness(lastSeedFetchTime);
+    if (_group == IOSChromeVariationsGroup::kEnabled) {
+      _fetcher = fetcher;
       _fetcher.delegate = self;
       [_fetcher startSeedFetch];
     }
   }
   return self;
+}
+
++ (void)registerLocalState:(PrefRegistrySimple*)registry {
+  registry->RegisterStringPref(kFirstRunSeedFetchExperimentGroupPref,
+                               std::string());
+}
+
+#pragma mark - AppAgentObserver
+
+- (void)appState:(AppState*)appState
+    willTransitionToInitStage:(InitStage)nextInitStage {
+  if (self.appState.initStage == InitStageBrowserObjectsForBackgroundHandlers) {
+    ActivateFieldTrialForGroup(_group);
+  }
 }
 
 #pragma mark - ObservingAppAgent
@@ -115,7 +253,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
   if (self.appState.initStage == InitStageVariationsSeed) {
     // Keep waiting for the seed if the app should have variations seed fetched
     // but hasn't.
-    if (![self shouldFetchVariationsSeed] || _seedFetchCompleted) {
+    if (_group != IOSChromeVariationsGroup::kEnabled || _seedFetchCompleted) {
       [self.appState queueTransitionToNextInitStage];
     }
   }
@@ -127,7 +265,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
   // If the app would be showing UI before Chrome UI is ready, extend the launch
   // screen.
   if (self.appState.initStage == InitStageVariationsSeed &&
-      [self shouldFetchVariationsSeed] &&
+      _group == IOSChromeVariationsGroup::kEnabled &&
       level > SceneActivationLevelBackground && !_extendedLaunchScreenShown) {
     [self showExtendedLaunchScreen:sceneState];
     _extendedLaunchScreenShown = YES;
@@ -146,7 +284,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 #pragma mark - IOSChromeVariationsSeedFetcherDelegate
 
 - (void)didFetchSeedSuccess:(BOOL)succeeded {
-  DCHECK([self shouldFetchVariationsSeed]);
+  DCHECK_EQ(_group, IOSChromeVariationsGroup::kEnabled);
   DCHECK_LE(self.appState.initStage, InitStageVariationsSeed);
   _seedFetchCompleted = YES;
   _fetcher.delegate = nil;
@@ -156,17 +294,6 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 }
 
 #pragma mark - private
-
-// Returns whether the variations seed should be fetched.
-- (BOOL)shouldFetchVariationsSeed {
-  return _firstRun && _featureEnabled;
-}
-
-// TODO(crbug.com/1372180): Replace this method by actual method that sets up a
-// custom client side experiment and return the value.
-- (BOOL)shouldTurnOnFeature {
-  return NO;
-}
 
 // Show a view that mocks the launch screen. This should only be called when the
 // scene will be active on the foreground but the seed has not been fetched to

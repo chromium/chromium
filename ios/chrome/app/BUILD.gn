@@ -243,13 +243,16 @@ source_set("variations_app_state_agent") {
   deps = [
     ":launch_screen_ui",
     "//base",
+    "//components/prefs",
     "//components/variations",
     "//components/variations/service",
+    "//components/version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/variations:fetcher",
+    "//ios/chrome/common",
   ]
 }
 
