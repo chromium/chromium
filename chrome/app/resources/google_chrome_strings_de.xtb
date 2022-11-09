@@ -56,6 +56,7 @@
 <translation id="2018879682492276940">Fehler bei der Installation. Bitte versuch es noch einmal.</translation>
 <translation id="2071318482926839249">Du bist bereits in einem anderen Konto angemeldet. Wenn du deine Browseraktivitäten getrennt halten möchtest, kann Chrome ein eigenes Profil für dich einrichten.</translation>
 <translation id="207902854391093810">Wenn Tests aktiviert sind, können mithilfe der Anzeigenanalyse von dir besuchte Websites Informationen von Chrome anfordern, mit denen sie die Leistung ihrer Werbung analysieren können. Durch die Anzeigenanalyse wird das websiteübergreifende Tracking eingeschränkt, indem so wenig Informationen wie möglich zwischen Websites ausgetauscht werden.</translation>
+<translation id="2091012649849228750">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
 <translation id="2094648590148273905">Nutzungsbedingungen für Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chrome trotzdem beenden?</translation>
 <translation id="2106831557840787829">Chrome OS Flex und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
@@ -284,6 +285,7 @@
 <translation id="6881299373831449287">Chrome wird aktualisiert</translation>
 <translation id="6885412569789873916">Chrome Beta-Apps</translation>
 <translation id="6933858244219479645">Chrome OS-System</translation>
+<translation id="6938166777909186039">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 8.1.</translation>
 <translation id="6943584222992551122">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Um die Daten wiederherzustellen, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="6967962315388095737">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome wurde aktualisiert, Du hast den Browser jedoch mindestens 30 Tage nicht verwendet.</translation>
@@ -387,6 +389,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8686817260976772516">Mit Chrome-Profilen kannst du deine Chrome-Inhalte voneinander trennen. Erstelle Profile für Freunde und Familie oder teile deine Inhalte in Arbeit und Freizeit ein.</translation>
 <translation id="8712767363896337380">Fast geschafft! Starte Chrome zum Abschluss der Aktualisierung neu.</translation>
 <translation id="873133009373065397">Google Chrome kann den Standardbrowser nicht bestimmen oder festlegen</translation>
+<translation id="8821043148920470810">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 7.</translation>
 <translation id="8823341990149967727">Chrome ist veraltet.</translation>
 <translation id="8825634023950448068">Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Falls Chrome falsch liegt oder du bestimmte Werbung nicht sehen möchtest, kannst du einzelne Interessen entfernen.</translation>
 <translation id="8834965163890861871">Google Chrome versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>

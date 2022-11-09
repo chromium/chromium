@@ -60,6 +60,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2018879682492276940">Methwyd â gosod. Rhowch gynnig arall arni.</translation>
 <translation id="2071318482926839249">Mae cyfrif arall eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, gall Chrome greu proffil eich hun ar eich cyfer.</translation>
 <translation id="207902854391093810">Pan fydd treialon ymlaen, mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw i ofyn am wybodaeth gan Chrome sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.</translation>
+<translation id="2091012649849228750">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.</translation>
 <translation id="2094648590148273905">Termau ChromeOS Flex</translation>
 <translation id="2094919256425865063">Gadael Chrome beth bynnag?</translation>
 <translation id="2106831557840787829">Mae ChromeOS Flex yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol, fel y mae <ph name="BEGIN_LINK_LINUX_OSS" />amgylchedd datblygu Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -292,6 +293,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6881299373831449287">Wrthi'n diweddaru Chrome</translation>
 <translation id="6885412569789873916">Apiau Beta Chrome</translation>
 <translation id="6933858244219479645">System ChromeOS</translation>
+<translation id="6938166777909186039">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.1.</translation>
 <translation id="6943584222992551122">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Rheol dod i mewn ar gyfer Beta Google Chrome i ganiatáu traffig mDNS.</translation>
 <translation id="6989339256997917931">Mae Google Chrome wedi'i ddiweddaru, ond nid ydych wedi ei ddefnyddio am o leiaf 30 diwrnod.</translation>
@@ -395,6 +397,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8686817260976772516">Gallwch wahanu eich holl bethau Chrome gyda phroffiliau Chrome. Creu proffiliau ar gyfer eich ffrindiau a'ch teulu, neu rannu rhwng gwaith a hwyl.</translation>
 <translation id="8712767363896337380">Bron yn gyfoes! Ail-lansiwch Chrome i orffen diweddaru.</translation>
 <translation id="873133009373065397">Ni all Google Chrome bennu na gosod y porwr diofyn</translation>
+<translation id="8821043148920470810">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 7.</translation>
 <translation id="8823341990149967727">Mae Chrome yn hen</translation>
 <translation id="8825634023950448068">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Ac os yw Chrome yn ei chael yn anghywir neu os nad ydych am weld rhai hysbysebion, gallwch ddileu diddordeb.</translation>
 <translation id="8834965163890861871">Mae Google Chrome yn ceisio golygu cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>

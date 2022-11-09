@@ -60,6 +60,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2018879682492276940">Namestitev ni uspela. Poskusite znova.</translation>
 <translation id="2071318482926839249">Drug račun je že prijavljen. Če želite ločiti brskanje, lahko Chrome za vas ustvari nov profil.</translation>
 <translation id="207902854391093810">Če so preizkusi vklopljeni, merjenje oglasov spletnim mestom omogoča, da od Chroma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
+<translation id="2091012649849228750">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.</translation>
 <translation id="2094648590148273905">Pogoji za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Želite vseeno zapreti Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />, enako kot <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okolje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -292,6 +293,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6881299373831449287">Posodabljanje Chroma</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
 <translation id="6933858244219479645">Sistem Chrome OS</translation>
+<translation id="6938166777909186039">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.1.</translation>
 <translation id="6943584222992551122">Podatki brskanja te osebe bodo izbrisani iz te naprave. Če želite podatke obnoviti, se prijavite v Chrome kot <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravilo za dohodni promet za Google Chrome Beta, ki dovoli promet mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome je posodobljen, a ga niste uporabljali že vsaj 30 dni.</translation>
@@ -395,6 +397,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8686817260976772516">S profili v Chromu lahko ločite vse stvari v Chromu. Ustvarite profile za prijatelje in svojce ali ustvarite ločene za delo in zabavo.</translation>
 <translation id="8712767363896337380">Skoraj je posodobljen. Znova zaženite Chrome, da dokončate posodobitev.</translation>
 <translation id="873133009373065397">Google Chrome ne more določiti ali nastaviti privzetega brskalnika</translation>
+<translation id="8821043148920470810">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastarel</translation>
 <translation id="8825634023950448068">Zaradi zaščite vaše varnosti samodejno izbrišemo vaša zanimanja, starejša od 4 tednov. Ko brskate naprej, se zanimanje morda znova prikaže na seznamu. Če se Chrome zmoti in ne želite videti nekaterih oglasov, lahko odstranite zanimanje.</translation>
 <translation id="8834965163890861871">Google Chrome poskuša urejati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>

@@ -55,6 +55,7 @@
 <translation id="2018879682492276940">Yükleme başarısız oldu. Lütfen tekrar deneyin.</translation>
 <translation id="2071318482926839249">Zaten başka bir hesapta oturum açılmış. Göz atma işlemlerinizi ayrı tutmak isterseniz Chrome, sizin için kendi profilinizi oluşturabilir.</translation>
 <translation id="207902854391093810">Reklam ölçümü, denemeler açıkken ziyaret ettiğiniz sitelerin Chrome'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>
+<translation id="2091012649849228750">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8 kullanıyor.</translation>
 <translation id="2094648590148273905">ChromeOS Flex şartları</translation>
 <translation id="2094919256425865063">Yine de Chrome'dan çıkılsın mı?</translation>
 <translation id="2106831557840787829">ChromeOS Flex, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
@@ -285,6 +286,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6881299373831449287">Chrome güncelleniyor</translation>
 <translation id="6885412569789873916">Chrome Beta Uygulamaları</translation>
 <translation id="6933858244219479645">ChromeOS Sistemi</translation>
+<translation id="6938166777909186039">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8.1 kullanıyor.</translation>
 <translation id="6943584222992551122">Bu kullanıcının göz atma verileri bu cihazdan silinecektir. Verileri kurtarmak için Chrome'da <ph name="USER_EMAIL" /> olarak oturum açın.</translation>
 <translation id="6967962315388095737">Google Chrome Beta'nın mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="6989339256997917931">Google Chrome güncellendi, ancak programı en azından 30 gündür kullanmıyorsunuz.</translation>
@@ -388,6 +390,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8686817260976772516">Chrome profilleri ile tüm Chrome öğelerinizi ayırabilirsiniz. Arkadaşlar ve aile için profil oluşturun veya iş ile eğlenceyi ayırın.</translation>
 <translation id="8712767363896337380">Güncel hale gelmek üzere. Güncellemenin tamamlanması için Chrome'u yeniden başlatın.</translation>
 <translation id="873133009373065397">Google Chrome, varsayılan tarayıcıyı tespit edemiyor veya ayarlayamıyor</translation>
+<translation id="8821043148920470810">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 7 kullanıyor.</translation>
 <translation id="8823341990149967727">Chrome Sürümü Eski</translation>
 <translation id="8825634023950448068">Gizliliğinizi korumak için 4 haftadan eski ilgi alanlarınızı otomatik olarak sileriz. Siz internette gezindikçe ilgi alanları tekrar listede görünmeye başlayabilir. Chrome ilgi alanınızı yanlış algılarsa veya belirli reklamları görmek istemezseniz ilgi alanlarını kaldırabilirsiniz.</translation>
 <translation id="8834965163890861871">Google Chrome şifreleri düzenlemeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>

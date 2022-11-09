@@ -60,6 +60,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2018879682492276940">Instalacija nije uspjela. Pokušajte ponovo.</translation>
 <translation id="2071318482926839249">Drugi račun je već prijavljen. Da vaše pregledanje ostane odvojeno, Chrome vam može kreirati lični profil.</translation>
 <translation id="207902854391093810">Tokom probnog perioda, mjerenje oglasa omogućava web lokacijama koje posjećujete da zatraže informaciju iz Chromea koja će im pomoći da izmjere performanse svojih oglasa. Mjerenje oglasa ograničava unakrsno praćenje web lokacija prenoseći minimalnu količinu informacija između njih.</translation>
+<translation id="2091012649849228750">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.</translation>
 <translation id="2094648590148273905">Uslovi za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Ipak želite napustiti Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -290,6 +291,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6881299373831449287">Ažuriranje Chromea</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
+<translation id="6938166777909186039">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.1.</translation>
 <translation id="6943584222992551122">Podaci pregledanja ove osobe će se izbrisati s uređaja. Da vratite podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Ulazno pravilo da Google Chrome beta verzija dozvoli mDNS saobraćaj.</translation>
 <translation id="6989339256997917931">Google Chrome je ažuriran, ali ga niste koristili najmanje 30 dana.</translation>
@@ -393,6 +395,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8686817260976772516">S Chrome profilima možete odvojiti sve svoje Chrome stvari. Kreirajte profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
 <translation id="8712767363896337380">Još malo pa je ažurirano! Ponovo pokrenite Chrome da završite ažuriranje.</translation>
 <translation id="873133009373065397">Google Chrome ne može odrediti ili postaviti zadani preglednik</translation>
+<translation id="8821043148920470810">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastario</translation>
 <translation id="8825634023950448068">Da zaštitimo vašu privatnost, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ako Chrome pogriješi ili ako ne želite gledati određene oglase, možete ukloniti interesovanje.</translation>
 <translation id="8834965163890861871">Google Chrome pokušava urediti lozinke. Unesite Windows lozinku da ovo omogućite.</translation>

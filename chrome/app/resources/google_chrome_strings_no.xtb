@@ -55,6 +55,7 @@
 <translation id="2018879682492276940">Installasjonen mislyktes. Prøv igjen.</translation>
 <translation id="2071318482926839249">En annen konto er allerede pålogget. For å holde surfingen din atskilt kan Chrome opprette en egen profil til deg.</translation>
 <translation id="207902854391093810">Når prøveprosjekter er påslått, kan nettsteder du besøker, bruke annonsemålinger for å spørre Chrome om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
+<translation id="2091012649849228750">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.</translation>
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vil du avslutte Chrome likevel?</translation>
 <translation id="2106831557840787829">ChromeOS Flex er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -283,6 +284,7 @@
 <translation id="6881299373831449287">Oppdaterer Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta-apper</translation>
 <translation id="6933858244219479645">ChromeOS-systemet</translation>
+<translation id="6938166777909186039">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.1.</translation>
 <translation id="6943584222992551122">Denne personens nettlesingsdata slettes fra denne enheten. For å gjenopprette dataene, logg på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regel for å tillate innkommende mDNS-trafikk i Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome har blitt oppdatert, men du har ikke brukt programmet på minst 30 dager.</translation>
@@ -386,6 +388,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8686817260976772516">Med Chrome-profiler kan du holde alle Chrome-tingene dine atskilt. Opprett profiler for venner og familie, eller skill mellom arbeid og fritid.</translation>
 <translation id="8712767363896337380">Nesten ferdig oppdatert! Start Chrome på nytt for å fullføre oppdateringen.</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastslå eller angi standardnettleseren</translation>
+<translation id="8821043148920470810">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er utdatert</translation>
 <translation id="8825634023950448068">For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Og hvis Chrome tar feil, eller hvis det er visse annonser du ikke vil se, kan du fjerne en interesse.</translation>
 <translation id="8834965163890861871">Google Chrome prøver å redigere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>

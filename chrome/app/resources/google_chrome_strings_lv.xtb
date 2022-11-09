@@ -57,6 +57,7 @@
 <translation id="2018879682492276940">Instalēšana neizdevās. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="2071318482926839249">Jūs jau esat pierakstījies citā kontā. Lai atdalītu pārlūkošanu, pārlūkā Chrome varat izveidot atsevišķu profilu.</translation>
 <translation id="207902854391093810">Kad izmēģināšana ir ieslēgta, reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chrome, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
+<translation id="2091012649849228750">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex noteikumi</translation>
 <translation id="2094919256425865063">Vai tik un tā aizvērt pārlūku Chrome?</translation>
 <translation id="2106831557840787829">Chrome OS Flex, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -287,6 +288,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6881299373831449287">Notiek Chrome atjaunināšana</translation>
 <translation id="6885412569789873916">Chrome Beta lietotnes</translation>
 <translation id="6933858244219479645">Chrome OS sistēma</translation>
+<translation id="6938166777909186039">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.1.</translation>
 <translation id="6943584222992551122">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chrome kā lietotājs <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Ienākošo savienojumu kārtula pārlūkam Google Chrome Beta, lai atļautu mDNS datplūsmu.</translation>
 <translation id="6989339256997917931">Pārlūkprogramma Google Chrome ir atjaunināta, bet jūs neesat to izmantojis vismaz 30 dienas.</translation>
@@ -390,6 +392,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8686817260976772516">Izmantojot Chrome profilus, varat nodalīt visu savu Chrome saturu. Izveidojiet profilus draugiem un ģimenes locekļiem vai nodaliet darba un izklaides saturu.</translation>
 <translation id="8712767363896337380">Gandrīz atjaunināts! Lai pabeigtu atjaunināšanu, atkārtoti palaidiet pārlūkprogrammu Chrome.</translation>
 <translation id="873133009373065397">Google Chrome nevar noteikt vai iestatīt noklusējuma pārlūku.</translation>
+<translation id="8821043148920470810">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 7.</translation>
 <translation id="8823341990149967727">Chrome versija ir novecojusi</translation>
 <translation id="8825634023950448068">Lai aizsargātu jūsu konfidencialitāti, mēs automātiski dzēšam intereses, kas ir glabātas ilgāk par četrām nedēļām. Intereses var tikt atkārtoti pievienotas sarakstam, kad turpināsiet pārlūkošanu. Ja intereses pārlūkā Chrome nav noteiktas pareizi vai nevēlaties skatīt konkrētas reklāmas, varat noņemt interesi.</translation>
 <translation id="8834965163890861871">Google Chrome mēģina rediģēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>

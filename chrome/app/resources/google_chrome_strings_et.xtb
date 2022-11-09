@@ -57,6 +57,7 @@
 <translation id="2018879682492276940">Installimine ebaõnnestus. Proovige uuesti.</translation>
 <translation id="2071318482926839249">Teine konto on juba sisse logitud. Teie sirvimise eraldi hoidmiseks saab Chrome teile luua oma profiili.</translation>
 <translation id="207902854391093810">Kui katsed on sisse lülitatud, võimaldab reklaamide mõõtmine külastatavatel saitidel taotleda Chrome'ilt teavet, mis aitab saidil oma reklaamide toimivust mõõta. Reklaamide mõõtmine piirab saitidevahelist jälgimist, edastades saitide vahel võimalikult vähe teavet.</translation>
+<translation id="2091012649849228750">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flexi tingimused</translation>
 <translation id="2094919256425865063">Kas väljuda Chrome'ist ikkagi?</translation>
 <translation id="2106831557840787829">Chrome OS Flexi ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -287,6 +288,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6881299373831449287">Chrome'i värskendamine</translation>
 <translation id="6885412569789873916">Chrome'i beetaversiooni rakendused</translation>
 <translation id="6933858244219479645">Chrome OS-i süsteem</translation>
+<translation id="6938166777909186039">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.1.</translation>
 <translation id="6943584222992551122">Selle isiku sirvimisandmed kustutatakse seadmest. Andmete taastamiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Sissetuleku reegel Google Chrome'i beetaversioonile mDNS-liikluse lubamiseks.</translation>
 <translation id="6989339256997917931">Google Chrome'i on värskendatud, aga te pole seda kasutanud vähemalt 30 päeva.</translation>
@@ -390,6 +392,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8686817260976772516">Chrome'i profiilidega saate eraldada kogu oma Chrome'i sisu. Looge profiile sõprade või pereliikmete jaoks või eraldage nende abil töö ja lõbu.</translation>
 <translation id="8712767363896337380">Peaaegu ajakohane! Värskendamise lõpuleviimiseks käivitage Chrome uuesti.</translation>
 <translation id="873133009373065397">Google Chrome ei saa määrata ega seadistada vaikebrauserit</translation>
+<translation id="8821043148920470810">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 7.</translation>
 <translation id="8823341990149967727">Chrome on aegunud</translation>
 <translation id="8825634023950448068">Teie privaatsuse kaitsmiseks kustutame automaatselt teie huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Kui Chrome eksib või te ei soovi teatud reklaame näha, võite huvisid eemaldada.</translation>
 <translation id="8834965163890861871">Google Chrome proovib muuta paroole. Selle lubamiseks sisestage Windowsi parool.</translation>

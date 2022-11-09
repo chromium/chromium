@@ -292,6 +292,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7398989605938454041">Chromium profilləri ilə bütün Chromium elementlərinizi ayıra bilərsiniz. Bu, iş və əyləncə arasında ayırım etməyi asanlaşdırır.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium bu sayt üçün kameraya giriş tələb edir</translation>
+<translation id="7461356015007898716">Chromium güncəlləmələrini əldə etmək üçün Windows 10 və ya daha yeni versiya tələb olunur. Bu kompüter Windows 7 istifadə edir.</translation>
 <translation id="7467949745582939695">Chromium yenidən başladılsın?</translation>
 <translation id="7483335560992089831">Hazırda istifadə olunan Chromium versiyasını quraşdıra bilməzsiniz. Lütfən, Chromium'u qapadın və yenidən cəhd edin.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 1 dəqiqəyə yenidən başlayacaq}other{Chromium # dəqiqəyə yenidən başlayacaq}}</translation>
@@ -332,6 +333,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8330519371938183845">Chromium'u cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün daxil olun</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> əvvəl Chromium istifadə edirdi</translation>
 <translation id="8357820681460164151">Bütün cihazlarınızda Chromium brauzerinin elementlərinə giriş etmək üçün daxil olun və sinxronizasiyanı aktiv edin</translation>
+<translation id="8360718212975266891">Chromium güncəlləmələrini əldə etmək üçün Windows 10 və ya daha yeni versiya tələb olunur. Bu kompüter Windows 8 istifadə edir.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium'u bir gün ərzində yenidən başladın}other{Chromium'u # gün ərzində yenidən başladın}}</translation>
 <translation id="8453117565092476964">Quraşdırıcı arxivi zədələnib və ya yanlışdır. Lütfən, Chromium'u yenidən endirin.</translation>
 <translation id="8463672209299734063">İstəyə görə: Diaqnostika və istifadəçi datasını avtomatik Google'a göndərməklə ChromiumOS funksiyalarını təkmilləşdirməyə yardım edin.</translation>
@@ -364,6 +366,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="9022552996538154597">Chromium'a daxil olun</translation>
 <translation id="9089354809943900324">Chromium'un vaxtı keçib</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 1 saata yenidən başlayacaq}other{Chromium # saata yenidən başlayacaq}}</translation>
+<translation id="9106612006984859720">Chromium güncəlləmələrini əldə etmək üçün Windows 10 və ya daha yeni versiya tələb olunur. Bu kompüter Windows 8.1 istifadə edir.</translation>
 <translation id="91086099826398415">Linki Yeni Chromium tabında açın</translation>
 <translation id="911206726377975832">Brauzinq datanız da silinsin?</translation>
 <translation id="9144490074902256427">Sınaqlar zamanı saytların sizə reklam göstərmək üçün istifadə etdiyi maraqlı mövzuları görə və silə bilərsiniz. Chromium son baxış tarixçənizə əsasən maraqlarınızı təxmin edir.</translation>

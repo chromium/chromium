@@ -294,6 +294,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7398989605938454041">Med Chromium-profiler kan du holde alle Chromium-tingene dine atskilt. Dette gjør det lettere å skille mellom arbeid og fritid.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for utviklere</translation>
 <translation id="7451052299415159299">Chromium trenger tilgang til kameraet ditt for dette nettstedet</translation>
+<translation id="7461356015007898716">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 7.</translation>
 <translation id="7467949745582939695">Vil du starte Chromium på nytt?</translation>
 <translation id="7483335560992089831">Kan ikke installere den samme Chromium-versjonen som kjører. Lukk Chromium og prøv på nytt.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium startes på nytt om 1 minutt}other{Chromium startes på nytt om # minutter}}</translation>
@@ -334,6 +335,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8330519371938183845">Logg på for å synkronisere og gi Chromium et personlig preg på alle enhetene dine</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> brukte Chromium tidligere</translation>
 <translation id="8357820681460164151">For å få tilgang til Chromium-nettlesertingene dine på alle enhetene dine, logg på og slå på synkronisering</translation>
+<translation id="8360718212975266891">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Start Chromium på nytt innen én dag}other{Start Chromium på nytt innen # dager}}</translation>
 <translation id="8453117565092476964">Installasjonsarkivet er skadet eller ugyldig. Last ned Chromium på nytt.</translation>
 <translation id="8463672209299734063">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til ChromiumOS bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
@@ -366,6 +368,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium startes på nytt om en time}other{Chromium startes på nytt om # timer}}</translation>
+<translation id="9106612006984859720">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.1.</translation>
 <translation id="91086099826398415">Åpne linken i en ny &amp;fane i Chromium</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>
 <translation id="9144490074902256427">Underveis i prøveprosjektene kan du se og fjerne interesseemnene som nettsteder bruker for å vise deg annonser. Chromium anslår interessene dine basert på den nylige nettleserloggen din.</translation>

@@ -59,6 +59,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2018879682492276940">Installation failed. Please try again.</translation>
 <translation id="2071318482926839249">Another account is already signed in. To keep your browsing separate, Chrome can create your own profile for you.</translation>
 <translation id="207902854391093810">When trials are on, ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
+<translation id="2091012649849228750">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex terms</translation>
 <translation id="2094919256425865063">Quit Chrome anyway?</translation>
 <translation id="2106831557840787829">Chrome OS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -291,6 +292,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6881299373831449287">Updating Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta apps</translation>
 <translation id="6933858244219479645">Chrome OS system</translation>
+<translation id="6938166777909186039">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
 <translation id="6943584222992551122">This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Inbound rule for Google Chrome Beta to allow mDNS traffic.</translation>
 <translation id="6989339256997917931">Google Chrome has been updated, but you haven't used it for at least 30 days.</translation>
@@ -394,6 +396,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8686817260976772516">With Chrome profiles you can separate all of your Chrome stuff. Create profiles for friends and family, or split between work and fun.</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
+<translation id="8821043148920470810">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 7.</translation>
 <translation id="8823341990149967727">Chrome is Out of Date</translation>
 <translation id="8825634023950448068">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. And if Chrome gets it wrong or you don't want to see certain ads, you can remove an interest.</translation>
 <translation id="8834965163890861871">Google Chrome is trying to edit passwords. Type your Windows password to allow this.</translation>

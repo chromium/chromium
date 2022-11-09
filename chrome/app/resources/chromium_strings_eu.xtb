@@ -296,6 +296,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7398989605938454041">Chromium-eko profilekin, Chromium-en dituzun gauza guztiak bereiz ditzakezu. Hala, errazago edukiko dituzu bananduta gauza pertsonalak eta lanekoak.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium-ek webgune honen izenean kamera atzitzeko baimena behar du</translation>
+<translation id="7461356015007898716">Etorkizunean Chromium-en eguneratzeak eskuratzeko, Windows 10 edo bertsio berriago bat beharko duzu. Ordenagailu hau Windows 7 erabiltzen ari da.</translation>
 <translation id="7467949745582939695">Chromium berrabiarazi nahi duzu?</translation>
 <translation id="7483335560992089831">Ezin da instalatu une honetan abian den Chromium-en bertsio bera. Itxi Chromium eta saiatu berriro.</translation>
 <translation id="753534427205733210">{0,plural, =1{1 minutu barru berrabiaraziko da Chromium}other{# minutu barru berrabiaraziko da Chromium}}</translation>
@@ -336,6 +337,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8330519371938183845">Hasi saioa Chromium gailu guztietan sinkronizatu eta pertsonalizatzeko</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> Chromium erabiltzen ari da lehendik ere</translation>
 <translation id="8357820681460164151">Chromium arakatzaileko gauzak gailu guztietan atzitzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
+<translation id="8360718212975266891">Etorkizunean Chromium-en eguneratzeak eskuratzeko, Windows 10 edo bertsio berriago bat beharko duzu. Ordenagailua Windows 8 erabiltzen ari da.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Berrabiarazi Chromium egun bateko epean}other{Berrabiarazi Chromium # eguneko epean}}</translation>
 <translation id="8453117565092476964">Instalatzailearen artxiboa hondatuta dago edo baliogabea da. Deskargatu Chromium berriro.</translation>
 <translation id="8463672209299734063">Aukerakoa: lagundu Chromium OS-ren eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
@@ -368,6 +370,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="9022552996538154597">Hasi saioa Chromium-en</translation>
 <translation id="9089354809943900324">Chromium zaharkituta dago</translation>
 <translation id="9093206154853821181">{0,plural, =1{Ordubete barru berrabiaraziko da Chromium}other{# ordu barru berrabiaraziko da Chromium}}</translation>
+<translation id="9106612006984859720">Etorkizunean Chromium-en eguneratzeak eskuratzeko, Windows 10 edo bertsio berriago bat beharko duzu. Ordenagailu hau Windows 8.1 erabiltzen ari da.</translation>
 <translation id="91086099826398415">Ireki esteka Chromium-eko beste &amp;fitxa batean</translation>
 <translation id="911206726377975832">Arakatze-datuak ere ezabatu nahi dituzu?</translation>
 <translation id="9144490074902256427">Probak abian diren bitartean, webguneek iragarkiak erakusteko erabili dituzten gai interesgarriak ikusi eta ken ditzakezu. Azkenaldiko arakatze-historian oinarrituta igartzen ditu Chromium-ek gutxi gorabehera zure interesak.</translation>

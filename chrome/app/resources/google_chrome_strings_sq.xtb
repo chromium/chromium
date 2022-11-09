@@ -59,6 +59,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2018879682492276940">Instalimi nuk u krye. Provo përsëri.</translation>
 <translation id="2071318482926839249">Një llogari tjetër është identifikuar tashmë. Për ta mbajtur shfletimin tënd më vete, Chrome mund të krijojë profilin tënd personal për ty.</translation>
 <translation id="207902854391093810">Kur provat janë aktive, Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
+<translation id="2091012649849228750">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.</translation>
 <translation id="2094648590148273905">Kushtet e Chrome OS Flex</translation>
 <translation id="2094919256425865063">Dëshiron ta mbyllësh Chrome gjithsesi?</translation>
 <translation id="2106831557840787829">ChromeOS Flex mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -291,6 +292,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6881299373831449287">Po përditëson Chrome</translation>
 <translation id="6885412569789873916">Aplikacionet e Chrome Beta</translation>
 <translation id="6933858244219479645">Sistemi i ChromeOS</translation>
+<translation id="6938166777909186039">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.1.</translation>
 <translation id="6943584222992551122">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Rregulli hyrës për Google Chrome Beta për të lejuar trafikun mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
@@ -394,6 +396,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8686817260976772516">Me profilet e Chrome mund t'i mbash të ndara të gjitha gjërat e tua të Chrome. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
 <translation id="8712767363896337380">Pothuajse u përditësua! Nis Chrome sërish për të përfunduar përditësimin.</translation>
 <translation id="873133009373065397">Google Chrome nuk mund të përcaktojë ose të vendosë shfletuesin e parazgjedhur</translation>
+<translation id="8821043148920470810">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="8823341990149967727">Sistemi operativ Chrome nuk është i përditësuar</translation>
 <translation id="8825634023950448068">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Nëse Chrome gabohet ose nëse nuk dëshiron të shikosh reklama të caktuara, mund të heqësh një interes.</translation>
 <translation id="8834965163890861871">Google Chrome po përpiqet t'i modifikojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>

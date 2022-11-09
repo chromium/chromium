@@ -296,6 +296,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7398989605938454041">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，從而更輕易劃分工作和娛樂內容。</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7451052299415159299">Chromium 需要取得權限，才能讓這個網站存取您的相機</translation>
+<translation id="7461356015007898716">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="7467949745582939695">要重新啟動 Chromium 嗎？</translation>
 <translation id="7483335560992089831">無法安裝這個版本的 Chromium，因為目前正在執行相同版本。請關閉 Chromium，然後再試一次。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 將於 1 分鐘後重新啟動}other{Chromium 將於 # 分鐘後重新啟動}}</translation>
@@ -336,6 +337,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
 <translation id="8357820681460164151">如要透過所有裝置存取 Chromium 瀏覽器資料，請登入並開啟同步處理功能</translation>
+<translation id="8360718212975266891">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已損毀或無效，請重新下載 Chromium。</translation>
 <translation id="8463672209299734063">可選用：將診斷和使用情況資料自動傳送給 Google，協助改善 Chromium 作業系統的功能和效能。</translation>
@@ -368,6 +370,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 將於 1 小時後重新啟動}other{Chromium 將於 # 小時後重新啟動}}</translation>
+<translation id="9106612006984859720">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8.1。</translation>
 <translation id="91086099826398415">在 Chromium 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="911206726377975832">您要一併刪除瀏覽數據嗎？</translation>
 <translation id="9144490074902256427">在試用期間，您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chromium 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>

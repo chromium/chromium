@@ -59,6 +59,7 @@
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2071318482926839249">已登入另一個帳戶。Chrome 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
 <translation id="207902854391093810">在試用期間，「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
+<translation id="2091012649849228750">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 條款</translation>
 <translation id="2094919256425865063">仍要退出 Chrome 嗎？</translation>
 <translation id="2106831557840787829">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
@@ -291,6 +292,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
 <translation id="6933858244219479645">Chrome OS 系統</translation>
+<translation id="6938166777909186039">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8.1。</translation>
 <translation id="6943584222992551122">系統將會從此裝置上刪除此使用者的瀏覽資料。如要復原資料，請以「<ph name="USER_EMAIL" />」的身分登入 Chrome。</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome 測試版輸入規則。</translation>
 <translation id="6989339256997917931">Google Chrome 已更新，但您至少已有 30 天未使用該瀏覽器。</translation>
@@ -394,6 +396,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8686817260976772516">透過 Chrome 設定檔，您可將所有 Chrome 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
 <translation id="8712767363896337380">即將更新至最新版本！重新啟動 Chrome 即可完成更新程序。</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
+<translation id="8821043148920470810">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>
 <translation id="8825634023950448068">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。如果您認為 Chrome 判斷錯誤或不想看到特定廣告，可以移除感興趣的主題。</translation>
 <translation id="8834965163890861871">Google Chrome 正在嘗試編輯密碼。如果您同意，請輸入 Windows 密碼。</translation>

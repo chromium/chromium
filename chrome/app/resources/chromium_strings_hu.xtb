@@ -293,6 +293,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7398989605938454041">A Chromium-profilokkal különválaszthatja minden Chromium-anyagát. Így könnyebben különítheti el egymástól a munkát és a szórakozást.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához ennél a webhelynél</translation>
+<translation id="7461356015007898716">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 7 operációs rendszer fut.</translation>
 <translation id="7467949745582939695">Újraindítja a Chromiumot?</translation>
 <translation id="7483335560992089831">Nem lehet ugyanazt a Chromium-verziót telepíteni, amely jelenleg is fut. Zárja be a Chromiumot, és próbálja újra.</translation>
 <translation id="753534427205733210">{0,plural, =1{A Chromium 1 percen belül újraindul}other{A Chromium # percen belül újraindul}}</translation>
@@ -333,6 +334,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8330519371938183845">Jelentkezzen be, hogy szinkronizálhassa és személyre szabhassa a Chromiumot minden eszközén</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> előzőleg Chromiumot használt</translation>
 <translation id="8357820681460164151">Ha szeretne minden eszközén hozzáférni Chromium böngészőhöz tartozó anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
+<translation id="8360718212975266891">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8 operációs rendszer fut.</translation>
 <translation id="8417404458978023919">{0,plural, =1{A Chromiumot 1 napon belül újra kell indítani}other{A Chromiumot # napon belül újra kell indítani}}</translation>
 <translation id="8453117565092476964">A telepítő tömörített állománya megsérült vagy érvénytelen. Kérjük, töltse le újra a Chromium böngészőt.</translation>
 <translation id="8463672209299734063">Nem kötelező: Hozzájárulhat a ChromiumOS funkcióinak és teljesítményének javításához azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak.</translation>
@@ -365,6 +367,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="9093206154853821181">{0,plural, =1{A Chromium 1 órán belül újraindul}other{A Chromium # órán belül újraindul}}</translation>
+<translation id="9106612006984859720">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8.1 operációs rendszer fut.</translation>
 <translation id="91086099826398415">Link megnyi&amp;tása új Chromium-lapon</translation>
 <translation id="911206726377975832">Törli a böngészési adatait is?</translation>
 <translation id="9144490074902256427">A próbaidőszak során megtekintheti és eltávolíthatja azokat a témaköröket, amelyeket a webhelyek hirdetések megjelenítésére használnak. A Chromium az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján határozza meg.</translation>

@@ -289,6 +289,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7398989605938454041">Con los perfiles de Chromium, puedes separar todo lo que tienes en Chromium. De esta manera, es más fácil separar el trabajo del entretenimiento.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" />: Chromium para desarrolladores</translation>
 <translation id="7451052299415159299">Chromium necesita permiso para acceder a tu cámara para este sitio</translation>
+<translation id="7461356015007898716">Para obtener próximas actualizaciones de Chromium, necesitarás Windows 10 o versiones posteriores. Esta computadora usa Windows 7.</translation>
 <translation id="7467949745582939695">¿Quieres reiniciar Chromium?</translation>
 <translation id="7483335560992089831">No es posible instalar la misma versión de Chromium que se está ejecutando. Cierra Chromium y vuelve a intentarlo.</translation>
 <translation id="753534427205733210">{0,plural, =1{Se reiniciará Chromium en 1 minuto}other{Se reiniciará Chromium en # minutos}}</translation>
@@ -329,6 +330,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8330519371938183845">Accede para sincronizar y personalizar Chromium en todos tus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>
 <translation id="8357820681460164151">A fin de ver el contenido de tu navegador Chromium en todos tus dispositivos, accede a tu cuenta y activa la sincronización</translation>
+<translation id="8360718212975266891">Para obtener las próximas actualizaciones de Chromium, necesitarás Windows 10 o versiones posteriores. Esta computadora usa Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en el transcurso de un día}other{Reinicia Chromium en el transcurso de # días}}</translation>
 <translation id="8453117565092476964">El instalador está dañado o no es válido. Descarga Chromium nuevamente.</translation>
 <translation id="8463672209299734063">Opcional: Para ayudarnos a mejorar las funciones y el rendimiento de Chromium OS, envía automáticamente datos de uso y diagnóstico a Google.</translation>
@@ -361,6 +363,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9089354809943900324">Chromium no actualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Se reiniciará Chromium en una hora}other{Se reiniciará Chromium en # horas}}</translation>
+<translation id="9106612006984859720">Para obtener próximas actualizaciones de Chromium, necesitarás Windows 10 o versiones posteriores. Esta computadora usa Windows 8.1.</translation>
 <translation id="91086099826398415">Abrir vínculo en una pes&amp;taña nueva de Chromium</translation>
 <translation id="911206726377975832">¿También eliminar datos de navegación?</translation>
 <translation id="9144490074902256427">Durante las pruebas, puedes ver y quitar los temas de interés que usan los sitios para mostrarte anuncios. Chromium estima tus intereses en función de tu historial de navegación reciente.</translation>

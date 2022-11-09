@@ -59,6 +59,7 @@
 <translation id="2018879682492276940">Produciuse un erro durante a instalación. Téntao de novo.</translation>
 <translation id="2071318482926839249">Xa hai outra conta coa sesión iniciada. Se queres xestionar a túa navegación cun perfil independente e de teu, Chrome pode crearche un.</translation>
 <translation id="207902854391093810">Cando as probas están activas, a medición dos anuncios permite que os sitios que visites lle soliciten a Chrome información que lles axude a medir o rendemento dos seus anuncios. Ademais, restrinxe o seguimento en varios sitios, dado que se transfire a menor cantidade posible de información entre eles.</translation>
+<translation id="2091012649849228750">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.</translation>
 <translation id="2094648590148273905">Condicións de Chrome OS Flex</translation>
 <translation id="2094919256425865063">Queres saír de Chrome de todas formas?</translation>
 <translation id="2106831557840787829">Chrome OS Flex é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -291,6 +292,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Aplicacións de Chrome Beta</translation>
 <translation id="6933858244219479645">Sistema Chrome OS</translation>
+<translation id="6938166777909186039">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.1.</translation>
 <translation id="6943584222992551122">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regra de entrada para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6989339256997917931">Actualizouse Google Chrome, pero non o utilizas desde hai polo menos 30 días.</translation>
@@ -394,6 +396,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8686817260976772516">Cos perfís de Chromium podes separar todo o contido que teñas neste navegador. Crea perfís para os amigos e a familia ou ben crea un para o traballo e outro para o lecer.</translation>
 <translation id="8712767363896337380">A actualización está a piques de rematar. Para que finalice, reinicia Chrome.</translation>
 <translation id="873133009373065397">Google Chrome non pode determinar nin establecer o navegador predeterminado</translation>
+<translation id="8821043148920470810">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 7.</translation>
 <translation id="8823341990149967727">Chrome está desactualizado</translation>
 <translation id="8825634023950448068">Para protexer a túa privacidade, eliminamos automaticamente os teus intereses cuxa antigüidade sexa superior a 4 semanas. Algúns poderían volver incluírse na lista ao seguires navegando. Se Chrome se trabuca ou non queres ver certos anuncios, podes quitar un interese.</translation>
 <translation id="8834965163890861871">Google Chrome está tentando editar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>

@@ -297,6 +297,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7398989605938454041">Naudodami „Chromium“ profilius galite atskirti visus savo „Chromium“ duomenis. Galėsite lengviau atskirti darbą ir pramogas.</translation>
 <translation id="7449453770951226939">„<ph name="PAGE_TITLE" />“ – „Chromium Dev“</translation>
 <translation id="7451052299415159299">„Chromium“ reikia leidimo, kad galėtų naudoti fotoaparatą šioje svetainėje</translation>
+<translation id="7461356015007898716">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 10 ar naujesnės versijos „Windows“. Šiame kompiuteryje naudojama 7 versijos „Windows“.</translation>
 <translation id="7467949745582939695">Iš naujo paleisti „Chromium“?</translation>
 <translation id="7483335560992089831">Negalima įdiegti tos pačios „Chromium“ versijos, kuri šiuo metu paleista. Uždarykite „Chromium“ ir bandykite dar kartą.</translation>
 <translation id="753534427205733210">{0,plural, =1{„Chromium“ bus paleista iš naujo po 1 minutės}one{„Chromium“ bus paleista iš naujo po # minutės}few{„Chromium“ bus paleista iš naujo po # minučių}many{„Chromium“ bus paleista iš naujo po # minutės}other{„Chromium“ bus paleista iš naujo po # minučių}}</translation>
@@ -337,6 +338,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8330519371938183845">Prisijunkite, kad galėtumėte sinchronizuoti ir suasmeninti „Chromium“ skirtinguose įrenginiuose</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> anksčiau naudojo „Chromium“</translation>
 <translation id="8357820681460164151">Jei norite pasiekti „Chromium“ naršyklės duomenis visuose savo įrenginiuose, prisijunkite ir įjunkite sinchronizavimą</translation>
+<translation id="8360718212975266891">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 10 ar naujesnės versijos „Windows“. Šiame kompiuteryje naudojama 8 versijos „Windows“.</translation>
 <translation id="8417404458978023919">{0,plural, =1{„Chromium“ paleidimas iš naujo po dienos}one{„Chromium“ paleidimas iš naujo po # dienos}few{„Chromium“ paleidimas iš naujo po # dienų}many{„Chromium“ paleidimas iš naujo po # dienos}other{„Chromium“ paleidimas iš naujo po # dienų}}</translation>
 <translation id="8453117565092476964">Diegimo programos archyvas sugadintas arba negalioja. Atsisiųskite „Chromium“ dar kartą.</translation>
 <translation id="8463672209299734063">Pasirenkama: padėkite tobulinti „Chromium“ OS funkcijas ir našumą automatiškai siųsdami diagnostikos ir naudojimo duomenis sistemai „Google“.</translation>
@@ -369,6 +371,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="9022552996538154597">Prisijungti prie „Chromium“</translation>
 <translation id="9089354809943900324">„Chromium“ versija yra pasenusi</translation>
 <translation id="9093206154853821181">{0,plural, =1{„Chromium“ bus paleista iš naujo po valandos}one{„Chromium“ bus paleista iš naujo po # valandos}few{„Chromium“ bus paleista iš naujo po # valandų}many{„Chromium“ bus paleista iš naujo po # valandos}other{„Chromium“ bus paleista iš naujo po # valandų}}</translation>
+<translation id="9106612006984859720">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 10 ar naujesnės versijos „Windows“. Šiame kompiuteryje naudojama 8.1 versijos „Windows“.</translation>
 <translation id="91086099826398415">Atidaryti nuorodą naujame „Chromium“ &amp;skirtuke</translation>
 <translation id="911206726377975832">Ar ištrinti naršymo duomenis?</translation>
 <translation id="9144490074902256427">Bandomuoju laikotarpiu matysite ir galėsite pašalinti pomėgių svetainių temas, pagal kurias parenkami jums rodomi skelbimai. „Chromium“ pagal jūsų naršymo istoriją įvertina temas, kurios jus domina</translation>

@@ -297,6 +297,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7398989605938454041">Þú getur aðskilið allt efnið þitt á Chromium með Chromium prófílum. Á þann hátt er auðveldara að skipta á milli vinnu og afþreyingar.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium þarf leyfi til að nota myndavélina á þessu vefsvæði</translation>
+<translation id="7461356015007898716">Til að fá frekari uppfærslur á Chromium þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 7.</translation>
 <translation id="7467949745582939695">Endurræsa Chromium?</translation>
 <translation id="7483335560992089831">Ekki er hægt að setja upp sömu útgáfu Chromium og er nú þegar í gangi. Lokaðu Chromium og reyndu aftur.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium verður endurræst eftir 1 mínútu}one{Chromium verður endurræst eftir # mínútu}other{Chromium verður endurræst eftir # mínútur}}</translation>
@@ -337,6 +338,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8330519371938183845">Skráðu þig inn til að samstilla Chromium í tækjunum þínum og gera það að þínu</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> var áður að nota Chromium</translation>
 <translation id="8357820681460164151">Til að fá aðgang að efni Chromium vafrans í öllum tækjunum þínum skaltu skrá þig inn og kveikja á samstillingu.</translation>
+<translation id="8360718212975266891">Til að fá frekari uppfærslur á Chromium þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Endurræstu Chromium innan dags}one{Endurræstu Chromium innan # dags}other{Endurræstu Chromium innan # daga}}</translation>
 <translation id="8453117565092476964">Uppsetningarsafnskráin er skemmd eða ógild. Sæktu Chromium aftur.</translation>
 <translation id="8463672209299734063">Valfrjálst: Hjálpa til við að bæta eiginleika og afköst ChromiumOS með því að senda greiningar- og notkunargögn sjálfkrafa til Google.</translation>
@@ -369,6 +371,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="9022552996538154597">Skráðu þig inn á Chromium</translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium verður endurræst eftir klukkustund}one{Chromium verður endurræst eftir # klukkustund}other{Chromium verður endurræst eftir # klukkustundir}}</translation>
+<translation id="9106612006984859720">Til að fá frekari uppfærslur á Chromium þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.1.</translation>
 <translation id="91086099826398415">Opna tengil í nýjum Chromium &amp;flipa</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>
 <translation id="9144490074902256427">Á meðan prófanirnar fara fram geturðu séð og fjarlægt áhugasvið sem vefsvæði nota til að birta þér auglýsingar. Chromium áætlar áhugasvið þín út frá nýlegum vafraferli þínum.</translation>

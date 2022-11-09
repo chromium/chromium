@@ -295,6 +295,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7398989605938454041">Pomoću Chromiumovih profila možete razdvojiti sve svoje sadržaje u Chromiumu. To olakšava odvajanje posla i zabave.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium treba dopuštenje za pristup kameri za ovu web-lokaciju</translation>
+<translation id="7461356015007898716">Da biste primali buduća Chromiumova ažuriranja, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 7.</translation>
 <translation id="7467949745582939695">Ponovo pokrenuti Chromium?</translation>
 <translation id="7483335560992089831">Ne možete instalirati istu verziju Chromiuma koja se trenutačno izvršava. Zatvorite Chromium i pokušajte ponovo.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium će se ponovo pokrenuti za jednu minutu}one{Chromium će se ponovo pokrenuti za # min}few{Chromium će se ponovo pokrenuti za # min}other{Chromium će se ponovo pokrenuti za # min}}</translation>
@@ -335,6 +336,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8330519371938183845">Prijavite se da biste sinkronizirali i prilagodili Chromium na svim svojim uređajima</translation>
 <translation id="8340674089072921962">E-adresa <ph name="USER_EMAIL_ADDRESS" /> prethodno je upotrebljavala Chromium</translation>
 <translation id="8357820681460164151">Da biste mogli pristupiti svojim sadržajima u pregledniku Chromium na svim svojim uređajima, prijavite se i zatim uključite sinkronizaciju</translation>
+<translation id="8360718212975266891">Da biste primali buduća Chromiumova ažuriranja, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Ponovo pokrenite Chromium u roku od jednog dana}one{Ponovo pokrenite Chromium u roku od # dana}few{Ponovo pokrenite Chromium u roku od # dana}other{Ponovo pokrenite Chromium u roku od # dana}}</translation>
 <translation id="8453117565092476964">Arhiva programa za instalaciju oštećena je ili nevažeća. Ponovo preuzmite Chromium.</translation>
 <translation id="8463672209299734063">Nije obavezno: pomozite poboljšati značajke i izvedbu Chromium OS-a automatskim slanjem podataka o upotrebi i dijagnostici Googleu.</translation>
@@ -367,6 +369,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="9022552996538154597">Prijava na Chromium</translation>
 <translation id="9089354809943900324">Chromium je zastario</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium će se ponovo pokrenuti za sat vremena}one{Chromium će se ponovo pokrenuti za # h}few{Chromium će se ponovo pokrenuti za # h}other{Chromium će se ponovo pokrenuti za # h}}</translation>
+<translation id="9106612006984859720">Da biste primali buduća Chromiumova ažuriranja, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.1.</translation>
 <translation id="91086099826398415">Otvori vezu na novoj &amp;kartici Chromiuma</translation>
 <translation id="911206726377975832">Izbrisati i podatke o pregledavanju?</translation>
 <translation id="9144490074902256427">Tijekom probi možete vidjeti i ukloniti teme koje web-lokacije koriste da bi vam prikazivale oglase. Chromium procjenjuje vaše interese na temelju vaše nedavne povijesti pregledavanja.</translation>

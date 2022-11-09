@@ -56,6 +56,7 @@
 <translation id="2018879682492276940">Falha na instalação. Tente novamente.</translation>
 <translation id="2071318482926839249">Outra conta já está conectada. Para manter sua navegação separada, o Chrome pode criar um perfil só para você.</translation>
 <translation id="207902854391093810">Quando os testes estão ativados, a medição de anúncios permite que os sites que você visita solicitem informações do Chrome, ajudando a medir o desempenho dos anúncios. Ela também restringe o rastreamento entre sites transferindo o mínimo de informações possível entre eles.</translation>
+<translation id="2091012649849228750">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.</translation>
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
 <translation id="2094919256425865063">Sair do Chrome mesmo assim?</translation>
 <translation id="2106831557840787829">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de desenvolvimento do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -284,6 +285,7 @@
 <translation id="6881299373831449287">Atualizando o Chrome</translation>
 <translation id="6885412569789873916">Apps do Chrome Beta</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
+<translation id="6938166777909186039">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.1.</translation>
 <translation id="6943584222992551122">Os dados de navegação dessa pessoa serão excluídos deste dispositivo. Para recuperar os dados, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regra interna do Google Chrome Beta que permite o tráfego mDNS.</translation>
 <translation id="6989339256997917931">O Google Chrome foi atualizado, mas ele não é utilizado há pelo menos trinta dias.</translation>
@@ -387,6 +389,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8686817260976772516">Você pode usar os perfis do Chrome para separar todos seus dados nele. Crie perfis para amigos e familiares ou separe trabalho e lazer.</translation>
 <translation id="8712767363896337380">Falta pouco para a atualização terminar. Reinicie o Chrome para concluir.</translation>
 <translation id="873133009373065397">O Google Chrome não pode determinar ou definir o navegador padrão</translation>
+<translation id="8821043148920470810">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 7.</translation>
 <translation id="8823341990149967727">O Google Chrome está desatualizado</translation>
 <translation id="8825634023950448068">Para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Se o Chrome se enganar ou você não quiser ver certos anúncios, você pode remover um interesse.</translation>
 <translation id="8834965163890861871">O Google Chrome está tentando editar senhas. Digite a senha do Windows para permitir essa ação.</translation>

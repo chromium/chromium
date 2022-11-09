@@ -296,6 +296,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7398989605938454041">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Vous pouvez ainsi faire plus facilement la distinction entre vos contenus personnels et professionnels.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pour les développeurs</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
+<translation id="7461356015007898716">Pour recevoir les futures mises à jour de Chromium, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 7.</translation>
 <translation id="7467949745582939695">Relancer Chromium ?</translation>
 <translation id="7483335560992089831">Impossible d'installer la même version de Chromium que celle qui est en cours d'exécution. Veuillez fermer Chromium, puis réessayer.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium va être relancé dans 1 minute}one{Chromium va être relancé dans # minute}other{Chromium va être relancé dans # minutes}}</translation>
@@ -336,6 +337,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8330519371938183845">Se connecter pour synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> utilisait Chromium précédemment</translation>
 <translation id="8357820681460164151">Pour retrouver vos réglages Chromium sur tous vos appareils, connectez-vous, puis activez la synchronisation</translation>
+<translation id="8360718212975266891">Pour recevoir les futures mises à jour de Chromium, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Relancer Chromium d'ici un jour}one{Relancer Chromium d'ici # jour}other{Relancer Chromium d'ici # jours}}</translation>
 <translation id="8453117565092476964">L'archive du programme d'installation est corrompue ou n'est pas valide. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="8463672209299734063">Facultatif : contribuez à améliorer les fonctionnalités et les performances de Chromium OS en envoyant automatiquement des données de diagnostic et d'utilisation à Google.</translation>
@@ -368,6 +370,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium va être relancé dans une heure}one{Chromium va être relancé dans # heure}other{Chromium va être relancé dans # heures}}</translation>
+<translation id="9106612006984859720">Pour recevoir les futures mises à jour de Chromium, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.1.</translation>
 <translation id="91086099826398415">Ouvrir le lien dans un nouvel ongle&amp;t Chromium</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9144490074902256427">Pendant ces tests, vous pouvez afficher et supprimer les centres d'intérêt que les sites utilisent pour vous proposer des annonces. Chromium se base sur votre historique de navigation récent pour prédire les sujets qui vous intéressent.</translation>

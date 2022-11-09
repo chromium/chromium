@@ -295,6 +295,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7398989605938454041">Els perfils de Chromium et permeten separar tot el teu contingut de Chromium. Així et serà més fàcil separar la feina de la diversió.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Per visitar aquest lloc web, Chromium necessita permís per accedir a la càmera</translation>
+<translation id="7461356015007898716">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 7.</translation>
 <translation id="7467949745582939695">Vols tornar a iniciar Chromium?</translation>
 <translation id="7483335560992089831">No es pot instal·lar la mateixa versió de Chromium que s'està executant actualment. Tanqueu Chromium i torneu-ho a provar.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium es reiniciarà d'aquí a 1 minut}other{Chromium es reiniciarà d'aquí a # minuts}}</translation>
@@ -335,6 +336,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8330519371938183845">Inicia la sessió per sincronitzar i personalitzar Chromium en tots els teus dispositius</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chromium</translation>
 <translation id="8357820681460164151">Per accedir al teu contingut del navegador Chromium des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització</translation>
+<translation id="8360718212975266891">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 dia}other{Reinicia Chromium en # dies}}</translation>
 <translation id="8453117565092476964">L'arxiu d'instal·lació està malmès o no és vàlid. Torneu a baixar Chromium.</translation>
 <translation id="8463672209299734063">Opcional: ajuda a millorar les funcions i el rendiment de Chromium OS enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
@@ -367,6 +369,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium es reiniciarà d'aquí a 1 hora}other{Chromium es reiniciarà d'aquí a # hores}}</translation>
+<translation id="9106612006984859720">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.1.</translation>
 <translation id="91086099826398415">Obre l'enllaç en una pes&amp;tanya nova a Chromium</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>
 <translation id="9144490074902256427">Durant les proves, pots veure i suprimir els temes d'interès que els llocs web utilitzen per mostrar-te anuncis. Chromium estima els teus interessos basant-se en l'historial de navegació recent.</translation>

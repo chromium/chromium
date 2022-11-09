@@ -295,6 +295,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7398989605938454041">Kun käytät Chromium-profiileja, voit pitää kaiken Chromium-sisällön erillään. Näin työ ja hauskanpito on helpompi erottaa toisistaan.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>
+<translation id="7461356015007898716">Jotta saat tulevia Chromiumin päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 7.</translation>
 <translation id="7467949745582939695">Käynnistä Chromium uudelleen?</translation>
 <translation id="7483335560992089831">Chromiumista ei voi asentaa versiota, joka on tällä hetkellä käynnissä. Sulje Chromium ja yritä uudelleen.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium käynnistetään uudelleen 1 minuutin kuluttua}other{Chromium käynnistetään uudelleen # minuutin kuluttua}}</translation>
@@ -335,6 +336,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8330519371938183845">Kirjaudu sisään, niin voit synkronoida Chromiumin ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> käytti aiemmin Chromiumia</translation>
 <translation id="8357820681460164151">Jos haluat pääsyn Chromiumin selainsisältöön kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
+<translation id="8360718212975266891">Jotta saat tulevia Chromiumin päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Käynnistä Chromium uudelleen vuorokauden kuluessa}other{Käynnistä Chromium uudelleen # vuorokauden kuluessa}}</translation>
 <translation id="8453117565092476964">Asennusarkisto on virheellinen. Lataa Chromium uudelleen.</translation>
 <translation id="8463672209299734063">Valinnainen: Auta parantamaan Chromium-käyttöjärjestelmän ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
@@ -367,6 +369,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium käynnistetään uudelleen tunnin kuluttua}other{Chromium käynnistetään uudelleen # tunnin kuluttua}}</translation>
+<translation id="9106612006984859720">Jotta saat tulevia Chromiumin päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>
 <translation id="91086099826398415">Avaa linkki uudella Chromiumin välilehdellä</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
 <translation id="9144490074902256427">Kokeilujen aikana voit katsella ja poistaa kiinnostuksen kohteita, joita sivustot käyttävät mainosten näyttämiseen. Chromium arvioi viimeaikaisen selaushistoriasi perusteella, mikä saattaisi kiinnostaa sinua.</translation>

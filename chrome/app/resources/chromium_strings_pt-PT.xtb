@@ -295,6 +295,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7398989605938454041">Com os perfis do Chromium, pode separar todos os seus itens do Chromium. Desta forma, é mais fácil alternar entre o trabalho e o lazer.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">O Chromium necessita de autorização de acesso à câmara para este site.</translation>
+<translation id="7461356015007898716">Para obter atualizações futuras do Chromium, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 7.</translation>
 <translation id="7467949745582939695">Reiniciar o Chromium?</translation>
 <translation id="7483335560992089831">Não é possível instalar a mesma versão do Chromium que está atualmente em execução. Feche o Chromium e tente novamente.</translation>
 <translation id="753534427205733210">{0,plural, =1{O Chromium será reiniciado dentro de 1 minuto}other{O Chromium será reiniciado dentro de # minutos}}</translation>
@@ -335,6 +336,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8330519371938183845">Inicie sessão para sincronizar e personalizar o Chromium em todos os dispositivos.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estava a utilizar o Chromium</translation>
 <translation id="8357820681460164151">Para aceder aos seus itens do navegador Chromium em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
+<translation id="8360718212975266891">Para obter atualizações futuras do Chromium, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 8.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicie o Chromium dentro de um dia}other{Reinicie o Chromium dentro de # dias}}</translation>
 <translation id="8453117565092476964">O arquivo do programa de instalação está corrompido ou não é válido. Descarregue novamente o Chromium.</translation>
 <translation id="8463672209299734063">Opcional: ajudar a melhorar as funcionalidades e o desempenho do ChromiumOS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
@@ -367,6 +369,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{O Chromium será reiniciado dentro de uma hora}other{O Chromium será reiniciado dentro de # horas}}</translation>
+<translation id="9106612006984859720">Para obter atualizações futuras do Chromium, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 8.1.</translation>
 <translation id="91086099826398415">Abrir link num novo &amp;separador do Chromium</translation>
 <translation id="911206726377975832">Eliminar também os seus dados de navegação?</translation>
 <translation id="9144490074902256427">Durante as avaliações, pode ver e remover tópicos de interesse que os sites usam para lhe mostrar anúncios. O Chromium estima os seus interesses com base no seu histórico de navegação recente.</translation>

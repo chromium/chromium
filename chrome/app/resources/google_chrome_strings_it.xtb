@@ -55,6 +55,7 @@
 <translation id="2018879682492276940">Installazione non riuscita. Riprova.</translation>
 <translation id="2071318482926839249">Un altro account ha già eseguito l'accesso. Per tenere separata la tua navigazione, Chrome può creare per te il tuo profilo personale.</translation>
 <translation id="207902854391093810">Quando sono attive le prove, Ad measurement consente ai siti che visiti di chiedere a Chrome informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
+<translation id="2091012649849228750">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.</translation>
 <translation id="2094648590148273905">Termini di ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vuoi chiudere comunque Chrome?</translation>
 <translation id="2106831557840787829">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -283,6 +284,7 @@
 <translation id="6881299373831449287">Aggiornamento di Chrome</translation>
 <translation id="6885412569789873916">App di Chrome Beta</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
+<translation id="6938166777909186039">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.1.</translation>
 <translation id="6943584222992551122">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regola inbound per consentire il traffico mDNS in Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome è stato aggiornato ma non lo utilizzi da almeno 30 giorni.</translation>
@@ -386,6 +388,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8686817260976772516">Con i profili Chrome puoi separare tutti i tuoi contenuti di Chrome. Crea profili per amici e familiari oppure dividi i dati di lavoro e i contenuti di svago.</translation>
 <translation id="8712767363896337380">Aggiornamento quasi terminato. Riavvia Chrome per terminare l'aggiornamento.</translation>
 <translation id="873133009373065397">Google Chrome non è in grado di determinare o impostare il browser predefinito</translation>
+<translation id="8821043148920470810">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 7.</translation>
 <translation id="8823341990149967727">Chrome non è aggiornato</translation>
 <translation id="8825634023950448068">Per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Se Chrome ha fatto la scelta sbagliata o se non vuoi ricevere determinati annunci, puoi rimuovere un interesse.</translation>
 <translation id="8834965163890861871">Google Chrome sta cercando di modificare le password. Per consentire la modifica, digita la tua password Windows.</translation>

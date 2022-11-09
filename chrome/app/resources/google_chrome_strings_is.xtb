@@ -59,6 +59,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2018879682492276940">Uppsetning mistókst. Reyndu aftur.</translation>
 <translation id="2071318482926839249">Annar reikningur er þegar skráður inn. Chrome getur búið til sérstakan prófíl fyrir þig svo að þú getir haldið þinni vefskoðun aðskilinni.</translation>
 <translation id="207902854391093810">Þegar kveikt er á prufuútgáfum gera auglýsingamælingar vefsvæðum sem þú opnar kleift að biðja Chrome um upplýsingar sem hjálpa vefsvæðinu að mæla afköst auglýsinga þess. Auglýsingamælingar takmarka rakningu á milli vefsvæða með því að flytja eins lítið magn upplýsinga á milli vefsvæða og mögulegt er.</translation>
+<translation id="2091012649849228750">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.</translation>
 <translation id="2094648590148273905">Skilmálar ChromeOS Flex</translation>
 <translation id="2094919256425865063">Viltu samt loka Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex á tilvist sína að þakka öðrum<ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -291,6 +292,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6881299373831449287">Uppfærir Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta forrit</translation>
 <translation id="6933858244219479645">ChromeOS kerfi</translation>
+<translation id="6938166777909186039">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.1.</translation>
 <translation id="6943584222992551122">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
 <translation id="6967962315388095737">Innleiðarregla til að láta Google Chrome Beta leyfa mDNS-umferð.</translation>
 <translation id="6989339256997917931">Google Chrome var uppfært en þú hefur ekki notað það í a.m.k. 30 daga.</translation>
@@ -394,6 +396,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8686817260976772516">Þú getur aðskilið allt efnið þitt á Chrome með Chrome prófílum. Stofnaðu prófíla fyrir vini og fjölskyldu eða skiptu á milli vinnu og afþreyingar.</translation>
 <translation id="8712767363896337380">Næstum því uppfært! Endurræstu Chrome til að ljúka við uppfærsluna.</translation>
 <translation id="873133009373065397">Google Chrome getur ekki ákvarðað eða stillt sjálfgefinn vafra</translation>
+<translation id="8821043148920470810">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er úrelt</translation>
 <translation id="8825634023950448068">Til að gæta persónuverndar þinnar eyðum við áhugasviðunum þínum sem eru eldri en 4 vikna sjálfkrafa. Áhugasvið kann að birtast aftur á listanum þegar þú heldur áfram að vafra. Ef Chrome skjátlast eða ef þú vilt ekki sjá tilteknar auglýsingar geturðu fjarlægt áhugasvið.</translation>
 <translation id="8834965163890861871">Google Chrome er að reyna að breyta aðgangsorðum. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
