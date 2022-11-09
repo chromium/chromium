@@ -367,6 +367,12 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   trials.emplace("PCScan_Effective_Fallback", pcscan_group_name_fallback);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  trials.emplace("DanglingPointerDetector", "Enabled");
+#else
+  trials.emplace("DanglingPointerDetector", "Disabled");
+#endif
+
   return trials;
 }
 
