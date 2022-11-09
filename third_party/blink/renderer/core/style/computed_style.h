@@ -465,7 +465,6 @@ class ComputedStyle : public ComputedStyleBase,
   HashSet<AtomicString>* CustomHighlightNames() const {
     return CustomHighlightNamesInternal().get();
   }
-  void SetHasCustomHighlightName(const AtomicString&);
 
   /**
    * ComputedStyle properties
@@ -3068,6 +3067,13 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void AddCallbackSelector(const String& selector) {
     if (!CallbackSelectors().Contains(selector))
       MutableCallbackSelectorsInternal().push_back(selector);
+  }
+
+  // CustomHighlightNames
+  void SetCustomHighlightNames(
+      const HashSet<AtomicString>& custom_highlight_names) {
+    SetCustomHighlightNamesInternal(
+        std::make_unique<HashSet<AtomicString>>(custom_highlight_names));
   }
 
   // PaintImage

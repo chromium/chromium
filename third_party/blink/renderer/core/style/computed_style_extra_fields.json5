@@ -305,7 +305,6 @@
       default_value: "nullptr",
       computed_style_custom_functions: ["setter", "getter"],
       custom_copy: true,
-      writable: true,
     },
     // True if 'underline solid' is the only text decoration on this element.
     {

@@ -146,6 +146,13 @@ class CORE_EXPORT MatchResult {
   void FinishAddingPresentationalHints();
   void FinishAddingAuthorRulesForTreeScope(const TreeScope&);
 
+  void AddCustomHighlightName(const AtomicString& custom_highlight_name) {
+    custom_highlight_names_.insert(custom_highlight_name);
+  }
+  const HashSet<AtomicString>& CustomHighlightNames() const {
+    return custom_highlight_names_;
+  }
+
   void SetIsCacheable(bool cacheable) { is_cacheable_ = cacheable; }
   bool IsCacheable() const { return is_cacheable_; }
   void SetDependsOnSizeContainerQueries() {
@@ -206,6 +213,7 @@ class CORE_EXPORT MatchResult {
  private:
   MatchedPropertiesVector matched_properties_;
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
+  HashSet<AtomicString> custom_highlight_names_;
   bool is_cacheable_{true};
   bool depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};

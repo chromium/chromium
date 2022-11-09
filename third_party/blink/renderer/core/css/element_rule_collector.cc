@@ -894,7 +894,7 @@ void ElementRuleCollector::DidMatchRule(
 
       if (dynamic_pseudo == kPseudoIdHighlight) {
         DCHECK(result.custom_highlight_name);
-        style_->SetHasCustomHighlightName(
+        result_.AddCustomHighlightName(
             AtomicString(result.custom_highlight_name));
       }
     } else if (dynamic_pseudo == kPseudoIdFirstLine && container_query) {

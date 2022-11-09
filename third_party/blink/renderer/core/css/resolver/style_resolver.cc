@@ -1341,6 +1341,10 @@ void StyleResolver::ApplyBaseStyleNoCache(
     state.Style()->SetHasRemUnits();
   if (match_result.ConditionallyAffectsAnimations())
     state.SetCanAffectAnimations();
+  if (!match_result.CustomHighlightNames().empty()) {
+    state.StyleBuilder().SetCustomHighlightNames(
+        match_result.CustomHighlightNames());
+  }
 
   ApplyCallbackSelectors(state);
 
