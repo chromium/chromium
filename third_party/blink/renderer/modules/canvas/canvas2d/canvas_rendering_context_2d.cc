@@ -1106,7 +1106,7 @@ CanvasRenderingContext2D::getContextAttributes() const {
       CanvasRenderingContext2DSettings::Create();
   settings->setAlpha(CreationAttributes().alpha);
   settings->setColorSpace(color_params_.GetColorSpaceAsString());
-  if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled())
+  if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled())
     settings->setPixelFormat(color_params_.GetPixelFormatAsString());
   settings->setDesynchronized(Host()->LowLatencyEnabled());
   switch (CreationAttributes().will_read_frequently) {

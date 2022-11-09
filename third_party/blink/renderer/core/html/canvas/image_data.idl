@@ -40,12 +40,9 @@ typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
     [RaisesException] constructor(Uint16Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
     [RaisesException] constructor(Float32Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
 
-    // TODO(crbug.com/1198606): Remove this.
-    [RuntimeEnabled=CanvasColorManagementV2] ImageDataSettings getSettings();
-
     readonly attribute unsigned long width;
     readonly attribute unsigned long height;
     readonly attribute PredefinedColorSpace colorSpace;
-    [RuntimeEnabled=CanvasColorManagementV2] readonly attribute ImageDataStorageFormat storageFormat;
+    [RuntimeEnabled=CanvasFloatingPoint] readonly attribute ImageDataStorageFormat storageFormat;
     readonly attribute ImageDataArray data;
 };

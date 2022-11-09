@@ -290,10 +290,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsWebGLBlocked() const override;
   void SetContextCreationWasBlocked() override;
 
-  ScriptPromise convertToBlob(ScriptState*,
-                              const ImageEncodeOptions*,
-                              ExceptionState&);
-
   bool NeedsUnbufferedInputEvents() const { return needs_unbuffered_input_; }
 
   void SetNeedsUnbufferedInputEvents(bool value) {

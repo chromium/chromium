@@ -16,10 +16,9 @@ class V8PredefinedColorSpace;
 
 // Convert from a V8PredefinedColorSpace to a PredefinedColorSpace. Note that
 // some values for PredefinedColorSpace are specified in the IDL but are
-// supposed to be guarded behind the CanvasColorManagementV2 and
-// CanvasHDREnabled features. This function will return false and throw an
-// exception into `exception_state` if `color_space` is unsupported because
-// its runtime flag is not enabled.
+// supposed to be guarded behind the CanvasFloatingPoint and CanvasHDR features.
+// This function will return false and throw an exception into `exception_state`
+// if `color_space` is unsupported because its runtime flag is not enabled.
 bool CORE_EXPORT
 ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
                              PredefinedColorSpace& color_space,

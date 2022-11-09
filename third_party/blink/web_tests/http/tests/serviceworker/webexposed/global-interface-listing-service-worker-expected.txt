@@ -778,7 +778,6 @@ interface ImageData
     getter storageFormat
     getter width
     method constructor
-    method getSettings
 interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method constructor

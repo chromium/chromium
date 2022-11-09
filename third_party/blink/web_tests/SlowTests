@@ -52,7 +52,6 @@ crbug.com/24182 media/controls/controls-cast-do-not-fade-out.html [ Slow ]
 crbug.com/24182 media/controls/controls-cast-overlay-slow-fade.html [ Slow ]
 crbug.com/24182 svg/filters/big-sized-filter.svg [ Slow ]
 crbug.com/24182 tables/mozilla/other/slashlogo.html [ Slow ]
-crbug.com/24182 fast/canvas/color-space/canvas-colorManaged-toBlob-toDataURL.html [ Slow ]
 crbug.com/24182 fast/dom/timer-throttling-background-page-near-alignment-interval.html [ Slow ]
 crbug.com/24182 http/tests/perf/large-inlined-script.html [ Slow ]
 crbug.com/24182 fast/css/should-not-insert-stylesheet-into-detached-document.html [ Slow ]
@@ -208,9 +207,6 @@ crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-solid.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Slow ]
-crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
-crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
-crbug.com/1041847 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-colorManaged-convertToBlob-roundtrip.html [ Slow ]
 crbug.com/1302791 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
 crbug.com/1302791 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
 
@@ -293,17 +289,11 @@ crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-pattern.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-shadow-source-in.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-shadow-source-in.html [ Slow ]
-crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Slow ]
-crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Slow ]
-crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
-crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-filter.html [ Slow ]
 crbug.com/866850 [ Mac11 ] virtual/gpu/fast/canvas/getPutImageDataPairTest.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
-
-crbug.com/1010472 fast/canvas/color-space/canvas-drawImage-offscreenCanvas.html [ Slow ]
 
 ### Some timeout tests in xmlhttprequest/timeout/ are slow
 crbug.com/869800 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-aborted.html [ Slow ]
@@ -539,11 +529,6 @@ crbug.com/980804 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/m
 crbug.com/983642 virtual/gpu/fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/983642 [ Debug Mac ] fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/983642 fast/canvas/canvas-composite-text-alpha.html [ Slow ]
-crbug.com/983642 [ Linux ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
-crbug.com/983642 [ Win ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
-crbug.com/983642 [ Mac ] fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
-crbug.com/983642 [ Win ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Slow ]
-crbug.com/983642 [ Win ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
 
 crbug.com/626703 external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Slow ]
 

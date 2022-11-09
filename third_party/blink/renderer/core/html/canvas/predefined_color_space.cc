@@ -12,7 +12,6 @@ namespace blink {
 bool ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
                                   PredefinedColorSpace& color_space,
                                   ExceptionState& exception_state) {
-  bool needs_v2 = false;
   bool needs_hdr = false;
   switch (v8_color_space.AsEnum()) {
     case V8PredefinedColorSpace::Enum::kSRGB:
@@ -20,7 +19,7 @@ bool ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
       break;
     case V8PredefinedColorSpace::Enum::kRec2020:
       color_space = PredefinedColorSpace::kRec2020;
-      needs_v2 = true;
+      needs_hdr = true;
       break;
     case V8PredefinedColorSpace::Enum::kDisplayP3:
       color_space = PredefinedColorSpace::kP3;
@@ -38,8 +37,7 @@ bool ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
       needs_hdr = true;
       break;
   }
-  if ((needs_v2 && !RuntimeEnabledFeatures::CanvasColorManagementV2Enabled()) ||
-      (needs_hdr && !RuntimeEnabledFeatures::CanvasHDREnabled())) {
+  if (needs_hdr && !RuntimeEnabledFeatures::CanvasHDREnabled()) {
     exception_state.ThrowTypeError(
         "The provided value '" + v8_color_space.AsString() +
         "' is not a valid enum value of the type PredefinedColorSpace.");

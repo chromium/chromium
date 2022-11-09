@@ -3162,7 +3162,6 @@ interface HTMLCanvasElement : HTMLElement
     method captureStream
     method configureHighDynamicRange
     method constructor
-    method convertToBlob
     method getContext
     method toBlob
     method toDataURL
@@ -4927,7 +4926,6 @@ interface ImageData
     getter storageFormat
     getter width
     method constructor
-    method getSettings
 interface ImageDecoder
     static method isTypeSupported
     attribute @@toStringTag

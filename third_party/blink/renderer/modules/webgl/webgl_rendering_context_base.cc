@@ -1067,13 +1067,6 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
                                              max_viewport_dims_);
   InitializeWebGLContextLimits(context_provider.get());
 
-  // TODO(https://crbug.com/1208480): Move color space to being a read-write
-  // attribute instead of a context creation attribute.
-  if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled()) {
-    drawing_buffer_color_space_ = requested_attributes.color_space;
-    pixel_format_deprecated_ = requested_attributes.pixel_format;
-  }
-
   scoped_refptr<DrawingBuffer> buffer =
       CreateDrawingBuffer(std::move(context_provider), graphics_info);
   if (!buffer) {

@@ -518,7 +518,6 @@ html element button
 html element canvas
     property captureStream
     property configureHighDynamicRange
-    property convertToBlob
     property getContext
     property height
     property toBlob

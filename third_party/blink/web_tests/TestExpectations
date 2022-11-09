@@ -5189,9 +5189,6 @@ crbug.com/1349215 [ Debug Linux ] external/wpt/fullscreen/api/document-fullscree
 crbug.com/1349215 [ Mac11 ] external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Timeout ]
 crbug.com/1349215 [ Mac10.15 ] external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Timeout ]
 
-# Sheriff 2020-06-06
-crbug.com/1091843 fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure Pass ]
-
 # Sheriff 2020-06-09
 crbug.com/1093003 [ Mac ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Failure Pass ]
 
@@ -5351,9 +5348,6 @@ crbug.com/1142877 [ Debug Linux ] external/wpt/mediacapture-fromelement/capture.
 
 # Sheriff 2020-11-04
 crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Failure Pass Timeout ]
-
-# Sheriff 2020-11-06
-crbug.com/1146560 [ Mac ] fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Failure Pass ]
 
 # Sheriff 2020-11-16
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/debugger-inline-values-frames.js [ Failure Pass Timeout ]
@@ -5606,8 +5600,6 @@ crbug.com/1205184 [ Mac12 ] external/wpt/IndexedDB/interleaved-cursors-large.htm
 
 # Sheriff 2021-05-03
 crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Timeout ]
-crbug.com/1093041 fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass ]
-crbug.com/1093041 virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-05-10
 
@@ -6355,8 +6347,6 @@ crbug.com/1262022 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/frag
 crbug.com/1256763 [ Win ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
 crbug.com/1256763 [ Mac ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
-
-crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure Pass ]
 
 # Sheriff 2021-10-19
 crbug.com/1256763 [ Linux ] images/color-profile-background-clip-text.html [ Failure Pass ]

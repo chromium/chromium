@@ -788,7 +788,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter storageFormat
 [Worker]     getter width
 [Worker]     method constructor
-[Worker]     method getSettings
 [Worker] interface ImageDecoder
 [Worker]     static method isTypeSupported
 [Worker]     attribute @@toStringTag

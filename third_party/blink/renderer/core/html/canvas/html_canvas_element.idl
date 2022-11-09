@@ -40,8 +40,6 @@
 
     [HighEntropy, MeasureAs=CanvasToBlob, RaisesException] void toBlob(BlobCallback _callback, optional DOMString type = "image/png", optional any quality);
 
-    [HighEntropy, RuntimeEnabled=CanvasColorManagementV2, MeasureAs=CanvasConvertToBlob, RaisesException, CallWith=ScriptState] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
-
     [RuntimeEnabled=CanvasHDR, RaisesException] void configureHighDynamicRange(CanvasHighDynamicRangeOptions options);
 };
 

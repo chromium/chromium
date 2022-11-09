@@ -701,8 +701,6 @@ fast/canvas/canvas-transforms-fillRect-shadow.html
 fast/canvas/canvas-unbalanced-save.html
 fast/canvas/canvas-zero-length-lineCap.html
 fast/canvas/color-space/ImageData-fidelity.html
-fast/canvas/color-space/canvas-colorManaged-convertToBlob-roundtrip.html
-fast/canvas/color-space/canvas-createImageBitmap-p3.html
 fast/canvas/color-space/canvas-getImageData-rec2020.html
 fast/canvas/color-space/transferFromImageBitmap.html
 fast/canvas/drawImage-with-globalAlpha.html

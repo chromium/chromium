@@ -486,14 +486,6 @@ void HTMLCanvasElement::configureHighDynamicRange(
   }
 }
 
-ScriptPromise HTMLCanvasElement::convertToBlob(
-    ScriptState* script_state,
-    const ImageEncodeOptions* options,
-    ExceptionState& exception_state) {
-  return CanvasRenderingContextHost::convertToBlob(script_state, options,
-                                                   exception_state, context_);
-}
-
 bool HTMLCanvasElement::ShouldBeDirectComposited() const {
   return (context_ && context_->IsComposited()) || (!!surface_layer_bridge_);
 }

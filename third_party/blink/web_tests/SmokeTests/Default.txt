@@ -405,7 +405,6 @@ fast/box-sizing/table-no-collapse.html
 fast/canvas/alpha.html
 fast/canvas/canvas-set-font-with-updated-style.html
 fast/canvas/canvas-hides-fallback.html
-fast/canvas/color-space/imageData-colorSpace.html
 fast/canvas/feimage-with-foreignobject-taint-canvas-2.html
 fast/canvas/imagebitmap/transferFromImageBitmap-drawImage.html
 fast/canvas/script-inside-canvas-fallback.html

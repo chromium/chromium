@@ -98,7 +98,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            unsigned width,
                            ExceptionState& exception_state) {
     ValidateAndCreateParams params;
-    params.require_canvas_color_management_v2 = true;
+    params.require_canvas_floating_point = true;
     return ValidateAndCreate(width, absl::nullopt, data, nullptr, params,
                              exception_state);
   }
@@ -108,7 +108,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
     ValidateAndCreateParams params;
-    params.require_canvas_color_management_v2 = true;
+    params.require_canvas_floating_point = true;
     return ValidateAndCreate(width, height, data, settings, params,
                              exception_state);
   }
@@ -119,7 +119,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            unsigned width,
                            ExceptionState& exception_state) {
     ValidateAndCreateParams params;
-    params.require_canvas_color_management_v2 = true;
+    params.require_canvas_floating_point = true;
     return ValidateAndCreate(width, absl::nullopt, data, nullptr, params,
                              exception_state);
   }
@@ -129,7 +129,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
     ValidateAndCreateParams params;
-    params.require_canvas_color_management_v2 = true;
+    params.require_canvas_floating_point = true;
     return ValidateAndCreate(width, height, data, settings, params,
                              exception_state);
   }
@@ -145,8 +145,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
     bool context_2d_error_mode = false;
     // Constructors in IDL files cannot specify RuntimeEnabled restrictions.
     // This argument is passed by Create functions that should require that the
-    // CanvasColorManagementV2 feature be enabled.
-    bool require_canvas_color_management_v2 = false;
+    // CanvasFloatingPoint feature be enabled.
+    bool require_canvas_floating_point = false;
     // If the caller is guaranteed to write over the result in its entirety,
     // then this flag may be used to skip initialization of the result's
     // data.

@@ -676,7 +676,6 @@ fast/borders/overflow-hidden-border-radius-force-backing-store.html
 fast/box-shadow/box-shadow.html
 fast/canvas-api/canvas-lowlatency-getContext.html
 fast/canvas/canvas-textMetrics-width.html
-fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html
 fast/css-generated-content/011.html
 fast/css-generated-content/012.html
 fast/css-generated-content/013.html
@@ -1557,7 +1556,6 @@ virtual/oopr-canvas2d/fast/canvas/canvas-largedraws.html
 virtual/oopr-canvas2d/fast/canvas/canvas-pattern-no-repeat-with-transformations.html
 virtual/oopr-canvas2d/fast/canvas/canvas-text-baseline.html
 virtual/oopr-canvas2d/fast/canvas/canvas-zero-length-lineCap.html
-virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html
 virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html
 virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xml
 virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html
