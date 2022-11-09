@@ -235,7 +235,7 @@ class RTCVideoDecoderAdapter::Impl {
 
   int32_t outstanding_decode_requests_ = 0;
   absl::optional<base::TimeTicks> start_time_;
-  webrtc::DecodedImageCallback* decode_complete_callback_;
+  webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
   int32_t consecutive_error_count_ = 0;
   // Requests that have not been submitted to the decoder yet.
   WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_;
@@ -463,7 +463,10 @@ void RTCVideoDecoderAdapter::Impl::Flush(
 
 void RTCVideoDecoderAdapter::Impl::RegisterDecodeCompleteCallback(
     webrtc::DecodedImageCallback* callback) {
+  DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  // decode_complete_callback_ should be called once with a valid pointer.
+  DCHECK_EQ(decode_complete_callback_, nullptr);
   decode_complete_callback_ = callback;
 }
 
