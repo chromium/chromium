@@ -376,6 +376,8 @@ buildflag_header("partition_alloc_buildflags") {
       enable_backup_ref_ptr_slow_checks && _enable_backup_ref_ptr_support
   _enable_dangling_raw_ptr_checks =
       enable_dangling_raw_ptr_checks && _enable_backup_ref_ptr_support
+  _enable_dangling_raw_ptr_perf_experiment =
+      enable_dangling_raw_ptr_perf_experiment && _enable_dangling_raw_ptr_checks
 
   # MTECheckedPtr is exclusive against BRP (asserted at declaration).
   # MTECheckedPtr requires 64-bit pointers (not available in NaCl).
@@ -407,6 +409,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_BACKUP_REF_PTR_SUPPORT=$_enable_backup_ref_ptr_support",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
+    "ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=$_enable_dangling_raw_ptr_perf_experiment",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
 

@@ -3994,6 +3994,22 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
+  // Free it. This creates two dangling pointer.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The dangling raw_ptr stop referencing it.
+  EXPECT_FALSE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The dangling raw_ptr stop referencing it again.
+  EXPECT_TRUE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+#else
   // Free it. This creates two dangling pointer.
   allocator.root()->Free(ptr);
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
@@ -4008,6 +4024,7 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
   EXPECT_TRUE(ref_count->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 2);
+#endif
 }
 
 // Allocate memory, and reference it from 3
@@ -4065,6 +4082,22 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
+  // Free it.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<> stops referencing it.
+  EXPECT_FALSE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
+  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+#else
   // Free it.
   allocator.root()->Free(ptr);
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
@@ -4079,6 +4112,7 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
   EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
+#endif
 }
 
 // When 'free' is called, it remain one raw_ptr<> and one
@@ -4097,6 +4131,22 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
+  // Free it.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<> stops referencing it.
+  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
+  EXPECT_TRUE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+#else
   // Free it.
   allocator.root()->Free(ptr);
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
@@ -4111,6 +4161,7 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
   EXPECT_TRUE(ref_count->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
+#endif
 }
 
 // When 'free' is called, it remains one

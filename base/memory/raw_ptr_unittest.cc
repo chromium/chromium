@@ -1725,7 +1725,8 @@ TEST_F(BackupRefPtrTest, RawPtrNotDangling) {
 
   void* ptr = allocator_.root()->Alloc(16, "");
   raw_ptr<void> dangling_ptr = ptr;
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && \
+    !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
   BASE_EXPECT_DEATH(
       {
         allocator_.root()->Free(ptr);  // Dangling raw_ptr detected.
@@ -1734,6 +1735,9 @@ TEST_F(BackupRefPtrTest, RawPtrNotDangling) {
       AllOf(HasSubstr("Detected dangling raw_ptr"),
             HasSubstr("The memory was freed at:"),
             HasSubstr("The dangling raw_ptr was released at:")));
+#else
+  allocator_.root()->Free(ptr);
+  dangling_ptr = nullptr;
 #endif
 }
 
@@ -1831,7 +1835,8 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
 
   raw_ptr<int> ptr =
       static_cast<int*>(allocator_.root()->Alloc(sizeof(int), ""));
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && \
+    !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
   BASE_EXPECT_DEATH(
       {
         allocator_.root()->Free(ptr.get());  // Dangling raw_ptr detected.
@@ -1840,6 +1845,9 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
       AllOf(HasSubstr("Detected dangling raw_ptr"),
             HasSubstr("The memory was freed at:"),
             HasSubstr("The dangling raw_ptr was released at:")));
+#else
+  allocator_.root()->Free(ptr.get());
+  ptr = nullptr;
 #endif
 }
 
