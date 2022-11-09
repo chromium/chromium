@@ -581,8 +581,12 @@ void MediaFoundationVideoEncodeAccelerator::EncoderInitializeTask(
     hr = encoder_->ProcessMessage(
         MFT_MESSAGE_SET_D3D_MANAGER,
         reinterpret_cast<ULONG_PTR>(mf_dxgi_device_manager.Get()));
-    NOTIFY_RETURN_ON_HR_FAILURE(
-        hr, "Couldn't set ProcessMessage MFT_MESSAGE_SET_D3D_MANAGER", );
+    // If HMFT rejects setting D3D manager, fallback to non-D3D11 encoding.
+    if (FAILED(hr)) {
+      dxgi_resource_mapping_required_ = true;
+      MEDIA_LOG(INFO, media_log.get())
+          << "Couldn't set DXGIDeviceManager, fallback to non-D3D11 encoding";
+    }
   }
 
   // Start the asynchronous processing model
@@ -1113,7 +1117,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
 
     if (gmb->GetType() == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE &&
         dxgi_device_manager_ != nullptr) {
-      return PopulateInputSampleBufferGpu(std::move(frame));
+      if (!dxgi_resource_mapping_required_) {
+        return PopulateInputSampleBufferGpu(std::move(frame));
+      } else {
+        return CopyInputSampleBufferFromGpu(*(frame.get()));
+      }
     }
 
     // ConvertToMemoryMappedFrame() doesn't copy pixel data,
@@ -1176,6 +1184,86 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
                 << static_cast<uint32_t>(status.code());
     return E_FAIL;
   }
+  return S_OK;
+}
+
+// Handle case where video frame is backed by a GPU texture, but needs to be
+// copied to CPU memory, if HMFT does not accept texture from adapter different
+// from that is currently used for encoding.
+HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
+    const VideoFrame& frame) {
+  DCHECK_EQ(frame.storage_type(),
+            VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
+  DCHECK(frame.HasGpuMemoryBuffer());
+  DCHECK_EQ(frame.GetGpuMemoryBuffer()->GetType(),
+            gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+  DCHECK(dxgi_device_manager_);
+
+  gfx::GpuMemoryBufferHandle buffer_handle =
+      frame.GetGpuMemoryBuffer()->CloneHandle();
+
+  auto d3d_device = dxgi_device_manager_->GetDevice();
+  if (!d3d_device) {
+    DLOG(ERROR) << "Failed to get device from MF DXGI device manager";
+    return E_HANDLE;
+  }
+  Microsoft::WRL::ComPtr<ID3D11Device1> device1;
+  HRESULT hr = d3d_device.As(&device1);
+
+  RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+  hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
+                                    IID_PPV_ARGS(&input_texture));
+  RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
+
+  // Check if we need to scale the input texture
+  D3D11_TEXTURE2D_DESC input_desc = {};
+  input_texture->GetDesc(&input_desc);
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> sample_texture;
+  if (input_desc.Width != static_cast<uint32_t>(input_visible_size_.width()) ||
+      input_desc.Height !=
+          static_cast<uint32_t>(input_visible_size_.height())) {
+    hr = PerformD3DScaling(input_texture.Get());
+    RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
+    sample_texture = scaled_d3d11_texture_;
+  } else {
+    sample_texture = input_texture;
+  }
+
+  const auto kTargetPixelFormat = PIXEL_FORMAT_NV12;
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
+
+  // Allocate a new buffer.
+  MFT_INPUT_STREAM_INFO input_stream_info;
+  hr = encoder_->GetInputStreamInfo(input_stream_id_, &input_stream_info);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't get input stream info", hr);
+  hr = MFCreateAlignedMemoryBuffer(
+      input_stream_info.cbSize
+          ? input_stream_info.cbSize
+          : VideoFrame::AllocationSize(kTargetPixelFormat, input_visible_size_),
+      input_stream_info.cbAlignment == 0 ? input_stream_info.cbAlignment
+                                         : input_stream_info.cbAlignment - 1,
+      &input_buffer);
+  RETURN_ON_HR_FAILURE(hr, "Failed to create memory buffer for input sample",
+                       hr);
+
+  MediaBufferScopedPointer scoped_buffer(input_buffer.Get());
+  bool copy_succeeded = gpu::CopyD3D11TexToMem(
+      sample_texture.Get(), scoped_buffer.get(), scoped_buffer.max_length(),
+      d3d_device.Get(), &staging_texture_);
+  if (!copy_succeeded) {
+    DLOG(ERROR) << "Failed to copy sample to memory.";
+    return E_FAIL;
+  }
+  size_t copied_bytes =
+      input_visible_size_.width() * input_visible_size_.height() * 3 / 2;
+  hr = input_buffer->SetCurrentLength(copied_bytes);
+  RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+  hr = input_sample_->RemoveAllBuffers();
+  RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
+  hr = input_sample_->AddBuffer(input_buffer.Get());
+  RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
   return S_OK;
 }
 
