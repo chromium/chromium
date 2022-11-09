@@ -235,6 +235,10 @@ void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
     StopHandleWindow(window);
     return;
   }
+
+  if (arc_tracker_)
+    arc_tracker_->OnWindowPropertyChanged(window, key, old);
+
   if (key != ash::kShelfIDKey)
     return;
 
