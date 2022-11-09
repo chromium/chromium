@@ -150,6 +150,14 @@ message SyncEnums {
     TYPE_TABLET = 7;
   }
 
+  // Types of device form factors.
+  enum DeviceFormFactor {
+    DEVICE_FORM_FACTOR_UNSPECIFIED = 0;
+    DEVICE_FORM_FACTOR_DESKTOP = 1;
+    DEVICE_FORM_FACTOR_PHONE = 2;
+    DEVICE_FORM_FACTOR_TABLET = 3;
+  }
+
   // Types of browsers; used for history-related data types.
   enum BrowserType {
     BROWSER_TYPE_UNKNOWN = 0;
