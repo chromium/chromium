@@ -803,11 +803,6 @@ void CompositorFrameReporter::TerminateReporter() {
       global_trackers_.dropped_frame_counter->AddGoodFrame();
   }
   global_trackers_.dropped_frame_counter->OnEndFrame(args_, frame_info);
-
-  if (discarded_partial_update_dependents_count_ > 0)
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Graphics.Smoothness.Diagnostic.DiscardedDependentCount",
-        discarded_partial_update_dependents_count_, 1, 1000, 50);
 }
 
 void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {
@@ -1616,7 +1611,6 @@ void CompositorFrameReporter::DiscardOldPartialUpdateReporters() {
     auto& dependent = owned_partial_update_dependents_.front();
     dependent->set_has_partial_update(false);
     owned_partial_update_dependents_.pop();
-    discarded_partial_update_dependents_count_++;
   }
 
   // Remove dependent reporters from the front of `partial_update_dependents_`
