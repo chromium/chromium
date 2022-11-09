@@ -23,15 +23,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/test_browser_window_aura.h"
@@ -51,7 +49,6 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,7 +65,6 @@ namespace apps {
 
 namespace {
 
-constexpr char kStartTime[] = "1 Jan 2021 21:00";
 constexpr char kChromeAppId[] = "plfjlfohfjjpmmifkbcmalnmcebkklkh";
 constexpr char kExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 
@@ -161,53 +157,15 @@ void SetSuspendImminent() {
       power_manager::SuspendImminent_Reason_OTHER);
 }
 
-apps::AppPtr MakeApp(const std::string& app_id,
-                     apps::AppType app_type,
-                     const std::string& publisher_id,
-                     apps::Readiness readiness,
-                     apps::InstallReason install_reason,
-                     apps::InstallSource install_source,
-                     bool is_platform_app = false,
-                     WindowMode window_mode = WindowMode::kUnknown) {
-  auto app = AppPublisher::MakeApp(app_type, app_id, readiness, publisher_id,
-                                   install_reason, install_source);
-  app->publisher_id = publisher_id;
-  app->is_platform_app = is_platform_app;
-  app->window_mode = window_mode;
-  return app;
-}
-
-void AddApp(apps::AppRegistryCache& cache,
-            const std::string& app_id,
-            apps::AppType app_type,
-            const std::string& publisher_id,
-            apps::Readiness readiness,
-            apps::InstallReason install_reason,
-            apps::InstallSource install_source,
-            bool should_notify_initialized,
-            bool is_platform_app = false,
-            WindowMode window_mode = WindowMode::kUnknown) {
-  std::vector<apps::AppPtr> deltas;
-  deltas.push_back(MakeApp(app_id, app_type, publisher_id, readiness,
-                           install_reason, install_source, is_platform_app,
-                           window_mode));
-  cache.OnApps(std::move(deltas), app_type, should_notify_initialized);
-}
-
-std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
-    content::BrowserContext* context) {
-  return std::make_unique<syncer::TestSyncService>();
-}
-
 }  // namespace
 
 // Tests for app platform metrics service.
-class AppPlatformMetricsServiceTest : public testing::Test,
-                                      public testing::WithParamInterface<bool> {
+class AppPlatformMetricsServiceTest
+    : public AppPlatformMetricsServiceTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    AddRegularUser("user@test.com");
-
+    AppPlatformMetricsServiceTestBase::SetUp();
     if (IsLacrosPrimary()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{ash::features::kLacrosSupport,
@@ -220,74 +178,13 @@ class AppPlatformMetricsServiceTest : public testing::Test,
                                  ash::features::kLacrosPrimary});
     }
 
-    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-
-    base::Time start_time;
-    EXPECT_TRUE(base::Time::FromUTCString(kStartTime, &start_time));
-    base::TimeDelta forward_by = start_time - base::Time::Now();
-    EXPECT_LT(base::TimeDelta(), forward_by);
-    task_environment_.AdvanceClock(forward_by);
-    GetPrefService()->SetInteger(
-        kAppPlatformMetricsDayId,
-        start_time.UTCMidnight().since_origin().InDaysFloored());
-
-    chromeos::PowerManagerClient::InitializeFake();
-    app_platform_metrics_service_ =
-        std::make_unique<AppPlatformMetricsService>(testing_profile_.get());
-
-    app_platform_metrics_service_->Start(
-        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
-            ->AppRegistryCache(),
-        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
-            ->InstanceRegistry());
-
     InstallApps();
   }
 
   void TearDown() override {
-    app_platform_metrics_service_.reset();
-    chromeos::PowerManagerClient::Shutdown();
+    AppPlatformMetricsServiceTestBase::TearDown();
     browser_window1_.reset();
     browser_window2_.reset();
-  }
-
-  void AddRegularUser(const std::string& email) {
-    fake_user_manager_ = new ash::FakeChromeUserManager;
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
-
-    AccountId account_id = AccountId::FromUserEmail(email);
-    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
-    fake_user_manager_->SimulateUserProfileLoad(account_id);
-
-    TestingProfile::Builder builder;
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              SyncServiceFactory::GetDefaultFactory());
-    testing_profile_ = builder.Build();
-
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, testing_profile_.get());
-
-    sync_service_ = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            testing_profile_.get(),
-            base::BindRepeating(&TestingSyncFactoryFunction)));
-    sync_service_->SetFirstSetupComplete(true);
-  }
-
-  void ResetAppPlatformMetricsService() {
-    app_platform_metrics_service_.reset();
-    app_platform_metrics_service_ =
-        std::make_unique<AppPlatformMetricsService>(testing_profile_.get());
-
-    app_platform_metrics_service_->Start(
-        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
-            ->AppRegistryCache(),
-        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
-            ->InstanceRegistry());
   }
 
   AppTypeName GetWebAppTypeName() {
@@ -296,8 +193,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
   }
 
   void InstallApps() {
-    auto* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get());
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
 
     AddApp(cache, /*app_id=*/"a", AppType::kArc, "com.google.A",
@@ -313,8 +209,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
            Readiness::kReady, InstallReason::kUser, InstallSource::kUnknown,
            true /* should_notify_initialized */);
 
-    borealis::CreateFakeApp(testing_profile_.get(), "borealistest",
-                            "steam://rungameid/123");
+    borealis::CreateFakeApp(profile(), "borealistest", "steam://rungameid/123");
     std::string borealis_app(borealis::FakeAppId("borealistest"));
     AddApp(cache, /*app_id=*/borealis_app.c_str(), AppType::kBorealis, "",
            Readiness::kReady, InstallReason::kUser, InstallSource::kUnknown,
@@ -322,8 +217,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
 
     vm_tools::apps::ApplicationList app_list =
         crostini::CrostiniTestHelper::BasicAppList("test");
-    guest_os::GuestOsRegistryServiceFactory::GetForProfile(
-        testing_profile_.get())
+    guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile())
         ->UpdateApplicationList(app_list);
     AddApp(cache, /*app_id=*/
            crostini::CrostiniTestHelper::GenerateAppId("test"),
@@ -380,34 +274,19 @@ class AppPlatformMetricsServiceTest : public testing::Test,
                  false /* should_notify_initialized */);
   }
 
-  void InstallOneApp(const std::string& app_id,
-                     AppType app_type,
-                     const std::string& publisher_id,
-                     Readiness readiness,
-                     InstallSource install_source,
-                     bool is_platform_app = false,
-                     WindowMode window_mode = WindowMode::kUnknown) {
-    auto* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get());
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
-    AddApp(cache, app_id, app_type, publisher_id, readiness,
-           InstallReason::kUser, install_source,
-           false /* should_notify_initialized */, is_platform_app, window_mode);
-  }
-
   void VerifyMetrics() {
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kArc),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kArc, apps::InstallReason::kUser),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kBuiltIn),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBuiltIn, apps::InstallReason::kSystem),
         /*count=*/1);
@@ -416,138 +295,106 @@ class AppPlatformMetricsServiceTest : public testing::Test,
     // BorealisApps class, plus the two created in this test.
     const int borealis_pre_installed = 2;
     const int borealis_installed_by_test = 2;
-    histogram_tester_.ExpectUniqueSample(
+    histogram_tester().ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kBorealis),
         /*sample=*/borealis_pre_installed + borealis_installed_by_test,
         /*expected_bucket_count=*/1);
 
     // The installer + launcher are preinstalled, the others are user-installed.
-    histogram_tester_.ExpectUniqueSample(
+    histogram_tester().ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBorealis, apps::InstallReason::kDefault),
         /*sample=*/borealis_pre_installed,
         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample(
+    histogram_tester().ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBorealis, apps::InstallReason::kUser),
         /*sample=*/borealis_installed_by_test,
         /*expected_bucket_count=*/1);
 
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kCrostini),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kCrostini, apps::InstallReason::kUser),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kChromeApp),
         /*count=*/0);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             GetWebAppTypeName()),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             GetWebAppTypeName(), apps::InstallReason::kSync),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kMacOs),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kMacOs, apps::InstallReason::kUnknown),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kPluginVm),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kPluginVm, apps::InstallReason::kUser),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kStandaloneBrowser),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kStandaloneBrowser, apps::InstallReason::kSystem),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp,
             apps::InstallReason::kUser),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp,
             apps::InstallReason::kUser),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kRemote),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kRemote, apps::InstallReason::kPolicy),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kSystemWeb),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kSystemWeb, apps::InstallReason::kSystem),
         /*count=*/1);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             GetWebAppTypeName(), apps::InstallReason::kSubApp),
         /*count=*/1);
-  }
-
-  void ModifyInstance(const std::string& app_id,
-                      aura::Window* window,
-                      apps::InstanceState state) {
-    apps::InstanceParams params(app_id, window);
-    params.state = std::make_pair(state, base::Time::Now());
-    apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
-        ->InstanceRegistry()
-        .CreateOrUpdateInstance(std::move(params));
-  }
-
-  void ModifyInstance(const base::UnguessableToken& instance_id,
-                      const std::string& app_id,
-                      aura::Window* window,
-                      apps::InstanceState state) {
-    auto instance =
-        std::make_unique<apps::Instance>(app_id, instance_id, window);
-    instance->UpdateState(state, base::Time::Now());
-    apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
-        ->InstanceRegistry()
-        .OnInstance(std::move(instance));
-  }
-
-  void ModifyWebAppInstance(const std::string& app_id,
-                            aura::Window* window,
-                            apps::InstanceState state) {
-    apps::InstanceParams params(app_id, window);
-    params.state = std::make_pair(state, base::Time::Now());
-    apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
-        ->InstanceRegistry()
-        .CreateOrUpdateInstance(std::move(params));
   }
 
   std::unique_ptr<Browser> CreateBrowserWithAuraWindow1() {
@@ -555,7 +402,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
         &delegate1_, aura::client::WINDOW_TYPE_NORMAL);
     window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
-    Browser::CreateParams params(testing_profile_.get(), true);
+    Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
     browser_window1_ =
         std::make_unique<TestBrowserWindowAura>(std::move(window));
@@ -568,7 +415,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
         &delegate2_, aura::client::WINDOW_TYPE_NORMAL);
     window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
-    Browser::CreateParams params(testing_profile_.get(), true);
+    Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
     browser_window2_ =
         std::make_unique<TestBrowserWindowAura>(std::move(window));
@@ -615,7 +462,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
   void VerifyAppRunningDurationCountHistogram(
       base::HistogramBase::Count expected_count,
       AppTypeName app_type_name) {
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
             app_type_name),
         expected_count);
@@ -634,7 +481,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
   void VerifyAppRunningPercentageCountHistogram(
       base::HistogramBase::Count expected_count,
       AppTypeName app_type_name) {
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
             app_type_name),
         expected_count);
@@ -686,7 +533,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
   void VerifyAppUsageTimeCountHistogram(
       base::HistogramBase::Count expected_count,
       AppTypeName app_type_name) {
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
         expected_count);
   }
@@ -694,7 +541,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
   void VerifyAppUsageTimeCountHistogram(
       base::HistogramBase::Count expected_count,
       AppTypeNameV2 app_type_name) {
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
         expected_count);
   }
@@ -857,49 +704,12 @@ class AppPlatformMetricsServiceTest : public testing::Test,
 
   bool IsLacrosPrimary() const { return GetParam(); }
 
-  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
-    return test_ukm_recorder_.get();
-  }
-
- protected:
-  sync_preferences::TestingPrefServiceSyncable* GetPrefService() {
-    return testing_profile_->GetTestingPrefService();
-  }
-
-  int GetDayIdPref() {
-    return GetPrefService()->GetInteger(kAppPlatformMetricsDayId);
-  }
-
-  std::unique_ptr<AppPlatformMetricsService> GetAppPlatformMetricsService() {
-    return std::move(app_platform_metrics_service_);
-  }
-
-  AppPlatformMetricsService* app_platform_metrics_service() {
-    return app_platform_metrics_service_.get();
-  }
-
-  TestingProfile* profile() { return testing_profile_.get(); }
-
-  syncer::TestSyncService* sync_service() { return sync_service_; }
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestingProfile> testing_profile_;
-  syncer::TestSyncService* sync_service_ = nullptr;
-  base::HistogramTester histogram_tester_;
-  std::unique_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
   std::unique_ptr<TestBrowserWindowAura> browser_window1_;
   std::unique_ptr<TestBrowserWindowAura> browser_window2_;
   aura::test::TestWindowDelegate delegate1_;
   aura::test::TestWindowDelegate delegate2_;
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
 // Tests OnNewDay() is called after more than one day passes.

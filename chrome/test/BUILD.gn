@@ -495,6 +495,8 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
+      "../browser/apps/app_service/metrics/app_platform_metrics_service_test_base.cc",
+      "../browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h",
       "../browser/ash/accessibility/speech_monitor.cc",
       "../browser/ash/accessibility/speech_monitor.h",
       "../browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.cc",
