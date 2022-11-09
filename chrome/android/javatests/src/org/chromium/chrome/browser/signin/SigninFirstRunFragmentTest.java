@@ -826,6 +826,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1382928")
     public void testFragmentWhenNativeIsLoadedAfterPolicyAndChildStatus() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         TestThreadUtils.runOnUiThreadBlocking(
