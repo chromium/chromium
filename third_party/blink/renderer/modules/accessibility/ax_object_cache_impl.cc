@@ -2269,7 +2269,11 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   ChildrenChangedWithCleanLayout(
       Get(LayoutTreeBuilderTraversal::Parent(*node)));
 
-  // Once we have reached the threshhold number of roles that forces a data
+  // If an image map area is added, we need to update children on the image.
+  if (IsA<HTMLAreaElement>(node))
+    ChildrenChangedWithCleanLayout(AXObject::ComputeNonARIAParent(*this, node));
+
+  // Once we have reached the threshold number of roles that forces a data
   // table, invalidate the AXTable if it was previously a layout table, so that
   // its subtree recomputes roles.
   if (IsA<HTMLTableRowElement>(node)) {
