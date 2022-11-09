@@ -132,6 +132,11 @@ extern const char kBubbleRichIPHDescription[];
 extern const char kCalendarExperienceKitName[];
 extern const char kCalendarExperienceKitDescription[];
 
+// Title and description for the flag to enable experience kit apple calendar
+// events.
+extern const char kAppleCalendarExperienceKitName[];
+extern const char kAppleCalendarExperienceKitDescription[];
+
 // Title and description for the flag to enable text classifier entity detection
 // in experience kit calendar.
 extern const char kEnableExpKitCalendarTextClassifierName[];

@@ -155,7 +155,13 @@ const char kBubbleRichIPHDescription[] =
 extern const char kCalendarExperienceKitName[] = "Experience Kit Calendar";
 extern const char kCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Calendar "
-    "event handling";
+    "event handling.";
+
+extern const char kAppleCalendarExperienceKitName[] =
+    "Experience Kit Apple Calendar";
+extern const char kAppleCalendarExperienceKitDescription[] =
+    "When enabled, long pressing on dates will trigger Experience Kit Apple "
+    "Calendar event handling.";
 
 extern const char kEnableExpKitCalendarTextClassifierName[] =
     "Text Classifier in Experience Kit Calendar";
@@ -167,7 +173,7 @@ extern const char kMapsExperienceKitName[] = "Experience Kit Maps";
 extern const char kMapsExperienceKitDescription[] =
     "When enabled, long pressing on an address will trigger Experience Kit Maps"
     "location and directions handling. Requires "
-    "#enable-long-press-surrounding-text to be enabled";
+    "#enable-long-press-surrounding-text to be enabled.";
 
 extern const char kLongPressSurroundingTextName[] =
     "Enable Long Press Surrounding Text";

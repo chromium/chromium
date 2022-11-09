@@ -195,7 +195,9 @@
 	<string>${SSOAUTH_URL_SCHEME}</string>
 	<key>KSChannelChromeScheme</key>
 	<string>${CHROMIUM_URL_CHANNEL_SCHEME}</string>
-	<key>NSCameraUsageDescription</key>
+	<key>NSContactsUsageDescription</key>
+        <string>IDS_IOS_CONTACTS_USAGE_DESCRIPTION</string>
+        <key>NSCameraUsageDescription</key>
 	<string>IDS_IOS_CAMERA_USAGE_DESCRIPTION</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION</string>

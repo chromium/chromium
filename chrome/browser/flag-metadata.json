@@ -3529,6 +3529,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "experience-kit-apple-calendar",
+    "owners": [ "djean@google.com", "olivierrobin", "bling-flags@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "experience-kit-calendar",
     "owners": [ "djean@google.com", "olivierrobin", "bling-flags@google.com" ],
     "expiry_milestone": 110

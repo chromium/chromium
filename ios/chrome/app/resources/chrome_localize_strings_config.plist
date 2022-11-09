@@ -110,6 +110,12 @@
 					<key>output</key>
 					<string>NSBluetoothPeripheralUsageDescription</string>
 				</dict>
+                                <dict>
+                                     	<key>input</key>
+                                        <string>IDS_IOS_CONTACTS_USAGE_DESCRIPTION</string>
+                                        <key>output</key>
+                                        <string>NSContactsUsageDescription</string>
+                                </dict>
 				<dict>
 					<key>input</key>
 					<string>IDS_IOS_CAMERA_USAGE_DESCRIPTION</string>
