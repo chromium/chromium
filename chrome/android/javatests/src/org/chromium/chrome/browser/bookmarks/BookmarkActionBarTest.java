@@ -426,6 +426,8 @@ public class BookmarkActionBarTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testOnSelectionStateChange_readingList() {
+        ReadingListFeatures.setShouldUseCustomTabForTesting(false);
+
         initializeNormal();
         when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
 

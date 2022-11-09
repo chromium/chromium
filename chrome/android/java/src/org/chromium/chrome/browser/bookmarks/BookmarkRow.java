@@ -176,9 +176,11 @@ public abstract class BookmarkRow
         }
         ModelList listItems = new ModelList();
         if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
-            // TODO(crbug.com/1269434): Add ability to mark an item as unread.
-            if (bookmarkItem != null && !bookmarkItem.isRead()) {
-                listItems.add(buildMenuListItem(R.string.reading_list_mark_as_read, 0, 0));
+            if (bookmarkItem != null) {
+                listItems.add(buildMenuListItem(bookmarkItem.isRead()
+                                ? R.string.reading_list_mark_as_unread
+                                : R.string.reading_list_mark_as_read,
+                        0, 0));
             }
             listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
             listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
@@ -230,8 +232,13 @@ public abstract class BookmarkRow
             } else if (textId == R.string.reading_list_mark_as_read) {
                 BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
                 mDelegate.getModel().setReadStatusForReadingList(
-                        bookmarkItem.getUrl(), true /*read*/);
+                        bookmarkItem.getUrl(), /*read=*/true);
                 RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsRead");
+            } else if (textId == R.string.reading_list_mark_as_unread) {
+                BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
+                mDelegate.getModel().setReadStatusForReadingList(
+                        bookmarkItem.getUrl(), /*read=*/false);
+                RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
             } else if (textId == R.string.bookmark_item_move) {
                 BookmarkFolderSelectActivity.startFolderSelectActivity(getContext(), mBookmarkId);
                 RecordUserAction.record("MobileBookmarkManagerMoveToFolder");

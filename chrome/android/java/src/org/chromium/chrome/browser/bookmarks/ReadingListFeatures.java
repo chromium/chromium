@@ -31,12 +31,16 @@ public class ReadingListFeatures {
     static final int VERSION = BookmarkFeatures.VERSION;
     private static final int DEFAULT_SESSION_LENGTH_SECONDS = (int) TimeUnit.HOURS.toSeconds(1);
 
+    private static Boolean sShouldUseCustomTabForTesting;
+
     private ReadingListFeatures() {}
 
     /** Returns whether Reading list items should open in a custom tab. */
     public static boolean shouldUseCustomTab() {
-        // Default value is `true`.
+        if (sShouldUseCustomTabForTesting != null) return sShouldUseCustomTabForTesting;
+
         if (!isReadingListEnabled()) return true;
+
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.READ_LATER, "use_cct", true);
     }
@@ -76,5 +80,9 @@ public class ReadingListFeatures {
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                            ChromeFeatureList.READ_LATER, "read_later_min_version", 0)
                 <= VERSION;
+    }
+
+    public static void setShouldUseCustomTabForTesting(boolean enabled) {
+        sShouldUseCustomTabForTesting = enabled;
     }
 }

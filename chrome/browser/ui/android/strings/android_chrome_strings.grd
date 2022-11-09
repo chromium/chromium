@@ -3723,6 +3723,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_READING_LIST_MARK_AS_READ" desc="The text for the action to mark the reading list as read.">
         Mark as read
       </message>
+      <message name="IDS_READING_LIST_MARK_AS_UNREAD" desc="The text for the action to mark the reading list as unread.">
+        Mark as unread
+      </message>
       <message name="IDS_READING_LIST_REMINDER_NOTIFICATION_TITLE" desc="The title of the reminder notification for reading list.">
         Catch up on your reading list
       </message>

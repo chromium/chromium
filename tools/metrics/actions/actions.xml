@@ -2475,7 +2475,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.BookmarkPage.ReadingList.MarkAsRead">
-  <owner>shaktisahu@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
   <description>
     User marked an item as read in the Reading List page from the Android
     bookmark page by clicking &quot;Mark As Read&quot; from the &quot;more&quot;
@@ -2483,8 +2484,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.BookmarkPage.ReadingList.MarkAsUnread">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <description>
+    User marked an item as unread in the Reading List page from the Android
+    bookmark page by clicking &quot;Mark As Unread&quot; from the
+    &quot;more&quot; menu.
+  </description>
+</action>
+
 <action name="Android.BookmarkPage.ReadingList.OpenReadingList">
-  <owner>shaktisahu@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
   <description>
     User navigated to the Reading List page from the Android bookmark page by
     clicking on reading list folder.
@@ -2492,7 +2504,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.BookmarkPage.ReadingList.RemoveItem">
-  <owner>shaktisahu@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
   <description>
     User removed an item from the Reading List page from the Android bookmarks
     page by clicking &quot;delete&quot; from the &quot;more&quot; menu.
@@ -2500,7 +2513,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.BookmarkPage.ReadingList.SelectFromMenu">
-  <owner>shaktisahu@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
   <description>
     User selected an item from the Reading List page from the Android bookmark
     page by clicking &quot;select&quot; from the &quot;more&quot; menu.

@@ -60,5 +60,17 @@ found in the LICENSE file.
             android:title="@string/contextmenu_open_in_incognito_tab"
             app:showAsAction="never" />
     </group>
+    <group
+        android:id="@+id/reading_list_menu_group"
+        android:visible="false" >
+        <item
+            android:id="@+id/reading_list_mark_as_read_id"
+            android:title="@string/reading_list_mark_as_read"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/reading_list_mark_as_unread_id"
+            android:title="@string/reading_list_mark_as_unread"
+            app:showAsAction="never" />
+    </group>
 
 </menu>
