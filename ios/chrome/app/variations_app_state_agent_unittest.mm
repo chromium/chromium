@@ -187,16 +187,18 @@ TEST_F(VariationsAppStateAgentTest,
 // Tests that the fetch time from last launch will be saved when the app goes to
 // background.
 TEST_F(VariationsAppStateAgentTest, SavesLastSeedFetchTimeOnBackgrounding) {
+  InitStage stageAfterChromeInitialization =
+      static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1);
   // Simulate foregrounding and setting up Chrome.
   base::Time last_fetch_time = base::Time::Now();
   VariationsAppStateAgent* agent = CreateAgent(/*first_run=*/false);
-  TransitionAgentToStage(agent, InitStageBrowserObjectsForUI);
-  [agent sceneState:scene_state_
+  TransitionAgentToStage(agent, stageAfterChromeInitialization);
+  [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
   local_state_.Get()->SetTime(variations::prefs::kVariationsLastFetchTime,
                               last_fetch_time);
   //  Simulate backgrounding and launch again.
-  [agent sceneState:scene_state_
+  [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelBackground];
   state_.initStage = InitStageStart;
   TransitionAgentToStage(agent, InitStageVariationsSeed);

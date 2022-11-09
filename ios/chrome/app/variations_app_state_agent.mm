@@ -132,11 +132,11 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
     [self showExtendedLaunchScreen:sceneState];
     _extendedLaunchScreenShown = YES;
   }
-  // Saves the fetch time to NSUserDefatuls when the app moves from foreground
+  // Saves the fetch time to NSUserDefaults when the app moves from foreground
   // to background.
   if (_previousActivationLevel > SceneActivationLevelBackground &&
       level == SceneActivationLevelBackground &&
-      self.appState.initStage >= InitStageBrowserObjectsForUI) {
+      self.appState.initStage > InitStageBrowserObjectsForBackgroundHandlers) {
     SaveFetchTimeOfLatestSeedInLocalState();
   }
   _previousActivationLevel = level;
