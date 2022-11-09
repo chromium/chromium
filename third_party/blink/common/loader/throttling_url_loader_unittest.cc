@@ -410,15 +410,15 @@ class ThrottlingURLLoaderTest : public testing::Test {
     throttles_.push_back(std::move(throttle));
   }
 
-  void CreateLoaderAndStart(bool sync = false) {
-    uint32_t options = 0;
-    if (sync)
-      options |= network::mojom::kURLLoadOptionSynchronous;
+  void CreateLoaderAndStart(
+      absl::optional<network::ResourceRequest::TrustedParams> trusted_params =
+          absl::nullopt) {
     network::ResourceRequest request;
     request.url = request_url;
+    request.trusted_params = std::move(trusted_params);
     loader_ = ThrottlingURLLoader::CreateLoaderAndStart(
-        factory_.shared_factory(), std::move(throttles_), 0, options, &request,
-        &client_, TRAFFIC_ANNOTATION_FOR_TESTS,
+        factory_.shared_factory(), std::move(throttles_), /*request_id=*/0,
+        /*options=*/0, &request, &client_, TRAFFIC_ANNOTATION_FOR_TESTS,
         base::ThreadTaskRunnerHandle::Get());
     factory_.factory_remote().FlushForTesting();
   }
@@ -554,6 +554,46 @@ TEST_F(ThrottlingURLLoaderTest, ModifyURLBeforeStart) {
 
   EXPECT_EQ(1u, throttle_->will_start_request_called());
   EXPECT_EQ(1u, throttle_->will_redirect_request_called());
+}
+
+TEST_F(ThrottlingURLLoaderTest,
+       CrossOriginRedirectBeforeStartWithIsolationInfo) {
+  const GURL modified_url = GURL("https://example.org");
+
+  throttle_->set_modify_url_in_will_start(modified_url);
+
+  network::ResourceRequest::TrustedParams trusted_params;
+  trusted_params.isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame,
+      url::Origin::Create(request_url), url::Origin::Create(request_url),
+      net::SiteForCookies());
+
+  const auto expected_redirected_isolation_info =
+      trusted_params.isolation_info.CreateForRedirect(
+          url::Origin::Create(modified_url));
+  ASSERT_FALSE(trusted_params.isolation_info.IsEqualForTesting(
+      expected_redirected_isolation_info));
+
+  CreateLoaderAndStart(std::move(trusted_params));
+
+  EXPECT_EQ(1u, throttle_->will_start_request_called());
+  EXPECT_EQ(1u, throttle_->will_redirect_request_called());
+  EXPECT_EQ(0u, factory_.create_loader_and_start_called());
+
+  base::RunLoop run_loop;
+  factory_.set_on_create_loader_and_start(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& url_request) {
+        run_loop.Quit();
+
+        ASSERT_TRUE(url_request.trusted_params);
+        EXPECT_TRUE(
+            url_request.trusted_params->isolation_info.IsEqualForTesting(
+                expected_redirected_isolation_info));
+      }));
+
+  loader_->FollowRedirect({}, {}, {});
+
+  run_loop.Run();
 }
 
 // Regression test for crbug.com/933538

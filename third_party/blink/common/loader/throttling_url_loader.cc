@@ -837,6 +837,11 @@ void ThrottlingURLLoader::OnReceiveRedirect(
   request.site_for_cookies = redirect_info.new_site_for_cookies;
   request.referrer = GURL(redirect_info.new_referrer);
   request.referrer_policy = redirect_info.new_referrer_policy;
+  if (request.trusted_params) {
+    request.trusted_params->isolation_info =
+        request.trusted_params->isolation_info.CreateForRedirect(
+            url::Origin::Create(request.url));
+  }
 
   // TODO(dhausknecht) at this point we do not actually know if we commit to the
   // redirect or if it will be cancelled. FollowRedirect would be a more
