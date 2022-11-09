@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -48,6 +49,7 @@
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -173,32 +175,32 @@ enum class IOSOverflowMenuActionType {
   base::RecordAction(
       base::UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
   [self presentPopupOfType:PopupMenuTypeNavigationBackward
-            fromNamedGuide:kBackButtonGuide];
+      fromLayoutGuideNamed:kBackButtonGuide];
 }
 
 - (void)showNavigationHistoryForwardPopupMenu {
   base::RecordAction(
       base::UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
   [self presentPopupOfType:PopupMenuTypeNavigationForward
-            fromNamedGuide:kForwardButtonGuide];
+      fromLayoutGuideNamed:kForwardButtonGuide];
 }
 
 - (void)showToolsMenuPopup {
   // The metric is registered at the toolbar level.
   [self presentPopupOfType:PopupMenuTypeToolsMenu
-            fromNamedGuide:kToolsMenuGuide];
+      fromLayoutGuideNamed:kToolsMenuGuide];
 }
 
 - (void)showTabGridButtonPopup {
   base::RecordAction(base::UserMetricsAction("MobileToolbarShowTabGridMenu"));
   [self presentPopupOfType:PopupMenuTypeTabGrid
-            fromNamedGuide:kTabSwitcherGuide];
+      fromLayoutGuideNamed:kTabSwitcherGuide];
 }
 
 - (void)showNewTabButtonPopup {
   base::RecordAction(base::UserMetricsAction("MobileToolbarShowNewTabMenu"));
   [self presentPopupOfType:PopupMenuTypeNewTab
-            fromNamedGuide:kNewTabButtonGuide];
+      fromLayoutGuideNamed:kNewTabButtonGuide];
 }
 
 - (void)dismissPopupMenuAnimated:(BOOL)animated {
@@ -329,10 +331,10 @@ enum class IOSOverflowMenuActionType {
 
 #pragma mark - Private
 
-// Presents a popup menu of type `type` with an animation starting from
-// `guideName`.
+// Presents a popup menu of type `type` with an animation starting from the
+// layout named `guideName`.
 - (void)presentPopupOfType:(PopupMenuType)type
-            fromNamedGuide:(GuideName*)guideName {
+      fromLayoutGuideNamed:(GuideName*)guideName {
   if (self.presenter || self.overflowMenuMediator)
     [self dismissPopupMenuAnimated:YES];
 
@@ -444,15 +446,18 @@ enum class IOSOverflowMenuActionType {
                          metricsHandler:self
                 carouselMetricsDelegate:self.overflowMenuMediator];
 
-        NamedGuide* guide =
-            [NamedGuide guideWithName:guideName
-                                 view:self.baseViewController.view];
+        LayoutGuideCenter* layoutGuideCenter =
+            LayoutGuideCenterForBrowser(self.browser);
+        UILayoutGuide* layoutGuide =
+            [layoutGuideCenter makeLayoutGuideNamed:guideName];
+        [self.baseViewController.view addLayoutGuide:layoutGuide];
+
         menu.modalPresentationStyle = UIModalPresentationPopover;
 
         UIPopoverPresentationController* popoverPresentationController =
             menu.popoverPresentationController;
-        popoverPresentationController.sourceView = guide.constrainedView;
-        popoverPresentationController.sourceRect = guide.constrainedView.bounds;
+        popoverPresentationController.sourceView = self.baseViewController.view;
+        popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
         popoverPresentationController.permittedArrowDirections =
             UIPopoverArrowDirectionUp;
         popoverPresentationController.delegate = self;

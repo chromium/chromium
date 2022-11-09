@@ -174,6 +174,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy:test_support",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/popup_menu/cells",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/popup_menu/public:popup_menu_ui",

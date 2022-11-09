@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
@@ -56,6 +58,10 @@ class PopupMenuCoordinatorTest : public PlatformTest {
   PopupMenuCoordinatorTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    // PopupMenuCoordinator relies on LayoutGuideCenter, which requires a scene
+    // state browser agent.
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
   void SetUp() override {
@@ -90,6 +96,7 @@ class PopupMenuCoordinatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
+  SceneState* scene_state_;
   id mock_browser_commands_handler_;
   id mock_browser_coordinator_commands_handler_;
   id mock_bookmarks_commands_handler_;
