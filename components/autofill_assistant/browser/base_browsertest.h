@@ -15,7 +15,7 @@ class BaseBrowserTest : public content::ContentBrowserTest {
  public:
   const char* kTargetWebsitePath = "/autofill_assistant_target_website.html";
 
-  BaseBrowserTest();
+  explicit BaseBrowserTest(bool start_iframe_server = false);
   ~BaseBrowserTest() override;
 
   BaseBrowserTest(const BaseBrowserTest&) = delete;
@@ -28,6 +28,7 @@ class BaseBrowserTest : public content::ContentBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_server_iframe_;
+  const bool start_iframe_server_;
 };
 }  // namespace autofill_assistant
 

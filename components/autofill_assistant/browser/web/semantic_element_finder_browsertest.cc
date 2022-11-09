@@ -65,11 +65,11 @@ using ::testing::WithArgs;
 
 }  // namespace
 
-class SemanticElementFinderBrowserTest
-    : public autofill_assistant::BaseBrowserTest,
-      public content::WebContentsObserver {
+class SemanticElementFinderBrowserTest : public BaseBrowserTest,
+                                         public content::WebContentsObserver {
  public:
-  SemanticElementFinderBrowserTest() {}
+  SemanticElementFinderBrowserTest()
+      : BaseBrowserTest(/* start_iframe_server= */ true) {}
 
   SemanticElementFinderBrowserTest(const SemanticElementFinderBrowserTest&) =
       delete;

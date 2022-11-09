@@ -45,11 +45,11 @@ using ::testing::AnyOf;
 using ::testing::IsEmpty;
 using ::testing::Return;
 
-class BatchElementCheckerBrowserTest
-    : public autofill_assistant::BaseBrowserTest,
-      public content::WebContentsObserver {
+class BatchElementCheckerBrowserTest : public BaseBrowserTest,
+                                       public content::WebContentsObserver {
  public:
-  BatchElementCheckerBrowserTest() {}
+  BatchElementCheckerBrowserTest()
+      : BaseBrowserTest(/* start_iframe_server= */ true) {}
 
   BatchElementCheckerBrowserTest(const BatchElementCheckerBrowserTest&) =
       delete;

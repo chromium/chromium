@@ -84,10 +84,11 @@ using ::testing::WithArgs;
 
 }  // namespace
 
-class WebControllerBrowserTest : public autofill_assistant::BaseBrowserTest,
+class WebControllerBrowserTest : public BaseBrowserTest,
                                  public content::WebContentsObserver {
  public:
-  WebControllerBrowserTest() {}
+  WebControllerBrowserTest()
+      : BaseBrowserTest(/* start_iframe_server= */ true) {}
 
   WebControllerBrowserTest(const WebControllerBrowserTest&) = delete;
   WebControllerBrowserTest& operator=(const WebControllerBrowserTest&) = delete;

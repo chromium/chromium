@@ -14,7 +14,9 @@ namespace autofill_assistant {
 // Flag to enable site per process to enforce OOPIFs.
 const char* kSitePerProcess = "site-per-process";
 
-BaseBrowserTest::BaseBrowserTest() = default;
+BaseBrowserTest::BaseBrowserTest(const bool start_iframe_server)
+    : start_iframe_server_(start_iframe_server) {}
+
 BaseBrowserTest::~BaseBrowserTest() = default;
 
 void BaseBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
@@ -27,14 +29,18 @@ void BaseBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 void BaseBrowserTest::SetUpOnMainThread() {
   ContentBrowserTest::SetUpOnMainThread();
 
-  // Start a mock server for hosting an OOPIF.
-  http_server_iframe_ = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTP);
-  http_server_iframe_->ServeFilesFromSourceDirectory(
-      "components/test/data/autofill_assistant/html_iframe");
-  // We must assign a known port since we reference http_server_iframe_ from the
-  // html hosted in http_server_.
-  ASSERT_TRUE(http_server_iframe_->Start(51217));
+  // Starting the iframe server is currently flaky since we assign a fixed port.
+  // We can fix in the future by creating the html of http_server_ dynamically.
+  if (start_iframe_server_) {
+    // Start a mock server for hosting an OOPIF.
+    http_server_iframe_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTP);
+    http_server_iframe_->ServeFilesFromSourceDirectory(
+        "components/test/data/autofill_assistant/html_iframe");
+    // We must assign a known port since we reference http_server_iframe_ from
+    // the html hosted in http_server_.
+    ASSERT_TRUE(http_server_iframe_->Start(51217));
+  }
 
   // Start the main server hosting the test page.
   http_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -47,7 +53,11 @@ void BaseBrowserTest::SetUpOnMainThread() {
 
 void BaseBrowserTest::TearDown() {
   ASSERT_TRUE(http_server_->ShutdownAndWaitUntilComplete());
-  ASSERT_TRUE(http_server_iframe_->ShutdownAndWaitUntilComplete());
+
+  if (start_iframe_server_) {
+    ASSERT_TRUE(http_server_iframe_->ShutdownAndWaitUntilComplete());
+  }
+
   ContentBrowserTest::TearDown();
 }
 
