@@ -11,31 +11,15 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
 import {FakeMediaDevices} from './fake_media_devices.js';
+import {FakeMetricsPrivate} from './fake_metrics_private.js';
 import {DEVICE_METRICS_CONSENT_PREF_NAME, TestMetricsConsentBrowserProxy} from './test_metrics_consent_browser_proxy.js';
+import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
 const USER_METRICS_CONSENT_PREF_NAME = 'metrics.user_consent';
-
-/** @implements {PrivacyHubBrowserProxy} */
-class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'getInitialMicrophoneHardwareToggleState',
-    ]);
-    this.microphoneToggleIsEnabled = false;
-  }
-
-  /** override */
-  getInitialMicrophoneHardwareToggleState() {
-    this.methodCalled('getInitialMicrophoneHardwareToggleState');
-    return Promise.resolve(this.microphoneToggleIsEnabled);
-  }
-}
 
 const PrivacyHubVersion = {
   Future: 'Privacy Hub with future (after MVP) features.',
@@ -391,6 +375,135 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
         assertTrue(getMicrophoneCrToggle().disabled);
       }
     }
+  });
+
+  test('Toggle camera button', async () => {
+    privacyHubSubpage = document.createElement('settings-privacy-hub-page');
+    privacyHubSubpage.prefs = {
+      'ash': {
+        'user': {
+          'camera_allowed': {
+            value: true,
+          },
+        },
+      },
+    };
+    document.body.appendChild(privacyHubSubpage);
+    const fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
+    flush();
+
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+
+    await waitAfterNextRender(privacyHubSubpage);
+
+    const cameraToggleControl =
+        assert(privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
+                   .shadowRoot.querySelector('cr-toggle'));
+
+    // Pref and toggle should be in sync and not disabled
+    assertTrue(cameraToggleControl.checked);
+    assertTrue(privacyHubSubpage.prefs.ash.user.camera_allowed.value);
+    assertFalse(cameraToggleControl.disabled);
+
+    // Click the button
+    cameraToggleControl.click();
+    flush();
+
+    await waitAfterNextRender(cameraToggleControl);
+
+    assertFalse(privacyHubSubpage.prefs.ash.user.camera_allowed.value);
+    assertFalse(cameraToggleControl.checked);
+    assertEquals(
+        fakeMetricsPrivate.countBoolean(
+            'ChromeOS.PrivacyHub.Camera.Settings.Enabled', false),
+        1);
+    assertEquals(
+        fakeMetricsPrivate.countBoolean(
+            'ChromeOS.PrivacyHub.Camera.Settings.Enabled', true),
+        0);
+
+    // Click the button again
+    cameraToggleControl.click();
+    flush();
+
+    await waitAfterNextRender(cameraToggleControl);
+
+    assertTrue(privacyHubSubpage.prefs.ash.user.camera_allowed.value);
+    assertTrue(cameraToggleControl.checked);
+    assertEquals(
+        fakeMetricsPrivate.countBoolean(
+            'ChromeOS.PrivacyHub.Camera.Settings.Enabled', false),
+        1);
+    assertEquals(
+        fakeMetricsPrivate.countBoolean(
+            'ChromeOS.PrivacyHub.Camera.Settings.Enabled', true),
+        1);
+  });
+
+  test('Toggle microphone button', async () => {
+    privacyHubSubpage = document.createElement('settings-privacy-hub-page');
+    privacyHubSubpage.prefs = {
+      'ash': {
+        'user': {
+          'microphone_allowed': {
+            value: true,
+          },
+        },
+      },
+    };
+
+    document.body.appendChild(privacyHubSubpage);
+    const fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
+    flush();
+
+    mediaDevices.addDevice('audioinput', 'Fake Mic');
+
+    await waitAfterNextRender(privacyHubSubpage);
+
+    const microphoneToggleControl =
+        assert(privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
+                   .shadowRoot.querySelector('cr-toggle'));
+
+    // Pref and toggle should be in sync and not disabled
+    assertTrue(microphoneToggleControl.checked);
+    assertTrue(privacyHubSubpage.prefs.ash.user.microphone_allowed.value);
+    assertFalse(microphoneToggleControl.disabled);
+
+    // Click the button
+    microphoneToggleControl.click();
+    flush();
+
+    await waitAfterNextRender(microphoneToggleControl);
+
+    assertFalse(privacyHubSubpage.prefs.ash.user.microphone_allowed.value);
+    assertFalse(microphoneToggleControl.checked);
+    assertEquals(
+        fakeMetricsPrivate.countBoolean(
+            'ChromeOS.PrivacyHub.Microphone.Settings.Enabled', false),
+        1);
+    assertEquals(
+        fakeMetricsPrivate.countBoolean(
+            'ChromeOS.PrivacyHub.Microphone.Settings.Enabled', true),
+        0);
+
+    // Click the button again
+    microphoneToggleControl.click();
+    flush();
+
+    await waitAfterNextRender(microphoneToggleControl);
+
+    assertTrue(privacyHubSubpage.prefs.ash.user.microphone_allowed.value);
+    assertTrue(microphoneToggleControl.checked);
+    assertEquals(
+        fakeMetricsPrivate.countBoolean(
+            'ChromeOS.PrivacyHub.Microphone.Settings.Enabled', false),
+        1);
+    assertEquals(
+        fakeMetricsPrivate.countBoolean(
+            'ChromeOS.PrivacyHub.Microphone.Settings.Enabled', true),
+        1);
   });
 }
 

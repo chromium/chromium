@@ -8,19 +8,6 @@
 
 namespace ash::privacy_hub_metrics {
 
-namespace {
-
-constexpr char kPrivacyHubMicrophoneEnabledFromSettingsHistogram[] =
-    "ChromeOS.PrivacyHub.Microphone.Settings.Enabled";
-constexpr char kPrivacyHubMicrophoneEnabledFromNotificationHistogram[] =
-    "ChromeOS.PrivacyHub.Microphone.Notification.Enabled";
-constexpr char kPrivacyHubCameraEnabledFromSettingsHistogram[] =
-    "ChromeOS.PrivacyHub.Camera.Settings.Enabled";
-constexpr char kPrivacyHubCameraEnabledFromNotificationHistogram[] =
-    "ChromeOS.PrivacyHub.Camera.Notification.Enabled";
-
-}  // namespace
-
 void LogMicrophoneEnabledFromSettings(bool enabled) {
   base::UmaHistogramBoolean(kPrivacyHubMicrophoneEnabledFromSettingsHistogram,
                             enabled);

@@ -8,9 +8,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -115,7 +117,12 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
     delegate_->SetAppAccessingMicrophone(app_name);
   }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
  private:
+  const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MicrophoneMuteNotificationController> controller_;
   std::unique_ptr<FakeMicrophoneMuteNotificationDelegate> delegate_;
@@ -256,11 +263,21 @@ TEST_F(MicrophoneMuteNotificationControllerTest, MuteNotificationActionButton) {
   ASSERT_TRUE(notification);
   EXPECT_EQ(1u, notification->buttons().size());
 
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
+                true),
+            0);
   // Clicking the action button should unmute device.
   ClickOnNotificationButton();
   EXPECT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
 
   EXPECT_FALSE(GetNotification());
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
+                true),
+            1);
 }
 
 TEST_F(MicrophoneMuteNotificationControllerTest,

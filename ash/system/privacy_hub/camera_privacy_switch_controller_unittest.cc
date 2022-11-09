@@ -11,7 +11,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -79,6 +81,7 @@ class PrivacyHubCameraControllerTests : public AshTestBase {
   ::testing::NiceMock<MockSwitchAPI>* mock_switch_;
   CameraPrivacySwitchController* controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  const base::HistogramTester histogram_tester_;
 };
 
 // Test reaction on UI action.
@@ -184,11 +187,31 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
   EXPECT_TRUE(message_center->FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
   EXPECT_TRUE(GetUserPref());
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            0);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                false),
+            0);
   message_center->ClickOnNotificationButton(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId, 0);
   EXPECT_FALSE(GetUserPref());
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            0);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                false),
+            1);
 }
 
 // This test is a regression test for b/253407315
@@ -229,12 +252,22 @@ TEST_F(PrivacyHubCameraControllerTests, CameraOffNotificationRemoveViaClick) {
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
 
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            0);
   // Enabling camera via clicking on the button should clear the notification
   message_center->ClickOnNotificationButton(kPrivacyHubCameraOffNotificationId,
                                             0);
   EXPECT_TRUE(GetUserPref());
   EXPECT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            1);
 }
 
 TEST_F(PrivacyHubCameraControllerTests,
@@ -279,12 +312,22 @@ TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
 
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            0);
   // Enabling camera via clicking on the button should clear the notification
   message_center->ClickOnNotificationButton(kPrivacyHubCameraOffNotificationId,
                                             0);
   EXPECT_TRUE(GetUserPref());
   EXPECT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            1);
 }
 
 // Tests if the notification `kPrivacyHubCameraOffNotificationId` is removed
