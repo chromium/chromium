@@ -83,13 +83,6 @@ proto_library("security_xdr_events_proto") {
   sources = [ "synced/security_xdr_events.proto" ]
 }
 
-# Definition for pipeline id storage info.
-proto_library("pipeline_id_proto") {
-  proto_in_dir = "//"
-
-  sources = [ "synced/pipeline_id.proto" ]
-}
-
 proto_library("status_proto") {
   # Generate JS so it can be used by chrome extensions
   generate_javascript = true

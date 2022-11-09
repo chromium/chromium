@@ -51,7 +51,6 @@ using ::testing::Eq;
 using ::testing::Gt;
 using ::testing::HasSubstr;
 using ::testing::Invoke;
-using ::testing::Ne;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::Sequence;
@@ -1065,52 +1064,6 @@ constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
 constexpr std::array<char, (1024 * 1024 / 3)* 2> kBigData = {'A'};
 constexpr base::StringPiece xBigData(&kBigData.front(), kBigData.size());
-
-TEST_P(StorageTest, WriteAndReadPipelineId) {
-  ResetTestStorage();
-  CreateTestStorageOrDie(BuildTestStorageOptions());
-  constexpr char kTestPipelineId[] = "test_pipeline_id";
-  Status status = storage_->StorePipelineId(kTestPipelineId);
-  EXPECT_THAT(status, Eq(Status::StatusOK()));
-  StatusOr<std::string> pipeline_id_result = storage_->GetPipelineId();
-  EXPECT_THAT(pipeline_id_result.status(), Eq(Status::StatusOK()));
-  EXPECT_THAT(pipeline_id_result.ValueOrDie(), Eq(kTestPipelineId));
-}
-
-TEST_P(StorageTest, PipelineIdMultipleSuccessiveReadsOk) {
-  ResetTestStorage();
-  CreateTestStorageOrDie(BuildTestStorageOptions());
-  constexpr char kTestPipelineId[] = "test_pipeline_id";
-  Status status = storage_->StorePipelineId(kTestPipelineId);
-  EXPECT_THAT(status, Eq(Status::StatusOK()));
-  StatusOr<std::string> pipeline_id_result = storage_->GetPipelineId();
-  EXPECT_THAT(pipeline_id_result.status(), Eq(Status::StatusOK()));
-  EXPECT_THAT(pipeline_id_result.ValueOrDie(), Eq(kTestPipelineId));
-  StatusOr<std::string> pipeline_id_result_2 = storage_->GetPipelineId();
-  EXPECT_THAT(pipeline_id_result_2.status(), Eq(Status::StatusOK()));
-  EXPECT_THAT(pipeline_id_result_2.ValueOrDie(), Eq(kTestPipelineId));
-}
-
-TEST_P(StorageTest, OverwritingPipelineIdReturnsMostRecentWrite) {
-  ResetTestStorage();
-  CreateTestStorageOrDie(BuildTestStorageOptions());
-  constexpr char kTestPipelineId[] = "test_pipeline_id";
-  Status status = storage_->StorePipelineId(kTestPipelineId);
-  EXPECT_THAT(status, Eq(Status::StatusOK()));
-  constexpr char kTestPipelineId_2[] = "test_pipeline_id_2";
-  Status status_2 = storage_->StorePipelineId(kTestPipelineId_2);
-  EXPECT_THAT(status_2, Eq(Status::StatusOK()));
-  StatusOr<std::string> pipeline_id_result = storage_->GetPipelineId();
-  EXPECT_THAT(pipeline_id_result.status(), Eq(Status::StatusOK()));
-  EXPECT_THAT(pipeline_id_result.ValueOrDie(), Eq(kTestPipelineId_2));
-}
-
-TEST_P(StorageTest, PipelineIdReadReturnsErrorIfNothingStored) {
-  ResetTestStorage();
-  CreateTestStorageOrDie(BuildTestStorageOptions());
-  StatusOr<std::string> pipeline_id_result = storage_->GetPipelineId();
-  EXPECT_THAT(pipeline_id_result.status(), Ne(Status::StatusOK()));
-}
 
 TEST_P(StorageTest, WriteIntoNewStorageAndReopen) {
   CreateTestStorageOrDie(BuildTestStorageOptions());

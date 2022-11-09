@@ -32,7 +32,6 @@
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/verification.h"
-#include "components/reporting/proto/synced/pipeline_id.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/storage/storage_configuration.h"
@@ -43,7 +42,6 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
-#include "crypto/sha2.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
 namespace reporting {
@@ -51,10 +49,7 @@ namespace reporting {
 namespace {
 constexpr base::FilePath::CharType kEncryptionKeyFilePrefix[] =
     FILE_PATH_LITERAL("EncryptionKey.");
-constexpr base::FilePath::CharType kPipelineIdFileName[] =
-    FILE_PATH_LITERAL("PipelineId");
 constexpr int32_t kEncryptionKeyMaxFileSize = 256;
-constexpr int32_t kPipelineIdMaxFileSize = 256;
 }  // namespace
 
 // Uploader interface adaptor for individual queue.
@@ -210,147 +205,6 @@ class Storage::KeyDelivery {
 
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-};
-
-class Storage::PipelineIdInStorage {
- public:
-  explicit PipelineIdInStorage(const base::FilePath& directory)
-      : directory_(directory) {}
-  ~PipelineIdInStorage() = default;
-  Status StorePipelineId(base::StringPiece pipeline_id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    PipelineIdStorageInfo info;
-    std::string pipeline_id_str(pipeline_id);
-    info.set_pipeline_id(pipeline_id_str);
-    info.set_pipeline_id_signature(GetSignature(pipeline_id_str));
-    Status write_status = WriteToFile(info);
-    if (write_status.ok()) {
-      // Invalidate cached |pipeline_id_| value so that we read from the file
-      // next time.
-      pipeline_id_.reset();
-    }
-    return write_status;
-  }
-  StatusOr<std::string> GetPipelineId() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Read cached value instead of performing a file read.
-    if (pipeline_id_.has_value()) {
-      return pipeline_id_.value();
-    }
-    const auto pipeline_id_result = ReadFromFile();
-    if (!pipeline_id_result.ok()) {
-      return pipeline_id_result.status();
-    }
-    // Cache |pipeline_id_| for next read
-    pipeline_id_ = pipeline_id_result.ValueOrDie().pipeline_id();
-    DCHECK(pipeline_id_.has_value());
-    base::StringPiece signature =
-        pipeline_id_result.ValueOrDie().pipeline_id_signature();
-    if (!VerifySignature(pipeline_id_.value(), signature)) {
-      return Status(error::DATA_LOSS, "Pipeline id corrupted in storage.");
-    }
-    return pipeline_id_.value();
-  }
-
- private:
-  static bool VerifySignature(base::StringPiece id,
-                              base::StringPiece signature) {
-    return signature == GetSignature(id);
-  }
-  static std::string GetSignature(base::StringPiece pipeline_id) {
-    return crypto::SHA256HashString(pipeline_id);
-  }
-  // Writes the pipeline ID and its signature to a file in a serialized
-  // PipelineIdStorageInfo format. Overwrites any data written during previous
-  // calls.
-  Status WriteToFile(const PipelineIdStorageInfo info) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    base::FilePath pipeline_id_file_path =
-        directory_.Append(kPipelineIdFileName);
-    // Create or overwrite the existing file and open for writing.
-    base::File pipeline_id_file(
-        pipeline_id_file_path,
-        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    if (!pipeline_id_file.IsValid()) {
-      return Status(
-          error::NOT_FOUND,
-          base::StrCat({"Cannot open pipeline id file='",
-                        pipeline_id_file_path.MaybeAsASCII(), "' for append"}));
-    }
-    std::string serialized_info;
-    if (!info.SerializeToString(&serialized_info)) {
-      return Status(error::DATA_LOSS,
-                    base::StrCat({"Failed to serialize pipeline id into file='",
-                                  pipeline_id_file_path.MaybeAsASCII(), "'"}));
-    }
-    const int32_t write_result = pipeline_id_file.Write(
-        /*offset=*/0, serialized_info.data(), serialized_info.size());
-    if (write_result < 0) {
-      return Status(
-          error::DATA_LOSS,
-          base::StrCat({"File write error=",
-                        pipeline_id_file.ErrorToString(
-                            pipeline_id_file.GetLastFileError()),
-                        " file=", pipeline_id_file_path.MaybeAsASCII()}));
-    }
-    if (static_cast<size_t>(write_result) != serialized_info.size()) {
-      return Status(error::DATA_LOSS,
-                    base::StrCat({"Failed to serialize pipeline id into file='",
-                                  pipeline_id_file_path.MaybeAsASCII(), "'"}));
-    }
-    return Status::StatusOK();
-  }
-  StatusOr<PipelineIdStorageInfo> ReadFromFile() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Make sure the assigned directory exists.
-    if (base::File::Error error;
-        !base::CreateDirectoryAndGetError(directory_, &error)) {
-      return Status(
-          error::UNAVAILABLE,
-          base::StrCat(
-              {"Storage directory '", directory_.MaybeAsASCII(),
-               "' does not exist, error=", base::File::ErrorToString(error)}));
-    }
-    base::FilePath pipeline_id_file_path =
-        directory_.Append(kPipelineIdFileName);
-    base::File pipeline_id_file(pipeline_id_file_path,
-                                base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!pipeline_id_file.IsValid()) {
-      return Status(error::NOT_FOUND,
-                    base::StrCat({"Could not open pipeline file, full_name= ",
-                                  pipeline_id_file_path.MaybeAsASCII()}));
-    }
-    PipelineIdStorageInfo pipeline_id_storage_info;
-
-    char file_buffer[kPipelineIdMaxFileSize];
-    const int32_t read_result = pipeline_id_file.Read(
-        /*offset=*/0, file_buffer, kPipelineIdMaxFileSize);
-    if (read_result < 0) {
-      return Status(error::DATA_LOSS,
-                    base::StrCat({"File read error, full_name= ",
-                                  pipeline_id_file.ErrorToString(
-                                      pipeline_id_file.GetLastFileError()),
-                                  " ", pipeline_id_file_path.MaybeAsASCII()}));
-    }
-    if (read_result == 0 || read_result >= kPipelineIdMaxFileSize) {
-      return Status(
-          error::DATA_LOSS,
-          base::StrCat({"Unexpected pipeline id file size, full_name= ",
-                        pipeline_id_file_path.MaybeAsASCII()}));
-    }
-    google::protobuf::io::ArrayInputStream stream(  // Zero-copy stream.
-        file_buffer, read_result);
-    if (!pipeline_id_storage_info.ParseFromZeroCopyStream(&stream)) {
-      return Status(
-          error::DATA_LOSS,
-          base::StrCat({"Failed to parse pipeline ID file, full_name= ",
-                        pipeline_id_file_path.MaybeAsASCII()}));
-    }
-    return pipeline_id_storage_info;
-  }
-  absl::optional<std::string> pipeline_id_;
-  const base::FilePath directory_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -780,8 +634,6 @@ Storage::Storage(const StorageOptions& options,
           options.signature_verification_public_key(),
           options.directory())),
       async_start_upload_cb_(async_start_upload_cb),
-      pipeline_id_in_storage_(
-          std::make_unique<PipelineIdInStorage>(options.directory())),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -935,14 +787,6 @@ StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(
         base::StrCat({"Undefined priority=", base::NumberToString(priority)}));
   }
   return it->second;
-}
-
-Status Storage::StorePipelineId(base::StringPiece pipeline_id) {
-  return pipeline_id_in_storage_->StorePipelineId(pipeline_id);
-}
-
-StatusOr<std::string> Storage::GetPipelineId() {
-  return pipeline_id_in_storage_->GetPipelineId();
 }
 
 void Storage::RegisterCompletionCallback(base::OnceClosure callback) {
