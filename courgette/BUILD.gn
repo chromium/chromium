@@ -151,16 +151,7 @@ if (!is_ios) {
   }
 
   if (is_win) {
-    if (current_cpu == "x64") {
-      # TODO(sebmarchand): The official build scripts expect courgette.exe to be
-      # in the official build archives, remove this once they have been updated.
-      # https://crbug.com/629243
-      copy("copy_courgette_binaries") {
-        sources = [ "$root_out_dir/courgette64.exe" ]
-        outputs = [ "$root_out_dir/courgette.exe" ]
-        deps = [ ":courgette" ]
-      }
-    } else {
+    if (current_cpu != "x64") {
       # Make sure that we have a copy of courgette64.exe(.pdb) in the root out
       # directory.
       courgette64_toolchain = "//build/toolchain/win:win_clang_x64"

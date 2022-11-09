@@ -964,13 +964,15 @@ if (is_win) {
       "//components/policy:pack_policy_templates",
       "//components/zucchini",
       "//courgette",
-      "//courgette:copy_courgette_binaries",
       "//third_party/hyphenation-patterns",
       "//tools/metrics:metrics_metadata",
     ]
 
     if (target_cpu == "x86") {
-      deps += [ "//courgette(//build/toolchain/win:win_clang_x64)" ]
+      deps += [
+        "//courgette:copy_courgette_binaries",
+        "//courgette(//build/toolchain/win:win_clang_x64)",
+      ]
     }
     if (is_chrome_branded) {
       deps += [ "//remoting/host:remoting_host_installation" ]
