@@ -99,6 +99,7 @@ try_.builder(
 try_.builder(
     name = "linux-blink-heap-verification-try",
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -121,6 +122,7 @@ try_.builder(
         "ci/linux-extended-tracing-rel",
     ],
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -135,6 +137,7 @@ try_.builder(
 try_.builder(
     name = "linux-headless-shell-rel",
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -150,6 +153,7 @@ try_.builder(
     name = "linux-mbi-mode-per-render-process-host-rel",
     mirrors = builder_config.copy_from("linux-rel"),
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -193,6 +197,7 @@ try_.builder(
         ],
     ),
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.orchestrator_builder(
@@ -312,6 +317,7 @@ try_.builder(
         "ci/WebKit Linux MSAN",
     ],
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -324,16 +330,19 @@ try_.builder(
 try_.builder(
     name = "linux-wpt-fyi-rel",
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "linux-wpt-identity-fyi-rel",
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "linux-wpt-input-fyi-rel",
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -381,6 +390,7 @@ try_.builder(
         "ci/linux-archive-rel",
     ],
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.orchestrator_builder(
@@ -441,6 +451,7 @@ try_.builder(
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
     execution_timeout = 7 * time.hour,
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -527,6 +538,7 @@ try_.builder(
         is_compile_only = True,
     ),
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -549,6 +561,7 @@ try_.builder(
         ],
     ),
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -559,6 +572,7 @@ try_.builder(
     execution_timeout = 16 * time.hour,
     goma_backend = None,
     os = os.LINUX_FOCAL,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -569,6 +583,7 @@ try_.builder(
     ],
     execution_timeout = 6 * time.hour,
     goma_backend = None,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.orchestrator_builder(
@@ -626,6 +641,7 @@ try_.builder(
         "ci/linux-ubsan-vptr",
     ],
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -697,6 +713,7 @@ try_.builder(
         ],
     ),
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(

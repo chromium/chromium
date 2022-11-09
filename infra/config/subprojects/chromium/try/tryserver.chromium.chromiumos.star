@@ -335,6 +335,7 @@ try_.builder(
     ),
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 # RTS builders
