@@ -181,7 +181,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="138218114945450791">Svijetloplava</translation>
 <translation id="1382194467192730611">USB uređaj koji je dopustio vaš administrator</translation>
 <translation id="1382378825779654399">Ako se cijena snizi na bilo kojoj web-lokaciji, dobit ćete upozorenja e-porukom. Ova će se stranica spremiti u mapu <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Ne vidite svoje trenutačne podatke? Obratite se svojoj banci da biste ih ažurirali.</translation>
 <translation id="1384725838384960382">List s autentifikacijom za vjerodajnicu sigurnog plaćanja</translation>
 <translation id="1386623374109090026">Napomene</translation>
 <translation id="1391289752476847787">Dionice i obveznice</translation>
@@ -1027,7 +1026,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Usmjerenje umetanja</translation>
 <translation id="3611317423880285981">Kućanske potrepštine</translation>
-<translation id="3611395257124510155">Virtualna kartica za <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Veličina 2</translation>
 <translation id="361438452008624280">Unos na popisu "<ph name="LANGUAGE_ID" />": nepoznati ili nepodržani jezik.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste pokrenuli sigurnosnu provjeru u postavkama Chromea</translation>
@@ -2285,7 +2283,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6890443033788248019">Želite li omogućiti lokaciju?</translation>
 <translation id="6890531741535756070">Odabrali ste potvrdu putem značajke <ph name="DEVICE_LABEL" /> na web-lokacijama koje upotrebljavaju <ph name="PROVIDER_ORIGIN" />. Taj je davatelj usluga možda pohranio podatke o vašem načinu plaćanja za koje možete <ph name="BEGIN_LINK" />zatražiti brisanje<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Razina pravila nije podržana.</translation>
-<translation id="6895143722905299846">Virtualni broj:</translation>
 <translation id="6895330447102777224">Kartica je potvrđena</translation>
 <translation id="6897140037006041989">Korisnički agent</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
@@ -2458,7 +2455,6 @@ Dodatne pojedinosti:
 <translation id="7334320624316649418">&amp;Ponovi promjenu rasporeda</translation>
 <translation id="7335157162773372339">Može tražiti dopuštenje za upotrebu kamere</translation>
 <translation id="7337248890521463931">Prikaži više redaka</translation>
-<translation id="7337418456231055214">Broj virtualne kartice nije ispunjen? Kliknite podatke o kartici da biste kopirali. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nije dostupno na vašoj platformi.</translation>
 <translation id="733923710415886693">Certifikat poslužitelja nije otkriven putem Transparentnosti certifikata.</translation>
 <translation id="7341357280245177602">Rabljena vozila</translation>

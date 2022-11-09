@@ -938,6 +938,7 @@
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1834503245783133039"><ph name="FILE_NAME" /> 下載失敗</translation>
 <translation id="1835261175655098052">正在升級 Linux</translation>
+<translation id="1835612721186505600">允許具備相機權限的應用程式和網站存取相機</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839021455997460752">您的電郵地址</translation>
 <translation id="1839540115464516994">在「<ph name="LOCATION" />」中顯示</translation>
@@ -2509,6 +2510,7 @@
 <translation id="3279230909244266691">此程序可能需時幾分鐘。正在啟動虛擬機器。</translation>
 <translation id="3280237271814976245">另存為(&amp;A)…</translation>
 <translation id="3280243678470289153">繼續使用 Chrome</translation>
+<translation id="328119399589609861">控制麥克風、相機等裝置存取權</translation>
 <translation id="3281892622610078515">要隔離的檔案和程式：</translation>
 <translation id="3282210178675490297">正在與 <ph name="APP_NAME" /> 共用此標籤</translation>
 <translation id="3285322247471302225">新分頁(&amp;T)</translation>
@@ -4515,6 +4517,7 @@
 <translation id="5185500136143151980">沒有互聯網連線</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">啟用連接埠</translation>
+<translation id="5190959794678983197">沒有麥克風</translation>
 <translation id="5191094172448199359">您輸入的 PIN 不符</translation>
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
 <translation id="519185197579575131">使用 QT</translation>
@@ -4874,6 +4877,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">這是您想要的首頁嗎？</translation>
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
+<translation id="5522403133543437426">網址列中使用的搜尋引擎。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{管理員已安裝 1 個擴充程式}other{管理員已安裝 # 個擴充程式}}</translation>
 <translation id="5523558474028191231">名稱可以使用字母、數字和特殊字元，且不可超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
@@ -7054,6 +7058,7 @@
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7608810328871051088">Android 偏好設定</translation>
 <translation id="7609148976235050828">請連線至互聯網，然後再試一次。</translation>
+<translation id="7612401678989660900">允許具備麥克風權限的應用程式和網站存取麥克風</translation>
 <translation id="7612655942094160088">啟用連接手機嘅功能。</translation>
 <translation id="7614260613810441905">網站必須先詢問您，才能編輯裝置上的檔案或資料夾 (建議使用)</translation>
 <translation id="761530003705945209">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。您的備份會上載至 Google，並透過您的 Google 帳戶密碼加密。</translation>
@@ -8436,6 +8441,7 @@
 <translation id="8872155268274985541">找到無效的 Kiosk 外部更新資訊清單檔案，無法更新 Kiosk 應用程式。請移除 USB 記憶體。</translation>
 <translation id="8872506776304248286">在應用程式中開啟</translation>
 <translation id="8872777911145321141">在網站要求使用您的虛擬實境裝置和資料時詢問您 (建議)</translation>
+<translation id="887292602123626481">進一步了解預設搜尋引擎</translation>
 <translation id="8874341931345877644">投放至裝置：</translation>
 <translation id="8875520811099717934">Linux 升級</translation>
 <translation id="8875736897340638404">選擇分享設定</translation>
@@ -8556,6 +8562,7 @@
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">重新整理網絡共享狀態</translation>
 <translation id="8991520179165052608">網站可以使用您的麥克風</translation>
+<translation id="8991694323904646277">沒有相機</translation>
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，您仍可還原本機資料。您需要登入 Google 帳戶或使用復原帳戶功能。</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>

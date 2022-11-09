@@ -333,6 +333,7 @@
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> 키를 눌렀습니다.</translation>
+<translation id="435692326371619097">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>

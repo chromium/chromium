@@ -181,7 +181,6 @@
 <translation id="138218114945450791">浅蓝色</translation>
 <translation id="1382194467192730611">您的管理员允许使用的 USB 设备</translation>
 <translation id="1382378825779654399">当任一网站上的商品降价时，您会收到电子邮件提醒。该网页将保存到“<ph name="LAST_BOOKMARKS_FOLDER" />”中。</translation>
-<translation id="1382912999714108023">看到的不是您的最新信息？请与银行联系以更新您的信息。</translation>
 <translation id="1384725838384960382">安全付款凭据身份验证表单</translation>
 <translation id="1386623374109090026">注释</translation>
 <translation id="1391289752476847787">股票与债券</translation>
@@ -1024,7 +1023,6 @@
 <translation id="3605899229568538311">5 x 5 英寸</translation>
 <translation id="3608932978122581043">送纸方向</translation>
 <translation id="3611317423880285981">家居用品</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> 的虚拟卡</translation>
 <translation id="3614103345592970299">大小：2</translation>
 <translation id="361438452008624280">列表条目“<ph name="LANGUAGE_ID" />”：语言未知或不受支持。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可从 Chrome 设置中运行安全检查</translation>
@@ -2281,7 +2279,6 @@
 <translation id="6890443033788248019">允许使用位置信息？</translation>
 <translation id="6890531741535756070">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过<ph name="DEVICE_LABEL" />来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="BEGIN_LINK" />请求删除相应信息<ph name="END_LINK" />。</translation>
 <translation id="6891596781022320156">政策级别不受支持。</translation>
-<translation id="6895143722905299846">虚拟卡号：</translation>
 <translation id="6895330447102777224">已确认您的信用卡</translation>
 <translation id="6897140037006041989">用户代理</translation>
 <translation id="6898699227549475383">组织 (O)</translation>
@@ -2454,7 +2451,6 @@
 <translation id="7334320624316649418">恢复顺序调整(&amp;R)</translation>
 <translation id="7335157162773372339">可以询问能否使用您的摄像头</translation>
 <translation id="7337248890521463931">显示更多行</translation>
-<translation id="7337418456231055214">未填充虚拟卡号？点击“信用卡详细信息”即可复制。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">在您的平台上不可用。</translation>
 <translation id="733923710415886693">该服务器的证书未通过证书透明度政策进行披露。</translation>
 <translation id="7341357280245177602">二手车</translation>

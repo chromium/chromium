@@ -181,7 +181,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="138218114945450791">Helesinine</translation>
 <translation id="1382194467192730611">Teie administraator lubas selle USB-seadme</translation>
 <translation id="1382378825779654399">Teile saadetakse meiliteavitus, kui hind mõnel saidil langeb. See leht salvestatakse kausta <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Teie teave on aegunud? Võtke selle värskendamiseks ühendust pangaga.</translation>
 <translation id="1384725838384960382">Turvalise maksemandaadi autentimisleht</translation>
 <translation id="1386623374109090026">Märkused</translation>
 <translation id="1391289752476847787">Aktsiad ja võlakirjad</translation>
@@ -1027,7 +1026,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3605899229568538311">5 × 5 tolli</translation>
 <translation id="3608932978122581043">Voo suund</translation>
 <translation id="3611317423880285981">Majapidamistarbed</translation>
-<translation id="3611395257124510155">Virtuaalkaart: <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Suurus 2</translation>
 <translation id="361438452008624280">Loendi kirje „<ph name="LANGUAGE_ID" />”: tundmatu või toetamata keel.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage tabulaatorit ja siis sisestusklahvi, et Chrome'i seadetes ohutuskontroll käitada</translation>
@@ -2286,7 +2284,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6890443033788248019">Kas anda asukohale juurdepääsu luba?</translation>
 <translation id="6890531741535756070">Otsustasite kinnitada <ph name="DEVICE_LABEL" /> veebisaitidel, mis kasutavad domeeni <ph name="PROVIDER_ORIGIN" />. See pakkuja võis teie makseviisi kohta teavet salvestada. Saate <ph name="BEGIN_LINK" />taotleda selle kustutamist<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Reegli taset ei toetata.</translation>
-<translation id="6895143722905299846">Virtuaalne number:</translation>
 <translation id="6895330447102777224">Teie kaart on kinnitatud</translation>
 <translation id="6897140037006041989">Kasutajaagent</translation>
 <translation id="6898699227549475383">Organisatsioon (O)</translation>
@@ -2459,7 +2456,6 @@ Lisateave:
 <translation id="7334320624316649418">&amp;Korrasta uuesti</translation>
 <translation id="7335157162773372339">Saab küsida luba teie kaamera kasutamiseks</translation>
 <translation id="7337248890521463931">Kuva rohkem ridu</translation>
-<translation id="7337418456231055214">Kas virtuaalkaardi numbrit pole sisestatud? Klõpsake kopeerimiseks kaardi üksikasjadel. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Pole teie platvormil saadaval.</translation>
 <translation id="733923710415886693">Serveri sertifikaati ei avalikustatud sertifikaadi läbipaistvuse reegli kaudu.</translation>
 <translation id="7341357280245177602">Kasutatud sõidukid</translation>

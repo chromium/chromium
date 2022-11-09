@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Ашық көк</translation>
 <translation id="1382194467192730611">Әкімші рұқсат еткен USB құрылғысы</translation>
 <translation id="1382378825779654399">Қандай да бір сайтта баға төмендесе, электрондық пошта хабарландыруларын аласыз. Бұл бет мына жерге сақталады: <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
-<translation id="1382912999714108023">Ақпарат дұрыс емес пе? Түзету үшін банкіңізге хабарласыңыз.</translation>
 <translation id="1384725838384960382">Қауіпсіз төлем деректерін аутентификациялау парағы</translation>
 <translation id="1386623374109090026">Аннотациялар</translation>
 <translation id="1391289752476847787">Акциялар және облигациялар</translation>
@@ -1026,7 +1025,6 @@
 <translation id="3605899229568538311">5 x 5 дюйм</translation>
 <translation id="3608932978122581043">Беру бағыты</translation>
 <translation id="3611317423880285981">Үйге арналған тауарлар</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> виртуалдық картасы</translation>
 <translation id="3614103345592970299">Өлшемі: 2</translation>
 <translation id="361438452008624280">"<ph name="LANGUAGE_ID" />" тізім жазбасы: тіл белгісіз немесе оған қолдау көрсетілмейді.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінен қауіпсіздік тексерісін іске қосу үшін Tab, сосын Enter пернесін басыңыз.</translation>
@@ -2285,7 +2283,6 @@
 <translation id="6890443033788248019">Локацияны пайдалануға рұқсат берілсін бе?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> пайдаланатын веб-сайттарда <ph name="DEVICE_LABEL" /> арқылы растау нұсқасын таңдадыңыз. Бұл провайдерде төлеу әдісіңіз туралы сақталған ақпарат болуы мүмкін, оны <ph name="BEGIN_LINK" />жоюды сұрауыңызға болады<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Саясат деңгейіне қолдау көрсетілмеген.</translation>
-<translation id="6895143722905299846">Виртуалдық нөмір:</translation>
 <translation id="6895330447102777224">Картаңыз расталды</translation>
 <translation id="6897140037006041989">Пайдаланушы агенті</translation>
 <translation id="6898699227549475383">Ұйым (O)</translation>
@@ -2458,7 +2455,6 @@
 <translation id="7334320624316649418">&amp;Қайта ретке келтіруді қайталау</translation>
 <translation id="7335157162773372339">Камераңызды қолдануға рұқсат сұрай алады</translation>
 <translation id="7337248890521463931">Жолдарды көбірек көрсету</translation>
-<translation id="7337418456231055214">Виртуалдық карта нөмірі толтырылмаған ба? Көшірілетін карта мәліметтерін басыңыз. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Сіздің платформаңызда қолжетімді емес.</translation>
 <translation id="733923710415886693">Сервер сертификаты Сертификат айқындығы саясатымен ашылмады.</translation>
 <translation id="7341357280245177602">Жүрілген көліктер</translation>

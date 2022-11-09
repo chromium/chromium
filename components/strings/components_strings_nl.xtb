@@ -181,7 +181,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="138218114945450791">Lichtblauw</translation>
 <translation id="1382194467192730611">USB-apparaat toegestaan door je beheerder</translation>
 <translation id="1382378825779654399">Je krijgt e-mailmeldingen bij een prijsdaling op een site. Deze pagina wordt opgeslagen in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Zijn je gegevens niet actueel? Neem contact op met je bank om ze te updaten.</translation>
 <translation id="1384725838384960382">Blad voor beveiligde verificatie van betalingsgegevens</translation>
 <translation id="1386623374109090026">Annotaties</translation>
 <translation id="1391289752476847787">Aandelen en obligaties</translation>
@@ -1023,7 +1022,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3605899229568538311">5 x 5 inch</translation>
 <translation id="3608932978122581043">Invoerrichting</translation>
 <translation id="3611317423880285981">Huishoudelijke benodigdheden</translation>
-<translation id="3611395257124510155">Virtuele kaart voor <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Grootte 2</translation>
 <translation id="361438452008624280">Lijstitem '<ph name="LANGUAGE_ID" />': Onbekende of niet-ondersteunde taal.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om een veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
@@ -2280,7 +2278,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6890443033788248019">Locatie toestaan?</translation>
 <translation id="6890531741535756070">Je hebt ervoor gekozen om te verifiëren met <ph name="DEVICE_LABEL" /> op websites die <ph name="PROVIDER_ORIGIN" /> gebruiken. Deze provider heeft misschien informatie over je betaalmethode opgeslagen. Je kunt een <ph name="BEGIN_LINK" />verwijderingsverzoek indienen<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Beleidsniveau wordt niet ondersteund.</translation>
-<translation id="6895143722905299846">Virtueel nummer:</translation>
 <translation id="6895330447102777224">Je creditcard is bevestigd</translation>
 <translation id="6897140037006041989">User-agent</translation>
 <translation id="6898699227549475383">Organisatie (O)</translation>
@@ -2453,7 +2450,6 @@ Aanvullende informatie:
 <translation id="7334320624316649418">&amp;Opnieuw volgorde wijzigen</translation>
 <translation id="7335157162773372339">Kan vragen of deze site je camera mag gebruiken</translation>
 <translation id="7337248890521463931">Meer regels bekijken</translation>
-<translation id="7337418456231055214">Virtueel kaartnummer niet ingevuld? Klik op de kaartgegevens om ze te kopiëren. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Niet beschikbaar op je platform.</translation>
 <translation id="733923710415886693">Het certificaat van de server is niet bekendgemaakt via Certificaattransparantie.</translation>
 <translation id="7341357280245177602">Tweedehands voertuigen</translation>

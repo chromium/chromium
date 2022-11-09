@@ -939,6 +939,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1832848789136765277">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
 <translation id="1834503245783133039">Aflaai onsuksesvol: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Gradeer Linux op</translation>
+<translation id="1835612721186505600">Laat toegang toe vir apps en webwerwe met die kameratoestemming</translation>
 <translation id="1838374766361614909">Vee soektog uit</translation>
 <translation id="1839021455997460752">Jou e-posadres</translation>
 <translation id="1839540115464516994">Wys in <ph name="LOCATION" /></translation>
@@ -2509,6 +2510,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3279230909244266691">Hierdie proses kan 'n paar minute neem. Begin tans die virtuele masjien.</translation>
 <translation id="3280237271814976245">Stoor as …</translation>
 <translation id="3280243678470289153">Bly in Chrome</translation>
+<translation id="328119399589609861">Beheer toesteltoegang tot mikrofoon, kamera en meer</translation>
 <translation id="3281892622610078515">Lêers en programme wat in kwarantyn geplaas moet word:</translation>
 <translation id="3282210178675490297">Deel tans 'n oortjie met <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Nuwe oortjie</translation>
@@ -4515,6 +4517,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5185500136143151980">Geen internet nie</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktiveer poort</translation>
+<translation id="5190959794678983197">Geen mikrofoon nie</translation>
 <translation id="5191094172448199359">Die PIN'e wat jy ingevoer het, stem nie ooreen nie</translation>
 <translation id="5191251636205085390">Vind meer uit oor en beheer nuwe tegnologieë wat beoog om derdepartywebkoekies te vervang</translation>
 <translation id="519185197579575131">Gebruik QT</translation>
@@ -4874,6 +4877,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Is dit die tuisblad wat jy verwag het?</translation>
 <translation id="5522156646677899028">Die uitbreiding bevat 'n ernstige sekuriteitswakheid.</translation>
+<translation id="5522403133543437426">Soekenjin wat op die adresbalk gebruik word.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{'n Uitbreiding is deur jou administrateur geïnstalleer}other{# uitbreidings is deur jou administrateur geïnstalleer}}</translation>
 <translation id="5523558474028191231">Name kan letters, syfers en spesiale karakters gebruik en moet <ph name="MAX_CHARACTER_COUNT" /> of minder karakters wees</translation>
 <translation id="5526701598901867718">Alles (onveilig)</translation>
@@ -7057,6 +7061,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7607002721634913082">Laat wag</translation>
 <translation id="7608810328871051088">Android-voorkeure</translation>
 <translation id="7609148976235050828">Koppel aan die internet en probeer weer.</translation>
+<translation id="7612401678989660900">Laat toegang toe vir apps en webwerwe met die mikrofoontoestemming</translation>
 <translation id="7612655942094160088">Aktiveer gekoppelde foonkenmerke.</translation>
 <translation id="7614260613810441905">Vra wanneer 'n werf lêers of vouers op jou toestel wil wysig (aanbeveel)</translation>
 <translation id="761530003705945209">Rugsteun in Google Drive. Laai jou data maklik terug of wissel enige tyd jou toestel. Jou rugsteun sluit programdata in. Jou rugsteune word na Google toe opgelaai en met jou Google-rekeningwagwoord geënkripteer.</translation>
@@ -8438,6 +8443,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8872155268274985541">Ongeldige Kiosk-manifeslêer vir eksterne opdatering gevind. Kon nie Kioskprogram opdateer nie. Verwyder asseblief die USB-stokkie.</translation>
 <translation id="8872506776304248286">Maak in program oop</translation>
 <translation id="8872777911145321141">Vra wanneer 'n werf jou virtuelerealiteittoestelle en -data wil gebruik (aanbeveel)</translation>
+<translation id="887292602123626481">Kom meer te wete oor versteksoekenjins</translation>
 <translation id="8874341931345877644">Saai uit na 'n toestel:</translation>
 <translation id="8875520811099717934">Linux-opgradering</translation>
 <translation id="8875736897340638404">Kies jou sigbaarheid</translation>
@@ -8558,6 +8564,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8987927404178983737">Maand</translation>
 <translation id="8989359959810288806">Herlaai verbindingstatus</translation>
 <translation id="8991520179165052608">Werf kan jou mikrofoon gebruik</translation>
+<translation id="8991694323904646277">Geen kamera nie</translation>
 <translation id="8993059306046735527">Jy kan steeds jou plaaslike data terugstel as jy jou <ph name="DEVICE_TYPE" />-wagwoord vergeet. Jy sal by jou Google-rekening moet aanmeld of rekeningherwinning moet gebruik.</translation>
 <translation id="899384117894244799">Verwyder gebruiker met beperkte gebruik</translation>
 <translation id="899403249577094719">Netscape-sertifikaatbasis se URL</translation>

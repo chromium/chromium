@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Светла-сіні</translation>
 <translation id="1382194467192730611">Прылада USB дазволена адміністратарам</translation>
 <translation id="1382378825779654399">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі па электроннай пошце. Гэта старонка будзе захоўвацца ў папцы "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
-<translation id="1382912999714108023">Не бачыце сваю бягучую інфармацыю? Звярніцеся ў банк, каб абнавіць яе.</translation>
 <translation id="1384725838384960382">Аркуш аўтэнтыфікацыі ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="1386623374109090026">Анатацыі</translation>
 <translation id="1391289752476847787">Акцыі і аблігацыі</translation>
@@ -1026,7 +1025,6 @@
 <translation id="3605899229568538311">5 x 5 цаляў</translation>
 <translation id="3608932978122581043">Арыентацыя падачы</translation>
 <translation id="3611317423880285981">Гаспадарчыя тавары</translation>
-<translation id="3611395257124510155">Віртуальная картка (<ph name="CARD_IDENTIFIER" />)</translation>
 <translation id="3614103345592970299">Памер 2</translation>
 <translation id="361438452008624280">Элемент спіса "<ph name="LANGUAGE_ID" />": мова невядомая або не падтрымліваецца.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выканаць праверку бяспекі ў наладах Chrome, націсніце Tab, затым Enter</translation>
@@ -2285,7 +2283,6 @@
 <translation id="6890443033788248019">Дазволіць вызначэнне месцазнаходжання?</translation>
 <translation id="6890531741535756070">Для спраўджання купляў на сайтах, якія карыстаюцца паслугамі пастаўшчыка <ph name="PROVIDER_ORIGIN" />, вы выбралі наступную прыладу: <ph name="DEVICE_LABEL" />. Гэты пастаўшчык мог захаваць інфармацыю пра ваш спосаб аплаты. Вы можаце <ph name="BEGIN_LINK" />запытаць яе выдаленне<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Узровень палітыкі не падтрымліваецца.</translation>
-<translation id="6895143722905299846">Віртуальны нумар:</translation>
 <translation id="6895330447102777224">Картка пацверджана</translation>
 <translation id="6897140037006041989">Агент карыстальніка</translation>
 <translation id="6898699227549475383">Арганізацыя (А)</translation>
@@ -2458,7 +2455,6 @@
 <translation id="7334320624316649418">&amp;Паўтарыць змяненне парадку</translation>
 <translation id="7335157162773372339">Сайт можа запытваць дазвол на выкарыстанне мікрафона</translation>
 <translation id="7337248890521463931">Паказваць больш радкоў</translation>
-<translation id="7337418456231055214">Не ўказаны нумар віртуальнай карткі? Скапіруйце рэквізіты карткі, націснуўшы на іх. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Недаступна на вашай платформе.</translation>
 <translation id="733923710415886693">Сертыфікат сервера не быў раскрыты ў адпаведнасці са стандартам "Празрыстасць сертыфікатаў".</translation>
 <translation id="7341357280245177602">Ужываныя аўтамабілі</translation>

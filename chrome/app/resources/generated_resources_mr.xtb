@@ -3750,6 +3750,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ने अ‍ॅक्टिव्ह TPM डिटेक्ट केले आहे जे तुमचा डेटा आणखी सुरक्षितरीत्या स्टोअर करू शकते.</translation>
 <translation id="4451479197788154834">तुमचा पासवर्ड या डिव्हाइसवर आणि तुमच्या Google खाते मध्ये सेव्ह केला गेला</translation>
 <translation id="4451757071857432900">अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवणाऱ्या साइटवर ब्लॉक केले (शिफारस केलेले)</translation>
+<translation id="4452898361839215358">किंवा PPD निवडा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> वर शोधा किंवा URL टाइप करा</translation>
 <translation id="4458535500699390320">हा टॅब निष्क्रिय असताना, मेमरी सेव्हरने इतर टास्कसाठी मेमरी मोकळी केली. तुम्ही सेटिंग्जमध्ये हे कधीही बदलू शकता.</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
@@ -4665,6 +4666,7 @@
 <translation id="5331568967879689647">ChromeOS सिस्टीम अ‍ॅप</translation>
 <translation id="5331975486040154427">USB-C डिव्‍हाइस (डाव्या बाजूचे मागील पोर्ट)</translation>
 <translation id="5333896723098573627">ॲप्स काढून टाकण्यासाठी, सेटिंग्ज &gt; ॲप्स &gt; Google Play Store &gt; Android प्राधान्ये व्यवस्थापित करा &gt; ॲप्स किंवा अ‍ॅप्लिकेशन व्यवस्थापक वर जा. नंतर तुम्हाला अनइंस्टॉल करायच्या असलेल्या ॲपवर टॅप करा (ॲप शोधण्‍यासाठी तुम्हाला कदाचित उजवीकडे किंवा डावीकडे स्वाइप करावे लागेल). यानंतर अनइंस्टॉल करा किंंवा बंद करा वर टॅप करा.</translation>
+<translation id="5334113802138581043">मायक्रोफोनचा अ‍ॅक्सेस</translation>
 <translation id="5334142896108694079">स्क्रिप्ट कॅशे </translation>
 <translation id="5336688142483283574">हे पेज तुमच्या इतिहास आणि <ph name="SEARCH_ENGINE" /> ॲक्टिव्हिटी मधून देखील काढून टाकले जाईल.</translation>
 <translation id="5336689872433667741">कर्सर आणि टचपॅड</translation>
@@ -8374,6 +8376,7 @@
 <translation id="8823514049557262177">लिंक मजकूर कॉपी करा</translation>
 <translation id="8823559166155093873">कुकी ब्लॉक करा</translation>
 <translation id="8823704566850948458">पासवर्ड सुचवा...</translation>
+<translation id="8823963789776061136">याव्यतिरिक्त, प्रिंटर PPD निवडा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">पृ&amp;ष्ठ जोडा...</translation>
 <translation id="8827125715368568315">ब्लॉक केलेले <ph name="PERMISSION" /> आणि आणखी <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">एक्स्टेंशन पिन करा</translation>
@@ -8629,6 +8632,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ला खालील आशय ॲक्सेस करायचा आहे:</translation>
 <translation id="9057354806206861646">शेड्युल अपडेट करा</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{एका दिवशी एका सूचनेबद्दल}other{एका दिवशी {NUM_NOTIFICATION} सूचनांबद्दल}}</translation>
+<translation id="9058760336383947367">प्रिंटर PPD पहा</translation>
 <translation id="9061383912634843744">सेव्ह केलेली क्रेडेंशियल वापरून साइट आणि अ‍ॅप्समध्ये आपोआप साइन इन करा. ते बंद केल्यास, तुम्ही साइट किंवा अ‍ॅपमध्ये साइन इन करण्यापूर्वी तुम्हाला प्रत्येक वेळी कंफर्मेशनसाठी विचारले जाईल.</translation>
 <translation id="9062468308252555888">१४x</translation>
 <translation id="9063208415146866933">ओळ <ph name="ERROR_LINE_START" /> ते <ph name="ERROR_LINE_END" /> पर्यंत एरर</translation>
@@ -8660,6 +8664,7 @@
 <translation id="9081543426177426948">गुप्त मोडमध्ये तुम्ही भेट देता त्या साइट सेव्ह केल्या जात नाहीत</translation>
 <translation id="9084064520949870008">विंडो म्हणून उघडा</translation>
 <translation id="9085256200913095638">निवडलेला टॅब डुप्लिकेट करा</translation>
+<translation id="9085446486797400519">कॅमेराचा अ‍ॅक्सेस</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> निवडलेली नाही. निवडण्यासाठी सर्च आणि स्पेस दाबा.</translation>
 <translation id="9087949559523851360">प्रतिबंधित वापरकर्ता जोडा</translation>
 <translation id="9088234649737575428">संस्‍थेच्या धोरणाद्वारे <ph name="PLUGIN_NAME" /> ब्लॉक केले आहे</translation>

@@ -181,7 +181,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="138218114945450791">Açık Mavi</translation>
 <translation id="1382194467192730611">Yöneticiniz USB cihaza izin veriyor</translation>
 <translation id="1382378825779654399">Herhangi bir sitede fiyatı düştüğünde e-posta uyarısı alırsınız. Bu sayfa <ph name="LAST_BOOKMARKS_FOLDER" /> klasörüne kaydedilir.</translation>
-<translation id="1382912999714108023">Güncel bilgilerinizi göremiyor musunuz? Bilgilerin güncellenmesi için bankanızla iletişime geçin.</translation>
 <translation id="1384725838384960382">Güvenli ödeme kimlik bilgisi doğrulama sayfası</translation>
 <translation id="1386623374109090026">Ek Açıklamalar</translation>
 <translation id="1391289752476847787">Hisse ve tahviller</translation>
@@ -1027,7 +1026,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3605899229568538311">5 x 5 inç</translation>
 <translation id="3608932978122581043">Besleme yönü</translation>
 <translation id="3611317423880285981">Ev malzemeleri</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> için sanal kart</translation>
 <translation id="3614103345592970299">Boyut 2</translation>
 <translation id="361438452008624280">Liste girişi "<ph name="LANGUAGE_ID" />": Bilinmeyen veya desteklenmeyen dil.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında güvenlik kontrolü yürütmek için Sekme'ye, sonra Enter'a basın</translation>
@@ -2286,7 +2284,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6890443033788248019">Konum erişimine izin verilsin mi?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> kullanan web sitelerinde <ph name="DEVICE_LABEL" /> ile doğrulama yapmayı seçtiniz. Bu sağlayıcı, ödeme yönteminizle ilgili bilgileri saklamış olabilir. Bu bilgilerin <ph name="BEGIN_LINK" />silinmesini isteyebilirsiniz<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Politika düzeyi desteklenmiyor.</translation>
-<translation id="6895143722905299846">Sanal numara:</translation>
 <translation id="6895330447102777224">Kartınız onaylandı</translation>
 <translation id="6897140037006041989">Kullanıcı Aracısı</translation>
 <translation id="6898699227549475383">Kuruluş (O)</translation>
@@ -2459,7 +2456,6 @@ Ek ayrıntılar:
 <translation id="7334320624316649418">Sıralama değişikliğini &amp;yeniden yap</translation>
 <translation id="7335157162773372339">Kameranızı kullanmak isteyebilir</translation>
 <translation id="7337248890521463931">Daha fazla satır göster</translation>
-<translation id="7337418456231055214">Sanal kart numarası doldurulmadı mı? Kopyalamak için kart detaylarını tıklayın. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Platformunuzda kullanılamıyor.</translation>
 <translation id="733923710415886693">Sunucunun sertifikası, Sertifika Şeffaflığı aracılığıyla açıklanmadı.</translation>
 <translation id="7341357280245177602">Kullanılmış araçlar</translation>

@@ -181,7 +181,6 @@
 <translation id="138218114945450791">ලා නිල්</translation>
 <translation id="1382194467192730611">ඔබේ පරිපාලකයා USB උපාංග අනුමත කර ඇත</translation>
 <translation id="1382378825779654399">ඕනෑම අඩවියක මිල අඩු වුවහොත් ඔබට ඉ-තැපැල් ඇඟවීම් ලැබෙනු ඇත. මෙම පිටුව <ph name="LAST_BOOKMARKS_FOLDER" /> වෙත සුරැකෙනු ඇත.</translation>
-<translation id="1382912999714108023">ඔබගේ වත්මන් තතු නොපෙනේද? එය යාවත්කාලීන කිරීමට කරුණාකර ඔබගේ බැංකුව අමතන්න.</translation>
 <translation id="1384725838384960382">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර සත්‍යාපනය කිරීමේ පත්‍රය</translation>
 <translation id="1386623374109090026">අනුසටහන්</translation>
 <translation id="1391289752476847787">කොටස් සහ බැඳුම්කර</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">අඟ 5 x 5</translation>
 <translation id="3608932978122581043">පෝෂණ දිශානතිය</translation>
 <translation id="3611317423880285981">ගෘහස්ත සැපයුම්</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> සඳහා අතථ්‍ය කාඩ්පත</translation>
 <translation id="3614103345592970299">ප්‍රමාණය 2</translation>
 <translation id="361438452008624280">ලැයිස්තු ඇතුළත් කිරීම "<ph name="LANGUAGE_ID" />": නොදන්නා හෝ සහය නොදැක්වෙන භාෂාව.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ආරක්ෂක පරීක්ෂාවක් ධාවනය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">ස්ථානය ඉඩ දෙන්නද?</translation>
 <translation id="6890531741535756070">ඔබ <ph name="PROVIDER_ORIGIN" /> භාවිතා කරන වෙබ් අඩවිවල <ph name="DEVICE_LABEL" /> සමග සත්‍යාපනය කිරීමට තෝරා ගෙන ඇත. මෙම සැපයුම්කරු ඔබට <ph name="BEGIN_LINK" />මකා දැමීමට ඉල්ලා සිටිය හැකි<ph name="END_LINK" />, ඔබේ ගෙවීම් ක්‍රමය පිළිබඳ තොරතුරු ගබඩා කර තිබිය හැක.</translation>
 <translation id="6891596781022320156">ප්‍රතිපත්ති මට්ටම උපකාර නොකරයි.</translation>
-<translation id="6895143722905299846">අතථ්‍ය අංකය:</translation>
 <translation id="6895330447102777224">ඔබේ කාඩ්පත තහවුරු කර ඇත</translation>
 <translation id="6897140037006041989">භාවිත නියෝජිත</translation>
 <translation id="6898699227549475383">සංවිධානය (O)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">යළි ඇනවුම් කිරීම &amp;යළි කරන්න</translation>
 <translation id="7335157162773372339">ඔබගේ කැමරාව භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="7337248890521463931">තවත් පේළි පෙන්වන්න</translation>
-<translation id="7337418456231055214">අතථ්‍ය කාඩ්පත් අංකය පුරවා නැතිද? පිටපත් කිරීමට කාඩ්පත් විස්තර ක්ලික් කරන්න. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">ඔබේ වේදිකාව මත නොතිබේ.</translation>
 <translation id="733923710415886693">සහතික පාරදෘශ්‍යතාව හරහා සේවාදායකයේ සහතිකය අනාවරණය නොකෙරේ.</translation>
 <translation id="7341357280245177602">පාවිච්චි කළ වාහන</translation>

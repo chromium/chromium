@@ -181,7 +181,6 @@
 <translation id="138218114945450791">ፈካ ያለ ሰማያዊ</translation>
 <translation id="1382194467192730611">በእርስዎ አስተዳዳሪ የተፈቀደ የዩኤስቢ መሣሪያ</translation>
 <translation id="1382378825779654399">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ የኢሜይል ማንቂያዎችን ያገኛሉ። ይህ ገጽ ወደ <ph name="LAST_BOOKMARKS_FOLDER" /> ይቀመጣል።</translation>
-<translation id="1382912999714108023">የአሁን መረጃዎን እየተመለከተ አይደለም? እባክዎ ለማዘመን ባንክዎን ያነጋግሩ።</translation>
 <translation id="1384725838384960382">ደህንነቱ የተጠበቀ የክፍያ የመግቢያ ማስረጃ ማረጋገጫ ሉህ</translation>
 <translation id="1386623374109090026">ማብራሪያዎች</translation>
 <translation id="1391289752476847787">አክሲዮኖች እና ቦንዶች</translation>
@@ -1026,7 +1025,6 @@
 <translation id="3605899229568538311">5 x 5 ኢንች</translation>
 <translation id="3608932978122581043">የምገባ አቀማመጥ</translation>
 <translation id="3611317423880285981">የቤተሰብ ዕቃዎች</translation>
-<translation id="3611395257124510155">የ<ph name="CARD_IDENTIFIER" /> ምናባዊ ካርድ</translation>
 <translation id="3614103345592970299">መጠን 2</translation>
 <translation id="361438452008624280">የዝርዝር ግቤት «<ph name="LANGUAGE_ID" />»፦ ያልታወቀ ወይም የማይደገፍ ቋንቋ።</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ የደህንነት ፍተሻን ለማሄድ ትርን ከዚያ አስገባን ይጫኑ</translation>
@@ -2285,7 +2283,6 @@
 <translation id="6890443033788248019">አካባቢ ይፈቀድ?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" />ን በሚጠቀሙ ድር ጣቢያዎች ላይ በ<ph name="DEVICE_LABEL" /> ማረጋገጥን መርጠዋል። ይህ አቅራቢ እርስዎ <ph name="BEGIN_LINK" />እንዲሰረዝ መጠየቅ<ph name="END_LINK" /> የሚችሉት ስለእርስዎ የመክፈያ ዘዴ መረጃን አከማችቶ ሊሆን ይችላል።</translation>
 <translation id="6891596781022320156">የመመሪያ ደረጃ አይደገፍም።</translation>
-<translation id="6895143722905299846">ምናባዊ ቁጥር፦</translation>
 <translation id="6895330447102777224">የእርስዎ ካርድ ተረጋግጧል</translation>
 <translation id="6897140037006041989">የተጠቀሚ ተወካይ</translation>
 <translation id="6898699227549475383">ድርጅት (O)</translation>
@@ -2458,7 +2455,6 @@
 <translation id="7334320624316649418">&amp;ማስተካከልን ድገም</translation>
 <translation id="7335157162773372339">ካሜራዎን ለመጠቀም መጠየቅ ይችላሉ</translation>
 <translation id="7337248890521463931">ተጨማሪ መስመሮችን አሳይ</translation>
-<translation id="7337418456231055214">የምናባዊ ካርድ ቁጥር አልተሞላም? የሚቀዱ የካርድ ዝርዝሮችን ጠቅ ያድርጉ። <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">በእርስዎ የመሣሪያ ስርዓት ላይ አይገኝም።</translation>
 <translation id="733923710415886693">የአገልጋዩ የእውቅና ማረጋገጫ በእውቅና ማረጋገጫ ግልጽነት በኩል አልተገለጸም።</translation>
 <translation id="7341357280245177602">ያገለገሉ ተሽከርካሪዎች</translation>

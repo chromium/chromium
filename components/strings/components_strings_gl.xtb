@@ -181,7 +181,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="138218114945450791">Azul claro</translation>
 <translation id="1382194467192730611">O teu administrador permite utilizar este dispositivo USB</translation>
 <translation id="1382378825779654399">Recibirás alertas por correo electrónico se baixa o prezo en calquera sitio. Esta páxina gardarase en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Non ves a túa información actual? Ponte en contacto co banco para actualizala.</translation>
 <translation id="1384725838384960382">Folla de autenticación da credencial de pagos seguros</translation>
 <translation id="1386623374109090026">Anotacións</translation>
 <translation id="1391289752476847787">Accións e bonos</translation>
@@ -1027,7 +1026,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3605899229568538311">5 x 5 polgadas</translation>
 <translation id="3608932978122581043">Orientación da alimentación</translation>
 <translation id="3611317423880285981">Produtos do fogar</translation>
-<translation id="3611395257124510155">Tarxeta virtual para <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Tamaño 2</translation>
 <translation id="361438452008624280">Entrada da lista "<ph name="LANGUAGE_ID" />": idioma descoñecido ou non compatible.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
@@ -2286,7 +2284,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6890443033788248019">Queres permitir o acceso á localización?</translation>
 <translation id="6890531741535756070">Escolliches verificar as compras con <ph name="DEVICE_LABEL" /> nos sitios web que usan <ph name="PROVIDER_ORIGIN" />. É posible que este provedor almacenase información sobre o teu método de pago, pero podes <ph name="BEGIN_LINK" />solicitar a súa eliminación<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">O nivel da política non é compatible.</translation>
-<translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">Confirmouse a túa tarxeta</translation>
 <translation id="6897140037006041989">Axente de usuario</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
@@ -2459,7 +2456,6 @@ Detalles adicionais:
 <translation id="7334320624316649418">&amp;Refacer de cambio de orde</translation>
 <translation id="7335157162773372339">Pode pedirche permiso para utilizar a cámara</translation>
 <translation id="7337248890521463931">Mostrar máis liñas</translation>
-<translation id="7337418456231055214">Non se autocompletou o número da tarxeta virtual? Para copialo, fai clic nos detalles da tarxeta. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Non está dispoñible na túa plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor non se indicou mediante Certificate Transparency.</translation>
 <translation id="7341357280245177602">Vehículos usados</translation>

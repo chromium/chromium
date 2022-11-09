@@ -352,6 +352,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2960314608273155470">Modo de captura, a predefinição é <ph name="SOURCE" /> <ph name="TYPE" />. Prima Tab para a navegação do teclado.</translation>
 <translation id="2961963223658824723">Ocorreu um erro. Tente novamente dentro de alguns segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Ativar acesso ao microfone?</translation>
 <translation id="296762781903199866">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instalar aplicações, extensões e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
@@ -430,6 +431,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3386978599540877378">a lupa em ecrã inteiro</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Definições adicionais</translation>
+<translation id="3405101454990027959">Ativar acesso ao microfone</translation>
 <translation id="3410336247007142655">Mostre as definições do tema escuro.</translation>
 <translation id="3413817803639110246">Ainda não existe nada para ver</translation>
 <translation id="3428447136709161042">Desligar da rede <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="385300504083504382">Início</translation>
 <translation id="3861651314799684201">Prima Enter para gravar o ecrã inteiro</translation>
+<translation id="3885531177412808398">Permite o acesso ao microfone para todas as apps e Websites com a autorização do microfone</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Prima Ctrl+Shift+Q duas vezes para terminar sessão.</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>
@@ -1375,6 +1378,7 @@ Nova instalação</translation>
 <translation id="8666856788528804727">Abra <ph name="NAME" /> para configurar o dispositivo</translation>
 <translation id="8676770494376880701">Carregador de baixo consumo ligado</translation>
 <translation id="8683506306463609433">O rastreio do desempenho está ativo.</translation>
+<translation id="8684405646663021166">Permite o acesso ao microfone para a app <ph name="APP_NAME" /> e todas as apps e Websites com a autorização do microfone</translation>
 <translation id="8685326675965865247">Pesquise no dispositivo, nas apps e na Web. Utilize as teclas de seta para navegar nas apps.</translation>
 <translation id="8703634754197148428">Inicie a gravação. Assim que a gravação for iniciada, utilize Alt + Shift + L para navegar até à prateleira e localize o botão para parar a gravação.</translation>
 <translation id="8721053961083920564">Ative/desative o volume. <ph name="STATE_TEXT" /></translation>

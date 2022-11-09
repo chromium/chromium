@@ -181,7 +181,6 @@
 <translation id="138218114945450791">ສີຟ້າອ່ອນ</translation>
 <translation id="1382194467192730611">ອຸປະກອນ USB ໄດ້ຮັບອະນຸຍາດໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="1382378825779654399">ທ່ານຈະໄດ້ຮັບການເຕືອນອີເມວຫາກລາຄາຫຼຸດລົງຢູ່ເວັບໄຊໃດໜຶ່ງ. ໜ້ານີ້ຈະຖືກບັນທຶກໃສ່ <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">ບໍ່ເຫັນຂໍ້ມູນປັດຈຸບັນຂອງທ່ານບໍ? ກະລຸນາຕິດຕໍ່ທະນາຄານຂອງທ່ານເພື່ອອັບເດດມັນ.</translation>
 <translation id="1384725838384960382">ຊີດການພິສູດຢືນຢັນຂໍ້ມູນການເຂົ້າສູ່ລະບົບການຈ່າຍເງິນແບບປອດໄພ</translation>
 <translation id="1386623374109090026">ການອະທິບາຍຄວາມເຫັນ</translation>
 <translation id="1391289752476847787">ການໃຫ້ຄຳປຶກສາດ້ານການເງິນເລື່ອງຮຸ້ນສ່ວນ ແລະ ຕາສານໜີ້</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5 x 5 ນິ້ວ</translation>
 <translation id="3608932978122581043">ປ້ອນເຈ້ຍຕາມທິດທາງ</translation>
 <translation id="3611317423880285981">ເຄື່ອງໃຊ້ໃນຄົວເຮືອນ</translation>
-<translation id="3611395257124510155">ບັດສະເໝືອນສຳລັບ <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">ຂະໜາດ 2</translation>
 <translation id="361438452008624280">ລະບຸລາຍການ "<ph name="LANGUAGE_ID" />": ພາສາທີ່ບໍ່ຮູ້ຈັກ ຫຼື ບໍ່ຮອງຮັບ.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພືີ່ອເປີດໃຊ້ການກວດສອບຄວາມປອດໄພໃນການຕັ້ງຄ່າ Chrome</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">ອະນຸຍາດສະຖານທີ່ບໍ?</translation>
 <translation id="6890531741535756070">ທ່ານໄດ້ເລືອກທີ່ຈະຢັ້ງຢືນດ້ວຍ <ph name="DEVICE_LABEL" /> ຢູ່ເວັບໄຊທີ່ໃຊ້ <ph name="PROVIDER_ORIGIN" />. ຜູ້ໃຫ້ບໍລິການນີ້ອາດຈັດເກັບຂໍ້ມູນກ່ຽວກັບວິທີການຈ່າຍເງິນຂອງທ່ານໄວ້ແລ້ວ, ໂດຍທ່ານສາມາດ <ph name="BEGIN_LINK" />ຮ້ອງຂໍໃຫ້ລຶບອອກໄດ້<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">ລະດັບນະໂຍບາຍບໍ່ຖືກຮອງຮັບ.</translation>
-<translation id="6895143722905299846">ໝາຍເລກສະເໝືອນ:</translation>
 <translation id="6895330447102777224">ຢືນຢັນບັດຂອງທ່ານແລ້ວ</translation>
 <translation id="6897140037006041989">ຕົວແທນຜູ້ໃຊ້</translation>
 <translation id="6898699227549475383">ອົງການຈັດຕັ້ງ (O)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">ເຮັດຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="7335157162773372339">ສາມາດຂໍໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ</translation>
 <translation id="7337248890521463931">ສະແດງແຖວເພີ່ມເຕີມ</translation>
-<translation id="7337418456231055214">ບໍ່ໄດ້ໃສ່ໝາຍເລກບັດສະເໝືອນບໍ? ກະລຸນາຄລິກລາຍລະອຽດບັດເພື່ອສຳເນົາ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">ບໍ່ສາມາດໃຊ້ໄດ້ໃນແພລັດຟອມຂອງທ່ານ.</translation>
 <translation id="733923710415886693">ໃບຢັ້ງຢືນຂອງເຊີບເວີບໍ່ຖືກເປີດເຜີຍຜ່ານນະໂຍບາຍຄວາມໂປ່ງໃສຂອງໃບຢັ້ງຢືນ.</translation>
 <translation id="7341357280245177602">ລົດມືສອງ</translation>

@@ -181,7 +181,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="138218114945450791">Šviesiai mėlyna</translation>
 <translation id="1382194467192730611">USB įrenginį leidžia administratorius</translation>
 <translation id="1382378825779654399">Jei kurioje nors svetainėje sumažės kaina, gausite įspėjimą el. paštu. Šis puslapis bus išsaugotas aplanke „<ph name="LAST_BOOKMARKS_FOLDER" />“.</translation>
-<translation id="1382912999714108023">Nematote dabartinės informacijos? Susisiekite su savo banku, kad ji būtų atnaujinta.</translation>
 <translation id="1384725838384960382">Saugaus mokėjimo prisijungimo duomenų autentifikavimo lapas</translation>
 <translation id="1386623374109090026">Komentarai</translation>
 <translation id="1391289752476847787">Akcijos ir obligacijos</translation>
@@ -1028,7 +1027,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3605899229568538311">5 x 5 col.</translation>
 <translation id="3608932978122581043">Pateikti orientaciją</translation>
 <translation id="3611317423880285981">Namų ūkio reikmenys</translation>
-<translation id="3611395257124510155">Virtuali kortelė (<ph name="CARD_IDENTIFIER" />)</translation>
 <translation id="3614103345592970299">Dydis: 2</translation>
 <translation id="361438452008624280">Sąrašo įrašas „<ph name="LANGUAGE_ID" />“: nežinoma arba nepalaikoma kalba.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite paleisti saugos patikrą „Chrome“ nustatymuose</translation>
@@ -2287,7 +2285,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6890443033788248019">Leisti pasiekti vietovę?</translation>
 <translation id="6890531741535756070">Pasirinkote patvirtinti naudodami <ph name="DEVICE_LABEL" /> svetainėse, kuriose naudojama <ph name="PROVIDER_ORIGIN" />. Šis teikėjas galėjo išsaugoti informaciją apie jūsų mokėjimo metodą, kurią <ph name="BEGIN_LINK" />galite paprašyti ištrinti<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Politikos lygis nepalaikomas.</translation>
-<translation id="6895143722905299846">Virtualus numeris:</translation>
 <translation id="6895330447102777224">Kortelė patvirtinta</translation>
 <translation id="6897140037006041989">Naudotojo atstovas</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
@@ -2460,7 +2457,6 @@ Papildoma išsami informacija:
 <translation id="7334320624316649418">&amp;Pertvarkyti dar kartą</translation>
 <translation id="7335157162773372339">Gali būti prašoma naudoti fotoaparatą</translation>
 <translation id="7337248890521463931">Rodyti daugiau eilučių</translation>
-<translation id="7337418456231055214">Virtualios kortelės numeris neįvestas? Spustelėkite išsamią kortelės informaciją, kad nukopijuotumėte. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nepasiekiama jūsų platformoje.</translation>
 <translation id="733923710415886693">Serverio sertifikatas nebuvo atskleistas taikant sertifikato skaidrumą.</translation>
 <translation id="7341357280245177602">Naudotos transporto priemonės</translation>

@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">Режим снимања, подразумевана вредност је <ph name="SOURCE" /> <ph name="TYPE" />. Притисните Tab за кретање помоћу тастатуре.</translation>
 <translation id="2961963223658824723">Дошло је до грешке. Пробајте поново за пар секунди.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Желите да укључите приступ микрофону?</translation>
 <translation id="296762781903199866">Преузимање фајлова са говором на језику <ph name="LANGUAGE" /> није успело</translation>
 <translation id="2970920913501714344">Инсталирајте апликације, додатке и теме</translation>
 <translation id="2977598380246111477">Следећи број</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">лупа преко целог екрана</translation>
 <translation id="3387527074123400161">Chromium ОС</translation>
 <translation id="3400357268283240774">Додатна подешавања</translation>
+<translation id="3405101454990027959">Укључи приступ микрофону</translation>
 <translation id="3410336247007142655">Прикажите подешавања тамне теме</translation>
 <translation id="3413817803639110246">Још увек нема шта да се види</translation>
 <translation id="3428447136709161042">Прекините везу са мрежом <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почетак</translation>
 <translation id="3861651314799684201">Притисните Enter да бисте снимили цео екран</translation>
+<translation id="3885531177412808398">Дозвољава приступ микрофону за све апликације и веб-сајтове са дозволом за микрофон</translation>
 <translation id="3886872229787704059">Отварано данас</translation>
 <translation id="3891340733213178823">Двапут притисните Ctrl+Shift+Q да бисте се одјавили.</translation>
 <translation id="3893630138897523026">ChromeVox (говорне повратне информације)</translation>
@@ -1376,6 +1379,7 @@
 <translation id="8666856788528804727">Отворите <ph name="NAME" /> да бисте подесили уређај</translation>
 <translation id="8676770494376880701">Повезан је пуњач мале снаге</translation>
 <translation id="8683506306463609433">Праћење учинка је активно</translation>
+<translation id="8684405646663021166">Дозвољава приступ микрофону за <ph name="APP_NAME" /> и све апликације и веб-сајтове са дозволом за микрофон</translation>
 <translation id="8685326675965865247">Претражујте уређај, апликације, подешавања и веб. Користите тастере са стрелицама да бисте се кретали кроз апликације.</translation>
 <translation id="8703634754197148428">Започните снимање. Када снимање почне, користите Alt + Shift + L да бисте се кретали до полице и пронашли дугме за заустављање снимања</translation>
 <translation id="8721053961083920564">Укључите/искључите звук. <ph name="STATE_TEXT" /></translation>

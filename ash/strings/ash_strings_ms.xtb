@@ -352,6 +352,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2960314608273155470">Mod Tangkap, pilihan lalai ialah <ph name="SOURCE" /> <ph name="TYPE" />. Tekan tab untuk menavigasi papan kekunci.</translation>
 <translation id="2961963223658824723">Maaf, kesilapan telah berlaku. Cuba lagi dalam beberapa saat.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Hidupkan akses mikrofon?</translation>
 <translation id="296762781903199866">Tidak dapat memuat turun fail pertuturan <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Pasang apl, sambungan dan tema</translation>
 <translation id="2977598380246111477">Nombor seterusnya</translation>
@@ -430,6 +431,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3386978599540877378">penggadang skrin penuh</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Tetapan tambahan</translation>
+<translation id="3405101454990027959">Hidupkan akses mikrofon</translation>
 <translation id="3410336247007142655">Tunjukkan tetapan tema gelap</translation>
 <translation id="3413817803639110246">Tiada apa-apa untuk dilihat</translation>
 <translation id="3428447136709161042">Putuskan sambungan daripada <ph name="NETWORK_NAME" />?</translation>
@@ -517,6 +519,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Permulaan</translation>
 <translation id="3861651314799684201">Tekan kekunci enter untuk merakam skrin penuh</translation>
+<translation id="3885531177412808398">Membenarkan akses mikrofon untuk semua apl dan laman web dengan kebenaran mikrofon</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3893630138897523026">ChromeVox (maklum balas dituturkan)</translation>
@@ -1376,6 +1379,7 @@ Pemasangan baharu</translation>
 <translation id="8666856788528804727">Buka <ph name="NAME" /> untuk menyediakan peranti anda</translation>
 <translation id="8676770494376880701">Pengecas berkuasa rendah disambungkan</translation>
 <translation id="8683506306463609433">Pengesanan prestasi aktif</translation>
+<translation id="8684405646663021166">Membenarkan akses mikrofon untuk <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran mikrofon</translation>
 <translation id="8685326675965865247">Cari dalam peranti anda, apl, tetapan dan web. Gunakan kekunci anak panah untuk menavigasi apl anda.</translation>
 <translation id="8703634754197148428">Mulakan rakaman. Sebaik sahaja rakaman dimulakan, gunakan Alt + Shift + L untuk menavigasi ke rak dan cari butang hentikan rakaman</translation>
 <translation id="8721053961083920564">Togol Kelantangan. <ph name="STATE_TEXT" /></translation>

@@ -333,6 +333,7 @@
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
+<translation id="435692326371619097">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4382484599443659549">PDF</translation>

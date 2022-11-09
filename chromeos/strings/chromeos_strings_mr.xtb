@@ -220,6 +220,7 @@
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे...</translation>
 <translation id="315738237743207937">कॅप्टिव्ह पोर्टल डिटेक्ट केले</translation>
+<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />सिस्टीम आणि ॲप माहिती<ph name="END_LINK1" /> व <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> पाठवा</translation>
 <translation id="3170673040743561620">तुमचे दस्तऐवज स्कॅनरवर ठेवा</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="319101249942218879">अवतार इमेज बदला</translation>
@@ -304,6 +305,7 @@
 <translation id="4044093238444069296">गेटवेशी संपर्क साधू शकत नाही</translation>
 <translation id="4046123991198612571">पुढील ट्रॅक</translation>
 <translation id="404928562651467259">चेतावणी:</translation>
+<translation id="4060260348856573701">नवीन APN</translation>
 <translation id="4093865285251893588">प्रोफाइल फोटो</translation>
 <translation id="409427325554347132">चाचणीचे तपशील सेव्ह करा</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /><ph name="DESC" /> अल्बम निवडा</translation>
@@ -332,6 +334,7 @@
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की दाबली</translation>
+<translation id="435692326371619097">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APN हे मोबाइल नेटवर्क आणि इंटरनेट यांदरम्यान कनेक्शन जोडतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
 <translation id="4378551569595875038">कनेक्ट होतय...</translation>
 <translation id="4382484599443659549">पीडीएफ</translation>
@@ -582,6 +585,7 @@
 <translation id="6575134580692778371">कॉंफिगर केले नाही</translation>
 <translation id="6579509898032828423">हा फोटो वापरा</translation>
 <translation id="6596816719288285829">IP पत्ता</translation>
+<translation id="6599673642868607614">तुमच्या फीडबॅकबद्दल धन्यवाद. तुमचा फीडबॅक आम्हाला Chromebook अनुभवामध्ये सुधारणा करण्यात मदत करू शकतो आणि त्याचे आमच्या टीमकडून पुनरावलोकन केले जाईल. मोठ्या प्रमाणात तक्रारी मिळाल्यामुळे, आम्हाला उत्तर पाठवता येणार नाही.</translation>
 <translation id="6618744767048954150">रन होत आहे</translation>
 <translation id="6620487321149975369">प्रिंट जॉब मॅन्‍युअली काढून टाकेपर्यंत इतिहासामध्ये दिसतील</translation>
 <translation id="6624819909909965616">१० MB पेक्षा मोठी फाइल अपलोड करू शकत नाही</translation>
@@ -603,6 +607,7 @@
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
 <translation id="6791471867139427246">कीबोर्डच्या लाइटचा रंग</translation>
+<translation id="6793680441750437230">तुमच्या कीबोर्डवर कोणतीही की टाइप करा. तुम्ही एकाच वेळी कमाल चार की दाबू शकता. डायलॉग बंद करण्यासाठी Alt प्लस Esc दाबा.</translation>
 <translation id="680983167891198932">की</translation>
 <translation id="6816797338148849397">तुमच्या निवडीशी संबंधित माहिती उपलब्ध आहे. अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="6853312040151791195">डिस्चार्ज होण्याचा रेट</translation>
@@ -690,6 +695,7 @@
 <translation id="7762130827864645708">तुमचा पासवर्ड यशस्वीरीत्या बदलला होता. कृपया आतापासून नवीन पासवर्ड वापरा.</translation>
 <translation id="7763470514545477072">डोमेन सफिक्स जुळणी</translation>
 <translation id="7769672763586021400">मॉडेल आयडी</translation>
+<translation id="7778717409420828014">तुमचा फीडबॅक आम्हाला Chromebook अनुभवामध्ये सुधारणा करण्यात मदत करू शकतो आणि त्याचे आमच्या टीमकडून पुनरावलोकन केले जाईल. मोठ्या प्रमाणात तक्रारी मिळाल्यामुळे, आम्हाला उत्तर पाठवता येणार नाही.</translation>
 <translation id="7784116172884276937">कोणतेही DNS सर्व्हर सेट केलेले नाहीत</translation>
 <translation id="779591286616261875">नवीन तक्रार पाठवा</translation>
 <translation id="7799817062559422778">प्रकाश मोड</translation>

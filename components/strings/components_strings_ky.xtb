@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Мала көк</translation>
 <translation id="1382194467192730611">Администраторуңуз уруксат берген USB түзмөгү</translation>
 <translation id="1382378825779654399">Кандайдыр бир сайтта баасы төмөндөсө, электрондук почта билдирүүсүн аласыз. Бул барак <ph name="LAST_BOOKMARKS_FOLDER" /> папкасына сакталат.</translation>
-<translation id="1382912999714108023">Учурдагы маалыматыңызды көрбөй турасызбы? Аны жаңыртуу үчүн банкка кайрылыңыз.</translation>
 <translation id="1384725838384960382">Коопсуз төлөм үчүн эсептик дайындардын аныктыгын текшерүү барагы</translation>
 <translation id="1386623374109090026">Аннотациялар</translation>
 <translation id="1391289752476847787">Акциялар жана облигациялар</translation>
@@ -1026,7 +1025,6 @@
 <translation id="3605899229568538311">5 x 5 дюйм</translation>
 <translation id="3608932978122581043">Түрмөктүн багыты</translation>
 <translation id="3611317423880285981">Үй буюмдары</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> виртуалдык картасы</translation>
 <translation id="3614103345592970299">Өлчөмү: 2</translation>
 <translation id="361438452008624280">Тизмедеги жазуу "<ph name="LANGUAGE_ID" />": Белгисиз же колдоого алынбаган тил.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome жөндөөлөрүнөн коопсуздукту текшерүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
@@ -2285,7 +2283,6 @@
 <translation id="6890443033788248019">Жайгашкан жерди көрүүгө уруксат бересизби?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> вебсайттарында <ph name="DEVICE_LABEL" /> аркылуу ырастоону тандадыңыз. Бул провайдер төлөм ыкмаңызды сактап койгон болушу мүмкүн. Аны <ph name="BEGIN_LINK" />өчүрүүнү сурана<ph name="END_LINK" /> аласыз.</translation>
 <translation id="6891596781022320156">Саясат деңгээли колдоого алынбайт.</translation>
-<translation id="6895143722905299846">Виртуалдык номер:</translation>
 <translation id="6895330447102777224">Карточкаңыз текшерилди</translation>
 <translation id="6897140037006041989">Колдонуучунун агенти</translation>
 <translation id="6898699227549475383">Уюм (У)</translation>
@@ -2458,7 +2455,6 @@
 <translation id="7334320624316649418">Иреттештирүүнү &amp;кайталоо</translation>
 <translation id="7335157162773372339">Камераңызды колдонууга уруксат сурай алат</translation>
 <translation id="7337248890521463931">Көбүрөөк көрсөтүү</translation>
-<translation id="7337418456231055214">Виртуалдык картанын номери киргизилген жокпу? Көчүрүү үчүн картанын чоо-жайын чыкылдатыңыз. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Сиздин платформада жеткиликсиз.</translation>
 <translation id="733923710415886693">Сервердин тастыктамасы "Тастыктаманын тунуктук саясаты" аркылуу ачыкка чыгарылган эмес.</translation>
 <translation id="7341357280245177602">Колдонулган транспорт каражаттары</translation>

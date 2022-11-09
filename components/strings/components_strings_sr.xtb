@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Светлоплава</translation>
 <translation id="1382194467192730611">USB уређај који дозвољава администратор</translation>
 <translation id="1382378825779654399">Добијаћете обавештења имејлом ако се цена снизи на било ком сајту. Ова страница ће бити сачувана у апликацији <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
 <translation id="1384725838384960382">Табела за потврду акредитива за безбедно плаћање</translation>
 <translation id="1386623374109090026">Напомене</translation>
 <translation id="1391289752476847787">Акције и обвезнице</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5×5 in</translation>
 <translation id="3608932978122581043">Смер уноса</translation>
 <translation id="3611317423880285981">Кућне потрепштине</translation>
-<translation id="3611395257124510155">Виртуелна картица за <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Величина 2</translation>
 <translation id="361438452008624280">Унос на листи „<ph name="LANGUAGE_ID" />“: непознат или неподржан језик.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте покренули проверу безбедности у Chrome подешавањима</translation>
@@ -2285,7 +2283,6 @@
 <translation id="6890443033788248019">Желите ли да дозволите локацију?</translation>
 <translation id="6890531741535756070">Одабрали сте да верификујете помоћу <ph name="DEVICE_LABEL" /> на веб-сајтовима који користе <ph name="PROVIDER_ORIGIN" />. Овај добављач је можда сачувао информације о начину плаћања, за који можете да <ph name="BEGIN_LINK" />затражите брисање<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Ниво смерница није подржан.</translation>
-<translation id="6895143722905299846">Виртуелни број:</translation>
 <translation id="6895330447102777224">Картица је потврђена</translation>
 <translation id="6897140037006041989">Кориснички агент</translation>
 <translation id="6898699227549475383">Организација (O)</translation>
@@ -2458,7 +2455,6 @@
 <translation id="7334320624316649418">&amp;Понови промену редоследа</translation>
 <translation id="7335157162773372339">Може да тражи да користи камеру</translation>
 <translation id="7337248890521463931">Прикажи више редова</translation>
-<translation id="7337418456231055214">Број виртуелне картице није унет? Кликните на податке о картици да бисте их копирали. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Није доступно на вашој платформи.</translation>
 <translation id="733923710415886693">Сертификат сервера није откривен помоћу Транспарентности сертификата.</translation>
 <translation id="7341357280245177602">Половна возила</translation>

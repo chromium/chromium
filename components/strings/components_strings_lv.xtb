@@ -181,7 +181,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="138218114945450791">Gaiši zila</translation>
 <translation id="1382194467192730611">USB ierīce, ko atļauj jūsu administrators</translation>
 <translation id="1382378825779654399">Jūs saņemsiet e-pasta brīdinājumus, ja kādā vietnē tiks konstatēts cenas kritums. Šī lapa tiks saglabāta mapē “<ph name="LAST_BOOKMARKS_FOLDER" />”.</translation>
-<translation id="1382912999714108023">Vai netiek rādīta jūsu pašreizējā informācija? Sazinieties ar banku, lai to atjauninātu.</translation>
 <translation id="1384725838384960382">Drošu maksājumu akreditācijas datu autentifikācijas lapa</translation>
 <translation id="1386623374109090026">Komentāri</translation>
 <translation id="1391289752476847787">Akcijas un obligācijas</translation>
@@ -1027,7 +1026,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3605899229568538311">5 x 5 collas</translation>
 <translation id="3608932978122581043">Padeves virziens</translation>
 <translation id="3611317423880285981">Mājsaimniecības piederumi</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" />: virtuālā karte</translation>
 <translation id="3614103345592970299">2. izmērs</translation>
 <translation id="361438452008624280">Saraksta ieraksts “<ph name="LANGUAGE_ID" />”: nezināma vai neatbalstīta valoda.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome iestatījumos veiktu drošības pārbaudi, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
@@ -2285,7 +2283,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6890443033788248019">Vai atļaut piekļuvi atrašanās vietai?</translation>
 <translation id="6890531741535756070">Jūs izvēlējāties veikt verifikāciju ar <ph name="DEVICE_LABEL" /> tīmekļa vietnēs, kas izmanto <ph name="PROVIDER_ORIGIN" /> pakalpojumus. Šis pakalpojumu sniedzējs, iespējams, ir saglabājis informāciju par jūsu maksājuma veidu, un jūs varat <ph name="BEGIN_LINK" />pieprasīt šīs informācijas dzēšanu<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Politikas līmenis netiek atbalstīts.</translation>
-<translation id="6895143722905299846">Virtuālais numurs:</translation>
 <translation id="6895330447102777224">Karte ir apstiprināta</translation>
 <translation id="6897140037006041989">Lietotāja aģents</translation>
 <translation id="6898699227549475383">Organizācija (O)</translation>
@@ -2458,7 +2455,6 @@ Papildu informācija:
 <translation id="7334320624316649418">&amp;Atcelt pārkārtošanas atsaukšanu</translation>
 <translation id="7335157162773372339">Var pieprasīt atļauju izmantot jūsu kameru</translation>
 <translation id="7337248890521463931">Rādīt vairāk rindu</translation>
-<translation id="7337418456231055214">Vai nav ievadīts virtuālās kartes numurs? Noklikšķiniet uz kartes informācijas, lai to kopētu. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nav pieejams jūsu platformā.</translation>
 <translation id="733923710415886693">Servera sertifikāts netika atklāts, izmantojot sertifikāta pārredzamību.</translation>
 <translation id="7341357280245177602">Lietoti transportlīdzekļi</translation>

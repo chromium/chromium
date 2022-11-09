@@ -220,6 +220,7 @@
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
 <translation id="3156846309055100599">Inachanganua ukurasa wa <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Ukurasa wa mwanzo umetambuliwa</translation>
+<translation id="3160172848211257835">Tuma <ph name="BEGIN_LINK1" />maelezo ya mfumo na programu<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />vipimo<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Weka hati yako kwenye kichanganuzi</translation>
 <translation id="3188257591659621405">Faili zangu</translation>
 <translation id="319101249942218879">Picha ya ishara imebadilishwa</translation>
@@ -581,6 +582,7 @@
 <translation id="6575134580692778371">Haijasanidiwa</translation>
 <translation id="6579509898032828423">Tumia picha hii</translation>
 <translation id="6596816719288285829">Anwani ya IP</translation>
+<translation id="6599673642868607614">Asante kwa maoni yako. Maoni yako hutusaidia kuboresha hali ya Chromebook na yatakaguliwa na timu yetu. Kutokana na idadi kubwa ya ripoti, hatutaweza kukujibu.</translation>
 <translation id="6618744767048954150">Inakagua</translation>
 <translation id="6620487321149975369">Kazi za kuchapisha zitaonekana katika historia usipoziondoa mwenyewe</translation>
 <translation id="6624819909909965616">Haiwezi kupakia faili lenye ukubwa unaozidi MB 10</translation>
@@ -689,6 +691,7 @@
 <translation id="7762130827864645708">Nenosiri lako limebadilishwa. Tafadhali tumia nenosiri jipya kuanzia sasa.</translation>
 <translation id="7763470514545477072">Kiambishi cha kikoa kinacholingana</translation>
 <translation id="7769672763586021400">Aina ya Kitambulisho</translation>
+<translation id="7778717409420828014">Maoni yako hutusaidia kuboresha hali ya Chromebook na yatakaguliwa na timu yetu. Kutokana na idadi kubwa ya ripoti, hatutaweza kukujibu.</translation>
 <translation id="7784116172884276937">Hakuna seva za DNS zilizowekwa mipangilio</translation>
 <translation id="779591286616261875">Tuma ripoti mpya</translation>
 <translation id="7799817062559422778">Hali ya mwangaza</translation>

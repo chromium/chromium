@@ -181,7 +181,6 @@
 <translation id="138218114945450791">આછો વાદળી</translation>
 <translation id="1382194467192730611">USB ડિવાઇસને તમારા વ્યવસ્થાપક દ્વારા મંજૂરી આપવામાં આવેલી છે</translation>
 <translation id="1382378825779654399">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને ઇમેઇલ દ્વારા અલર્ટ મળશે. આ પેજને <ph name="LAST_BOOKMARKS_FOLDER" />માં સાચવવામાં આવશે.</translation>
-<translation id="1382912999714108023">તમારી હાલની માહિતી દેખાઈ રહી નથી? તેને અપડેટ કરવા માટે, કૃપા કરીને તમારી બેંકનો સંપર્ક કરો.</translation>
 <translation id="1384725838384960382">સુરક્ષિત ચુકવણી માટે લૉગ ઇન વિગતના પ્રમાણીકરણની શીટ</translation>
 <translation id="1386623374109090026">ટીકાટિપ્પણી</translation>
 <translation id="1391289752476847787">સ્ટૉક અને બોન્ડ</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5 x 5 ઇંચ</translation>
 <translation id="3608932978122581043">ફીડ ઓરિએન્ટેશન</translation>
 <translation id="3611317423880285981">ઘરનો સામાન</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> માટે વર્ચ્યુઅલ કાર્ડ</translation>
 <translation id="3614103345592970299">કદ 2</translation>
 <translation id="361438452008624280">સૂચિની એન્ટ્રી "<ph name="LANGUAGE_ID" />": અજાણી અથવા અસમર્થિત ભાષા.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">શું સ્થાનની મંજૂરી આપીએ?</translation>
 <translation id="6890531741535756070">તમે <ph name="PROVIDER_ORIGIN" />નો ઉપયોગ કરતી વેબસાઇટ પર <ph name="DEVICE_LABEL" /> વડે ચકાસણી કરવાનું પસંદ કર્યું છે. આ પ્રદાતાએ તમારી ચુકવણી પદ્ધતિ વિશેની માહિતી કદાચ સ્ટોર કરી હોઈ શકે છે, જેને તમે <ph name="BEGIN_LINK" />ડિલીટ કરવા માટેની વિનંતી<ph name="END_LINK" /> કરી શકો છો.</translation>
 <translation id="6891596781022320156">પૉલિસી લેવલ સમર્થિત નથી.</translation>
-<translation id="6895143722905299846">વર્ચ્યુઅલ નંબર:</translation>
 <translation id="6895330447102777224">તમારા કાર્ડની પુષ્ટિ કરવામાં આવી છે</translation>
 <translation id="6897140037006041989">વપરાશકર્તા એજન્ટ</translation>
 <translation id="6898699227549475383">ઑર્ગેનાઇઝેશન (O)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">&amp;પુનઃક્રમાંકિત કરવું ફરી કરો</translation>
 <translation id="7335157162773372339">તમારા કૅમેરાનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="7337248890521463931">વધુ પંક્તિઓ બતાવો</translation>
-<translation id="7337418456231055214">શું વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવ્યો નથી? કૉપિ કરવા માટે, કાર્ડની વિગતો પર ક્લિક કરો. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">તમારા પ્લૅટફૉર્મ પર ઉપલબ્ધ નથી.</translation>
 <translation id="733923710415886693">પ્રમાણપત્ર પારદર્શિતા દ્વારા સર્વરનું પ્રમાણપત્ર જાહેર કરવામાં આવ્યું ન હતું.</translation>
 <translation id="7341357280245177602">વાપરેલા વાહનો</translation>

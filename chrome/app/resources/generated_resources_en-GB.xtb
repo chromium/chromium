@@ -939,6 +939,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1834503245783133039">Download unsuccessful: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Upgrading Linux</translation>
+<translation id="1835612721186505600">Allow access for apps and websites with the camera permission</translation>
 <translation id="1838374766361614909">Clear search</translation>
 <translation id="1839021455997460752">Your email address</translation>
 <translation id="1839540115464516994">Show in <ph name="LOCATION" /></translation>
@@ -2509,6 +2510,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3279230909244266691">This process may take a few minutes. Starting the virtual machine.</translation>
 <translation id="3280237271814976245">Save &amp;as...</translation>
 <translation id="3280243678470289153">Stay in Chrome</translation>
+<translation id="328119399589609861">Control device access to microphone, camera and more</translation>
 <translation id="3281892622610078515">Files and programs to be quarantined:</translation>
 <translation id="3282210178675490297">Sharing a tab to <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">New &amp;Tab</translation>
@@ -4516,6 +4518,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5185500136143151980">No Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Activate port</translation>
+<translation id="5190959794678983197">No microphone</translation>
 <translation id="5191094172448199359">The PINs that you entered don't match</translation>
 <translation id="5191251636205085390">Learn about and control new technologies that aim to replace third-party cookies</translation>
 <translation id="519185197579575131">Use QT</translation>
@@ -4875,6 +4878,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Is this the home page that you were expecting?</translation>
 <translation id="5522156646677899028">This extension contains a serious security vulnerability.</translation>
+<translation id="5522403133543437426">Search engine used in the address bar.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{An extension has been installed by your administrator}other{# extensions have been installed by your administrator}}</translation>
 <translation id="5523558474028191231">Name can use letters, numbers and special characters, and must be <ph name="MAX_CHARACTER_COUNT" /> characters or fewer</translation>
 <translation id="5526701598901867718">All (insecure)</translation>
@@ -7057,6 +7061,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7608810328871051088">Android preferences</translation>
 <translation id="7609148976235050828">Please connect to the Internet and try again.</translation>
+<translation id="7612401678989660900">Allow access for apps and websites with the microphone permission</translation>
 <translation id="7612655942094160088">Connected phone features enable.</translation>
 <translation id="7614260613810441905">Ask when a site wants to edit files or folders on your device (recommended)</translation>
 <translation id="761530003705945209">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
@@ -8440,6 +8445,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8872155268274985541">Invalid Kiosk external update manifest file found. Failed to update Kiosk app. Please remove the USB stick.</translation>
 <translation id="8872506776304248286">Open in app</translation>
 <translation id="8872777911145321141">Ask when a site wants to use your virtual reality devices and data (recommended)</translation>
+<translation id="887292602123626481">Learn more about default search engines</translation>
 <translation id="8874341931345877644">Cast to a device:</translation>
 <translation id="8875520811099717934">Linux upgrade</translation>
 <translation id="8875736897340638404">Choose your visibility</translation>
@@ -8560,6 +8566,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8987927404178983737">Month</translation>
 <translation id="8989359959810288806">Refresh tethering status</translation>
 <translation id="8991520179165052608">Site can use your microphone</translation>
+<translation id="8991694323904646277">No camera</translation>
 <translation id="8993059306046735527">If you forget your <ph name="DEVICE_TYPE" /> password, you can still restore your local data. You'll need to sign in to your Google Account or use account recovery.</translation>
 <translation id="899384117894244799">Remove restricted user</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>

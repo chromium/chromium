@@ -181,7 +181,6 @@
 <translation id="138218114945450791">ഇളം നീല</translation>
 <translation id="1382194467192730611">നിങ്ങളുടെ അഡ്‌‌മിനിസ്‌ട്രേറ്റർ USB ഉപകരണം അനുവദിച്ചു</translation>
 <translation id="1382378825779654399">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ നിങ്ങൾക്ക് ഇമെയിൽ അറിയിപ്പുകൾ ലഭിക്കും. ഈ പേജ് <ph name="LAST_BOOKMARKS_FOLDER" /> എന്നതിൽ സംരക്ഷിക്കും.</translation>
-<translation id="1382912999714108023">നിങ്ങളുടെ നിലവിലെ വിവരങ്ങൾ കാണുന്നില്ലേ? അപ്ഡേറ്റ് ചെയ്യാൻ നിങ്ങളുടെ ബാങ്കിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="1384725838384960382">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യൽ പരിശോധിച്ചുറപ്പിക്കൽ ഷീറ്റ്</translation>
 <translation id="1386623374109090026">കുറിപ്പുകൾ</translation>
 <translation id="1391289752476847787">സ്റ്റോക്കുകളും ബോണ്ടുകളും</translation>
@@ -1026,7 +1025,6 @@
 <translation id="3605899229568538311">5 x 5 ഇഞ്ച്</translation>
 <translation id="3608932978122581043">ഓറിയന്റേഷൻ ഫീഡ് ചെയ്യുക</translation>
 <translation id="3611317423880285981">ഗാർഹിക സാമഗ്രികൾ</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> എന്നതിനുള്ള വെർച്വൽ കാർഡ്</translation>
 <translation id="3614103345592970299">വലുപ്പം 2</translation>
 <translation id="361438452008624280">ലിസ്‌റ്റ് എൻട്രി "<ph name="LANGUAGE_ID" />": അജ്ഞാതമോ പിന്തുണയ്ക്കാത്തതോ ആയ ഭാഷ.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
@@ -2285,7 +2283,6 @@
 <translation id="6890443033788248019">ലൊക്കേഷൻ അനുമതി നൽകണോ?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> ഉപയോഗിക്കുന്ന വെബ്സൈറ്റുകളിൽ <ph name="DEVICE_LABEL" /> ഉപയോഗിച്ച് പരിശോധിച്ചുറപ്പിക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തു. നിങ്ങളുടെ പേയ്മെന്റ് രീതിയെ കുറിച്ചുള്ള വിവരങ്ങൾ ഈ ദാതാവ് സംഭരിച്ചിട്ടുണ്ടാകാം, നിങ്ങൾക്ക് ഇത് <ph name="BEGIN_LINK" />ഇല്ലാതാക്കാൻ അഭ്യർത്ഥിക്കാവുന്നതാണ്<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">നയ നില പിന്തുണയ്ക്കുന്നില്ല.</translation>
-<translation id="6895143722905299846">വെർച്വൽ നമ്പർ:</translation>
 <translation id="6895330447102777224">നിങ്ങളുടെ കാർഡ് സ്ഥിരീകരിച്ചു</translation>
 <translation id="6897140037006041989">ഉപയോക്തൃ ഏജന്‍റ്</translation>
 <translation id="6898699227549475383">ഓര്‍‌ഗനൈസേഷന്‍‌ (O)</translation>
@@ -2458,7 +2455,6 @@
 <translation id="7334320624316649418">&amp;പുനഃക്രമീകരിക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="7335157162773372339">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="7337248890521463931">കൂടുതൽ വരികൾ കാണിക്കുക</translation>
-<translation id="7337418456231055214">വെർച്വൽ കാർഡ് നമ്പർ പൂരിപ്പിച്ചിട്ടില്ലേ? പകർത്താൻ കാർഡ് വിശദാംശങ്ങൾ ക്ലിക്ക് ചെയ്യുക. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">നിങ്ങളുടെ പ്ലാറ്റ്‌ഫോമിൽ ലഭ്യമല്ല.</translation>
 <translation id="733923710415886693">സർട്ടിഫിക്കറ്റ് സുതാര്യതയിലൂടെ സെർവറുടെ സർട്ടിഫിക്കറ്റ് വെളിപ്പെടുത്തിയിട്ടില്ല.</translation>
 <translation id="7341357280245177602">ഉപയോഗിച്ച വാഹനങ്ങൾ</translation>

@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Бүдэг цэнхэр</translation>
 <translation id="1382194467192730611">Таны админы зөвшөөрсөн USB төхөөрөмж</translation>
 <translation id="1382378825779654399">Аль нэг сайт дээр үнэ буурсан тохиолдолд та имэйлээр илгээх сэрэмжлүүлэг авна. Энэ хуудсыг <ph name="LAST_BOOKMARKS_FOLDER" />-д хадгална.</translation>
-<translation id="1382912999714108023">Одоогийн мэдээллээ харахгүй байна уу? Үүнийг шинэчлэхийн тулд банктайгаа холбогдоно уу.</translation>
 <translation id="1384725838384960382">Аюулгүй төлбөрийн мандат үнэмлэхийг баталгаажуулах хүснэгт</translation>
 <translation id="1386623374109090026">Тэмдэглэгээ</translation>
 <translation id="1391289752476847787">Хувьцаа, бонд</translation>
@@ -1028,7 +1027,6 @@
 <translation id="3605899229568538311">5 x 5 инч</translation>
 <translation id="3608932978122581043">Чиглэлийг заах</translation>
 <translation id="3611317423880285981">Өрхийн хангамж</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" />-н виртуал карт</translation>
 <translation id="3614103345592970299">Хэмжээ 2</translation>
 <translation id="361438452008624280">Жагсаалтын оролт "<ph name="LANGUAGE_ID" />": Энэ хэлийг танихгүй эсвэл дэмжээгүй байна.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоонд аюулгүй байдлын шалгалтыг ажиллуулахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">Байршлыг зөвшөөрөх үү?</translation>
 <translation id="6890531741535756070">Та <ph name="PROVIDER_ORIGIN" />-г ашигладаг вебсайтууд дээр <ph name="DEVICE_LABEL" />-р баталгаажуулахаар сонгосон. Энэ үйлчилгээ үзүүлэгч таны төлбөрийн хэрэгслийн талаарх мэдээллийг хадгалсан байж болзошгүй бөгөөд та үүнийг <ph name="BEGIN_LINK" />устгуулах хүсэлт тавих<ph name="END_LINK" /> боломжтой.</translation>
 <translation id="6891596781022320156">Энэ журмын түвшинг дэмжээгүй байна.</translation>
-<translation id="6895143722905299846">Виртуал дугаар:</translation>
 <translation id="6895330447102777224">Таны картыг баталгаажуулсан байна</translation>
 <translation id="6897140037006041989">Хэрэглэгчийн төлөөлөгч</translation>
 <translation id="6898699227549475383">Байгууллага (O)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">&amp; Дахин эрэмбэлэх үйлдлийг дахин хийх</translation>
 <translation id="7335157162773372339">Таны камерыг ашиглахыг хүсэх боломжтой</translation>
 <translation id="7337248890521463931">Илүү олон мөр харуулах</translation>
-<translation id="7337418456231055214">Виртуал картын дугаарыг бөглөөгүй байна уу? Хуулахын тулд картын дэлгэрэнгүйг товшино уу. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Таны платформд боломжгүй.</translation>
 <translation id="733923710415886693">Серверийн сертификатыг Сертификатын ил тод байдлаар ил тод болгоогүй.</translation>
 <translation id="7341357280245177602">Хуучин тээврийн хэрэгсэл</translation>

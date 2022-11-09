@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Բաց կապույտ</translation>
 <translation id="1382194467192730611">USB սարքը թույլատրված է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1382378825779654399">Դուք էլփոստով ծանուցումներ կստանաք, երբ որևէ կայքում գնիջեցում լինի։ Այս էջը կպահվի «<ph name="LAST_BOOKMARKS_FOLDER" />» պանակում։</translation>
-<translation id="1382912999714108023">Եթե տվյալները չեն թարմացվել, դիմեք ձեր բանկ։</translation>
 <translation id="1384725838384960382">Պաշտպանված վճարումների մուտքային տվյալների նույնականացման էկրան</translation>
 <translation id="1386623374109090026">Ծանոթագրություններ</translation>
 <translation id="1391289752476847787">Բաժնետոմսեր և պարտատոմսեր</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5 x 5 դյույմ</translation>
 <translation id="3608932978122581043">Նշել դիրքը</translation>
 <translation id="3611317423880285981">Կենցաղային ապրանքներ</translation>
-<translation id="3611395257124510155">Վիրտուալ քարտ (<ph name="CARD_IDENTIFIER" />)</translation>
 <translation id="3614103345592970299">Չափ 2</translation>
 <translation id="361438452008624280">«<ph name="LANGUAGE_ID" />» ցանկի տարր․ լեզուն չի աջակցվում կամ հայտնի չէ։</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
@@ -2287,7 +2285,6 @@
 <translation id="6890443033788248019">Թույլատրե՞լ տեղորոշման օգտագործումը</translation>
 <translation id="6890531741535756070">Դուք ընտրել եք, որ կայքերում, որոնք օգտագործում են <ph name="DEVICE_LABEL" />, հաստատումը կատարվի <ph name="PROVIDER_ORIGIN" />-ի միջոցով։ Հնարավոր է՝ այս մատակարարը տեղեկություններ է պահել ձեր վճարման եղանակի մասին։ Դուք կարող եք այդ տեղեկությունների <ph name="BEGIN_LINK" />ջնջման հայտ ուղարկել<ph name="END_LINK" />։</translation>
 <translation id="6891596781022320156">Կանոնի մակարդակը չի աջակցվում:</translation>
-<translation id="6895143722905299846">Վիրտուալ համար՝</translation>
 <translation id="6895330447102777224">Ձեր քարտը հաստատված է</translation>
 <translation id="6897140037006041989">Օգտատիրոջ գործակալ</translation>
 <translation id="6898699227549475383">Կազմակերպություն (O)</translation>
@@ -2460,7 +2457,6 @@
 <translation id="7334320624316649418">&amp;Վերարկել վերադասավորումը</translation>
 <translation id="7335157162773372339">Կարող է հայցել տեսախցիկն օգտագործելու թույլտվություն</translation>
 <translation id="7337248890521463931">Ցույց տալ ավելի շատ տողեր</translation>
-<translation id="7337418456231055214">Վիրտուալ քարտի համարը չի՞ լրացվել։ Սեղմեք քարտի տվյալների վրա՝ դրանք պատճենելու համար։ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Հասանելի չէ ձեր հարթակում:</translation>
 <translation id="733923710415886693">Սերվերի վկայագիրը չի բացահայտվել «Վկայագրերի թափանցիկություն» կանոնի միջոցով:</translation>
 <translation id="7341357280245177602">Օգտագործված ավտոմեքենաներ</translation>

@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">โหมดจับภาพ ค่าเริ่มต้นคือ<ph name="TYPE" /><ph name="SOURCE" /> กดแป้น Tab เพื่อไปยังส่วนต่างๆ ด้วยแป้นพิมพ์</translation>
 <translation id="2961963223658824723">เกิดข้อผิดพลาด โปรดลองอีกครั้งในอีกสักครู่</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">เปิดการเข้าถึงไมโครโฟนใช่ไหม</translation>
 <translation id="296762781903199866">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />ไม่สำเร็จ</translation>
 <translation id="2970920913501714344">ติดตั้งแอป ส่วนขยาย และธีม</translation>
 <translation id="2977598380246111477">ตัวเลขถัดไป</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">แว่นขยายแบบเต็มหน้าจอ</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">การตั้งค่าเพิ่มเติม</translation>
+<translation id="3405101454990027959">เปิดการเข้าถึงไมโครโฟน</translation>
 <translation id="3410336247007142655">แสดงการตั้งค่าธีมมืด</translation>
 <translation id="3413817803639110246">ไม่มีการแจ้งเตือนใหม่</translation>
 <translation id="3428447136709161042">ยกเลิกการเชื่อมต่อกับ <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">กลับ</translation>
 <translation id="385300504083504382">จุดเริ่มต้น</translation>
 <translation id="3861651314799684201">กด Enter เพื่อบันทึกแบบเต็มหน้าจอ</translation>
+<translation id="3885531177412808398">ช่วยให้เข้าถึงไมโครโฟนสำหรับแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟน</translation>
 <translation id="3886872229787704059">เปิดวันนี้</translation>
 <translation id="3891340733213178823">กด Ctrl+Shift+Q 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="3893630138897523026">ChromeVox (การตอบสนองด้วยเสียง)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727">เปิด <ph name="NAME" /> เพื่อตั้งค่าอุปกรณ์</translation>
 <translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
 <translation id="8683506306463609433">ใช้งานการติดตามประสิทธิภาพอยู่</translation>
+<translation id="8684405646663021166">อนุญาตให้เข้าถึงไมโครโฟนสำหรับ "<ph name="APP_NAME" />" รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟน</translation>
 <translation id="8685326675965865247">ค้นหาอุปกรณ์ แอป การตั้งค่า และเว็บ ใช้แป้นลูกศรเพื่อไปยังส่วนต่างๆ ของแอป</translation>
 <translation id="8703634754197148428">เริ่มบันทึก เมื่อการบันทึกเริ่มต้น ให้ใช้ Alt + Shift + L เพื่อไปที่แถบและหาปุ่มหยุดบันทึก</translation>
 <translation id="8721053961083920564">สลับเปิด/ปิดระดับเสียง <ph name="STATE_TEXT" /></translation>

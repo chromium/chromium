@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Ανοιχτό μπλε</translation>
 <translation id="1382194467192730611">Συσκευή USB που επιτρέπεται από τον διαχειριστή σας</translation>
 <translation id="1382378825779654399">Αν η τιμή πέσει σε οποιονδήποτε ιστότοπο, θα λάβετε ειδοποιήσεις ηλεκτρονικού ταχυδρομείου. Αυτή η σελίδα θα αποθηκευτεί στον φάκελο <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Δεν βλέπετε τα τρέχοντα στοιχεία σας; Επικοινωνήστε με την τράπεζά σας για να γίνει ενημέρωση.</translation>
 <translation id="1384725838384960382">Φύλλο ελέγχου ταυτότητας διαπιστευτηρίων για ασφαλείς πληρωμές</translation>
 <translation id="1386623374109090026">Σχολιασμοί</translation>
 <translation id="1391289752476847787">Μετοχές και ομόλογα</translation>
@@ -1028,7 +1027,6 @@
 <translation id="3605899229568538311">5 x 5 ίντσες</translation>
 <translation id="3608932978122581043">Προσανατολισμός ροής</translation>
 <translation id="3611317423880285981">Οικιακά είδη</translation>
-<translation id="3611395257124510155">Εικονική κάρτα για <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Μέγεθος 2</translation>
 <translation id="361438452008624280">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Άγνωστη ή μη υποστηριζόμενη γλώσσα.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
@@ -2290,7 +2288,6 @@
 <translation id="6890443033788248019">Να επιτρέπεται η τοποθεσία;</translation>
 <translation id="6890531741535756070">Επιλέξατε να επαληθεύσετε το προφίλ σας με <ph name="DEVICE_LABEL" /> σε ιστοτόπους που χρησιμοποιούν <ph name="PROVIDER_ORIGIN" />. Αυτός ο πάροχος μπορεί να έχει αποθηκεύσει πληροφορίες σχετικά με τον τρόπο πληρωμής σας, τις οποίες μπορείτε να <ph name="BEGIN_LINK" />ζητήσετε να διαγραφούν<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Το επίπεδο πολιτικής δεν υποστηρίζεται.</translation>
-<translation id="6895143722905299846">Εικονικός αριθμός:</translation>
 <translation id="6895330447102777224">Η κάρτα σας επιβεβαιώθηκε</translation>
 <translation id="6897140037006041989">Παράγοντας χρήστη</translation>
 <translation id="6898699227549475383">Οργάνωση (O)</translation>
@@ -2463,7 +2460,6 @@
 <translation id="7334320624316649418">&amp;Επανάληψη αναδιάταξης</translation>
 <translation id="7335157162773372339">Μπορεί να ζητά να χρησιμοποιεί την κάμερά σας.</translation>
 <translation id="7337248890521463931">Εμφάνιση περισσότερων γραμμών</translation>
-<translation id="7337418456231055214">Δεν συμπληρώθηκε ο αριθμός εικονικής κάρτας; Κάντε κλικ στις λεπτομέρειες της κάρτας για αντιγραφή. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Δεν είναι διαθέσιμο στην πλατφόρμα σας.</translation>
 <translation id="733923710415886693">Το πιστοποιητικό του διακομιστή δεν αποκαλύφθηκε μέσω της Διαφάνειας πιστοποιητικών.</translation>
 <translation id="7341357280245177602">Μεταχειρισμένα οχήματα</translation>

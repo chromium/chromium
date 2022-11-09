@@ -181,7 +181,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="138218114945450791">Xanh lam nhạt</translation>
 <translation id="1382194467192730611">Thiết bị USB được quản trị viên của bạn cho phép</translation>
 <translation id="1382378825779654399">Bạn sẽ nhận được email thông báo nếu có chương trình giảm giá trên một trang web bất kỳ. Trang này sẽ được lưu vào <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Bạn không thấy thông tin hiện tại của mình? Xin vui lòng liên hệ với ngân hàng của bạn để cập nhật thông tin.</translation>
 <translation id="1384725838384960382">Bảng xác thực thông tin thanh toán an toàn</translation>
 <translation id="1386623374109090026">Chú thích</translation>
 <translation id="1391289752476847787">Cổ phiếu và trái phiếu</translation>
@@ -1027,7 +1026,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3605899229568538311">5 x 5 inch</translation>
 <translation id="3608932978122581043">Hướng nạp giấy</translation>
 <translation id="3611317423880285981">Đồ dùng gia đình</translation>
-<translation id="3611395257124510155">Thẻ ảo cho <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Kích thước 2</translation>
 <translation id="361438452008624280">Mục nhập danh sách "<ph name="LANGUAGE_ID" />": Ngôn ngữ không xác định hoặc không được hỗ trợ.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để chạy quy trình kiểm tra an toàn trong phần Cài đặt của Chrome</translation>
@@ -2286,7 +2284,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6890443033788248019">Cho phép dùng thông tin vị trí?</translation>
 <translation id="6890531741535756070">Bạn đã chọn xác minh bằng <ph name="DEVICE_LABEL" /> trên các trang web sử dụng <ph name="PROVIDER_ORIGIN" />. Nhà cung cấp này có thể đã lưu trữ thông tin về phương thức thanh toán của bạn. Bạn có thể <ph name="BEGIN_LINK" />yêu cầu xoá<ph name="END_LINK" /> thông tin đó.</translation>
 <translation id="6891596781022320156">Cấp chính sách không được hỗ trợ.</translation>
-<translation id="6895143722905299846">Số thẻ ảo:</translation>
 <translation id="6895330447102777224">Thẻ của bạn đã được xác nhận</translation>
 <translation id="6897140037006041989">Tác nhân Người dùng</translation>
 <translation id="6898699227549475383">Tổ chức (O)</translation>
@@ -2459,7 +2456,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7334320624316649418">&amp;Làm lại sắp xếp lại</translation>
 <translation id="7335157162773372339">Trang web có thể yêu cầu dùng máy ảnh của bạn</translation>
 <translation id="7337248890521463931">Hiện thêm dòng</translation>
-<translation id="7337418456231055214">Bạn chưa điền số thẻ ảo? Hãy nhấp vào mục thông tin thẻ chi tiết để sao chép. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Không được hỗ trợ trên nền tảng của bạn.</translation>
 <translation id="733923710415886693">Chứng chỉ của máy chủ đã không được tiết lộ qua Tính minh bạch của chứng chỉ.</translation>
 <translation id="7341357280245177602">Xe đã qua sử dụng</translation>

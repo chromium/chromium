@@ -181,7 +181,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="138218114945450791">Biru Cerah</translation>
 <translation id="1382194467192730611">Peranti USB yang dibenarkan oleh pentadbir anda</translation>
 <translation id="1382378825779654399">Anda akan mendapat makluman e-mel jika harga turun pada mana-mana laman. Halaman ini akan disimpan pada <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Maklumat yang dipaparkan telah lapuk? Sila hubungi bank anda untuk mengemas kini maklumat.</translation>
 <translation id="1384725838384960382">Helaian pengesahan bukti kelayakan pembayaran selamat</translation>
 <translation id="1386623374109090026">Anotasi</translation>
 <translation id="1391289752476847787">Saham &amp; bon</translation>
@@ -1027,7 +1026,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Orientasi suapan</translation>
 <translation id="3611317423880285981">Barangan isi rumah</translation>
-<translation id="3611395257124510155">Kad maya untuk <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Saiz 2</translation>
 <translation id="361438452008624280">Masukan senarai "<ph name="LANGUAGE_ID" />": Bahasa tidak diketahui atau bahasa tidak disokong.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menjalankan semakan keselamatan dalam tetapan Chrome</translation>
@@ -2287,7 +2285,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6890443033788248019">Benarkan lokasi?</translation>
 <translation id="6890531741535756070">Anda memilih untuk mengesahkan dengan <ph name="DEVICE_LABEL" /> pada laman web yang menggunakan <ph name="PROVIDER_ORIGIN" />. Pembekal ini mungkin telah menyimpan maklumat tentang kaedah pembayaran anda, yang boleh anda <ph name="BEGIN_LINK" />minta untuk dipadamkan<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Tahap dasar tidak disokong.</translation>
-<translation id="6895143722905299846">Nombor maya:</translation>
 <translation id="6895330447102777224">Kad anda telah disahkan</translation>
 <translation id="6897140037006041989">Ejen Pengguna</translation>
 <translation id="6898699227549475383">Organisasi (O)</translation>
@@ -2460,7 +2457,6 @@ Butiran tambahan:
 <translation id="7334320624316649418">&amp;Buat semula susun semula</translation>
 <translation id="7335157162773372339">Boleh meminta untuk menggunakan kamera anda</translation>
 <translation id="7337248890521463931">Tunjukkan lagi baris</translation>
-<translation id="7337418456231055214">Nombor kad maya tidak diisikan? Klik butiran kad untuk disalin. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Tidak tersedia pada platform anda.</translation>
 <translation id="733923710415886693">Sijil pelayan tidak didedahkan melalui Ketelusan Sijil.</translation>
 <translation id="7341357280245177602">Kenderaan terpakai</translation>

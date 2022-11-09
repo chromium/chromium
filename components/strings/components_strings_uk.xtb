@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Світло-синій</translation>
 <translation id="1382194467192730611">Пристрій USB дозволив адміністратор</translation>
 <translation id="1382378825779654399">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення електронною поштою. Цю сторінку буде збережено в папці "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
-<translation id="1382912999714108023">Не відображається актуальна інформація? Попросіть представника банку оновити її.</translation>
 <translation id="1384725838384960382">Екран автентифікації облікових даних для безпечних платежів</translation>
 <translation id="1386623374109090026">Примітки</translation>
 <translation id="1391289752476847787">Акції й облігації</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5 x 5 дюйм.</translation>
 <translation id="3608932978122581043">Орієнтація стрічки</translation>
 <translation id="3611317423880285981">Господарчі товари</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> – віртуальна картка</translation>
 <translation id="3614103345592970299">Розмір 2</translation>
 <translation id="361438452008624280">Пункт списку <ph name="LANGUAGE_ID" />: мова невідома або не підтримується.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">Дозволити доступ до геоданих?</translation>
 <translation id="6890531741535756070">Ви вибрали підтвердження за допомогою <ph name="DEVICE_LABEL" /> на веб-сайтах, які використовують <ph name="PROVIDER_ORIGIN" />. У цього постачальника могла зберегтись інформація про ваш спосіб оплати, але ви можете надіслати <ph name="BEGIN_LINK" />запит на її видалення<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Правило не підтримується.</translation>
-<translation id="6895143722905299846">Номер картки:</translation>
 <translation id="6895330447102777224">Дані картки підтверджено</translation>
 <translation id="6897140037006041989">Агент користувача</translation>
 <translation id="6898699227549475383">Організація (О)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">&amp;Повторити перевпорядкування</translation>
 <translation id="7335157162773372339">Може просити доступ до камери</translation>
 <translation id="7337248890521463931">Показати більше рядків</translation>
-<translation id="7337418456231055214">Номер віртуальної картки не заповнено? Щоб скопіювати дані картки, натисніть їх. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Недоступний на вашій платформі.</translation>
 <translation id="733923710415886693">Сертифікат сервера не надав інформацію про перевірку.</translation>
 <translation id="7341357280245177602">Уживані автомобілі</translation>

@@ -927,6 +927,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1832848789136765277">Da biste bili sigurni da uvek možete da pristupate sinhronizovanim podacima, potvrdite da ste to vi</translation>
 <translation id="1834503245783133039">Preuzimanje nije uspelo: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux se nadograđuje</translation>
+<translation id="1835612721186505600">Dozvolite pristup aplikacijama i veb-sajtovima sa dozvolom za kameru</translation>
 <translation id="1838374766361614909">Obrišite pretragu</translation>
 <translation id="1839021455997460752">Imejl adresa</translation>
 <translation id="1839540115464516994">Prikaži u: <ph name="LOCATION" /></translation>
@@ -2493,6 +2494,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3279230909244266691">Ovo može da potraje par minuta. Pokreće se virtuelna mašina.</translation>
 <translation id="3280237271814976245">Sačuvaj &amp;kao...</translation>
 <translation id="3280243678470289153">Ostani u Chrome-u</translation>
+<translation id="328119399589609861">Kontroliše pristup uređaja mikrofonu, kameri i drugom</translation>
 <translation id="3281892622610078515">Datoteke i programi koji treba da se stave u karantin:</translation>
 <translation id="3282210178675490297">Kartica se deli sa aplikacijom <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Nova &amp;kartica</translation>
@@ -4498,6 +4500,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5185500136143151980">Nema interneta</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktiviraj port</translation>
+<translation id="5190959794678983197">Nema mikrofona</translation>
 <translation id="5191094172448199359">Uneti PIN-ovi se ne podudaraju</translation>
 <translation id="5191251636205085390">Saznajte više o novim tehnologijama čiji je cilj da zamene kolačiće trećih strana i upravljajte njima</translation>
 <translation id="519185197579575131">Koristi QT</translation>
@@ -4856,6 +4859,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Je li ovo početna stranica koju ste očekivali?</translation>
 <translation id="5522156646677899028">Ovaj dodatak sadrži ozbiljan bezbednosni propust.</translation>
+<translation id="5522403133543437426">Pretraživač koji se koristi na traci za adresu.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrator je instalirao dodatak}one{Administrator je instalirao # dodatak}few{Administrator je instalirao # dodatka}other{Administrator je instalirao # dodataka}}</translation>
 <translation id="5523558474028191231">Slova, brojevi i specijalni znakovi mogu da se koriste u nazivu, a maksimalni broj znakova je <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526701598901867718">Sve (nebezbedno)</translation>
@@ -7043,6 +7047,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7608810328871051088">Android podešavanja</translation>
 <translation id="7609148976235050828">Povežite se na internet i probajte ponovo.</translation>
+<translation id="7612401678989660900">Dozvolite pristup aplikacijama i veb-sajtovima sa dozvolom za mikrofon</translation>
 <translation id="7612655942094160088">Omogućite povezane funkcije telefona.</translation>
 <translation id="7614260613810441905">Pitaj kada sajt želi da izmeni datoteke ili direktorijume na uređaju (preporučeno)</translation>
 <translation id="761530003705945209">Pravite rezervne kopije na Google disku. Lako vratite podatke ili pređite na drugi uređaj u bilo kom trenutku. Rezervna kopija obuhvata podatke aplikacija. Rezervne kopije se otpremaju na Google i šifruju pomoću lozinke za Google nalog.</translation>
@@ -8427,6 +8432,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8872155268274985541">Pronađena je nevažeća datoteka manifesta za spoljno ažuriranje kioska. Ažuriranje kiosk aplikacije nije uspelo. Uklonite USB memoriju.</translation>
 <translation id="8872506776304248286">Otvori u aplikaciji</translation>
 <translation id="8872777911145321141">Pitaj kada sajt želi da koristi uređaje i podatke virtuelne realnosti (preporučeno)</translation>
+<translation id="887292602123626481">Saznajte više o podrazumevanim pretraživačima</translation>
 <translation id="8874341931345877644">Prebacujte na uređaj:</translation>
 <translation id="8875520811099717934">Nadogradnja Linux-a</translation>
 <translation id="8875736897340638404">Izaberite vidljivost</translation>
@@ -8547,6 +8553,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8987927404178983737">Mesec</translation>
 <translation id="8989359959810288806">Osveži status privezivanja</translation>
 <translation id="8991520179165052608">Sajt može da koristi mikrofon</translation>
+<translation id="8991694323904646277">Nema kamere</translation>
 <translation id="8993059306046735527">Ako zaboravite lozinku za <ph name="DEVICE_TYPE" />, i dalje možete da vratite lokalne podatke. Morate da se prijavite na Google nalog ili da upotrebite vraćanje pristupa nalogu.</translation>
 <translation id="899384117894244799">Uklonite korisnika sa ograničenim pristupom</translation>
 <translation id="899403249577094719">Osnovna URL adresa za Netscape sertifikat</translation>

@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Голубой</translation>
 <translation id="1382194467192730611">Это устройство USB входит в список разрешенных</translation>
 <translation id="1382378825779654399">Если на одном из сайтов появится скидка, вы получите оповещение по электронной почте. Эта страница будет сохранена в папку "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
-<translation id="1382912999714108023">Если вы видите устаревшие данные, обратитесь в свой банк.</translation>
 <translation id="1384725838384960382">Экран проверки учетных данных для защищенных платежей</translation>
 <translation id="1386623374109090026">Заметки</translation>
 <translation id="1391289752476847787">Акции и облигации</translation>
@@ -1026,7 +1025,6 @@
 <translation id="3605899229568538311">5 x 5 дюймов</translation>
 <translation id="3608932978122581043">Задать ориентацию</translation>
 <translation id="3611317423880285981">Хозяйственные товары</translation>
-<translation id="3611395257124510155">Виртуальная карта (<ph name="CARD_IDENTIFIER" />)</translation>
 <translation id="3614103345592970299">Размер: 2</translation>
 <translation id="361438452008624280">Элемент списка "<ph name="LANGUAGE_ID" />": язык не поддерживается или неизвестен.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы запустить проверку безопасности в настройках Chrome.</translation>
@@ -2285,7 +2283,6 @@
 <translation id="6890443033788248019">Предоставить доступ к данным о местоположении?</translation>
 <translation id="6890531741535756070">Вы выбрали <ph name="DEVICE_LABEL" /> для подтверждения покупок на сайтах, пользующихся услугами поставщика <ph name="PROVIDER_ORIGIN" />. Поставщик мог сохранить информацию о вашем способе оплаты. У вас есть право <ph name="BEGIN_LINK" />запросить удаление этих данных<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Значение правила не поддерживается.</translation>
-<translation id="6895143722905299846">Номер карты:</translation>
 <translation id="6895330447102777224">Ваша карта подтверждена</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Организация (O)</translation>
@@ -2458,7 +2455,6 @@
 <translation id="7334320624316649418">&amp;Повторить изменение порядка</translation>
 <translation id="7335157162773372339">Разрешено отправлять запрос на использование камеры</translation>
 <translation id="7337248890521463931">Показать больше строк</translation>
-<translation id="7337418456231055214">Номер виртуальной карты не указан? Нажмите на реквизиты, чтобы скопировать их. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Недоступно на вашей платформе.</translation>
 <translation id="733923710415886693">Сертификат сервера не проходил проверку.</translation>
 <translation id="7341357280245177602">Подержанные транспортные средства</translation>

@@ -181,7 +181,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="138218114945450791">Urdin argia</translation>
 <translation id="1382194467192730611">Administratzaileak onartzen duen USB bidezko gailua</translation>
 <translation id="1382378825779654399">Webguneren batean prezioa jaisten bada, posta elektroniko bidezko alertak jasoko dituzu. Orria <ph name="LAST_BOOKMARKS_FOLDER" /> karpetan gordeko da.</translation>
-<translation id="1382912999714108023">Ezin duzu ikusi oraingo informazioa? Eguneratzeko, jarri bankuarekin harremanetan.</translation>
 <translation id="1384725838384960382">Ordainketa seguruetarako kredentzialak autentifikatzeko orria</translation>
 <translation id="1386623374109090026">Oharpenak</translation>
 <translation id="1391289752476847787">Akzioak eta bonuak</translation>
@@ -1023,7 +1022,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3605899229568538311">12,7 × 12,7 cm (5 × 5 in)</translation>
 <translation id="3608932978122581043">Papera sartzeko orientazioa</translation>
 <translation id="3611317423880285981">Etxeko hornigaiak</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> txartel birtuala</translation>
 <translation id="3614103345592970299">Tamaina: 2</translation>
 <translation id="361438452008624280">"<ph name="LANGUAGE_ID" />" zerrenda-sarrera: hizkuntza ez da ezagutzen edo onartzen.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla Chrome-ren ezarpenetan segurtasun-egiaztapena egiteko</translation>
@@ -2281,7 +2279,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6890443033788248019">Kokapena atzitzeko baimena eman nahi diozu?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> darabilten webguneetan <ph name="DEVICE_LABEL" /> erabilita egiaztatzea aukeratu duzu. Baliteke hornitzaile horrek zure ordainketa-metodoari buruzko informazioa gorde izatea, baina <ph name="BEGIN_LINK" />hura ezabatzeko eska<ph name="END_LINK" /> dezakezu.</translation>
 <translation id="6891596781022320156">Ez da gidalerroen maila onartzen.</translation>
-<translation id="6895143722905299846">Zenbaki birtuala:</translation>
 <translation id="6895330447102777224">Berretsi da txartela</translation>
 <translation id="6897140037006041989">Erabiltzaile-agentea</translation>
 <translation id="6898699227549475383">Erakundea (O)</translation>
@@ -2454,7 +2451,6 @@ Xehetasun gehiago:
 <translation id="7334320624316649418">&amp;Berregin berrantolatzea</translation>
 <translation id="7335157162773372339">Kamera erabiltzea eska dezake</translation>
 <translation id="7337248890521463931">Erakutsi lerro gehiago</translation>
-<translation id="7337418456231055214">Txartel birtualaren zenbakia ez dago beteta? Txartelaren xehetasunak kopiatu nahi badituzu, saka itzazu. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Ez dago erabilgarri darabilzun plataforman.</translation>
 <translation id="733923710415886693">Zerbitzariaren ziurtagiria ez da ezagutarazi ziurtagirien gardentasun-gidalerroa erabilita.</translation>
 <translation id="7341357280245177602">Bigarren eskuko ibilgailuak</translation>

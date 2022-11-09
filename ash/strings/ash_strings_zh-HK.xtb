@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">擷取模式，預設係<ph name="SOURCE" /><ph name="TYPE" />。㩒 tab 鍵就可以睇下鍵盤導覽資料。</translation>
 <translation id="2961963223658824723">系統發生錯誤，請幾秒後再試。</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">要開啟麥克風存取權嗎？</translation>
 <translation id="296762781903199866">無法下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="2970920913501714344">安裝應用程式、擴充程式和主題</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3387527074123400161">Chromium 作業系統</translation>
 <translation id="3400357268283240774">其他設定</translation>
+<translation id="3405101454990027959">開啟麥克風存取權</translation>
 <translation id="3410336247007142655">顯示深色主題背景設定</translation>
 <translation id="3413817803639110246">目前尚未有任何通知</translation>
 <translation id="3428447136709161042">中斷同<ph name="NETWORK_NAME" />嘅連線</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">開頭</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
+<translation id="3885531177412808398">允許所有具備麥克風權限的應用程式和網站存取麥克風</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -1373,6 +1376,7 @@
 <translation id="8666856788528804727">開啟 <ph name="NAME" /> 以設定裝置</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
 <translation id="8683506306463609433">效能追蹤使用中</translation>
+<translation id="8684405646663021166">允許「<ph name="APP_NAME" />」和所有具備麥克風權限的應用程式和網站存取麥克風</translation>
 <translation id="8685326675965865247">搜尋您的裝置、應用程式、設定及網絡。使用箭咀鍵可瀏覽應用程式。</translation>
 <translation id="8703634754197148428">開始錄影。如果喺開始之後想停止錄影，請㩒 Alt + Shift + L 鍵去捷徑列，然後搵停止錄影掣</translation>
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>

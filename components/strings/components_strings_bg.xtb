@@ -181,7 +181,6 @@
 <translation id="138218114945450791">светлосиньо</translation>
 <translation id="1382194467192730611">USB устройството е разрешено от администратора</translation>
 <translation id="1382378825779654399">Ще получавате сигнали по имейл, когато има понижение на цената в който и да е сайт. Тази страница ще бъде запазена в папката „<ph name="LAST_BOOKMARKS_FOLDER" />“.</translation>
-<translation id="1382912999714108023">Не виждате текущите си данни? Свържете се с банката си, за да ги актуализирате.</translation>
 <translation id="1384725838384960382">Лист за удостоверяване на идентификационни данни за сигурни плащания</translation>
 <translation id="1386623374109090026">Пояснения</translation>
 <translation id="1391289752476847787">Акции и облигации</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5 x 5 инча</translation>
 <translation id="3608932978122581043">Ориентация при подаване</translation>
 <translation id="3611317423880285981">Стоки за домакинството</translation>
-<translation id="3611395257124510155">Виртуална карта за <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Размер 2</translation>
 <translation id="361438452008624280">Списъчен запис „<ph name="LANGUAGE_ID" />“: Неизвестен или неподдържан език.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да стартирате проверка на безопасността от настройките на Chrome</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">Да се разреши ли достъпът до местоположението?</translation>
 <translation id="6890531741535756070">Избрахте опцията за потвърждаване чрез <ph name="DEVICE_LABEL" /> в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче <ph name="BEGIN_LINK" />да заявите изтриването ѝ<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Нивото на правилото не се поддържа.</translation>
-<translation id="6895143722905299846">Виртуален номер:</translation>
 <translation id="6895330447102777224">Картата ви е потвърдена</translation>
 <translation id="6897140037006041989">Потребителски агент</translation>
 <translation id="6898699227549475383">Организация (О)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">&amp;Възстановяване на пренареждането</translation>
 <translation id="7335157162773372339">Може да поиска разрешение да използва камерата ви</translation>
 <translation id="7337248890521463931">Показване на повече редове</translation>
-<translation id="7337418456231055214">Номерът на виртуалната карта не е попълнен? Кликнете върху данните за картата, за да ги копирате. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Не е налице за платформата ви.</translation>
 <translation id="733923710415886693">Сертификатът на сървъра не е разкрит чрез Прозрачност на сертификатите.</translation>
 <translation id="7341357280245177602">Употребявани превозни средства</translation>

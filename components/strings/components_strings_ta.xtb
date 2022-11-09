@@ -181,7 +181,6 @@
 <translation id="138218114945450791">வெளிர் நீலம்</translation>
 <translation id="1382194467192730611">உங்கள் நிர்வாகி அனுமதிக்கும் USB சாதனம்</translation>
 <translation id="1382378825779654399">எந்தத் தளத்தில் விலை குறைந்தாலும் அதுகுறித்த மின்னஞ்சல் விழிப்பூட்டல்களைப் பெறுவீர்கள். <ph name="LAST_BOOKMARKS_FOLDER" /> என்பதில் இந்தப் பக்கம் சேமிக்கப்படும்.</translation>
-<translation id="1382912999714108023">சமீபத்திய தகவல்கள் காட்டப்படவில்லையா? பேங்கைத் தொடர்புகொண்டு அவற்றைச் சேர்க்குமாறு கேட்கவும்.</translation>
 <translation id="1384725838384960382">பாதுகாப்பான பேமெண்ட்டின் அனுமதிச் சான்றை அங்கீகரிப்பதற்கான தாள்</translation>
 <translation id="1386623374109090026">விரிவுரைகள்</translation>
 <translation id="1391289752476847787">பங்குகள் &amp; பத்திரங்கள்</translation>
@@ -1023,7 +1022,6 @@
 <translation id="3605899229568538311">5 x 5 இன்ச்</translation>
 <translation id="3608932978122581043">உட்செலுத்தும் திசையமைப்பு</translation>
 <translation id="3611317423880285981">வீட்டிற்கான பொருட்கள்</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" />க்கான விர்ச்சுவல் கார்டு</translation>
 <translation id="3614103345592970299">அளவு: 2</translation>
 <translation id="361438452008624280">பட்டியல் உள்ளீடு '<ph name="LANGUAGE_ID" />': தெரியாத அல்லது ஆதரிக்கப்படாத மொழி.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -2281,7 +2279,6 @@
 <translation id="6890443033788248019">இருப்பிட அணுகலை வழங்கவா?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> ஐப் பயன்படுத்தும் தளங்களில் <ph name="DEVICE_LABEL" /> மூலம் சரிபார்க்கத் தேர்வுசெய்துள்ளீர்கள். உங்கள் பேமெண்ட் முறை குறித்த தகவல்களை இந்த வழங்குநர் சேமித்திருக்கக்கூடும். அவற்றை <ph name="BEGIN_LINK" />நீக்கக் கோரலாம்<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">கொள்கையின் நிலை ஆதரிக்கப்படவில்லை.</translation>
-<translation id="6895143722905299846">விர்ச்சுவல் எண்:</translation>
 <translation id="6895330447102777224">கார்டு உறுதிசெய்யப்பட்டது</translation>
 <translation id="6897140037006041989">பயனர் ஏஜெண்ட்</translation>
 <translation id="6898699227549475383">நிறுவனம் (O)</translation>
@@ -2454,7 +2451,6 @@
 <translation id="7334320624316649418">&amp;மறுவரிசைப்படுத்தலை மீண்டும் செய்</translation>
 <translation id="7335157162773372339">கேமராவைப் பயன்படுத்த அனுமதி கேட்க வேண்டும்</translation>
 <translation id="7337248890521463931">மேலும் வரிகளைக் காட்டும்</translation>
-<translation id="7337418456231055214">விர்ச்சுவல் கார்டு எண் நிரப்பப்படவில்லையா? நகலெடுக்க, கார்டு விவரங்களைக் கிளிக் செய்யவும். <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">உங்கள் இயங்குதளத்தில் இல்லை.</translation>
 <translation id="733923710415886693">சான்றிதழ் வெளிப்படைத்தன்மை மூலம் சேவையகத்தின் சான்றிதழ் வெளியிடப்படவில்லை.</translation>
 <translation id="7341357280245177602">பயன்படுத்திய வாகனங்கள்</translation>

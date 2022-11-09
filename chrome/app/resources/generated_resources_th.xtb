@@ -928,6 +928,7 @@
 <translation id="1832848789136765277">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงข้อมูลที่ซิงค์ไว้ได้ทุกเมื่อ</translation>
 <translation id="1834503245783133039">ดาวน์โหลดไม่สำเร็จ: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">กำลังอัปเกรด Linux</translation>
+<translation id="1835612721186505600">อนุญาตให้เข้าถึงสำหรับแอปและเว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="1839021455997460752">อีเมลของคุณ</translation>
 <translation id="1839540115464516994">แสดงใน <ph name="LOCATION" /></translation>
@@ -2494,6 +2495,7 @@
 <translation id="3279230909244266691">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังเริ่มเครื่องเสมือน</translation>
 <translation id="3280237271814976245">บันทึกใ&amp;ห้เป็น...</translation>
 <translation id="3280243678470289153">อยู่ภายใน Chrome</translation>
+<translation id="328119399589609861">ควบคุมสิทธิ์ของอุปกรณ์ในการเข้าถึงไมโครโฟน กล้อง และอื่นๆ</translation>
 <translation id="3281892622610078515">ไฟล์และโปรแกรมที่จะกักบริเวณ</translation>
 <translation id="3282210178675490297">กำลังแชร์แท็บกับ <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">แ&amp;ท็บใหม่</translation>
@@ -4499,6 +4501,7 @@
 <translation id="5185500136143151980">ไม่มีอินเทอร์เน็ต</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">เปิดใช้งานพอร์ต</translation>
+<translation id="5190959794678983197">ไม่มีไมโครโฟน</translation>
 <translation id="5191094172448199359">PIN ที่คุณป้อนไม่ตรงกัน</translation>
 <translation id="5191251636205085390">ดูข้อมูลและควบคุมเทคโนโลยีใหม่ๆ ที่มีจุดประสงค์เพื่อมาแทนที่คุกกี้ของบุคคลที่สาม</translation>
 <translation id="519185197579575131">ใช้ QT</translation>
@@ -4858,6 +4861,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">นี่คือ "หน้าแรก" ที่คุณต้องการใช่ไหม</translation>
 <translation id="5522156646677899028">ส่วนขยายนี้มีช่องโหว่ด้านความปลอดภัยอย่างร้ายแรง</translation>
+<translation id="5522403133543437426">เครื่องมือค้นหาที่ใช้ในแถบที่อยู่</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{มีการติดตั้งส่วนขยาย 1 รายการโดยผู้ดูแลระบบของคุณ}other{มีการติดตั้งส่วนขยาย # รายการโดยผู้ดูแลระบบของคุณ}}</translation>
 <translation id="5523558474028191231">ชื่อมีตัวอักษร ตัวเลข และสัญลักษณ์พิเศษได้ โดยต้องมีความยาวไม่เกิน <ph name="MAX_CHARACTER_COUNT" /> อักขระ</translation>
 <translation id="5526701598901867718">ทั้งหมด (ไม่ปลอดภัย)</translation>
@@ -7037,6 +7041,7 @@
 <translation id="7607002721634913082">หยุดชั่วคราว</translation>
 <translation id="7608810328871051088">ค่ากำหนด Android</translation>
 <translation id="7609148976235050828">โปรดเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
+<translation id="7612401678989660900">อนุญาตให้เข้าถึงสำหรับแอปและเว็บไซต์ที่มีสิทธิ์เข้าถึงไมโครโฟน</translation>
 <translation id="7612655942094160088">เปิดใช้ฟีเจอร์ของโทรศัพท์ที่เชื่อมต่ออยู่</translation>
 <translation id="7614260613810441905">ถามเมื่อเว็บไซต์ต้องการแก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ (แนะนำ)</translation>
 <translation id="761530003705945209">สำรองข้อมูลไปที่ Google ไดรฟ์ กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะมีข้อมูลแอปอยู่ด้วย ข้อมูลสำรองดังกล่าวจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google</translation>
@@ -8419,6 +8424,7 @@
 <translation id="8872155268274985541">พบไฟล์ Manifest การอัปเดตภายนอกของคีออสก์ที่ไม่ถูกต้อง ไม่สามารถอัปเดตแอปคีออสก์ได้ โปรดนำ USB สติ๊กออก</translation>
 <translation id="8872506776304248286">เปิดในแอป</translation>
 <translation id="8872777911145321141">ถามเมื่อเว็บไซต์ต้องการใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ (แนะนำ)</translation>
+<translation id="887292602123626481">ดูข้อมูลเพิ่มเติมเกี่ยวกับเครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="8874341931345877644">แคสต์ไปยังอุปกรณ์:</translation>
 <translation id="8875520811099717934">อัปเกรด Linux</translation>
 <translation id="8875736897340638404">เลือกระดับการเข้าถึง</translation>
@@ -8539,6 +8545,7 @@
 <translation id="8987927404178983737">เดือน</translation>
 <translation id="8989359959810288806">รีเฟรชสถานะการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
 <translation id="8991520179165052608">เว็บไซต์ใช้ไมโครโฟนของคุณได้</translation>
+<translation id="8991694323904646277">ไม่มีกล้อง</translation>
 <translation id="8993059306046735527">หากลืมรหัสผ่าน <ph name="DEVICE_TYPE" /> คุณจะยังคงกู้คืนข้อมูลในเครื่องได้ โดยจะต้องลงชื่อเข้าใช้บัญชี Google หรือใช้การกู้คืนบัญชี</translation>
 <translation id="899384117894244799">นำผู้ใช้ที่ถูกจำกัดออก</translation>
 <translation id="899403249577094719">URL ที่อ้างอิงใบรับรองของ Netscape</translation>

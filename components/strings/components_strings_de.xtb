@@ -181,7 +181,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="138218114945450791">Hellblau</translation>
 <translation id="1382194467192730611">USB-Gerät wurde von deinem Administrator zugelassen</translation>
 <translation id="1382378825779654399">Du erhältst eine E-Mail-Benachrichtigung, wenn der Preis auf einer Website gesenkt wird. Diese Seite wird in „<ph name="LAST_BOOKMARKS_FOLDER" />“ gespeichert.</translation>
-<translation id="1382912999714108023">Deine aktuellen Daten werden nicht angezeigt? Kontaktiere deine Bank, um die Daten zu aktualisieren.</translation>
 <translation id="1384725838384960382">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen</translation>
 <translation id="1386623374109090026">Anmerkungen</translation>
 <translation id="1391289752476847787">Aktien und Anleihen</translation>
@@ -1026,7 +1025,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3605899229568538311">5 × 5 Zoll</translation>
 <translation id="3608932978122581043">Einzugsausrichtung</translation>
 <translation id="3611317423880285981">Haushaltsbedarf</translation>
-<translation id="3611395257124510155">Virtuelle Karte für <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Größe 2</translation>
 <translation id="361438452008624280">Listeneintrag "<ph name="LANGUAGE_ID" />": Unbekannte oder nicht unterstützte Sprache.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
@@ -2284,7 +2282,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6890443033788248019">Standortermittlung zulassen?</translation>
 <translation id="6890531741535756070">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit <ph name="DEVICE_LABEL" /> durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsmethode gespeichert. Du kannst <ph name="BEGIN_LINK" />beantragen, dass diese Informationen gelöscht werden<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Richtlinienebene wird nicht unterstützt.</translation>
-<translation id="6895143722905299846">Virtuelle Nummer:</translation>
 <translation id="6895330447102777224">Deine Karte wurde bestätigt</translation>
 <translation id="6897140037006041989">User-Agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
@@ -2457,7 +2454,6 @@ Weitere Details:
 <translation id="7334320624316649418">&amp;Neu anordnen wiederholen</translation>
 <translation id="7335157162773372339">Darf nachfragen, wenn sie meine Kamera verwenden möchte</translation>
 <translation id="7337248890521463931">Mehr Zeilen anzeigen</translation>
-<translation id="7337418456231055214">Wurde die virtuelle Kartennummer nicht eingefügt? Klicke auf die Kartendetails, um sie zu kopieren. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nicht auf deiner Plattform verfügbar.</translation>
 <translation id="733923710415886693">Das Serverzertifikat wurde nicht über die Zertifikatstransparenz offengelegt.</translation>
 <translation id="7341357280245177602">Gebrauchtwagen</translation>

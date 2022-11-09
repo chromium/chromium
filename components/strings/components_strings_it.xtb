@@ -181,7 +181,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="138218114945450791">Azzurro</translation>
 <translation id="1382194467192730611">Dispositivo USB consentito dall'amministratore</translation>
 <translation id="1382378825779654399">Riceverai avvisi via email se il prezzo calerà su qualsiasi sito. Questa pagina verrà salvata su <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Non visualizzi le informazioni correnti? Contatta la tua banca per aggiornarle.</translation>
 <translation id="1384725838384960382">Foglio per l'autenticazione delle credenziali di pagamento sicure</translation>
 <translation id="1386623374109090026">Annotazioni</translation>
 <translation id="1391289752476847787">Azioni e obbligazioni</translation>
@@ -1024,7 +1023,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Fornisci orientamento</translation>
 <translation id="3611317423880285981">Articoli per la casa</translation>
-<translation id="3611395257124510155">Carta virtuale per <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Dimensione 2</translation>
 <translation id="361438452008624280">Voce "<ph name="LANGUAGE_ID" />": lingua sconosciuta o non supportata.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per eseguire il controllo di sicurezza nelle impostazioni di Chrome</translation>
@@ -2282,7 +2280,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6890443033788248019">Vuoi consentire l'accesso alla posizione?</translation>
 <translation id="6890531741535756070">Hai scelto di eseguire la verifica con <ph name="DEVICE_LABEL" /> sui siti web che utilizzano <ph name="PROVIDER_ORIGIN" />. Questo fornitore potrebbe aver memorizzato informazioni sul tuo metodo di pagamento, che puoi <ph name="BEGIN_LINK" />chiedere di eliminare<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Il livello della norma non è supportato.</translation>
-<translation id="6895143722905299846">Numero carta virtuale:</translation>
 <translation id="6895330447102777224">La carta è stata confermata</translation>
 <translation id="6897140037006041989">User-agent</translation>
 <translation id="6898699227549475383">Organizzazione (O)</translation>
@@ -2455,7 +2452,6 @@ Ulteriori dettagli:
 <translation id="7334320624316649418">&amp;Ripeti ridisposizione</translation>
 <translation id="7335157162773372339">Può richiedere l'autorizzazione per utilizzare la videocamera</translation>
 <translation id="7337248890521463931">Mostra più righe</translation>
-<translation id="7337418456231055214">Il numero della carta virtuale non è stato compilato? Fai clic sui dettagli della carta per copiarli. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Non disponibile sulla piattaforma in uso.</translation>
 <translation id="733923710415886693">Il certificato del server non è stato reso pubblico tramite Certificate Transparency.</translation>
 <translation id="7341357280245177602">Veicoli usati</translation>

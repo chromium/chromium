@@ -220,6 +220,7 @@
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে...</translation>
 <translation id="315738237743207937">অন্তরীণ পোর্টাল শনাক্ত করা হয়েছে</translation>
+<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />সিস্টেম ও অ্যাপ সংক্রান্ত তথ্য<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />মেট্রিক<ph name="END_LINK2" /> পাঠান।</translation>
 <translation id="3170673040743561620">স্ক্যানারে আপনার ডকুমেন্ট রাখুন</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="319101249942218879">অবতারের ছবি পরিবর্তন করা হয়েছে</translation>
@@ -332,6 +333,7 @@
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />টি ছবি</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কী প্রেস করা হয়েছে</translation>
+<translation id="435692326371619097">নেটওয়ার্ক APN সেটিংস ম্যানেজ করুন। APN একটি সেলুলার নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">চালানো যায়নি</translation>
 <translation id="4378551569595875038">সংযুক্ত হচ্ছে...</translation>
 <translation id="4382484599443659549">পিডিএফ</translation>
@@ -581,6 +583,7 @@
 <translation id="6575134580692778371">কনফিগার হয়নি</translation>
 <translation id="6579509898032828423">এই ফটো ব্যবহার করুন</translation>
 <translation id="6596816719288285829">আইপি অ্যাড্রেস</translation>
+<translation id="6599673642868607614">আপনার প্রতিক্রিয়া আমাদের জানানোর জন্য ধন্যবাদ। আপনার প্রতিক্রিয়া আমাদের Chromebook অভিজ্ঞতা উন্নত করতে সাহায্য করে এবং আমাদের টিম দ্বারা পর্যালোচনা করা হবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
 <translation id="6618744767048954150">চলছে</translation>
 <translation id="6620487321149975369">ম্যানুয়ালি সরিয়ে না দেওয়া পর্যন্ত প্রিন্ট হওয়া কাজগুলি ইতিহাসে দেখা যাবে</translation>
 <translation id="6624819909909965616">১০ এমবির থেকে বড় ফাইল আপলোড করা যাবে না</translation>
@@ -689,6 +692,7 @@
 <translation id="7762130827864645708">আপনার পাসওয়ার্ড পরিবর্তন করা হয়ে গেছে। এখন থেকে নতুন পাসওয়ার্ড ব্যবহার করুন।</translation>
 <translation id="7763470514545477072">ডোমেন সাফিক্সের সাথে মিল থাকা</translation>
 <translation id="7769672763586021400">মডেল আইডি</translation>
+<translation id="7778717409420828014">আপনার প্রতিক্রিয়া আমাদের Chromebook অভিজ্ঞতা উন্নত করতে সাহায্য করে এবং আমাদের টিম দ্বারা পর্যালোচনা করা হবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
 <translation id="7784116172884276937">কোনও ডিএনএস সার্ভার সেট আপ করা হয়নি</translation>
 <translation id="779591286616261875">নতুন রিপোর্ট পাঠান</translation>
 <translation id="7799817062559422778">'লাইট মোড'</translation>

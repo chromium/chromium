@@ -181,7 +181,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="138218114945450791">Glas Golau</translation>
 <translation id="1382194467192730611">Dyfais USB a ganiateir gan eich gweinyddwr</translation>
 <translation id="1382378825779654399">Byddwch yn cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan. Bydd y dudalen hon yn cael ei chadw i <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Ddim yn gweld eich gwybodaeth gyfredol? Cysylltwch â'ch banc i'w diweddaru.</translation>
 <translation id="1384725838384960382">Taflen ddilysu manylion talu ddiogel</translation>
 <translation id="1386623374109090026">Anodiadau</translation>
 <translation id="1391289752476847787">Stociau a bondiau</translation>
@@ -1027,7 +1026,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3605899229568538311">5 x 5 modfedd</translation>
 <translation id="3608932978122581043">Cyfeiriadaeth ffrydio</translation>
 <translation id="3611317423880285981">Cyflenwadau cartref</translation>
-<translation id="3611395257124510155">Cerdyn rhithwir ar gyfer <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Maint 2</translation>
 <translation id="361438452008624280">Cofnod rhestr "<ph name="LANGUAGE_ID" />": Iaith anhysbys neu heb ei chefnogi.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i gynnal gwiriad diogelwch yng ngosodiadau Chrome</translation>
@@ -2286,7 +2284,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6890443033788248019">Caniatáu Lleoliad?</translation>
 <translation id="6890531741535756070">Gwnaethoch ddewis dilysu gyda <ph name="DEVICE_LABEL" /> ar wefannau sy'n defnyddio <ph name="PROVIDER_ORIGIN" />. Mae'n bosib bod y darparwr hwn wedi storio gwybodaeth am eich dull talu, a gallwch <ph name="BEGIN_LINK" />ofyn am gael ei dileu<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Ni chefnogir lefel polisi.</translation>
-<translation id="6895143722905299846">Rhif rhithwir:</translation>
 <translation id="6895330447102777224">Mae eich cerdyn wedi'i gadarnhau</translation>
 <translation id="6897140037006041989">Asiant Defnyddiwr</translation>
 <translation id="6898699227549475383">Sefydliad (O)</translation>
@@ -2459,7 +2456,6 @@ Manylion ychwanegol:
 <translation id="7334320624316649418">&amp;Ail-wneud aildrefnu</translation>
 <translation id="7335157162773372339">Yn gallu gofyn am ddefnyddio eich camera</translation>
 <translation id="7337248890521463931">Dangos rhagor o linellau</translation>
-<translation id="7337418456231055214">Rhif cerdyn rhithwir heb ei lenwi? Cliciwch fanylion y cerdyn i'w copïo. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nid yw ar gael ar eich platfform.</translation>
 <translation id="733923710415886693">Ni chafodd tystysgrif y gweinydd ei ddatgelu drwy Dryloywder Tystysgrif.</translation>
 <translation id="7341357280245177602">Cerbydau ail law</translation>

@@ -181,7 +181,6 @@
 <translation id="138218114945450791">ライトブルー</translation>
 <translation id="1382194467192730611">管理者によって許可された USB デバイス</translation>
 <translation id="1382378825779654399">値下げしたサイトがある場合、メールで通知します。このページは <ph name="LAST_BOOKMARKS_FOLDER" /> に保存されます。</translation>
-<translation id="1382912999714108023">現在の情報が表示されていない場合は、カード発行会社に連絡して更新してください。</translation>
 <translation id="1384725838384960382">保護されたお支払い認証情報の認証シート</translation>
 <translation id="1386623374109090026">アノテーション</translation>
 <translation id="1391289752476847787">株式、債券</translation>
@@ -1025,7 +1024,6 @@
 <translation id="3605899229568538311">5x5 インチ</translation>
 <translation id="3608932978122581043">給紙方向</translation>
 <translation id="3611317423880285981">日用品</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> の仮想カード</translation>
 <translation id="3614103345592970299">サイズ 2</translation>
 <translation id="361438452008624280">リスト項目「<ph name="LANGUAGE_ID" />」: 不明またはサポートされていない言語です。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定で安全確認を実行できます</translation>
@@ -2278,7 +2276,6 @@
 <translation id="6890443033788248019">位置情報の使用を許可しますか？</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで <ph name="DEVICE_LABEL" /> による確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="BEGIN_LINK" />削除をリクエスト<ph name="END_LINK" />できます。</translation>
 <translation id="6891596781022320156">ポリシーレベルがサポートされていません。</translation>
-<translation id="6895143722905299846">仮想番号:</translation>
 <translation id="6895330447102777224">カードを確認しました</translation>
 <translation id="6897140037006041989">ユーザー エージェント</translation>
 <translation id="6898699227549475383">組織（O）</translation>
@@ -2448,7 +2445,6 @@
 <translation id="7334320624316649418">順序変更のやり直し（&amp;R）</translation>
 <translation id="7335157162773372339">カメラの使用を要求できる</translation>
 <translation id="7337248890521463931">表示する行数を増やす</translation>
-<translation id="7337418456231055214">仮想カード番号が入力されない場合は、カード情報をクリックしてコピーしてください。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">現在のプラットフォームではご利用いただけません。</translation>
 <translation id="733923710415886693">サーバーの証明書は、証明書の透明性ポリシーを介して公開されていません。</translation>
 <translation id="7341357280245177602">中古車</translation>

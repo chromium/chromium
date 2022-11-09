@@ -930,6 +930,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1832848789136765277">Da biste uvijek mogli pristupati svojim podacima za sinkronizaciju, potvrdite da ste to vi</translation>
 <translation id="1834503245783133039">Preuzimanje nije uspjelo: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Nadogradnja Linuxa</translation>
+<translation id="1835612721186505600">Dopustite pristup za aplikacije i web-lokacije s dopuštenjem za kameru</translation>
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
 <translation id="1839021455997460752">Vaša e-adresa</translation>
 <translation id="1839540115464516994">Prikaži na lokaciji <ph name="LOCATION" /></translation>
@@ -2497,6 +2498,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3279230909244266691">Taj postupak može potrajati nekoliko minuta. Pokreće se virtualno računalo.</translation>
 <translation id="3280237271814976245">Spremi &amp;kao...</translation>
 <translation id="3280243678470289153">Ostani u Chromeu</translation>
+<translation id="328119399589609861">Kontroliranje pristupanja uređaja mikrofonu, kameri i ostalome</translation>
 <translation id="3281892622610078515">Datoteke i programi za karantenu:</translation>
 <translation id="3282210178675490297">Jedna kartica dijeli se s aplikacijom <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Nova &amp;kartica</translation>
@@ -4503,6 +4505,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5185500136143151980">Nema interneta</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktiviraj priključak</translation>
+<translation id="5190959794678983197">Nema mikrofona</translation>
 <translation id="5191094172448199359">Unijeli ste PIN-ove koji se ne podudaraju</translation>
 <translation id="5191251636205085390">Saznajte o novim tehnologijama čiji je cilj zamijeniti kolačiće treće strane i upravljajte njima</translation>
 <translation id="519185197579575131">Koristi QT</translation>
@@ -4862,6 +4865,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Je li to početna stranica koju ste očekivali?</translation>
 <translation id="5522156646677899028">To proširenje sadrži ozbiljni sigurnosni propust.</translation>
+<translation id="5522403133543437426">Tražilica koja se upotrebljava u adresnoj traci.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Vaš administrator instalirao je proširenje}one{Vaš administrator instalirao je # proširenje}few{Vaš administrator instalirao je # proširenja}other{Vaš administrator instalirao je # proširenja}}</translation>
 <translation id="5523558474028191231">Naziv može sadržavati slova, brojke i posebne znakove, a maksimalni je dopušteni broj znakova <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526701598901867718">Sve (nije sigurno)</translation>
@@ -7045,6 +7049,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7608810328871051088">Postavke Androida</translation>
 <translation id="7609148976235050828">Povežite se s internetom i pokušajte ponovo.</translation>
+<translation id="7612401678989660900">Dopustite pristup za aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
 <translation id="7612655942094160088">Omogućivanje značajki povezanog telefona.</translation>
 <translation id="7614260613810441905">Prikaži upit kada web-lokacija želi urediti datoteke ili mape na uređaju (preporučeno)</translation>
 <translation id="761530003705945209">Sigurnosno kopiranje na Google disku. Jednostavno vratite svoje podatke ili promijenite uređaj u bilo kojem trenutku. Sigurnosna kopija uključuje podatke aplikacija. Sigurnosna kopija prenosi se na Google i kriptira pomoću zaporke vašeg Google računa.</translation>
@@ -8430,6 +8435,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8872155268274985541">Pronađena je nevažeća datoteka manifesta vanjskog ažuriranja kioska. Aplikacija kioska nije ažurirana. Uklonite USB privjesak.</translation>
 <translation id="8872506776304248286">Otvori u aplikaciji</translation>
 <translation id="8872777911145321141">Kad web-lokacija želi koristiti uređaje i podatke virtualne stvarnosti, prikaži upit (preporučeno)</translation>
+<translation id="887292602123626481">Saznajte više o zadanim tražilicama</translation>
 <translation id="8874341931345877644">Emitirajte na uređaju:</translation>
 <translation id="8875520811099717934">Nadogradnja Linuxa</translation>
 <translation id="8875736897340638404">Odaberite svoju vidljivost</translation>
@@ -8550,6 +8556,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8987927404178983737">Mjesec</translation>
 <translation id="8989359959810288806">Osvježi status modemskog povezivanja</translation>
 <translation id="8991520179165052608">Web-lokacija može upotrebljavati vaš mikrofon</translation>
+<translation id="8991694323904646277">Nema kamere</translation>
 <translation id="8993059306046735527">Ako zaboravite zaporku za <ph name="DEVICE_TYPE" />, i dalje možete vratiti svoje lokalne podatke. Morat ćete se prijaviti na Google račun ili upotrijebiti značajku oporavka računa.</translation>
 <translation id="899384117894244799">Uklanjanje ograničenog korisnika</translation>
 <translation id="899403249577094719">Osnovni URL Netscape certifikata</translation>

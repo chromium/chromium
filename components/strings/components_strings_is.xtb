@@ -181,7 +181,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="138218114945450791">Ljósblár</translation>
 <translation id="1382194467192730611">USB-tæki sem kerfisstjórinn hefur heimilað</translation>
 <translation id="1382378825779654399">Þú færð tilkynningu í tölvupósti ef verðlækkun verður á einhverju vefsvæði. Síðan verður vistuð í <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Sérðu ekki núverandi upplýsingar? Hafðu samband við bankann þinn til að uppfæra þær.</translation>
 <translation id="1384725838384960382">Sannvottunarsíða fyrir skilríki öruggrar greiðslu</translation>
 <translation id="1386623374109090026">Skýringar</translation>
 <translation id="1391289752476847787">Hlutabréf og skuldabréf</translation>
@@ -1027,7 +1026,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3605899229568538311">5 x 5 to.</translation>
 <translation id="3608932978122581043">Inntaksstefna</translation>
 <translation id="3611317423880285981">Rekstrarvörur fyrir heimili</translation>
-<translation id="3611395257124510155">Sýndarkort fyrir <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Stærð 2</translation>
 <translation id="361438452008624280">Listafærslan „<ph name="LANGUAGE_ID" />“: Óþekkt eða óstutt tungumál.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo Enter til að keyra öryggisathugun í stillingum Chrome</translation>
@@ -2286,7 +2284,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6890443033788248019">Leyfa staðsetningu?</translation>
 <translation id="6890531741535756070">Þú valdir að staðfesta með <ph name="DEVICE_LABEL" /> á vefsvæðum sem nota <ph name="PROVIDER_ORIGIN" />. Þessi þjónustuaðili kann að hafa vistað upplýsingar um greiðslumátann þinn sem þú getur <ph name="BEGIN_LINK" />óskað eftir að verði eytt<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Stig stefnunnar er óstutt.</translation>
-<translation id="6895143722905299846">Sýndarnúmer:</translation>
 <translation id="6895330447102777224">Kortið er staðfest</translation>
 <translation id="6897140037006041989">Vafraupplýsingar</translation>
 <translation id="6898699227549475383">Notendaskipan (O)</translation>
@@ -2459,7 +2456,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7334320624316649418">Endu&amp;rtaka nýja röðun</translation>
 <translation id="7335157162773372339">Getur beðið um að nota myndavélina</translation>
 <translation id="7337248890521463931">Sýna fleiri línur</translation>
-<translation id="7337418456231055214">Var sýndarkortsnúmerið ekki útfyllt? Smelltu á upplýsingar kortsins til að afrita. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Ekki í boði fyrir stýrikerfið þitt.</translation>
 <translation id="733923710415886693">Vottorð vefþjóns var ekki birt í gegnum gagnsæi vottorðs.</translation>
 <translation id="7341357280245177602">Notaðir bílar</translation>

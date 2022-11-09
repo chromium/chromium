@@ -181,7 +181,6 @@
 <translation id="138218114945450791">ฟ้าอ่อน</translation>
 <translation id="1382194467192730611">อุปกรณ์ USB ที่ผู้ดูแลระบบอนุญาต</translation>
 <translation id="1382378825779654399">คุณจะได้รับการแจ้งเตือนทางอีเมลหากราคาลดลงในเว็บไซต์ใดก็ตาม ระบบจะบันทึกหน้านี้ไว้ใน<ph name="LAST_BOOKMARKS_FOLDER" /></translation>
-<translation id="1382912999714108023">หากไม่เห็นข้อมูลปัจจุบันของคุณ โปรดติดต่อธนาคารเพื่ออัปเดต</translation>
 <translation id="1384725838384960382">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="1386623374109090026">คำอธิบายประกอบ</translation>
 <translation id="1391289752476847787">หุ้นและตราสารหนี้</translation>
@@ -1026,7 +1025,6 @@
 <translation id="3605899229568538311">5 x 5 นิ้ว</translation>
 <translation id="3608932978122581043">ฟีดกระดาษตามแนว</translation>
 <translation id="3611317423880285981">อุปกรณ์เครื่องใช้ในครัวเรือน</translation>
-<translation id="3611395257124510155">บัตรเสมือนสำหรับ <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">ขนาด 2</translation>
 <translation id="361438452008624280">ข้อมูลในรายการ "<ph name="LANGUAGE_ID" />": ภาษาที่ไม่รู้จักหรือไม่รองรับ</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเรียกใช้การตรวจสอบความปลอดภัยในการตั้งค่า Chrome</translation>
@@ -2285,7 +2283,6 @@
 <translation id="6890443033788248019">อนุญาตให้เข้าถึงตำแหน่งไหม</translation>
 <translation id="6890531741535756070">คุณเลือกยืนยันด้วย<ph name="DEVICE_LABEL" />ในเว็บไซต์ที่ใช้ <ph name="PROVIDER_ORIGIN" /> ผู้ให้บริการรายนี้อาจจัดเก็บข้อมูลเกี่ยวกับวิธีการชำระเงินของคุณไว้แล้ว โดยคุณ<ph name="BEGIN_LINK" />ส่งคำขอให้ลบ<ph name="END_LINK" />ได้</translation>
 <translation id="6891596781022320156">ระดับนโยบายไม่ได้รับการสนับสนุน</translation>
-<translation id="6895143722905299846">หมายเลขเสมือน:</translation>
 <translation id="6895330447102777224">บัตรของคุณได้รับการยืนยันแล้ว</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">องค์กร (O)</translation>
@@ -2458,7 +2455,6 @@
 <translation id="7334320624316649418">&amp;ทำซ้ำการจัดลำดับใหม่</translation>
 <translation id="7335157162773372339">สามารถขอใช้กล้องของคุณได้</translation>
 <translation id="7337248890521463931">แสดงบรรทัดเพิ่มเติม</translation>
-<translation id="7337418456231055214">หากยังไม่กรอกหมายเลขบัตรเสมือน คลิกรายละเอียดบัตรเพื่อคัดลอก <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">ยังไม่พร้อมให้ใช้งานในแพลตฟอร์มของคุณ</translation>
 <translation id="733923710415886693">ไม่มีการเปิดเผยใบรับรองของเซิร์ฟเวอร์ผ่านความโปร่งใสของใบรับรอง</translation>
 <translation id="7341357280245177602">ยานพาหนะมือสอง</translation>

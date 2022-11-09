@@ -181,7 +181,6 @@
 <translation id="138218114945450791">أزرق فاتح</translation>
 <translation id="1382194467192730611">‏سماح المشرف بجهاز USB</translation>
 <translation id="1382378825779654399">ستتلقّى تنبيهات عبر البريد الإلكتروني في حال انخفاض السعر على أي موقع إلكتروني. وسيتم حفظ هذه الصفحة في مجلد "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
-<translation id="1382912999714108023">ألا تظهر معلومات بطاقتك الحالية؟ يُرجى التواصل مع المصرف الذي تتعامل معه لتعديلها.</translation>
 <translation id="1384725838384960382">صفحة مصادقة بيانات اعتماد الدفع الآمن</translation>
 <translation id="1386623374109090026">تعليقات توضيحية</translation>
 <translation id="1391289752476847787">أسهم وسندات</translation>
@@ -1028,7 +1027,6 @@
 <translation id="3605899229568538311">5 × 5 بوصة</translation>
 <translation id="3608932978122581043">تخطيط الاتجاه</translation>
 <translation id="3611317423880285981">مستلزمات منزلية</translation>
-<translation id="3611395257124510155">البطاقة الافتراضية لـ <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">الحجم 2</translation>
 <translation id="361438452008624280">إدخال في القائمة "<ph name="LANGUAGE_ID" />": لغة غير معروفة أو غير متاحة.</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتفعيل ميزة "التحقّق من الأمان" في إعدادات Chrome</translation>
@@ -2288,7 +2286,6 @@
 <translation id="6890443033788248019">هل تريد السماح بالوصول إلى الموقع الجغرافي؟</translation>
 <translation id="6890531741535756070">لقد اخترت إثبات هويتك باستخدام <ph name="DEVICE_LABEL" /> على المواقع الإلكترونية التي تستخدم <ph name="PROVIDER_ORIGIN" />. قد يكون مقدّم الخدمة هذا احتفظ بمعلومات حول طريقة الدفع الخاصة بك، ويمكنك <ph name="BEGIN_LINK" />طلب حذف هذه المعلومات<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">مستوى السياسة غير مدعوم.</translation>
-<translation id="6895143722905299846">الرقم الافتراضي:</translation>
 <translation id="6895330447102777224">تم التأكد من بطاقتك</translation>
 <translation id="6897140037006041989">وكيل المستخدم</translation>
 <translation id="6898699227549475383">‏المؤسسة (O)</translation>
@@ -2460,7 +2457,6 @@
 <translation id="7334320624316649418">إعادة إ&amp;جراء الترتيب</translation>
 <translation id="7335157162773372339">السماح للموقع الإلكتروني بطلب استخدام الكاميرا</translation>
 <translation id="7337248890521463931">عرض المزيد من الأسطر</translation>
-<translation id="7337418456231055214">ألم تتم تعبئة الحقل برقم البطاقة الافتراضية؟ انقر على تفاصيل البطاقة لنسخها. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">غير متاحة على نظامك الأساسي.</translation>
 <translation id="733923710415886693">لم يتم الكشف عن شهادة الخادم عن طريق شهادة الشفافية.</translation>
 <translation id="7341357280245177602">مركبات مستعملة</translation>

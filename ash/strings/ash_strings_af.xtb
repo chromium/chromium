@@ -352,6 +352,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2960314608273155470">Vasvangmodus; verstek is <ph name="SOURCE" /> <ph name="TYPE" />. Druk Tab vir sleutelbordnavigasie</translation>
 <translation id="2961963223658824723">Iets het verkeerd gegaan. Probeer oor 'n paar sekondes weer.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Skakel mikrofoontoegang aan?</translation>
 <translation id="296762781903199866">Kon nie <ph name="LANGUAGE" />-spraaklêers aflaai nie</translation>
 <translation id="2970920913501714344">Installeer programme, uitbreidings en temas</translation>
 <translation id="2977598380246111477">Volgende syfer</translation>
@@ -430,6 +431,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3386978599540877378">die volskermvergrootglas</translation>
 <translation id="3387527074123400161">Chromium-bedryfstelsel</translation>
 <translation id="3400357268283240774">Bykomende instellings</translation>
+<translation id="3405101454990027959">Skakel mikrofoontoegang aan</translation>
 <translation id="3410336247007142655">Wys Donkertema-instellings</translation>
 <translation id="3413817803639110246">Nog niks om te sien nie</translation>
 <translation id="3428447136709161042">Ontkoppel vanaf <ph name="NETWORK_NAME" /></translation>
@@ -517,6 +519,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3861651314799684201">Druk Enter om volskerm op te neem</translation>
+<translation id="3885531177412808398">Laat mikrofoontoegang toe vir alle apps en webwerwe met die mikrofoontoestemming</translation>
 <translation id="3886872229787704059">Vandag oopgemaak</translation>
 <translation id="3891340733213178823">Druk Ctrl+Shift+Q twee keer om af te meld.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproke terugvoer)</translation>
@@ -1376,6 +1379,7 @@ Nuwe installasie</translation>
 <translation id="8666856788528804727">Maak <ph name="NAME" /> oop om jou toestel op te stel</translation>
 <translation id="8676770494376880701">Laekraglaaier gekoppel</translation>
 <translation id="8683506306463609433">Werkverrigtingnasporing is aktief</translation>
+<translation id="8684405646663021166">Laat mikrofoontoegang toe vir <ph name="APP_NAME" /> en alle apps en webwerwe met die mikrofoontoestemming</translation>
 <translation id="8685326675965865247">Deursoek jou toestel, programme, instellings en die web. Gebruik die pylsleutels om deur jou programme te navigeer.</translation>
 <translation id="8703634754197148428">Begin opname. Nadat die opname begin het, kan jy Alt + Shift + L gebruik om na die rak toe te gaan en die Stop Opname-knoppie te kry.</translation>
 <translation id="8721053961083920564">Wissel volume. <ph name="STATE_TEXT" /></translation>

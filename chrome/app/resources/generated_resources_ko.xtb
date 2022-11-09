@@ -4667,6 +4667,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5331568967879689647">ChromeOS 시스템 앱</translation>
 <translation id="5331975486040154427">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="5333896723098573627">앱을 삭제하려면 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.</translation>
+<translation id="5334113802138581043">마이크 액세스</translation>
 <translation id="5334142896108694079">스크립트 캐시</translation>
 <translation id="5336688142483283574">이 페이지도 방문 기록 및 <ph name="SEARCH_ENGINE" /> 활동에서 삭제됩니다.</translation>
 <translation id="5336689872433667741">커서 및 터치패드</translation>
@@ -8663,6 +8664,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9081543426177426948">시크릿 모드에서는 방문한 사이트가 저장되지 않음</translation>
 <translation id="9084064520949870008">창으로 열기</translation>
 <translation id="9085256200913095638">선택한 탭 복사</translation>
+<translation id="9085446486797400519">카메라 액세스</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" />가 선택되지 않았습니다. Search와 Space 키를 눌러 선택하세요.</translation>
 <translation id="9087949559523851360">제한된 사용자 추가</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" />이(가) 기업 정책에 의해 차단되었습니다.</translation>

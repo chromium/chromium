@@ -923,6 +923,7 @@
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
 <translation id="1834503245783133039">未能成功下载“<ph name="FILE_NAME" />”</translation>
 <translation id="1835261175655098052">正在升级 Linux</translation>
+<translation id="1835612721186505600">允许具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1839021455997460752">您的电子邮件地址</translation>
 <translation id="1839540115464516994">在“<ph name="LOCATION" />”中显示</translation>
@@ -2486,6 +2487,7 @@
 <translation id="3279230909244266691">此过程可能需要几分钟的时间。正在启动虚拟机。</translation>
 <translation id="3280237271814976245">另存为(&amp;A)...</translation>
 <translation id="3280243678470289153">继续使用 Chrome</translation>
+<translation id="328119399589609861">控制对摄像头、麦克风等设备的使用权限</translation>
 <translation id="3281892622610078515">要隔离的文件和程序：</translation>
 <translation id="3282210178675490297">正在与 <ph name="APP_NAME" /> 分享某个标签页</translation>
 <translation id="3285322247471302225">打开新的标签页(&amp;T)</translation>
@@ -4488,6 +4490,7 @@
 <translation id="5185500136143151980">未连接到互联网</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">启用此端口</translation>
+<translation id="5190959794678983197">没有麦克风</translation>
 <translation id="5191094172448199359">您输入的 PIN 码不一致</translation>
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="519185197579575131">使用 QT</translation>
@@ -4847,6 +4850,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">这是您想要的主页吗？</translation>
 <translation id="5522156646677899028">该扩展程序存在严重的安全漏洞。</translation>
+<translation id="5522403133543437426">地址栏中使用的搜索引擎。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{您的管理员已安装了 1 个扩展程序}other{您的管理员已安装了 # 个扩展程序}}</translation>
 <translation id="5523558474028191231">名称可以使用字母、数字和特殊字符，并且不得超过 <ph name="MAX_CHARACTER_COUNT" /> 个字符</translation>
 <translation id="5526701598901867718">所有（不安全）</translation>
@@ -7026,6 +7030,7 @@
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7608810328871051088">Android 偏好设置</translation>
 <translation id="7609148976235050828">请连接到互联网，然后重试。</translation>
+<translation id="7612401678989660900">允许具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="7612655942094160088">启用与已连接的手机相关的功能。</translation>
 <translation id="7614260613810441905">在网站想要修改您设备上的文件或文件夹时先询问您（推荐）</translation>
 <translation id="761530003705945209">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。您的备份内容包含应用数据。您的备份内容将上传到 Google 并使用您的 Google 帐号密码进行加密。</translation>
@@ -8408,6 +8413,7 @@
 <translation id="8872155268274985541">发现无效的自助服务终端外部更新清单文件，未能成功更新自助服务终端应用。请拔下 U 盘。</translation>
 <translation id="8872506776304248286">在应用中打开</translation>
 <translation id="8872777911145321141">在网站想使用您的虚拟实境设备和数据时询问您（推荐）</translation>
+<translation id="887292602123626481">详细了解默认搜索引擎</translation>
 <translation id="8874341931345877644">投放到设备：</translation>
 <translation id="8875520811099717934">Linux 升级</translation>
 <translation id="8875736897340638404">选择您的公开范围</translation>
@@ -8528,6 +8534,7 @@
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">刷新网络共享状态</translation>
 <translation id="8991520179165052608">该网站可能会使用您的麦克风</translation>
+<translation id="8991694323904646277">没有摄像头</translation>
 <translation id="8993059306046735527">如果您忘记了 <ph name="DEVICE_TYPE" /> 密码，您仍然可以恢复本地数据。您需要登录自己的 Google 帐号或使用帐号恢复功能。</translation>
 <translation id="899384117894244799">移除受限用户</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>

@@ -333,6 +333,7 @@
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> pilti</translation>
 <translation id="4333390807948134856">Klahv <ph name="KEY_NAME" /> on alla vajutatud</translation>
+<translation id="435692326371619097">Hallake võrgu APN-ide seadeid. APN-id loovad ühenduse mobiilsidevõrgu ja interneti vahel. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4382484599443659549">PDF</translation>

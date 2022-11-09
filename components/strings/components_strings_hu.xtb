@@ -181,7 +181,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="138218114945450791">Világoskék</translation>
 <translation id="1382194467192730611">A rendszergazda által engedélyezett USB-eszköz</translation>
 <translation id="1382378825779654399">E-mailes értesítést küldünk, ha valamelyik webhelyen csökken az ár. Ez az oldal a következő mappába lesz elmentve: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Nem látja aktuális adatait? A frissítés érdekében forduljon bankjához.</translation>
 <translation id="1384725838384960382">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja</translation>
 <translation id="1386623374109090026">Annotációk</translation>
 <translation id="1391289752476847787">Részvények és kötvények</translation>
@@ -1025,7 +1024,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3605899229568538311">5 × 5 hüvelyk</translation>
 <translation id="3608932978122581043">Adagolás tájolása</translation>
 <translation id="3611317423880285981">Háztartási kellékek</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> virtuális kártya</translation>
 <translation id="3614103345592970299">Méret: 2</translation>
 <translation id="361438452008624280">„<ph name="LANGUAGE_ID" />” listabejegyzés: Ismeretlen vagy nem támogatott nyelv.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a biztonsági ellenőrzés futtatásához a Chrome beállításaiban.</translation>
@@ -2284,7 +2282,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6890443033788248019">Engedélyezi a helyadatokat?</translation>
 <translation id="6890531741535756070">Úgy döntött, hogy <ph name="DEVICE_LABEL" /> a használatával igazolja magát a következőt használó webhelyeken: <ph name="PROVIDER_ORIGIN" />. Ez a szolgáltató eltárolhatott információkat az Ön fizetési módjáról. Ön <ph name="BEGIN_LINK" />kérelmezheti az adatok törlését<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Ezt a házirendszintet a rendszer nem támogatja.</translation>
-<translation id="6895143722905299846">Virtuális szám:</translation>
 <translation id="6895330447102777224">Kártyáját ellenőriztük</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Szervezet (O)</translation>
@@ -2457,7 +2454,6 @@ További részletek:
 <translation id="7334320624316649418">&amp;Átrendezés újra</translation>
 <translation id="7335157162773372339">Hozzáférést kérhet a kamerához</translation>
 <translation id="7337248890521463931">Több sor megjelenítése</translation>
-<translation id="7337418456231055214">Nincs kitöltve a virtuális kártya száma? Kattintson a másolni kívánt kártyaadatokra. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nem áll rendelkezésre ezen a platformon.</translation>
 <translation id="733923710415886693">A szerver tanúsítványát nem A tanúsítványok átláthatósága keretrendszeren keresztül hozták nyilvánosságra.</translation>
 <translation id="7341357280245177602">Használt járművek</translation>

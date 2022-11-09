@@ -333,6 +333,7 @@
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
 <translation id="4333390807948134856">Die Taste „<ph name="KEY_NAME" />“ wird gedrückt</translation>
+<translation id="435692326371619097">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
 <translation id="4378551569595875038">Verbindung...</translation>
 <translation id="4382484599443659549">PDF</translation>

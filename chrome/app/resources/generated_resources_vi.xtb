@@ -939,6 +939,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1832848789136765277">Hãy xác minh danh tính để đảm bảo bạn luôn có thể truy cập vào dữ liệu đã đồng bộ</translation>
 <translation id="1834503245783133039">Tải xuống không thành công: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Đang nâng cấp Linux</translation>
+<translation id="1835612721186505600">Cho phép truy cập đối với các ứng dụng và trang web có quyền sử dụng máy ảnh</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
 <translation id="1839021455997460752">Địa chỉ email của bạn</translation>
 <translation id="1839540115464516994">Hiện trong <ph name="LOCATION" /></translation>
@@ -2509,6 +2510,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3279230909244266691">Quá trình này có thể mất vài phút. Đang khởi động máy ảo.</translation>
 <translation id="3280237271814976245">Lưu &amp;thành...</translation>
 <translation id="3280243678470289153">Tiếp tục điều hướng trong Chrome</translation>
+<translation id="328119399589609861">Kiểm soát quyền truy cập của thiết bị vào micrô, máy ảnh và nhiều ứng dụng khác</translation>
 <translation id="3281892622610078515">Các tệp và chương trình cần cách ly:</translation>
 <translation id="3282210178675490297">Đang chia sẻ một thẻ với <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">&amp;Tab Mới</translation>
@@ -4515,6 +4517,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5185500136143151980">Không có Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Kích hoạt cổng</translation>
+<translation id="5190959794678983197">Không có micrô</translation>
 <translation id="5191094172448199359">Mã PIN bạn nhập không khớp</translation>
 <translation id="5191251636205085390">Tìm hiểu và kiểm soát các công nghệ mới giúp thay thế cookie của bên thứ ba</translation>
 <translation id="519185197579575131">Dùng QT</translation>
@@ -4874,6 +4877,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Đây có phải là trang chủ bạn muốn không?</translation>
 <translation id="5522156646677899028">Tiện ích này chứa lỗ hổng bảo mật nghiêm trọng.</translation>
+<translation id="5522403133543437426">Công cụ tìm kiếm được dùng trong thanh địa chỉ.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Quản trị viên của bạn đã cài đặt 1 tiện ích}other{Quản trị viên của bạn đã cài đặt # tiện ích}}</translation>
 <translation id="5523558474028191231">Tên có thể bao gồm chữ cái, chữ số và các ký tự đặc biệt, đồng thời không được dài quá <ph name="MAX_CHARACTER_COUNT" /> ký tự</translation>
 <translation id="5526701598901867718">Tất cả (không an toàn)</translation>
@@ -7056,6 +7060,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7607002721634913082">Đã tạm dừng</translation>
 <translation id="7608810328871051088">Các tùy chọn Android</translation>
 <translation id="7609148976235050828">Vui lòng kết nối với Internet và thử lại.</translation>
+<translation id="7612401678989660900">Cho phép truy cập đối với các ứng dụng và trang web có quyền sử dụng micrô</translation>
 <translation id="7612655942094160088">Các tính năng trên điện thoại đã kết nối bật.</translation>
 <translation id="7614260613810441905">Hỏi khi một trang web muốn chỉnh sửa các tệp hoặc thư mục trên thiết bị (khuyên dùng)</translation>
 <translation id="761530003705945209">Sao lưu vào Google Drive. Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Nội dung sao lưu của bạn bao gồm các dữ liệu ứng dụng. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của bạn.</translation>
@@ -8438,6 +8443,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8872155268274985541">Đã tìm thấy tệp kê khai cập nhật bên ngoài Kiosk không hợp lệ. Không cập nhật được ứng dụng Kiosk. Vui lòng rút thẻ USB.</translation>
 <translation id="8872506776304248286">Mở trong ứng dụng</translation>
 <translation id="8872777911145321141">Hỏi ý bạn khi có trang web muốn sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
+<translation id="887292602123626481">Tìm hiểu thêm về công cụ tìm kiếm mặc định</translation>
 <translation id="8874341931345877644">Truyền tới thiết bị:</translation>
 <translation id="8875520811099717934">Nâng cấp Linux</translation>
 <translation id="8875736897340638404">Chọn tùy chọn hiển thị</translation>
@@ -8558,6 +8564,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8987927404178983737">Tháng</translation>
 <translation id="8989359959810288806">Làm mới trạng thái chia sẻ Internet</translation>
 <translation id="8991520179165052608">Trang web có thể sử dụng micrô của bạn</translation>
+<translation id="8991694323904646277">Không có máy ảnh</translation>
 <translation id="8993059306046735527">Nếu quên mật khẩu vào <ph name="DEVICE_TYPE" />, bạn vẫn có thể khôi phục dữ liệu trên thiết bị của mình. Bạn sẽ cần đăng nhập vào Tài khoản Google hoặc sử dụng tính năng khôi phục tài khoản.</translation>
 <translation id="899384117894244799">Xóa người dùng bị hạn chế</translation>
 <translation id="899403249577094719">URL Cơ sở Chứng chỉ Netscape</translation>

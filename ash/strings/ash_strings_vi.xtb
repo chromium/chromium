@@ -352,6 +352,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2960314608273155470">Chế độ chụp, mặc định là <ph name="SOURCE" /> <ph name="TYPE" />. Nhấn phím Tab để di chuyển bằng bàn phím.</translation>
 <translation id="2961963223658824723">Đã xảy ra sự cố. Hãy thử lại sau vài giây.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Cho phép truy cập micrô?</translation>
 <translation id="296762781903199866">Không thể tải các tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
 <translation id="2977598380246111477">Số tiếp theo</translation>
@@ -430,6 +431,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3386978599540877378">tính năng phóng to toàn màn hình</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Tùy chọn cài đặt bổ sung</translation>
+<translation id="3405101454990027959">Cho phép truy cập micrô</translation>
 <translation id="3410336247007142655">Hiển thị các tùy chọn cài đặt giao diện tối</translation>
 <translation id="3413817803639110246">Chưa có thông báo nào để xem</translation>
 <translation id="3428447136709161042">Ngắt kết nối khỏi <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="385300504083504382">Phần đầu</translation>
 <translation id="3861651314799684201">Nhấn phím Enter để ghi toàn màn hình</translation>
+<translation id="3885531177412808398">Cho phép truy cập micrô đối với mọi ứng dụng và trang web có quyền sử dụng micrô</translation>
 <translation id="3886872229787704059">Mở hôm nay</translation>
 <translation id="3891340733213178823">Nhấn Ctrl+Shift+Q hai lần để đăng xuất.</translation>
 <translation id="3893630138897523026">ChromeVox (phản hồi bằng giọng nói)</translation>
@@ -1375,6 +1378,7 @@ Mới cài đặt</translation>
 <translation id="8666856788528804727">Mở <ph name="NAME" /> để thiết lập thiết bị của bạn</translation>
 <translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="8683506306463609433">Tính năng theo dõi hiệu suất đang hoạt động</translation>
+<translation id="8684405646663021166">Cho phép truy cập micrô đối với <ph name="APP_NAME" /> cũng như mọi ứng dụng và trang web có quyền sử dụng micrô</translation>
 <translation id="8685326675965865247">Tìm kiếm trong thiết bị, ứng dụng, phần thông tin cài đặt và trên Internet. Hãy sử dụng các phím mũi tên để di chuyển đến các ứng dụng.</translation>
 <translation id="8703634754197148428">Bắt đầu ghi. Sau khi quá trình ghi bắt đầu, hãy nhấn tổ hợp phím Alt + Shift + L để chuyển đến kệ rồi tìm nút dừng ghi</translation>
 <translation id="8721053961083920564">Bật/tắt tiếng. <ph name="STATE_TEXT" /></translation>

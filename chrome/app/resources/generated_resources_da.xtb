@@ -3754,6 +3754,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> har registreret en aktiv TMP-enhed, som kan gemme dine data på en mere sikker måde.</translation>
 <translation id="4451479197788154834">Din adgangskode gemmes på denne enhed og din Google-konto</translation>
 <translation id="4451757071857432900">Blokeret på websites, der viser påtrængende eller vildledende annoncer (anbefales)</translation>
+<translation id="4452898361839215358">eller vælg PPD-fil. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Søg på <ph name="SEARCH_ENGINE_NAME" />, eller angiv en webadresse</translation>
 <translation id="4458535500699390320">Mens denne fane var inaktiv, frigjorde Hukommelsessparefunktion hukommelse til andre opgaver. Du kan til enhver tid ændre dette i indstillingerne.</translation>
 <translation id="4459169140545916303">Aktiv for <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dage siden</translation>
@@ -8382,6 +8383,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8823514049557262177">Kopiér linkte&amp;kst</translation>
 <translation id="8823559166155093873">Bloker cookies</translation>
 <translation id="8823704566850948458">Foreslå adgangskode...</translation>
+<translation id="8823963789776061136">Du kan også vælge PPD-filen for printeren i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Tilføj si&amp;de...</translation>
 <translation id="8827125715368568315">Adgangen til <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere blev blokeret</translation>
 <translation id="8827289157496676362">Fastgør udvidelse</translation>
@@ -8636,6 +8638,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> anmoder om adgang til følgende indhold:</translation>
 <translation id="9057354806206861646">Tidsplan for opdateringer</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Ca. 1 notifikation om dagen}one{Ca. {NUM_NOTIFICATION} notifikation om dagen}other{Ca. {NUM_NOTIFICATION} notifikationer om dagen}}</translation>
+<translation id="9058760336383947367">Se PPD-fil for printer</translation>
 <translation id="9061383912634843744">Log automatisk ind på websites og i apps ved hjælp af gemte loginoplysninger. Hvis indstillingen er deaktiveret, bliver du bedt om en bekræftelse, hver gang du logger ind på et website eller i en app.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Der er fejl på linje <ph name="ERROR_LINE_START" /> til <ph name="ERROR_LINE_END" /></translation>

@@ -572,6 +572,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5489208564673669003">Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Toca Gestor de contraseñas &gt; Añadir</translation>
 <translation id="5525095647255982834">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ese dispositivo.</translation>
 <translation id="5525269841082836315">Crear frase de contraseña</translation>
 <translation id="5542540507657872337">Resultados: <ph name="COUNT" /></translation>
@@ -842,7 +843,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="734758817008927353">Opciones para guardar una tarjeta</translation>
 <translation id="7351537303876921605">Toca Crear enlace en el menú contextual</translation>
-<translation id="7353432112255316844">Verificar mi identidad</translation>
+<translation id="7353432112255316844">Verifica que eres tú</translation>
 <translation id="7356359962760467032">Detener seguimiento de precios</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
 <translation id="7398893703713203428">Crear enlace</translation>
@@ -883,6 +884,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7738120385185846461">Informar de un problema…</translation>
 <translation id="7741325291586284254">Nueva página de pestaña de Incógnito</translation>
+<translation id="7744394900930577716">Contraseñas en otras aplicaciones</translation>
 <translation id="7756478488453921771">Menú → Configuración → Métodos de pago</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Repite la frase de contraseña</translation>
@@ -1060,6 +1062,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña de <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Activa la sincronización para sincronizar y personalizar todos tus dispositivos.</translation>
 <translation id="9087108903408689779">Contraseña sugerida de Chrome:</translation>
+<translation id="9093271241977565440">En la parte superior de la pantalla, toca el icono de búsqueda</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9097506547406246598">No se puede dejar de seguir. Algo ha fallado.</translation>
 <translation id="9100610230175265781">La frase de contraseña es obligatoria</translation>

@@ -4660,6 +4660,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5331568967879689647">ChromeOS-systemapp</translation>
 <translation id="5331975486040154427">USB-C-enhet (porten bak på venstre side)</translation>
 <translation id="5333896723098573627">For å fjerne apper, gå til Innstillinger &gt; Apper &gt; Google Play Butikk &gt; Administrer Android-innstillinger &gt; Apper eller Appstyring. Trykk på appen du vil avinstallere (du må kanskje sveipe til høyre eller venstre for å finne den). Trykk deretter på Avinstaller eller Slå av.</translation>
+<translation id="5334113802138581043">Mikrofontilgang</translation>
 <translation id="5334142896108694079">Skriptbuffer</translation>
 <translation id="5336688142483283574">Denne siden blir også fjernet fra loggen og <ph name="SEARCH_ENGINE" />-aktiviteten.</translation>
 <translation id="5336689872433667741">Markør og styreflate</translation>
@@ -8656,6 +8657,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9081543426177426948">Nettsteder du besøker, lagres ikke i inkognitomodus</translation>
 <translation id="9084064520949870008">Åpne som vindu</translation>
 <translation id="9085256200913095638">Dupliser den valgte fanen</translation>
+<translation id="9085446486797400519">Kameratilgang</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> er ikke valgt. Trykk på Søk + mellomrom for å velge.</translation>
 <translation id="9087949559523851360">Legg til begrenset bruker</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> er blokkert av bedriftens retningslinjer</translation>

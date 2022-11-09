@@ -182,7 +182,6 @@
 <translation id="138218114945450791">ہلکا نیلا</translation>
 <translation id="1382194467192730611">‏آپ کے منتظم کی جانب سے USB آلے کی اجازت ہے</translation>
 <translation id="1382378825779654399">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر آپ کو ای میل الرٹس ملیں گے۔ یہ صفحہ <ph name="LAST_BOOKMARKS_FOLDER" /> پر محفوظ ہو جائے گا۔</translation>
-<translation id="1382912999714108023">آپ کی موجودہ معلومات نظر نہیں آ رہی ہے؟ براہ کرم اسے اپ ڈیٹ کرنے کے لیے اپنے بینک سے رابطہ کریں۔</translation>
 <translation id="1384725838384960382">محفوظ طریقے سے ادائیگی کرنے کیلئے سند کی تصدیق کرنے کی شیٹ</translation>
 <translation id="1386623374109090026">تشریحات</translation>
 <translation id="1391289752476847787">اسٹاکس اور بانڈز</translation>
@@ -1029,7 +1028,6 @@
 <translation id="3605899229568538311">‏‎5 x 5 انچ</translation>
 <translation id="3608932978122581043">سمت بندی فیڈ کریں</translation>
 <translation id="3611317423880285981">گھریلو سپلائیز</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> کے لیے ورچوئل کارڈ</translation>
 <translation id="3614103345592970299">سائز 2</translation>
 <translation id="361438452008624280">فہرست کا اندراج "<ph name="LANGUAGE_ID" />": نامعلوم یا غیر تعاون یافتہ زبان۔</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے ٹیب پھر Enter دبائیں</translation>
@@ -2289,7 +2287,6 @@
 <translation id="6890443033788248019">مقام کی اجازت دیں؟</translation>
 <translation id="6890531741535756070">آپ نے <ph name="DEVICE_LABEL" /> استعمال کرنے والی ویب سائٹس پر <ph name="PROVIDER_ORIGIN" /> سے تصدیق کرنے کا انتخاب کیا۔ ممکن ہے کہ اس فراہم کنندہ کے پاس آپ کی ادائیگی کے طریقہ کے بارے میں معلومات اسٹور کردہ ہے جن کو آپ <ph name="BEGIN_LINK" />حذف کرنے کی درخواست<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="6891596781022320156">پالیسی کی سطح تعاون یافتہ نہیں ہے۔</translation>
-<translation id="6895143722905299846">ورچوئل نمبر:</translation>
 <translation id="6895330447102777224">آپ کے کارڈ کی توثیق ہو گئی ہے</translation>
 <translation id="6897140037006041989">صارف کا ایجنٹ</translation>
 <translation id="6898699227549475383">‏تنظیم (O)</translation>
@@ -2462,7 +2459,6 @@
 <translation id="7334320624316649418">دوبارہ ترتیب کو &amp;واپس لائیں</translation>
 <translation id="7335157162773372339">سائٹ آپ کا کیمرا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="7337248890521463931">مزید لائنز دکھائیں</translation>
-<translation id="7337418456231055214">ورچوئل کارڈ نمبر پُر نہیں ہے؟ کاپی کرنے کے لیے کارڈ کی تفصیلات پر کلک کریں۔ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">آپ کے پلیٹ فارم پر دستیاب نہیں ہے۔</translation>
 <translation id="733923710415886693">سرٹیفیکیٹ کی شفافیت کے ذریعے سرور کے سرٹیفیکیٹ کا انکشاف نہیں کیا گیا۔</translation>
 <translation id="7341357280245177602">استعمال شدہ گاڑیاں</translation>

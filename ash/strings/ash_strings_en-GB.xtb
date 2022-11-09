@@ -352,6 +352,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2960314608273155470">Capture mode, default is <ph name="SOURCE" /> <ph name="TYPE" />. Press tab for keyboard navigation.</translation>
 <translation id="2961963223658824723">Something went wrong. Try again in a few seconds.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Turn on microphone access?</translation>
 <translation id="296762781903199866">Couldn't download <ph name="LANGUAGE" /> speech files</translation>
 <translation id="2970920913501714344">Install apps, extensions and themes</translation>
 <translation id="2977598380246111477">Next number</translation>
@@ -430,6 +431,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3386978599540877378">the full-screen magnifier</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Additional settings</translation>
+<translation id="3405101454990027959">Turn on microphone access</translation>
 <translation id="3410336247007142655">Show Dark theme settings</translation>
 <translation id="3413817803639110246">Nothing to see just yet</translation>
 <translation id="3428447136709161042">Disconnect from <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Connect your device to power.</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="385300504083504382">Beginning</translation>
 <translation id="3861651314799684201">Press enter to record full screen</translation>
+<translation id="3885531177412808398">Allows microphone access for all apps and websites with the microphone permission</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
@@ -1375,6 +1378,7 @@ New install</translation>
 <translation id="8666856788528804727">Open <ph name="NAME" /> to set up your device</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
 <translation id="8683506306463609433">Performance tracing active</translation>
+<translation id="8684405646663021166">Allows microphone access for <ph name="APP_NAME" /> and all apps and websites with the microphone permission</translation>
 <translation id="8685326675965865247">Search your device, apps, settings and web. Use the arrow keys to navigate your apps.</translation>
 <translation id="8703634754197148428">Start recording. Once recording has started use Alt + Shift + L to navigate to the shelf and find the stop recording button</translation>
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>

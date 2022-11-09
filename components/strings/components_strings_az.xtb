@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Açıq-mavi</translation>
 <translation id="1382194467192730611">USB cihazına administrator tərəfindən icazə verilib</translation>
 <translation id="1382378825779654399">Hər hansı saytda qiymət enərsə, e-poçt xəbərdarlıqları alacaqsınız. Bu səhifə burada saxlanılacaq: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Cari məlumatınızı görmürsünüz? Yeniləmək üçün bankınızla əlaqə saxlayın.</translation>
 <translation id="1384725838384960382">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi</translation>
 <translation id="1386623374109090026">Annotasiyalar</translation>
 <translation id="1391289752476847787">Səhmlər və istiqrazlar</translation>
@@ -1024,7 +1023,6 @@
 <translation id="3605899229568538311">5 x 5 düym</translation>
 <translation id="3608932978122581043">İstiqaməti tənzimləyin</translation>
 <translation id="3611317423880285981">Məişət ləvazimatları</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> üçün virtual kart</translation>
 <translation id="3614103345592970299">Ölçü 2</translation>
 <translation id="361438452008624280">Siyahı girişi "<ph name="LANGUAGE_ID" />": Naməlum və ya dəstəklənməyən dil.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Təhlükəsizlik Yoxlanışını icra edin</translation>
@@ -2282,7 +2280,6 @@
 <translation id="6890443033788248019">Məkan icazəsi verilsin?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> istifadə edən saytlarda <ph name="DEVICE_LABEL" /> ilə doğrulamağı seçmisiniz. Bu provayder ödəniş metodunuz haqqında məlumat saxlamış ola bilər, bu məlumatın <ph name="BEGIN_LINK" />silinməsini tələb edə<ph name="END_LINK" /> bilərsiniz.</translation>
 <translation id="6891596781022320156">Qayda səviyyəsi dəstəklənmir.</translation>
-<translation id="6895143722905299846">Virtual nömrə:</translation>
 <translation id="6895330447102777224">Kartınız təsdiqləndi</translation>
 <translation id="6897140037006041989">İstifadəçi Agent</translation>
 <translation id="6898699227549475383">Təşkilat (T)</translation>
@@ -2455,7 +2452,6 @@
 <translation id="7334320624316649418">&amp;Yenidən yerbəyer edin</translation>
 <translation id="7335157162773372339">Saytlar kameranızdan istifadə üçün icazə tələb edə bilər</translation>
 <translation id="7337248890521463931">Daha çox sətir göstərin</translation>
-<translation id="7337418456231055214">Virtual kart nömrəsi daxil edilməyib? Kopyalamaq üçün kart məlumatlarını tıklayın. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Platformanızda əlçatan deyil.</translation>
 <translation id="733923710415886693">Serverin sertifikatı Sertifikat Şəffaflığı vasitəsi ilə aşkarlanmayıb.</translation>
 <translation id="7341357280245177602">İkinci əl avtomobillər</translation>

@@ -181,7 +181,6 @@
 <translation id="138218114945450791">हल्का निलो</translation>
 <translation id="1382194467192730611">तपाईंका प्रशासकले अनुमति दिएको USB यन्त्र</translation>
 <translation id="1382378825779654399">कुनै साइटमा मूल्य घटेका खण्डमा तपाईंलाई इमेलमार्फत अलर्ट पठाइने छ। यो पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मा सेभ गरिने छ।</translation>
-<translation id="1382912999714108023">तपाईंको हालको जानकारी देखाइएको छैन? तपाईं यो जानकारी संशोधन गर्न चाहनुहुन्छ भने कृपया आफ्नो बैंकमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="1384725838384960382">सुरक्षित तरिकाले भुक्तानी गर्नका निम्ति क्रिडेन्सियल पुष्टि गर्ने पाना</translation>
 <translation id="1386623374109090026">एनोटेसनहरू</translation>
 <translation id="1391289752476847787">सेयर तथा बचतपत्र</translation>
@@ -1024,7 +1023,6 @@
 <translation id="3605899229568538311">५ x ५ इन्च</translation>
 <translation id="3608932978122581043">अभिमुखीकरण फिड गर्नुहोस्</translation>
 <translation id="3611317423880285981">घरायसी सामग्रीहरू</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> को भर्चुअल कार्ड</translation>
 <translation id="3614103345592970299">आकार २</translation>
 <translation id="361438452008624280">प्रविष्टिको सूची "<ph name="LANGUAGE_ID" />": अज्ञात वा असमर्थित भाषा।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Chrome का सेटिङमा गई सुरक्षितपनाको जाँच गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -2283,7 +2281,6 @@
 <translation id="6890443033788248019">लोकेसन प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="6890531741535756070">तपाईंले <ph name="PROVIDER_ORIGIN" /> प्रयोग गर्ने वेबसाइटहरूमा <ph name="DEVICE_LABEL" /> मार्फत पुष्टि गर्ने विकल्प छनौट गर्नुभएको थियो। यो प्रदायकले तपाईंको भुक्तानी विधिसम्बन्धी जानकारी भण्डारण गरेको हुन सक्छ, तपाईं सो जानकारी <ph name="BEGIN_LINK" />मेटाइदिन अनुरोध गर्न<ph name="END_LINK" /> सक्नुहुन्छ।</translation>
 <translation id="6891596781022320156">नीति तह समर्थित छैन।</translation>
-<translation id="6895143722905299846">भर्चुअल कार्ड नम्बर:</translation>
 <translation id="6895330447102777224">तपाईंको कार्डको पुष्टि भयो</translation>
 <translation id="6897140037006041989">प्रयोगकर्ता एजेन्ट</translation>
 <translation id="6898699227549475383">संगठन (सं)</translation>
@@ -2456,7 +2453,6 @@
 <translation id="7334320624316649418">क्रम परिवर्तन &amp;पुन: गर्नुहोस्</translation>
 <translation id="7335157162773372339">तपाईंको क्यामेरा प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="7337248890521463931">थप हरफ देखाउनुहोस्</translation>
-<translation id="7337418456231055214">भर्चुअल कार्ड नम्बर भरिएको छैन? आफूले कपी गर्न चाहेका कार्डसम्बन्धी विवरणमा क्लिक गर्नुहोस्। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">तपाईंको प्लेटफर्ममा उपलब्ध छैन।</translation>
 <translation id="733923710415886693">प्रमाणपत्रको पारदर्शिता नीति मार्फत सर्भरको प्रमाणपत्रको खुलासा भएन।</translation>
 <translation id="7341357280245177602">पुराना सवारी साधनहरू</translation>

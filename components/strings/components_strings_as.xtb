@@ -181,7 +181,6 @@
 <translation id="138218114945450791">পাতল নীলা</translation>
 <translation id="1382194467192730611">আপোনাৰ প্ৰশাসকে অনুমতি দিয়া ইউএছবি ডিভাইচ</translation>
 <translation id="1382378825779654399">কোনো ছাইটত মূল্য কমিলে আপুনি ইমেইলৰ জৰিয়তে সতৰ্কবাৰ্তা পাব। এই পৃষ্ঠাখন <ph name="LAST_BOOKMARKS_FOLDER" />ত ছেভ কৰা হ'ব।</translation>
-<translation id="1382912999714108023">আপোনাৰ বৰ্তমানৰ তথ্য দেখা নাই নেকি? এইটো আপডে’ট কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ বেংকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1384725838384960382">সুৰক্ষিত পৰিশোধৰ ক্ৰিডেনশ্বিয়েলৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ শ্বীট</translation>
 <translation id="1386623374109090026">এন’টেশ্বন</translation>
 <translation id="1391289752476847787">ষ্ট’ক আৰু বণ্ড</translation>
@@ -1024,7 +1023,6 @@
 <translation id="3605899229568538311">৫ x ৫ ইঞ্চি</translation>
 <translation id="3608932978122581043">ফীডৰ দিশ</translation>
 <translation id="3611317423880285981">ঘৰৰ বস্তু আৰু সেৱা প্ৰদানকাৰী</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" />ৰ বাবে ভাৰ্চুৱেল কাৰ্ড</translation>
 <translation id="3614103345592970299">আকাৰ ২</translation>
 <translation id="361438452008624280">তালিকাত থকা "<ph name="LANGUAGE_ID" />": অজ্ঞাত বা অসমৰ্থিত ভাষা।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিঙত সুৰক্ষা পৰীক্ষা চলাবলৈ টেবত আৰু তাৰ পাছত এণ্টাৰত টিপক</translation>
@@ -2281,7 +2279,6 @@
 <translation id="6890443033788248019">অৱস্থানৰ অনুমতি দিবনে?</translation>
 <translation id="6890531741535756070">আপুনি <ph name="PROVIDER_ORIGIN" /> ব্যৱহাৰ কৰা ৱেবছাইটসমূহত <ph name="DEVICE_LABEL" />ৰ জৰিয়তে সত্যাপন কৰিবলৈ বাছনি কৰিছে। এই প্ৰদানকাৰীয়ে হয়তো আপোনাৰ পৰিশোধ পদ্ধতিৰ বিষয়ে তথ্য ষ্ট’ৰ কৰি ৰাখিব পাৰে, যিটো আপুনি <ph name="BEGIN_LINK" />মচিবলৈ অনুৰোধ জনাব<ph name="END_LINK" />পাৰে।</translation>
 <translation id="6891596781022320156">নীতিটোৰ স্তৰ সমর্থন নকৰে।</translation>
-<translation id="6895143722905299846">ভাৰ্ছুৱেল নম্বৰ:</translation>
 <translation id="6895330447102777224">আপোনাৰ কার্ড নিশ্চিত কৰা হৈছে</translation>
 <translation id="6897140037006041989">ব্যৱহাৰকাৰীৰ এজেণ্ট</translation>
 <translation id="6898699227549475383">প্ৰতিষ্ঠান (O)</translation>
@@ -2454,7 +2451,6 @@
 <translation id="7334320624316649418">&amp;পুনৰ ক্ৰমবদ্ধ কৰাটো ৰিডু কৰক</translation>
 <translation id="7335157162773372339">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="7337248890521463931">অধিক শাৰী দেখুৱাওক</translation>
-<translation id="7337418456231055214">ভাৰ্চুৱেল কাৰ্ডৰ নম্বৰটো পূৰ কৰা নাই নেকি? প্ৰতিলিপি কৰিবলৈ কাৰ্ডৰ সবিশেষত ক্লিক কৰক। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">আপোনাৰ প্লেটফ’ৰ্মত উপলব্ধ নহয়৷</translation>
 <translation id="733923710415886693">ছার্ভাৰৰ প্ৰমাণপত্ৰখন প্ৰমাণপত্ৰৰ স্বচ্ছতাৰ মাধ্যমেৰে ঘোষণা কৰা হোৱা নাছিল।</translation>
 <translation id="7341357280245177602">ব্যৱহাৰ কৰা বাহন</translation>

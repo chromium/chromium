@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">截屏/录屏模式，默认为<ph name="SOURCE" /><ph name="TYPE" />。按 Tab 键即可使用键盘进行导航。</translation>
 <translation id="2961963223658824723">出了点问题。请过几秒钟后重试。</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">开启麦克风使用权限？</translation>
 <translation id="296762781903199866">无法下载<ph name="LANGUAGE" />语音识别结果文件</translation>
 <translation id="2970920913501714344">安装应用、扩展程序和主题背景</translation>
 <translation id="2977598380246111477">下一个代码</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">全屏放大镜</translation>
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3400357268283240774">其他设置</translation>
+<translation id="3405101454990027959">开启麦克风使用权限</translation>
 <translation id="3410336247007142655">显示深色主题设置</translation>
 <translation id="3413817803639110246">目前尚无可查看的内容</translation>
 <translation id="3428447136709161042">断开与<ph name="NETWORK_NAME" />的连接</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">开头</translation>
 <translation id="3861651314799684201">按 Enter 键即可录制整个屏幕</translation>
+<translation id="3885531177412808398">允许所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="3886872229787704059">今天打开过</translation>
 <translation id="3891340733213178823">连按两次Ctrl+Shift+Q即可退出。</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
@@ -1372,6 +1375,7 @@
 <translation id="8666856788528804727">请打开“<ph name="NAME" />”以设置您的设备</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>
 <translation id="8683506306463609433">正在跟踪性能</translation>
+<translation id="8684405646663021166">允许“<ph name="APP_NAME" />”以及所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="8685326675965865247">搜索您的设备、应用、设置和网站。使用箭头键可浏览各个应用。</translation>
 <translation id="8703634754197148428">开始录制。录制开始后，使用 Alt + Shift + L 可转到任务栏并从中找到“停止录制”按钮</translation>
 <translation id="8721053961083920564">开启/关闭声音。<ph name="STATE_TEXT" /></translation>

@@ -181,7 +181,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="138218114945450791">Jasnoniebieski</translation>
 <translation id="1382194467192730611">Urządzenie USB dozwolone przez administratora</translation>
 <translation id="1382378825779654399">Otrzymasz alert e-mail, jeśli produkt stanieje w dowolnej witrynie. Ta strona zostanie zapisana w folderze <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Nie widzisz aktualnych informacji? Skontaktuj się z bankiem, aby je zaktualizować.</translation>
 <translation id="1384725838384960382">Arkusz uwierzytelniania danych logowania na potrzeby bezpiecznych płatności</translation>
 <translation id="1386623374109090026">Adnotacje</translation>
 <translation id="1391289752476847787">Akcje i obligacje</translation>
@@ -1027,7 +1026,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3605899229568538311">5 x 5 cali</translation>
 <translation id="3608932978122581043">Orientacja podajnika</translation>
 <translation id="3611317423880285981">Artykuły dla domu</translation>
-<translation id="3611395257124510155">Karta wirtualna <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Rozmiar 2</translation>
 <translation id="361438452008624280">Pozycja listy „<ph name="LANGUAGE_ID" />”: nieznany lub nieobsługiwany język.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby uruchomić kontrolę zabezpieczeń w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
@@ -2286,7 +2284,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6890443033788248019">Zezwolić na dostęp do lokalizacji?</translation>
 <translation id="6890531741535756070">W witrynach korzystających z <ph name="PROVIDER_ORIGIN" /> do potwierdzania tożsamości używasz <ph name="DEVICE_LABEL" />. Możliwe, że ten dostawca przechowuje dane Twojej formy płatności. Możesz <ph name="BEGIN_LINK" />poprosić o ich usunięcie<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Ten poziom zasad nie jest obsługiwany.</translation>
-<translation id="6895143722905299846">Numer wirtualny:</translation>
 <translation id="6895330447102777224">Karta została potwierdzona</translation>
 <translation id="6897140037006041989">Klient</translation>
 <translation id="6898699227549475383">Organizacja (O)</translation>
@@ -2459,7 +2456,6 @@ Dodatkowe informacje:
 <translation id="7334320624316649418">&amp;Ponów zmianę kolejności</translation>
 <translation id="7335157162773372339">Może prosić o dostęp do kamery</translation>
 <translation id="7337248890521463931">Pokaż więcej wierszy</translation>
-<translation id="7337418456231055214">Nie uzupełniono numeru karty wirtualnej? Kliknij dane karty, które chcesz skopiować. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Niedostępny na Twojej platformie.</translation>
 <translation id="733923710415886693">Certyfikat serwera nie został ujawniony przez protokół Certificate Transparency.</translation>
 <translation id="7341357280245177602">Pojazdy używane</translation>

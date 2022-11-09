@@ -181,7 +181,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="138218114945450791">Svetlomodrá</translation>
 <translation id="1382194467192730611">Zariadenie USB je povolené správcom</translation>
 <translation id="1382378825779654399">Keď na ktoromkoľvek webe klesne cena, dostanete e‑mailové upozornenie. Táto stránka sa uloží do priečinka <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Nezobrazujú sa vaše aktuálne informácie? Kontaktujte svoju banku a aktualizujte ich.</translation>
 <translation id="1384725838384960382">Hárok overenia poverenia zabezpečenej platby</translation>
 <translation id="1386623374109090026">Anotácie</translation>
 <translation id="1391289752476847787">Akcie a dlhopisy</translation>
@@ -1024,7 +1023,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3605899229568538311">5 × 5 palca</translation>
 <translation id="3608932978122581043">Orientácia zásobníka</translation>
 <translation id="3611317423880285981">Domáce potreby</translation>
-<translation id="3611395257124510155">Virtuálna karta pre <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Veľkosť 2</translation>
 <translation id="361438452008624280">Položka zoznamu „<ph name="LANGUAGE_ID" />“: neznámy alebo nepodporovaný jazyk.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter spustite kontrolu bezpečnosti v Chrome</translation>
@@ -2281,7 +2279,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6890443033788248019">Chcete povoliť prístup k polohe?</translation>
 <translation id="6890531741535756070">Na weboch využívajúcich poskytovateľa <ph name="PROVIDER_ORIGIN" /> ste vybrali overovanie pomocou <ph name="DEVICE_LABEL" />. Tento poskytovateľ mohol ukladať informácie o vašom spôsobe platby, <ph name="BEGIN_LINK" />o ktorých odstránenie môžete požiadať<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Úroveň pravidla nie je podporovaná.</translation>
-<translation id="6895143722905299846">Virtuálne číslo:</translation>
 <translation id="6895330447102777224">Vaša karta je overená</translation>
 <translation id="6897140037006041989">Používateľský agent</translation>
 <translation id="6898699227549475383">Organizácia (O)</translation>
@@ -2454,7 +2451,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7334320624316649418">&amp;Znova zmeniť poradie</translation>
 <translation id="7335157162773372339">Môže žiadať o povolenie používať kameru</translation>
 <translation id="7337248890521463931">Zobraziť viac riadkov</translation>
-<translation id="7337418456231055214">Nebolo vyplnené číslo virtuálnej karty? Kliknutím skopírujte podrobnosti karty. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nie je k dispozícii pre vašu platformu.</translation>
 <translation id="733923710415886693">Certifikát servera nebol zverejnený prostredníctvom pravidla transparentnosti certifikátov.</translation>
 <translation id="7341357280245177602">Jazdené vozidlá</translation>

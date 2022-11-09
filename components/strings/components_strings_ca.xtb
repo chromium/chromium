@@ -181,7 +181,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="138218114945450791">Blau clar</translation>
 <translation id="1382194467192730611">Dispositiu USB permès per l'administrador</translation>
 <translation id="1382378825779654399">Si el preu baixa en qualsevol lloc web, rebràs una alerta. Aquesta pàgina es desarà a <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">No es mostren les teves dades actuals? Contacta amb el teu banc per actualitzar-les.</translation>
 <translation id="1384725838384960382">Full d'autenticació de credencials de pagament segur</translation>
 <translation id="1386623374109090026">Anotacions</translation>
 <translation id="1391289752476847787">Accions i bons</translation>
@@ -1027,7 +1026,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3605899229568538311">5 x 5 polzades</translation>
 <translation id="3608932978122581043">Orientació de l'entrada</translation>
 <translation id="3611317423880285981">Productes per a la llar</translation>
-<translation id="3611395257124510155">Targeta virtual per a <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Mida 2</translation>
 <translation id="361438452008624280">Entrada "<ph name="LANGUAGE_ID" />" de la llista: l'idioma és desconegut o no s'admet.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per executar la comprovació de seguretat a la configuració de Chrome</translation>
@@ -2286,7 +2284,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6890443033788248019">Vols permetre l'accés a la ubicació?</translation>
 <translation id="6890531741535756070">Has decidit verificar amb <ph name="DEVICE_LABEL" /> els llocs web que utilitzen <ph name="PROVIDER_ORIGIN" />. És possible que aquest proveïdor hagi emmagatzemat informació sobre la teva forma de pagament. Si vols, pots <ph name="BEGIN_LINK" />sol·licitar que se suprimeixi<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">No s'admet el nivell de la política.</translation>
-<translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">La teva targeta s'ha confirmat</translation>
 <translation id="6897140037006041989">Agent d'usuari</translation>
 <translation id="6898699227549475383">Organització (O)</translation>
@@ -2459,7 +2456,6 @@ Detalls addicionals:
 <translation id="7334320624316649418">&amp;Refés el canvi d'ordre</translation>
 <translation id="7335157162773372339">Pot demanar permís per utilitzar la càmera</translation>
 <translation id="7337248890521463931">Mostra més línies</translation>
-<translation id="7337418456231055214">No s'ha emplenat el número de la targeta virtual? Fes clic als detalls de la targeta per copiar-los. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">No està disponible a la teva plataforma.</translation>
 <translation id="733923710415886693">El certificat del servidor no s'ha divulgat mitjançant la Transparència de certificats.</translation>
 <translation id="7341357280245177602">Vehicles de segona mà</translation>

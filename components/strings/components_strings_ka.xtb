@@ -181,7 +181,6 @@
 <translation id="138218114945450791">ცისფერი</translation>
 <translation id="1382194467192730611">USB მოწყობილობა დაშვებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="1382378825779654399">როცა რომელიმე საიტზე ფასი დაიკლებს, ელფოსტით გაფრთხილებებს მიიღებთ. ეს გვერდი შეინახება „<ph name="LAST_BOOKMARKS_FOLDER" />“-ში.</translation>
-<translation id="1382912999714108023">თქვენი ამჟამინდელი ინფორმაცია არ ჩანს? დაუკავშირდით თქვენს ბანკს ინფორმაციის განახლებისთვის.</translation>
 <translation id="1384725838384960382">უსაფრთხო გადახდის ავტორიზაციის რეგისტრაციის ფურცელი</translation>
 <translation id="1386623374109090026">ანოტაციები</translation>
 <translation id="1391289752476847787">აქციები და ობლიგაციები</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5 x 5 დუიმი</translation>
 <translation id="3608932978122581043">მიწოდების ორიენტაცია</translation>
 <translation id="3611317423880285981">საყოფაცხოვრებო პროდუქცია</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" />-ის ვირტუალური ბარათი</translation>
 <translation id="3614103345592970299">ზომა 2</translation>
 <translation id="361438452008624280">სიის ჩანაწერი „<ph name="LANGUAGE_ID" />“: ენა უცნობი ან მხარდაუჭერელია.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან უსაფრთხოების შემოწმების გასაშვებად დააჭირეთ კლავიშს Tab, შემდეგ Enter-ს</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">გსურთ მდებარეობაზე წვდომის დაშვება?</translation>
 <translation id="6890531741535756070">თქვენ აირჩიეთ <ph name="DEVICE_LABEL" /> დადასტურებისთვის იმ ვებსაიტებზე, რომლებზეც <ph name="PROVIDER_ORIGIN" /> გამოიყენება. ამ პროვაიდერს შეიძლებოდა შეენახა ინფორმაცია თქვენი გადახდის მეთოდის შესახებ. სურვილისამებრ, შეგიძლიათ <ph name="BEGIN_LINK" />მისი წაშლის მოთხოვნა<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">წესის დონე არ არის მხარდაჭერილი.</translation>
-<translation id="6895143722905299846">ვირტუალური ნომერი:</translation>
 <translation id="6895330447102777224">თქვენი ბარათი დადასტურდა</translation>
 <translation id="6897140037006041989">მომხმარებლის აგენტი</translation>
 <translation id="6898699227549475383">ორგანიზაცია (O)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">გადალაგების &amp;გამეორება</translation>
 <translation id="7335157162773372339">შეუძლია თქვენი კამერის გამოყენების თხოვნა</translation>
 <translation id="7337248890521463931">მეტი ხაზის ჩვენება</translation>
-<translation id="7337418456231055214">ვირტუალური ბარათის ნომერი არ არის შევსებული? კოპირებისთვის შეეხეთ ბარათის დეტალებს. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">მიუწვდომელია თქვენი პლატფორმისთვის.</translation>
 <translation id="733923710415886693">სერვერის სერტიფიკატის გამოქვეყნება სერტიფიკატთა გამჭვირვალობის შესახებ წესების შესაბამისად არ მომხდარა.</translation>
 <translation id="7341357280245177602">მეორადი ავტომობილები</translation>

@@ -4649,6 +4649,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5331568967879689647">Chrome OS-System-App</translation>
 <translation id="5331975486040154427">USB-C-Gerät (Port hinten links)</translation>
 <translation id="5333896723098573627">Wenn du eine App entfernen möchtest, gehe zu den Einstellungen &gt; „Apps“ &gt; „Google Play Store“ &gt; „Android-Einstellungen verwalten“ &gt; „Apps“ oder rufe den Anwendungsmanager auf. Tippe dann auf die App, die du deinstallieren möchtest, und wähle „Deinstallieren“ oder „Deaktivieren“ aus. Möglicherweise musst du nach rechts oder links wischen, um die App zu finden.</translation>
+<translation id="5334113802138581043">Mikrofonzugriff</translation>
 <translation id="5334142896108694079">Skript-Cache</translation>
 <translation id="5336688142483283574">Diese Seite wird auch aus dem Verlauf und deinen <ph name="SEARCH_ENGINE" />-Aktivitäten entfernt.</translation>
 <translation id="5336689872433667741">Cursor und Touchpad</translation>
@@ -8641,6 +8642,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9081543426177426948">Besuchte Websites werden im Inkognitomodus nicht gespeichert</translation>
 <translation id="9084064520949870008">In Fenster öffnen</translation>
 <translation id="9085256200913095638">Ausgewählten Tab duplizieren</translation>
+<translation id="9085446486797400519">Kamerazugriff</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nicht ausgewählt. Drücke zum Auswählen die Suchtaste + Leertaste.</translation>
 <translation id="9087949559523851360">Nutzer mit eingeschränktem Zugriff hinzufügen</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> wurde aufgrund von Unternehmensrichtlinien blockiert</translation>

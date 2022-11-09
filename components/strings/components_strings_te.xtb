@@ -183,7 +183,6 @@
 <translation id="138218114945450791">లేత నీలి రంగు</translation>
 <translation id="1382194467192730611">మీ నిర్వాహకుడు అనుమతించే USB పరికరం</translation>
 <translation id="1382378825779654399">ఏదైనా సైట్‌లో ధర తగ్గితే, మీరు ఈమెయిల్ అలర్ట్‌లను పొందుతారు. ఈ పేజీ <ph name="LAST_BOOKMARKS_FOLDER" />‌లో సేవ్ చేయబడుతుంది.</translation>
-<translation id="1382912999714108023">మీ ప్రస్తుత సమాచారం కనిపించలేదా? దీన్ని అప్‌డేట్ చేయడం కోసం మీ బ్యాంక్‌ను సంప్రదించండి.</translation>
 <translation id="1384725838384960382">సురక్షిత పేమెంట్ ఆధారాల ప్రామాణీకరణ షీట్</translation>
 <translation id="1386623374109090026">అదనపు గమనికలు</translation>
 <translation id="1391289752476847787">స్టాక్‌లు &amp; బాండ్‌లు</translation>
@@ -1029,7 +1028,6 @@
 <translation id="3605899229568538311">5 x 5 అంగుళాలు</translation>
 <translation id="3608932978122581043">ఫీడ్ ఓరియంటేషన్</translation>
 <translation id="3611317423880285981">ఇంటికి కావల్సిన సామాగ్రి</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" />కు వర్చువల్ కార్డ్</translation>
 <translation id="3614103345592970299">సైజ్‌ 2</translation>
 <translation id="361438452008624280">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": తెలియని లేదా మద్దతు లేని భాష.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయడానికి 'Tab'ను నొక్కి ఆపై 'Enter'ను నొక్కండి</translation>
@@ -2288,7 +2286,6 @@
 <translation id="6890443033788248019">లొకేషన్‌ను యాక్సెస్ చేయడానికి అనుమతించాలా?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో <ph name="DEVICE_LABEL" />‌తో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, మీరు దాన్ని <ph name="BEGIN_LINK" />తొలగించమని రిక్వెస్ట్<ph name="END_LINK" /> చేయవచ్చు.</translation>
 <translation id="6891596781022320156">విధాన స్థాయికి మద్దతు లేదు.</translation>
-<translation id="6895143722905299846">వర్చువల్ నంబర్:</translation>
 <translation id="6895330447102777224">మీ కార్డ్ నిర్ధారించబడింది</translation>
 <translation id="6897140037006041989">వినియోగదారు ప్రతినిధి</translation>
 <translation id="6898699227549475383">సంస్థ (O)</translation>
@@ -2461,7 +2458,6 @@
 <translation id="7334320624316649418">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="7335157162773372339">మీ కెమెరాను ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="7337248890521463931">మరిన్ని వరుసలను చూపించు</translation>
-<translation id="7337418456231055214">వర్చువల్ కార్డ్ నంబర్‌ను పూరించలేదా? కాపీ చేయడం కోసం కార్డ్ వివరాలను క్లిక్ చేయండి. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">మీ ప్లాట్‌ఫారమ్‌లో అందుబాటులో లేదు.</translation>
 <translation id="733923710415886693">సర్వర్ ప్రమాణపత్రాన్ని ప్రమాణపత్రం పారదర్శకత ద్వారా బహిరంగపరచలేదు.</translation>
 <translation id="7341357280245177602">వాడిన వాహనాలు</translation>

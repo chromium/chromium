@@ -181,7 +181,6 @@
 <translation id="138218114945450791">Albastru deschis</translation>
 <translation id="1382194467192730611">Dispozitiv USB permis de administrator</translation>
 <translation id="1382378825779654399">Vei primi alerte prin e-mail dacă prețul scade pe orice site. Pagina se va salva în <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Nu apar informațiile curente? Contactează banca pentru a le actualiza.</translation>
 <translation id="1384725838384960382">Foaie de autentificare cu date de conectare pentru plăți securizate</translation>
 <translation id="1386623374109090026">Adnotări</translation>
 <translation id="1391289752476847787">Acțiuni și obligațiuni</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Orientarea alimentării</translation>
 <translation id="3611317423880285981">Consumabile pentru casă</translation>
-<translation id="3611395257124510155">Card virtual pentru <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Mărimea 2</translation>
 <translation id="361438452008624280">Intrarea din listă „<ph name="LANGUAGE_ID" />”: limbă necunoscută sau neacceptată.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a rula verificarea de siguranță în setările Chrome</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">Permiți accesul la locație?</translation>
 <translation id="6890531741535756070">Ai ales să confirmi cu <ph name="DEVICE_LABEL" /> pe site-urile care folosesc <ph name="PROVIDER_ORIGIN" />. Este posibil ca acest furnizor să fi stocat informații despre metoda de plată, pentru care poți <ph name="BEGIN_LINK" />trimite o solicitare de ștergere<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Nivelul politicii nu este acceptat.</translation>
-<translation id="6895143722905299846">Număr virtual:</translation>
 <translation id="6895330447102777224">Cardul tău este confirmat</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Organizația (O)</translation>
@@ -2459,7 +2456,6 @@ Detalii suplimentare:
 <translation id="7334320624316649418">&amp;Repetați reordonarea</translation>
 <translation id="7335157162773372339">Poate solicita permisiunea de a folosi camera</translation>
 <translation id="7337248890521463931">Afișează mai multe rânduri</translation>
-<translation id="7337418456231055214">Numărul de card virtual nu este completat? Dă clic pe detaliile cardului pentru a le copia. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nu este disponibil pe platforma ta.</translation>
 <translation id="733923710415886693">Certificatul serverului nu a fost dezvăluit folosind Transparența certificatului.</translation>
 <translation id="7341357280245177602">Vehicule second-hand</translation>

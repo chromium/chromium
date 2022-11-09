@@ -181,7 +181,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="138218114945450791">Světle modrá</translation>
 <translation id="1382194467192730611">Zařízení USB povolené administrátorem</translation>
 <translation id="1382378825779654399">Pokud cena na některém webu klesne, dostanete e-mailové upozornění. Tato stránka bude uložena do složky <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Pokud nevidíte své aktuální informace, požádejte svoji banku o jejich aktualizaci.</translation>
 <translation id="1384725838384960382">List ověření identifikačních údajů pro zabezpečené platby</translation>
 <translation id="1386623374109090026">Poznámky</translation>
 <translation id="1391289752476847787">Akcie a dluhopisy</translation>
@@ -1024,7 +1023,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3605899229568538311">5 × 5″</translation>
 <translation id="3608932978122581043">Orientace podávání</translation>
 <translation id="3611317423880285981">Domácí potřeby</translation>
-<translation id="3611395257124510155">Virtuální karta pro kartu <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Velikost 2</translation>
 <translation id="361438452008624280">Položka seznamu „<ph name="LANGUAGE_ID" />“: Neznámý nebo nepodporovaný jazyk.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter spustíte bezpečnostní kontrolu v nastavení Chromu</translation>
@@ -2281,7 +2279,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6890443033788248019">Povolit přístup k poloze?</translation>
 <translation id="6890531741535756070">Zvolili jste, že na webech, které používají poskytovatele <ph name="PROVIDER_ORIGIN" />, chcete k ověření používat <ph name="DEVICE_LABEL" />. Tento poskytovatel může mít uložené informace o vaší platební metodě a můžete <ph name="BEGIN_LINK" />požádat o jejich smazání<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Úroveň zásady není podporována.</translation>
-<translation id="6895143722905299846">Virtuální číslo:</translation>
 <translation id="6895330447102777224">Vaše karta je ověřena</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organizace (O)</translation>
@@ -2453,7 +2450,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7334320624316649418">&amp;Opakovat změnu uspořádání</translation>
 <translation id="7335157162773372339">Může žádat o použití kamery</translation>
 <translation id="7337248890521463931">Zobrazit další řádky</translation>
-<translation id="7337418456231055214">Číslo virtuální karty není vyplněno? Klikněte na podrobnosti o kartě a zkopírujte ho. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Pro vaši platformu nedostupné.</translation>
 <translation id="733923710415886693">Certifikát serveru nebyl zveřejněn prostřednictvím projektu Certificate Transparency.</translation>
 <translation id="7341357280245177602">Ojetá vozidla</translation>

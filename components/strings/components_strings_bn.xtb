@@ -181,7 +181,6 @@
 <translation id="138218114945450791">হালকা নীল</translation>
 <translation id="1382194467192730611">আপনার অ্যাডমিনিস্ট্রেটর ইউএসবি ডিভাইস ব্যবহার করার অনুমতি দিয়েছেন</translation>
 <translation id="1382378825779654399">কোনও সাইটে দাম কমলে আপনি সেই বিষয়ে ইমেল বিজ্ঞপ্তি পাবেন। এই পৃষ্ঠাটি <ph name="LAST_BOOKMARKS_FOLDER" />-এ সেভ করা হবে।</translation>
-<translation id="1382912999714108023">আপনার বর্তমান তথ্য দেখতে পাচ্ছেন না? এটি আপডেট করতে আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।</translation>
 <translation id="1384725838384960382">নিরাপদ পেমেন্ট ক্রেডেনশিয়াল যাচাই করার শিট</translation>
 <translation id="1386623374109090026">টিকা</translation>
 <translation id="1391289752476847787">স্টক ও বন্ড</translation>
@@ -1028,7 +1027,6 @@
 <translation id="3605899229568538311">৫ x ৫ ইঞ্চি</translation>
 <translation id="3608932978122581043">ফিড ওরিয়েন্টেশন</translation>
 <translation id="3611317423880285981">বাড়ির সামগ্রী</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" />-এর জন্য ভার্চুয়াল কার্ড</translation>
 <translation id="3614103345592970299">সাইজ ২</translation>
 <translation id="361438452008624280">তালিকার এন্ট্রি "<ph name="LANGUAGE_ID" />": অজানা বা কাজ করে না এমন ভাষা।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে 'নিরাপত্তা সংক্রান্ত পরীক্ষা' চালাতে প্রথমে Tab আর তারপরে Enter কী প্রেস করুন</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">লোকেশন অ্যাক্সেস করার অনুমতি দেবেন?</translation>
 <translation id="6890531741535756070">আপনি <ph name="DEVICE_LABEL" />-এর মাধ্যমে ওয়েবসাইটে যাচাই করার বিকল্প বেছে নিয়েছেন যা <ph name="PROVIDER_ORIGIN" /> ব্যবহার করে। এই পরিষেবা প্রদানকারী আপনার পেমেন্ট পদ্ধতি সংক্রান্ত তথ্য সেভ করে রাখতে পারে, যা আপনি <ph name="BEGIN_LINK" />মুছে ফেলার জন্য অনুরোধ<ph name="END_LINK" /> করতে পারবেন।</translation>
 <translation id="6891596781022320156">নীতি স্তর সমর্থিত নয়।</translation>
-<translation id="6895143722905299846">ভার্চুয়াল সংখ্যা:</translation>
 <translation id="6895330447102777224">আপনার কার্ডটি নিশ্চিত করা হয়েছে</translation>
 <translation id="6897140037006041989">ব্যবহারকারী এজেন্ট</translation>
 <translation id="6898699227549475383">সংস্থা (O)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">&amp;পুনর্বিন্যাসকে আবার করুন</translation>
 <translation id="7335157162773372339">ক্যামেরা ব্যবহার করার অনুমতি চাইতে পারে</translation>
 <translation id="7337248890521463931">বেশি লাইন দেখুন</translation>
-<translation id="7337418456231055214">ভার্চুয়াল কার্ডের নম্বর দেওয়া হয়নি? কপি করতে কার্ডের বিবরণে ক্লিক করুন। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">আপনার প্ল্যাটফর্মে উপলভ্য নেই।</translation>
 <translation id="733923710415886693">সার্ভারের সার্টিফিকেটটি সার্টিফিকেটের স্বচ্ছতার মাধ্যমে প্রকাশ করা হয়নি।</translation>
 <translation id="7341357280245177602">ব্যবহার করা গাড়ি</translation>

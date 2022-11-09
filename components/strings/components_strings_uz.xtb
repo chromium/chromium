@@ -181,7 +181,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="138218114945450791">Havorang</translation>
 <translation id="1382194467192730611">USB qurilmani ishlatishga administrator tomonidan ruxsat berildi</translation>
 <translation id="1382378825779654399">Har qaysi saytda narx tushganda sizga email orqali ogohlantirish yuboriladi. Bu sahifa <ph name="LAST_BOOKMARKS_FOLDER" /> jildiga saqlanadi.</translation>
-<translation id="1382912999714108023">Joriy maʼlumotlar chiqmayaptimi? Yangilash uchun bankka murojaat qiling.</translation>
 <translation id="1384725838384960382">Xavfsiz toʻlovlar uchun hisob maʼlumotlarini autentifikatsiya qilish ekrani</translation>
 <translation id="1386623374109090026">Izohlar</translation>
 <translation id="1391289752476847787">Aksiya va obligatsiyalar</translation>
@@ -1023,7 +1022,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Holatini belgilash</translation>
 <translation id="3611317423880285981">Uy uchun mahsulotlar</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> virtual kartasi</translation>
 <translation id="3614103345592970299">Hajmi: 2</translation>
 <translation id="361438452008624280">“<ph name="LANGUAGE_ID" />” qiymati: Notanish yoki mos kelmaydigan til.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali xavfsizlik tekshiruvini bajarish uchun avval Tab, keyin Enter tugmalarini bosing</translation>
@@ -2280,7 +2278,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6890443033788248019">Joylashuvga ruxsat berilsinmi?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> saytlarida shaxsni <ph name="DEVICE_LABEL" /> qurilmasi yordamida tasdiqlashni tanlagansiz. Bu provayder toʻlov usulingiz axborotini saqlashi mumkin, lekin uning <ph name="BEGIN_LINK" />oʻchirilishini talab qilish mumkin<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Qoida qiymati qo‘llab-quvvatlanmaydi.</translation>
-<translation id="6895143722905299846">Virtual raqam:</translation>
 <translation id="6895330447102777224">Kartangiz tasdiqlandi</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Tashkilot (O)</translation>
@@ -2453,7 +2450,6 @@ Batafsil axborot:
 <translation id="7334320624316649418">&amp;Qayta tartiblashni qayta bajarish</translation>
 <translation id="7335157162773372339">Kameradan foydalanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="7337248890521463931">Koʻproq qatorlarni koʻrsatish</translation>
-<translation id="7337418456231055214">Virtual karta raqami kiritilmadimi? Nusxalanadigan karta maʼlumotlari ustiga bosing. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Sizdagi tizimda ishlamaydi.</translation>
 <translation id="733923710415886693">Sertifikatning ishonchlilik belgilari haqidagi ma’lumot server tomonidan taqdim etilmadi.</translation>
 <translation id="7341357280245177602">Minilgan avtomobillar</translation>

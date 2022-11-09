@@ -181,7 +181,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="138218114945450791">Ljusblå</translation>
 <translation id="1382194467192730611">USB-enhet som tillåtits av administratören</translation>
 <translation id="1382378825779654399">Du får aviseringar via e-post om priset sjunker på en webbplats. Den här sidan sparas i <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Saknar du aktuella uppgifter? Kontakta banken för att uppdatera dem.</translation>
 <translation id="1384725838384960382">Arbetsblad för autentisering av användaruppgifter för säker betalning</translation>
 <translation id="1386623374109090026">Kommentarer</translation>
 <translation id="1391289752476847787">Aktier och obligationer</translation>
@@ -1027,7 +1026,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3605899229568538311">5 x 5 tum</translation>
 <translation id="3608932978122581043">Ställa in riktning</translation>
 <translation id="3611317423880285981">Hushållsartiklar</translation>
-<translation id="3611395257124510155">Virtuellt kort för <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Storlek 2</translation>
 <translation id="361438452008624280">Listposten <ph name="LANGUAGE_ID" />: Språket är okänt eller stöds inte.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill köra en säkerhetskontroll i inställningarna för Chrome</translation>
@@ -2286,7 +2284,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6890443033788248019">Vill du tillåta plats?</translation>
 <translation id="6890531741535756070">Du har valt att verifiera dig med <ph name="DEVICE_LABEL" /> på webbplatser där <ph name="PROVIDER_ORIGIN" /> används. Den här leverantören kan ha lagrat uppgifter om din betalningsmetod som du kan <ph name="BEGIN_LINK" />begära borttagning av<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Policynivån stöds inte.</translation>
-<translation id="6895143722905299846">Kortnummer:</translation>
 <translation id="6895330447102777224">Kortet har bekräftats</translation>
 <translation id="6897140037006041989">Användaragent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
@@ -2459,7 +2456,6 @@ Mer information.
 <translation id="7334320624316649418">&amp;Gör om Ändra ordning</translation>
 <translation id="7335157162773372339">Får begära åtkomst till kameran</translation>
 <translation id="7337248890521463931">Visa fler rader</translation>
-<translation id="7337418456231055214">Har det virtuella kortnumret inte fyllts i? Klicka på kortuppgifterna om du vill kopiera dem. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Ej tillgänglig för din plattform.</translation>
 <translation id="733923710415886693">Servercertifikatet har inte lämnats ut via Certifikattransparens.</translation>
 <translation id="7341357280245177602">Begagnade fordon</translation>

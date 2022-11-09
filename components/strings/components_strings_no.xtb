@@ -181,7 +181,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="138218114945450791">Lyseblå</translation>
 <translation id="1382194467192730611">USB-enheten er tillatt av administratoren din</translation>
 <translation id="1382378825779654399">Du får e-postvarsler hvis prisen settes ned på noe nettsted. Denne siden blir lagret i <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Er ikke informasjonen din oppdatert? Kontakt banken din for å oppdatere den.</translation>
 <translation id="1384725838384960382">Ark for sikker autentisering av betalingslegitimasjon</translation>
 <translation id="1386623374109090026">Annoteringer</translation>
 <translation id="1391289752476847787">Aksjer og obligasjoner</translation>
@@ -1027,7 +1026,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3605899229568538311">5 x 5 tommer</translation>
 <translation id="3608932978122581043">Feed-retning</translation>
 <translation id="3611317423880285981">Husholdningsutstyr</translation>
-<translation id="3611395257124510155">Virtuelt kort for <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Størrelse 2</translation>
 <translation id="361438452008624280">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Språket er ukjent eller støttes ikke.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
@@ -2286,7 +2284,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6890443033788248019">Vil du gi posisjonstillatelse?</translation>
 <translation id="6890531741535756070">Du har valgt å verifisere med <ph name="DEVICE_LABEL" /> på nettsteder som bruker <ph name="PROVIDER_ORIGIN" />. Denne leverandøren kan ha lagret informasjon om betalingsmåten din, som du kan <ph name="BEGIN_LINK" />be om å få slettet<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Innstillingsnivået støttes ikke.</translation>
-<translation id="6895143722905299846">Virtuelt nummer:</translation>
 <translation id="6895330447102777224">Kortet ditt er bekreftet</translation>
 <translation id="6897140037006041989">Brukeragent</translation>
 <translation id="6898699227549475383">Organisasjon (O)</translation>
@@ -2458,7 +2455,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7334320624316649418">&amp;Omorganiser likevel</translation>
 <translation id="7335157162773372339">Kan be om å få bruke kameraet ditt</translation>
 <translation id="7337248890521463931">Vis flere linjer</translation>
-<translation id="7337418456231055214">Ble ikke det virtuelle kortnummeret fylt ut? Klikk på kortopplysningene for å kopiere dem. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Ikke tilgjengelig på plattformen din.</translation>
 <translation id="733923710415886693">Tjenerens sertifikat er ikke vist i henhold til regelen for sertifikatåpenhet.</translation>
 <translation id="7341357280245177602">Brukte kjøretøy</translation>

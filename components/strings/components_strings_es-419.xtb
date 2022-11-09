@@ -181,7 +181,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="138218114945450791">Celeste</translation>
 <translation id="1382194467192730611">El dispositivo USB que permite tu administrador</translation>
 <translation id="1382378825779654399">Recibirás alertas por correo electrónico si hay descuentos en algún sitio. Se guardará esta página en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">¿No aparece tu información actual? Comunícate con el banco para actualizarla.</translation>
 <translation id="1384725838384960382">Hoja de autenticación de credenciales de pago seguro</translation>
 <translation id="1386623374109090026">Anotaciones</translation>
 <translation id="1391289752476847787">Acciones y bonos</translation>
@@ -1028,7 +1027,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3605899229568538311">12.7 × 12.7 cm (5 × 5 in)</translation>
 <translation id="3608932978122581043">Orientación de la entrada</translation>
 <translation id="3611317423880285981">Productos del hogar</translation>
-<translation id="3611395257124510155">Tarjeta virtual para <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Tamaño 2</translation>
 <translation id="361438452008624280">Entrada de lista "<ph name="LANGUAGE_ID" />": El idioma es desconocido o no es compatible.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para realizar una verificación de seguridad en la configuración de Chrome</translation>
@@ -2287,7 +2285,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6890443033788248019">¿Quieres permitir acceso a la ubicación?</translation>
 <translation id="6890531741535756070">Elegiste realizar la verificación con <ph name="DEVICE_LABEL" /> en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu forma de pago, la que puedes <ph name="BEGIN_LINK" />solicitar que se borre<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">No se admite el nivel de políticas.</translation>
-<translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">Tu tarjeta se confirmó</translation>
 <translation id="6897140037006041989">Usuario-agente</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
@@ -2460,7 +2457,6 @@ Detalles adicionales:
 <translation id="7334320624316649418">&amp;Rehacer Reorganizar</translation>
 <translation id="7335157162773372339">Puede solicitar permiso para usar la cámara</translation>
 <translation id="7337248890521463931">Mostrar más líneas</translation>
-<translation id="7337418456231055214">¿No se completó el número de la tarjeta virtual? Haz clic en los detalles de la tarjeta para copiarlos. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">No está disponible para tu plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se divulgó mediante el Certificado de transparencia.</translation>
 <translation id="7341357280245177602">Vehículos usados</translation>

@@ -4658,6 +4658,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5331568967879689647">Chrome OS-i süsteemirakendus</translation>
 <translation id="5331975486040154427">C-tüüpi USB-seade (tagumine vasakpoolne port)</translation>
 <translation id="5333896723098573627">Rakenduste eemaldamiseks avage menüü Seaded &gt; Rakendused &gt; Google Play pood &gt; Androidi eelistuste haldamine &gt; Rakendused või Rakenduste haldur. Seejärel puudutage rakendust, mille soovite desinstallida (rakenduse leidmiseks peate võib-olla paremale või vasakule pühkima). Seejärel puudutage käsku Desinstalli või Keela.</translation>
+<translation id="5334113802138581043">Juurdepääs mikrofonile</translation>
 <translation id="5334142896108694079">Skripti vahemälu</translation>
 <translation id="5336688142483283574">See leht eemaldatakse ka teie ajaloost ja otsingumootori <ph name="SEARCH_ENGINE" /> tegevustest.</translation>
 <translation id="5336689872433667741">Kursor ja puuteplaat</translation>
@@ -8653,6 +8654,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9081543426177426948">Külastatavaid saite inkognito režiimis ei salvestata</translation>
 <translation id="9084064520949870008">Ava aknana</translation>
 <translation id="9085256200913095638">Valitud vahelehe duplitseerimine</translation>
+<translation id="9085446486797400519">Juurdepääs kaamerale</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> pole valitud. Valimiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>
 <translation id="9087949559523851360">Piiratud juurdepääsuga kasutaja lisamine</translation>
 <translation id="9088234649737575428">Pistikprogramm <ph name="PLUGIN_NAME" /> on ettevõtte reegliga keelatud</translation>

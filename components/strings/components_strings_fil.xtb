@@ -181,7 +181,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="138218114945450791">Light Blue</translation>
 <translation id="1382194467192730611">USB device na pinapayagan ng iyong administrator</translation>
 <translation id="1382378825779654399">Makakatanggap ka ng mga alerto sa email kung bababa ang presyo sa anumang site. Mase-save ang page na ito sa <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Hindi mo nakikita ang iyong kasalukuyan impormasyon? Makipag-ugnayan sa iyong bangko para ma-update ito.</translation>
 <translation id="1384725838384960382">Sheet para sa pag-authenticate ng kredensyal sa secure na pagbabayad</translation>
 <translation id="1386623374109090026">Mga Anotasyon</translation>
 <translation id="1391289752476847787">Mga stock at bond</translation>
@@ -1027,7 +1026,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Oryentasyon ng feed</translation>
 <translation id="3611317423880285981">Mga supply sa sambahayan</translation>
-<translation id="3611395257124510155">Virtual na card para sa <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Laki 2</translation>
 <translation id="361438452008624280">Listahan ng entry na "<ph name="LANGUAGE_ID" />": Hindi kilala o hindi sinusuportahang wika.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para magpatakbo ng pag-check sa kaligtasan sa mga setting ng Chrome</translation>
@@ -2286,7 +2284,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6890443033788248019">Payagan ang lokasyon?</translation>
 <translation id="6890531741535756070">Pinili mong mag-verify gamit ang <ph name="DEVICE_LABEL" /> sa mga website na gumagamit ng <ph name="PROVIDER_ORIGIN" />. Posibleng nag-store ang provider na ito ng impormasyon tungkol sa iyong paraan ng pagbabayad, na puwede mong <ph name="BEGIN_LINK" />hilinging i-delete<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Hindi sinusuportahan ang antas ng patakaran.</translation>
-<translation id="6895143722905299846">Virtual na numero:</translation>
 <translation id="6895330447102777224">Nakumpirma na ang iyong card</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Samahan (O)</translation>
@@ -2459,7 +2456,6 @@ Mga karagdagang detalye:
 <translation id="7334320624316649418">&amp;Gawing muli ang pagbabago sa ayos</translation>
 <translation id="7335157162773372339">Puwedeng hilinging gamitin ang iyong camera</translation>
 <translation id="7337248890521463931">Magpakita ng mas marami pang linya</translation>
-<translation id="7337418456231055214">Hindi napunan ang numero ng virtual na card? I-click ang mga detalye ng card para kopyahin. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Hindi available sa iyong platform.</translation>
 <translation id="733923710415886693">Ang certificate ng server ay hindi inihayag sa pamamagitan ng Transparency ng Certificate.</translation>
 <translation id="7341357280245177602">Mga gamit nang sasakyan</translation>

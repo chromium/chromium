@@ -939,6 +939,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1832848789136765277">Untuk memastikan anda dapat mengakses data penyegerakan anda pada bila-bila masa, sahkan itu anda</translation>
 <translation id="1834503245783133039">Muat turun tidak berjaya: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Meningkatkan Linux</translation>
+<translation id="1835612721186505600">Benarkan akses untuk apl dan laman web dengan kebenaran kamera</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
 <translation id="1839021455997460752">Alamat e-mel anda</translation>
 <translation id="1839540115464516994">Paparkan dalam <ph name="LOCATION" /></translation>
@@ -2509,6 +2510,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3279230909244266691">Proses ini mungkin mengambil masa beberapa minit. Memulakan mesin maya.</translation>
 <translation id="3280237271814976245">Simpan &amp;sebagai...</translation>
 <translation id="3280243678470289153">Kekal dalam Chrome</translation>
+<translation id="328119399589609861">Kawal akses peranti kepada mikrofon, kamera dan pelbagai lagi</translation>
 <translation id="3281892622610078515">Fail dan program yang akan dikuarantin:</translation>
 <translation id="3282210178675490297">Berkongsi tab kepada <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">&amp;Tab Baharu</translation>
@@ -4515,6 +4517,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5185500136143151980">Tiada Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktifkan port</translation>
+<translation id="5190959794678983197">Tiada mikrofon</translation>
 <translation id="5191094172448199359">PIN yang anda masukkan tidak sepadan</translation>
 <translation id="5191251636205085390">Ketahui tentang teknologi baharu yang disasarkan untuk menggantikan kuki pihak ketiga dan kawal teknologi tersebut</translation>
 <translation id="519185197579575131">Gunakan QT</translation>
@@ -4874,6 +4877,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Adakah ini halaman utama yang anda jangkakan?</translation>
 <translation id="5522156646677899028">Sambungan ini mengandungi kelemahan keselamatan yang serius.</translation>
+<translation id="5522403133543437426">Enjin carian yang digunakan dalam bar alamat.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah dipasang oleh pentadbir anda}other{# sambungan telah dipasang oleh pentadbir anda}}</translation>
 <translation id="5523558474028191231">Nama boleh menggunakan huruf, nombor serta aksara khas dan mestilah tidak melebihi <ph name="MAX_CHARACTER_COUNT" /> aksara</translation>
 <translation id="5526701598901867718">Semua (tidak selamat)</translation>
@@ -7056,6 +7060,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7608810328871051088">Pilihan Android</translation>
 <translation id="7609148976235050828">Sila sambung ke Internet dan cuba lagi.</translation>
+<translation id="7612401678989660900">Benarkan akses untuk semua apl dan laman web dengan kebenaran mikrofon</translation>
 <translation id="7612655942094160088">Dayakan ciri telefon yang disambungkan.</translation>
 <translation id="7614260613810441905">Tanya apabila tapak mahu mengedit fail atau folder pada peranti anda (disyorkan)</translation>
 <translation id="761530003705945209">Sandarkan pada Google Drive. Pulihkan data atau tukar peranti anda dengan mudah pada bila-bila masa. Sandaran anda merangkumi data apl. Sandaran anda dimuat naik pada Google dan disulitkan menggunakan kata laluan Akaun Google anda.</translation>
@@ -8439,6 +8444,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8872155268274985541">Fail manifes kemas kini luar Kiosk yang tidak sah dijumpai. Gagal mengemas kini apl Kiosk. Sila alih keluar batang USB.</translation>
 <translation id="8872506776304248286">Buka dalam apl</translation>
 <translation id="8872777911145321141">Tanya apabila tapak mahu menggunakan peranti dan data realiti maya anda (disyorkan)</translation>
+<translation id="887292602123626481">Ketahui lebih lanjut tentang enjin carian lalai</translation>
 <translation id="8874341931345877644">Hantar ke peranti:</translation>
 <translation id="8875520811099717934">Peningkatan Linux</translation>
 <translation id="8875736897340638404">Pilih keterlihatan anda</translation>
@@ -8559,6 +8565,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8987927404178983737">Bulan</translation>
 <translation id="8989359959810288806">Muat Semula Status Penambatan</translation>
 <translation id="8991520179165052608">Tapak boleh menggunakan mikrofon anda</translation>
+<translation id="8991694323904646277">Tiada kamera</translation>
 <translation id="8993059306046735527">Jika anda terlupa kata laluan <ph name="DEVICE_TYPE" />, anda masih boleh memulihkan data setempat anda. Anda perlu log masuk ke Google Account anda atau menggunakan pemulihan akaun.</translation>
 <translation id="899384117894244799">Alih keluar pengguna yang disekat</translation>
 <translation id="899403249577094719">URL Tapak Sijil Netscape</translation>

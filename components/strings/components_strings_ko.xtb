@@ -181,7 +181,6 @@
 <translation id="138218114945450791">하늘색</translation>
 <translation id="1382194467192730611">관리자가 허용한 USB 기기</translation>
 <translation id="1382378825779654399">사이트에서 가격이 인하되면 이메일 알림을 받게 됩니다. 페이지가 <ph name="LAST_BOOKMARKS_FOLDER" />에 저장됩니다.</translation>
-<translation id="1382912999714108023">최신 정보가 표시되지 않나요? 은행에 문의하여 업데이트하세요.</translation>
 <translation id="1384725838384960382">보안 결제 사용자 인증 정보 승인 시트</translation>
 <translation id="1386623374109090026">주석</translation>
 <translation id="1391289752476847787">주식 및 채권</translation>
@@ -1027,7 +1026,6 @@
 <translation id="3605899229568538311">5x5인치</translation>
 <translation id="3608932978122581043">종이 공급 방향</translation>
 <translation id="3611317423880285981">가정용품</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> 가상 카드</translation>
 <translation id="3614103345592970299">크기 2</translation>
 <translation id="361438452008624280">목록 항목 ‘<ph name="LANGUAGE_ID" />’: 알 수 없거나 지원되지 않는 언어입니다.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 안전 확인을 실행하려면 Tab과 Enter를 차례로 누르세요</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6890443033788248019">위치 정보 액세스 권한을 허용하시겠습니까?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" />을(를) 사용하는 웹사이트에서 <ph name="DEVICE_LABEL" />(으)로 인증하도록 선택했습니다. 제공업체에서 내 결제 수단 정보를 저장했을 가능성이 있으며 이 경우 <ph name="BEGIN_LINK" />삭제를 요청<ph name="END_LINK" />할 수 있습니다.</translation>
 <translation id="6891596781022320156">정책 수준이 지원되지 않습니다.</translation>
-<translation id="6895143722905299846">가상 번호:</translation>
 <translation id="6895330447102777224">카드가 확인되었습니다.</translation>
 <translation id="6897140037006041989">사용자 에이전트</translation>
 <translation id="6898699227549475383">조직(O)</translation>
@@ -2459,7 +2456,6 @@
 <translation id="7334320624316649418">재정렬 다시 실행(&amp;R)</translation>
 <translation id="7335157162773372339">카메라 사용을 요청할 수 있음</translation>
 <translation id="7337248890521463931">자막 펼치기</translation>
-<translation id="7337418456231055214">가상 카드 번호가 자동 완성되지 않았나요? 복사할 카드 세부정보를 클릭하세요. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">사용 중인 플랫폼에서는 제공되지 않습니다.</translation>
 <translation id="733923710415886693">서버 인증서가 인증서 투명성 정책을 사용하여 공개되지 않았습니다.</translation>
 <translation id="7341357280245177602">중고차</translation>

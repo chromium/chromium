@@ -181,7 +181,6 @@
 <translation id="138218114945450791">כחול בהיר</translation>
 <translation id="1382194467192730611">‏מנהל המערכת שלך אישר את התקן ה-USB</translation>
 <translation id="1382378825779654399">תתקבל התראה באימייל אם תהיה הנחה באתר כלשהו. הדף הזה יישמר ב-<ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">הפרטים המוצגים לא עדכניים? עליך לפנות לבנק שלך כדי לעדכן אותם.</translation>
 <translation id="1384725838384960382">גיליון האימות של פרטי הכניסה לתשלום המאובטח</translation>
 <translation id="1386623374109090026">הערות</translation>
 <translation id="1391289752476847787">מניות ואג"ח</translation>
@@ -1026,7 +1025,6 @@
 <translation id="3605899229568538311">‏5x5 אינץ'</translation>
 <translation id="3608932978122581043">כיוון הזנה</translation>
 <translation id="3611317423880285981">מוצרים לבית</translation>
-<translation id="3611395257124510155">כרטיס וירטואלי עבור <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">גודל 2</translation>
 <translation id="361438452008624280">רשומה ברשימה "<ph name="LANGUAGE_ID" />": שפה לא מוכרת או לא נתמכת.</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
@@ -2288,7 +2286,6 @@ Del</translation>
 <translation id="6890443033788248019">לאשר גישה למיקום?</translation>
 <translation id="6890531741535756070">בחרת לבצע אימות באמצעות <ph name="DEVICE_LABEL" /> באתרים שמשתמשים ב-<ph name="PROVIDER_ORIGIN" />. יכול להיות שהספק הזה אחסן מידע על אמצעי התשלום שלך, ואפשר <ph name="BEGIN_LINK" />לבקש למחוק את המידע הזה<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">רמת המדיניות אינה נתמכת.</translation>
-<translation id="6895143722905299846">מספר וירטואלי:</translation>
 <translation id="6895330447102777224">הכרטיס שלך מאושר</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">‏ארגון (O)</translation>
@@ -2460,7 +2457,6 @@ Del</translation>
 <translation id="7334320624316649418">&amp;ביצוע מחדש של שינוי סדר</translation>
 <translation id="7335157162773372339">האתר יכול לבקש הרשאה להשתמש במצלמה</translation>
 <translation id="7337248890521463931">אני רוצה לראות יותר שורות</translation>
-<translation id="7337418456231055214">מספר הכרטיס הווירטואלי לא הוזן? לוחצים על פרטי הכרטיס כדי להעתיק. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">לא זמין בפלטפורמה שלך.</translation>
 <translation id="733923710415886693">אישור השרת לא נחשף דרך 'שקיפות אישורים'.</translation>
 <translation id="7341357280245177602">רכבים משומשים</translation>

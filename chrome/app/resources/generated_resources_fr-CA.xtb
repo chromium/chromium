@@ -4654,6 +4654,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5331568967879689647">Application système de Chrome OS</translation>
 <translation id="5331975486040154427">Appareil USB-C (port arrière-gauche)</translation>
 <translation id="5333896723098573627">Pour retirer des applications, sélectionnez Paramètres &gt; Applications &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications. Ensuite, touchez l'application que vous voulez désinstaller (vous devrez peut-être balayer l'écran vers la droite ou vers la gauche pour trouver l'application). Enfin, touchez Désinstaller ou Désactiver.</translation>
+<translation id="5334113802138581043">Accès au microphone</translation>
 <translation id="5334142896108694079">Cache des scripts</translation>
 <translation id="5336688142483283574">Cette page sera aussi supprimée de votre historique et de votre activité <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Curseur et pavé tactile</translation>
@@ -8651,6 +8652,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9081543426177426948">Les sites que vous visitez ne sont pas enregistrés en mode de navigation privée</translation>
 <translation id="9084064520949870008">Ouvrir dans une fenêtre</translation>
 <translation id="9085256200913095638">Dupliquer l'onglet sélectionné</translation>
+<translation id="9085446486797400519">Accès à l'appareil photo</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> non sélectionné. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour sélectionner une langue.</translation>
 <translation id="9087949559523851360">Ajouter un profil d'utilisateur restreint</translation>
 <translation id="9088234649737575428">Le plugiciel <ph name="PLUGIN_NAME" /> est bloqué par une politique de l'entreprise</translation>

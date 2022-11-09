@@ -181,7 +181,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="138218114945450791">Light blue</translation>
 <translation id="1382194467192730611">USB device allowed by your administrator</translation>
 <translation id="1382378825779654399">You’ll get email alerts if the price drops on any site. This page will be saved to <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Not seeing your current info? Please contact your bank to update it.</translation>
 <translation id="1384725838384960382">Secure payment credential authentication sheet</translation>
 <translation id="1386623374109090026">Annotations</translation>
 <translation id="1391289752476847787">Stocks and bonds</translation>
@@ -1027,7 +1026,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3605899229568538311">5 in x 5 in</translation>
 <translation id="3608932978122581043">Feed orientation</translation>
 <translation id="3611317423880285981">Household supplies</translation>
-<translation id="3611395257124510155">Virtual card for <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Size 2</translation>
 <translation id="361438452008624280">List entry '<ph name="LANGUAGE_ID" />': unknown or unsupported language.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to run a safety check in Chrome settings</translation>
@@ -2286,7 +2284,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6890443033788248019">Allow location?</translation>
 <translation id="6890531741535756070">You chose to verify with <ph name="DEVICE_LABEL" /> on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="BEGIN_LINK" />request to have deleted<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Policy level is not supported.</translation>
-<translation id="6895143722905299846">Virtual number:</translation>
 <translation id="6895330447102777224">Your card is confirmed</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
@@ -2459,7 +2456,6 @@ Additional details:
 <translation id="7334320624316649418">&amp;Redo reorder</translation>
 <translation id="7335157162773372339">Can ask to use your camera</translation>
 <translation id="7337248890521463931">Show more lines</translation>
-<translation id="7337418456231055214">Virtual card number not filled in? Click card details to copy. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Not available on your platform.</translation>
 <translation id="733923710415886693">The server's certificate was not disclosed via Certificate Transparency.</translation>
 <translation id="7341357280245177602">Used vehicles</translation>

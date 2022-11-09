@@ -181,7 +181,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="138218114945450791">Vaaleansininen</translation>
 <translation id="1382194467192730611">Järjestelmänvalvojan sallima USB-laite</translation>
 <translation id="1382378825779654399">Saat sähköposti-ilmoituksen, jos hinta laskee jollakin sivustolla. Sivu tallennetaan tänne: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="1382912999714108023">Eivätkö tietosi ole ajan tasalla? Ota yhteyttä pankkiin ja päivitä ne.</translation>
 <translation id="1384725838384960382">Suojatun maksun kirjautumistietojen todennuspaneeli</translation>
 <translation id="1386623374109090026">Kommentit</translation>
 <translation id="1391289752476847787">Osakkeet ja joukkolainat</translation>
@@ -1028,7 +1027,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3605899229568538311">5 x 5 tuumaa</translation>
 <translation id="3608932978122581043">Syöttösuunta</translation>
 <translation id="3611317423880285981">Kodinhoitotarvikkeet</translation>
-<translation id="3611395257124510155">Virtuaalinen kortti: <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Koko 2</translation>
 <translation id="361438452008624280">Luettelokohde <ph name="LANGUAGE_ID" />: Kieli on tuntematon tai sitä ei tueta.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tee turvatarkistus Chromen asetuksissa painamalla sarkainta ja sitten Enter</translation>
@@ -2287,7 +2285,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6890443033788248019">Sallitaanko sijainti?</translation>
 <translation id="6890531741535756070">Sinulla on <ph name="DEVICE_LABEL" /> valittuna vahvistukseen sivustoilla, joilla on käytössä <ph name="PROVIDER_ORIGIN" />. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joiden <ph name="BEGIN_LINK" />poistamista voit pyytää<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Käytännön tasoa ei tueta.</translation>
-<translation id="6895143722905299846">Virtuaalinen numero:</translation>
 <translation id="6895330447102777224">Korttisi vahvistettiin.</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organisaatio (O)</translation>
@@ -2460,7 +2457,6 @@ Lisätietoja:
 <translation id="7334320624316649418">&amp;Toista uudelleenjärjestely</translation>
 <translation id="7335157162773372339">Saa pyytää kameran käyttölupaa</translation>
 <translation id="7337248890521463931">Näytä enemmän rivejä</translation>
-<translation id="7337418456231055214">Eikö virtuaalista korttinumeroa ole täytetty? Kopioi kortin tiedot klikkaamalla niitä. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Ei saatavilla käyttöympäristössäsi</translation>
 <translation id="733923710415886693">Palvelimen varmenteesta ei ole saatu Certificate Transparencyn vaatimia tietoja.</translation>
 <translation id="7341357280245177602">Käytetyt ajoneuvot</translation>

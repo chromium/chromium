@@ -352,6 +352,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2960314608273155470">Način snimanja, zadano je <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite Tab da biste se kretali pomoću tipkovnice.</translation>
 <translation id="2961963223658824723">Nešto nije u redu. Pokušajte ponovno za nekoliko sekundi.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Uključiti pristup mikrofonu?</translation>
 <translation id="296762781903199866">Nije uspjelo preuzimanje govornih datoteka za <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instaliranje aplikacija, proširenja i tema</translation>
 <translation id="2977598380246111477">Sljedeći broj</translation>
@@ -430,6 +431,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3386978599540877378">povećalo cijelog zaslona</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Dodatne postavke</translation>
+<translation id="3405101454990027959">Uključite pristup mikrofonu</translation>
 <translation id="3410336247007142655">Prikaz postavki tamne teme</translation>
 <translation id="3413817803639110246">Još nema ničega</translation>
 <translation id="3428447136709161042">Želite li prekinuti vezu s mrežom <ph name="NETWORK_NAME" />?</translation>
@@ -515,6 +517,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="385051799172605136">Natrag</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3861651314799684201">Pritisnite Enter za snimanje cijelog zaslona</translation>
+<translation id="3885531177412808398">Omogućuje pristup mikrofonu za sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
 <translation id="3886872229787704059">Otvoreno danas</translation>
 <translation id="3891340733213178823">Pritisnite Ctrl + Shift + Q dvaput da biste se odjavili.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -1374,6 +1377,7 @@ Novo instaliranje</translation>
 <translation id="8666856788528804727">Otvorite <ph name="NAME" /> da biste postavili uređaj</translation>
 <translation id="8676770494376880701">Priključen je punjač male snage</translation>
 <translation id="8683506306463609433">Aktivno je praćenje izvedbe</translation>
+<translation id="8684405646663021166">Omogućuje pristup mikrofonu za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
 <translation id="8685326675965865247">Pretražite uređaj, aplikacije, postavke i web. Za kretanje po aplikacijama koristite tipke sa strelicama.</translation>
 <translation id="8703634754197148428">Početak snimanja. Kad snimanje započne, pomoću Alt + Shift + L možete se pomaknuti do police i pronaći gumb za zaustavljanje snimanja</translation>
 <translation id="8721053961083920564">Uključivanje ili isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
