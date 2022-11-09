@@ -509,7 +509,7 @@ enum class ToolbarKind {
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [self.passKitCoordinator stop];
 
-  [self.openInCoordinator disableAll];
+  [self.openInCoordinator dismissAll];
 
   [self.printController dismissAnimated:YES];
 

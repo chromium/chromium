@@ -41,6 +41,9 @@ class Browser;
 // variables specific to the loaded document.
 - (void)disable;
 
+// Dismisses any modal presented by the controller
+- (void)dismissModalView;
+
 // Disconnects the controller from its WebState. Should be called when the
 // WebState is being torn down.
 - (void)detachFromWebState;

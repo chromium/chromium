@@ -65,6 +65,11 @@
   _openInControllersForWebStates.clear();
 }
 
+- (void)dismissAll {
+  for (const auto& element : _openInControllersForWebStates)
+    [element.second dismissModalView];
+}
+
 - (void)disconnect {
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserver.get());

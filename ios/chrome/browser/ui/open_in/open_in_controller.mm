@@ -243,7 +243,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   GURL _documentURL;
 
   // Controller for opening documents in other applications.
-  OpenInActivityViewController* activityViewController;
+  OpenInActivityViewController* _activityViewController;
 
   // Toolbar overlay to be displayed on tap.
   OpenInToolbar* _openInToolbar;
@@ -339,6 +339,10 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   _documentURL = GURL();
   _suggestedFilename = nil;
   _urlLoader.reset();
+}
+
+- (void)dismissModalView {
+  [_activityViewController dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)detachFromWebState {
@@ -530,18 +534,18 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   if (!_webState)
     return;
 
-  activityViewController =
+  _activityViewController =
       [[OpenInActivityViewController alloc] initWithURL:fileURL];
-  activityViewController.delegate = self;
+  _activityViewController.delegate = self;
 
   // UIActivityViewController is presented in a popover on iPad.
-  activityViewController.popoverPresentationController.sourceView =
+  _activityViewController.popoverPresentationController.sourceView =
       self.baseView;
-  activityViewController.popoverPresentationController.sourceRect =
+  _activityViewController.popoverPresentationController.sourceRect =
       _anchorLocation;
 
   [self removeOverlayedView];
-  [self.baseViewController presentViewController:activityViewController
+  [self.baseViewController presentViewController:_activityViewController
                                         animated:YES
                                       completion:nil];
 }

@@ -24,6 +24,9 @@ class Browser;
 // Disables all registered openInControllers.
 - (void)disableAll;
 
+// Dismisses all the activity controller window.
+- (void)dismissAll;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OPEN_IN_OPEN_IN_MEDIATOR_H_

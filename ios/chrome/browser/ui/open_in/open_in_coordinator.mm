@@ -36,4 +36,8 @@
   [self.openInMediator disableAll];
 }
 
+- (void)dismissAll {
+  [self.openInMediator dismissAll];
+}
+
 @end
