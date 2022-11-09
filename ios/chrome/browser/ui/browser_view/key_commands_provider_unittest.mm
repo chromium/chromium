@@ -10,17 +10,22 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -149,7 +154,6 @@ TEST_F(KeyCommandsProviderTest, CanPerform_AlwaysAvailableActions) {
   EXPECT_TRUE(CanPerform(@"keyCommand_reopenLastClosedTab"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showSettings"));
   EXPECT_TRUE(CanPerform(@"keyCommand_reportAnIssue"));
-  EXPECT_TRUE(CanPerform(@"keyCommand_addToReadingList"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showReadingList"));
   EXPECT_TRUE(CanPerform(@"keyCommand_goToTabGrid"));
   EXPECT_TRUE(CanPerform(@"keyCommand_clearBrowsingData"));
@@ -162,16 +166,15 @@ TEST_F(KeyCommandsProviderTest, CanPerform_TabsActions) {
   ASSERT_EQ(web_state_list_->count(), 0);
   NSArray<NSString*>* actions = @[
     @"keyCommand_openLocation",  @"keyCommand_closeTab",
-    @"keyCommand_showBookmarks", @"keyCommand_addToBookmarks",
-    @"keyCommand_reload",        @"keyCommand_back",
-    @"keyCommand_forward",       @"keyCommand_showHistory",
-    @"keyCommand_voiceSearch",   @"keyCommand_stop",
-    @"keyCommand_showHelp",      @"keyCommand_showDownloads",
-    @"keyCommand_showFirstTab",  @"keyCommand_showTab2",
-    @"keyCommand_showTab3",      @"keyCommand_showTab4",
-    @"keyCommand_showTab5",      @"keyCommand_showTab6",
-    @"keyCommand_showTab7",      @"keyCommand_showTab8",
-    @"keyCommand_showLastTab",
+    @"keyCommand_showBookmarks", @"keyCommand_reload",
+    @"keyCommand_back",          @"keyCommand_forward",
+    @"keyCommand_showHistory",   @"keyCommand_voiceSearch",
+    @"keyCommand_stop",          @"keyCommand_showHelp",
+    @"keyCommand_showDownloads", @"keyCommand_showFirstTab",
+    @"keyCommand_showTab2",      @"keyCommand_showTab3",
+    @"keyCommand_showTab4",      @"keyCommand_showTab5",
+    @"keyCommand_showTab6",      @"keyCommand_showTab7",
+    @"keyCommand_showTab8",      @"keyCommand_showLastTab",
   ];
   for (NSString* action in actions) {
     EXPECT_FALSE(CanPerform(action));
@@ -463,6 +466,60 @@ TEST_F(KeyCommandsProviderTest, CanPerform_ShowPreviousAndNextTab) {
   CloseWebState(0);
   for (NSString* action in actions) {
     EXPECT_FALSE(CanPerform(action));
+  }
+}
+
+// Checks whether KeyCommandsProvider can perform the actions that are only
+// available when there are tabs and it is a http or https page.
+TEST_F(KeyCommandsProviderTest, CanPerform_ActionsInHttpPage) {
+  // No tabs.
+  ASSERT_EQ(web_state_list_->count(), 0);
+  NSArray<NSString*>* actions =
+      @[ @"keyCommand_addToBookmarks", @"keyCommand_addToReadingList" ];
+  for (NSString* action in actions) {
+    EXPECT_FALSE(CanPerform(action));
+  }
+
+  // Open a New Tab Page (NTP) tab which is not a http or https page.
+  std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =
+      std::make_unique<web::FakeNavigationManager>();
+
+  std::unique_ptr<web::NavigationItem> pending_item =
+      web::NavigationItem::Create();
+  pending_item->SetURL(GURL(kChromeUIAboutNewTabURL));
+
+  fake_navigation_manager->SetPendingItem(pending_item.get());
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      std::make_unique<web::FakeWebState>();
+
+  GURL url(kChromeUINewTabURL);
+  fake_web_state->SetVisibleURL(url);
+  fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
+  fake_web_state->SetBrowserState(browser_state_.get());
+
+  id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
+
+  NewTabPageTabHelper::CreateForWebState(fake_web_state.get());
+  NewTabPageTabHelper* ntp_helper =
+      NewTabPageTabHelper::FromWebState(fake_web_state.get());
+  ntp_helper->SetDelegate(delegate);
+
+  // Ensure that the actions are not available when the tab is a NTP.
+  ASSERT_TRUE(ntp_helper->IsActive());
+  ASSERT_FALSE(url.SchemeIsHTTPOrHTTPS());
+  for (NSString* action in actions) {
+    EXPECT_FALSE(CanPerform(action));
+  }
+
+  // Open a second tab which is a http one.
+  web::FakeWebState* second_tab_web_state = InsertNewWebState(1);
+  GURL http_url("http://foo/");
+  second_tab_web_state->SetVisibleURL(http_url);
+
+  // Ensure that the actions are available.
+  ASSERT_TRUE(http_url.SchemeIsHTTPOrHTTPS());
+  for (NSString* action in actions) {
+    EXPECT_TRUE(CanPerform(action));
   }
 }
 

@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
+#import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -180,7 +181,6 @@ using base::UserMetricsAction;
   if (sel_isEqual(action, @selector(keyCommand_openLocation)) ||
       sel_isEqual(action, @selector(keyCommand_closeTab)) ||
       sel_isEqual(action, @selector(keyCommand_showBookmarks)) ||
-      sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
       sel_isEqual(action, @selector(keyCommand_reload)) ||
       sel_isEqual(action, @selector(keyCommand_showHistory)) ||
       sel_isEqual(action, @selector(keyCommand_voiceSearch)) ||
@@ -212,6 +212,10 @@ using base::UserMetricsAction;
     return webStateList &&
            webStateList->active_index() != WebStateList::kInvalidIndex &&
            self.tabsCount > 1;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
+      sel_isEqual(action, @selector(keyCommand_addToReadingList))) {
+    return [self isHTTPOrHTTPSPage];
   }
   return [super canPerformAction:action withSender:sender];
 }
@@ -542,6 +546,17 @@ using base::UserMetricsAction;
   if (webStateList->ContainsIndex(index)) {
     webStateList->ActivateWebStateAt(static_cast<int>(index));
   }
+}
+
+- (BOOL)isHTTPOrHTTPSPage {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!currentWebState) {
+    return NO;
+  }
+
+  const GURL& url = currentWebState->GetVisibleURL();
+  return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
 }
 
 @end
