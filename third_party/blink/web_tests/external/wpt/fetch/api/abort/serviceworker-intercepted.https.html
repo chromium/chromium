@@ -114,12 +114,30 @@
     const controller = new w.AbortController();
     const signal = controller.signal;
 
-    const fetchPromise = await w.fetch('data.json', { signal });
+    const fetchPromise = w.fetch('data.json', { signal });
 
     controller.abort(error1);
 
     await promise_rejects_exactly(t, error1, fetchPromise);
   }, "fetch() rejects with abort reason");
+
+
+  promise_test(async t => {
+    const scope = SCOPE + "?q=aborted-with-abort-reason-in-body";
+    await setupRegistration(t, scope, '../resources/sw-intercept.js');
+    const iframe = await with_iframe(scope);
+    add_completion_callback(_ => iframe.remove());
+    const w = iframe.contentWindow;
+
+    const controller = new w.AbortController();
+    const signal = controller.signal;
+
+    const fetchResponse = await w.fetch('data.json', { signal });
+    const bodyPromise  = fetchResponse.body.getReader().read();
+    controller.abort(error1);
+
+    await promise_rejects_exactly(t, error1, bodyPromise);
+    }, "fetch() response body has abort reason");
 
   promise_test(async t => {
     const scope = SCOPE + "?q=service-worker-observes-abort-reason";
