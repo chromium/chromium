@@ -12,6 +12,7 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
       'getOAuthToken',
       'onParentAccessCallbackReceived',
       'getParentAccessParams',
+      'getParentAccessURL',
       'onParentAccessDone',
     ]);
 
@@ -35,6 +36,12 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
   getParentAccessParams() {
     this.methodCalled('getParentAccessParams');
     return Promise.resolve({params: this.params_});
+  }
+
+  /** @override */
+  getParentAccessURL() {
+    this.methodCalled('getParentAccessURL');
+    return Promise.resolve({url: 'https://www.google.com'});
   }
 
   /** @override */

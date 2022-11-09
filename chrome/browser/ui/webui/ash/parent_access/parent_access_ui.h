@@ -14,7 +14,6 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -48,7 +47,6 @@ class ParentAccessUI : public ui::MojoWebDialogUI {
       mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
           receiver);
 
-  const GURL GetWebContentURLForTesting();
   parent_access_ui::mojom::ParentAccessUIHandler* GetHandlerForTest();
 
  private:
@@ -56,10 +54,6 @@ class ParentAccessUI : public ui::MojoWebDialogUI {
 
   std::unique_ptr<parent_access_ui::mojom::ParentAccessUIHandler>
       mojo_api_handler_;
-
-  // The URL for the remote web content embedded in the WebUI's webview (not to
-  // be confused with the chrome:// URL for the WebUI itself).
-  GURL web_content_url_;
 
   static signin::IdentityManager* test_identity_manager_;
 

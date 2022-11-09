@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl.h"
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -72,6 +73,38 @@ class ParentAccessUIHandlerImplTest : public testing::Test {
   std::unique_ptr<ParentAccessUIHandlerImpl> parent_access_ui_handler_;
   FakeParentAccessUIHandlerDelegate delegate_;
 };
+
+// Verifies that the webview URL is properly constructed
+TEST_F(ParentAccessUIHandlerImplTest, GetParentAccessURL) {
+  base::RunLoop run_loop;
+  parent_access_ui_handler_->GetParentAccessURL(
+      base::BindLambdaForTesting([&](const std::string& url) -> void {
+        GURL webview_url(url);
+        ASSERT_TRUE(webview_url.has_query());
+
+        // Split the query string into a map of keys to values.
+        std::string query_str = webview_url.query();
+        url::Component query(0, query_str.length());
+        url::Component key;
+        url::Component value;
+        std::map<std::string, std::string> query_parts;
+        while (url::ExtractQueryKeyValue(query_str.c_str(), &query, &key,
+                                         &value)) {
+          query_parts[query_str.substr(key.begin, key.len)] =
+              query_str.substr(value.begin, value.len);
+        }
+
+        // Validate the query parameters.
+        // TODO(b/200853161): Validate caller id from params.
+        EXPECT_EQ(query_parts.at("callerid"), "39454505");
+        EXPECT_EQ(query_parts.at("cros-origin"), "chrome://parent-access");
+        EXPECT_EQ(query_parts.at("platform_version"),
+                  base::SysInfo::OperatingSystemVersion());
+        EXPECT_EQ(query_parts.at("hl"), "en");
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
 
 // Verify that the access token is successfully fetched.
 TEST_F(ParentAccessUIHandlerImplTest, GetOAuthTokenSuccess) {

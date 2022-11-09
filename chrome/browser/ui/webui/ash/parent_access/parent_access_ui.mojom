@@ -84,6 +84,9 @@ interface ParentAccessUIHandler {
   // Returns the FlowTypeParams pertinent to the current parent access flow.
   GetParentAccessParams() => (ParentAccessParams params);
 
+  // Returns the URL for the parent access widget endpoint.
+  GetParentAccessURL() => (string url);
+
   // When called, indicates that that the request has completed with the
   // specified result, which will cause the Parent Access UI to close.
   OnParentAccessDone(ParentAccessResult result) => ();

@@ -25,11 +25,6 @@ parent_access_ui_tests.TestNames = {
 suite(parent_access_ui_tests.suiteName, function() {
   let parentAccessUI;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues(
-        {webviewUrl: 'chrome://about', eventOriginFilter: 'chrome://about'});
-  });
-
   setup(function() {
     PolymerTest.clearBody();
     parentAccessUI = document.createElement('parent-access-ui');
@@ -59,16 +54,17 @@ suite(parent_access_ui_tests.suiteName, function() {
     assertFalse(parentAccessUI.isAllowedRequest('http://www.example.com'));
 
     // Exception to HTTPS for localhost for local server development.
-    assertTrue(
-        parentAccessUI.isAllowedRequest(loadTimeData.getString('webviewUrl')));
+    assertTrue(parentAccessUI.isAllowedRequest('http://localhost:9879'));
   });
 
   test(
       parent_access_ui_tests.TestNames.TestShouldReceiveAuthHeader,
       async function() {
         // Auth header should be sent to webview URL.
-        assertTrue(parentAccessUI.shouldReceiveAuthHeader(
-            loadTimeData.getString('webviewUrl')));
+        const webviewUrl =
+            (await parentAccessUI.parentAccessUIHandler.getParentAccessURL())
+                .url;
+        assertTrue(parentAccessUI.shouldReceiveAuthHeader(webviewUrl));
 
         // Nothing else should receive the auth header.
         assertFalse(

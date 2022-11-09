@@ -8,10 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
@@ -21,48 +18,12 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/google/core/common/google_util.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "url/gurl.h"
 
 namespace ash {
-
-namespace {
-
-const char kParentAccessDefaultURL[] =
-    "https://families.google.com/parentaccess";
-const char kParentAccessSwitch[] = "parent-access-url";
-
-// Returns the URL of the Parent Access flow from the command-line switch,
-// or the default value if it's not defined.
-GURL GetParentAccessURL(std::string caller_id,
-                        std::string platform_version,
-                        std::string language_code) {
-  std::string url;
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kParentAccessSwitch)) {
-    url = command_line->GetSwitchValueASCII(kParentAccessSwitch);
-  } else {
-    url = kParentAccessDefaultURL;
-    DCHECK(GURL(url).DomainIs("google.com"));
-  }
-  const GURL base_url(url);
-  GURL::Replacements replacements;
-  std::string query_string = base::StringPrintf(
-      "callerid=%s&hl=%s&platform_version=%s&cros-origin=chrome://"
-      "parent-access",
-      caller_id.c_str(), language_code.c_str(), platform_version.c_str());
-  replacements.SetQueryStr(query_string);
-  const GURL result = base_url.ReplaceComponents(replacements);
-  DCHECK(result.is_valid()) << "Invalid URL \"" << url << "\" for switch \""
-                            << kParentAccessSwitch << "\"";
-  return result;
-}
-
-}  // namespace
 
 // static
 signin::IdentityManager* ParentAccessUI::test_identity_manager_ = nullptr;
@@ -94,10 +55,6 @@ void ParentAccessUI::BindInterface(
       std::move(receiver), identity_manager, ParentAccessDialog::GetInstance());
 }
 
-const GURL ParentAccessUI::GetWebContentURLForTesting() {
-  return web_content_url_;
-}
-
 parent_access_ui::mojom::ParentAccessUIHandler*
 ParentAccessUI::GetHandlerForTest() {
   return mojo_api_handler_.get();
@@ -107,11 +64,6 @@ void ParentAccessUI::SetUpResources() {
   Profile* profile = Profile::FromWebUI(web_ui());
   std::unique_ptr<content::WebUIDataSource> source(
       content::WebUIDataSource::Create(chrome::kChromeUIParentAccessHost));
-
-  web_content_url_ = GetParentAccessURL(
-      "39454505", /* TODO(b/200853161): Set caller id from params. */
-      base::SysInfo::OperatingSystemVersion(),
-      google_util::GetGoogleLocale(g_browser_process->GetApplicationLocale()));
 
   // The Polymer JS bundle requires this at the moment because it sets innerHTML
   // on an element, which violates the Trusted Types CSP.
@@ -135,10 +87,6 @@ void ParentAccessUI::SetUpResources() {
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
-  source->AddString("webviewUrl", web_content_url_.spec());
-  // Set the filter to accept postMessages from the webviewURL's origin only.
-  source->AddString("eventOriginFilter",
-                    web_content_url_.GetWithEmptyPath().spec());
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"pageTitle", IDS_PARENT_ACCESS_PAGE_TITLE},
