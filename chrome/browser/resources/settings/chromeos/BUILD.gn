@@ -322,7 +322,6 @@ generate_grd("build_grd") {
     input_files += [ "../../nearby_share/shared/nearby_shared_icons.html" ]
     resource_path_rewrites += [
       "lazy_load.rollup.js|chromeos/lazy_load.js",
-      "lazy_load.vulcanized.html|chromeos/lazy_load.html",
       "os_settings.rollup.js|chromeos/os_settings.js",
       "shared.rollup.js|chromeos/shared.rollup.js",
       "../../nearby_share/shared/nearby_shared_icons.html|shared/nearby_shared_icons.html",

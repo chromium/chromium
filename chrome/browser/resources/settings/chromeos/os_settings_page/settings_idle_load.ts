@@ -26,13 +26,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   }
 
   static get properties() {
-    return {
-      /**
-       * If specified, it will be loaded via an HTML import before stamping the
-       * template.
-       */
-      url: String,
-    };
+    return {};
   }
 
   private child_: Element|null;

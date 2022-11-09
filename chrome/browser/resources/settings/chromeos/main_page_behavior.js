@@ -159,10 +159,8 @@ export const MainPageBehavior = {
     this.classList.add('showing-subpage');
     this.fire('subpage-expand');
 
-    // Explicitly load the lazy_load.html module, since all subpages reside in
+    // Explicitly load the lazy_load module, since all subpages reside in
     // the lazy loaded module.
-
-    // Polymer 3 codepath, do not delete next line comment.
     ensureLazyLoaded();
 
     this.ensureSectionForRoute_(route).then(section => {
