@@ -178,7 +178,8 @@ void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(
     return;
   }
 
-  bool success = RecordAuthenticationResult(IsSuccessfulResult(ui_result));
+  bool success = IsSuccessfulResult(ui_result);
+  RecordAuthenticationTimeIfSuccessful(success);
 
   LogAuthResult(requester_.value(), MapUIResultToFinal(ui_result));
   std::move(callback_).Run(success);

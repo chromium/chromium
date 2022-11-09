@@ -69,9 +69,8 @@ void BiometricAuthenticatorWin::AuthenticateWithMessage(
 
   authenticator_->AuthenticateUser(
       message,
-      base::BindOnce(&BiometricAuthenticatorWin::RecordAuthenticationResult,
-                     base::UnsafeDanglingUntriaged(this))
-          .Then(std::move(callback)));
+      base::BindOnce(&BiometricAuthenticatorWin::OnAuthenticationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BiometricAuthenticatorWin::Cancel(
@@ -82,4 +81,11 @@ void BiometricAuthenticatorWin::Cancel(
 
 void BiometricAuthenticatorWin::CacheIfBiometricsAvailable() {
   authenticator_->CheckIfBiometricsAvailable(base::BindOnce(&SaveAvailability));
+}
+
+void BiometricAuthenticatorWin::OnAuthenticationCompleted(
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
+  RecordAuthenticationTimeIfSuccessful(success);
+  std::move(callback).Run(success);
 }

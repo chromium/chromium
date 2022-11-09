@@ -26,8 +26,8 @@ class ChromeBiometricAuthenticatorCommon
   // Checks whether user needs to reauthenticate.
   bool NeedsToAuthenticate() const;
 
-  // Records authentication time if authentication was successful.
-  bool RecordAuthenticationResult(bool success);
+  // Records the authentication time if the authentication was successful.
+  void RecordAuthenticationTimeIfSuccessful(bool success);
 
  private:
   // Time of last successful re-auth. nullopt if there hasn't been an auth yet.

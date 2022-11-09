@@ -23,7 +23,8 @@ class FakeChromeBiometricAuthenticatorCommon
     : public ChromeBiometricAuthenticatorCommon {
  public:
   using ChromeBiometricAuthenticatorCommon::NeedsToAuthenticate;
-  using ChromeBiometricAuthenticatorCommon::RecordAuthenticationResult;
+  using ChromeBiometricAuthenticatorCommon::
+      RecordAuthenticationTimeIfSuccessful;
 
   FakeChromeBiometricAuthenticatorCommon();
 
@@ -108,7 +109,8 @@ TEST_F(ChromeBiometricAuthenticatorCommonTest, IsObjectReleased) {
   base::WeakPtr<ChromeBiometricAuthenticatorCommon> factory_pointer =
       authenticator_pointer()->GetWeakPtr();
 
-  authenticator_pointer()->RecordAuthenticationResult(/*success=*/true);
+  authenticator_pointer()->RecordAuthenticationTimeIfSuccessful(
+      /*success=*/true);
 
   task_environment().FastForwardBy(
       PasswordAccessAuthenticator::kAuthValidityPeriod / 2);
@@ -128,7 +130,8 @@ TEST_F(ChromeBiometricAuthenticatorCommonTest, IsObjectReleased) {
 // `kAuthValidityPeriod` since previous authentication. And if needs to
 // authenticate after that time.
 TEST_F(ChromeBiometricAuthenticatorCommonTest, NeedAuthentication) {
-  authenticator_pointer()->RecordAuthenticationResult(/*success=*/true);
+  authenticator_pointer()->RecordAuthenticationTimeIfSuccessful(
+      /*success=*/true);
 
   task_environment().FastForwardBy(
       PasswordAccessAuthenticator::kAuthValidityPeriod / 2);

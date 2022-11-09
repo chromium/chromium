@@ -58,7 +58,15 @@ class BiometricAuthenticatorWin : public ChromeBiometricAuthenticatorCommon {
       std::unique_ptr<AuthenticatorWinInterface> authenticator);
   ~BiometricAuthenticatorWin() override;
 
+  // Records authentication status and executes |callback| with |success|
+  // parameter.
+  void OnAuthenticationCompleted(base::OnceCallback<void(bool)> callback,
+                                 bool success);
+
   std::unique_ptr<AuthenticatorWinInterface> authenticator_;
+
+  // Factory for weak pointers to this class.
+  base::WeakPtrFactory<BiometricAuthenticatorWin> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_WIN_BIOMETRIC_AUTHENTICATOR_WIN_H_

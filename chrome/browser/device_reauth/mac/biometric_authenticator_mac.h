@@ -58,8 +58,8 @@ class BiometricAuthenticatorMac : public ChromeBiometricAuthenticatorCommon {
   BiometricAuthenticatorMac();
   ~BiometricAuthenticatorMac() override;
 
-  // Called when the authentication compeletes with the result.
-  void OnAuthenticationCompleted(bool result);
+  // Called when the authentication completes with the result |success|.
+  void OnAuthenticationCompleted(bool success);
 
   // Callback to be executed after the authentication completes.
   AuthenticateCallback callback_;
