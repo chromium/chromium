@@ -445254,6 +445254,13 @@
       {}
      ]
     ],
+    "ElementInternals-accessibility.html": [
+     "b823a9ddea844749274c8913fd326051edae5cd0",
+     [
+      null,
+      {}
+     ]
+    ],
     "HTMLElement-attachInternals.html": [
      "43ea55a67e08ce1c3086775f0df89f464e505e03",
      [
@@ -445364,13 +445371,6 @@
     "form-associated": {
      "ElementInternals-NotSupportedError.html": [
       "51be7183c1e0a8456ade46de3ecea4166f8988d1",
-      [
-       null,
-       {}
-      ]
-     ],
-     "ElementInternals-accessibility.html": [
-      "b823a9ddea844749274c8913fd326051edae5cd0",
       [
        null,
        {}
