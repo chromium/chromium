@@ -309,7 +309,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
 
   void PopulateTraceValue(TracedValue&, const ImageRecord& first_image_paint);
   void RegisterNotifyPresentationTime();
-  void ReportCandidateToTrace(ImageRecord&);
+  void ReportCandidateToTrace(ImageRecord&, base::TimeTicks);
   void ReportNoCandidateToTrace();
   // Computes the size of an image for the purpose of LargestContentfulPaint,
   // downsizing the size of images with low intrinsic size. Images that occupy
