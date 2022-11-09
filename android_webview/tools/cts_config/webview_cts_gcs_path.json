@@ -277,6 +277,11 @@
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHit",
             "arch": "x86",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.text.cts.EmojiTest#testEmojiGlyph",
+            "arch": "x86",
+            "_bug_id": "crbug.com/1379362"
           }
         ]
       },
