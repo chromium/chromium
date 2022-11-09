@@ -7,6 +7,7 @@
 
 #include <tuple>
 
+#include "base/functional/callback_forward.h"
 #include "base/test/repeating_test_future.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -14,6 +15,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
+
+using RecordFilterCb =
+    base::RepeatingCallback<bool(const ::reporting::Record& record)>;
 
 // Test helper class that observe |FakeMissiveClient| events.
 class MissiveClientTestObserver
@@ -24,6 +28,10 @@ class MissiveClientTestObserver
   // captured.
   explicit MissiveClientTestObserver(
       absl::optional<::reporting::Destination> destination = absl::nullopt);
+
+  // The observer will capture only enqueued records that satisfy the condition
+  // specified by |observed_record_cb|.
+  explicit MissiveClientTestObserver(RecordFilterCb record_filter_cb);
 
   MissiveClientTestObserver(const MissiveClientTestObserver&) = delete;
   MissiveClientTestObserver operator=(const MissiveClientTestObserver&) =
@@ -50,7 +58,7 @@ class MissiveClientTestObserver
   base::test::RepeatingTestFuture<::reporting::Priority, ::reporting::Record>
       enqueued_records_;
 
-  const absl::optional<::reporting::Destination> destination_;
+  RecordFilterCb record_filter_cb_;
 };
 
 }  // namespace chromeos

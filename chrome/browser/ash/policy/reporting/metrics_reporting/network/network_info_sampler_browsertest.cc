@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -170,25 +171,10 @@ class NetworkInfoSamplerBrowserTest
     return record_data.info_data().has_networks_info();
   }
 
-  // Gets next enqueued network interface record. This is useful in excluding
-  // other types of records from being examined.
-  static std::tuple<Priority, Record> GetNextEnqueuedNetworkInterfaceRecord(
-      MissiveClientTestObserver* observer) {
-    Priority priority;
-    Record record;
-    do {
-      // If no record is enqueued, this line would time out when the loop
-      // is entered for the first time.
-      std::tie(priority, record) = observer->GetNextEnqueuedRecord();
-    } while (!IsRecordNetworkInterface(record));
-
-    return std::make_tuple(priority, record);
-  }
-
   template <typename DeviceSequence>
   static void AssertNetworkInterfaces(const DeviceSequence& expected_devices,
                                       MissiveClientTestObserver* observer) {
-    auto [priority, record] = GetNextEnqueuedNetworkInterfaceRecord(observer);
+    auto [priority, record] = observer->GetNextEnqueuedRecord();
     EXPECT_THAT(priority, Eq(Priority::SLOW_BATCH));
     EXPECT_THAT(record.destination(), Eq(Destination::INFO_METRIC));
     MetricData record_data;
@@ -250,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
       kEthernetPath, shill::kTypeEthernet, "ethernet", kEthernetMac)};
   AddDevices(devices);
   EnableReportingNetworkInterfaces();
-  MissiveClientTestObserver observer(Destination::INFO_METRIC);
+  MissiveClientTestObserver observer(
+      base::BindRepeating(&IsRecordNetworkInterface));
   // Start initialization after the observer is initialized.
   metric_test_initialization_helper_.SetUpDelayedInitialization();
 
@@ -268,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
                     kImei, kIccid, kMdn)};
   AddDevices(devices);
   EnableReportingNetworkInterfaces();
-  MissiveClientTestObserver observer(Destination::INFO_METRIC);
+  MissiveClientTestObserver observer(
+      base::BindRepeating(&IsRecordNetworkInterface));
   // Start initialization after the observer is initialized.
   metric_test_initialization_helper_.SetUpDelayedInitialization();
 
