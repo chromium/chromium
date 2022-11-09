@@ -644,7 +644,15 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
     }
   }
 
+  // TODO(b/230891887): use uint64_t when v4l2_timeval_to_ns() function is used.
+  constexpr uint32_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
+
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
+    if (!ref_frames[i]) {
+      v4l2_frame_params.reference_frame_ts[i] = kInvalidSurface;
+      continue;
+    }
+
     const auto* v4l2_ref_pic =
         static_cast<const V4L2AV1Picture*>(ref_frames[i].get());
 
@@ -822,7 +830,7 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
             << v4l2_pic->dec_surface()->ToString();
   surface_handler_->DecodeSurface(v4l2_pic->dec_surface());
 
-  return DecodeStatus::kFail;
+  return DecodeStatus::kOk;
 }
 
 bool V4L2VideoDecoderDelegateAV1::OutputPicture(const AV1Picture& pic) {
