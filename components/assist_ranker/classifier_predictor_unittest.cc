@@ -106,7 +106,7 @@ TEST_F(ClassifierPredictorTest, NoInferenceModuleForModel) {
   features[kFeatureName0].set_bool_value(true);
   std::vector<float> response;
   EXPECT_FALSE(predictor->Predict(ranker_example, &response));
-  EXPECT_FALSE(predictor->Predict({0, 0}, &response));
+  EXPECT_FALSE(predictor->Predict({{0, 0}}, &response));
 }
 
 TEST_F(ClassifierPredictorTest, PredictFeatureVector) {
@@ -118,18 +118,18 @@ TEST_F(ClassifierPredictorTest, PredictFeatureVector) {
 
   std::vector<float> response;
   // True responses.
-  EXPECT_TRUE(predictor->Predict({0, 1}, &response));
+  EXPECT_TRUE(predictor->Predict({{0.0, 1}}, &response));
   EXPECT_EQ(response.size(), 1u);
   EXPECT_THAT(response[0], FloatEq(2.8271765));
-  EXPECT_TRUE(predictor->Predict({1, 0}, &response));
+  EXPECT_TRUE(predictor->Predict({{1, 0}}, &response));
   EXPECT_EQ(response.size(), 1u);
   EXPECT_THAT(response[0], FloatEq(2.6790769));
 
   // False responses.
-  EXPECT_TRUE(predictor->Predict({0, 0}, &response));
+  EXPECT_TRUE(predictor->Predict({{0, 0}}, &response));
   EXPECT_EQ(response.size(), 1u);
   EXPECT_THAT(response[0], FloatEq(-2.7154054));
-  EXPECT_TRUE(predictor->Predict({1, 1}, &response));
+  EXPECT_TRUE(predictor->Predict({{1, 1}}, &response));
   EXPECT_EQ(response.size(), 1u);
   EXPECT_THAT(response[0], FloatEq(-3.1652793));
 }
