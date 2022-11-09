@@ -1023,6 +1023,10 @@ BASE_FEATURE(kGesturePropertiesDBusService,
              "GesturePropertiesDBusService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the ability to record the screen into an animated GIF image from the
+// native screen capture tool.
+BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables editing with handwriting gestures within the virtual keyboard.
 BASE_FEATURE(kHandwritingGestureEditing,
              "HandwritingGestureEditing",
@@ -2561,6 +2565,10 @@ bool IsGaiaReauthEndpointEnabled() {
 
 bool IsGalleryAppPdfEditNotificationEnabled() {
   return base::FeatureList::IsEnabled(kGalleryAppPdfEditNotification);
+}
+
+bool IsGifRecordingEnabled() {
+  return base::FeatureList::IsEnabled(kGifRecording);
 }
 
 bool AreGlanceablesEnabled() {
