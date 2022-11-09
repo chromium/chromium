@@ -69,7 +69,7 @@ class MetadataTable {
                            const std::string& component_name) const;
 
   // Returns the index of an installed item with the given |hashed_user_id| and
-  // |component_name|. Returns `installed_items_.GetListDeprecated().size()` if
+  // |component_name|. Returns `installed_items_.size()` if
   // no such item exists.
   size_t GetInstalledItemIndex(const std::string& hashed_user_id,
                                const std::string& component_name) const;
