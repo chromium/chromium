@@ -122,22 +122,8 @@ public class ProxyChangeListenerTest {
                 mDelegate = Mockito.mock(ProxyChangeListener.Delegate.class));
         mListener.start(0);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Mockito.verify(mAppContext)
-                    .registerReceiver(Mockito.anyObject(),
-                            Mockito.argThat(
-                                    (IntentFilter filter)
-                                            -> filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
-                            ArgumentMatchers.isNull(), ArgumentMatchers.isNull(),
-                            ArgumentMatchers.eq(ContextUtils.RECEIVER_NOT_EXPORTED));
-        } else {
-            Mockito.verify(mAppContext)
-                    .registerReceiver(Mockito.anyObject(),
-                            Mockito.argThat(
-                                    (IntentFilter filter)
-                                            -> filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
-                            ArgumentMatchers.isNull(), ArgumentMatchers.isNull());
-        }
+        // These are looking for a call to register*NonExported*BroadcastReceiver to register a
+        // dummy ProxyReceiver, which matches no intents. (If registered, it is registered first.)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Mockito.verify(mAppContext)
@@ -155,6 +141,23 @@ public class ProxyChangeListenerTest {
                                                 -> !filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
                                 ArgumentMatchers.isNull(), ArgumentMatchers.isNull());
             }
+        }
+        // These are looking for the main call to register*Protected*BroadcastReceiver.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Mockito.verify(mAppContext)
+                    .registerReceiver(Mockito.anyObject(),
+                            Mockito.argThat(
+                                    (IntentFilter filter)
+                                            -> filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
+                            ArgumentMatchers.isNull(), ArgumentMatchers.isNull(),
+                            ArgumentMatchers.eq(0));
+        } else {
+            Mockito.verify(mAppContext)
+                    .registerReceiver(Mockito.anyObject(),
+                            Mockito.argThat(
+                                    (IntentFilter filter)
+                                            -> filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
+                            ArgumentMatchers.isNull(), ArgumentMatchers.isNull());
         }
     }
 
