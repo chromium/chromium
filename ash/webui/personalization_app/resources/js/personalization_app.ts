@@ -122,9 +122,11 @@ if (link) {
 document.title = loadTimeData.getString('personalizationTitle');
 
 if (loadTimeData.getBoolean('isJellyEnabled')) {
-  // After the Jelly experiment is launched, replace `cros_styles.css` with
-  // `theme/colors.css` directly in `index.html`.
-  document.querySelector('link[href*=\'cros_styles.css\']')
-      ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
+  // After the Jelly experiment is launched, add the link directly to
+  // `index.html`.
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'chrome://theme/colors.css?sets=legacy,sys';
+  document.head.appendChild(link);
   startColorChangeUpdater();
 }
