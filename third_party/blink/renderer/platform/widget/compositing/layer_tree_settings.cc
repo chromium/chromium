@@ -48,6 +48,19 @@ bool IsSmallScreen(const gfx::Size& size) {
 }
 #endif
 
+void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
+  // Default settings that may be overridden below for specific platforms.
+  settings.scrollbar_fade_delay = base::Milliseconds(300);
+  settings.scrollbar_fade_duration = base::Milliseconds(300);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (ui::IsOverlayScrollbarEnabled()) {
+    settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
+    settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace
 
 // static
@@ -390,8 +403,8 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   // emulator. Aura Overlay Scrollbar will override below.
   settings.scrollbar_animator = cc::LayerTreeSettings::ANDROID_OVERLAY;
   settings.solid_color_scrollbar_color = {0.5f, 0.5f, 0.5f, 0.5f};
-  settings.scrollbar_fade_delay = base::Milliseconds(300);
-  settings.scrollbar_fade_duration = base::Milliseconds(300);
+
+  InitializeScrollbarFadeAndDelay(settings);
 
   if (cmd.HasSwitch(cc::switches::kCCScrollAnimationDurationForTesting)) {
     const int kMinScrollAnimationDuration = 0;
@@ -449,8 +462,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 
   if (ui::IsOverlayScrollbarEnabled()) {
     settings.scrollbar_animator = cc::LayerTreeSettings::AURA_OVERLAY;
-    settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
-    settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
     settings.scrollbar_thinning_duration =
         ui::kOverlayScrollbarThinningDuration;
     settings.scrollbar_flash_after_any_scroll_update = true;
