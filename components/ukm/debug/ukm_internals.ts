@@ -8,7 +8,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {$, createElementWithClassName} from 'chrome://resources/js/util.js';
 
 interface Metric {

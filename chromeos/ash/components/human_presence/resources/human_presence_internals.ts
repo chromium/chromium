@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 const POLL_INTERVAL_MS = 500;  // Matches hpsd polling rate.
@@ -138,11 +138,11 @@ function onNotifyChanged(value: IncomingHpsResult) {
 }
 
 function initialize() {
-  addWebUIListener('connected', onConnected);
-  addWebUIListener('sense_changed', onSenseChanged);
-  addWebUIListener('notify_changed', onNotifyChanged);
-  addWebUIListener('enable_error', onEnableError);
-  addWebUIListener('manifest', onManifest);
+  addWebUiListener('connected', onConnected);
+  addWebUiListener('sense_changed', onSenseChanged);
+  addWebUiListener('notify_changed', onNotifyChanged);
+  addWebUiListener('enable_error', onEnableError);
+  addWebUiListener('manifest', onManifest);
   $('enable-sense').onclick = enableSense;
   $('disable-sense').onclick = disableSense;
   $('enable-notify').onclick = enableNotify;

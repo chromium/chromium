@@ -5,7 +5,7 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
 
 import {requestDataAndRegisterForUpdates, requestStart, requestStopClearData, requestStopKeepData, setIncludeSpecifics, triggerRefresh} from './chrome_sync.js';
 import {ProtocolEvent} from './traffic_log.js';
@@ -28,8 +28,8 @@ function getAboutInfoForTest() {
   return aboutInfo;
 }
 
-let aboutInfoListener: WebUIListener|null = null;
-let entityCountsUpdatedListener: WebUIListener|null = null;
+let aboutInfoListener: WebUiListener|null = null;
+let entityCountsUpdatedListener: WebUiListener|null = null;
 
 function highlightIfChanged(node: HTMLElement, oldVal: number, newVal: number) {
   const oldStr = oldVal.toString();
@@ -138,7 +138,7 @@ function initProtocolEventLog() {
     setIncludeSpecifics(includeSpecificsCheckbox.checked);
   });
 
-  addWebUIListener('onProtocolEvent', onReceivedProtocolEvent);
+  addWebUiListener('onProtocolEvent', onReceivedProtocolEvent);
 
   // Make the prototype jscontent element disappear.
   const container =
@@ -215,12 +215,12 @@ function initStatusDumpButton() {
 
     // Remove listeners to prevent sync events from overwriting imported data.
     if (aboutInfoListener) {
-      removeWebUIListener(aboutInfoListener);
+      removeWebUiListener(aboutInfoListener);
       aboutInfoListener = null;
     }
 
     if (entityCountsUpdatedListener) {
-      removeWebUIListener(entityCountsUpdatedListener);
+      removeWebUiListener(entityCountsUpdatedListener);
       entityCountsUpdatedListener = null;
     }
 
@@ -258,10 +258,10 @@ function onLoad() {
   initStatusDumpButton();
   initProtocolEventLog();
 
-  aboutInfoListener = addWebUIListener('onAboutInfoUpdated', refreshAboutInfo);
+  aboutInfoListener = addWebUiListener('onAboutInfoUpdated', refreshAboutInfo);
 
   entityCountsUpdatedListener =
-      addWebUIListener('onEntityCountsUpdated', onEntityCountsUpdatedEvent);
+      addWebUiListener('onEntityCountsUpdated', onEntityCountsUpdatedEvent);
 
   const requestStartEl = document.querySelector<HTMLElement>('#request-start');
   assert(requestStartEl);

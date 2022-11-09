@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 
 interface LogEntry {
   submodule: string;
@@ -27,7 +27,7 @@ class Log extends EventTarget {
   constructor() {
     super();
 
-    addWebUIListener(this.protocolEventName_, (response: object) => {
+    addWebUiListener(this.protocolEventName_, (response: object) => {
       this.log_(response);
     });
   }

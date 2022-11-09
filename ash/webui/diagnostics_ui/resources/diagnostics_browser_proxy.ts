@@ -8,7 +8,7 @@
  * exist in chrome/.
  */
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 import {NavigationView} from './diagnostics_types.js';
 import {getNavigationViewForPageId} from './diagnostics_utils.js';

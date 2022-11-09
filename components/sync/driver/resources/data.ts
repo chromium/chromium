@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
 
 import {aboutInfo} from './about.js';
 import {getAllNodes, requestIncludeSpecificsInitialState, requestListOfTypes, SyncNode, SyncNodeMap} from './chrome_sync.js';
@@ -193,14 +193,14 @@ function createTypesCheckboxes(types: string[]) {
   });
 }
 
-let listOfTypesListener: WebUIListener|null = null;
+let listOfTypesListener: WebUiListener|null = null;
 
 function onReceivedListOfTypes(response: {types: string[]}) {
   const types = response.types;
   types.sort();
   createTypesCheckboxes(types);
   assert(listOfTypesListener);
-  removeWebUIListener(listOfTypesListener);
+  removeWebUiListener(listOfTypesListener);
 }
 
 function onReceivedIncludeSpecificsInitialState(
@@ -213,10 +213,10 @@ function onReceivedIncludeSpecificsInitialState(
 
 document.addEventListener('DOMContentLoaded', function() {
   listOfTypesListener =
-      addWebUIListener('onReceivedListOfTypes', onReceivedListOfTypes);
+      addWebUiListener('onReceivedListOfTypes', onReceivedListOfTypes);
   requestListOfTypes();
 
-  addWebUIListener(
+  addWebUiListener(
       'onReceivedIncludeSpecificsInitialState',
       onReceivedIncludeSpecificsInitialState);
   requestIncludeSpecificsInitialState();

@@ -5,7 +5,7 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 
 /**
  * A map from data type to number of invalidations received.
@@ -72,7 +72,7 @@ function onInvalidationReceived(types: string[]) {
 }
 
 function onLoad() {
-  addWebUIListener('onInvalidationReceived', onInvalidationReceived);
+  addWebUiListener('onInvalidationReceived', onInvalidationReceived);
   refreshInvalidationCountersDisplay();
 }
 

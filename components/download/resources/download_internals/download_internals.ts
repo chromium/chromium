@@ -6,7 +6,7 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 import {DownloadInternalsBrowserProxy, DownloadInternalsBrowserProxyImpl, ServiceEntry, ServiceEntryState, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
@@ -120,11 +120,11 @@ function onServiceRequestMade(request: ServiceRequest) {
 
 function initialize() {
   // Register all event listeners.
-  addWebUIListener('service-status-changed', onServiceStatusChanged);
-  addWebUIListener('service-downloads-available', onServiceDownloadsAvailable);
-  addWebUIListener('service-download-changed', onServiceDownloadChanged);
-  addWebUIListener('service-download-failed', onServiceDownloadFailed);
-  addWebUIListener('service-request-made', onServiceRequestMade);
+  addWebUiListener('service-status-changed', onServiceStatusChanged);
+  addWebUiListener('service-downloads-available', onServiceDownloadsAvailable);
+  addWebUiListener('service-download-changed', onServiceDownloadChanged);
+  addWebUiListener('service-download-failed', onServiceDownloadFailed);
+  addWebUiListener('service-request-made', onServiceRequestMade);
 
   $('start-download').onclick = function() {
     browserProxy.startDownload(($('download-url') as HTMLInputElement).value);

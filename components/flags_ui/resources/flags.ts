@@ -10,7 +10,7 @@ import 'chrome://resources/js/jstemplate_compiled.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isIOS} from 'chrome://resources/js/platform.js';
