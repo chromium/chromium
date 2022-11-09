@@ -175,7 +175,7 @@ export class SearchPageElement extends SearchPageElementBase {
      * set its value.
      * @type {number}
      */
-    this.searchTimoutInMs_ = 500;
+    this.searchTimoutInMs_ = 250;
   }
 
   ready() {
