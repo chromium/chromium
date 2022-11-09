@@ -271,6 +271,17 @@ bool WebRequestPermissions::HideRequest(
     return true;
   }
 
+  // Hide requests initiated by the new Webstore domain, including requests that
+  // may be on subframes which have an opaque origin.
+  if (request.initiator) {
+    const auto& request_tuple_or_precursor_tuple =
+        request.initiator->GetTupleOrPrecursorTupleIfOpaque();
+    if (request_tuple_or_precursor_tuple ==
+        url::SchemeHostPort(extension_urls::GetNewWebstoreLaunchURL())) {
+      return true;
+    }
+  }
+
   const GURL& url = request.url;
 
   bool is_request_from_webui_renderer =

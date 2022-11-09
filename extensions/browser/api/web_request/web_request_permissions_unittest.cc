@@ -214,6 +214,33 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
     EXPECT_TRUE(WebRequestPermissions::HideRequest(permission_helper,
                                                    sensitive_request_info));
   }
+  // If the request is initiated by the new webstore domain it becomes
+  // protected.
+  {
+    auto request_init_params = create_request_params(
+        non_sensitive_url, WebRequestResourceType::SCRIPT, kRendererProcessId);
+    GURL webstore_url("https://webstore.google.com/");
+    request_init_params.initiator = url::Origin::Create(webstore_url);
+
+    WebRequestInfo sensitive_request_info(std::move(request_init_params));
+    EXPECT_TRUE(WebRequestPermissions::HideRequest(permission_helper,
+                                                   sensitive_request_info));
+  }
+  // Requests initiated in opaque origins with the webstore as a precursor will
+  // also be protected.
+  {
+    auto request_init_params = create_request_params(
+        non_sensitive_url, WebRequestResourceType::SCRIPT, kRendererProcessId);
+    GURL webstore_url("https://webstore.google.com/");
+    auto opaque_origin =
+        url::Origin::Create(webstore_url).DeriveNewOpaqueOrigin();
+    EXPECT_TRUE(opaque_origin.opaque());
+    request_init_params.initiator = std::move(opaque_origin);
+
+    WebRequestInfo sensitive_request_info(std::move(request_init_params));
+    EXPECT_TRUE(WebRequestPermissions::HideRequest(permission_helper,
+                                                   sensitive_request_info));
+  }
 }
 
 TEST_F(ExtensionWebRequestPermissionsTest,
