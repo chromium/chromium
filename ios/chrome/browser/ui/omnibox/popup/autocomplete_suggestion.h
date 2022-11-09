@@ -11,6 +11,14 @@
 @protocol OmniboxPedal;
 @class CrURL;
 
+// Copy of `SuggestTileType` enum in histograms.
+typedef NS_ENUM(NSUInteger, SuggestTileType) {
+  kOther = 0,
+  kURL = 1,
+  kSearch = 2,
+  kCount = 3
+};
+
 // Represents an autocomplete suggestion in UI.
 @protocol AutocompleteSuggestion <NSObject>
 // Some suggestions can be deleted with a swipe-to-delete gesture.

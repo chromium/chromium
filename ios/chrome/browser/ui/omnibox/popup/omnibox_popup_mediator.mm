@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -39,6 +40,9 @@
 
 namespace {
 const CGFloat kOmniboxIconSize = 16;
+// Maximum number of suggest tile types we want to record. Anything beyond this
+// will be reported in the overflow bucket.
+const NSUInteger kMaxSuggestTileTypePosition = 15;
 }  // namespace
 
 @interface OmniboxPopupMediator () <PedalSectionExtractorDelegate>
@@ -165,6 +169,10 @@ const CGFloat kOmniboxIconSize = 16;
     if (!self.incognito && match.type == AutocompleteMatchType::CLIPBOARD_URL) {
       [self.promoScheduler logUserPastedInOmnibox];
     }
+    if (!self.incognito &&
+        match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
+      [self logSelectedAutocompleteTile:match];
+    }
 
     _delegate->OnMatchSelected(match, row, WindowOpenDisposition::CURRENT_TAB);
   } else {
@@ -220,6 +228,8 @@ const CGFloat kOmniboxIconSize = 16;
   _delegate->OnScroll();
 }
 
+#pragma mark AutocompleteResultConsumerDelegate Private
+
 - (void)loadModelImages {
   for (PopupMatchSection* section in self.model.sections) {
     for (PopupMatch* match in section.matches) {
@@ -242,6 +252,27 @@ const CGFloat kOmniboxIconSize = 16;
           break;
         }
       }
+    }
+  }
+}
+
+// Logs selected tile index and type.
+- (void)logSelectedAutocompleteTile:(const AutocompleteMatch&)match {
+  DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
+  for (size_t i = 0; i < match.suggest_tiles.size(); ++i) {
+    const AutocompleteMatch::SuggestTile& tile = match.suggest_tiles[i];
+    // AutocompleteMatch contains all tiles, find the tile corresponding to the
+    // match. See how tiles are unwrapped in `extractMatches`.
+    if (match.destination_url == tile.url) {
+      // Log selected tile index. Note: When deleting a tile, the index may
+      // shift, this is not taken into account.
+      base::UmaHistogramExactLinear("Omnibox.SuggestTiles.SelectedTileIndex", i,
+                                    kMaxSuggestTileTypePosition);
+      int tileType =
+          tile.is_search ? SuggestTileType::kSearch : SuggestTileType::kURL;
+      base::UmaHistogramExactLinear("Omnibox.SuggestTiles.SelectedTileType",
+                                    tileType, SuggestTileType::kCount);
+      return;
     }
   }
 }
