@@ -38,6 +38,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -49,7 +50,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowUmaSessionStats;
-import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowCriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowProfile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -119,6 +119,8 @@ public class RequestDesktopUtilsUnitTest {
     private TabModel mRegularTabModel;
     @Mock
     private TabModel mIncognitoTabModel;
+    @Mock
+    private ObservableSupplier<Tab> mCurrentTabSupplier;
 
     private @ContentSettingValues int mRdsDefaultValue;
     private SharedPreferencesManager mSharedPreferencesManager;
@@ -687,13 +689,10 @@ public class RequestDesktopUtilsUnitTest {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
-        Tab tab = mock(Tab.class);
-        when(tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE))
-                .thenReturn(true);
 
         boolean shown = RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
-                mProfile, mMessageDispatcher, mActivity, tab);
+                mProfile, mMessageDispatcher, mActivity, mCurrentTabSupplier);
         Assert.assertTrue("Desktop site global setting opt-in message should be shown.", shown);
 
         ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
@@ -726,13 +725,10 @@ public class RequestDesktopUtilsUnitTest {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
-        Tab tab = mock(Tab.class);
-        when(tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE))
-                .thenReturn(true);
 
         boolean shown = RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
-                mProfile, mMessageDispatcher, mActivity, tab);
+                mProfile, mMessageDispatcher, mActivity, mCurrentTabSupplier);
 
         boolean shouldShow = RequestDesktopUtils.shouldShowGlobalSettingOptInMessage(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
@@ -747,9 +743,6 @@ public class RequestDesktopUtilsUnitTest {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
-        Tab tab = mock(Tab.class);
-        when(tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE))
-                .thenReturn(true);
 
         when(mWebsitePreferenceBridgeJniMock.isContentSettingEnabled(
                      mProfile, ContentSettingsType.REQUEST_DESKTOP_SITE))
@@ -757,7 +750,7 @@ public class RequestDesktopUtilsUnitTest {
 
         boolean shown = RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
-                mProfile, mMessageDispatcher, mActivity, tab);
+                mProfile, mMessageDispatcher, mActivity, mCurrentTabSupplier);
         Assert.assertFalse(
                 "Desktop site global setting opt-in message should not be shown when the setting is already enabled.",
                 shown);
@@ -881,6 +874,35 @@ public class RequestDesktopUtilsUnitTest {
         verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DESKTOP);
         verify(mCriticalPersistedTabData, never()).setUserAgent(TabUserAgent.MOBILE);
         verify(mCriticalPersistedTabData, never()).setUserAgent(TabUserAgent.DEFAULT);
+    }
+
+    // Tests the fix for crash crbug.com/1381841. When the global setting opt-in message is clicked,
+    // the current activity tab should be reloaded to use the desktop UA. This tab might not
+    // necessarily be the tab on which the message was shown, which could be destroyed by the time
+    // the message is clicked on.
+    @Test
+    public void testGlobalSettingOptInMessageClickedOnDifferentTab() {
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+
+        // Simulate showing the message on `shownTab`.
+        Tab shownTab = mock(Tab.class);
+        when(mCurrentTabSupplier.get()).thenReturn(shownTab);
+        RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
+                mProfile, mMessageDispatcher, mActivity, mCurrentTabSupplier);
+
+        // Simulate clicking on the message on `clickedTab`, when also the `shownTab` has been
+        // destroyed.
+        Tab clickedTab = mock(Tab.class);
+        when(mCurrentTabSupplier.get()).thenReturn(clickedTab);
+        when(clickedTab.isDestroyed()).thenReturn(false);
+        shownTab.destroy();
+        RequestDesktopUtils.onGlobalSettingOptInMessageClicked(mProfile, mCurrentTabSupplier);
+        verify(shownTab, never()).isDestroyed();
+        verify(shownTab, never()).loadIfNeeded(anyInt());
+        verify(clickedTab).loadIfNeeded(anyInt());
     }
 
     private void testSiteExceptionsDowngradePath() {
