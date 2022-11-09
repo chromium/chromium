@@ -2270,9 +2270,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
-    expires_after="2021-10-04">
-  <owner>marcgrimme@chromium.org</owner>
-  <owner>managed-devices@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>bfranz@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
     A public session starts when a user signs in using the policy configured
     public account. It stops when the user signs out. Session length is the
@@ -2295,9 +2295,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
-    expires_after="2021-08-09">
-  <owner>marcgrimme@chromium.org</owner>
-  <owner>managed-devices@google.com</owner>
+    expires_after="2023-07-01">
+  <owner>bfranz@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
     A regular user session starts when a user signs in using his/her user
     account. It stops when the user signs out. Session length is the duration
