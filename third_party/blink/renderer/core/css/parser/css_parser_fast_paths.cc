@@ -1268,7 +1268,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
   }
 }
 
-bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
+bool CSSParserFastPaths::IsHandledByKeywordFastPath(CSSPropertyID property_id) {
+  // NOTE: This list must match exactly those properties handled by
+  // IsValidKeywordPropertyAndValue().
   switch (property_id) {
     case CSSPropertyID::kAlignmentBaseline:
     case CSSPropertyID::kAll:
@@ -1396,22 +1398,33 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
                                    CSSParserMode parser_mode) {
   DCHECK(!string.empty());
 
-  if (!CSSParserFastPaths::IsKeywordPropertyID(property_id)) {
-    // All properties accept CSS-wide keywords.
+  if (!CSSParserFastPaths::IsHandledByKeywordFastPath(property_id)) {
+    // This isn't a property we have a fast path for, but even
+    // so, it will generally accept a CSS-wide keyword.
+    // So check if we're in that situation, in which case we
+    // can run through the fast path anyway (if not, we'll return
+    // nullptr, letting us fall back to the slow path).
+
     if (!EqualIgnoringASCIICase(string, "initial") &&
         !EqualIgnoringASCIICase(string, "inherit") &&
         !EqualIgnoringASCIICase(string, "unset") &&
         !EqualIgnoringASCIICase(string, "revert") &&
-        !EqualIgnoringASCIICase(string, "revert-layer"))
+        !EqualIgnoringASCIICase(string, "revert-layer")) {
+      // Not a CSS-wide keyword.
       return nullptr;
+    }
 
-    // Parse CSS-wide keyword shorthands using the CSSPropertyParser.
-    if (shorthandForProperty(property_id).length())
+    if (shorthandForProperty(property_id).length()) {
+      // CSS-wide keyword shorthands must be parsed using the CSSPropertyParser.
       return nullptr;
+    }
 
-    // Descriptors do not support css wide keywords.
-    if (!CSSProperty::Get(property_id).IsProperty())
+    if (!CSSProperty::Get(property_id).IsProperty()) {
+      // Descriptors do not support CSS-wide keywords.
       return nullptr;
+    }
+
+    // Fall through.
   }
 
   CSSValueID value_id = CssValueKeywordID(string);

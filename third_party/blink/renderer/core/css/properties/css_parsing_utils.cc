@@ -3303,7 +3303,7 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
                               CSSParserTokenRange& range) {
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
   DCHECK(!CSSProperty::Get(property_id).IsShorthand());
-  if (CSSParserFastPaths::IsKeywordPropertyID(property_id)) {
+  if (CSSParserFastPaths::IsHandledByKeywordFastPath(property_id)) {
     if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(
             property_id, range.Peek().Id(), context.Mode())) {
       CountKeywordOnlyPropertyUsage(property_id, context, range.Peek().Id());

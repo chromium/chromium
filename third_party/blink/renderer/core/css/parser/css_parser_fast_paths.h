@@ -24,9 +24,9 @@ class CORE_EXPORT CSSParserFastPaths {
   // about handling any property completely.
   static CSSValue* MaybeParseValue(CSSPropertyID, const String&, CSSParserMode);
 
-  // Properties handled here shouldn't be explicitly handled in
-  // CSSPropertyParser
-  static bool IsKeywordPropertyID(CSSPropertyID);
+  // NOTE: Properties handled here shouldn't be explicitly handled in
+  // CSSPropertyParser, so if this returns true, the fast path is the only path.
+  static bool IsHandledByKeywordFastPath(CSSPropertyID);
 
   static bool IsValidKeywordPropertyAndValue(CSSPropertyID,
                                              CSSValueID,

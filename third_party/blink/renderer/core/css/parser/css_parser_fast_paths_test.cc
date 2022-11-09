@@ -55,18 +55,20 @@ TEST(CSSParserFastPathsTest, ParseCSSWideKeywords) {
 }
 
 TEST(CSSParserFastPathsTest, ParseRevert) {
-  // Revert enabled, IsKeywordPropertyID=false
+  // Revert enabled, IsHandledByKeywordFastPath=false
   {
-    DCHECK(!CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kMarginTop));
+    DCHECK(!CSSParserFastPaths::IsHandledByKeywordFastPath(
+        CSSPropertyID::kMarginTop));
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
         CSSPropertyID::kMarginTop, "revert", kHTMLStandardMode);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertValue());
   }
 
-  // Revert enabled, IsKeywordPropertyID=true
+  // Revert enabled, IsHandledByKeywordFastPath=true
   {
-    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDirection));
+    DCHECK(CSSParserFastPaths::IsHandledByKeywordFastPath(
+        CSSPropertyID::kDirection));
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
         CSSPropertyID::kDirection, "revert", kHTMLStandardMode);
     ASSERT_TRUE(value);
@@ -75,18 +77,20 @@ TEST(CSSParserFastPathsTest, ParseRevert) {
 }
 
 TEST(CSSParserFastPathsTest, ParseRevertLayer) {
-  // 'revert-layer' enabled, IsKeywordPropertyID=false
+  // 'revert-layer' enabled, IsHandledByKeywordFastPath=false
   {
-    DCHECK(!CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kMarginTop));
+    DCHECK(!CSSParserFastPaths::IsHandledByKeywordFastPath(
+        CSSPropertyID::kMarginTop));
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
         CSSPropertyID::kMarginTop, "revert-layer", kHTMLStandardMode);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertLayerValue());
   }
 
-  // 'revert-layer' enabled, IsKeywordPropertyID=true
+  // 'revert-layer' enabled, IsHandledByKeywordFastPath=true
   {
-    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDirection));
+    DCHECK(CSSParserFastPaths::IsHandledByKeywordFastPath(
+        CSSPropertyID::kDirection));
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
         CSSPropertyID::kDirection, "revert-layer", kHTMLStandardMode);
     ASSERT_TRUE(value);
