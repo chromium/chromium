@@ -285,7 +285,7 @@ class BoxChunkedUploader : public BoxUploader {
   const size_t file_size_;
   base::Value::Dict session_endpoints_;
   PartInfo curr_part_;
-  base::ListValue uploaded_parts_;
+  base::Value::List uploaded_parts_;
   std::string sha1_digest_;
 
   base::WeakPtrFactory<BoxChunkedUploader> weak_factory_{this};

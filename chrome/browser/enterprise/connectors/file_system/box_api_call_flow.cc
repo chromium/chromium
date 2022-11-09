@@ -97,10 +97,9 @@ base::Value CreateSingleFieldDict(const std::string& key,
   return dict;
 }
 
-bool VerifyChunkedUploadParts(const base::Value& parts) {
-  DCHECK(parts.is_dict()) << parts;
-  DCHECK(parts.FindPath("parts")->is_list()) << parts;
-  const auto& parts_list = parts.FindPath("parts")->GetList();
+bool VerifyChunkedUploadParts(const base::Value::Dict& parts) {
+  DCHECK(parts.Find("parts")->is_list()) << parts;
+  const auto& parts_list = parts.Find("parts")->GetList();
   DCHECK(!parts_list.empty());
   for (auto p = parts_list.begin(); p != parts_list.end(); ++p) {
     DCHECK(p->is_dict()) << parts;
@@ -916,7 +915,7 @@ void BoxAbortUploadSessionApiCallFlow::ProcessFailure(Response response) {
 BoxCommitUploadSessionApiCallFlow::BoxCommitUploadSessionApiCallFlow(
     TaskCallback callback,
     const std::string& session_endpoint,
-    const base::Value& parts,
+    const base::Value::List& parts,
     const std::string digest)
     : BoxChunkedUploadBaseApiCallFlow(GURL(session_endpoint)),
       callback_(std::move(callback)),
@@ -934,8 +933,8 @@ BoxCommitUploadSessionApiCallFlow::CreateApiCallHeaders() {
 }
 
 std::string BoxCommitUploadSessionApiCallFlow::CreateApiCallBody() {
-  base::Value parts(base::Value::Type::DICTIONARY);
-  parts.SetKey("parts", std::move(upload_session_parts_));
+  base::Value::Dict parts;
+  parts.Set("parts", std::move(upload_session_parts_));
   DCHECK(VerifyChunkedUploadParts(parts));
   std::string body;
   base::JSONWriter::Write(parts, &body);

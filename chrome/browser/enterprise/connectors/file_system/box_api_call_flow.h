@@ -371,7 +371,7 @@ class BoxCommitUploadSessionApiCallFlow
       base::OnceCallback<void(Response, base::TimeDelta, const std::string&)>;
   BoxCommitUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& session_endpoint,
-                                    const base::Value& parts,
+                                    const base::Value::List& parts,
                                     const std::string digest);
   ~BoxCommitUploadSessionApiCallFlow() override;
 
@@ -388,7 +388,7 @@ class BoxCommitUploadSessionApiCallFlow
   TaskCallback callback_;
   const GURL commit_endpoint_;
   const std::string sha_digest_;
-  base::Value upload_session_parts_;
+  base::Value::List upload_session_parts_;
   base::TimeDelta retry_after_;
 };
 
