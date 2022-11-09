@@ -44,6 +44,7 @@ include_rules = [
   "+components/safe_browsing/core/common/web_ui_constants.h",
   "+components/safe_browsing/core/common/proto/csd.pb.h",
   "+components/services/app_service/public/cpp/share_target.h",
+  "+components/signin/public/base/signin_buildflags.h",
   "+components/strings/grit/components_strings.h",
   "+components/translate/core/common",
   "+components/url_formatter",

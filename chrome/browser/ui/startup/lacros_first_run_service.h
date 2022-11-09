@@ -20,6 +20,7 @@
 #error This file should only be included on lacros.
 #endif
 
+class PrefRegistrySimple;
 class Profile;
 class SilentSyncEnabler;
 
@@ -46,6 +47,8 @@ class LacrosFirstRunService : public KeyedService {
 
     kMaxValue = kWebAppContextMenu
   };
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   explicit LacrosFirstRunService(Profile* profile);
   ~LacrosFirstRunService() override;

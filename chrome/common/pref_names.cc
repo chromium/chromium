@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_font_webkit_names.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -1704,6 +1705,12 @@ const char kWebRtcLocalIpsAllowedUrls[] = "webrtc.local_ips_allowed_urls";
 // and DTLS protocols.
 const char kWebRTCAllowLegacyTLSProtocols[] =
     "webrtc.allow_legacy_tls_protocols";
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Boolean that indicates that the first run experience has been finished (or
+// skipped by some policy) for this browser install.
+const char kFirstRunFinished[] = "browser.first_run_finished";
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 // Whether or not this profile has been shown the Welcome page.

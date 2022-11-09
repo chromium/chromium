@@ -14,13 +14,8 @@ namespace lacros_prefs {
 const char kShowedExperimentalBannerPref[] =
     "lacros.showed_experimental_banner";
 
-const char kPrimaryProfileFirstRunFinished[] =
-    "lacros.primary_profile_first_run_finished";
-
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kShowedExperimentalBannerPref,
-                                /*default_value=*/false);
-  registry->RegisterBooleanPref(kPrimaryProfileFirstRunFinished,
                                 /*default_value=*/false);
 }
 

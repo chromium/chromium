@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lacros/lacros_prefs.h"
+#include "chrome/browser/lacros/device_settings_lacros.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/startup/silent_sync_enabler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -68,7 +68,7 @@ bool IsSyncRequired(Profile* profile) {
 
 void SetFirstRunFinished() {
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetBoolean(lacros_prefs::kPrimaryProfileFirstRunFinished, true);
+  local_state->SetBoolean(prefs::kFirstRunFinished, true);
 }
 
 // Processes the outcome from the FRE and resumes the user's interrupted task.
@@ -103,6 +103,12 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
 
 // LacrosFirstRunService -------------------------------------------------------
 
+// static
+void LacrosFirstRunService::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kFirstRunFinished, false);
+}
+
 LacrosFirstRunService::LacrosFirstRunService(Profile* profile)
     : profile_(profile) {}
 LacrosFirstRunService::~LacrosFirstRunService() = default;
@@ -116,8 +122,7 @@ bool LacrosFirstRunService::ShouldOpenFirstRun() const {
     return false;
 
   const PrefService* const pref_service = g_browser_process->local_state();
-  return !pref_service->GetBoolean(
-      lacros_prefs::kPrimaryProfileFirstRunFinished);
+  return !pref_service->GetBoolean(prefs::kFirstRunFinished);
 }
 
 void LacrosFirstRunService::TryMarkFirstRunAlreadyFinished(

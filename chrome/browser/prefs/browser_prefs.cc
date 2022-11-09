@@ -466,6 +466,7 @@
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
 #include "chrome/browser/lacros/net/proxy_config_service_lacros.h"
+#include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -766,6 +767,10 @@ const char kChromeCreatedLoginItem[] =
 const char kMigratedLoginItemPref[] =
     "background_mode.migrated_login_item_pref";
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kPrimaryProfileFirstRunFinished[] =
+    "lacros.primary_profile_first_run_finished";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -828,6 +833,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kChromeCreatedLoginItem, false);
   registry->RegisterBooleanPref(kMigratedLoginItemPref, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  registry->RegisterBooleanPref(kPrimaryProfileFirstRunFinished, false);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1114,6 +1123,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   UpgradeDetector::RegisterPrefs(registry);
   WhatsNewUI::RegisterLocalStatePrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LacrosFirstRunService::RegisterLocalStatePrefs(registry);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   arc::prefs::RegisterLocalStatePrefs(registry);
@@ -1726,6 +1739,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kUserRemovedLoginItem);
   local_state->ClearPref(kChromeCreatedLoginItem);
   local_state->ClearPref(kMigratedLoginItemPref);
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (local_state->HasPrefPath(kPrimaryProfileFirstRunFinished)) {
+    bool old_value = local_state->GetBoolean(kPrimaryProfileFirstRunFinished);
+    local_state->ClearPref(kPrimaryProfileFirstRunFinished);
+    local_state->SetBoolean(prefs::kFirstRunFinished, old_value);
+  }
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

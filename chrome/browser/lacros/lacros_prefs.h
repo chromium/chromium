@@ -17,10 +17,6 @@ namespace lacros_prefs {
 // been shown to the user.
 extern const char kShowedExperimentalBannerPref[];
 
-// Boolean which indicates whether the user finished the Lacros First Run
-// Experience.
-extern const char kPrimaryProfileFirstRunFinished[];
-
 // Local state prefs are also known as browser-wide prefs. This function
 // registers Lacros-related local state prefs.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

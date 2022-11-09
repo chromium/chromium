@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/device_settings_lacros.h"
-#include "chrome/browser/lacros/lacros_prefs.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -97,8 +96,8 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   fre_service()->TryMarkFirstRunAlreadyFinished(run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_FALSE(g_browser_process->local_state()->GetBoolean(
-      lacros_prefs::kPrimaryProfileFirstRunFinished));
+  EXPECT_FALSE(
+      g_browser_process->local_state()->GetBoolean(prefs::kFirstRunFinished));
   EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
   histogram_tester.ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunOutcome", 0);
@@ -123,8 +122,9 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
   run_loop.Run();
 
-  EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
-      lacros_prefs::kPrimaryProfileFirstRunFinished));
+  EXPECT_TRUE(
+      g_browser_process->local_state()->GetBoolean(prefs::kFirstRunFinished));
+  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
   histogram_tester.ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
       ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing, 1);
@@ -145,8 +145,9 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   run_loop.Run();
 
-  EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
-      lacros_prefs::kPrimaryProfileFirstRunFinished));
+  EXPECT_TRUE(
+      g_browser_process->local_state()->GetBoolean(prefs::kFirstRunFinished));
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   histogram_tester.ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
@@ -181,8 +182,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   run_loop.Run();
 
-  EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
-      lacros_prefs::kPrimaryProfileFirstRunFinished));
+  EXPECT_TRUE(
+      g_browser_process->local_state()->GetBoolean(prefs::kFirstRunFinished));
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   histogram_tester.ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
