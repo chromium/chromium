@@ -4,7 +4,7 @@
 
 import {CapabilitiesResponse, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PageLayoutInfo, PrinterType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 

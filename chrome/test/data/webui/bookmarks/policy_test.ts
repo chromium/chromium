@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BookmarksAppElement, BookmarksCommandManagerElement, BrowserProxyImpl, Command, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';

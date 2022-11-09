@@ -37,8 +37,8 @@ TEST_F('CrModuleTest', 'SendWithPromise', function() {
   mocha.fgrep('CrModuleSendWithPromiseTest').run();
 });
 
-TEST_F('CrModuleTest', 'WebUIListeners', function() {
-  mocha.fgrep('CrModuleWebUIListenersTest').run();
+TEST_F('CrModuleTest', 'WebUiListeners', function() {
+  mocha.fgrep('CrModuleWebUiListenersTest').run();
 });
 
 var IconModuleTest = class extends WebUIResourceModuleAsyncTest {

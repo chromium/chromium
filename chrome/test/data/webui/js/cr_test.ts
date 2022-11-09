@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener, webUIListenerCallback, webUIResponse} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, removeWebUiListener, sendWithPromise, WebUiListener, webUIListenerCallback, webUIResponse} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -86,39 +86,39 @@ suite('CrModuleSendWithPromiseTest', function() {
   });
 });
 
-suite('CrModuleWebUIListenersTest', function() {
-  let listener1: WebUIListener|null = null;
-  let listener2: WebUIListener|null = null;
+suite('CrModuleWebUiListenersTest', function() {
+  let listener1: WebUiListener|null = null;
+  let listener2: WebUiListener|null = null;
 
   const EVENT_NAME: string = 'my-foo-event';
 
   teardown(function() {
     if (listener1) {
-      removeWebUIListener(listener1);
+      removeWebUiListener(listener1);
     }
     if (listener2) {
-      removeWebUIListener(listener2);
+      removeWebUiListener(listener2);
     }
   });
 
-  test('removeWebUIListener', function() {
-    listener1 = addWebUIListener(EVENT_NAME, function() {});
-    assertTrue(removeWebUIListener(listener1));
-    assertFalse(removeWebUIListener(listener1));
-    assertFalse(removeWebUIListener({
+  test('removeWebUiListener', function() {
+    listener1 = addWebUiListener(EVENT_NAME, function() {});
+    assertTrue(removeWebUiListener(listener1));
+    assertFalse(removeWebUiListener(listener1));
+    assertFalse(removeWebUiListener({
       eventName: 'non-existing-event',
       uid: 12345,
     }));
   });
 
-  test('addWebUIListener_ResponseParams', function() {
+  test('addWebUiListener_ResponseParams', function() {
     const expectedString = 'foo';
     const expectedNumber = 123;
     const expectedArray = [1, 2];
     const expectedObject = {};
 
     return new Promise<void>(function(resolve) {
-      listener1 = addWebUIListener(
+      listener1 = addWebUiListener(
           EVENT_NAME, function(s: string, n: number, a: number[], o: object) {
             assertEquals(expectedString, s);
             assertEquals(expectedNumber, n);
@@ -132,9 +132,9 @@ suite('CrModuleWebUIListenersTest', function() {
     });
   });
 
-  test('addWebUIListener_NoResponseParams', function() {
+  test('addWebUiListener_NoResponseParams', function() {
     return new Promise<void>(function(resolve) {
-      listener1 = addWebUIListener(EVENT_NAME, function() {
+      listener1 = addWebUiListener(EVENT_NAME, function() {
         assertEquals(0, arguments.length);
         resolve();
       });
@@ -142,11 +142,11 @@ suite('CrModuleWebUIListenersTest', function() {
     });
   });
 
-  test('addWebUIListener_MulitpleListeners', function() {
+  test('addWebUiListener_MulitpleListeners', function() {
     const resolver1 = new PromiseResolver();
     const resolver2 = new PromiseResolver();
-    listener1 = addWebUIListener(EVENT_NAME, resolver1.resolve);
-    listener2 = addWebUIListener(EVENT_NAME, resolver2.resolve);
+    listener1 = addWebUiListener(EVENT_NAME, resolver1.resolve);
+    listener2 = addWebUiListener(EVENT_NAME, resolver2.resolve);
     webUIListenerCallback(EVENT_NAME);
     // Check that both listeners registered are invoked.
     return Promise.all([resolver1.promise, resolver2.promise]);

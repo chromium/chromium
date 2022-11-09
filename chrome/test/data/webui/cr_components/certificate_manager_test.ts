@@ -25,7 +25,7 @@ import {CertificatePasswordDecryptionDialogElement} from 'chrome://resources/cr_
 import {CertificatePasswordEncryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_encryption_dialog.js';
 import {CertificateSubentryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_subentry.js';
 import {CaTrustInfo, CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificatesOrgGroup, CertificateSubnode, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

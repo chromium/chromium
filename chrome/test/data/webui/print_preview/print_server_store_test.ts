@@ -4,7 +4,7 @@
 
 import {PrintServerStore, PrintServerStoreEventType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {addWebUIListener, removeWebUIListener, WebUIListener, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, removeWebUiListener, WebUiListener, webUIListenerCallback} from 'chrome://resources/js/cr.js';
 
 import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -28,10 +28,10 @@ suite(print_server_store_test.suiteName, function() {
 
   let nativeLayerCros: NativeLayerCrosStub;
 
-  let listeners: WebUIListener[];
+  let listeners: WebUiListener[];
 
   function addListener(eventName: string, callback: (p: any) => void) {
-    listeners.push(addWebUIListener(eventName, callback));
+    listeners.push(addWebUiListener(eventName, callback));
   }
 
   setup(function() {
@@ -41,7 +41,7 @@ suite(print_server_store_test.suiteName, function() {
   });
 
   teardown(function() {
-    listeners.forEach(removeWebUIListener);
+    listeners.forEach(removeWebUiListener);
   });
 
   // Tests that print servers with the selected name are selected by ID is the

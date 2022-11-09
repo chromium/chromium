@@ -7,7 +7,7 @@ import 'chrome://commander/app.js';
 import {CommanderAppElement} from 'chrome://commander/app.js';
 import {BrowserProxyImpl} from 'chrome://commander/browser_proxy.js';
 import {Action, Entity, ViewModel} from 'chrome://commander/types.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

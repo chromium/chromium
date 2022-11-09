@@ -17,7 +17,7 @@ import {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 
 // <if expr="not chromeos_ash">
 import {UpdateStatus} from 'chrome://settings/settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 

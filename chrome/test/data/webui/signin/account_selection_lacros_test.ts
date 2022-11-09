@@ -6,7 +6,7 @@ import 'chrome://profile-picker/lazy_load.js';
 
 import {AccountSelectionLacrosElement} from 'chrome://profile-picker/lazy_load.js';
 import {AvailableAccount, ensureLazyLoaded, ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
