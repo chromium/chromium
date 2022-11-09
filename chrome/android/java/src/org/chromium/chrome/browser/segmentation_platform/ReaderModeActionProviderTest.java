@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import static android.os.Looper.getMainLooper;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +30,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
@@ -37,6 +40,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +69,7 @@ public class ReaderModeActionProviderTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         initializeReaderModeBackend();
+        DomDistillerTabUtils.setDistillerHeuristicsForTesting(null);
 
         mMockTab.getUserDataHost().setUserData(
                 ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
@@ -92,6 +98,75 @@ public class ReaderModeActionProviderTest {
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, accumulator);
         Assert.assertTrue(accumulator.hasReaderMode());
+    }
+
+    @Test
+    public void testWaitForDistillabilityResult() throws TimeoutException {
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        // Get action before distillability is determined.
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        verify(mMockSignalAccumulator, never()).setHasReaderMode(anyBoolean());
+        verify(mMockSignalAccumulator, never()).notifySignalAvailable();
+
+        // We should wait for distillability before setting a signal.
+        setReaderModeBackendSignal(true);
+        verify(mMockSignalAccumulator).setHasReaderMode(true);
+        verify(mMockSignalAccumulator).notifySignalAvailable();
+    }
+
+    @Test
+    public void testReaderModeDisabledOnDesktopPages() {
+        DomDistillerTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.OG_ARTICLE);
+
+        WebContents mockWebContents = mock(WebContents.class);
+        NavigationController mockNavigationController = mock(NavigationController.class);
+        // Set "request desktop page" on.
+        when(mockNavigationController.getUseDesktopUserAgent()).thenReturn(true);
+        when(mockWebContents.getNavigationController()).thenReturn(mockNavigationController);
+        when(mMockTab.getWebContents()).thenReturn(mockWebContents);
+
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        setReaderModeBackendSignal(true);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        verify(mMockSignalAccumulator).setHasReaderMode(false);
+        verify(mMockSignalAccumulator).notifySignalAvailable();
+    }
+
+    @Test
+    public void testReaderModeDisabledOnDesktopPages_exceptIfHeuristicIsAlwaysTrue() {
+        // Set heuristic to flag all sites as distillable.
+        DomDistillerTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.ALWAYS_TRUE);
+
+        WebContents mockWebContents = mock(WebContents.class);
+        NavigationController mockNavigationController = mock(NavigationController.class);
+        // Set "request desktop page" on.
+        when(mockNavigationController.getUseDesktopUserAgent()).thenReturn(true);
+        when(mockWebContents.getNavigationController()).thenReturn(mockNavigationController);
+        when(mMockTab.getWebContents()).thenReturn(mockWebContents);
+
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        setReaderModeBackendSignal(true);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        verify(mMockSignalAccumulator).setHasReaderMode(true);
+        verify(mMockSignalAccumulator).notifySignalAvailable();
+    }
+
+    @Test
+    public void testUsingReaderModeManagerRateLimiting() {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                "reader_mode_session_rate_limiting", "true");
+        FeatureList.setTestValues(testValues);
+        when(mMockReaderModeManager.isReaderModeUiRateLimited()).thenReturn(true);
+
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        setReaderModeBackendSignal(true);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        verify(mMockSignalAccumulator).setHasReaderMode(false);
+        verify(mMockSignalAccumulator).notifySignalAvailable();
     }
 
     @Test

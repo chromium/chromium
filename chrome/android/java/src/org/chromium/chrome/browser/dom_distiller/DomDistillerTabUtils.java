@@ -29,6 +29,9 @@ public class DomDistillerTabUtils {
     /** Used to specify whether mobile friendly is enabled for testing purposes. */
     private static Boolean sExcludeMobileFriendlyForTesting;
 
+    @DistillerHeuristicsType
+    private static Integer sHeuristicsForTesting;
+
     private DomDistillerTabUtils() {
     }
 
@@ -116,9 +119,21 @@ public class DomDistillerTabUtils {
     }
 
     /**
+     * Set a test value of DistillerHeuristicsType.
+     */
+    @VisibleForTesting
+    public static void setDistillerHeuristicsForTesting(
+            @DistillerHeuristicsType Integer distillerHeuristicsType) {
+        sHeuristicsForTesting = distillerHeuristicsType;
+    }
+
+    /**
      * Cached version of DomDistillerTabUtilsJni.get().getDistillerHeuristics().
      */
     public static @DistillerHeuristicsType int getDistillerHeuristics() {
+        if (sHeuristicsForTesting != null) {
+            return sHeuristicsForTesting;
+        }
         if (sHeuristics == null) {
             sHeuristics = DomDistillerTabUtilsJni.get().getDistillerHeuristics();
         }
