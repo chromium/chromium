@@ -54,6 +54,12 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   // chromium::cast::DataReset implementation.
   void DeletePersistentData(DeletePersistentDataCallback callback) override;
 
+  // Returns a connection request handler for the fuchsia.web.FrameHost
+  // protocol exposed by the main web_instance. This is available regardless
+  // of whether `enable_frame_host_component_` is set.
+  fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>
+  GetFrameHostRequestHandler();
+
   // Enables the special component that provides the fuchsia.web.FrameHost API,
   // hosted using the same WebEngine instance as the main web.Context.
   void set_enable_frame_host_component() {

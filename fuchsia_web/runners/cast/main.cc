@@ -152,6 +152,11 @@ int main(int argc, char** argv) {
   const base::ScopedServiceBinding<chromium::cast::DataReset>
       data_reset_binding(outgoing_directory, &runner);
 
+  // Allow ephemeral web profiles to be created in the main web instance.
+  const base::ScopedServicePublisher<fuchsia::web::FrameHost>
+      frame_host_binding(outgoing_directory,
+                         runner.GetFrameHostRequestHandler());
+
   // Allow web containers to be debugged, by end-to-end tests.
   base::ScopedServiceBinding<fuchsia::web::Debug> debug_binding(
       outgoing_directory, web_instance_host.debug_api());

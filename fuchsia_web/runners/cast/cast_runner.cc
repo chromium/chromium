@@ -624,6 +624,23 @@ bool CastRunner::DeletePersistentDataInternal() {
   return true;
 }
 
+fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>
+CastRunner::GetFrameHostRequestHandler() {
+  return [this](fidl::InterfaceRequest<fuchsia::web::FrameHost> request) {
+    if (!cors_exempt_headers_) {
+      on_have_cors_exempt_headers_.push_back(base::BindOnce(
+          [](fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>
+                 request_handler,
+             fidl::InterfaceRequest<fuchsia::web::FrameHost> request) {
+            request_handler(std::move(request));
+          },
+          main_context_->GetFrameHostRequestHandler(), std::move(request)));
+      return;
+    }
+    main_context_->GetFrameHostRequestHandler()(std::move(request));
+  };
+}
+
 void CastRunner::CreatePersistedCacheSentinel() {
   base::WriteFile(SentinelFilePath(), "");
   was_cache_sentinel_created_ = true;
