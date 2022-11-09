@@ -295,7 +295,7 @@
               "os": "Mac-10.15"
             }
           ],
-          "hard_timeout": 900,
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -335,7 +335,7 @@
               "os": "Mac-10.15"
             }
           ],
-          "hard_timeout": 900,
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -377,7 +377,7 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
-          "hard_timeout": 1800,
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -415,7 +415,7 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
-          "hard_timeout": 1800,
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },
@@ -457,6 +457,7 @@
               "os": "Mac-11"
             }
           ],
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -494,6 +495,7 @@
               "os": "Mac-11"
             }
           ],
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },
@@ -535,6 +537,7 @@
               "os": "Mac-12"
             }
           ],
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -572,6 +575,7 @@
               "os": "Mac-12"
             }
           ],
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },
@@ -613,6 +617,7 @@
               "os": "Mac-12"
             }
           ],
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -650,6 +655,7 @@
               "os": "Mac-12"
             }
           ],
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },
@@ -690,7 +696,7 @@
               "os": "Windows-10-19042"
             }
           ],
-          "hard_timeout": 1200,
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -727,7 +733,7 @@
               "os": "Windows-10-19042"
             }
           ],
-          "hard_timeout": 1200,
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 9
         },
@@ -770,7 +776,7 @@
               "os": "Windows-11-22000"
             }
           ],
-          "hard_timeout": 1200,
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -809,7 +815,7 @@
               "os": "Windows-11-22000"
             }
           ],
-          "hard_timeout": 1200,
+          "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },

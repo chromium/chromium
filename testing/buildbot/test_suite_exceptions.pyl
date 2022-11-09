@@ -500,12 +500,28 @@
       'mac10.15-blink-rel': {
         'swarming': {
           'shards': 8,
+          'hard_timeout': 2400,
         },
       },
       'mac11.0-blink-rel': {
         'swarming': {
           'shards': 5,
-          'hard_timeout': 1800,
+          'hard_timeout': 2400,
+        },
+      },
+      'mac11.0.arm64-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
+        },
+      },
+      'mac12.0-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
+        },
+      },
+      'mac12.0.arm64-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
         },
       },
       'win10-rel-no-external-ip': {
@@ -520,12 +536,12 @@
       'win10.20h2-blink-rel': {
         'swarming': {
           'shards': 6,
-          'hard_timeout': 1200,
+          'hard_timeout': 2400,
         },
       },
       'win11-blink-rel': {
         'swarming': {
-          'hard_timeout': 1200,
+          'hard_timeout': 2400,
         },
         'args': [
           '--target',
@@ -795,12 +811,28 @@
       'mac10.15-blink-rel': {
         'swarming': {
           'shards': 12,
+          'hard_timeout': 2400,
         },
       },
       'mac11.0-blink-rel': {
         'swarming': {
           'shards': 7,
-          'hard_timeout': 1800,
+          'hard_timeout': 2400,
+        },
+      },
+      'mac11.0.arm64-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
+        },
+      },
+      'mac12.0-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
+        },
+      },
+      'mac12.0.arm64-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
         },
       },
       'win10-rel-no-external-ip': {
@@ -815,12 +847,12 @@
       'win10.20h2-blink-rel': {
         'swarming': {
           'shards': 9,
-          'hard_timeout': 1200,
+          'hard_timeout': 2400,
         },
       },
       'win11-blink-rel': {
         'swarming': {
-          'hard_timeout': 1200,
+          'hard_timeout': 2400,
         },
         'args': [
           '--target',
