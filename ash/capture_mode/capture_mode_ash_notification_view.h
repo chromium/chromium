@@ -25,6 +25,8 @@ namespace ash {
 // image captures, or a play icon on top of the video thumbnail.
 class ASH_EXPORT CaptureModeAshNotificationView : public AshNotificationView {
  public:
+  METADATA_HEADER(CaptureModeAshNotificationView);
+
   CaptureModeAshNotificationView(
       const message_center::Notification& notification,
       CaptureModeType capture_type,

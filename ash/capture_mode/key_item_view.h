@@ -19,6 +19,8 @@ namespace ash {
 // which can contain a text label or an icon.
 class KeyItemView : public views::View {
  public:
+  METADATA_HEADER(KeyItemView);
+
   KeyItemView();
   KeyItemView(const KeyItemView&) = delete;
   KeyItemView& operator=(const KeyItemView&) = delete;

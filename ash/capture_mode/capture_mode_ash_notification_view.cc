@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
 
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -82,5 +83,8 @@ void CaptureModeAshNotificationView::CreateExtraView() {
           ? capture_mode_util::CreateBannerView()
           : capture_mode_util::CreatePlayIconView());
 }
+
+BEGIN_METADATA(CaptureModeAshNotificationView, AshNotificationView)
+END_METADATA
 
 }  // namespace ash

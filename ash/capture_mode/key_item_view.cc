@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/style/ash_color_id.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -85,5 +86,8 @@ void KeyItemView::SetText(const std::u16string& text) {
   }
   label_->SetText(text);
 }
+
+BEGIN_METADATA(KeyItemView, views::View)
+END_METADATA
 
 }  // namespace ash
