@@ -1,5 +1,7 @@
 sauski@google.com # Primary for general logic, primary for web UI, catch-all
-andzaytsev@google.com # Primary for android UI
+andzaytsev@google.com #  For android UI
+dullweber@chromium.org # For android UI
+tommasin@chromium.org # For android UI
 msramek@chromium.org # Secondary for general logic
 olesiamarukhno@google.com # Primary for desktop UI
 rainhard@chromium.org # Secondary for web UI
