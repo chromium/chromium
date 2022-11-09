@@ -42480,6 +42480,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4382" label="V8MediaStreamTrack_ApplyConstraints_Method"/>
   <int value="4383" label="ViewTransition"/>
   <int value="4384" label="ElementTogglePopover"/>
+  <int value="4385" label="LayoutMediaInlineChildren"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

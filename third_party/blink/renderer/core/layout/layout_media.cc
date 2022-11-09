@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_media.h"
 
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -136,13 +137,22 @@ bool LayoutMedia::IsChildAllowed(LayoutObject* child,
   // of replaced content, which is not supposed to be possible. This
   // check can be removed if ::-webkit-media-controls is made
   // internal.
-  if (child->GetNode()->IsMediaControls())
+  if (child->GetNode()->IsMediaControls()) {
+    // IsInline() and StyleRef() don't work at this timing.
+    if (child->IsFlexibleBoxIncludingNG() &&
+        child->GetNode()->GetComputedStyle()->IsDisplayInlineType()) {
+      UseCounter::Count(GetDocument(), WebFeature::kLayoutMediaInlineChildren);
+    }
     return child->IsFlexibleBoxIncludingNG();
+  }
 
   if (child->GetNode()->IsTextTrackContainer() ||
       child->GetNode()->IsMediaRemotingInterstitial() ||
-      child->GetNode()->IsPictureInPictureInterstitial())
+      child->GetNode()->IsPictureInPictureInterstitial()) {
+    if (child->GetNode()->GetComputedStyle()->IsDisplayInlineType())
+      UseCounter::Count(GetDocument(), WebFeature::kLayoutMediaInlineChildren);
     return true;
+  }
 
   return false;
 }

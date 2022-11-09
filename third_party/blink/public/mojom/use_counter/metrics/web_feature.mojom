@@ -3723,6 +3723,7 @@ enum WebFeature {
   // The items above roughly this point are available in the M108 branch.
 
   kElementTogglePopover = 4384,
+  kLayoutMediaInlineChildren = 4385,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
