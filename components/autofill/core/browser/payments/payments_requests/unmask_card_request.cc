@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace payments {
@@ -89,18 +91,36 @@ void ParseAsCvcChallengeOption(
   // Get the position of the CVC on the card. In most cases it will be on the
   // back of the card, but it is possible for it to be on the front, for
   // example in the case of the Card Identification Number on the front of an
-  // American Express card.
+  // American Express card. We will also build `challenge_info_position_string`,
+  // which will be used to build the challenge info that will be rendered if we
+  // end up displaying the authentication selection dialog.
+  std::u16string challenge_info_position_string;
   const auto* cvc_position =
       defined_challenge_option->FindStringKey("cvc_position");
   if (cvc_position) {
     if (*cvc_position == "CVC_POSITION_FRONT") {
       parsed_challenge_option->cvc_position = CvcPosition::kFrontOfCard;
+      challenge_info_position_string = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_FRONT_OF_CARD);
     } else if (*cvc_position == "CVC_POSITION_BACK") {
       parsed_challenge_option->cvc_position = CvcPosition::kBackOfCard;
+      challenge_info_position_string = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD);
     } else {
       NOTREACHED();
       parsed_challenge_option->cvc_position = CvcPosition::kUnknown;
     }
+  }
+
+  // Build the challenge info for this CVC challenge option. The challenge info
+  // will be displayed under the authentication label for the challenge option
+  // in the authentication selection dialog if we have multiple challenge
+  // options present.
+  if (!challenge_info_position_string.empty()) {
+    parsed_challenge_option->challenge_info = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CVC_CHALLENGE_INFO,
+        base::NumberToString16(parsed_challenge_option->challenge_input_length),
+        challenge_info_position_string);
   }
 }
 

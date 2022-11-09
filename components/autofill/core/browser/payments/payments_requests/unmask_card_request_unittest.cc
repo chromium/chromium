@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,6 +33,12 @@ class UnmaskCardRequestTest : public testing::Test {
   bool IsIncludedInRequestContent(const std::string& field_name_or_value) {
     return GetRequest()->GetRequestContent().find(field_name_or_value) !=
            std::string::npos;
+  }
+
+  // Returns the response details that was created for the current test
+  // instance.
+  const PaymentsClient::UnmaskResponseDetails& GetParsedResponse() const {
+    return request_->GetResponseDetailsForTesting();
   }
 
  protected:
@@ -105,6 +112,76 @@ TEST_P(VirtualCardUnmaskCardRequestTest, GetRequestContent) {
     EXPECT_TRUE(IsIncludedInRequestContent("challenge_id"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_length"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_position"));
+  }
+}
+
+TEST_P(VirtualCardUnmaskCardRequestTest,
+       ChallengeOptionsReturned_ParseResponse) {
+  base::test::ScopedFeatureList feature_list;
+  for (bool enable_cvc_challenge_option : {true, false}) {
+    feature_list.Reset();
+    feature_list.InitWithFeatureState(
+        features::kAutofillEnableCvcForVcnYellowPath,
+        /*enabled=*/enable_cvc_challenge_option);
+
+    absl::optional<base::Value> response = base::JSONReader::Read(
+        "{ \"fido_request_options\": { \"challenge\": "
+        "\"fake_fido_challenge\" }, \"context_token\": \"fake_context_token\", "
+        "\"idv_challenge_options\": [{ \"sms_otp_challenge_option\": "
+        "{ \"challenge_id\": \"fake_challenge_id_1\", \"masked_phone_number\": "
+        "\"(***)-***-1234\" } }, { \"sms_otp_challenge_option\": { "
+        "\"challenge_id\": \"fake_challenge_id_2\", \"masked_phone_number\": "
+        "\"(***)-***-5678\" } }, { \"cvc_challenge_option\": { "
+        "\"challenge_id\": \"fake_challenge_id_3\", \"cvc_length\": 3, "
+        "\"cvc_position\": \"CVC_POSITION_BACK\"}}, { "
+        "\"cvc_challenge_option\":{ \"challenge_id\": \"fake_challenge_id_4\", "
+        "\"cvc_length\": 4, \"cvc_position\": \"CVC_POSITION_FRONT\"}}]}");
+    ASSERT_TRUE(response.has_value());
+    GetRequest()->ParseResponse(response.value());
+
+    const PaymentsClient::UnmaskResponseDetails& response_details =
+        GetParsedResponse();
+    EXPECT_EQ("fake_context_token", response_details.context_token);
+    // Verify the FIDO request challenge is correctly parsed.
+    EXPECT_EQ(
+        "fake_fido_challenge",
+        *response_details.fido_request_options->FindStringKey("challenge"));
+    // Verify the three challenge options are two sms challenge options and one
+    // cvc challenge option, and fields can be correctly parsed.
+    ASSERT_EQ(enable_cvc_challenge_option ? 4u : 2u,
+              response_details.card_unmask_challenge_options.size());
+
+    const CardUnmaskChallengeOption& challenge_option_1 =
+        response_details.card_unmask_challenge_options[0];
+    EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
+    EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id);
+    EXPECT_EQ(u"(***)-***-1234", challenge_option_1.challenge_info);
+
+    const CardUnmaskChallengeOption& challenge_option_2 =
+        response_details.card_unmask_challenge_options[1];
+    EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
+    EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id);
+    EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
+
+    if (enable_cvc_challenge_option) {
+      const CardUnmaskChallengeOption& challenge_option_3 =
+          response_details.card_unmask_challenge_options[2];
+      EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_3.type);
+      EXPECT_EQ("fake_challenge_id_3", challenge_option_3.id);
+      EXPECT_EQ(challenge_option_3.challenge_info,
+                u"This is the 3-digit code on the back of your card");
+      EXPECT_EQ(3u, challenge_option_3.challenge_input_length);
+      EXPECT_EQ(CvcPosition::kBackOfCard, challenge_option_3.cvc_position);
+
+      const CardUnmaskChallengeOption& challenge_option_4 =
+          response_details.card_unmask_challenge_options[3];
+      EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_4.type);
+      EXPECT_EQ("fake_challenge_id_4", challenge_option_4.id);
+      EXPECT_EQ(challenge_option_4.challenge_info,
+                u"This is the 4-digit code on the front of your card");
+      EXPECT_EQ(4u, challenge_option_4.challenge_input_length);
+      EXPECT_EQ(CvcPosition::kFrontOfCard, challenge_option_4.cvc_position);
+    }
   }
 }
 

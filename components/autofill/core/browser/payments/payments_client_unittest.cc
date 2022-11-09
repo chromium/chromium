@@ -793,7 +793,8 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOn) {
       unmask_response_details_->card_unmask_challenge_options[2];
   EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_3.type);
   EXPECT_EQ("fake_challenge_id_3", challenge_option_3.id);
-  EXPECT_TRUE(challenge_option_3.challenge_info.empty());
+  EXPECT_EQ(challenge_option_3.challenge_info,
+            u"This is the 3-digit code on the back of your card");
   EXPECT_EQ(3u, challenge_option_3.challenge_input_length);
   EXPECT_EQ(CvcPosition::kBackOfCard, challenge_option_3.cvc_position);
 }

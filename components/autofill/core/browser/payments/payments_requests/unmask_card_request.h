@@ -23,6 +23,10 @@ class UnmaskCardRequest : public PaymentsRequest {
   UnmaskCardRequest& operator=(const UnmaskCardRequest&) = delete;
   ~UnmaskCardRequest() override;
 
+  const PaymentsClient::UnmaskResponseDetails& GetResponseDetailsForTesting() {
+    return response_details_;
+  }
+
   // PaymentsRequest:
   std::string GetRequestUrlPath() override;
   std::string GetRequestContentType() override;

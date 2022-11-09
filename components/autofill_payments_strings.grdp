@@ -298,6 +298,18 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC_AND_EXPIRATION_V2" desc="Error message that encourages the user to try to re-enter their credit card CVC or update the expiration dates after a previous failed attempt, according to August 2019 UI guidelines.">
     Check your CVC and try again or update the expiration date
   </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT" desc="Error message to show when a credit card cannot be verified and the user isn't allowed to retry.">
+    This card can't be verified right now
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_NETWORK" desc="Error message to show when a credit card cannot be verified because Wallet servers can't be reached.">
+    There was a problem confirming your card. Check your internet connection and try again.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD" desc="Text explaining that the security code is located in the back of your card, specifically for the virtual card unmasking case.">
+    back of your card
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_FRONT_OF_CARD" desc="Text explaining that the security code is located in the front of your card, specifically for the virtual card unmasking case.">
+    front of your card
+  </message>
   <if expr="is_android">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_DATE" desc="Error message that encourages the user to try to re-enter their credit card expiration date after a previous failed attempt." formatter_data="android_java">
       Check your expiration date and try again
@@ -312,12 +324,6 @@
       Check your expiration year and try again
     </message>
   </if>
-  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT" desc="Error message to show when a credit card cannot be verified and the user isn't allowed to retry.">
-    This card can't be verified right now
-  </message>
-  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_NETWORK" desc="Error message to show when a credit card cannot be verified because Wallet servers can't be reached.">
-    There was a problem confirming your card. Check your internet connection and try again.
-  </message>
   <if expr="not is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
       Enter the CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
@@ -336,12 +342,6 @@
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD" desc="Text explaining what the user should do in the card unmasking dialog.  Appears specifically for local cards already stored on the device.">
       Once you confirm, your card details will be shared with this site.
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD" desc="Text explaining that the security code is located in the back of your card, specifically for the virtual card unmasking case.">
-      back of your card
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_FRONT_OF_CARD" desc="Text explaining that the security code is located in the front of your card, specifically for the virtual card unmasking case.">
-      front of your card
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD" desc="Text providing instructions on how to unmask virtual card.">
       Enter the <ph name="NUMBER_OF_DIGITS">$1<ex>3</ex></ph>-digit security code on the <ph name="SIDE_OF_CARD">$2<ex>back of your card</ex></ph> so your bank can verify it's you
