@@ -680,17 +680,14 @@ TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenAlreadyExpired) {
         base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
                 [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
-                  ASSERT_FALSE(result);
+                  ASSERT_TRUE(result);
                   run_loop.Quit();
                 })));
     RespondWithOAuthToken(expiration);
-    run_loop.Run();
-  }
-  // The crasher required three additional responses before crashing.
-  if (HasPendingRequest()) {
     RespondWithTrustTokenNonUniqueUserId(2);
     RespondWithTrustTokenKeys(2, base::Time::Max());
     RespondWithTrustTokenIssued(2);
+    run_loop.Run();
   }
   task_environment()->RunUntilIdle();
   {
@@ -704,8 +701,6 @@ TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenAlreadyExpired) {
                   run_loop.Quit();
                 })));
     RespondWithOAuthToken(base::Time::Max());
-    RespondWithTrustTokenNonUniqueUserId(2);
-    RespondWithTrustTokenKeys(2, base::Time::Max());
     RespondWithTrustTokenIssued(2);
     run_loop.Run();
   }
