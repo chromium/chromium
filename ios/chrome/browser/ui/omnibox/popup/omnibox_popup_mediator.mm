@@ -536,6 +536,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   if (!carouselItem) {
     return;
   }
+  base::RecordAction(
+      base::UserMetricsAction("MostVisited_UrlBlacklisted_Omnibox"));
   [self blockMostVisitedURL:URL];
   [self.carouselItemConsumer deleteCarouselItem:carouselItem];
 }

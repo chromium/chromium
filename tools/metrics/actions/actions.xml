@@ -21404,6 +21404,12 @@ should be able to be added at any place in this file.
   <description>An NTP tile was blacklisted. iOS only.</description>
 </action>
 
+<action name="MostVisited_UrlBlacklisted_Omnibox">
+  <owner>christianxu@chromium.org</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <description>An omnibox MV tile was blacklisted. iOS only.</description>
+</action>
+
 <action name="MostVisited_UrlPinned">
   <obsolete>No longer recorded.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
