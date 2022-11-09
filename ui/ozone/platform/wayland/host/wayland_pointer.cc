@@ -37,8 +37,12 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
                                Delegate* delegate)
     : obj_(pointer), connection_(connection), delegate_(delegate) {
   static constexpr wl_pointer_listener listener = {
-      &Enter, &Leave,      &Motion,   &Button,      &Axis,
-      &Frame, &AxisSource, &AxisStop, &AxisDiscrete};
+      &Enter,        &Leave,      &Motion,   &Button,       &Axis,
+      &Frame,        &AxisSource, &AxisStop, &AxisDiscrete,
+#ifdef WL_POINTER_AXIS_VALUE120_SINCE_VERSION
+      &AxisValue120,
+#endif
+  };
 
   wl_pointer_add_listener(obj_.get(), &listener, this);
 
@@ -216,10 +220,24 @@ void WaylandPointer::AxisDiscrete(void* data,
                                   wl_pointer* obj,
                                   uint32_t axis,
                                   int32_t discrete) {
-  // TODO(fukino): Use this events for better handling of mouse wheel events.
-  // crbug.com/1129259.
+  // TODO(crbug.com/1129259): Use this event for better handling of mouse wheel
+  // events.
   NOTIMPLEMENTED_LOG_ONCE();
 }
+
+#ifdef WL_POINTER_AXIS_VALUE120_SINCE_VERSION
+// --- Version 8 ---
+
+// static
+void WaylandPointer::AxisValue120(void* data,
+                                  wl_pointer* obj,
+                                  uint32_t axis,
+                                  int32_t value120) {
+  // TODO(crbug.com/1129259): Use this event for better handling of mouse wheel
+  // events.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+#endif
 
 void WaylandPointer::SetupStylus() {
   auto* stylus_v2 = connection_->stylus_v2();

@@ -145,7 +145,10 @@ void WaylandKeyboard::Keymap(void* data,
   if (!data || format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1)
     return;
 
-  void* keymap = mmap(nullptr, size, PROT_READ, MAP_SHARED, fd, 0);
+  // From the Wayland specification: "From version 7 onwards, the fd must be
+  // mapped with MAP_PRIVATE by the recipient, as MAP_SHARED may fail."
+  int map_flags = wl_keyboard_get_version(obj) >= 7 ? MAP_PRIVATE : MAP_SHARED;
+  void* keymap = mmap(nullptr, size, PROT_READ, map_flags, fd, 0);
   if (keymap == MAP_FAILED) {
     DPLOG(ERROR) << "Failed to map XKB keymap.";
     return;

@@ -18,7 +18,7 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 5;
+constexpr uint32_t kMaxVersion = 8;
 }  // namespace
 
 // static
