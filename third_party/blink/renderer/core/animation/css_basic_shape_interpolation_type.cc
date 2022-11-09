@@ -194,7 +194,7 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
           ShapeClipPathOperation::Create(std::move(shape)));
       break;
     case CSSPropertyID::kObjectViewBox:
-      state.Style()->SetObjectViewBox(std::move(shape));
+      state.StyleBuilder().SetObjectViewBox(std::move(shape));
       break;
     default:
       NOTREACHED();

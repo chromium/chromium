@@ -184,7 +184,7 @@ void CSSTranslateInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   const auto& list = To<InterpolableList>(interpolable_value);
   if (list.length() == 0) {
-    state.Style()->SetTranslate(nullptr);
+    state.StyleBuilder().SetTranslate(nullptr);
     return;
   }
   const CSSToLengthConversionData& conversion_data =
@@ -200,7 +200,7 @@ void CSSTranslateInterpolationType::ApplyStandardPropertyValue(
   scoped_refptr<TranslateTransformOperation> result =
       TranslateTransformOperation::Create(x, y, z,
                                           TransformOperation::kTranslate3D);
-  state.Style()->SetTranslate(std::move(result));
+  state.StyleBuilder().SetTranslate(std::move(result));
 }
 
 }  // namespace blink

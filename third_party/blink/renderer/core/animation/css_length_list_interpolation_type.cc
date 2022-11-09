@@ -179,7 +179,7 @@ void CSSLengthListInterpolationType::ApplyStandardPropertyValue(
             .CreateLength(state.CssToLengthConversionData(), value_range_);
   }
   LengthListPropertyFunctions::SetLengthList(
-      CssProperty(), *state.Style(), state.StyleBuilder(), std::move(result));
+      CssProperty(), state.StyleBuilder(), std::move(result));
 }
 
 }  // namespace blink

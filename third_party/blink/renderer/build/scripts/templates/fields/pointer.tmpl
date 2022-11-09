@@ -6,6 +6,7 @@
   return {{decode(field, getter_expression(field))}}.get();
 }
 
+{% if field.writable %}
 void {{field.setter_method_name}}({{field.wrapper_pointer_name}}<{{field.type_name}}> v) {
 {% if field.group.parent %}
   {{setter_expression(field)}} = std::move(v);
@@ -13,6 +14,7 @@ void {{field.setter_method_name}}({{field.wrapper_pointer_name}}<{{field.type_na
   {{field.name}} = std::move(v);
 {% endif %}
 }
+{% endif %}
 {%- endmacro %}
 
 {% macro decl_protected_methods(field) -%}

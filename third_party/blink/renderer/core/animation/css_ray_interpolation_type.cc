@@ -123,7 +123,7 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   const auto& ray_non_interpolable_value =
       To<CSSRayNonInterpolableValue>(*non_interpolable_value);
-  state.Style()->SetOffsetPath(
+  state.StyleBuilder().SetOffsetPath(
       StyleRay::Create(To<InterpolableNumber>(interpolable_value).Value(),
                        ray_non_interpolable_value.Mode().Size(),
                        ray_non_interpolable_value.Mode().Contain()));

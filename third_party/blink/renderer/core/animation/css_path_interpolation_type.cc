@@ -41,15 +41,14 @@ const StylePath* GetPath(const CSSProperty& property,
 
 // Set the property to the given path() value.
 void SetPath(const CSSProperty& property,
-             ComputedStyle& style,
              ComputedStyleBuilder& builder,
              scoped_refptr<blink::StylePath> path) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kD:
-      style.SetD(std::move(path));
+      builder.SetD(std::move(path));
       return;
     case CSSPropertyID::kOffsetPath:
-      style.SetOffsetPath(std::move(path));
+      builder.SetOffsetPath(std::move(path));
       return;
     case CSSPropertyID::kClipPath:
       builder.SetClipPath(ShapeClipPathOperation::Create(std::move(path)));
@@ -66,7 +65,7 @@ void CSSPathInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  SetPath(CssProperty(), *state.Style(), state.StyleBuilder(),
+  SetPath(CssProperty(), state.StyleBuilder(),
           PathInterpolationFunctions::AppliedValue(interpolable_value,
                                                    non_interpolable_value));
 }

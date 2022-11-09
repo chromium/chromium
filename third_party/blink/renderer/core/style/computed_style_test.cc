@@ -1431,12 +1431,14 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
 // Ensures ref-counted values are compared by their values, not by pointers.
 #define TEST_STYLE_REFCOUNTED_VALUE_NO_DIFF(type, field_name)              \
   {                                                                        \
-    scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();           \
-    scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();           \
+    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();          \
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();          \
     scoped_refptr<type> value1 = base::MakeRefCounted<type>();             \
     scoped_refptr<type> value2 = base::MakeRefCounted<type>(value1->data); \
-    style1->Set##field_name(value1);                                       \
-    style2->Set##field_name(value2);                                       \
+    builder1.Set##field_name(value1);                                      \
+    builder2.Set##field_name(value2);                                      \
+    scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();      \
+    scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();      \
     auto diff = style1->VisualInvalidationDiff(*document, *style2);        \
     EXPECT_FALSE(diff.HasDifference());                                    \
   }

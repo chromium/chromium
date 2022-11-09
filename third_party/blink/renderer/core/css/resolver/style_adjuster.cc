@@ -800,14 +800,14 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
   }
 }
 
-void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style,
+void StyleAdjuster::AdjustForForcedColorsMode(const ComputedStyle& style,
                                               ComputedStyleBuilder& builder) {
   if (!style.InForcedColorsMode() ||
       style.ForcedColorAdjust() != EForcedColorAdjust::kAuto)
     return;
 
-  style.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());
-  style.SetBoxShadow(ComputedStyleInitialValues::InitialBoxShadow());
+  builder.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());
+  builder.SetBoxShadow(ComputedStyleInitialValues::InitialBoxShadow());
   builder.SetColorScheme({"light", "dark"});
   if (style.ShouldForceColor(style.AccentColor()))
     builder.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());

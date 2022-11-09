@@ -27,7 +27,6 @@ class LengthListPropertyFunctions {
                             const ComputedStyle&,
                             Vector<Length>& result);
   static void SetLengthList(const CSSProperty&,
-                            ComputedStyle&,
                             ComputedStyleBuilder&,
                             Vector<Length>&& length_list);
 };

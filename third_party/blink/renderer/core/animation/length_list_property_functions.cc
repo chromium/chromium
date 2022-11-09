@@ -202,12 +202,11 @@ static TransformOrigin TransformOriginFromVector(const Vector<Length>& list) {
 }
 
 void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
-                                                ComputedStyle& style,
                                                 ComputedStyleBuilder& builder,
                                                 Vector<Length>&& length_list) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeDasharray:
-      style.SetStrokeDashArray(
+      builder.SetStrokeDashArray(
           length_list.empty()
               ? nullptr
               : base::MakeRefCounted<SVGDashArray>(std::move(length_list)));

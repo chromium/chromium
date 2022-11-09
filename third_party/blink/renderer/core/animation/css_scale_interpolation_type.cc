@@ -271,10 +271,10 @@ void CSSScaleInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   Scale scale(interpolable_value);
   if (scale.is_none) {
-    state.Style()->SetScale(nullptr);
+    state.StyleBuilder().SetScale(nullptr);
     return;
   }
-  state.Style()->SetScale(ScaleTransformOperation::Create(
+  state.StyleBuilder().SetScale(ScaleTransformOperation::Create(
       scale.array[0], scale.array[1], scale.array[2],
       TransformOperation::kScale3D));
 }
