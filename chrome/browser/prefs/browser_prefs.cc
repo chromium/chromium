@@ -99,6 +99,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/pref_names.h"
 #include "components/embedder_support/origin_trials/origin_trial_prefs.h"
+#include "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
@@ -1288,6 +1289,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chrome_prefs::RegisterProfilePrefs(registry);
   commerce::RegisterPrefs(registry);
   DocumentProvider::RegisterProfilePrefs(registry);
+  enterprise::RegisterIdentifiersProfilePrefs(registry);
   enterprise_reporting::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   dom_distiller::RegisterProfilePrefs(registry);

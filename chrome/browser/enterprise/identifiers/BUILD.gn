@@ -1,0 +1,24 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("identifiers") {
+  public = [
+    "profile_id_delegate_impl.h",
+    "profile_id_service_factory.h",
+  ]
+
+  sources = [
+    "profile_id_delegate_impl.cc",
+    "profile_id_service_factory.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common",
+    "//components/prefs",
+  ]
+}

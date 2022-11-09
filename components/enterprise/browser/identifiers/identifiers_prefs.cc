@@ -11,7 +11,7 @@ namespace enterprise {
 const char kProfileGUIDPref[] = "enterprise_profile_guid";
 
 // static
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void RegisterIdentifiersProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kProfileGUIDPref, std::string());
 }
 

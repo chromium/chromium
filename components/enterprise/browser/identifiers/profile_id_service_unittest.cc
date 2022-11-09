@@ -31,7 +31,7 @@ class ProfileIdServiceTest : public testing::Test {
   void SetUp() override {
     auto mock_delegate = std::make_unique<MockProfileIdDelegate>();
     mock_delegate_ = mock_delegate.get();
-    RegisterProfilePrefs(profile_prefs_.registry());
+    RegisterIdentifiersProfilePrefs(profile_prefs_.registry());
     service_ = std::make_unique<ProfileIdService>(std::move(mock_delegate),
                                                   &profile_prefs_);
   }

@@ -12,7 +12,7 @@ namespace enterprise {
 // The name of the preference that stores the generated profile GUID.
 extern const char kProfileGUIDPref[];
 
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
+void RegisterIdentifiersProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise
 
