@@ -455,6 +455,20 @@ TEST(TransformOperationsTest, NonCommutativeRotations) {
   EXPECT_BOXF_EQ(bounds, expanded_bounds);
 }
 
+TEST(TransformOperationsTest, NonInvertibleBlendTest) {
+  TransformOperations from_ops;
+  TransformOperations to_ops;
+
+  from_ops.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Fixed(5), Length::Fixed(-5), TransformOperation::kTranslate));
+  to_ops.Operations().push_back(
+      MatrixTransformOperation::Create(0, 0, 0, 0, 0, 0));
+
+  EXPECT_EQ(from_ops, to_ops.Blend(from_ops, 0.25));
+  EXPECT_EQ(to_ops, to_ops.Blend(from_ops, 0.5));
+  EXPECT_EQ(to_ops, to_ops.Blend(from_ops, 0.75));
+}
+
 TEST(TransformOperationsTest, AbsoluteSequenceBoundsTest) {
   TransformOperations from_ops;
   TransformOperations to_ops;

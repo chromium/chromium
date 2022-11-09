@@ -241,19 +241,21 @@ String AffineTransform::ToString(bool as_matrix) const {
   if (IsIdentity())
     return "identity";
 
-  TransformationMatrix::Decomposed2dType decomposition;
-  if (!ToTransformationMatrix().Decompose2D(decomposition))
+  absl::optional<gfx::DecomposedTransform> decomp =
+      ToTransformationMatrix().Decompose();
+  if (!decomp)
     return ToString(true) + " (degenerate)";
 
-  if (IsIdentityOrTranslation())
-    return String::Format("translation(%lg,%lg)", decomposition.translate_x,
-                          decomposition.translate_y);
+  if (IsIdentityOrTranslation()) {
+    return String::Format("translation(%lg,%lg)", decomp->translate[0],
+                          decomp->translate[1]);
+  }
 
+  double angle = Rad2deg(std::asin(decomp->quaternion.z())) * 2;
   return String::Format(
       "translation(%lg,%lg), scale(%lg,%lg), angle(%lgdeg), skewxy(%lg)",
-      decomposition.translate_x, decomposition.translate_y,
-      decomposition.scale_x, decomposition.scale_y,
-      Rad2deg(decomposition.angle), decomposition.skew_xy);
+      decomp->translate[0], decomp->translate[1], decomp->scale[0],
+      decomp->scale[1], angle, decomp->skew[0]);
 }
 
 std::ostream& operator<<(std::ostream& ostream,

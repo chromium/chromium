@@ -47,7 +47,8 @@ void InterpolatedTransformOperation::Apply(
   from_.ApplyRemaining(border_box_size, starting_index_, from_transform);
   to_.ApplyRemaining(border_box_size, starting_index_, to_transform);
 
-  to_transform.Blend(from_transform, progress_);
+  if (!to_transform.Blend(from_transform, progress_) && progress_ < 0.5)
+    to_transform = from_transform;
   transform.PreConcat(to_transform);
 }
 

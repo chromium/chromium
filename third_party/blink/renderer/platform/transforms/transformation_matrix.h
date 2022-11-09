@@ -117,20 +117,6 @@ class PLATFORM_EXPORT TransformationMatrix : public gfx::Transform {
   using gfx::Transform::MapRect;
   [[nodiscard]] LayoutRect MapRect(const LayoutRect&) const;
 
-  // Decompose 2-D transform matrix into its component parts.
-  typedef struct {
-    double scale_x, scale_y;
-    double skew_xy;
-    double translate_x, translate_y;
-    double angle;
-  } Decomposed2dType;
-
-  [[nodiscard]] bool Decompose2D(Decomposed2dType&) const;
-  void Recompose(const gfx::DecomposedTransform&);
-  void Recompose2D(const Decomposed2dType&);
-  void Blend(const TransformationMatrix& from, double progress);
-  void Blend2D(const TransformationMatrix& from, double progress);
-
   bool IsAffine() const { return Is2dTransform(); }
 
   [[nodiscard]] AffineTransform ToAffineTransform() const;

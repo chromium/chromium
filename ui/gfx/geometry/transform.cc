@@ -908,6 +908,20 @@ bool Transform::Blend(const Transform& from, double progress) {
   return true;
 }
 
+bool Transform::Accumulate(const Transform& other) {
+  absl::optional<DecomposedTransform> this_decomp = Decompose();
+  if (!this_decomp)
+    return false;
+  absl::optional<DecomposedTransform> other_decomp = other.Decompose();
+  if (!other_decomp)
+    return false;
+
+  *this_decomp = AccumulateDecomposedTransforms(*this_decomp, *other_decomp);
+
+  *this = Compose(*this_decomp);
+  return true;
+}
+
 void Transform::Round2dTranslationComponents() {
   if (LIKELY(!full_matrix_)) {
     axis_2d_ = AxisTransform2d::FromScaleAndTranslation(

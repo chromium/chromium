@@ -30,6 +30,13 @@ BlendDecomposedTransforms(const DecomposedTransform& to,
                           const DecomposedTransform& from,
                           double progress);
 
+// Accumulates the decomposed components |to| with |from| using the
+// routines described in
+// https://www.w3.org/TR/css-transforms-2/#combining-transform-lists
+GEOMETRY_SKIA_EXPORT DecomposedTransform
+AccumulateDecomposedTransforms(const DecomposedTransform& to,
+                               const DecomposedTransform& from);
+
 // Calculates a transform with a transformed origin. The resulting transform is
 // created by composing P * T * P^-1 where P is a constant transform to the new
 // origin.

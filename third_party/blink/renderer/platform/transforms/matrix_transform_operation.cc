@@ -30,27 +30,10 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Accumulate(
   DCHECK(other_op.IsSameType(*this));
   const auto& other = To<MatrixTransformOperation>(other_op);
 
-  // Similar to interpolation, accumulating matrices is done by decomposing
-  // them, accumulating the individual functions, and then recomposing.
-
-  TransformationMatrix::Decomposed2dType from_decomp;
-  TransformationMatrix::Decomposed2dType to_decomp;
-  if (!other.matrix_.Decompose2D(from_decomp) ||
-      !matrix_.Decompose2D(to_decomp)) {
+  TransformationMatrix result = matrix_;
+  if (!result.Accumulate(other.matrix_))
     return nullptr;
-  }
 
-  // For a 2D matrix, the components can just be naively summed, noting that
-  // scale uses 1-based addition.
-  from_decomp.scale_x += to_decomp.scale_x - 1;
-  from_decomp.scale_y += to_decomp.scale_y - 1;
-  from_decomp.skew_xy += to_decomp.skew_xy;
-  from_decomp.translate_x += to_decomp.translate_x;
-  from_decomp.translate_y += to_decomp.translate_y;
-  from_decomp.angle += to_decomp.angle;
-
-  TransformationMatrix result;
-  result.Recompose2D(from_decomp);
   return MatrixTransformOperation::Create(result);
 }
 
@@ -60,24 +43,17 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Blend(
     bool blend_to_identity) {
   DCHECK(!from || CanBlendWith(*from));
 
-  // convert the TransformOperations into matrices
-  if (!matrix_.IsInvertible())
-    return nullptr;
-
   TransformationMatrix from_t;
-  if (from) {
-    const MatrixTransformOperation* m =
-        static_cast<const MatrixTransformOperation*>(from);
-    from_t = m->matrix_;
-    if (!from_t.IsInvertible())
-      return nullptr;
-  }
+  if (from)
+    from_t = To<MatrixTransformOperation>(from)->matrix_;
 
   TransformationMatrix to_t = matrix_;
   if (blend_to_identity)
     std::swap(from_t, to_t);
 
-  to_t.Blend(from_t, progress);
+  if (!to_t.Blend(from_t, progress))
+    return nullptr;
+
   return MatrixTransformOperation::Create(to_t);
 }
 

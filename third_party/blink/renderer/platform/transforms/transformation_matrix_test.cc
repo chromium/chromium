@@ -34,11 +34,11 @@ TEST(TransformationMatrixTest, NonInvertableBlendTest) {
   TransformationMatrix result;
 
   result = to;
-  result.Blend(from, 0.25);
-  EXPECT_EQ(result, from);
+  EXPECT_FALSE(result.Blend(from, 0.25));
+  EXPECT_EQ(result, to);
 
   result = to;
-  result.Blend(from, 0.75);
+  EXPECT_FALSE(result.Blend(from, 0.75));
   EXPECT_EQ(result, to);
 }
 
@@ -225,36 +225,6 @@ TEST(TransformationMatrixTest, Blend2dRotationDirectionTest) {
   result = from;
   result.Blend(to, 0.5);
   EXPECT_TRANSFORMATION_MATRIX(expected, result);
-}
-
-TEST(TransformationMatrixTest, Decompose2dShearTest) {
-  // Test that x and y-shear transforms are properly decomposed.
-  // The canonical decomposition is: transform, rotate, x-axis shear, scale.
-  auto transform_shear_x = TransformationMatrix::Affine(1, 0, 1, 1, 0, 0);
-  TransformationMatrix::Decomposed2dType decomp_shear_x;
-  EXPECT_TRUE(transform_shear_x.Decompose2D(decomp_shear_x));
-  EXPECT_FLOAT(1, decomp_shear_x.scale_x);
-  EXPECT_FLOAT(1, decomp_shear_x.scale_y);
-  EXPECT_FLOAT(0, decomp_shear_x.translate_x);
-  EXPECT_FLOAT(0, decomp_shear_x.translate_y);
-  EXPECT_FLOAT(0, decomp_shear_x.angle);
-  EXPECT_FLOAT(1, decomp_shear_x.skew_xy);
-  TransformationMatrix recomp_shear_x;
-  recomp_shear_x.Recompose2D(decomp_shear_x);
-  EXPECT_TRANSFORMATION_MATRIX(transform_shear_x, recomp_shear_x);
-
-  auto transform_shear_y = TransformationMatrix::Affine(1, 1, 0, 1, 0, 0);
-  TransformationMatrix::Decomposed2dType decomp_shear_y;
-  EXPECT_TRUE(transform_shear_y.Decompose2D(decomp_shear_y));
-  EXPECT_FLOAT(sqrt(2), decomp_shear_y.scale_x);
-  EXPECT_FLOAT(1 / sqrt(2), decomp_shear_y.scale_y);
-  EXPECT_FLOAT(0, decomp_shear_y.translate_x);
-  EXPECT_FLOAT(0, decomp_shear_y.translate_y);
-  EXPECT_FLOAT(M_PI / 4, decomp_shear_y.angle);
-  EXPECT_FLOAT(1, decomp_shear_y.skew_xy);
-  TransformationMatrix recomp_shear_y;
-  recomp_shear_y.Recompose2D(decomp_shear_y);
-  EXPECT_TRANSFORMATION_MATRIX(transform_shear_y, recomp_shear_y);
 }
 
 TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {

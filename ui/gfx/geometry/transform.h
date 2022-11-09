@@ -505,8 +505,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
   static Transform Compose(const DecomposedTransform& decomp);
 
   // Decomposes |this| and |from|, interpolates the decomposed values, and
-  // sets |this| to the reconstituted result. Returns false if either matrix
-  // can't be decomposed. Uses routines described in this spec:
+  // sets |this| to the reconstituted result. Returns false and leaves |this|
+  // unchanged if either matrix can't be decomposed.
+  // Uses routines described in this spec:
   // https://www.w3.org/TR/css-transforms-2/#matrix-interpolation
   //
   // Note: this call is expensive for complex transforms since we need to
@@ -515,6 +516,17 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // using Decompose() and reuse your DecomposedTransform with
   // BlendDecomposedTransforms() (see transform_util.h).
   bool Blend(const Transform& from, double progress);
+
+  // Decomposes |this| and |from|, accumulates the decomposed values, and
+  // sets |this| to the reconstituted result. Returns false and leaves |this|
+  // unchanged if either matrix can't be decomposed.
+  // Uses routines described in this spec:
+  // https://www.w3.org/TR/css-transforms-2/#combining-transform-lists.
+  //
+  // Note: this function has the same performance characteristics as Blend().
+  // When possible, you should also reuse DecomposedTransform with
+  // AccumulateDecomposedTransforms() (see transform_util.h).
+  bool Accumulate(const Transform& other);
 
   double Determinant() const;
 

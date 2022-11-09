@@ -145,7 +145,9 @@ TransformOperations::BlendRemainingByUsingMatrixInterpolation(
     return nullptr;
   }
 
-  to_transform.Blend(from_transform, progress);
+  if (!to_transform.Blend(from_transform, progress) && progress < 0.5)
+    to_transform = from_transform;
+
   return Matrix3DTransformOperation::Create(to_transform);
 }
 
