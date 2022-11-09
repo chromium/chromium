@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/ui_base_switches.h"
@@ -30,6 +31,13 @@
 namespace ui {
 
 namespace {
+
+class ComparatorSkColor4f {
+ public:
+  bool operator()(const SkColor4f& a, const SkColor4f& b) const {
+    return std::tie(a.fR, a.fG, a.fB, a.fA) < std::tie(b.fR, b.fG, b.fB, b.fA);
+  }
+};
 
 // TODO(https://crbug.com/1313999): Remove debug prints after the code is
 // stable.
@@ -230,20 +238,21 @@ class CARendererLayerTree::SolidColorContents
  private:
   friend class base::RefCounted<SolidColorContents>;
 
-  SolidColorContents(SkColor color, IOSurfaceRef io_surface);
+  SolidColorContents(SkColor4f color, IOSurfaceRef io_surface);
   ~SolidColorContents();
 
-  static std::map<SkColor, SolidColorContents*>* GetMap();
+  using Map = std::map<SkColor4f,
+                       CARendererLayerTree::SolidColorContents*,
+                       ComparatorSkColor4f>;
+  static Map* GetMap();
 
-  SkColor color_ = 0;
+  const SkColor4f color_;
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
 };
 
 // static
 scoped_refptr<CARendererLayerTree::SolidColorContents>
-CARendererLayerTree::SolidColorContents::Get(SkColor4f color4f) {
-  // TODO(https://crbug.com/1376717): Support non-sRGB colors.
-  const SkColor color = color4f.toSkColor();
+CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
   const int kSolidColorContentsSize = 16;
 
   auto* map = GetMap();
@@ -251,24 +260,36 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color4f) {
   if (found != map->end())
     return found->second;
 
-  IOSurfaceRef io_surface = CreateIOSurface(
-      gfx::Size(kSolidColorContentsSize, kSolidColorContentsSize),
-      gfx::BufferFormat::BGRA_8888);
+  const gfx::Size size(kSolidColorContentsSize, kSolidColorContentsSize);
+  gfx::BufferFormat buffer_format = gfx::BufferFormat::BGRA_8888;
+  SkColorType color_type = kBGRA_8888_SkColorType;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Use P3 for non-sRGB solid colors, because that is likely the tile
+  // rasterization color space.
+  // https://crbug.com/1376717
+  if (!color.fitsInBytes()) {
+    color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  }
+
+  IOSurfaceRef io_surface = CreateIOSurface(size, buffer_format);
   if (!io_surface)
     return nullptr;
+  IOSurfaceSetColorSpace(io_surface, color_space);
 
-  size_t bytes_per_row = IOSurfaceGetBytesPerRowOfPlane(io_surface, 0);
-  IOSurfaceLock(io_surface, 0, NULL);
-  char* row_base_address =
-      reinterpret_cast<char*>(IOSurfaceGetBaseAddress(io_surface));
-  for (int i = 0; i < kSolidColorContentsSize; ++i) {
-    unsigned int* pixel = reinterpret_cast<unsigned int*>(row_base_address);
-    for (int j = 0; j < kSolidColorContentsSize; ++j)
-      *(pixel++) = color;
-    row_base_address += bytes_per_row;
+  {
+    size_t bytes_per_row = IOSurfaceGetBytesPerRowOfPlane(io_surface, 0);
+    IOSurfaceLock(io_surface, 0, NULL);
+    char* base_address =
+        reinterpret_cast<char*>(IOSurfaceGetBaseAddress(io_surface));
+    SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
+                                         color_type, kPremul_SkAlphaType);
+    auto canvas = SkCanvas::MakeRasterDirect(info, base_address, bytes_per_row);
+    DCHECK(canvas);
+    canvas->clear(color);
+
+    IOSurfaceUnlock(io_surface, 0, NULL);
   }
-  IOSurfaceUnlock(io_surface, 0, NULL);
-
   return new SolidColorContents(color, io_surface);
 }
 
@@ -281,7 +302,7 @@ IOSurfaceRef CARendererLayerTree::SolidColorContents::GetIOSurfaceRef() const {
 }
 
 CARendererLayerTree::SolidColorContents::SolidColorContents(
-    SkColor color,
+    SkColor4f color,
     IOSurfaceRef io_surface)
     : color_(color), io_surface_(io_surface) {
   auto* map = GetMap();
@@ -298,10 +319,10 @@ CARendererLayerTree::SolidColorContents::~SolidColorContents() {
 }
 
 // static
-std::map<SkColor, CARendererLayerTree::SolidColorContents*>*
+CARendererLayerTree::SolidColorContents::Map*
 CARendererLayerTree::SolidColorContents::GetMap() {
-  static auto* map = new std::map<SkColor, SolidColorContents*>();
-  return map;
+  static base::NoDestructor<Map> map;
+  return map.get();
 }
 
 CARendererLayerTree::CARendererLayerTree(
