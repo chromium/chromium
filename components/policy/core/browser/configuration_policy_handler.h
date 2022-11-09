@@ -271,7 +271,7 @@ class POLICY_EXPORT StringMappingListPolicyHandler
   // Attempts to convert the list in |input| to |output| according to the table,
   // returns false on errors.
   bool Convert(const base::Value* input,
-               base::ListValue* output,
+               base::Value::List* output,
                PolicyErrorMap* errors);
 
   // Helper method that converts from a policy value string to the associated
