@@ -19,7 +19,9 @@
 // Consult crx3.gni for more information.
 int main(int argc, char* argv[]) {
   std::string key_file;
-  if (!base::ReadFileToString(base::FilePath::FromASCII(argv[3]), &key_file)) {
+  if (!base::ReadFileToString(
+          base::MakeAbsoluteFilePath(base::FilePath::FromASCII(argv[3])),
+          &key_file)) {
     VLOG(0) << "Failed to read key material from " << argv[3];
     return -1;
   }

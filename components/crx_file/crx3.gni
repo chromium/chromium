@@ -8,7 +8,8 @@ import("//build/config/zip.gni")
 # Creates a CRX3 archive of the inputs
 #
 # inputs: A list of files that will be placed into the CRX.
-# key: An RSA key (DER-encoded PKCS #8 PrivateKeyInfo) to sign the CRX with.
+# key: Path to a file containing an RSA key (DER-encoded PKCS #8 PrivateKeyInfo)
+# to sign the CRX with.
 # output: Path to the output CRX.
 # base_dir (optional): The CRX paths will be relative to this directory.
 #
@@ -43,7 +44,7 @@ template("crx3") {
     args = [
       rebase_path(invoker.output, root_build_dir),
       rebase_path(_zip_out, root_build_dir),
-      rebase_path(invoker.key),
+      rebase_path(invoker.key, root_build_dir),
     ]
     inputs = [ _zip_out ]
     deps = [ ":$_zip_target" ]
