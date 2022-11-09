@@ -98,10 +98,13 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   // Handles a response from the agent for a given request.
   void HandleResponse(
-      RequestKey key,
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
       absl::optional<content_analysis::sdk::ContentAnalysisResponse>
           sdk_response);
+
+  // Find the request that corresponds to the given response.
+  RequestKey FindRequestByToken(
+      const content_analysis::sdk::ContentAnalysisResponse& sdk_response);
 
   // Move the next request from the pending list, if any, to the active
   // list and process it.
@@ -121,15 +124,15 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // be in either the active or pending lists.
   void OnTimeout(RequestKey key);
 
-  // Moves the request given by `key` from the active list to the pending
-  // list and queues up a task to reconnect to the agent.  Once reconnected
-  // the requests will be retried in order.
+  // If there haven't been too many retries, moves all requests from the active
+  // list to the pending list and queues up a task to reconnect to the agent.
+  // Once reconnected the requests will be retried in order.
   //
-  // If there have been too many errors connecting to the agent, returns
-  // false to indicate that no more attempts will be made to reconnect to the
-  // agent and that all subsequent deep scan requests should fail
+  // If there have been too many errors connecting to the agent, fail all
+  // active and pending requests.  No more attempts will be made to reconnect
+  // to the agent and that all subsequent deep scan requests should fail
   // automatically.
-  bool RetryRequest(RequestKey key);
+  void RetryActiveRequestsSoonOrFailAllRequests();
 
   // Called when BinaryUploadService should attempt to reconnect and retry
   // requests to the agent.  This method is called by the timer set in
