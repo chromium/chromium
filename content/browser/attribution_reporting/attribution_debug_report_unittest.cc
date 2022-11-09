@@ -70,27 +70,50 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
   const struct {
     StorableSource::Result result;
     absl::optional<int> max_destinations_per_source_site_reporting_origin;
+    absl::optional<int> max_sources_per_origin;
     const char* expected_report_body_without_cookie;
     const char* expected_report_body_with_cookie;
   } kTestCases[] = {
       {StorableSource::Result::kSuccess,
        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_sources_per_origin=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
        /*expected_report_body_with_cookie=*/nullptr},
       {StorableSource::Result::kInternalError,
        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_sources_per_origin=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/nullptr},
+       /*expected_report_body_with_cookie=*/
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "source-unknown-error"
+       }])json"},
       {StorableSource::Result::kInsufficientSourceCapacity,
        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_sources_per_origin=*/10,
        /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/nullptr},
+       /*expected_report_body_with_cookie=*/
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": 10,
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "source-storage-limit"
+       }])json"},
       {StorableSource::Result::kProhibitedByBrowserPolicy,
        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_sources_per_origin=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
        /*expected_report_body_with_cookie=*/nullptr},
       {StorableSource::Result::kInsufficientUniqueDestinationCapacity,
        /*max_destinations_per_source_site_reporting_origin=*/3,
+       /*max_sources_per_origin=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/
        R"json([{
          "body": {
@@ -113,6 +136,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StorableSource::Result::kSuccessNoised,
        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_sources_per_origin=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
        /*expected_report_body_with_cookie=*/
        R"json([{
@@ -134,8 +158,8 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
               AttributionStorage::StoreSourceResult(
                   test_case.result,
                   /*min_fake_report_time=*/absl::nullopt,
-                  /*max_destinations_per_source_site_reporting_origin=*/
-                  test_case.max_destinations_per_source_site_reporting_origin));
+                  test_case.max_destinations_per_source_site_reporting_origin,
+                  test_case.max_sources_per_origin));
       const char* expected_report_body =
           is_debug_cookie_set ? test_case.expected_report_body_with_cookie
                               : test_case.expected_report_body_without_cookie;

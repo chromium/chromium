@@ -576,7 +576,8 @@ void AttributionManagerImpl::ProcessEvents() {
     const url::Origin* cookie_origin =
         absl::visit(base::Overloaded{
                         [](const StorableSource& source) {
-                          return source.common_info().debug_key().has_value()
+                          return source.common_info().debug_key().has_value() ||
+                                         source.debug_reporting()
                                      ? &source.common_info().reporting_origin()
                                      : nullptr;
                         },

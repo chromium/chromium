@@ -585,7 +585,10 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       SerializePotentiallyTrustworthyOrigin(common_info.source_origin());
   if (!HasCapacityForStoringSource(serialized_source_origin)) {
     return StoreSourceResult(
-        StorableSource::Result::kInsufficientSourceCapacity);
+        StorableSource::Result::kInsufficientSourceCapacity,
+        /*min_fake_report_time=*/absl::nullopt,
+        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+        delegate_->GetMaxSourcesPerOrigin());
   }
 
   RateLimitResult unexpired_sources_destination_limit =

@@ -32,7 +32,8 @@ class AttributionStorage {
         StorableSource::Result status,
         absl::optional<base::Time> min_fake_report_time = absl::nullopt,
         absl::optional<int> max_destinations_per_source_site_reporting_origin =
-            absl::nullopt);
+            absl::nullopt,
+        absl::optional<int> max_sources_per_origin = absl::nullopt);
 
     ~StoreSourceResult();
 
@@ -51,6 +52,10 @@ class AttributionStorage {
     // Only populated in case of
     // `StorableSource::Result::kInsufficientUniqueDestinationCapacity`.
     absl::optional<int> max_destinations_per_source_site_reporting_origin;
+
+    // Only populated in case of
+    // `StorableSource::Result::kInsufficientSourceCapacity`.
+    absl::optional<int> max_sources_per_origin;
   };
 
   virtual ~AttributionStorage() = default;

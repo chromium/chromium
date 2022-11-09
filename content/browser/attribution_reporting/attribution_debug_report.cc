@@ -21,40 +21,51 @@ namespace content {
 
 namespace {
 
-absl::optional<AttributionDebugReport::DataType> GetReportDataType(
-    StorableSource::Result result,
-    bool is_debug_cookie_set) {
+using DebugDataType = ::content::AttributionDebugReport::DataType;
+
+absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
+                                                  bool is_debug_cookie_set) {
+  return is_debug_cookie_set ? absl::make_optional(data_type) : absl::nullopt;
+}
+
+absl::optional<DebugDataType> GetReportDataType(StorableSource::Result result,
+                                                bool is_debug_cookie_set) {
   switch (result) {
     case StorableSource::Result::kSuccess:
-    case StorableSource::Result::kInternalError:
-    case StorableSource::Result::kInsufficientSourceCapacity:
     case StorableSource::Result::kExcessiveReportingOrigins:
     case StorableSource::Result::kProhibitedByBrowserPolicy:
       return absl::nullopt;
     case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
-      return AttributionDebugReport::DataType::kSourceDestinationLimit;
+      return DebugDataType::kSourceDestinationLimit;
     case StorableSource::Result::kSuccessNoised:
-      return is_debug_cookie_set
-                 ? absl::make_optional(
-                       AttributionDebugReport::DataType::kSourceNoised)
-                 : absl::nullopt;
+      return DataTypeIfCookieSet(DebugDataType::kSourceNoised,
+                                 is_debug_cookie_set);
+    case StorableSource::Result::kInsufficientSourceCapacity:
+      return DataTypeIfCookieSet(DebugDataType::kSourceStorageLimit,
+                                 is_debug_cookie_set);
+    case StorableSource::Result::kInternalError:
+      return DataTypeIfCookieSet(DebugDataType::kSourceUnknownError,
+                                 is_debug_cookie_set);
   }
 }
 
-std::string SerializeReportDataType(
-    AttributionDebugReport::DataType data_type) {
+std::string SerializeReportDataType(DebugDataType data_type) {
   switch (data_type) {
-    case AttributionDebugReport::DataType::kSourceDestinationLimit:
+    case DebugDataType::kSourceDestinationLimit:
       return "source-destination-limit";
-    case AttributionDebugReport::DataType::kSourceNoised:
+    case DebugDataType::kSourceNoised:
       return "source-noised";
+    case DebugDataType::kSourceStorageLimit:
+      return "source-storage-limit";
+    case DebugDataType::kSourceUnknownError:
+      return "source-unknown-error";
   }
 }
 
 base::Value::Dict GetReportDataBody(
-    AttributionDebugReport::DataType data_type,
+    DebugDataType data_type,
     const StorableSource& source,
-    absl::optional<int> max_destinations_per_source_site_reporting_origin) {
+    const AttributionStorage::StoreSourceResult& result) {
   DCHECK(!source.is_within_fenced_frame());
 
   const CommonSourceInfo& common_info = source.common_info();
@@ -65,13 +76,20 @@ base::Value::Dict GetReportDataBody(
                 base::NumberToString(common_info.source_event_id()));
   data_body.Set("source_site", common_info.SourceSite().Serialize());
 
+  static constexpr char kLimit[] = "limit";
+
   switch (data_type) {
-    case AttributionDebugReport::DataType::kSourceDestinationLimit:
-      DCHECK(max_destinations_per_source_site_reporting_origin);
-      data_body.Set("limit",
-                    *max_destinations_per_source_site_reporting_origin);
+    case DebugDataType::kSourceDestinationLimit:
+      DCHECK(result.max_destinations_per_source_site_reporting_origin);
+      data_body.Set(kLimit,
+                    *result.max_destinations_per_source_site_reporting_origin);
       break;
-    case AttributionDebugReport::DataType::kSourceNoised:
+    case DebugDataType::kSourceStorageLimit:
+      DCHECK(result.max_sources_per_origin);
+      data_body.Set(kLimit, *result.max_sources_per_origin);
+      break;
+    case DebugDataType::kSourceNoised:
+    case DebugDataType::kSourceUnknownError:
       break;
   }
 
@@ -130,11 +148,8 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return absl::nullopt;
 
   std::vector<ReportData> report_data;
-  report_data.emplace_back(
-      *data_type,
-      GetReportDataBody(
-          *data_type, source,
-          result.max_destinations_per_source_site_reporting_origin));
+  report_data.emplace_back(*data_type,
+                           GetReportDataBody(*data_type, source, result));
   return AttributionDebugReport(std::move(report_data),
                                 source.common_info().reporting_origin());
 }

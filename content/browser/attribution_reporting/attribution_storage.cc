@@ -17,14 +17,18 @@ using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
 StoreSourceResult::StoreSourceResult(
     StorableSource::Result status,
     absl::optional<base::Time> min_fake_report_time,
-    absl::optional<int> max_destinations_per_source_site_reporting_origin)
+    absl::optional<int> max_destinations_per_source_site_reporting_origin,
+    absl::optional<int> max_sources_per_origin)
     : status(status),
       min_fake_report_time(min_fake_report_time),
       max_destinations_per_source_site_reporting_origin(
-          max_destinations_per_source_site_reporting_origin) {
+          max_destinations_per_source_site_reporting_origin),
+      max_sources_per_origin(max_sources_per_origin) {
   DCHECK(!max_destinations_per_source_site_reporting_origin.has_value() ||
          status ==
              StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+  DCHECK(!max_sources_per_origin.has_value() ||
+         status == StorableSource::Result::kInsufficientSourceCapacity);
 }
 
 StoreSourceResult::~StoreSourceResult() = default;

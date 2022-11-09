@@ -2106,4 +2106,56 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   EXPECT_TRUE(report_data->Find("source_site"));
 }
 
+class AttributionManagerImplCookieBasedDebugReportTest
+    : public AttributionManagerImplTest {
+ protected:
+  void ConfigureStorageDelegate(
+      ConfigurableStorageDelegate& delegate) const override {
+    delegate.set_max_sources_per_origin(1);
+  }
+};
+
+TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
+       VerboseDebugReport_ReportSent) {
+  url::Origin reporting_origin = url::Origin::Create(GURL("https://r1.test"));
+  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
+
+  attribution_manager_->HandleSource(SourceBuilder().Build());
+
+  // Failed without debug reporting.
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetReportingOrigin(reporting_origin).Build());
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  // Source registered within a fenced frame failed with debug reporting, but
+  // no debug report is sent.
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetReportingOrigin(reporting_origin)
+                                         .SetDebugReporting(true)
+                                         .SetIsWithinFencedFrame(true)
+                                         .Build());
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  // Source registered outside a fenced frame failed with debug reporting but no
+  // debug cookie is set, therefore no debug report is sent.
+  attribution_manager_->HandleSource(
+      SourceBuilder()
+          .SetReportingOrigin(url::Origin::Create(GURL("https://r2.test")))
+          .SetDebugReporting(true)
+          .Build());
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  // Source registered outside a fenced frame with debug reporting and debug
+  // cookie is set.
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetReportingOrigin(reporting_origin)
+                                         .SetDebugReporting(true)
+                                         .Build());
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
+}
+
 }  // namespace content

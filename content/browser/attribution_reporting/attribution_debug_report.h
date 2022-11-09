@@ -26,6 +26,8 @@ class CONTENT_EXPORT AttributionDebugReport {
   enum class DataType {
     kSourceDestinationLimit,
     kSourceNoised,
+    kSourceStorageLimit,
+    kSourceUnknownError,
   };
 
   static absl::optional<AttributionDebugReport> Create(
