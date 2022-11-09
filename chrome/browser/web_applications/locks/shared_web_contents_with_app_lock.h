@@ -17,6 +17,7 @@ class WebContents;
 namespace web_app {
 
 class OsIntegrationManager;
+class WebAppInstallFinalizer;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 
@@ -41,6 +42,7 @@ class SharedWebContentsWithAppLock : public SharedWebContentsLock, AppLock {
   SharedWebContentsWithAppLock(content::WebContents& shared_web_contents,
                                WebAppRegistrar& registrar,
                                WebAppSyncBridge& sync_bridge,
+                               WebAppInstallFinalizer& install_finalizer,
                                OsIntegrationManager& os_integration_manager);
   ~SharedWebContentsWithAppLock();
 };

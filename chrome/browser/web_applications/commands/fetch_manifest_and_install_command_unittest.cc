@@ -187,8 +187,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
                   result = code;
                   run_loop.Quit();
                 }),
-            use_fallback, &provider()->install_finalizer(),
-            std::move(data_retriever)));
+            use_fallback, std::move(data_retriever)));
     run_loop.Run();
     return result;
   }
@@ -289,8 +288,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
                 result_populated = true;
                 result = code;
               }),
-          /*use_fallback=*/false, &provider()->install_finalizer(),
-          SetupDefaultFakeDataRetriever()));
+          /*use_fallback=*/false, SetupDefaultFakeDataRetriever()));
 
   dialog_runloop.Run();
   provider()->command_manager().Shutdown();
@@ -316,8 +314,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsDestroyed) {
                 result = code;
                 loop.Quit();
               }),
-          /*use_fallback=*/false, &provider()->install_finalizer(),
-          SetupDefaultFakeDataRetriever()));
+          /*use_fallback=*/false, SetupDefaultFakeDataRetriever()));
 
   DeleteContents();
   loop.Run();

@@ -58,7 +58,7 @@ class ExternallyManagedInstallCommandTest : public WebAppTest {
                   result.installed_app_id = app_id;
                   run_loop.Quit();
                 }),
-            web_contents()->GetWeakPtr(), &provider()->install_finalizer(),
+            web_contents()->GetWeakPtr(),
 
             std::move(data_retriever)));
     run_loop.Run();
@@ -226,7 +226,7 @@ TEST_F(ExternallyManagedInstallCommandTest, UpgradeLock) {
             result.installed_app_id = app_id;
             run_loop.Quit();
           }),
-      web_contents()->GetWeakPtr(), &provider()->install_finalizer(),
+      web_contents()->GetWeakPtr(),
 
       std::move(data_retriever));
 

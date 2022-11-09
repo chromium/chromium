@@ -16,8 +16,10 @@
 
 namespace web_app {
 
+class AppLock;
 class AppLockDescription;
 class LockDescription;
+class NoopLock;
 class NoopLockDescription;
 class SharedWebContentsLockDescription;
 class SharedWebContentsWithAppLockDescription;
@@ -58,9 +60,10 @@ class WebAppLockManager {
                         base::OnceClosure on_lock_acquired);
 
   std::unique_ptr<AppLockDescription> UpgradeAndAcquireLock(
-      std::unique_ptr<NoopLockDescription> lock,
+      std::unique_ptr<NoopLockDescription> lock_description,
+      std::unique_ptr<NoopLock> lock,
       const base::flat_set<AppId>& app_ids,
-      base::OnceClosure on_lock_acquired);
+      base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired);
 
  private:
   content::PartitionedLockManager lock_manager_;

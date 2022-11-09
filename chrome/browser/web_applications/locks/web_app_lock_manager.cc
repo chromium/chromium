@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -156,9 +157,9 @@ void WebAppLockManager::AcquireLock(
     base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired) {
   CHECK(lock_description.type() == LockDescription::Type::kApp);
 
-  auto lock = std::make_unique<AppLock>(provider_->registrar(),
-                                        provider_->sync_bridge(),
-                                        provider_->os_integration_manager());
+  auto lock = std::make_unique<AppLock>(
+      provider_->registrar(), provider_->sync_bridge(),
+      provider_->install_finalizer(), provider_->os_integration_manager());
 
   AcquireLock(lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
@@ -174,7 +175,7 @@ void WebAppLockManager::AcquireLock(
   auto lock = std::make_unique<SharedWebContentsWithAppLock>(
       *provider_->command_manager().EnsureWebContentsCreated(PassKey()),
       provider_->registrar(), provider_->sync_bridge(),
-      provider_->os_integration_manager());
+      provider_->install_finalizer(), provider_->os_integration_manager());
 
   AcquireLock(lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
@@ -189,7 +190,7 @@ void WebAppLockManager::AcquireLock(
 
   auto lock = std::make_unique<FullSystemLock>(
       provider_->registrar(), provider_->sync_bridge(),
-      provider_->os_integration_manager());
+      provider_->install_finalizer(), provider_->os_integration_manager());
 
   AcquireLock(lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
@@ -215,18 +216,29 @@ WebAppLockManager::UpgradeAndAcquireLock(
 
 std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
     std::unique_ptr<NoopLockDescription> lock_description,
+    std::unique_ptr<NoopLock> lock,
     const base::flat_set<AppId>& app_ids,
-    base::OnceClosure on_lock_acquired) {
+    base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired) {
   CHECK(lock_description->HasLockBeenRequested());
-  std::unique_ptr<AppLockDescription> result_lock =
+  std::unique_ptr<AppLockDescription> result_lock_description =
       std::make_unique<AppLockDescription>(app_ids);
-  result_lock->holder_ = std::move(lock_description->holder_);
-  content::PartitionedLockManager::AcquireOptions options;
-  options.ensure_async = true;
+  // TODO(https://crbug.com/1375870): move `holder_` from lock description to
+  // lock after all commands are migrated to use command template.
+  result_lock_description->holder_ = std::move(lock_description->holder_);
+
+  auto result_lock = std::make_unique<AppLock>(
+      provider_->registrar(), provider_->sync_bridge(),
+      provider_->install_finalizer(), provider_->os_integration_manager());
+  // TODO(dmurph): Create option for lock acquisition callbacks to always be
+  // posted async. https://crbug.com/1354312
+  auto posted_callback = base::BindOnce(
+      base::IgnoreResult(&base::TaskRunner::PostTask),
+      base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+      base::BindOnce(std::move(on_lock_acquired), std::move(result_lock)));
   lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
-                             result_lock->holder_->AsWeakPtr(),
-                             std::move(on_lock_acquired), options);
-  return result_lock;
+                             result_lock_description->holder_->AsWeakPtr(),
+                             std::move(posted_callback));
+  return result_lock_description;
 }
 
 }  // namespace web_app

@@ -123,7 +123,6 @@ void WebAppCommandManager::StartCommandOrPrepareForLoad(
   DCHECK(command);
   auto command_it = commands_.find(command->id());
   DCHECK(command_it != commands_.end());
-  DCHECK(!command->IsStarted());
 #endif
   if (command->lock_description().IncludesSharedWebContents()) {
     command->shared_web_contents_ = EnsureWebContentsCreated();

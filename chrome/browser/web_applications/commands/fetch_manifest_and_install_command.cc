@@ -137,7 +137,6 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback,
     bool use_fallback,
-    WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_surface_(install_surface),
@@ -146,7 +145,6 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
       dialog_callback_(std::move(dialog_callback)),
       install_callback_(std::move(callback)),
       use_fallback_(use_fallback),
-      install_finalizer_(install_finalizer),
       data_retriever_(std::move(data_retriever)),
       install_error_log_entry_(/*background_installation=*/false,
                                install_surface_) {}
@@ -162,7 +160,10 @@ LockDescription& FetchManifestAndInstallCommand::lock_description() const {
   return *app_lock_description_;
 }
 
-void FetchManifestAndInstallCommand::Start() {
+void FetchManifestAndInstallCommand::StartWithLock(
+    std::unique_ptr<NoopLock> lock) {
+  noop_lock_ = std::move(lock);
+
   // This metric is recorded regardless of the installation result.
   if (webapps::InstallableMetrics::IsReportableInstallSource(
           install_surface_)) {
@@ -295,7 +296,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
 
   app_lock_description_ =
       command_manager()->lock_manager().UpgradeAndAcquireLock(
-          std::move(noop_lock_description_), {app_id_},
+          std::move(noop_lock_description_), std::move(noop_lock_), {app_id_},
           base::BindOnce(&FetchManifestAndInstallCommand::
                              CheckForPlayStoreIntentOrGetIcons,
                          weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
@@ -304,7 +305,10 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
 
 void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
     base::flat_set<GURL> icon_urls,
-    bool skip_page_favicons) {
+    bool skip_page_favicons,
+    std::unique_ptr<AppLock> app_lock) {
+  app_lock_ = std::move(app_lock);
+
   bool is_create_shortcut =
       install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT;
   // Background installations are not a user-triggered installs, and thus
@@ -466,7 +470,8 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
   finalize_options.add_to_desktop = true;
   finalize_options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
 
-  install_finalizer_->FinalizeInstall(
+  DCHECK(app_lock_);
+  app_lock_->install_finalizer().FinalizeInstall(
       *web_app_info_, finalize_options,
       base::BindOnce(
           &FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab,
@@ -499,12 +504,14 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
   RecordAppBanner(web_contents_.get(), web_app_info_->start_url);
 
   bool error = os_hooks_errors[OsHookType::kShortcuts];
+  DCHECK(app_lock_);
   const bool can_reparent_tab =
-      install_finalizer_->CanReparentTab(app_id, !error);
+      app_lock_->install_finalizer().CanReparentTab(app_id, !error);
 
   if (can_reparent_tab &&
       (web_app_info_->user_display_mode != UserDisplayMode::kBrowser)) {
-    install_finalizer_->ReparentTab(app_id, !error, web_contents_.get());
+    app_lock_->install_finalizer().ReparentTab(app_id, !error,
+                                               web_contents_.get());
   }
 
   OnInstallCompleted(app_id, webapps::InstallResultCode::kSuccessNewInstall);

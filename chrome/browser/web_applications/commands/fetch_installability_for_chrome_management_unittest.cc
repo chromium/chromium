@@ -75,8 +75,8 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
     WebAppProvider* provider = WebAppProvider::GetForTest(profile());
     provider->command_manager().ScheduleCommand(
         std::make_unique<FetchInstallabilityForChromeManagement>(
-            url, std::move(web_contents), provider->registrar(),
-            std::move(url_loader), std::move(data_retriever),
+            url, std::move(web_contents), std::move(url_loader),
+            std::move(data_retriever),
             base::BindLambdaForTesting([&](InstallableCheckResult result,
                                            absl::optional<AppId> app_id) {
               output.result = result;

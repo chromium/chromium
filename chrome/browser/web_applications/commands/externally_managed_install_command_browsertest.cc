@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
                 run_loop.Quit();
               }),
           browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-          &provider().install_finalizer(),
+
           std::make_unique<WebAppDataRetriever>()));
 
   run_loop.Run();
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
             run_loop.Quit();
           }),
           browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-          &provider().install_finalizer(),
+
           std::make_unique<WebAppDataRetriever>()));
 
   run_loop.Run();
@@ -111,7 +111,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
             run_loop.Quit();
           }),
           browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-          &provider().install_finalizer(),
 
           std::make_unique<WebAppDataRetriever>()));
 
@@ -144,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
                 run_loop.Quit();
               }),
           browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-          &provider().install_finalizer(),
+
           std::make_unique<WebAppDataRetriever>()));
 
   run_loop.Run();
@@ -170,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
             EXPECT_FALSE(provider().registrar().IsLocallyInstalled(app_id));
             run_loop.Quit();
           }),
-          web_contents->GetWeakPtr(), &provider().install_finalizer(),
+          web_contents->GetWeakPtr(),
 
           std::make_unique<WebAppDataRetriever>()));
 
@@ -205,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
             EXPECT_FALSE(provider().registrar().IsLocallyInstalled(app_id));
             run_loop.Quit();
           }),
-          web_contents->GetWeakPtr(), &provider().install_finalizer(),
+          web_contents->GetWeakPtr(),
 
           std::make_unique<WebAppDataRetriever>()));
 

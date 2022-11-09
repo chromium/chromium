@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
@@ -26,24 +25,25 @@ class WebContents;
 namespace web_app {
 
 class LockDescription;
+class AppLock;
+class AppLockDescription;
+class NoopLock;
 class NoopLockDescription;
 class WebAppDataRetriever;
-class WebAppInstallFinalizer;
 
 // Command to install web_apps from param by the ExternallyInstalledAppsManager
-class ExternallyManagedInstallCommand : public WebAppCommand {
+class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
  public:
   ExternallyManagedInstallCommand(
       const ExternalInstallOptions& external_install_options,
       OnceInstallCallback callback,
       base::WeakPtr<content::WebContents> contents,
-      WebAppInstallFinalizer* install_finalizer,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
   ~ExternallyManagedInstallCommand() override;
 
   LockDescription& lock_description() const override;
 
-  void Start() override;
+  void StartWithLock(std::unique_ptr<NoopLock> lock) override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
@@ -65,22 +65,23 @@ class ExternallyManagedInstallCommand : public WebAppCommand {
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
 
-  void OnLockDescriptionUpgradedFinalizeInstall();
+  void OnLockUpgradedFinalizeInstall(std::unique_ptr<AppLock> app_lock);
 
   void OnInstallFinalized(const AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
   std::unique_ptr<NoopLockDescription> noop_lock_description_;
+  std::unique_ptr<AppLockDescription> app_lock_description_;
 
-  std::unique_ptr<AppLockDescription> app_lock_description_ = nullptr;
+  std::unique_ptr<AppLock> app_lock_;
+  std::unique_ptr<NoopLock> noop_lock_;
 
   WebAppInstallParams install_params_;
   webapps::WebappInstallSource install_surface_;
   OnceInstallCallback install_callback_;
 
   base::WeakPtr<content::WebContents> web_contents_;
-  base::raw_ptr<WebAppInstallFinalizer> install_finalizer_;
 
   bool bypass_service_worker_check_ = false;
 

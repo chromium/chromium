@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "base/memory/raw_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -21,8 +21,10 @@ class WebContents;
 
 namespace web_app {
 
+class AppLock;
 class AppLockDescription;
 class LockDescription;
+class NoopLock;
 class NoopLockDescription;
 class WebAppDataRetriever;
 class WebAppUrlLoader;
@@ -39,12 +41,12 @@ using FetchInstallabilityForChromeManagementCallback =
 
 // Given a url and web contents, this command determines if the given url is
 // installable, what the AppId is, and if it is already installed.
-class FetchInstallabilityForChromeManagement : public WebAppCommand {
+class FetchInstallabilityForChromeManagement
+    : public WebAppCommandTemplate<NoopLock> {
  public:
   FetchInstallabilityForChromeManagement(
       const GURL& url,
       base::WeakPtr<content::WebContents> web_contents,
-      const WebAppRegistrar& registry,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       std::unique_ptr<WebAppDataRetriever> data_retriever,
       FetchInstallabilityForChromeManagementCallback callback);
@@ -52,7 +54,7 @@ class FetchInstallabilityForChromeManagement : public WebAppCommand {
 
   LockDescription& lock_description() const override;
 
-  void Start() override;
+  void StartWithLock(std::unique_ptr<NoopLock>) override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
@@ -64,18 +66,20 @@ class FetchInstallabilityForChromeManagement : public WebAppCommand {
                                      const GURL& manifest_url,
                                      bool valid_manifest_for_web_app,
                                      bool is_installable);
-  void OnAppLockGranted();
+  void OnAppLockGranted(std::unique_ptr<AppLock> app_lock);
 
   void Abort(InstallableCheckResult result);
   bool IsWebContentsDestroyed();
 
   std::unique_ptr<NoopLockDescription> noop_lock_description_;
   std::unique_ptr<AppLockDescription> app_lock_description_;
+
+  std::unique_ptr<AppLock> app_lock_;
+  std::unique_ptr<NoopLock> noop_lock_;
+
   const GURL url_;
   AppId app_id_;
-  // The registry is owned by the WebAppProvider, and is always destroyed after
-  // the CommandManager, so this is safe.
-  const base::raw_ref<const WebAppRegistrar> registry_;
+
   base::WeakPtr<content::WebContents> web_contents_;
   const std::unique_ptr<WebAppUrlLoader> url_loader_;
   const std::unique_ptr<WebAppDataRetriever> data_retriever_;

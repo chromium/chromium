@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
@@ -46,7 +47,7 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
       std::make_unique<FetchManifestAndInstallCommand>(
           std::move(install_surface), std::move(contents),
           bypass_service_worker_check, std::move(dialog_callback),
-          std::move(callback), use_fallback, &provider_->install_finalizer(),
+          std::move(callback), use_fallback,
           std::make_unique<WebAppDataRetriever>()));
 }
 
@@ -144,6 +145,30 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
           std::move(profile_keep_alive), &provider_->registrar(),
           &provider_->install_finalizer(), &provider_->os_integration_manager(),
           &provider_->sync_bridge()));
+}
+
+void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
+    const GURL& url,
+    base::WeakPtr<content::WebContents> web_contents,
+    FetchInstallabilityForChromeManagementCallback callback) {
+  if (is_in_shutdown_)
+    return;
+
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(
+            &WebAppCommandScheduler::FetchInstallabilityForChromeManagement,
+            weak_ptr_factory_.GetWeakPtr(), url, web_contents,
+            std::move(callback)));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<web_app::FetchInstallabilityForChromeManagement>(
+          url, web_contents, std::make_unique<web_app::WebAppUrlLoader>(),
+          std::make_unique<web_app::WebAppDataRetriever>(),
+          std::move(callback)));
 }
 
 void WebAppCommandScheduler::Shutdown() {

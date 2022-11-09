@@ -31,7 +31,6 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
     const ExternalInstallOptions& external_install_options,
     OnceInstallCallback callback,
     base::WeakPtr<content::WebContents> contents,
-    WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_params_(
@@ -40,7 +39,6 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
           external_install_options.install_source)),
       install_callback_(std::move(callback)),
       web_contents_(contents),
-      install_finalizer_(install_finalizer),
       data_retriever_(std::move(data_retriever)),
       install_error_log_entry_(/*background_installation=*/true,
                                install_surface_) {
@@ -63,7 +61,10 @@ LockDescription& ExternallyManagedInstallCommand::lock_description() const {
   return *app_lock_description_;
 }
 
-void ExternallyManagedInstallCommand::Start() {
+void ExternallyManagedInstallCommand::StartWithLock(
+    std::unique_ptr<NoopLock> lock) {
+  noop_lock_ = std::move(lock);
+
   if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);
     return;
@@ -207,14 +208,16 @@ void ExternallyManagedInstallCommand::OnIconsRetrievedUpgradeLockDescription(
 
   app_lock_description_ =
       command_manager()->lock_manager().UpgradeAndAcquireLock(
-          std::move(noop_lock_description_), {app_id_},
-          base::BindOnce(&ExternallyManagedInstallCommand::
-                             OnLockDescriptionUpgradedFinalizeInstall,
-                         weak_factory_.GetWeakPtr()));
+          std::move(noop_lock_description_), std::move(noop_lock_), {app_id_},
+          base::BindOnce(
+              &ExternallyManagedInstallCommand::OnLockUpgradedFinalizeInstall,
+              weak_factory_.GetWeakPtr()));
 }
 
-void ExternallyManagedInstallCommand::
-    OnLockDescriptionUpgradedFinalizeInstall() {
+void ExternallyManagedInstallCommand::OnLockUpgradedFinalizeInstall(
+    std::unique_ptr<AppLock> app_lock) {
+  app_lock_ = std::move(app_lock);
+
   if (on_lock_upgraded_callback_for_testing_)
     std::move(on_lock_upgraded_callback_for_testing_).Run();
 
@@ -240,7 +243,7 @@ void ExternallyManagedInstallCommand::
   finalize_options.add_to_quick_launch_bar =
       install_params_.add_to_quick_launch_bar;
 
-  install_finalizer_->FinalizeInstall(
+  app_lock_->install_finalizer().FinalizeInstall(
       *web_app_info_, finalize_options,
       base::BindOnce(&ExternallyManagedInstallCommand::OnInstallFinalized,
                      weak_factory_.GetWeakPtr()));

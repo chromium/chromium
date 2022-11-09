@@ -58,7 +58,7 @@ class WebAppCommand {
   virtual ~WebAppCommand();
 
   // Returns if the command has been started yet.
-  bool IsStarted() const { return command_manager_ != nullptr; }
+  bool IsStarted() const { return command_manager() != nullptr; }
 
   // Unique id generated for this command. Currently only used for debug values.
   Id id() const { return id_; }
