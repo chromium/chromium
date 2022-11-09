@@ -6986,10 +6986,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kTangibleSync,
                                     kTangibleSyncVariations,
                                     "TangibleSyncVariations")},
-
-    {"enable-cbd-sign-out", flag_descriptions::kEnableCbdSignOutName,
-     flag_descriptions::kEnableCbdSignOutDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kEnableCbdSignOut)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-use-improved-label-disambiguation",

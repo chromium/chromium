@@ -63,7 +63,6 @@ import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.UserSelectableType;
@@ -75,7 +74,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Tests for {@link SigninManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
-@DisableFeatures({ChromeFeatureList.ENABLE_CBD_SIGN_OUT})
 public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -373,7 +371,6 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedOut() {
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
@@ -386,7 +383,6 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInAndSync() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                      eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -402,69 +398,12 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
-    public void clearingAccountCookieTriggersSignoutWhenNormalUserIsSignedInWithoutSync() {
+    public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInWithoutSync() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                      NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(ACCOUNT_INFO);
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
-
-        mIdentityManager.onAccountsCookieDeletedByUserAction();
-
-        verify(mIdentityMutator)
-                .clearPrimaryAccount(
-                        SignoutReason.USER_DELETED_ACCOUNT_COOKIES, SignoutDelete.IGNORE_METRIC);
-
-        // Sign-out triggered by wiping account cookies should only wipe service worker caches.
-        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
-        verify(mNativeMock).wipeGoogleServiceWorkerCaches(anyLong(), any());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ENABLE_CBD_SIGN_OUT})
-    public void clearingAccountCookieDoesNotTriggerSignoutWhenNormalUserIsSignedInWithoutSync() {
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
-                .thenReturn(ACCOUNT_INFO);
-        mFakeAccountManagerFacade.addAccount(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
-
-        mIdentityManager.onAccountsCookieDeletedByUserAction();
-
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
-        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
-        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
-    public void clearingAccountCookieTriggersSignoutWhenSupervisedUserIsSignedInWithoutSync() {
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
-                .thenReturn(CHILD_CORE_ACCOUNT_INFO);
-        mFakeAccountManagerFacade.addAccount(
-                AccountUtils.createAccountFromName(CHILD_CORE_ACCOUNT_INFO.getEmail()));
-
-        mIdentityManager.onAccountsCookieDeletedByUserAction();
-
-        verify(mIdentityMutator)
-                .clearPrimaryAccount(
-                        SignoutReason.USER_DELETED_ACCOUNT_COOKIES, SignoutDelete.IGNORE_METRIC);
-        // Sign-out triggered by wiping account cookies should only wipe service worker caches.
-        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
-        verify(mNativeMock).wipeGoogleServiceWorkerCaches(anyLong(), any());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
-    public void
-    clearingAccountCookieDoesNotTriggerSignoutWhenSupervisedUserIsSignedInWithoutSync() {
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
-                .thenReturn(CHILD_CORE_ACCOUNT_INFO);
-        mFakeAccountManagerFacade.addAccount(
-                AccountUtils.createAccountFromName(CHILD_CORE_ACCOUNT_INFO.getEmail()));
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 

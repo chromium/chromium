@@ -4470,7 +4470,6 @@
     "EnableCbdSignOut": [
         {
             "platforms": [
-                "android",
                 "ios"
             ],
             "experiments": [

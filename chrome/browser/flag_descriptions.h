@@ -2009,9 +2009,6 @@ extern const char kChromeSharingHubLaunchAdjacentDescription[];
 extern const char kDiscardOccludedBitmapsName[];
 extern const char kDiscardOccludedBitmapsDescription[];
 
-extern const char kEnableCbdSignOutName[];
-extern const char kEnableCbdSignOutDescription[];
-
 extern const char kCloseTabSuggestionsName[];
 extern const char kCloseTabSuggestionsDescription[];
 

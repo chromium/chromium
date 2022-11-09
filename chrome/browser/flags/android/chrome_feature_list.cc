@@ -416,7 +416,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &supervised_users::kWebFilterInterstitialRefresh,
     &switches::kAllowSyncOffForChildAccounts,
     &switches::kCreateSigninCheckerBeforeSyncConsentFragment,
-    &switches::kEnableCbdSignOut,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kTangibleSync,

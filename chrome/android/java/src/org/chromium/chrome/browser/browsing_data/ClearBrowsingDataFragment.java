@@ -31,7 +31,6 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -665,8 +664,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     private void updateSignOutOfChromeText() {
         ClickableSpansTextMessagePreference signOutOfChromeTextPref =
                 findPreference(ClearBrowsingDataFragment.PREF_SIGN_OUT_OF_CHROME_TEXT);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_CBD_SIGN_OUT)
-                && mSigninManager.isSignOutAllowed()) {
+        if (mSigninManager.isSignOutAllowed()) {
             signOutOfChromeTextPref.setSummary(buildSignOutOfChromeText());
             signOutOfChromeTextPref.setVisible(true);
         } else {
