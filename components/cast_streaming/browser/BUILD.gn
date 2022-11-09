@@ -41,12 +41,16 @@ source_set("network_context") {
 
 source_set("browser") {
   visibility += [ "*" ]
-  public = [ "public/receiver_session.h" ]
+  public = [
+    "public/receiver_config.h",
+    "public/receiver_session.h",
+  ]
   sources = [
     "demuxer_stream_client.h",
     "demuxer_stream_data_provider.h",
     "playback_command_dispatcher.cc",
     "playback_command_dispatcher.h",
+    "receiver_config.cc",
     "remoting_session_client.h",
     "renderer_control_multiplexer.cc",
     "renderer_control_multiplexer.h",
@@ -84,6 +88,8 @@ source_set("browser") {
     sources += [
       "cast_streaming_session.cc",
       "cast_streaming_session.h",
+      "receiver_config_conversions.cc",
+      "receiver_config_conversions.h",
       "receiver_session_impl.cc",
       "receiver_session_impl.h",
       "renderer_controller_config.cc",
@@ -98,6 +104,7 @@ source_set("browser") {
       "//components/cast_streaming/public:config_conversions",
       "//components/openscreen_platform",
       "//mojo/public/cpp/bindings",
+      "//ui/gfx/geometry",
     ]
   }
 

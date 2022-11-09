@@ -28,6 +28,8 @@ class VideoDecoderConfig;
 
 namespace cast_streaming {
 
+class ReceiverConfig;
+
 // This interface handles a single Cast Streaming Receiver Session over a given
 // |message_port| and with a given |demuxer_connector|. On destruction,
 // the Cast Streaming Receiver Session will be terminated if it was ever
@@ -84,6 +86,10 @@ class ReceiverSession {
   // ReceiverSession::Preferences object from //media types.
   static std::unique_ptr<ReceiverSession> Create(
       std::unique_ptr<AVConstraints> av_constraints,
+      MessagePortProvider message_port_provider,
+      Client* client = nullptr);
+  static std::unique_ptr<ReceiverSession> Create(
+      const ReceiverConfig& av_constraints,
       MessagePortProvider message_port_provider,
       Client* client = nullptr);
 

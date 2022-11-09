@@ -6,6 +6,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
+#include "components/cast_streaming/browser/receiver_config_conversions.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 
@@ -18,6 +19,16 @@ std::unique_ptr<ReceiverSession> ReceiverSession::Create(
     ReceiverSession::Client* client) {
   return std::make_unique<ReceiverSessionImpl>(
       std::move(av_constraints), std::move(message_port_provider), client);
+}
+
+// static
+std::unique_ptr<ReceiverSession> ReceiverSession::Create(
+    const ReceiverConfig& av_constraints,
+    ReceiverSession::MessagePortProvider message_port_provider,
+    ReceiverSession::Client* client) {
+  return Create(std::make_unique<ReceiverSession::AVConstraints>(
+                    ToOpenscreenConstraints(av_constraints)),
+                std::move(message_port_provider), client);
 }
 
 ReceiverSessionImpl::ReceiverSessionImpl(
