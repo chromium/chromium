@@ -10,7 +10,19 @@ import("//tools/json_schema_compiler/json_schema_api.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
-source_set("api") {
+# The set of all targets needed to build out the extension API implementations.
+# Embedders should usually depend on this.
+group("api") {
+  public_deps = [
+    "//extensions/browser/api:api_implementations",
+    "//extensions/browser/api:api_registration",
+  ]
+}
+
+# TODO(https://crbug.com/1381644): This target should not exist. It's a
+# mishmash of various APIs and utilities. Instead, these should be extracted
+# into individual utility targets or separate API implementation targets.
+source_set("bulk_api_implementation") {
   sources = [
     "async_api_function.cc",
     "async_api_function.h",
@@ -112,7 +124,7 @@ source_set("api") {
 group("api_implementations") {
   public_deps = [
     "//extensions/browser:browser_sources",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/browser/api/alarms",
     "//extensions/browser/api/app_current_window_internal",
     "//extensions/browser/api/app_runtime",
@@ -187,7 +199,7 @@ function_registration("api_registration") {
   root_namespace = extensions_api_root_namespace
 
   deps = [
-    ":api",
+    "//extensions/browser/api:api_implementations",
     "//extensions/common/api",
     "//skia",
   ]

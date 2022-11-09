@@ -28,7 +28,7 @@ source_set("socket") {
     "//build:chromeos_buildflags",
     "//content/public/browser",
     "//content/public/common",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common",
     "//extensions/common/api",
   ]

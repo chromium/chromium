@@ -24,7 +24,7 @@ source_set("feedback_private") {
     "//components/feedback/content",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common",
     "//extensions/common/api",
     "//google_apis",

@@ -18,7 +18,7 @@ source_set("system_info") {
   deps = [
     "//components/storage_monitor",
     "//content/public/browser",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common/api",
   ]
 

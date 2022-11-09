@@ -25,7 +25,7 @@ source_set("webcam_private") {
 
   deps = [
     "//chromeos/ash/components/dbus/ip_peripheral",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/browser/api/serial",
     "//extensions/common",
     "//extensions/common/api",

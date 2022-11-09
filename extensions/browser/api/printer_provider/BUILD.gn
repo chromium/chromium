@@ -23,7 +23,7 @@ source_set("printer_provider") {
   deps = [
     "//components/keyed_service/content",
     "//content/public/browser",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common",
     "//extensions/common/api",
     "//services/device/public/cpp/usb",

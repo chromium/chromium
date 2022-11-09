@@ -15,15 +15,11 @@ group("browser") {
   public_deps = [
     "//extensions/browser:browser_context_keyed_service_factories",
     "//extensions/browser:browser_sources",
-    "//extensions/browser/api:api_registration",
-  ]
 
-  # Includes all API implementations and the ExtensionsApiClient
-  # interface. Moving an API from src/chrome to src/extensions implies
-  # it can be cleanly disabled with enable_extensions=false.
-  public_deps += [
+    # Includes all API implementations and the ExtensionsApiClient
+    # interface. Moving an API from src/chrome to src/extensions implies
+    # it can be cleanly disabled with enable_extensions=false.
     "//extensions/browser/api",
-    "//extensions/browser/api:api_implementations",
   ]
 }
 

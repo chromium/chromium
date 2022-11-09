@@ -23,7 +23,7 @@ source_set("automation_internal") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/prefs",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common",
     "//extensions/common/api",
   ]

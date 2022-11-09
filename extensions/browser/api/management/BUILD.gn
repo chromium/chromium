@@ -18,7 +18,7 @@ source_set("management") {
 
   deps = [
     "//build:chromeos_buildflags",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common",
     "//extensions/common/api",
   ]

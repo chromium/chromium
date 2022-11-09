@@ -29,7 +29,7 @@ source_set("networking_private") {
     "//build:chromeos_buildflags",
     "//components/keyed_service/content",
     "//components/onc",
-    "//extensions/browser/api",
+    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common",
     "//extensions/common/api",
     "//net",
