@@ -152,8 +152,10 @@ void FullCardRequest::GetFullCardImpl(
   // If there is a UI delegate, then perform a CVC check.
   // Otherwise, continue and use |fido_assertion_info| to unmask.
   if (ui_delegate_) {
-    ui_delegate_->ShowUnmaskPrompt(request_->card, reason,
-                                   weak_ptr_factory_.GetWeakPtr());
+    ui_delegate_->ShowUnmaskPrompt(
+        request_->card,
+        CardUnmaskPromptOptions(selected_challenge_option, reason),
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   if (should_unmask_card_) {

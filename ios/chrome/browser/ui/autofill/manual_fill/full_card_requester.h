@@ -18,6 +18,7 @@ class ChromeBrowserState;
 namespace autofill {
 class BrowserAutofillManager;
 class CreditCard;
+struct CardUnmaskPromptOptions;
 }  // namespace autofill
 
 // Receives the full credit card details. Also displays the unmask prompt UI.
@@ -40,7 +41,7 @@ class FullCardRequester
   // payments::FullCardRequest::UIDelegate:
   void ShowUnmaskPrompt(
       const autofill::CreditCard& card,
-      autofill::AutofillClient::UnmaskCardReason reason,
+      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(
       autofill::AutofillClient::PaymentsRpcResult result) override;

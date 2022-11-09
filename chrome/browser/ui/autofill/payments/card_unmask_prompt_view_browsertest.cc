@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -169,10 +170,14 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
     if (name == kExpiryExpired)
       card.SetExpirationYear(2016);
 
+    CardUnmaskPromptOptions card_unmask_prompt_options =
+        CardUnmaskPromptOptions(
+            /*challenge_option=*/
+            absl::nullopt, AutofillClient::UnmaskCardReason::kAutofill);
     controller()->ShowPrompt(base::BindOnce(&CreateCardUnmaskPromptView,
                                             base::Unretained(controller()),
                                             base::Unretained(contents())),
-                             card, AutofillClient::UnmaskCardReason::kAutofill,
+                             card, card_unmask_prompt_options,
                              delegate()->GetWeakPtr());
     // Setting error expectations and confirming the dialogs for some test
     // cases.

@@ -355,10 +355,11 @@ using UserDecision =
   [_saver handleCreditCardUploadCompleted:cardSaved];
 }
 
-- (void)
-showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
-                 reason:(autofill::AutofillClient::UnmaskCardReason)reason
-               delegate:(base::WeakPtr<autofill::CardUnmaskDelegate>)delegate {
+- (void)showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
+        cardUnmaskPromptOptions:
+            (const autofill::CardUnmaskPromptOptions&)cardUnmaskPromptOptions
+                       delegate:(base::WeakPtr<autofill::CardUnmaskDelegate>)
+                                    delegate {
   if ([_delegate respondsToSelector:@selector
                  (autofillController:verifyCreditCardWithVerifier:)]) {
     ios_web_view::WebViewBrowserState* browserState =
@@ -368,7 +369,7 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
          initWithPrefs:browserState->GetPrefs()
         isOffTheRecord:browserState->IsOffTheRecord()
             creditCard:creditCard
-                reason:reason
+                reason:cardUnmaskPromptOptions.reason
               delegate:delegate];
     [_delegate autofillController:self verifyCreditCardWithVerifier:verifier];
 

@@ -8,7 +8,9 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -116,7 +118,8 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
         base::BindOnce(^autofill::CardUnmaskPromptView*() {
           return [weakSelf createUnmaskingView];
         }),
-        creditCard, reason, delegate);
+        creditCard, autofill::CardUnmaskPromptOptions(absl::nullopt, reason),
+        delegate);
   }
   return self;
 }

@@ -38,7 +38,7 @@ CardUnmaskPromptControllerImpl::~CardUnmaskPromptControllerImpl() {
 void CardUnmaskPromptControllerImpl::ShowPrompt(
     CardUnmaskPromptViewFactory card_unmask_view_factory,
     const CreditCard& card,
-    AutofillClient::UnmaskCardReason reason,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
   if (card_unmask_view_)
     card_unmask_view_->ControllerGone();
@@ -46,9 +46,10 @@ void CardUnmaskPromptControllerImpl::ShowPrompt(
   new_card_link_clicked_ = false;
   shown_timestamp_ = AutofillClock::Now();
   pending_details_ = CardUnmaskDelegate::UserProvidedUnmaskDetails();
+  card_unmask_challenge_option_ = card_unmask_prompt_options.challenge_option;
   card_ = card;
-  reason_ = reason;
   delegate_ = delegate;
+  reason_ = card_unmask_prompt_options.reason;
   card_unmask_view_ = std::move(card_unmask_view_factory).Run();
   card_unmask_view_->Show();
   unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
@@ -179,6 +180,13 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
         IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE);
   }
 
+  // For VCN unmask flow, display unique CVC title.
+  if (IsChallengeOptionPresent()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_SECURITY_CODE,
+        card_.CardIdentifierStringForAutofillDisplay());
+  }
+
   return l10n_util::GetStringFUTF16(
       ShouldRequestExpirationDate()
           ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE
@@ -207,6 +215,30 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
   return l10n_util::GetStringFUTF16(
       ids, card_.CardIdentifierStringForAutofillDisplay());
 #else
+  // If the challenge option is present, return the challenge option instruction
+  // information.
+  if (IsChallengeOptionPresent()) {
+    DCHECK_EQ(card_unmask_challenge_option_->type,
+              CardUnmaskChallengeOptionType::kCvc);
+    std::u16string side_of_card;
+    switch (card_unmask_challenge_option_->cvc_position) {
+      case CvcPosition::kFrontOfCard:
+        side_of_card = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_FRONT_OF_CARD);
+        break;
+      case CvcPosition::kBackOfCard:
+        side_of_card = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD);
+        break;
+      default:
+        NOTREACHED();
+    }
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD,
+        base::NumberToString16(
+            card_unmask_challenge_option_->challenge_input_length),
+        side_of_card);
+  }
   return l10n_util::GetStringUTF16(
       card_.record_type() == CreditCard::LOCAL_CARD
           ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD
@@ -219,6 +251,18 @@ std::u16string CardUnmaskPromptControllerImpl::GetOkButtonLabel() const {
 }
 
 int CardUnmaskPromptControllerImpl::GetCvcImageRid() const {
+  // If a challenge option is present, this is the virtual card unmask CVC
+  // case. Rely on the challenge option to inform us whether the
+  // CVC is on the front or back of the card.
+  if (IsChallengeOptionPresent()) {
+    return card_unmask_challenge_option_->cvc_position ==
+                   CvcPosition::kFrontOfCard
+               ? IDR_CREDIT_CARD_CVC_HINT_AMEX
+               : IDR_CREDIT_CARD_CVC_HINT;
+  }
+
+  // For normal CVC unmask case, depend on the network to inform where the CVC
+  // is on the card.
   return card_.network() == kAmericanExpressCard ? IDR_CREDIT_CARD_CVC_HINT_AMEX
                                                  : IDR_CREDIT_CARD_CVC_HINT;
 }
@@ -257,6 +301,14 @@ bool CardUnmaskPromptControllerImpl::InputCvcIsValid(
     const std::u16string& input_text) const {
   std::u16string trimmed_text;
   base::TrimWhitespace(input_text, base::TRIM_ALL, &trimmed_text);
+
+  // Allow three digit American Express Cvc value when it is a back of card cvc
+  // challenge option.
+  if (card_unmask_challenge_option_ &&
+      card_unmask_challenge_option_->cvc_position == CvcPosition::kBackOfCard) {
+    return IsValidCreditCardSecurityCode(trimmed_text, card_.network(),
+                                         CvcType::kBackOfAmexCvc);
+  }
   return IsValidCreditCardSecurityCode(trimmed_text, card_.network());
 }
 
@@ -287,6 +339,10 @@ bool CardUnmaskPromptControllerImpl::InputExpirationIsValid(
 
 int CardUnmaskPromptControllerImpl::GetExpectedCvcLength() const {
   return GetCvcLengthForCardNetwork(card_.network());
+}
+
+bool CardUnmaskPromptControllerImpl::IsChallengeOptionPresent() const {
+  return card_unmask_challenge_option_.has_value();
 }
 
 base::TimeDelta CardUnmaskPromptControllerImpl::GetSuccessMessageDuration()

@@ -121,8 +121,9 @@ bool PassesLuhnCheck(const std::u16string& number) {
 }
 
 bool IsValidCreditCardSecurityCode(const std::u16string& code,
-                                   const base::StringPiece card_network) {
-  return code.length() == GetCvcLengthForCardNetwork(card_network) &&
+                                   const base::StringPiece card_network,
+                                   CvcType cvc_type) {
+  return code.length() == GetCvcLengthForCardNetwork(card_network, cvc_type) &&
          base::ContainsOnlyChars(code, u"0123456789");
 }
 
@@ -336,9 +337,12 @@ bool IsValidForType(const std::u16string& value,
   return false;
 }
 
-size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network) {
-  if (card_network == kAmericanExpressCard)
+size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network,
+                                  CvcType cvc_type) {
+  if (card_network == kAmericanExpressCard &&
+      cvc_type == CvcType::kRegularCvc) {
     return AMEX_CVC_LENGTH;
+  }
 
   return GENERAL_CVC_LENGTH;
 }

@@ -103,9 +103,9 @@ void CreditCardCVCAuthenticator::OnFullCardRequestFailed(
 
 void CreditCardCVCAuthenticator::ShowUnmaskPrompt(
     const CreditCard& card,
-    AutofillClient::UnmaskCardReason reason,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
-  client_->ShowUnmaskPrompt(card, reason, delegate);
+  client_->ShowUnmaskPrompt(card, card_unmask_prompt_options, delegate);
 }
 
 void CreditCardCVCAuthenticator::OnUnmaskVerificationResult(

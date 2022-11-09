@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -35,10 +36,13 @@ using ::testing::WithArg;
 
 class MockAutofillClient : public autofill::TestAutofillClient {
  public:
-  MOCK_METHOD3(ShowUnmaskPrompt,
-               void(const autofill::CreditCard& card,
-                    autofill::AutofillClient::UnmaskCardReason reason,
-                    base::WeakPtr<autofill::CardUnmaskDelegate> delegate));
+  MOCK_METHOD(
+      void,
+      ShowUnmaskPrompt,
+      (const autofill::CreditCard& card,
+       const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
+       base::WeakPtr<autofill::CardUnmaskDelegate> delegate),
+      (override));
 };
 
 class FullCardRequesterTest : public testing::Test {

@@ -23,7 +23,6 @@
 
 namespace views {
 class Label;
-class Textfield;
 class Throbber;
 }  // namespace views
 
@@ -51,9 +50,6 @@ class TitleWithIconAndSeparatorView : public views::TableLayoutView {
   // views::View:
   gfx::Size GetMinimumSize() const override;
 };
-
-// Creates and returns a small Textfield intended to be used for CVC entry.
-std::unique_ptr<views::Textfield> CreateCvcTextfield();
 
 // Defines a view with legal message. This class handles the legal message
 // parsing and the links clicking events.

@@ -187,9 +187,11 @@ void WebViewAutofillClientIOS::ShowAutofillSettings(
 
 void WebViewAutofillClientIOS::ShowUnmaskPrompt(
     const CreditCard& card,
-    UnmaskCardReason reason,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
-  [bridge_ showUnmaskPromptForCard:card reason:reason delegate:delegate];
+  [bridge_ showUnmaskPromptForCard:card
+           cardUnmaskPromptOptions:card_unmask_prompt_options
+                          delegate:delegate];
 }
 
 void WebViewAutofillClientIOS::OnUnmaskVerificationResult(

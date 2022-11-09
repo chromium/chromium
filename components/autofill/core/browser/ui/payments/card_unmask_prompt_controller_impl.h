@@ -14,8 +14,10 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 
 namespace autofill {
 
@@ -42,7 +44,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   // returns, i.e., the callback will not outlive the stack frame of ShowPrompt.
   void ShowPrompt(CardUnmaskPromptViewFactory view_factory,
                   const CreditCard& card,
-                  AutofillClient::UnmaskCardReason reason,
+                  const CardUnmaskPromptOptions& card_unmask_prompt_options,
                   base::WeakPtr<CardUnmaskDelegate> delegate);
   // The CVC the user entered went through validation.
   void OnVerificationResult(AutofillClient::PaymentsRpcResult result);
@@ -70,6 +72,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   bool InputExpirationIsValid(const std::u16string& month,
                               const std::u16string& year) const override;
   int GetExpectedCvcLength() const override;
+  bool IsChallengeOptionPresent() const override;
   base::TimeDelta GetSuccessMessageDuration() const override;
   AutofillClient::PaymentsRpcResult GetVerificationResult() const override;
 
@@ -84,6 +87,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   void LogOnCloseEvents();
   AutofillMetrics::UnmaskPromptEvent GetCloseReasonEvent();
 
+  absl::optional<CardUnmaskChallengeOption> card_unmask_challenge_option_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   bool new_card_link_clicked_ = false;
   CreditCard card_;

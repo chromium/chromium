@@ -322,6 +322,9 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
       Enter the CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_SECURITY_CODE" desc="Title for the credit card unmasking dialog, specifically for the virtual card unmasking case.">
+      Enter your security code for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
+    </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_V2" desc="Title for the credit card unmasking dialog, according to August 2019 UI guidelines.">
       Verify your card
     </message>
@@ -333,6 +336,15 @@
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD" desc="Text explaining what the user should do in the card unmasking dialog.  Appears specifically for local cards already stored on the device.">
       Once you confirm, your card details will be shared with this site.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD" desc="Text explaining that the security code is located in the back of your card, specifically for the virtual card unmasking case.">
+      back of your card
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_FRONT_OF_CARD" desc="Text explaining that the security code is located in the front of your card, specifically for the virtual card unmasking case.">
+      front of your card
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD" desc="Text providing instructions on how to unmask virtual card.">
+      Enter the <ph name="NUMBER_OF_DIGITS">$1<ex>3</ex></ph>-digit security code on the <ph name="SIDE_OF_CARD">$2<ex>back of your card</ex></ph> so your bank can verify it's you
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_V2" desc="Text explaining what the user should do in the card unmasking dialog, according to August 2019 UI guidelines.">
       Confirm the security code to share your card details with this site
@@ -417,6 +429,9 @@
   <message name="IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC" desc="The placeholder/label text for credit card verification code in the requestAutocomplete dialog. The text field where this is presented can be very narrow, so please prefer to translate this to the most common abbreviated form. [CHAR_LIMIT=4]" meaning="Placeholder label for a very narrow CVC field that should preferably be translated to an abbreviated form.">
     CVC
   </message>
+  <message name="IDS_AUTOFILL_DIALOG_ACCESSIBLE_NAME_SECURITY_CODE" desc = "The accessible name used for credit card security codes.">
+    Security code
+ </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE" desc="Message displayed after tapping a Virtual Card, and before any other verification steps.">
     Contacting your bank...
   </message>

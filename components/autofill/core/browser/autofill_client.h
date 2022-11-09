@@ -69,6 +69,7 @@ class AutofillProfile;
 enum class AutofillProgressDialogType;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
+struct CardUnmaskPromptOptions;
 class CreditCard;
 class CreditCardCVCAuthenticator;
 enum class CreditCardFetchResult;
@@ -429,9 +430,10 @@ class AutofillClient : public RiskDataLoader {
 
   // A user has attempted to use a masked card. Prompt them for further
   // information to proceed.
-  virtual void ShowUnmaskPrompt(const CreditCard& card,
-                                UnmaskCardReason reason,
-                                base::WeakPtr<CardUnmaskDelegate> delegate) = 0;
+  virtual void ShowUnmaskPrompt(
+      const CreditCard& card,
+      const CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<CardUnmaskDelegate> delegate) = 0;
   virtual void OnUnmaskVerificationResult(PaymentsRpcResult result) = 0;
 
   // Shows a dialog for the user to choose/confirm the authentication

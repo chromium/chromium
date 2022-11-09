@@ -243,13 +243,13 @@ void ChromeAutofillClientIOS::ShowAutofillSettings(
 
 void ChromeAutofillClientIOS::ShowUnmaskPrompt(
     const CreditCard& card,
-    UnmaskCardReason reason,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
   unmask_controller_.ShowPrompt(
       base::BindOnce(&autofill::CreateCardUnmaskPromptViewBridge,
                      base::Unretained(&unmask_controller_),
                      base::Unretained(base_view_controller_)),
-      card, reason, delegate);
+      card, card_unmask_prompt_options, delegate);
 }
 
 void ChromeAutofillClientIOS::OnUnmaskVerificationResult(

@@ -49,7 +49,7 @@ class AutofillClientImpl
   void ShowAutofillSettings(bool show_credit_card_settings) override;
   void ShowUnmaskPrompt(
       const autofill::CreditCard& card,
-      UnmaskCardReason reason,
+      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
 

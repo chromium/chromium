@@ -34,13 +34,13 @@ void FullCardRequester::GetFullCard(
 
 void FullCardRequester::ShowUnmaskPrompt(
     const autofill::CreditCard& card,
-    autofill::AutofillClient::UnmaskCardReason reason,
+    const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<autofill::CardUnmaskDelegate> delegate) {
   unmask_controller_.ShowPrompt(
       base::BindOnce(&autofill::CreateCardUnmaskPromptViewBridge,
                      base::Unretained(&unmask_controller_),
                      base::Unretained(base_view_controller_)),
-      card, reason, delegate);
+      card, card_unmask_prompt_options, delegate);
 }
 
 void FullCardRequester::OnUnmaskVerificationResult(

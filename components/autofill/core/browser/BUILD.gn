@@ -405,6 +405,8 @@ static_library("browser") {
     "ui/payments/card_unmask_prompt_controller.h",
     "ui/payments/card_unmask_prompt_controller_impl.cc",
     "ui/payments/card_unmask_prompt_controller_impl.h",
+    "ui/payments/card_unmask_prompt_options.cc",
+    "ui/payments/card_unmask_prompt_options.h",
     "ui/payments/card_unmask_prompt_view.h",
     "ui/payments/payments_bubble_closed_reasons.h",
     "ui/payments/virtual_card_enroll_bubble_controller.h",

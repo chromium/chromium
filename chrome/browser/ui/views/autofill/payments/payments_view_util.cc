@@ -33,7 +33,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -154,15 +153,6 @@ gfx::Size TitleWithIconAndSeparatorView::GetMinimumSize() const {
 
 BEGIN_METADATA(TitleWithIconAndSeparatorView, views::View)
 END_METADATA
-
-std::unique_ptr<views::Textfield> CreateCvcTextfield() {
-  auto textfield = std::make_unique<views::Textfield>();
-  textfield->SetPlaceholderText(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC));
-  textfield->SetDefaultWidthInChars(8);
-  textfield->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
-  return textfield;
-}
 
 LegalMessageView::LegalMessageView(
     const LegalMessageLines& legal_message_lines,

@@ -47,6 +47,7 @@ class CardUnmaskPromptController {
   virtual bool InputExpirationIsValid(const std::u16string& month,
                                       const std::u16string& year) const = 0;
   virtual int GetExpectedCvcLength() const = 0;
+  virtual bool IsChallengeOptionPresent() const = 0;
 };
 
 }  // namespace autofill

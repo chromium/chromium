@@ -21,11 +21,11 @@ namespace autofill {
 class AutocompleteHistoryManager;
 class AutofillDriver;
 class AutofillPopupDelegate;
-class CardUnmaskDelegate;
 class CreditCard;
 class FormStructure;
 class PersonalDataManager;
 class StrikeDatabase;
+struct CardUnmaskPromptOptions;
 }  // namespace autofill
 
 namespace content {
@@ -85,7 +85,7 @@ class AwAutofillClient : public autofill::AutofillClient,
   void ShowAutofillSettings(bool show_credit_card_settings) override;
   void ShowUnmaskPrompt(
       const autofill::CreditCard& card,
-      UnmaskCardReason reason,
+      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
   void ConfirmAccountNameFixFlow(

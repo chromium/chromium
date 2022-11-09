@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 
 namespace autofill {
 
@@ -80,7 +81,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
     virtual ~UIDelegate() = default;
     virtual void ShowUnmaskPrompt(
         const CreditCard& card,
-        AutofillClient::UnmaskCardReason reason,
+        const CardUnmaskPromptOptions& card_unmask_prompt_options,
         base::WeakPtr<CardUnmaskDelegate> delegate) = 0;
     virtual void OnUnmaskVerificationResult(
         AutofillClient::PaymentsRpcResult result) = 0;

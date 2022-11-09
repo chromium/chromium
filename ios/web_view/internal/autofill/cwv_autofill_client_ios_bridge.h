@@ -42,10 +42,11 @@ class WebFrame;
 - (void)handleCreditCardUploadCompleted:(BOOL)cardSaved;
 
 // Bridge for AutofillClient's method |ShowUnmaskPrompt|.
-- (void)
-showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
-                 reason:(autofill::AutofillClient::UnmaskCardReason)reason
-               delegate:(base::WeakPtr<autofill::CardUnmaskDelegate>)delegate;
+- (void)showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
+        cardUnmaskPromptOptions:
+            (const autofill::CardUnmaskPromptOptions&)cardUnmaskPromptOptions
+                       delegate:(base::WeakPtr<autofill::CardUnmaskDelegate>)
+                                    delegate;
 
 // Bridge for AutofillClient's method |onUnmaskVerificationResult|.
 - (void)didReceiveUnmaskVerificationResult:

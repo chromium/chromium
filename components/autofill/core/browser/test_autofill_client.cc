@@ -154,9 +154,9 @@ TestAutofillClient::CreateCreditCardInternalAuthenticator(
 void TestAutofillClient::ShowAutofillSettings(bool show_credit_card_settings) {}
 
 void TestAutofillClient::ShowUnmaskPrompt(
-    const CreditCard& card,
-    UnmaskCardReason reason,
-    base::WeakPtr<CardUnmaskDelegate> delegate) {}
+    const autofill::CreditCard& card,
+    const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<autofill::CardUnmaskDelegate> delegate) {}
 
 void TestAutofillClient::OnUnmaskVerificationResult(PaymentsRpcResult result) {}
 

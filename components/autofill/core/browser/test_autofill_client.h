@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/test_address_normalizer.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/translate/core/browser/language_state.h"
@@ -90,9 +91,10 @@ class TestAutofillClient : public AutofillClient {
 #endif
 
   void ShowAutofillSettings(bool show_credit_card_settings) override;
-  void ShowUnmaskPrompt(const CreditCard& card,
-                        UnmaskCardReason reason,
-                        base::WeakPtr<CardUnmaskDelegate> delegate) override;
+  void ShowUnmaskPrompt(
+      const autofill::CreditCard& card,
+      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   void ShowVirtualCardEnrollDialog(

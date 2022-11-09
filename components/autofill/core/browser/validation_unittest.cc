@@ -165,6 +165,22 @@ TEST(AutofillValidation, IsValidCreditCardSecurityCode) {
   }
 }
 
+TEST(AutofillValidation, IsValidCreditCardSecurityCode_BackOfAmexCvc) {
+  // For back of card American Express, expect a three digit CVC.
+  SCOPED_TRACE(base::UTF16ToUTF8(u"123"));
+  SCOPED_TRACE(kAmericanExpressCard);
+  EXPECT_TRUE(IsValidCreditCardSecurityCode(u"123", kAmericanExpressCard,
+                                            CvcType::kBackOfAmexCvc));
+}
+
+TEST(AutofillValidation, IsInvalidCreditCardSecurityCode_BackOfAmexCvc) {
+  // For back of card American Express, expect a three digit CVC.
+  SCOPED_TRACE(base::UTF16ToUTF8(u"1234"));
+  SCOPED_TRACE(kAmericanExpressCard);
+  EXPECT_FALSE(IsValidCreditCardSecurityCode(u"1234", kAmericanExpressCard,
+                                             CvcType::kBackOfAmexCvc));
+}
+
 TEST(AutofillValidation, IsValidEmailAddress) {
   for (const char16_t* valid_email : kValidEmailAddress) {
     SCOPED_TRACE(base::UTF16ToUTF8(valid_email));
@@ -438,20 +454,26 @@ INSTANTIATE_TEST_SUITE_P(
                      IDS_PAYMENTS_VALIDATION_UNSUPPORTED_CREDIT_CARD_TYPE)));
 
 struct GetCvcLengthForCardTypeCase {
-  GetCvcLengthForCardTypeCase(const char* card_network, size_t expected_length)
-      : card_network(card_network), expected_length(expected_length) {}
-  ~GetCvcLengthForCardTypeCase() {}
+  GetCvcLengthForCardTypeCase(const char* card_network,
+                              size_t expected_length,
+                              CvcType cvc_type = CvcType::kRegularCvc)
+      : card_network(card_network),
+        expected_length(expected_length),
+        cvc_type(cvc_type) {}
+  ~GetCvcLengthForCardTypeCase() = default;
 
   const char* const card_network;
   const size_t expected_length;
+  CvcType cvc_type;
 };
 
 class AutofillGetCvcLengthForCardType
     : public testing::TestWithParam<GetCvcLengthForCardTypeCase> {};
 
 TEST_P(AutofillGetCvcLengthForCardType, GetCvcLengthForCardNetwork) {
-  EXPECT_EQ(GetParam().expected_length,
-            GetCvcLengthForCardNetwork(GetParam().card_network));
+  EXPECT_EQ(
+      GetParam().expected_length,
+      GetCvcLengthForCardNetwork(GetParam().card_network, GetParam().cvc_type));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -468,7 +490,9 @@ INSTANTIATE_TEST_SUITE_P(
         GetCvcLengthForCardTypeCase{kMirCard, GENERAL_CVC_LENGTH},
         GetCvcLengthForCardTypeCase{kTroyCard, GENERAL_CVC_LENGTH},
         GetCvcLengthForCardTypeCase{kUnionPay, GENERAL_CVC_LENGTH},
-        GetCvcLengthForCardTypeCase{kVisaCard, GENERAL_CVC_LENGTH}));
+        GetCvcLengthForCardTypeCase{kVisaCard, GENERAL_CVC_LENGTH},
+        GetCvcLengthForCardTypeCase{kAmericanExpressCard, GENERAL_CVC_LENGTH,
+                                    CvcType::kBackOfAmexCvc}));
 
 class AutofillIsUPIVirtualPaymentAddress
     : public testing::TestWithParam<std::u16string> {};

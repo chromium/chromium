@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -124,12 +125,20 @@ class CardUnmaskPromptControllerImplGenericTest {
     card_.set_record_type(should_unmask_virtual_card
                               ? CreditCard::VIRTUAL_CARD
                               : CreditCard::MASKED_SERVER_CARD);
+
+    CardUnmaskPromptOptions card_unmask_prompt_options =
+        CardUnmaskPromptOptions(
+            should_unmask_virtual_card
+                ? test::GetCardUnmaskChallengeOptions(
+                      {CardUnmaskChallengeOptionType::kCvc})[0]
+                : absl::optional<autofill::CardUnmaskChallengeOption>(),
+            AutofillClient::UnmaskCardReason::kAutofill);
+
     controller_->ShowPrompt(
         base::BindOnce(
             &CardUnmaskPromptControllerImplGenericTest::GetCardUnmaskPromptView,
             base::Unretained(this)),
-        card_, AutofillClient::UnmaskCardReason::kAutofill,
-        delegate_->GetWeakPtr());
+        card_, card_unmask_prompt_options, delegate_->GetWeakPtr());
   }
 
   void ShowPromptAndSimulateResponse(bool enable_fido_auth,
@@ -288,6 +297,23 @@ TEST_F(CardUnmaskPromptControllerImplTest, DisplayCardInformation) {
               std::string::npos);
 #endif
 }
+
+// Ensures the instruction message and window title is correctly displayed when
+// showing the card unmask prompt for a virtual card. Virtual cards are not
+// currently supported on iOS, so we don't test on the platform.
+#if !BUILDFLAG(IS_IOS)
+TEST_F(CardUnmaskPromptControllerImplTest,
+       ChallengeOptionInstructionMessageAndWindowTitle) {
+  ShowPrompt(/*should_unmask_virtual_card=*/true);
+
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"Enter the 3-digit security code on the back of your card so your "
+            u"bank can verify it's you");
+  EXPECT_EQ(controller_->GetWindowTitle(),
+            u"Enter your security code for " +
+                card_.CardIdentifierStringForAutofillDisplay());
+}
+#endif
 
 class LoggingValidationTestForNickname
     : public CardUnmaskPromptControllerImplGenericTest,

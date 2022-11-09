@@ -352,7 +352,19 @@ void CardUnmaskPromptViews::InitIfNecessary() {
     year_input_->SetVisible(false);
   }
 
-  std::unique_ptr<views::Textfield> cvc_input = CreateCvcTextfield();
+  std::unique_ptr<views::Textfield> cvc_input =
+      std::make_unique<views::Textfield>();
+  // Only put a placeholder text if there is no challenge option present. A
+  // challenge option being present indicates we are unmasking a virtual card
+  // CVC.
+  if (!controller_->IsChallengeOptionPresent()) {
+    cvc_input->SetPlaceholderText(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC));
+  }
+  cvc_input->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_DIALOG_ACCESSIBLE_NAME_SECURITY_CODE));
+  cvc_input->SetDefaultWidthInChars(8);
+  cvc_input->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
   cvc_input->set_controller(this);
   cvc_input_ = input_row->AddChildView(std::move(cvc_input));
 
