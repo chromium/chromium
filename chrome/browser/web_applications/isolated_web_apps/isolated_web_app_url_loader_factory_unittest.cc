@@ -703,7 +703,7 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
   }
 
   const std::string kEd25519WebBundleId =
-      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+      "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic";
   const GURL kEd25519AppOriginUrl =
       GURL("isolated-app://" + kEd25519WebBundleId);
 

@@ -59,6 +59,8 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(web_bundle_id.type(),
+            web_package::SignedWebBundleId::Type::kEd25519PublicKey);
 
   if (auto cache_entry_it = reader_cache_.Find(web_bundle_path);
       cache_entry_it != reader_cache_.End()) {

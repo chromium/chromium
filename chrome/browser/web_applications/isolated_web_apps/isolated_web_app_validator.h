@@ -28,7 +28,7 @@ class IsolatedWebAppValidator {
   // public keys given the `web_bundle_id`. Returns `absl::nullopt` on success,
   // or an error message if the public keys are not trusted.
   virtual void ValidateIntegrityBlock(
-      const web_package::SignedWebBundleId& web_bundle_id,
+      const web_package::SignedWebBundleId& expected_web_bundle_id,
       const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
       base::OnceCallback<void(absl::optional<std::string>)> callback);
 

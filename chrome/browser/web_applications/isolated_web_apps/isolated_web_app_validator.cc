@@ -15,12 +15,26 @@
 namespace web_app {
 
 void IsolatedWebAppValidator::ValidateIntegrityBlock(
-    const web_package::SignedWebBundleId& web_bundle_id,
+    const web_package::SignedWebBundleId& expected_web_bundle_id,
     const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
     base::OnceCallback<void(absl::optional<std::string>)> callback) {
   if (public_key_stack.empty()) {
     std::move(callback).Run(
         "The Isolated Web App must have at least one signature.");
+    return;
+  }
+
+  // The Web Bundle ID of the Isolated Web App must always be derived from the
+  // first public key in the stack.
+  auto actual_web_bundle_id =
+      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+          public_key_stack[0]);
+  if (actual_web_bundle_id != expected_web_bundle_id) {
+    std::move(callback).Run(
+        base::StringPrintf("The Web Bundle ID (%s) derived from the public key "
+                           "does not match the expected Web Bundle ID (%s).",
+                           actual_web_bundle_id.id().c_str(),
+                           expected_web_bundle_id.id().c_str()));
     return;
   }
 

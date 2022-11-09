@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
@@ -175,7 +176,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
 
   const web_package::SignedWebBundleId kWebBundleId =
       *web_package::SignedWebBundleId::Create(
-          "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac");
+          "aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic");
   const GURL kPrimaryUrl = GURL("isolated-app://" + kWebBundleId.id());
 
   constexpr static char kResponseBody[] = "test";
@@ -290,7 +291,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
   EXPECT_EQ(result.error().message,
             "The Web Bundle does not contain a response for the provided URL: "
             "isolated-app://"
-            "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/foo");
+            "aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/foo");
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {

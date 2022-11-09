@@ -69,6 +69,28 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, OnePublicKey) {
   EXPECT_EQ(future.Get(), absl::nullopt);
 }
 
+TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, UnexpectedWebBundleId) {
+  std::vector<web_package::Ed25519PublicKey> public_key_stack = {
+      web_package::Ed25519PublicKey::Create(
+          base::make_span(kEd25519PublicKey))};
+
+  auto expected_web_bundle_id =
+      web_package::SignedWebBundleId::Create(kAnotherSignedWebBundleId);
+  ASSERT_TRUE(expected_web_bundle_id.has_value())
+      << expected_web_bundle_id.error();
+
+  IsolatedWebAppValidator validator;
+  base::test::TestFuture<absl::optional<std::string>> future;
+  validator.ValidateIntegrityBlock(*expected_web_bundle_id, public_key_stack,
+                                   future.GetCallback());
+  EXPECT_EQ(
+      future.Get(),
+      "The Web Bundle ID "
+      "(aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic) derived from "
+      "the public key does not match the expected Web Bundle ID "
+      "(berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic).");
+}
+
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, EmptyPublicKeyStack) {
   auto web_bundle_id =
       web_package::SignedWebBundleId::Create(kSignedWebBundleId);

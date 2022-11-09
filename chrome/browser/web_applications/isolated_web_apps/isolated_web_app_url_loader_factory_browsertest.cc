@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -35,6 +37,24 @@ using ::testing::IsFalse;
 using ::testing::IsNull;
 using ::testing::IsTrue;
 using ::testing::NotNull;
+
+constexpr uint8_t kTestPublicKey[] = {
+    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51,
+    0x66, 0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02,
+    0x72, 0xFE, 0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D,
+};
+
+constexpr uint8_t kTestPrivateKey[] = {
+    0x1F, 0x27, 0x3F, 0x93, 0xE9, 0x59, 0x4E, 0xC7, 0x88, 0x82, 0xC7, 0x49,
+    0xF8, 0x79, 0x3D, 0x8C, 0xDB, 0xE4, 0x60, 0x1C, 0x21, 0xF1, 0xD9, 0xF9,
+    0xBC, 0x3A, 0xB5, 0xC7, 0x7F, 0x2D, 0x95, 0xE1,
+    // public key (part of the private key)
+    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51, 0x66,
+    0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02, 0x72, 0xFE,
+    0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
+
+constexpr char kWebBundleId[] =
+    "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic";
 
 std::u16string MessagesAsString(
     const std::vector<content::WebContentsConsoleObserver::Message>& messages) {
@@ -104,8 +124,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public InProcessBrowserTest {
   base::FilePath SignAndWriteBundleToDisk(
       const std::vector<uint8_t>& unsigned_bundle) {
     auto signed_bundle = web_package::WebBundleSigner::SignBundle(
-        unsigned_bundle,
-        {web_package::WebBundleSigner::KeyPair::CreateRandom()});
+        unsigned_bundle, {{kTestPublicKey, kTestPrivateKey}});
 
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -184,9 +203,9 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public InProcessBrowserTest {
     EXPECT_THAT(console_observer.GetMessageAt(0), Eq(error_messsage));
   }
 
-  const std::string kWebBundleId =
-      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-  const std::string kPrimaryUrl = "isolated-app://" + kWebBundleId;
+  const std::string kPrimaryUrl =
+      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    kWebBundleId});
 
   bool enable_isolated_web_apps_feature_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -302,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
       GURL(kPrimaryUrl + "/non-existing"),
       "Failed to read response from Signed Web Bundle: The Web Bundle does not "
       "contain a response for the provided URL: "
-      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
+      "isolated-app://4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic/"
       "non-existing");
 }
 
