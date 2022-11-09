@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {MockController} from '../../mock_controller.js';
+import {MockController} from '../mock_controller.m.js';
 
 suite('keyboardTesterTestSuite', function() {
   /** @type {?KeyboardTesterElement} */

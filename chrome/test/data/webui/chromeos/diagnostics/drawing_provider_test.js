@@ -9,7 +9,7 @@ import {CanvasDrawingProvider} from 'chrome://diagnostics/drawing_provider.js';
 import {constructRgba, DESTINATION_OVER, LINE_CAP, LINE_WIDTH, lookupCssVariableValue, MARK_COLOR, MARK_OPACITY, MARK_RADIUS, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider_utils.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
-import {MockController} from '../../mock_controller.js';
+import {MockController} from '../mock_controller.m.js';
 
 /**
  * FakeCanvasCtx class mocks various html Canvas API methods to make it easy to
