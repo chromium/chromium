@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {assertNotReached} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {DialogType} from '../../common/js/dialog_type.js';
@@ -157,8 +157,8 @@ export function testExecuteEntryTask(callback: () => void) {
  * Tests that getFileTasks() does not call .fileManagerPrivate.getFileTasks()
  * multiple times when the selected entries are not changed.
  */
-export function testGetFileTasksShouldNotBeCalledMultipleTimes(
-    callback: () => void) {
+export async function testGetFileTasksShouldNotBeCalledMultipleTimes(
+    done: () => void) {
   const selectionHandler = new FakeFileSelectionHandler();
 
   const fileSystem = new MockFileSystem('volumeId');
@@ -169,26 +169,48 @@ export function testGetFileTasksShouldNotBeCalledMultipleTimes(
 
   assert(mockChrome.fileManagerPrivate.getFileTaskCalledCount_ === 0);
 
-  taskController.getFileTasks()
-      .then(tasks => {
-        assert(mockChrome.fileManagerPrivate.getFileTaskCalledCount_ === 1);
-        assert(util.isSameEntries(
-            tasks.entries, selectionHandler.selection.entries));
-        // Make oldSelection.entries !== newSelection.entries
-        selectionHandler.updateSelection(
-            [MockFileEntry.create(fileSystem, '/test.png')], ['image/png']);
-        return taskController.getFileTasks();
-      })
-      .then(tasks => {
-        assert(mockChrome.fileManagerPrivate.getFileTaskCalledCount_ === 1);
-        assert(util.isSameEntries(
-            tasks.entries, selectionHandler.selection.entries));
-        callback();
-      })
-      .catch(error => {
-        assertNotReached(error.toString());
-        callback();
-      });
+  let tasks = await taskController.getFileTasks();
+  assert(mockChrome.fileManagerPrivate.getFileTaskCalledCount_ === 1);
+  assert(util.isSameEntries(tasks.entries, selectionHandler.selection.entries));
+  // Make oldSelection.entries !== newSelection.entries
+  selectionHandler.updateSelection(
+      [MockFileEntry.create(fileSystem, '/test.png')], ['image/png']);
+  tasks = await taskController.getFileTasks();
+  assert(mockChrome.fileManagerPrivate.getFileTaskCalledCount_ === 1);
+  assert(util.isSameEntries(tasks.entries, selectionHandler.selection.entries));
+
+  // Check concurrent calls, should only create one promise and one call to the
+  // private API.
+  const promise1 = taskController.getFileTasks();
+  // Await 0ms to give time to pomise1 to initialize.
+  await new Promise(r => setTimeout(r));
+  const promise2 = taskController.getFileTasks();
+  const [tasks1, tasks2] = await Promise.all([promise1, promise2]);
+  assertDeepEquals(
+      tasks1.entries, tasks2.entries,
+      'both tasks should have test.png as entry');
+  assertTrue(tasks1 === tasks2);
+  assert(mockChrome.fileManagerPrivate.getFileTaskCalledCount_ === 1);
+  assert(
+      util.isSameEntries(tasks1.entries, selectionHandler.selection.entries));
+
+  // Check concurrent calls right after changing the selection.
+  selectionHandler.updateSelection(
+      [MockFileEntry.create(fileSystem, '/hello.txt')], ['text/plain']);
+  const promise3 = taskController.getFileTasks();
+  // Await 0ms to give time to pomise3 to initialize.
+  await new Promise(r => setTimeout(r));
+  const promise4 = taskController.getFileTasks();
+  const [tasks3, tasks4] = await Promise.all([promise3, promise4]);
+  assertDeepEquals(
+      tasks3.entries, tasks4.entries,
+      'both tasks should have hello.txt as entry');
+  assertTrue(tasks3 === tasks4);
+  assert(
+      util.isSameEntries(tasks3.entries, selectionHandler.selection.entries));
+  assert(mockChrome.fileManagerPrivate.getFileTaskCalledCount_ === 2);
+
+  done();
 }
 
 /**

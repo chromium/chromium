@@ -1361,6 +1361,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("changeDefaultDialogScrollList"),
                       TestCase("genericTaskIsNotExecuted"),
                       TestCase("genericTaskAndNonGenericTask"),
+                      TestCase("executeViaDblClick"),
                       TestCase("noActionBarOpenForDirectories")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

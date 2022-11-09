@@ -49,7 +49,11 @@ export class TaskController {
    * open-with command used previously for the same task.
    */
   private openWithCommand_: Command;
-  private tasks_: FileTasks|null = null;
+  /**
+   * Cached promise used to avoid initializing the same FileTasks
+   * multiple times.
+   */
+  private tasks_: Promise<FileTasks>|null = null;
   private tasksEntries_: Entry[];
   /** Map used to track extract IOTasks in progress.  */
   private extractTasks_: Map<number, ExtractingTasks> = new Map();
@@ -425,6 +429,16 @@ export class TaskController {
       return this.tasks_;
     }
     this.tasksEntries_ = selection.entries;
+    this.tasks_ = this.fetchTasks_();
+    return this.tasks_;
+  }
+
+  /**
+   * Fetch FileTasks, it should be only used by getFileTasks() because
+   * getFileTasks() takes into account the caching.
+   */
+  private async fetchTasks_(): Promise<FileTasks> {
+    const selection = this.selectionHandler_.selection;
     await selection.computeAdditional(this.metadataModel_);
     if (this.selectionHandler_.selection !== selection) {
       if (util.isSameEntries(this.tasksEntries_, selection.entries)) {
@@ -443,9 +457,7 @@ export class TaskController {
       }
       throw new Error('stale selection');
     }
-    this.tasks_ = tasks;
-
-    return this.tasks_!;
+    return tasks;
   }
 
   /** Returns whether default task command can be executed or not. */

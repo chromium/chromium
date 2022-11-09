@@ -120,7 +120,7 @@ async function executeDefaultTask(appId, descriptor) {
       ['#file-list li.table-row[selected] .filename-label span']));
 
   // Wait until the task is executed.
-  await remoteCall.waitUntilTaskExecutes(appId, descriptor);
+  await remoteCall.waitUntilTaskExecutes(appId, descriptor, ['hello.txt']);
 }
 
 /**
@@ -202,7 +202,7 @@ async function defaultTaskDialog(appId, descriptor) {
       !!await remoteCall.waitForElement(appId, '#tasks-menu[hidden]'));
 
   // Check the executed tasks.
-  await remoteCall.waitUntilTaskExecutes(appId, descriptor);
+  await remoteCall.waitUntilTaskExecutes(appId, descriptor, ['hello.txt']);
 }
 
 testcase.executeDefaultTaskDrive = async () => {
@@ -359,4 +359,34 @@ testcase.noActionBarOpenForDirectories = async () => {
       'fakeMouseRightClick', appId, ['#file-list .table-row[selected]']));
   await remoteCall.waitForElement(
       appId, '#default-task-menu-item:not([hidden])');
+};
+
+testcase.executeViaDblClick = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  await remoteCall.callRemoteTestUtil(
+      'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
+  //  Double-click the file.
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseDoubleClick', appId,
+      ['#file-list li[file-name="hello.txt"] .filename-label span']));
+
+  // Wait until the task is executed.
+  const descriptor = DOWNLOADS_FAKE_TASKS[0].descriptor;
+  await remoteCall.waitUntilTaskExecutes(appId, descriptor, ['hello.txt']);
+
+  // Reset the overridden tasks.
+  await remoteCall.callRemoteTestUtil(
+      'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
+
+  // Click on the currently selected tree item to reset the file list selection.
+  await remoteCall.waitAndClickElement(
+      appId, '#directory-tree .tree-item[selected]');
+
+  // Double click on a different file.
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseDoubleClick', appId,
+      ['#file-list li[file-name="world.ogv"] .filename-label span']));
+
+  // Check the tasks again.
+  await remoteCall.waitUntilTaskExecutes(appId, descriptor, ['world.ogv']);
 };

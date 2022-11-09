@@ -421,7 +421,7 @@ testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
       'fakeMouseDoubleClick', appId, ['#file-list [file-name="hello.txt"]']));
   await remoteCall.waitUntilTaskExecutes(
-      appId, DOWNLOADS_FAKE_TASKS[0].descriptor);
+      appId, DOWNLOADS_FAKE_TASKS[0].descriptor, ['hello.txt']);
 
   // Delete item and wait for it to be removed (no dialog).
   await clickTrashButton(appId);

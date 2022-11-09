@@ -643,25 +643,30 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {string} appId App window Id.
    * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task to
    *     watch.
-   * @param {Array<Object>=} opt_replyArgs arguments to reply to executed task.
+   * @param {!Array<string>} fileNames Name of files that should have been
+   *     passed to the executeTasks().
+   * @param {Array<Object>=} replyArgs arguments to reply to executed task.
    * @return {Promise} Promise to be fulfilled when the task appears in the
    *     executed task list.
    */
-  waitUntilTaskExecutes(appId, descriptor, opt_replyArgs) {
+  waitUntilTaskExecutes(appId, descriptor, fileNames, replyArgs) {
     const caller = getCaller();
     return repeatUntil(async () => {
       if (!await this.callRemoteTestUtil(
-              'taskWasExecuted', appId, [descriptor])) {
-        const executedTasks =
-            (await this.callRemoteTestUtil('getExecutedTasks', appId, []))
-                .map(
-                    ({appId, taskType, actionId}) =>
-                        `${appId}|${taskType}|${actionId}`);
+              'taskWasExecuted', appId, [descriptor, fileNames])) {
+        const tasks =
+            await this.callRemoteTestUtil('getExecutedTasks', appId, []);
+        const executedTasks = tasks.map((task) => {
+          const {appId, taskType, actionId} = task.descriptor;
+          const executedFileNames = task['fileNames'];
+          return `${appId}|${taskType}|${actionId} for ${
+              JSON.stringify(executedFileNames)}`;
+        });
         return pending(caller, 'Executed task is %j', executedTasks);
       }
-      if (opt_replyArgs) {
+      if (replyArgs) {
         await this.callRemoteTestUtil(
-            'replyExecutedTask', appId, [descriptor, opt_replyArgs]);
+            'replyExecutedTask', appId, [descriptor, replyArgs]);
       }
     });
   }
