@@ -25,11 +25,8 @@
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 #include "ui/ozone/platform/flatland/flatland_window.h"
 #include "ui/ozone/platform/flatland/flatland_window_manager.h"
-#include "ui/ozone/public/surface_ozone_canvas.h"
-
-#if BUILDFLAG(ENABLE_VULKAN)
 #include "ui/ozone/platform/flatland/vulkan_implementation_flatland.h"
-#endif
+#include "ui/ozone/public/surface_ozone_canvas.h"
 
 namespace ui {
 
@@ -197,7 +194,6 @@ FlatlandSurfaceFactory::CreateNativePixmapFromHandle(
   return collection->CreateNativePixmap(std::move(handle), size);
 }
 
-#if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 FlatlandSurfaceFactory::CreateVulkanImplementation(
     bool use_swiftshader,
@@ -206,7 +202,6 @@ FlatlandSurfaceFactory::CreateVulkanImplementation(
       this, &flatland_sysmem_buffer_manager_, use_swiftshader,
       allow_protected_memory);
 }
-#endif
 
 void FlatlandSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
                                         FlatlandSurface* surface) {
