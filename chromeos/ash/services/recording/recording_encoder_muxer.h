@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -56,10 +57,10 @@ using OnFailureCallback =
 // This object performs VP8 video encoding and Opus audio encoding, and mux the
 // audio and video encoded frames into a Webm container.
 class RecordingEncoderMuxer {
- public:
-  RecordingEncoderMuxer(const RecordingEncoderMuxer&) = delete;
-  RecordingEncoderMuxer& operator=(const RecordingEncoderMuxer&) = delete;
+ private:
+  using PassKey = base::PassKey<RecordingEncoderMuxer>;
 
+ public:
   // Creates an instance of this class that is bound to the given sequenced
   // |blocking_task_runner| on which all operations as well as destruction will
   // happen. |video_encoder_options| and |audio_input_params| will be used to
@@ -82,6 +83,18 @@ class RecordingEncoderMuxer {
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
+
+  RecordingEncoderMuxer(
+      PassKey,
+      const media::VideoEncoder::Options& video_encoder_options,
+      const media::AudioParameters* audio_input_params,
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
+      const base::FilePath& webm_file_path,
+      OnFailureCallback on_failure_callback);
+  ~RecordingEncoderMuxer();
+
+  RecordingEncoderMuxer(const RecordingEncoderMuxer&) = delete;
+  RecordingEncoderMuxer& operator=(const RecordingEncoderMuxer&) = delete;
 
   bool did_failure_occur() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -124,16 +137,6 @@ class RecordingEncoderMuxer {
     std::unique_ptr<media::AudioBus> bus;
     base::TimeTicks capture_time;
   };
-
-  friend class base::SequenceBound<RecordingEncoderMuxer>;
-
-  RecordingEncoderMuxer(
-      const media::VideoEncoder::Options& video_encoder_options,
-      const media::AudioParameters* audio_input_params,
-      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-      const base::FilePath& webm_file_path,
-      OnFailureCallback on_failure_callback);
-  ~RecordingEncoderMuxer();
 
   // Creates and initializes the audio encoder.
   void InitializeAudioEncoder(const media::AudioEncoder::Options& options);
