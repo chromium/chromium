@@ -48,6 +48,7 @@ optimize_ts("annotations_ts") {
 
 optimize_ts("annotations_test_ts") {
   visibility = [ ":inttests" ]
+  testonly = true
 
   sources = [ "resources/annotations_test.ts" ]
 
