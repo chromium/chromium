@@ -367,13 +367,16 @@ void DeferredTaskHandler::DeleteHandlersOnMainThread() {
 
 void DeferredTaskHandler::ClearHandlersToBeDeleted() {
   DCHECK(IsMainThread());
+  // crbug 1370091: Acquire graph lock before clearing
+  // rendering_automatic_pull_handlers_ to avoid race conditions on
+  // teardown.
+  GraphAutoLocker graph_locker(*this);
 
   {
     base::AutoLock locker(automatic_pull_handlers_lock_);
     rendering_automatic_pull_handlers_.clear();
   }
 
-  GraphAutoLocker locker(*this);
   tail_processing_handlers_.clear();
   rendering_orphan_handlers_.clear();
   deletable_orphan_handlers_.clear();
