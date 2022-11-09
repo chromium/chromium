@@ -90,11 +90,11 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
       {"https://chrome.google.com/webstore", HIDE_ALL},
       {"https://chrome.google.com./webstore", HIDE_ALL},
       {"https://chrome.google.com./webstore/", HIDE_ALL},
-      {"https://webstore.google.com", HIDE_ALL},
-      {"https://webstore.google.com/", HIDE_ALL},
-      {"https://webstore.google.com./", HIDE_ALL},
-      {"https://webstore.google.com:80/", HIDE_ALL},
-      {"https://webstore.google.com/?query", HIDE_ALL},
+      {"https://chromewebstore.google.com", HIDE_ALL},
+      {"https://chromewebstore.google.com/", HIDE_ALL},
+      {"https://chromewebstore.google.com./", HIDE_ALL},
+      {"https://chromewebstore.google.com:80/", HIDE_ALL},
+      {"https://chromewebstore.google.com/?query", HIDE_ALL},
       // Unsupported scheme.
       {"blob:https://chrome.google.com/fc3f440b-78ed-469f-8af8-7a1717ff39ae",
        HIDE_ALL},
@@ -219,7 +219,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
   {
     auto request_init_params = create_request_params(
         non_sensitive_url, WebRequestResourceType::SCRIPT, kRendererProcessId);
-    GURL webstore_url("https://webstore.google.com/");
+    GURL webstore_url("https://chromewebstore.google.com/");
     request_init_params.initiator = url::Origin::Create(webstore_url);
 
     WebRequestInfo sensitive_request_info(std::move(request_init_params));
@@ -231,7 +231,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
   {
     auto request_init_params = create_request_params(
         non_sensitive_url, WebRequestResourceType::SCRIPT, kRendererProcessId);
-    GURL webstore_url("https://webstore.google.com/");
+    GURL webstore_url("https://chromewebstore.google.com/");
     auto opaque_origin =
         url::Origin::Create(webstore_url).DeriveNewOpaqueOrigin();
     EXPECT_TRUE(opaque_origin.opaque());

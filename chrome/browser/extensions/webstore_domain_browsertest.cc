@@ -22,7 +22,7 @@ namespace extensions {
 namespace {
 
 // URL the new webstore is associated with in production.
-constexpr char kNewWebstoreURL[] = "https://webstore.google.com/";
+constexpr char kNewWebstoreURL[] = "https://chromewebstore.google.com/";
 // URL the webstore hosted app is associated with in production, minus the
 // /webstore/ path which is added in the tests themselves.
 constexpr char kWebstoreAppBaseURL[] = "https://chrome.google.com/";

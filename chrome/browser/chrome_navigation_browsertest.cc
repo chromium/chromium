@@ -1260,7 +1260,8 @@ IN_PROC_BROWSER_TEST_F(WebstoreIsolationBrowserTest, WebstorePopupIsIsolated) {
 }
 
 // Make sure that the new Chrome Web Store URL used in production
-// (webstore.google.com) is isolated from the rest of the google.com domain.
+// (chromewebstore.google.com) is isolated from the rest of the google.com
+// domain.
 IN_PROC_BROWSER_TEST_F(WebstoreIsolationBrowserTest,
                        NewWebstorePopupIsIsolated) {
   const GURL first_url("https://google.com/title1.html");
@@ -1270,11 +1271,12 @@ IN_PROC_BROWSER_TEST_F(WebstoreIsolationBrowserTest,
   scoped_refptr<content::SiteInstance> initial_instance(
       initial_web_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
-  // Open a popup for webstore.google.com and ensure that it's isolated in a
-  // different SiteInstance and process from the rest of google.com. Since the
+  // Open a popup for chromewebstore.google.com and ensure that it's isolated in
+  // a different SiteInstance and process from the rest of google.com. Since the
   // new Webstore encompasses the entire subdomain, there should have also been
   // a BrowsingInstance swap at this point.
-  const GURL webstore_origin_url("https://webstore.google.com/title1.html");
+  const GURL webstore_origin_url(
+      "https://chromewebstore.google.com/title1.html");
   {
     content::TestNavigationObserver popup_waiter(webstore_origin_url);
     popup_waiter.StartWatchingNewWebContents();

@@ -510,7 +510,7 @@ TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreURLsAreAlwaysAllowed) {
   // The actual Webstore URLs should also be allowed regardless of filtering
   // behavior,
   GURL webstore_url("https://chrome.google.com/webstore");
-  GURL new_webstore_url("https://webstore.google.com/");
+  GURL new_webstore_url("https://chromewebstore.google.com/");
 
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
@@ -530,7 +530,7 @@ TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreURLsAreAlwaysAllowed) {
   hosts["clients2.google.com"] = false;
   hosts["clients2.googleusercontent.com"] = false;
   hosts["chrome.google.com"] = false;
-  hosts["webstore.google.com"] = false;
+  hosts["chromewebstore.google.com"] = false;
   filter_.SetManualHosts(std::move(hosts));
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,

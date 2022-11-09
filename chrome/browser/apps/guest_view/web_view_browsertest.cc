@@ -5567,7 +5567,7 @@ IN_PROC_BROWSER_TEST_P(WebViewPPAPITest, Shim_TestPluginLoadPermission) {
 // Domain which the Webstore hosted app is associated with in production.
 constexpr char kWebstoreURL[] = "https://chrome.google.com/";
 // Domain which the new Webstore is associated with in production.
-constexpr char kNewWebstoreURL[] = "https://webstore.google.com/";
+constexpr char kNewWebstoreURL[] = "https://chromewebstore.google.com/";
 // Domain for testing an overridden Webstore URL.
 constexpr char kWebstoreURLOverride[] = "https://webstore.override.test.com/";
 

@@ -989,7 +989,7 @@
   }, {
     "channel": "dev",
     "contexts": ["web_page"],
-    "matches": ["https://webstore.google.com/*"],
+    "matches": ["https://chromewebstore.google.com/*"],
     "feature_flag": "NewWebstoreDomain"
   }],
   "webviewTag": {

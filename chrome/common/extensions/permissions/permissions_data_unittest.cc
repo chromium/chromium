@@ -936,18 +936,18 @@ TEST(PermissionsDataTest, ChromeWebstoreUrl) {
            "empty-new-tab-page/dpjamkmjmigaoobjbekmfgabipmfilij"),
       GURL("https://chrome.google.com./webstore/detail/"
            "empty-new-tab-page/dpjamkmjmigaoobjbekmfgabipmfilij"),
-      GURL("https://webstore.google.com"),
-      GURL("https://webstore.google.com."),
-      GURL("https://webstore.google.com/category/foo/bar"),
-      GURL("https://webstore.google.com./category/foo/bar"),
-      GURL("https://webstore.google.com/collection/foo"),
-      GURL("https://webstore.google.com./collection/foo"),
-      GURL("https://webstore.google.com/detail/"
+      GURL("https://chromewebstore.google.com"),
+      GURL("https://chromewebstore.google.com."),
+      GURL("https://chromewebstore.google.com/category/foo/bar"),
+      GURL("https://chromewebstore.google.com./category/foo/bar"),
+      GURL("https://chromewebstore.google.com/collection/foo"),
+      GURL("https://chromewebstore.google.com./collection/foo"),
+      GURL("https://chromewebstore.google.com/detail/"
            "empty-new-tab-page/dpjamkmjmigaoobjbekmfgabipmfilij"),
-      GURL("https://webstore.google.com/search/foo"),
-      GURL("https://webstore.google.com/user/installed"),
-      GURL("https://webstore.google.com/user/library"),
-      GURL("https://webstore.google.com/report/"
+      GURL("https://chromewebstore.google.com/search/foo"),
+      GURL("https://chromewebstore.google.com/user/installed"),
+      GURL("https://chromewebstore.google.com/user/library"),
+      GURL("https://chromewebstore.google.com/report/"
            "dpjamkmjmigaoobjbekmfgabipmfilij"),
 
       // Unintuitively, the script blocking also applies to deeper subdomains
@@ -956,7 +956,7 @@ TEST(PermissionsDataTest, ChromeWebstoreUrl) {
       // are not the case, but it's better to have the current behavior
       // explicitly documented in tests for now.
       GURL("https://foo.chrome.google.com/webstore"),
-      GURL("https://foo.bar.webstore.google.com"),
+      GURL("https://foo.bar.chromewebstore.google.com"),
       GURL("https://chrome.google.com/foo"),
   };
 
@@ -971,10 +971,10 @@ TEST(PermissionsDataTest, ChromeWebstoreUrl) {
       GURL("https://chrome.google.com./webstore").DeprecatedGetOriginAsURL());
   tab_hosts.AddOrigin(
       UserScript::ValidUserScriptSchemes(),
-      GURL("https://webstore.google.com/").DeprecatedGetOriginAsURL());
+      GURL("https://chromewebstore.google.com/").DeprecatedGetOriginAsURL());
   tab_hosts.AddOrigin(
       UserScript::ValidUserScriptSchemes(),
-      GURL("https://webstore.google.com./").DeprecatedGetOriginAsURL());
+      GURL("https://chromewebstore.google.com./").DeprecatedGetOriginAsURL());
   PermissionSet tab_permissions(APIPermissionSet(), ManifestPermissionSet(),
                                 tab_hosts.Clone(), tab_hosts.Clone());
   for (const Extension* extension : extensions) {

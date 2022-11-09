@@ -78,7 +78,7 @@ class ProcessManagementTest : public ExtensionBrowserTest {
 // Domain which the Webstore hosted app is associated with in production.
 constexpr char kWebstoreURL[] = "chrome.google.com";
 // Domain which the new Webstore is associated with in production.
-constexpr char kNewWebstoreURL[] = "webstore.google.com";
+constexpr char kNewWebstoreURL[] = "chromewebstore.google.com";
 // Domain for testing an overridden Webstore URL.
 constexpr char kWebstoreURLOverride[] = "chrome.webstore.test.com";
 
