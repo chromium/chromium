@@ -17,7 +17,6 @@ static_library("backend") {
     "//ash/public/cpp",
     "//ash/public/mojom",
     "//ash/webui/shortcut_customization_ui/mojom",
-    "//components/prefs:prefs",
     "//ui/events/devices",
   ]
 }
