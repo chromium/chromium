@@ -123,9 +123,9 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
     return MakeError(ImportEntry::Status::NON_ASCII_URL);
 
   if (!url.has_value() ||
-      (url.has_value() &&
-       !password_manager_util::IsValidPasswordURL(url.value())))
+      !password_manager_util::IsValidPasswordURL(url.value())) {
     return MakeError(ImportEntry::Status::INVALID_URL);
+  }
 
   if (csv_password.GetPassword().length() > 1000)
     return MakeError(ImportEntry::Status::LONG_PASSWORD);
