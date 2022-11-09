@@ -24,7 +24,7 @@
   <video controls width=1200 style="transform:rotate(30deg)"></video>
 </body>
 <script>
-test(_ => {
+promise_test(async _ => {
   const expectedWidth = [
     "400px", // Smaller than viewport so fully visible.
     "800px", // Larger than viewport and horizontal so width=viewport_width.
@@ -37,8 +37,7 @@ test(_ => {
   for (var i=0; i < videos.length; ++i) {
     videos[i].src = 'content/test.ogv';
   }
-
-  var forceLayout = document.body.offsetHeight;
+  await new Promise(resolve => {window.onload = resolve;});
 
   for (var i=0; i < videos.length; ++i) {
     var controls = mediaControlsButton(videos[i], 'panel');
