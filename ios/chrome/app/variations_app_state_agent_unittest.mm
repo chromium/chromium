@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -35,7 +36,7 @@ NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
 @interface StateForMockAppState : NSObject
 
 @property(nonatomic, assign) InitStage initStage;
-@property(nonatomic, assign) BOOL transitionQueued;
+@property(nonatomic, assign) BOOL transitionQueuedFromVariationsStage;
 
 @end
 
@@ -48,7 +49,8 @@ class VariationsAppStateAgentTest : public PlatformTest {
   VariationsAppStateAgentTest() {
     // Mocks the app state such that the mock_app_state_.initStage always
     // returns state_.initStage, and `[mock_app_state_
-    // queueTransitionToNextInitStage]` sets state_.transitionQueued to YES.
+    // queueTransitionToNextInitStage]` sets
+    // state_.transitionQueuedFromVariationsStage to YES.
     state_ = [[StateForMockAppState alloc] init];
     mock_app_state_ = OCMClassMock([AppState class]);
     // Use a local variable to prevent capturing `this` in  member field).
@@ -59,7 +61,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
     });
     OCMStub([mock_app_state_ queueTransitionToNextInitStage])
         .andDo(^(NSInvocation* inv) {
-          state.transitionQueued = YES;
+          state.transitionQueuedFromVariationsStage = YES;
         });
     // Mocks the fetcher.
     mock_fetcher_ =
@@ -83,6 +85,8 @@ class VariationsAppStateAgentTest : public PlatformTest {
 
   // Create the variations services agent for testing.
   VariationsAppStateAgent* CreateAgent(bool first_run) {
+    state_.initStage = InitStageStart;
+    state_.transitionQueuedFromVariationsStage = NO;
     VariationsAppStateAgent* agent =
         [[VariationsAppStateAgent alloc] initWithFirstRunStatus:first_run
                                                         fetcher:mock_fetcher_
@@ -105,6 +109,15 @@ class VariationsAppStateAgentTest : public PlatformTest {
     DCHECK_LE(current_stage, new_stage);
     InitStage previous_stage;
     while (current_stage < new_stage) {
+      bool transition_queued_from_variations_stage =
+          IsAppStateQueueTransitionToNextInitStageInvoked();
+      if (current_stage < InitStageVariationsSeed) {
+        // If the seed should be fetched for `agent`, please make sure
+        // `SimulateFetchCompletion(agent)` prior to calling this method.
+        ASSERT_FALSE(transition_queued_from_variations_stage);
+      } else {
+        ASSERT_TRUE(transition_queued_from_variations_stage);
+      }
       previous_stage = current_stage;
       current_stage = static_cast<InitStage>(current_stage + 1);
       state_.initStage = current_stage;
@@ -115,7 +128,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
 
   // Whether the app state has attempted to transition to the next stage.
   BOOL IsAppStateQueueTransitionToNextInitStageInvoked() {
-    return state_.transitionQueued;
+    return state_.transitionQueuedFromVariationsStage;
   }
 
   // Gets the current scene state to simulate activation level transitions.
@@ -151,9 +164,9 @@ TEST_F(VariationsAppStateAgentTest, EnableSeedFetchOnFirstRun) {
   // TODO(crbug.com/1380164): Test that first run metric is logged.
 }
 
-// Tests that on first run, the agent transitions to the next stage from
-// InitStageVariationsSeed after seed is fetched, and that the metric for first
-// run would be logged.
+// Tests that the agent immediately transitions to the next stage from
+// InitStageVariationsSeed when the user is not running the first time after
+// installation.
 TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnNonFirstRun) {
   // Start the agent.
   VariationsAppStateAgent* agent = CreateAgent(/*first_run=*/false);
@@ -168,7 +181,7 @@ TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnNonFirstRun) {
 // InitStageVariationsSeed when the seed fetch has completed before then.
 TEST_F(VariationsAppStateAgentTest,
        TransitionToNextStageIfSeedFetchedBeforeReachingVariationsStage) {
-  VariationsAppStateAgent* agent = CreateAgent(/*first_run=*/false);
+  VariationsAppStateAgent* agent = CreateAgent(/*first_run=*/true);
   // Simulate that the seed fetch has completed right before
   // InitStageVariationsSeed is reached.
   TransitionAgentToStage(agent,
@@ -182,6 +195,29 @@ TEST_F(VariationsAppStateAgentTest,
   // to the next stage immediately.
   TransitionAgentToStage(agent, InitStageVariationsSeed);
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
+}
+
+// Tests that if the seed fetch does not complete before the scene transitions
+// to foreground, the LaunchScreenViewController would be displayed.
+TEST_F(VariationsAppStateAgentTest, LaunchScreenDisplaysIfSeedIsNotFetched) {
+  // Sets expectation.
+  id mock_scene_state = OCMPartialMock(GetSceneState());
+  id mock_window = [OCMockObject mockForClass:[UIWindow class]];
+  OCMExpect([mock_window
+      setRootViewController:[OCMArg checkWithBlock:^BOOL(UIViewController* vc) {
+        return vc.view.accessibilityIdentifier ==
+               first_run::kLaunchScreenAccessibilityIdentifier;
+      }]]);
+  OCMExpect([mock_window makeKeyAndVisible]);
+  OCMStub([mock_scene_state window]).andReturn(mock_window);
+  // Starts an agent that fetches the seed.
+  VariationsAppStateAgent* agent = CreateAgent(/*first_run=*/true);
+  // Simulate that the seed fetch has completed right before
+  // InitStageVariationsSeed is reached.
+  TransitionAgentToStage(agent, InitStageVariationsSeed);
+  [agent sceneState:mock_scene_state
+      transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
+  EXPECT_OCMOCK_VERIFY(mock_window);
 }
 
 // Tests that the fetch time from last launch will be saved when the app goes to
@@ -200,9 +236,8 @@ TEST_F(VariationsAppStateAgentTest, SavesLastSeedFetchTimeOnBackgrounding) {
   //  Simulate backgrounding and launch again.
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelBackground];
-  state_.initStage = InitStageStart;
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
   agent = CreateAgent(/*first_run=*/false);
+  TransitionAgentToStage(agent, InitStageVariationsSeed);
   double stored_value = [[NSUserDefaults standardUserDefaults]
       doubleForKey:kLastVariationsSeedFetchTimeKey];
   EXPECT_EQ(base::Time::FromDoubleT(stored_value), last_fetch_time);

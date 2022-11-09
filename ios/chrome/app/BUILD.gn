@@ -101,6 +101,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main/test",
