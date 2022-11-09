@@ -65,6 +65,65 @@ FillingSource GetSourceForTabType(const AccessorySheetData& accessory_sheet) {
   }
 }
 
+// This method describes whether an action is sufficiently relevant to show a
+// fallback sheet for their own sake in the accessory V1. As of this writing,
+// they filter mainly the "Manage" entry points since they are only useful if
+// users stored data already.
+bool IsRelevantActionForVisibility(AccessoryAction action) {
+  switch (action) {
+    case AccessoryAction::MANAGE_CREDIT_CARDS:
+    case AccessoryAction::MANAGE_ADDRESSES:
+      // These options don't provide merit on their own. If the user has no data
+      // in the fallback sheet, "manage" is not likely to be useful. The space
+      // the accessory consumes is very hard to justify in this case.
+      return false;
+
+    case AccessoryAction::MANAGE_PASSWORDS:
+      // Technically, the "Manage" entry point justifies showing the bar if two
+      // conditions are met:
+      // a) the user has at least one password for *any* site (and looks for it)
+      // b) the user wants to sign up and needs to adjust their settings
+      // But a) is covered by the presence of USE_OTHER_PASSWORD and b) is
+      // covered by
+      // * the pwd generation logic showing the bar for new sites, OR
+      // * the recovery toggle showing the bar for already encountered sites.
+      // Therefore, Manage Passwords is a weak signal that shows the accessory
+      // too often and in cases where it doesn't make sense: most notably on
+      // non-search inputs that *could be a username* – even without any stored
+      // passwords. This applies to almost every form in a field
+      return false;
+
+    // The cases below don't exist in fallback sheets as of this writing. But if
+    // they ever move there, the sheet has a strong reason to be accessible.
+    case AccessoryAction::AUTOFILL_SUGGESTION:
+    case AccessoryAction::GENERATE_PASSWORD_AUTOMATIC:
+    case AccessoryAction::TOGGLE_SAVE_PASSWORDS:
+      return true;
+
+    // These cases are sufficient as a reason for showing the fallback sheet.
+    case AccessoryAction::USE_OTHER_PASSWORD:
+    case AccessoryAction::GENERATE_PASSWORD_MANUAL:
+      return true;
+
+    case AccessoryAction::COUNT:
+      NOTREACHED();
+  }
+  return false;
+}
+
+// This method filters which actions are sufficient on their own to justify
+// showing the V1 version of the accessory. With V2, that decision is moved into
+// each `AccessoryController::GetSheetData` implementation.
+// In general, if there is any saved data, we want to show the fallback.
+bool HasRelevantSuggestions(const AccessorySheetData& accessory_sheet_data) {
+  return !accessory_sheet_data.user_info_list().empty() ||
+         !accessory_sheet_data.promo_code_info_list().empty() ||
+         accessory_sheet_data.option_toggle().has_value() ||
+         base::ranges::any_of(accessory_sheet_data.footer_commands(),
+                              &IsRelevantActionForVisibility,
+                              &autofill::FooterCommand::accessory_action);
+}
+
 }  // namespace
 
 ManualFillingControllerImpl::~ManualFillingControllerImpl() {
@@ -129,10 +188,8 @@ void ManualFillingControllerImpl::RefreshSuggestions(
   view_->OnItemsAvailable(accessory_sheet_data);
   available_sheets_.insert_or_assign(GetSourceForTabType(accessory_sheet_data),
                                      accessory_sheet_data);
-  UpdateSourceAvailability(
-      GetSourceForTabType(accessory_sheet_data),
-      !accessory_sheet_data.user_info_list().empty() ||
-          !accessory_sheet_data.promo_code_info_list().empty());
+  UpdateSourceAvailability(GetSourceForTabType(accessory_sheet_data),
+                           HasRelevantSuggestions(accessory_sheet_data));
 }
 
 void ManualFillingControllerImpl::NotifyFocusedInputChanged(
