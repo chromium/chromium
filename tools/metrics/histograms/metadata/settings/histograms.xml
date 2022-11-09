@@ -351,6 +351,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyCheck.NotificationsListCount"
+    units="suggestions" expires_after="2023-10-21">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <summary>
+    The number of suggestions of notification permissions to revoke, recorded
+    when the notification permission list is updated for the SafetyCheck
+    notifications module.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyCheck.NotificationsModuleInteractions"
+    enum="SafetyCheckNotificationsModuleInteractions"
+    expires_after="2023-10-21">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <summary>
+    The user actions taken on the notifications module in safety check in Chrome
+    settings. Recorded every time the user interacts with the respective UI
+    element.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyCheck.PasswordsResult"
     enum="SafetyCheckPasswordsStatus" expires_after="2023-02-19">
   <owner>andzaytsev@google.com</owner>

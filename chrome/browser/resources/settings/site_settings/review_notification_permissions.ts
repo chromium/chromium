@@ -17,6 +17,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckNotificationsModuleInteractions} from '../metrics_browser_proxy.js';
 
 import {getTemplate} from './review_notification_permissions.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
@@ -73,6 +74,7 @@ export class SettingsReviewNotificationPermissionsElement extends
       notificationPermissionReviewListExpanded_: {
         type: Boolean,
         value: true,
+        observer: 'updateNotificationPermissionReviewListExpanded_',
       },
 
       /* The last action taken by the user: block, reset or ignore. */
@@ -118,6 +120,8 @@ export class SettingsReviewNotificationPermissionsElement extends
   private sitesLoaded_: boolean = false;
   private modelUpdateDelayMsForTesting_: number|null = null;
   private toastText_: string|null;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -128,6 +132,8 @@ export class SettingsReviewNotificationPermissionsElement extends
             this.onReviewNotificationPermissionListChanged_(sites));
 
     this.sites_ = await this.browserProxy_.getNotificationPermissionReview();
+    this.metricsBrowserProxy_.recordSafetyCheckNotificationsListCountHistogram(
+      this.sites_.length);
     this.sitesLoaded_ = true;
   }
 
@@ -147,6 +153,9 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.lastUserAction_ = Actions.BLOCK;
     this.showUndoToast_();
     this.hideItem_(this.lastOrigins_[0]);
+    this.metricsBrowserProxy_
+        .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+            SafetyCheckNotificationsModuleInteractions.BLOCK);
     setTimeout(
         this.browserProxy_.blockNotificationPermissionForOrigins.bind(
             this.browserProxy_, this.lastOrigins_),
@@ -159,6 +168,9 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.showUndoToast_();
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
     this.hideItem_(this.lastOrigins_[0]);
+    this.metricsBrowserProxy_
+        .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+            SafetyCheckNotificationsModuleInteractions.IGNORE);
     setTimeout(
         this.browserProxy_.ignoreNotificationPermissionForOrigins.bind(
             this.browserProxy_, this.lastOrigins_),
@@ -171,6 +183,9 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.showUndoToast_();
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
     this.hideItem_(this.lastOrigins_[0]);
+    this.metricsBrowserProxy_
+        .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+            SafetyCheckNotificationsModuleInteractions.RESET);
     setTimeout(
         this.browserProxy_.resetNotificationPermissionForOrigins.bind(
             this.browserProxy_, this.lastOrigins_),
@@ -185,6 +200,9 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.browserProxy_.blockNotificationPermissionForOrigins(this.lastOrigins_);
     this.lastUserAction_ = Actions.BLOCK;
     this.showUndoToast_();
+    this.metricsBrowserProxy_
+        .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+            SafetyCheckNotificationsModuleInteractions.BLOCK_ALL);
   }
 
   /* Repopulate the list when notification permission list is updated. */
@@ -199,6 +217,8 @@ export class SettingsReviewNotificationPermissionsElement extends
     for (const row of rows) {
       row.classList.remove('removed');
     }
+    this.metricsBrowserProxy_.recordSafetyCheckNotificationsListCountHistogram(
+        this.sites_.length);
   }
 
   private onShowTooltip_(e: Event) {
@@ -220,6 +240,16 @@ export class SettingsReviewNotificationPermissionsElement extends
     target.addEventListener('click', hide);
     tooltip.addEventListener('mouseenter', hide);
     tooltip.show();
+  }
+
+  private async updateNotificationPermissionReviewListExpanded_():
+      Promise<void> {
+    if (!this.notificationPermissionReviewListExpanded_) {
+      // Record metric on user minimising the review list.
+      this.metricsBrowserProxy_
+          .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+              SafetyCheckNotificationsModuleInteractions.MINIMIZE);
+    }
   }
 
   private async updateUndoNotificationText_(): Promise<void> {
@@ -268,19 +298,33 @@ export class SettingsReviewNotificationPermissionsElement extends
       // As BLOCK and RESET actions just change the notification permission,
       // undoing them only requires allowing notification permissions again.
       case Actions.BLOCK:
+        this.browserProxy_.allowNotificationPermissionForOrigins(
+            this.lastOrigins_);
+        this.lastOrigins_ = [];
+        this.metricsBrowserProxy_
+            .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+                SafetyCheckNotificationsModuleInteractions.UNDO_BLOCK);
+        break;
       case Actions.RESET:
         this.browserProxy_.allowNotificationPermissionForOrigins(
             this.lastOrigins_);
         this.lastOrigins_ = [];
+        this.metricsBrowserProxy_
+            .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+                SafetyCheckNotificationsModuleInteractions.UNDO_RESET);
         break;
       case Actions.IGNORE:
         this.browserProxy_.undoIgnoreNotificationPermissionForOrigins(
             this.lastOrigins_);
         this.lastOrigins_ = [];
+        this.metricsBrowserProxy_
+            .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+                SafetyCheckNotificationsModuleInteractions.UNDO_IGNORE);
         break;
       default:
         assertNotReached();
     }
+
     this.$.undoToast.hide();
   }
 
