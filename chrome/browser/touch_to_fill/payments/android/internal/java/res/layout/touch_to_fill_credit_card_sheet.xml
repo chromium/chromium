@@ -7,18 +7,24 @@ found in the LICENSE file.
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
-             android:layout_height="match_parent">
+             android:layout_height="match_parent"
+             android:paddingHorizontal="@dimen/ttf_for_payments_sheet_padding_horizontal">
   <ImageView
       android:id="@+id/drag_handlebar"
       android:layout_alignParentTop="true"
       android:layout_centerHorizontal="true"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal"
-      android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin_modern"
-      android:layout_marginStart="@dimen/touch_to_fill_sheet_margin_modern"
-      android:layout_marginTop="6dp"
-      android:layout_marginBottom="6dp"
+      android:layout_marginTop="@dimen/ttf_for_payments_drag_handler_margin_top"
       android:importantForAccessibility="no"
       app:srcCompat="@drawable/drag_handlebar" />
+
+  <ImageView
+      android:id="@+id/branding_icon"
+      android:layout_below="@id/drag_handlebar"
+      android:layout_centerHorizontal="true"
+      android:layout_width="wrap_content"
+      android:layout_height="@dimen/ttf_for_payments_product_icon_height"
+      android:layout_marginVertical="@dimen/ttf_for_payments_product_icon_margin_vertical"
+      android:importantForAccessibility="no"/>
 </RelativeLayout>
