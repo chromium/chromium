@@ -1544,6 +1544,14 @@ void HTMLElement::PopoverHideFinishIfNeeded() {
   }
 }
 
+Element* HTMLElement::GetPopoverFirstFocusableElement(bool autofocus_only) {
+  // If the popover has autofocus, focus it.
+  if (IsAutofocusable())
+    return this;
+  // Otherwise, look for a child control that has the autofocus attribute.
+  return GetPopoverFocusableArea(autofocus_only);
+}
+
 void HTMLElement::SetPopoverFocusOnShow() {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
@@ -1551,14 +1559,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
   // which requires an up-to-date layout.
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
 
-  Element* control = nullptr;
-  if (IsAutofocusable()) {
-    // If the popover has autofocus, focus it.
-    control = this;
-  } else {
-    // Otherwise, look for a child control that has the autofocus attribute.
-    control = GetPopoverFocusableArea();
-  }
+  Element* control = GetPopoverFirstFocusableElement(/*autofocus_only*/ true);
 
   // If the popover does not use autofocus, then the focus should remain on the
   // currently active element.
@@ -1591,7 +1592,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
 // and can possibly be merged with the similar logic for <dialog>. The spec for
 // https://html.spec.whatwg.org/multipage/interaction.html#get-the-focusable-area
 // does not include dialogs or popovers yet.
-Element* HTMLElement::GetPopoverFocusableArea() const {
+Element* HTMLElement::GetPopoverFocusableArea(bool autofocus_only) const {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   Node* next = nullptr;
@@ -1604,7 +1605,8 @@ Element* HTMLElement::GetPopoverFocusableArea() const {
       next = FlatTreeTraversal::NextSkippingChildren(*element, this);
       continue;
     }
-    if (element->IsFocusable() && element->IsAutofocusable()) {
+    if (element->IsFocusable() &&
+        (!autofocus_only || element->IsAutofocusable())) {
       return element;
     }
   }

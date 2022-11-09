@@ -233,6 +233,7 @@ class CORE_EXPORT HTMLElement : public Element {
   Element* anchorElement() const;
   static void HandlePopoverLightDismiss(const Event& event);
   void InvokePopover(Element* invoker);
+  Element* GetPopoverFirstFocusableElement(bool autofocus_only);
   void SetPopoverFocusOnShow();
   // This hides all visible popovers up to, but not including,
   // |endpoint|. If |endpoint| is nullptr, all popovers are hidden.
@@ -338,7 +339,7 @@ class CORE_EXPORT HTMLElement : public Element {
       const QualifiedName& attr_name);
 
   // Special focus handling for popovers.
-  Element* GetPopoverFocusableArea() const;
+  Element* GetPopoverFocusableArea(bool autofocus_only) const;
 
   void OnDirAttrChanged(const AttributeModificationParams&);
   void OnFormAttrChanged(const AttributeModificationParams&);
