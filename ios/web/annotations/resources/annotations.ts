@@ -264,10 +264,12 @@ function removeHighlight(): void {
  * @param root - root node where to start traversal.
  * @param process - callback for each text node.
  * @param includeShadowDOM - when true, shadow DOM is also traversed.
+ * @param filterInvisibles - when true, filters out invisible nodes.
  */
 function enumerateTextNodes(
     root: Node, process: EnumNodesFunction,
-    includeShadowDOM: boolean = true): void {
+    includeShadowDOM: boolean = true,
+    filterInvisibles: boolean = false): void {
   const nodes: Node[] = [root];
   let index = 0;
 
@@ -290,8 +292,9 @@ function enumerateTextNodes(
         continue;
       }
       const style = window.getComputedStyle(node as Element);
-      // Only proceed if the element is visible.
-      if (style.display === 'none' || style.visibility === 'hidden') {
+      // Only proceed if the element is visible or if invisibles are to be kept.
+      if (filterInvisibles && (style.display === 'none' ||
+          style.visibility === 'hidden')) {
         continue;
       }
       // No need to add a line break before `body` as it is the first element.
