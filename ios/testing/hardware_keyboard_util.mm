@@ -424,9 +424,10 @@ void SimulatePhysicalKeyboardEvent(UIKeyModifierFlags flags, NSString* input) {
     keyPressesFinished = YES;
   });
 
-  BOOL __unused result = base::test::ios::WaitUntilConditionOrTimeout(1.0, ^{
-    return keyPressesFinished;
-  });
+  BOOL __unused result =
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), ^{
+        return keyPressesFinished;
+      });
 }
 
 }  // namespace chrome_test_util
