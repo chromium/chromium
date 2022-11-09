@@ -173,7 +173,7 @@ bool IsVisitCheckout(const GURL& url) {
   auto* pattern = GetVisitCheckoutPattern(url);
   if (!pattern)
     return false;
-  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit), *pattern);
+  return PartialMatch(url.spec().substr(0, kLengthLimit), *pattern);
 }
 
 bool IsAddToCartButtonSpec(int height, int width) {

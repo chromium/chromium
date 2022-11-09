@@ -181,7 +181,7 @@ constexpr base::FeatureParam<std::string> kCheckoutPattern{
     ")"
     "|"
     "(\\w+(checkout|chkout)(s)?)"
-    ")(/|\\.|$|\\?)"
+    ")(#|/|\\.|$|\\?)"
   // clang-format on
 };
 
