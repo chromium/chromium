@@ -299,9 +299,17 @@ int RealtimeAudioDestinationHandler::GetFramesPerBuffer() const {
 }
 
 void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
-  platform_destination_ = AudioDestination::Create(
-      *this, sink_descriptor_, ChannelCount(), latency_hint_, sample_rate_,
-      Context()->GetDeferredTaskHandler().RenderQuantumFrames());
+  if (base::FeatureList::IsEnabled(features::kWebAudioSinkSelection)) {
+    platform_destination_ = AudioDestination::Create(
+        *this, sink_descriptor_, ChannelCount(), latency_hint_, sample_rate_,
+        Context()->GetDeferredTaskHandler().RenderQuantumFrames());
+  } else {
+    WebAudioSinkDescriptor
+        sink_descriptor(String(""), sink_descriptor_.Token());
+    platform_destination_ = AudioDestination::Create(
+        *this, sink_descriptor, ChannelCount(), latency_hint_, sample_rate_,
+        Context()->GetDeferredTaskHandler().RenderQuantumFrames());
+  }
 }
 
 void RealtimeAudioDestinationHandler::StartPlatformDestination() {

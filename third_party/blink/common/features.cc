@@ -564,6 +564,12 @@ BASE_FEATURE(kAudioWorkletThreadRealtimePriority,
              "AudioWorkletThreadRealtimePriority",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// A server-side switch for the output device (sink) selection in Web Audio API.
+// This enables the selection via the AudioContext constructor and also via
+// AudioContext.setSinkId() method.
+BASE_FEATURE(kWebAudioSinkSelection, "kWebAudioSinkSelection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // A feature to reduce the set of resources fetched by No-State Prefetch.
 BASE_FEATURE(kLightweightNoStatePrefetch,
              "LightweightNoStatePrefetch",
