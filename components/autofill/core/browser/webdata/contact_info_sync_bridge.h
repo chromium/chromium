@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
@@ -20,6 +21,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,6 +65,14 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
  private:
   // Returns the `AutofillTable` associated with the `web_data_backend_`.
   AutofillTable* GetAutofillTable();
+
+  // Queries all `Source::kAccount` profiles from `GetAutofillTable()` and
+  // restricts the result to profiles where `filter(guid)` is true.
+  // These profiles are then converted to their `ContactInfoSpecifics`
+  // representation and returned as a `syncer::MutableDataBatch`.
+  // If querying the database fails, a nullptr is returned and an error raised.
+  std::unique_ptr<syncer::MutableDataBatch> GetDataAndFilter(
+      base::RepeatingCallback<bool(const std::string&)> filter);
 
   // The bridge should be used on the same sequence where it has been
   // constructed.
