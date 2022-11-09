@@ -48,6 +48,7 @@ constexpr char kManualStart[] = "manual";
 constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 
 // ArcVmUreadaheadMode param value strings.
+constexpr char kReadahead[] = "readahead";
 constexpr char kGenerate[] = "generate";
 constexpr char kDisabled[] = "disabled";
 
@@ -176,7 +177,9 @@ ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
     const std::string value =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             ash::switches::kArcVmUreadaheadMode);
-    if (value == kGenerate) {
+    if (value == kReadahead) {
+      mode = ArcVmUreadaheadMode::READAHEAD;
+    } else if (value == kGenerate) {
       mode = ArcVmUreadaheadMode::GENERATE;
     } else if (value == kDisabled) {
       mode = ArcVmUreadaheadMode::DISABLED;

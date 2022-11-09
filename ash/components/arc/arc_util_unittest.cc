@@ -348,6 +348,15 @@ TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
   EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
             GetArcVmUreadaheadMode(callback_disabled));
 
+  command_line->InitFromArgv(
+      {"", "--arc-disable-ureadahead", "--arcvm-ureadahead-mode=readahead"});
+  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD,
+            GetArcVmUreadaheadMode(callback_readahead));
+
+  command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=readahead"});
+  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD,
+            GetArcVmUreadaheadMode(callback_readahead));
+
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=generate"});
   EXPECT_EQ(ArcVmUreadaheadMode::GENERATE,
             GetArcVmUreadaheadMode(callback_readahead));

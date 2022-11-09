@@ -105,7 +105,8 @@ const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
 const char kArcDisableTtsCache[] = "arc-disable-tts-cache";
 
 // Flag that disables ureadahead completely, including host and guest parts.
-// See also |kArcVmUreadaheadMode|.
+// To enable only guest ureadahead, please use --arcvm-ureadahead-mode=readahead
+// in combination with this switch (see |kArcVmUreadaheadMode|).
 const char kArcDisableUreadahead[] = "arc-disable-ureadahead";
 
 // Flag that forces the OptIn ui to be shown. Used in tests.
@@ -149,6 +150,9 @@ const char kArcTosHostForTests[] = "arc-tos-host-for-tests";
 // Sets the mode of operation for ureadahead during ARCVM boot. If this switch
 // is not set, ARCVM ureadahead will check for the presence and age of pack
 // file and reads ahead files to page cache for improved boot performance.
+// readahead (default) - used during production and is equivalent to no switch
+//                       being set. This is used in tast test to explicitly turn
+//                       on guest ureadahead (see |kArcDisableUreadahead|).
 // generate - used during Android PFQ data collector to pre-generate pack file
 //            and upload to Google Cloud as build artifact for CrOS build image.
 // disabled - used for test purpose to disable ureadahead during ARCVM boot.
