@@ -14,9 +14,9 @@ namespace ash {
 
 namespace {
 
-// Conigure of grid view for `PillButton` instances. We have 12 x 3 instances
-// divided into 2 x 3 groups.
-constexpr size_t kGridViewRowNum = 12;
+// Conigure of grid view for `PillButton` instances. We have 18 x 3 instances
+// divided into 3 x 3 groups.
+constexpr size_t kGridViewRowNum = 18;
 constexpr size_t kGridViewColNum = 3;
 constexpr size_t kGridViewRowGroupSize = 6;
 constexpr size_t kGirdViewColGroupSize = 1;
@@ -85,22 +85,50 @@ CreatePillButtonInstancesGirdView() {
   for (auto color_variant_flags : color_variant_flag_groups) {
     for (auto icon_type_flag : icon_type_flags) {
       for (auto button_size_flag : button_size_flags) {
-        for (auto color_type_flag : color_variant_flags) {
+        for (auto color_variant_flag : color_variant_flags) {
           // Convert flag type flags to name.
           const std::u16string name =
-              PillButtonColorTypeFlagToString(color_type_flag) + u" " +
+              PillButtonColorTypeFlagToString(color_variant_flag) + u" " +
               PillButtonSizeTypeFlagToString(button_size_flag) + u" " +
               PillButtonIconTypeFlagToString(icon_type_flag);
 
-          // Combine the type flags to get buttion type.
-          PillButton::TypeFlag type =
-              color_type_flag | button_size_flag | icon_type_flag;
+          // Combine the type flags to get button type.
+          const PillButton::TypeFlag type =
+              color_variant_flag | button_size_flag | icon_type_flag;
           grid_view->AddInstance(
               name, std::make_unique<PillButton>(
                         PillButton::PressedCallback(), u"Pill Button",
                         static_cast<PillButton::Type>(type),
                         (icon_type_flag ? &kSettingsIcon : nullptr)));
         }
+      }
+    }
+  }
+
+  // Insert the instances of disabled button at the end of first column. We only
+  // generate instances for disabled primary button, since when disabled, all
+  // types of pill buttons have the same color scheme.
+  for (auto icon_type_flag : icon_type_flags) {
+    for (auto button_size_flag : button_size_flags) {
+      for (size_t col_idx = 0; col_idx < kGridViewColNum; col_idx++) {
+        // If it's not the first column, insert an empty instance.
+        if (col_idx > 0) {
+          grid_view->AddInstance(u"", std::unique_ptr<PillButton>(nullptr));
+          continue;
+        }
+
+        // Otherwise, insert a primary type button and disable it.
+        const std::u16string name =
+            u"Disabled " + PillButtonSizeTypeFlagToString(button_size_flag) +
+            u" " + PillButtonIconTypeFlagToString(icon_type_flag);
+        const PillButton::TypeFlag type =
+            PillButton::kPrimary | button_size_flag | icon_type_flag;
+        auto* pill_button = grid_view->AddInstance(
+            name, std::make_unique<PillButton>(
+                      PillButton::PressedCallback(), u"Pill Button",
+                      static_cast<PillButton::Type>(type),
+                      (icon_type_flag ? &kSettingsIcon : nullptr)));
+        pill_button->SetEnabled(false);
       }
     }
   }
