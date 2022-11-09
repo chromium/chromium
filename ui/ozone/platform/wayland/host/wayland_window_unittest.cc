@@ -739,6 +739,53 @@ TEST_P(WaylandWindowTest, MaximizeAndRestore) {
   Sync();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// Tests the event sequence where a minimize request is initiated by the client.
+TEST_P(WaylandWindowTest, ClientInitiatedMinimize) {
+  ScopedWlArray states;
+
+  // Make sure the window is initialized to normal state from the beginning.
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  SendConfigureEvent(xdg_surface_, {0, 0}, 1, states.get());
+  Sync();
+
+  // Have the client minimize the window which should synchronously update the
+  // window's local state and notify the delegate.
+  EXPECT_CALL(*GetXdgToplevel(), SetMinimized());
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+  window_->Minimize();
+  EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMinimized);
+
+  // Simulate an event from the server sent in response to the above request.
+  // This should not result in another call to delegates as this will have
+  // already been propagated in the above call to WaylandWindow::Minimize().
+  window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {.is_minimized = true});
+  window_->HandleSurfaceConfigure(3);
+  EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMinimized);
+}
+
+// Tests the event sequence where a minimize event is initiated by the server
+// and the client's window is in a non-minimized state.
+TEST_P(WaylandWindowTest, ServerInitiatedMinimize) {
+  ScopedWlArray states;
+
+  // Make sure the window is initialized to normal state from the beginning.
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  SendConfigureEvent(xdg_surface_, {0, 0}, 1, states.get());
+  Sync();
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+  // A subsequent minimize event from the server should notify delegates of the
+  // window state change.
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+  window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {.is_minimized = true});
+  window_->HandleSurfaceConfigure(3);
+  EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
+}
+
+#else
+
 TEST_P(WaylandWindowTest, Minimize) {
   ScopedWlArray states;
 
@@ -780,6 +827,8 @@ TEST_P(WaylandWindowTest, Minimize) {
   SendConfigureEvent(xdg_surface_, {0, 0}, 4, states.get());
   Sync();
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
   // Make sure the window is initialized to normal state from the beginning.

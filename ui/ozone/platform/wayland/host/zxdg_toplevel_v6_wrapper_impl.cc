@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/zxdg_toplevel_v6_wrapper_impl.h"
 
+#include <aura-shell-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
@@ -174,6 +175,8 @@ void ZXDGToplevelV6WrapperImpl::ConfigureTopLevel(
               CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_FULLSCREEN),
           .is_activated =
               CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_ACTIVATED),
+          .is_minimized =
+              CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_MINIMIZED),
       });
 }
 

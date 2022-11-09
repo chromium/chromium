@@ -295,6 +295,8 @@ void XDGToplevelWrapperImpl::ConfigureAuraTopLevel(
            CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
        .is_activated =
            CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
+       .is_minimized =
+           CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_MINIMIZED),
        .is_snapped_primary =
            CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY),
        .is_snapped_secondary = CheckIfWlArrayHasValue(

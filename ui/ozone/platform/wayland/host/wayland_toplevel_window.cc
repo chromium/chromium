@@ -401,8 +401,9 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
   PlatformWindowState old_state = state_;
-  if (state_ == PlatformWindowState::kMinimized &&
-      !window_states.is_activated) {
+  if ((state_ == PlatformWindowState::kMinimized &&
+       !window_states.is_activated) ||
+      window_states.is_minimized) {
     state_ = PlatformWindowState::kMinimized;
   } else if (window_states.is_fullscreen) {
     state_ = PlatformWindowState::kFullScreen;
