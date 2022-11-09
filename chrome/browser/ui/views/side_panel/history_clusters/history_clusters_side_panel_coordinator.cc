@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -18,15 +19,24 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
+#include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/url_constants.h"
 #include "components/omnibox/browser/actions/history_clusters_action.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 
 HistoryClustersSidePanelCoordinator::HistoryClustersSidePanelCoordinator(
     Browser* browser)
-    : BrowserUserData<HistoryClustersSidePanelCoordinator>(*browser) {}
+    : BrowserUserData<HistoryClustersSidePanelCoordinator>(*browser) {
+  pref_change_registrar_.Init(browser->profile()->GetPrefs());
+  base::RepeatingClosure callback(base::BindRepeating(
+      &HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged,
+      base::Unretained(this)));
+  pref_change_registrar_.Add(history_clusters::prefs::kVisible, callback);
+}
 
 HistoryClustersSidePanelCoordinator::~HistoryClustersSidePanelCoordinator() =
     default;
@@ -87,6 +97,28 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
   }
 
   return std::move(side_panel_ui);
+}
+
+void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
+  auto* browser = &GetBrowser();
+  auto* global_registry = BrowserView::GetBrowserViewForBrowser(browser)
+                              ->side_panel_coordinator()
+                              ->GetGlobalSidePanelRegistry();
+  if (browser->profile()->GetPrefs()->GetBoolean(
+          history_clusters::prefs::kVisible)) {
+    auto* history_clusters_service =
+        HistoryClustersServiceFactory::GetForBrowserContext(browser->profile());
+    if (base::FeatureList::IsEnabled(features::kSidePanelJourneys) &&
+        history_clusters_service &&
+        history_clusters_service->IsJourneysEnabled() &&
+        !browser->profile()->IsIncognitoProfile()) {
+      HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
+          ->CreateAndRegisterEntry(global_registry);
+    }
+  } else {
+    global_registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters));
+  }
 }
 
 bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
