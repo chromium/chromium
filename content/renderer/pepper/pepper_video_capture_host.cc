@@ -158,6 +158,10 @@ void PepperVideoCaptureHost::OnFrameReady(
         DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
         scoped_refptr<media::VideoFrame> mapped_frame =
             media::ConvertToMemoryMappedFrame(frame);
+        if (!mapped_frame) {
+          DLOG(ERROR) << "VideoFrame failed to map";
+          return;
+        }
         scoped_refptr<media::VideoFrame> dst_frame =
             media::VideoFrame::WrapExternalData(
                 media::PIXEL_FORMAT_I420, frame->natural_size(),

@@ -124,8 +124,13 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
          frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420 ||
          frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420A);
 
-  if (frame->format() == media::PIXEL_FORMAT_NV12)
+  if (frame->format() == media::PIXEL_FORMAT_NV12) {
     frame = ConvertToI420ForSoftwareEncoder(frame);
+    if (!frame) {
+      DLOG(ERROR) << "VideoFrame failed to map";
+      return;
+    }
+  }
   DCHECK(frame->IsMappable());
 
   const gfx::Size frame_size = frame->visible_rect().size();

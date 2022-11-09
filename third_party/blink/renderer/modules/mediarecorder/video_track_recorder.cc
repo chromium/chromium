@@ -578,6 +578,8 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
 
   if (frame->GetGpuMemoryBuffer())
     frame = media::ConvertToMemoryMappedFrame(frame);
+  if (!frame)
+    return nullptr;
 
   scoped_refptr<media::VideoFrame> i420_frame = frame_pool_.CreateFrame(
       media::VideoPixelFormat::PIXEL_FORMAT_I420, frame->coded_size(),

@@ -72,6 +72,8 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
   // and handle like a software frame. There is no memcpy here.
   if (frame->HasGpuMemoryBuffer())
     frame = ConvertToMemoryMappedFrame(std::move(frame));
+  if (!frame)
+    return pixel_buffer;
 
   VLOG(3) << "Returning RAM based CVPixelBuffer.";
 
