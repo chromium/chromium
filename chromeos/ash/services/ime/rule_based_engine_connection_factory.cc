@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/ime/connection_factory.h"
+#include "chromeos/ash/services/ime/rule_based_engine_connection_factory.h"
 
 #include <utility>
 
 namespace ash {
 namespace ime {
 
-ConnectionFactory::ConnectionFactory(
+RuleBasedEngineConnectionFactory::RuleBasedEngineConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> pending_receiver)
     : receiver_(this, std::move(pending_receiver)) {}
 
-ConnectionFactory::~ConnectionFactory() = default;
+RuleBasedEngineConnectionFactory::~RuleBasedEngineConnectionFactory() = default;
 
-void ConnectionFactory::ConnectToInputMethod(
+void RuleBasedEngineConnectionFactory::ConnectToInputMethod(
     const std::string& ime_spec,
     mojo::PendingAssociatedReceiver<mojom::InputMethod> pending_input_method,
     mojo::PendingAssociatedRemote<mojom::InputMethodHost>
@@ -29,7 +29,7 @@ void ConnectionFactory::ConnectToInputMethod(
   std::move(callback).Run(/*bound=*/true);
 }
 
-bool ConnectionFactory::IsConnected() {
+bool RuleBasedEngineConnectionFactory::IsConnected() {
   return rule_based_engine_ && rule_based_engine_->IsConnected();
 }
 

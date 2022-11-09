@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_IME_CONNECTION_FACTORY_H_
-#define CHROMEOS_ASH_SERVICES_IME_CONNECTION_FACTORY_H_
+#ifndef CHROMEOS_ASH_SERVICES_IME_RULE_BASED_ENGINE_CONNECTION_FACTORY_H_
+#define CHROMEOS_ASH_SERVICES_IME_RULE_BASED_ENGINE_CONNECTION_FACTORY_H_
 
 #include <memory>
 #include <string>
@@ -23,13 +23,11 @@ namespace ime {
 // Chromium implementation of ConnectionFactory (as opposed to the sharedlib
 // implementation). This impl is used to connect the RuleBasedEngine in the ime
 // service to the NativeIME when requested.
-// TODO(b/214153032): Rename to RuleBasedEngineMojoConnectionFactory to better
-// and more specifically reflect what this represents.
-class ConnectionFactory : public mojom::ConnectionFactory {
+class RuleBasedEngineConnectionFactory : public mojom::ConnectionFactory {
  public:
-  explicit ConnectionFactory(
+  explicit RuleBasedEngineConnectionFactory(
       mojo::PendingReceiver<mojom::ConnectionFactory> pending_receiver);
-  ~ConnectionFactory() override;
+  ~RuleBasedEngineConnectionFactory() override;
 
   // mojom::ConnectionFactory overrides.
   void ConnectToInputMethod(

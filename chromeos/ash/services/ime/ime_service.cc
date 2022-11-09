@@ -125,8 +125,8 @@ void ImeService::InitializeConnectionFactory(
 
   switch (connection_target) {
     case mojom::ConnectionTarget::kRulebasedEngine: {
-      connection_factory_ =
-          std::make_unique<ConnectionFactory>(std::move(connection_factory));
+      connection_factory_ = std::make_unique<RuleBasedEngineConnectionFactory>(
+          std::move(connection_factory));
       std::move(callback).Run(/*success=*/true);
       break;
     }

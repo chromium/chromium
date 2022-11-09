@@ -35,8 +35,6 @@ source_set("decoder") {
 
 source_set("lib") {
   sources = [
-    "connection_factory.cc",
-    "connection_factory.h",
     "decoder/decoder_engine.cc",
     "decoder/decoder_engine.h",
     "decoder/system_engine.cc",
@@ -45,6 +43,8 @@ source_set("lib") {
     "ime_service.h",
     "rule_based_engine.cc",
     "rule_based_engine.h",
+    "rule_based_engine_connection_factory.cc",
+    "rule_based_engine_connection_factory.h",
   ]
 
   deps = [
