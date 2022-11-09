@@ -62,6 +62,8 @@ class WebNavigationControl : public WebLocalFrame {
   virtual void SetIsNotOnInitialEmptyDocument() = 0;
   virtual bool IsOnInitialEmptyDocument() = 0;
 
+  virtual void WillPotentiallyStartNavigation(const WebURL&) const = 0;
+
   // Marks the frame as loading, before WebLocalFrameClient issues a navigation
   // request through the browser process on behalf of the frame.
   // This runs some JavaScript event listeners, which may cancel the navigation

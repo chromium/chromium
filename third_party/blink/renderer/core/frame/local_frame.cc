@@ -1877,6 +1877,12 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
   return false;
 }
 
+void LocalFrame::WillPotentiallyStartNavigation(const KURL& url) const {
+  TRACE_EVENT1("navigation", "LocalFrame::WillPotentiallyStartNavigation",
+               "url", url);
+  GetLocalFrameHostRemote().WillPotentiallyStartNavigation(url);
+}
+
 ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {
   DCHECK(Client());
   if (!IsLocalRoot())

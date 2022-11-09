@@ -379,6 +379,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool is_browser_initiated) override;
   void SetIsNotOnInitialEmptyDocument() override;
   bool IsOnInitialEmptyDocument() override;
+  void WillPotentiallyStartNavigation(const WebURL&) const override;
   bool WillStartNavigation(const WebNavigationInfo&) override;
   void DidDropNavigation() override;
   void DownloadURL(

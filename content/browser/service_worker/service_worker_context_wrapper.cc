@@ -51,6 +51,7 @@
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -810,6 +811,18 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
     std::move(callback).Run(StartServiceWorkerForNavigationHintResult::FAILED);
     return;
   }
+
+  // Checking this is for performance optimization. Without this check,
+  // following FindRegistrationForClientUrl() can detect if the given URL has
+  // service worker registration or not. But FindRegistrationForClientUrl()
+  // takes time to compute. Hence avoid calling it when the given URL clearly
+  // doesn't register service workers.
+  if (!OriginCanAccessServiceWorkers(document_url)) {
+    std::move(callback).Run(StartServiceWorkerForNavigationHintResult::
+                                NO_SERVICE_WORKER_REGISTRATION);
+    return;
+  }
+
   context_core_->registry()->FindRegistrationForClientUrl(
       net::SimplifyUrlForRequest(document_url), key,
       base::BindOnce(

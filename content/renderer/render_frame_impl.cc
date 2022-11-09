@@ -55,6 +55,7 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/debug_utils.h"
+#include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/main_frame_counter.h"
@@ -5142,6 +5143,12 @@ void RenderFrameImpl::BeginNavigation(
       OpenURL(std::move(info));
       return;  // Suppress the load here.
     }
+  }
+
+  if (IsTopLevelNavigation(frame_) && url.SchemeIsHTTPOrHTTPS() &&
+      !url.is_empty() &&
+      base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
+    frame_->WillPotentiallyStartNavigation(url);
   }
 
   if (info->navigation_policy == blink::kWebNavigationPolicyCurrentTab) {

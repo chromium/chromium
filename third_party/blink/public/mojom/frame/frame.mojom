@@ -400,6 +400,15 @@ interface LocalFrameHost {
   [Sync]
   RunBeforeUnloadConfirm(bool is_reload) => (bool success);
 
+  // Notifies that a renderer-initiated navigation to |url| will
+  // potentially start soon. This is fired before the beforeunload event
+  // (if it's needed) gets dispatched in the renderer, so that the
+  // browser can speculatively start service worker before processing
+  // beforeunload event, which might take a long time. Note that the
+  // navigation might not actually start, e.g. if it gets canceled by
+  // beforeunload.
+  WillPotentiallyStartNavigation(url.mojom.Url url);
+
   // Notifies that the urls for the favicon of a site has been determined.
   UpdateFaviconURL(array<FaviconURL> favicon_urls);
 

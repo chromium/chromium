@@ -160,6 +160,7 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/debug_utils.h"
+#include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/navigation_client.mojom.h"
@@ -5400,6 +5401,33 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
 
   delegate_->RunBeforeUnloadConfirm(this, is_reload,
                                     std::move(dialog_closed_callback));
+}
+
+void RenderFrameHostImpl::WillPotentiallyStartNavigation(const GURL& url) {
+  TRACE_EVENT1("navigation",
+               "RenderFrameHostImpl::WillPotentiallyStartNavigation", "url",
+               url);
+
+  GURL filtered_url(url);
+  GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url);
+  if (filtered_url == GURL(kBlockedURL))
+    return;
+
+  // Ask the service worker context to speculatively start a service worker for
+  // the request URL if necessary for optimization purposes. There are cases
+  // where we have already started the service worker (e.g, Prerendering or the
+  // previous navigation already started the service worker), but this call does
+  // nothing if the service worker already started for the URL.
+  if (base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
+    if (ServiceWorkerContext* context =
+            GetStoragePartition()->GetServiceWorkerContext()) {
+      const blink::StorageKey key(url::Origin::Create(filtered_url));
+      if (context->MaybeHasRegistrationForStorageKey(key)) {
+        context->StartServiceWorkerForNavigationHint(filtered_url, key,
+                                                     base::DoNothing());
+      }
+    }
+  }
 }
 
 // TODO(crbug.com/1213863): Move this method to content::PageImpl.

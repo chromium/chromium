@@ -24,6 +24,9 @@ BASE_DECLARE_FEATURE(kOnShowWithPageVisibility);
 // See https://crbug.com/838348 and https://crbug.com/1220337.
 BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
 
+// (crbug/1377753): Speculatively start service worker before BeforeUnload runs.
+BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerStartup);
+
 // Please keep features in alphabetical order.
 
 }  // namespace content

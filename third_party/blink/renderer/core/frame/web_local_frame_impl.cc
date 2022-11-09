@@ -2688,6 +2688,11 @@ void WebLocalFrameImpl::DownloadURL(
                           std::move(blob_url_token));
 }
 
+void WebLocalFrameImpl::WillPotentiallyStartNavigation(
+    const WebURL& url) const {
+  GetFrame()->WillPotentiallyStartNavigation(url);
+}
+
 bool WebLocalFrameImpl::WillStartNavigation(const WebNavigationInfo& info) {
   DCHECK(!info.url_request.IsNull());
   DCHECK(!info.url_request.Url().ProtocolIs("javascript"));
