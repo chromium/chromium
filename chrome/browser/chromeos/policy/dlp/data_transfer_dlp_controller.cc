@@ -32,11 +32,13 @@ namespace policy {
 
 namespace {
 
-// Set |kSkipReportingTimeout| to 50 ms because:
+// Set |kSkipReportingTimeout| to 75 ms because:
 // - at 5 ms DataTransferDlpBlinkBrowserTest.Reporting test starts to be flaky
 // - 100 ms is approximately the time a human needs to press a key.
 // See DataTransferDlpController::LastReportedEndpoints struct for details.
-const base::TimeDelta kSkipReportingTimeout = base::Milliseconds(50);
+// TODO(crbug.com/1381095): Improve timeout tuning since duplicate warning
+// proceed events delay is very variable.
+const base::TimeDelta kSkipReportingTimeout = base::Milliseconds(75);
 
 // In case the clipboard data is in warning mode, it will be allowed to
 // be shared with Arc, Crostini, and Plugin VM without waiting for the
@@ -56,22 +58,6 @@ bool IsNullEndpoint(const absl::optional<ui::DataTransferEndpoint>& endpoint) {
   return !endpoint.has_value() ||
          endpoint->type() == ui::EndpointType::kDefault;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Map ui::EndpointType to DlpRulesManager::Component for VMs.
-DlpRulesManager::Component GetComponent(ui::EndpointType endpoint_type) {
-  switch (endpoint_type) {
-    case ui::EndpointType::kCrostini:
-      return DlpRulesManager::Component::kCrostini;
-    case ui::EndpointType::kPluginVm:
-      return DlpRulesManager::Component::kPluginVm;
-    case ui::EndpointType::kArc:
-      return DlpRulesManager::Component::kArc;
-    default:
-      return DlpRulesManager::Component::kUnknownComponent;
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsFilesApp(const ui::DataTransferEndpoint* const data_dst) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -198,37 +184,19 @@ DlpRulesManager::Level IsDataTransferAllowed(
   return level;
 }
 
-void ReportWarningProceededEvent(const ui::DataTransferEndpoint* const data_src,
-                                 const ui::DataTransferEndpoint* const data_dst,
-                                 const std::string& src_pattern,
-                                 const std::string& dst_pattern,
-                                 DlpReportingManager* reporting_manager) {
-  if (!reporting_manager)
-    return;
-
-  if (data_dst && IsVM(data_dst->type())) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    reporting_manager->ReportWarningProceededEvent(
-        src_pattern, GetComponent(data_dst->type()),
-        DlpRulesManager::Restriction::kClipboard);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  } else {
-    reporting_manager->ReportWarningProceededEvent(
-        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard);
+// Reports warning proceeded events and paste the copied text according to
+// `should_proceed`. It is used as a callback in `PasteIfAllowed` to handle
+// warning proceeded clipboard events.
+void MaybeReportWarningProceededEventAndPaste(
+    base::OnceCallback<void(void)> reporting_cb,
+    base::OnceCallback<void(bool)> paste_cb,
+    bool should_proceed) {
+  if (should_proceed) {
+    std::move(reporting_cb).Run();
   }
+  std::move(paste_cb).Run(should_proceed);
 }
 
-bool MaybeReportWarningProceededEvent(const ui::DataTransferEndpoint data_src,
-                                      const ui::DataTransferEndpoint data_dst,
-                                      std::string src_pattern,
-                                      std::string dst_pattern,
-                                      DlpReportingManager* reporting_manager,
-                                      bool should_proceed) {
-  if (should_proceed)
-    ReportWarningProceededEvent(&data_src, &data_dst, src_pattern, dst_pattern,
-                                reporting_manager);
-  return should_proceed;
-}
 }  // namespace
 
 // static
@@ -293,13 +261,13 @@ void DataTransferDlpController::PasteIfAllowed(
     const ui::DataTransferEndpoint* const data_dst,
     const absl::optional<size_t> size,
     content::RenderFrameHost* rfh,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool)> paste_cb) {
   DCHECK(data_dst);
   DCHECK(data_dst->IsUrlType());
 
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
-    std::move(callback).Run(false);
+    std::move(paste_cb).Run(false);
     return;
   }
 
@@ -316,7 +284,7 @@ void DataTransferDlpController::PasteIfAllowed(
 
   if (level == DlpRulesManager::Level::kAllow ||
       level == DlpRulesManager::Level::kReport) {
-    std::move(callback).Run(true);
+    std::move(paste_cb).Run(true);
     return;
   }
 
@@ -324,23 +292,33 @@ void DataTransferDlpController::PasteIfAllowed(
 
   if (ShouldPasteOnWarn(data_dst)) {
     if (ShouldNotifyOnPaste(data_dst)) {
-      ReportWarningProceededEvent(data_src, data_dst, src_pattern, dst_pattern,
-                                  dlp_rules_manager_.GetReportingManager());
+      ReportWarningProceededEvent(base::OptionalFromPtr(data_src),
+                                  base::OptionalFromPtr(data_dst), src_pattern,
+                                  dst_pattern,
+                                  /*is_clipboard_event=*/true);
     }
-    std::move(callback).Run(true);
+    std::move(paste_cb).Run(true);
   } else if (ShouldCancelOnWarn(data_dst)) {
-    std::move(callback).Run(false);
+    std::move(paste_cb).Run(false);
   } else {
     if (ShouldNotifyOnPaste(data_dst)) {
-      auto reporting_callback = base::BindOnce(
-          &MaybeReportWarningProceededEvent, *data_src, *data_dst, src_pattern,
-          dst_pattern, dlp_rules_manager_.GetReportingManager());
       ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
                   DlpRulesManager::Level::kWarn, /*is_clipboard_event=*/true);
+
+      auto reporting_cb = base::BindOnce(
+          &DataTransferDlpController::ReportWarningProceededEvent,
+          weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
+          base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
+          /*is_clipboard_event=*/true);
+
+      auto report_and_paste_cb =
+          base::BindOnce(&MaybeReportWarningProceededEventAndPaste,
+                         std::move(reporting_cb), std::move(paste_cb));
+
       WarnOnBlinkPaste(data_src, data_dst, web_contents,
-                       std::move(reporting_callback).Then(std::move(callback)));
+                       std::move(report_and_paste_cb));
     } else {
-      std::move(callback).Run(true);
+      std::move(paste_cb).Run(true);
     }
   }
 }
@@ -440,6 +418,7 @@ void DataTransferDlpController::WarnOnDrop(
 bool DataTransferDlpController::ShouldSkipReporting(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,
+    bool is_warning_proceeded,
     base::TimeTicks curr_time) {
   // Skip reporting for destination endpoints which don't notify the user
   // because it's not originating from a user action.
@@ -452,11 +431,16 @@ bool DataTransferDlpController::ShouldSkipReporting(
                               : IsNullEndpoint(last_reported_.data_src);
   bool is_same_dst = data_dst ? *data_dst == last_reported_.data_dst
                               : IsNullEndpoint(last_reported_.data_dst);
-  if (is_same_src && is_same_dst) {
+  bool is_same_mode =
+      last_reported_.is_warning_proceeded.has_value() &&
+      is_warning_proceeded == last_reported_.is_warning_proceeded.value();
+
+  if (is_same_src && is_same_dst && is_same_mode) {
     base::TimeDelta time_diff = curr_time - last_reported_.time;
     base::UmaHistogramTimes(
         GetDlpHistogramPrefix() + dlp::kDataTransferReportingTimeDiffUMA,
         time_diff);
+
     return time_diff < GetSkipReportingTimeout();
   }
   return false;
@@ -475,13 +459,15 @@ void DataTransferDlpController::ReportEvent(
 
   if (is_clipboard_event) {
     base::TimeTicks curr_time = base::TimeTicks::Now();
-    if (ShouldSkipReporting(data_src, data_dst, curr_time))
+    if (ShouldSkipReporting(data_src, data_dst, /*is_warning_proceeded=*/false,
+                            curr_time))
       return;
     last_reported_.data_src =
         base::OptionalFromPtr<ui::DataTransferEndpoint>(data_src);
     last_reported_.data_dst =
         base::OptionalFromPtr<ui::DataTransferEndpoint>(data_dst);
     last_reported_.time = curr_time;
+    last_reported_.is_warning_proceeded = false;
   }
 
   ui::EndpointType dst_type =
@@ -525,6 +511,43 @@ void DataTransferDlpController::MaybeReportEvent(
       level == DlpRulesManager::Level::kBlock) {
     ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
                 is_clipboard_event);
+  }
+}
+
+void DataTransferDlpController::ReportWarningProceededEvent(
+    const absl::optional<ui::DataTransferEndpoint> maybe_data_src,
+    const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
+    const std::string& src_pattern,
+    const std::string& dst_pattern,
+    bool is_clipboard_event) {
+  auto* reporting_manager = dlp_rules_manager_.GetReportingManager();
+
+  if (!reporting_manager)
+    return;
+
+  const ui::DataTransferEndpoint* data_dst =
+      maybe_data_dst.has_value() ? &maybe_data_dst.value() : nullptr;
+
+  if (is_clipboard_event) {
+    base::TimeTicks curr_time = base::TimeTicks::Now();
+
+    const ui::DataTransferEndpoint* data_src =
+        maybe_data_src.has_value() ? &maybe_data_src.value() : nullptr;
+
+    if (ShouldSkipReporting(data_src, data_dst, /*is_warning_proceeded=*/true,
+                            curr_time))
+      return;
+    last_reported_.data_src = maybe_data_src;
+    last_reported_.data_dst = maybe_data_dst;
+    last_reported_.time = curr_time;
+    last_reported_.is_warning_proceeded = true;
+  }
+
+  if (data_dst && IsVM(data_dst->type())) {
+    NOTREACHED();
+  } else {
+    reporting_manager->ReportWarningProceededEvent(
+        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard);
   }
 }
 

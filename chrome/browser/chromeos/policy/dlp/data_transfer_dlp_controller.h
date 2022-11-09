@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"
@@ -42,7 +43,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                       const ui::DataTransferEndpoint* const data_dst,
                       const absl::optional<size_t> size,
                       content::RenderFrameHost* rfh,
-                      base::OnceCallback<void(bool)> callback) override;
+                      base::OnceCallback<void(bool)> paste_cb) override;
   void DropIfAllowed(const ui::DataTransferEndpoint* data_src,
                      const ui::DataTransferEndpoint* data_dst,
                      base::OnceClosure drop_cb) override;
@@ -85,6 +86,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
 
   bool ShouldSkipReporting(const ui::DataTransferEndpoint* const data_src,
                            const ui::DataTransferEndpoint* const data_dst,
+                           bool is_warning_proceeded,
                            base::TimeTicks curr_time);
 
   void ReportEvent(const ui::DataTransferEndpoint* const data_src,
@@ -101,6 +103,13 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                         DlpRulesManager::Level level,
                         bool is_clipboard_event);
 
+  void ReportWarningProceededEvent(
+      const absl::optional<ui::DataTransferEndpoint> maybe_data_src,
+      const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
+      const std::string& src_pattern,
+      const std::string& dst_pattern,
+      bool is_clipboard_event);
+
   // The solution for the issue of sending multiple reporting events for a
   // single user action. When a user triggers a paste (for instance by pressing
   // ctrl+V) clipboard API receives multiple mojo calls. For each call we check
@@ -112,12 +121,15 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
     ~LastReportedEndpoints();
     absl::optional<ui::DataTransferEndpoint> data_src;
     absl::optional<ui::DataTransferEndpoint> data_dst;
+    absl::optional<bool> is_warning_proceeded;
     base::TimeTicks time;
   } last_reported_;
 
   const DlpRulesManager& dlp_rules_manager_;
   DlpClipboardNotifier clipboard_notifier_;
   DlpDragDropNotifier drag_drop_notifier_;
+
+  base::WeakPtrFactory<DataTransferDlpController> weak_ptr_factory_{this};
 };
 
 }  // namespace policy

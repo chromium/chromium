@@ -22,6 +22,7 @@ void DataTransferPolicyController::DeleteInstance() {
     return;
 
   delete g_data_transfer_policy_controller_;
+  g_data_transfer_policy_controller_ = nullptr;
 }
 
 DataTransferPolicyController::DataTransferPolicyController() {
