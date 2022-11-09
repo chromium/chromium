@@ -103,17 +103,17 @@
    {
     "name": "allow-dsp-based-aec",
     "owners": [ "peah" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "allow-dsp-based-agc",
     "owners": [ "peah" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "allow-dsp-based-ns",
     "owners": [ "peah" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "allow-insecure-localhost",
@@ -3481,22 +3481,22 @@
   {
     "name": "enforce-system-aec",
     "owners": [ "peah" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 118
   },
   {
     "name": "enforce-system-aec-agc",
     "owners": [ "peah" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 118
   },
   {
     "name": "enforce-system-aec-ns",
     "owners": [ "peah" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 118
   },
   {
     "name": "enforce-system-aec-ns-agc",
     "owners": [ "peah" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 118
   },
   {
     "name": "enhanced_clipboard_nudge_session_reset",
