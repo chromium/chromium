@@ -13,6 +13,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/sessions/core/live_tab.h"
 #import "components/sessions/core/session_id.h"
@@ -82,7 +83,7 @@ const char kPriceTrackingWithOptimizationGuideParam[] =
 const char kHasPriceDropUserAction[] = "Commerce.TabGridSwitched.HasPriceDrop";
 const char kHasNoPriceDropUserAction[] = "Commerce.TabGridSwitched.NoPriceDrop";
 // Timeout for waiting for the GridConsumer updates.
-const NSTimeInterval kWaitForGridConsumerUpdateTimeout = 1.0;
+constexpr base::TimeDelta kWaitForGridConsumerUpdateTimeout = base::Seconds(1);
 
 // A Fake restore service that just store and returns tabs.
 class FakeTabRestoreService : public sessions::TabRestoreService {
