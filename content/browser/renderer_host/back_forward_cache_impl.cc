@@ -1514,11 +1514,19 @@ BackForwardCacheCanStoreTreeResult::CreateEmptyTree(RenderFrameHostImpl* rfh) {
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheCanStoreTreeResult::CreateEmptyTreeBeforeCommit(
     NavigationRequest* navigation) {
+  // This method should only be called when a RenderFrameHostImpl is in the
+  // process of committing a navigation.
+  DCHECK_GE(navigation->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+  RenderFrameHostImpl* frame = navigation->GetRenderFrameHost();
+  DCHECK(frame);
+  // Non-null `frame` indicates a non-`nullopt` `origin`.
+  absl::optional<url::Origin> origin = navigation->GetOriginToCommit();
+  DCHECK(origin.has_value());
+
   BackForwardCacheCanStoreDocumentResult empty_result;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
       new BackForwardCacheCanStoreTreeResult(
-          navigation->GetRenderFrameHost(), navigation->GetOriginToCommit(),
-          navigation->GetURL(), empty_result));
+          frame, origin.value(), navigation->GetURL(), empty_result));
   return empty_tree;
 }
 

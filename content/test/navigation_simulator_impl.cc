@@ -1542,7 +1542,7 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
       // TODO(https://crbug.com/1158101): Reconsider how we calculate
       // should_update_history.
       params->should_update_history = response_headers_->response_code() != 404;
-      params->origin = origin_.value_or(request_->GetOriginToCommit());
+      params->origin = origin_.value_or(request_->GetOriginToCommit().value());
     }
   }
 

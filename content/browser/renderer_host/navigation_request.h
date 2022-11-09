@@ -787,7 +787,8 @@ class CONTENT_EXPORT NavigationRequest
   // response is received (unlike GetOriginToCommit), but the returned origin
   // may differ from the final origin committed by this navigation (e.g. the
   // origin may change because of subsequent redirects, or because of CSP
-  // headers in the final response). Prefer to use GetOriginToCommit if
+  // headers in the final response; or because no commit may happen at all in
+  // case of downloads or 204 responses). Prefer to use GetOriginToCommit if
   // possible.
   url::Origin GetTentativeOriginAtRequestTime();
 
@@ -796,17 +797,21 @@ class CONTENT_EXPORT NavigationRequest
   // might still exist - they are currently tracked in
   // https://crbug.com/1220238).
   //
-  // This method depends on GetRenderFrameHost() and therefore can only be
-  // called after a response has been delivered for processing, or after the
-  // navigation fails with an error page.
-  url::Origin GetOriginToCommit();
+  // Returns `nullopt` if the navigation will not commit (e.g. in case of
+  // downloads, or 204 responses).  This may happen if and only if
+  // `NavigationRequest::GetRenderFrameHost` returns null.
+  //
+  // This method may only be called after a response has been delivered for
+  // processing, or after the navigation fails with an error page.
+  absl::optional<url::Origin> GetOriginToCommit();
 
   // Same as `GetOriginToCommit()`, except that includes information about how
   // the origin gets calculated, to help debug if the browser-side calculated
   // origin for this navigation differs from the origin calculated on the
   // renderer side.
   // TODO(https://crbug.com/1220238): Remove this.
-  std::pair<url::Origin, std::string> GetOriginToCommitWithDebugInfo();
+  std::pair<absl::optional<url::Origin>, std::string>
+  GetOriginToCommitWithDebugInfo();
 
   // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
   // cancelled by the user and do not commit an error page.
@@ -1020,7 +1025,7 @@ class CONTENT_EXPORT NavigationRequest
     return navigation_or_document_handle_;
   }
 
-  const std::pair<url::Origin, std::string>&
+  const std::pair<absl::optional<url::Origin>, std::string>&
   browser_side_origin_to_commit_with_debug_info() {
     return browser_side_origin_to_commit_with_debug_info_;
   }
@@ -1582,13 +1587,13 @@ class CONTENT_EXPORT NavigationRequest
   // from RenderFrameHostImpl (e.g. CSPs are ignored). Should be used only in
   // situations where the final frame host hasn't been determined but the origin
   // is needed to create URLLoaderFactory.
-  url::Origin GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+  url::Origin GetOriginForURLLoaderFactoryBeforeResponse(
       network::mojom::WebSandboxFlags sandbox_flags);
 
-  // Superset of GetOriginForURLLoaderFactoryWithoutFinalFrameHost(). Calculates
+  // Superset of GetOriginForURLLoaderFactoryBeforeResponse(). Calculates
   // the origin with information from the final frame host. Can be called only
   // after the final response is received or ready.
-  url::Origin GetOriginForURLLoaderFactoryWithFinalFrameHost();
+  absl::optional<url::Origin> GetOriginForURLLoaderFactoryAfterResponse();
 
   // These functions are the same as their non-WithDebugInfo counterparts,
   // except that they include information about how the origin gets calculated,
@@ -1596,10 +1601,10 @@ class CONTENT_EXPORT NavigationRequest
   // differs from the origin calculated on the renderer side.
   // TODO(https://crbug.com/1220238): Remove this.
   std::pair<url::Origin, std::string>
-  GetOriginForURLLoaderFactoryWithoutFinalFrameHostWithDebugInfo(
+  GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
       network::mojom::WebSandboxFlags sandbox_flags);
-  std::pair<url::Origin, std::string>
-  GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo();
+  std::pair<absl::optional<url::Origin>, std::string>
+  GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo();
 
   // Computes the web-exposed isolation information based on `coop_status_` and
   // current `frame_tree_node_` info.
@@ -1662,7 +1667,7 @@ class CONTENT_EXPORT NavigationRequest
   // This member is calculated at ReadyToCommit time. It is used to compare
   // against renderer calculated origin and browser calculated one at commit
   // time.
-  std::pair<url::Origin, std::string>
+  std::pair<absl::optional<url::Origin>, std::string>
       browser_side_origin_to_commit_with_debug_info_;
 
   // Stores the NavigationUIData for this navigation until the NavigationHandle

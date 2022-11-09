@@ -850,30 +850,32 @@ bool VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   // - blob urls with content scheme are opaque on browser side
   // (https://crbug.com/1295268)
   const url::Origin& renderer_side_origin = params.origin;
-  std::pair<url::Origin, std::string> browser_side_origin_and_debug_info =
-      navigation_request->GetOriginToCommitWithDebugInfo();
+  std::pair<absl::optional<url::Origin>, std::string>
+      browser_side_origin_and_debug_info =
+          navigation_request->GetOriginToCommitWithDebugInfo();
   if ((renderer_side_origin.opaque() ||
        renderer_side_origin.scheme() == url::kContentScheme) &&
-      browser_side_origin_and_debug_info.first.opaque()) {
+      browser_side_origin_and_debug_info.first->opaque()) {
     return true;
   }
 
   // TODO(https://crbug.com/888079): Remove the DumpWithoutCrashing below, once
   // we are sure that the `browser_side_origin` is always the same as the
   // `renderer_side_origin`.
-  if (browser_side_origin_and_debug_info.first != renderer_side_origin) {
+  if (browser_side_origin_and_debug_info.first.value() !=
+      renderer_side_origin) {
     NavigationRequest::ScopedCrashKeys navigation_request_crash_keys(
         *navigation_request);
     SCOPED_CRASH_KEY_STRING256(
         "", "browser_origin",
-        browser_side_origin_and_debug_info.first.GetDebugString());
+        browser_side_origin_and_debug_info.first->GetDebugString());
     SCOPED_CRASH_KEY_STRING256("", "browser_debug_info",
                                browser_side_origin_and_debug_info.second);
 
     SCOPED_CRASH_KEY_STRING256(
         "", "browser_ready_to_commit_origin",
         navigation_request->browser_side_origin_to_commit_with_debug_info()
-            .first.GetDebugString());
+            .first->GetDebugString());
     SCOPED_CRASH_KEY_STRING256(
         "", "browser_ready_to_commit_debug_info",
         navigation_request->browser_side_origin_to_commit_with_debug_info()
@@ -890,7 +892,8 @@ bool VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
     return false;
   }
 
-  DCHECK_EQ(browser_side_origin_and_debug_info.first, renderer_side_origin)
+  DCHECK_EQ(browser_side_origin_and_debug_info.first.value(),
+            renderer_side_origin)
       << "; navigation_request->GetURL() = " << navigation_request->GetURL();
   return true;
 }
@@ -1317,7 +1320,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   static SubresourceLoaderFactoriesConfig ForPendingNavigation(
       NavigationRequest& navigation_request) {
     SubresourceLoaderFactoriesConfig result;
-    result.origin_ = navigation_request.GetOriginToCommit();
+    result.origin_ = navigation_request.GetOriginToCommit().value();
     result.client_security_state_ =
         navigation_request.BuildClientSecurityState();
     result.ukm_source_id_ = ukm::SourceIdObj::FromInt64(
@@ -12427,7 +12430,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
         navigation_request->isolation_info_for_subresources()
             .network_isolation_key());
 
-    url::Origin origin_to_commit = navigation_request->GetOriginToCommit();
+    url::Origin origin_to_commit =
+        navigation_request->GetOriginToCommit().value();
     // Make sure the origin of the isolation info and origin to commit match,
     // otherwise the cookie manager will crash. Sending the cookie manager here
     // is just an optimization, so it is fine for it to be null in the case

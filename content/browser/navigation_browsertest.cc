@@ -4239,14 +4239,28 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitBasic) {
   shell()->LoadURL(url);
   EXPECT_TRUE(manager.WaitForResponse());
   NavigationRequest* navigation = main_frame()->navigation_request();
-  url::Origin origin_to_commit = navigation->GetOriginToCommit();
+  absl::optional<url::Origin> origin_to_commit =
+      navigation->GetOriginToCommit();
+  ASSERT_TRUE(origin_to_commit.has_value());
   manager.WaitForNavigationFinished();
   url::Origin origin_committed = current_frame_host()->GetLastCommittedOrigin();
 
-  EXPECT_FALSE(origin_to_commit.opaque());
+  EXPECT_FALSE(origin_to_commit->opaque());
   EXPECT_FALSE(origin_committed.opaque());
-  EXPECT_EQ(origin_expected, origin_to_commit);
+  EXPECT_EQ(origin_expected, *origin_to_commit);
   EXPECT_EQ(origin_expected, origin_committed);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommit204) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/nocontent");
+  TestNavigationManager manager(web_contents(), url);
+  shell()->LoadURL(url);
+  EXPECT_TRUE(manager.WaitForResponse());
+  NavigationRequest* navigation = main_frame()->navigation_request();
+  absl::optional<url::Origin> origin_to_commit =
+      navigation->GetOriginToCommit();
+  EXPECT_FALSE(origin_to_commit.has_value());
+  manager.WaitForNavigationFinished();
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
@@ -4257,7 +4271,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   shell()->LoadURL(url);
   EXPECT_TRUE(manager.WaitForResponse());
   NavigationRequest* navigation = main_frame()->navigation_request();
-  url::Origin origin_to_commit = navigation->GetOriginToCommit();
+  url::Origin origin_to_commit = navigation->GetOriginToCommit().value();
   manager.WaitForNavigationFinished();
   url::Origin origin_committed = current_frame_host()->GetLastCommittedOrigin();
 
@@ -4282,7 +4296,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_TRUE(manager.WaitForResponse());
   FrameTreeNode* iframe = current_frame_host()->child_at(0);
   NavigationRequest* navigation = iframe->navigation_request();
-  url::Origin origin_to_commit = navigation->GetOriginToCommit();
+  url::Origin origin_to_commit = navigation->GetOriginToCommit().value();
   manager.WaitForNavigationFinished();
   url::Origin origin_committed =
       iframe->current_frame_host()->GetLastCommittedOrigin();
@@ -4467,7 +4481,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitSandboxFromFrame) {
   EXPECT_TRUE(manager.WaitForResponse());
   FrameTreeNode* iframe = current_frame_host()->child_at(0);
   NavigationRequest* navigation = iframe->navigation_request();
-  url::Origin origin_to_commit = navigation->GetOriginToCommit();
+  url::Origin origin_to_commit = navigation->GetOriginToCommit().value();
   manager.WaitForNavigationFinished();
   url::Origin origin_committed =
       iframe->current_frame_host()->GetLastCommittedOrigin();

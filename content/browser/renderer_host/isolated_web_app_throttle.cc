@@ -118,15 +118,19 @@ IsolatedWebAppThrottle::WillRedirectRequest() {
 
 NavigationThrottle::ThrottleCheckResult
 IsolatedWebAppThrottle::WillProcessResponse() {
-  // Update |dest_origin_| to point to the final origin, which may have changed
-  // since the last WillStartRequest/WillRedirectRequest call.
   auto* navigation_request = NavigationRequest::From(navigation_handle());
-  dest_origin_ = navigation_request->GetOriginToCommit();
   auto* assigned_rfh = static_cast<RenderFrameHostImpl*>(
       navigation_request->GetRenderFrameHost());
+  // Allow downloads and 204s (for these GetOriginToCommit returns nullopt).
+  if (!assigned_rfh) {
+    return NavigationThrottle::PROCEED;
+  }
+
+  // Update |dest_origin_| to point to the final origin, which may have changed
+  // since the last WillStartRequest/WillRedirectRequest call.
+  dest_origin_ = navigation_request->GetOriginToCommit().value();
   const WebExposedIsolationInfo& assigned_isolation_info =
       assigned_rfh->GetSiteInstance()->GetWebExposedIsolationInfo();
-
   return DoThrottle(assigned_isolation_info.is_isolated_application(),
                     NavigationThrottle::BLOCK_RESPONSE);
 }

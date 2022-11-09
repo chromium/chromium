@@ -3637,8 +3637,7 @@ void NavigationRequest::OnResponseStarted(
     const PolicyContainerPolicies& policies =
         policy_container_builder_->FinalPolicies();
     const url::Origin origin =
-        GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
-            policies.sandbox_flags);
+        GetOriginForURLLoaderFactoryBeforeResponse(policies.sandbox_flags);
     coop_status_.EnforceCOOP(policies.cross_origin_opener_policy, origin,
                              network_anonymization_key);
   }
@@ -4005,7 +4004,7 @@ void NavigationRequest::OnResponseStarted(
   }
 
   if (render_frame_host_ &&
-      !CheckPermissionsPoliciesForFencedFrames(GetOriginToCommit())) {
+      !CheckPermissionsPoliciesForFencedFrames(GetOriginToCommit().value())) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
         false /*skip_throttles*/, absl::nullopt /*error_page_content*/,
@@ -4068,7 +4067,7 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
       commit_params_->frame_policy.sandbox_flags;
 
   const url::Origin tentative_origin =
-      GetOriginForURLLoaderFactoryWithoutFinalFrameHost(sandbox_flags);
+      GetOriginForURLLoaderFactoryBeforeResponse(sandbox_flags);
 
   mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer;
   Clone(cookie_observer.InitWithNewPipeAndPassReceiver());
@@ -4994,7 +4993,7 @@ void NavigationRequest::CommitNavigation() {
       (common_params_->url.SchemeIs(url::kUuidInPackageScheme) &&
        GetWebBundleURL().is_valid())
           ? url::Origin::Create(GetWebBundleURL())
-          : GetOriginToCommit();
+          : GetOriginToCommit().value();
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
@@ -5009,7 +5008,7 @@ void NavigationRequest::CommitNavigation() {
       render_frame_host_->ComputeNonce(is_anonymous(),
                                        ComputeFencedFrameNonce());
   commit_params_->storage_key = render_frame_host_->CalculateStorageKey(
-      GetOriginToCommit(), base::OptionalToPtr(nonce));
+      GetOriginToCommit().value(), base::OptionalToPtr(nonce));
 
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();
@@ -5062,9 +5061,9 @@ void NavigationRequest::CommitNavigation() {
           response()->headers.get(), browser_context, client_hints_delegate,
           frame_tree_node_);
     }
-    commit_params_->enabled_client_hints =
-        LookupAcceptCHForCommit(GetOriginToCommit(), client_hints_delegate,
-                                frame_tree_node_, common_params_->url);
+    commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
+        GetOriginToCommit().value(), client_hints_delegate, frame_tree_node_,
+        common_params_->url);
     RemoveOriginTrialHintsFromAcceptCH(
         common_params_->url, client_hints_delegate, response(),
         commit_params_->enabled_client_hints, frame_tree_node_);
@@ -5079,7 +5078,7 @@ void NavigationRequest::CommitNavigation() {
           ReduceAcceptLanguageUtils::Create(browser_context);
       reduce_accept_lang_utils && !devtools_accept_language_override_) {
     reduce_accept_lang_utils.value().RemoveOriginTrialReducedAcceptLanguage(
-        commit_params_->reduced_accept_language, GetOriginToCommit(),
+        commit_params_->reduced_accept_language, GetOriginToCommit().value(),
         response(), frame_tree_node_);
   }
 
@@ -6470,7 +6469,7 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   BrowserContext* context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
 
-  url::Origin origin = GetOriginToCommit();
+  url::Origin origin = GetOriginToCommit().value();
   if (client->ShouldAllowInsecurePrivateNetworkRequests(context, origin)) {
     // The content browser client decided to make an exception for this URL.
     private_network_request_policy_ =
@@ -6633,30 +6632,28 @@ bool NavigationRequest::IsLoadDataWithBaseURL() const {
 
 url::Origin NavigationRequest::GetTentativeOriginAtRequestTime() {
   DCHECK_LT(state_, WILL_PROCESS_RESPONSE);
-  return GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+  return GetOriginForURLLoaderFactoryBeforeResponse(
       commit_params_->frame_policy.sandbox_flags);
 }
 
-url::Origin NavigationRequest::GetOriginToCommit() {
+absl::optional<url::Origin> NavigationRequest::GetOriginToCommit() {
   return GetOriginToCommitWithDebugInfo().first;
 }
 
-std::pair<url::Origin, std::string>
+std::pair<absl::optional<url::Origin>, std::string>
 NavigationRequest::GetOriginToCommitWithDebugInfo() {
-  return GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo();
+  return GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo();
 }
 
-url::Origin
-NavigationRequest::GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+url::Origin NavigationRequest::GetOriginForURLLoaderFactoryBeforeResponse(
     network::mojom::WebSandboxFlags sandbox_flags) {
-  return GetOriginForURLLoaderFactoryWithoutFinalFrameHostWithDebugInfo(
-             sandbox_flags)
+  return GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(sandbox_flags)
       .first;
 }
 
-std::pair<url::Origin, std::string> NavigationRequest::
-    GetOriginForURLLoaderFactoryWithoutFinalFrameHostWithDebugInfo(
-        network::mojom::WebSandboxFlags sandbox_flags) {
+std::pair<url::Origin, std::string>
+NavigationRequest::GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
+    network::mojom::WebSandboxFlags sandbox_flags) {
   // Calculate an approximation of the origin. The sandbox/csp are ignored.
   std::pair<url::Origin, std::string> origin_and_debug_info =
       GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(this);
@@ -6683,22 +6680,28 @@ std::pair<url::Origin, std::string> NavigationRequest::
   return origin_and_debug_info;
 }
 
-url::Origin
-NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
-  return GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo().first;
+absl::optional<url::Origin>
+NavigationRequest::GetOriginForURLLoaderFactoryAfterResponse() {
+  return GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo().first;
 }
 
-std::pair<url::Origin, std::string> NavigationRequest::
-    GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo() {
+std::pair<absl::optional<url::Origin>, std::string>
+NavigationRequest::GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo() {
   // The origin to commit is not known until we get the final network response.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+
+  // Downloads and/or 204 responses don't commit anything - there is no frame to
+  // commit in (and therefor there is no origin that will get committed and we
+  // indicate this by returning `nullopt`).
+  if (!GetRenderFrameHost())
+    return std::make_pair(absl::nullopt, "no_commit");
 
   if (IsSameDocument() || IsPageActivation())
     return std::make_pair(GetRenderFrameHost()->GetLastCommittedOrigin(),
                           "same_doc_or_page_activation");
 
   std::pair<url::Origin, std::string> origin_with_debug_info =
-      GetOriginForURLLoaderFactoryWithoutFinalFrameHostWithDebugInfo(
+      GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
           SandboxFlagsToCommit());
 
   // MHTML documents should commit as an opaque origin. They should not be able

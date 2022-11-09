@@ -278,6 +278,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // changes that occur during navigation.) This can only be accessed after a
   // response has been delivered for processing, or after the navigation fails
   // with an error page.
+  //
+  // Note that null will be returned for downloads and/or 204 responses, because
+  // they don't commit a new document into a renderer process.
   virtual RenderFrameHost* GetRenderFrameHost() const = 0;
 
   // Returns the id of the RenderFrameHost this navigation is committing from.

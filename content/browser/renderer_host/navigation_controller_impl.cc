@@ -4560,7 +4560,7 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
     FrameTreeNode* node,
     NavigationRequest* request) {
   url::Origin pending_origin = request
-                                   ? request->GetOriginToCommit()
+                                   ? request->GetOriginToCommit().value()
                                    : url::Origin::Create(node->current_url());
 
   scoped_refptr<SiteInstance> site_instance =
