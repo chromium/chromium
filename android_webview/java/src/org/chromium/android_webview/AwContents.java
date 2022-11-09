@@ -3755,6 +3755,11 @@ public class AwContents implements SmartClipProvider {
         client.init(mContext);
     }
 
+    @VisibleForTesting
+    public AwAutofillClient getAutofillClient() {
+        return mAwAutofillClient;
+    }
+
     @CalledByNative
     private void didOverscroll(
             int deltaX, int deltaY, float velocityX, float velocityY, boolean insideVSync) {

@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
+import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedSafeModeAction;
 
@@ -21,5 +22,6 @@ public final class BrowserSafeModeActionList {
     public static final SafeModeAction[] sList = {
             new VariationsSeedSafeModeAction(),
             new AndroidAutofillSafeModeAction(),
+            new ChromeAutocompleteSafeModeAction(),
     };
 }

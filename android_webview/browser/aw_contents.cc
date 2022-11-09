@@ -319,8 +319,8 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
   if (ContentAutofillDriverFactory::FromWebContents(web_contents))
     return;
 
-  // The autofill_provider object shall already be created by the
-  // AutofillProvider Java object in Android O and beyond.
+  // The autofill_provider object is already created by the AutofillProvider
+  // Java object in Android O and beyond.
   auto* autofill_provider =
       autofill::AutofillProvider::FromWebContents(web_contents);
 
@@ -333,8 +333,7 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
 
   AwAutofillClient::CreateForWebContents(web_contents);
 
-  // WebView browser tests may shall use BrowserAutofillManager if
-  // `!autofill_provider`.
+  // WebView browser tests use BrowserAutofillManager if `!autofill_provider`.
   ContentAutofillDriverFactory::DriverInitCallback driver_init_hook =
       autofill_provider
           ? base::BindRepeating(&autofill::AndroidDriverInitHook,

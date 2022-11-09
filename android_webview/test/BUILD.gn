@@ -359,6 +359,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AwVariationsSeedFetcherTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwWebContentsObserverTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwZoomTest.java",
+    "../javatests/src/org/chromium/android_webview/test/ChromeAutocompleteSafeModeTest.java",
     "../javatests/src/org/chromium/android_webview/test/CleanupReferenceTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClearHistoryTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClientAddMessageToConsoleTest.java",
