@@ -162,8 +162,10 @@ void ResizeObserver::DeliverObservations() {
     // In case that the observer and the target belong to different execution
     // contexts and the target's execution context is already gone, then skip
     // such a target.
-    ExecutionContext* execution_context =
-        observation->Target()->GetExecutionContext();
+    Element* target = observation->Target();
+    if (!target)
+      continue;
+    ExecutionContext* execution_context = target->GetExecutionContext();
     if (!execution_context || execution_context->IsContextDestroyed())
       continue;
 
