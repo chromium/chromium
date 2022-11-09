@@ -35,6 +35,8 @@ constexpr char kPinEncryptionNone[] = "none";
 constexpr char kOptionFalse[] = "false";
 constexpr char kOptionTrue[] = "true";
 
+constexpr char kIppClientInfo[] = "client-info";
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

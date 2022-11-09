@@ -35,6 +35,8 @@ COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPinEncryptionNone[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kOptionFalse[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kOptionTrue[];
 
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppClientInfo[];
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

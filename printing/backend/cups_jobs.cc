@@ -45,6 +45,7 @@ constexpr base::StringPiece kOauthAuthorizationServerUri =
     "oauth-authorization-server-uri";
 constexpr base::StringPiece kOauthAuthorizationScope =
     "oauth-authorization-scope";
+constexpr base::StringPiece kClientInfoSupported = "client-info-supported";
 
 // job attributes
 constexpr char kJobUri[] = "job-uri";
@@ -122,11 +123,12 @@ constexpr int kHttpConnectTimeoutMs = 1000;
 constexpr std::array<const char* const, 3> kPrinterAttributes{
     {kPrinterState, kPrinterStateReasons, kPrinterStateMessage}};
 
-constexpr std::array<const char* const, 9> kPrinterInfoAndStatus{
+constexpr std::array<const char* const, 10> kPrinterInfoAndStatus{
     {kPrinterMakeAndModel.data(), kIppVersionsSupported.data(),
      kIppFeaturesSupported.data(), kDocumentFormatSupported.data(),
      kPrinterState, kPrinterStateReasons, kPrinterStateMessage,
-     kOauthAuthorizationServerUri.data(), kOauthAuthorizationScope.data()}};
+     kOauthAuthorizationServerUri.data(), kOauthAuthorizationScope.data(),
+     kClientInfoSupported.data()}};
 
 // Converts an IPP attribute `attr` to the appropriate JobState enum.
 CupsJob::JobState ToJobState(ipp_attribute_t* attr) {
@@ -379,6 +381,8 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
         oauth_error = true;
         LOG(WARNING) << "Cannot parse oauth-authorization-scope.";
       }
+    } else if (name == kClientInfoSupported) {
+      ParseCollection(attr, &printer_info->client_info_supported);
     }
   }
 
