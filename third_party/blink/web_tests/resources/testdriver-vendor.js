@@ -182,8 +182,8 @@
       for (let j = 0; j < actions[i].actions.length; j++) {
         if (actions[i].actions[j].type == "keyDown" ||
             actions[i].actions[j].type == "keyUp") {
-          return Promise.reject(new Error("we do not support keydown and keyup actions, " +
-                                          "please use test_driver.send_keys"));
+          return Promise.reject(new Error("We do not support keydown and keyup actions, " +
+                                          "please use test_driver.send_keys. See crbug.com/893480."));
         }
 
         if ('origin' in actions[i].actions[j]) {
