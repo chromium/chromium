@@ -125,6 +125,24 @@ namespace blink {
 
 namespace {
 
+bool IsInitialEmptyDocument(const Document& document) {
+  // Do not fire for initial empty top document. This helps avoid thrashing the
+  // a11y tree, causing an extra serialization.
+  // TODO(accessibility) This is an ugly special case -- find a better way.
+  // Note: Document::IsInitialEmptyDocument() did not work -- should it?
+  if (document.body() && document.body()->hasChildren())
+    return false;
+
+  if (document.head() && document.head()->hasChildren())
+    return false;
+
+  if (document.ParentDocument())
+    return false;
+
+  // No contents and not a child document, return true if about::blank.
+  return document.Url().IsAboutBlankURL();
+}
+
 // Return a node for the current layout object or ancestor layout object.
 Node* GetClosestNodeForLayoutObject(const LayoutObject* layout_object) {
   if (!layout_object)
@@ -647,7 +665,7 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       ax_tree_source_(BlinkAXTreeSource::Create(*this)),
       ax_tree_serializer_(
           std::make_unique<ui::AXTreeSerializer<AXObject*>>(ax_tree_source_)) {
-  if (document_->LoadEventFinished())
+  if (document_->IsLoadCompleted())
     AddPermissionStatusListener();
   use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();
 }
@@ -4343,13 +4361,15 @@ void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
 
 void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
   DCHECK(document_node);
-  DCHECK(IsA<Document>(document_node));
-#if DCHECK_IS_ON()
   const Document* document = To<Document>(document_node);
+#if DCHECK_IS_ON()
   DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
   DCHECK(document == document_.Get());
 #endif  // DCHECK_IS_ON()
+
+  if (!document->IsLoadCompleted() || IsInitialEmptyDocument(*document))
+    return;
 
   AddPermissionStatusListener();
   PostNotification(GetOrCreate(document_node),
@@ -4360,19 +4380,17 @@ void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   DCHECK(document);
   // Do not fire kLayoutComplete for popup document.
-  if (document == GetPopupDocumentIfShowing())
+  if (IsPopup(*document))
     return;
 
-  // TODO(accessibility) What is the purpose of firing kLayoutComplete?
-  // Do we even need this?
-  if (document->Lifecycle().GetState() >=
-      DocumentLifecycle::kAfterPerformLayout) {
-    PostNotification(GetOrCreate(document),
-                     ax::mojom::blink::Event::kLayoutComplete);
-  } else {
-    DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
-                    ax::mojom::blink::Event::kLayoutComplete);
-  }
+  // Do not fire for initial empty document.
+  if (IsInitialEmptyDocument(*document))
+    return;
+
+  // TODO(accessibility) Investigate removal of the layout complete event, which
+  // seems to only be used as a signal to serialize location data.
+  DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
+                  ax::mojom::blink::Event::kLayoutComplete);
 }
 
 void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
