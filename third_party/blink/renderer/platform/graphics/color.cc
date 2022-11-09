@@ -409,11 +409,6 @@ Color Color::InterpolateColors(
   DCHECK(percentage >= 0.0f && percentage <= 1.0f);
   // TODO(1092638) : HSL, HWB and LegacyRGB don't support yet the "none"
   // interpolation.
-  // TODO(1092638) : HSL, HWB don't support interpolation yet.
-  if (interpolation_space == ColorInterpolationSpace::kHSL ||
-      interpolation_space == ColorInterpolationSpace::kHWB)
-    return color1;
-
   if (interpolation_space == ColorInterpolationSpace::kHSL ||
       interpolation_space == ColorInterpolationSpace::kHWB ||
       interpolation_space == ColorInterpolationSpace::kLch ||
