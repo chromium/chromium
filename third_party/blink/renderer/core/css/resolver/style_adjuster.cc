@@ -130,7 +130,7 @@ void AdjustStyleForSvgElement(const SVGElement& element,
   builder.SetTextDecorationStyle(
       ETextDecorationStyle::kSolid);  // crbug.com/1246719
   builder.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
-  builder.MutableInternalStyle()->SetTextEmphasisMark(TextEmphasisMark::kNone);
+  builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
   builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
   builder.SetTextUnderlinePosition(kTextUnderlinePositionAuto);
 }
@@ -350,7 +350,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
   style.SetLetterSpacing(0.0f);
   builder.SetTextAlign(ETextAlign::kCenter);
   builder.SetTextDecorationLine(TextDecorationLine::kNone);
-  style.SetTextEmphasisMark(TextEmphasisMark::kNone);
+  builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
   style.SetVerticalAlign(EVerticalAlign ::kMiddle);
   builder.SetWordBreak(EWordBreak::kKeepAll);
   style.SetWordSpacing(0.0f);

@@ -429,7 +429,6 @@
       default_value: "filled",
       keywords: ["filled", "open"],
       field_group: "*",
-      writable: true,
     },
     {
       name: "TextEmphasisMark",
@@ -439,8 +438,7 @@
       default_value: "none",
       keywords: ["none", "auto", "dot", "circle", "double-circle", "triangle", "sesame", "custom"],
       field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-      writable: true,
+      computed_style_custom_functions: ["getter"],
     },
     // Though will-change is not itself an inherited property, the intent
     // expressed by 'will-change: contents' includes descendants.
@@ -488,7 +486,6 @@
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "AtomicString()",
       field_group: "*",
-      writable: true,
     },
     {
       name: "AppliedTextDecorations",
