@@ -1167,7 +1167,14 @@ class PixelTestPages():
                       test_rect=[0, 0, 300, 300],
                       browser_args=[],
                       matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO,
-                      grace_period_end=date(2022, 11, 10))
+                      grace_period_end=date(2022, 11, 10)),
+        PixelTestPage(
+            'pixel_media_recorder_from_video_element.html',
+            base_name + '_MediaRecorderFromVideoElementWithOoprCanvasDisabled',
+            test_rect=[0, 0, 300, 300],
+            browser_args=['--disable-features=CanvasOopRasterization'],
+            matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO,
+            grace_period_end=date(2022, 11, 20))
     ]
 
   @staticmethod
