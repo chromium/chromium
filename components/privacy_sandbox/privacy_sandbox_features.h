@@ -10,6 +10,9 @@
 
 namespace privacy_sandbox {
 
+// Enables the fourth release of the Privacy Sandbox settings.
+BASE_DECLARE_FEATURE(kPrivacySandboxSettings4);
+
 // Enables the third release of the Privacy Sandbox settings.
 BASE_DECLARE_FEATURE(kPrivacySandboxSettings3);
 // When true, the user will be shown a consent to enable the Privacy Sandbox

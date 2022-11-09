@@ -395,6 +395,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kPasswordEditDialogWithDetails,
     &privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
     &privacy_sandbox::kPrivacySandboxSettings3,
+    &privacy_sandbox::kPrivacySandboxSettings4,
     &query_tiles::features::kQueryTiles,
     &query_tiles::features::kQueryTilesInNTP,
     &query_tiles::features::kQueryTilesOnStart,

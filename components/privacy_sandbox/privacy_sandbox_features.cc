@@ -6,6 +6,10 @@
 
 namespace privacy_sandbox {
 
+BASE_FEATURE(kPrivacySandboxSettings4,
+             "PrivacySandboxSettings4",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrivacySandboxSettings3,
              "PrivacySandboxSettings3",
              base::FEATURE_ENABLED_BY_DEFAULT);
