@@ -229,14 +229,25 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
     ns_window_host_->CreateInProcessNSWindowBridge(std::move(window));
   }
 
-  // In immersive fullscreen, bubbles will be shown under the toolbar by
-  // default. Fix it by using a higher z-order level.
-  // TODO(mek): Figure out how to make this work with remote remote_cocoa
-  // windows.
-  if (params.parent && remote_cocoa::IsNSToolbarFullScreenWindow(
-                           params.parent.GetNativeNSView().window)) {
-    if (!params.z_order || params.z_order == ui::ZOrderLevel::kNormal)
+  // If the z-order wasn't specifically set to something other than `kNormal`,
+  // then override it if it would leave the widget z-ordered incorrectly in some
+  // platform-specific corner cases.
+  if (params.parent &&
+      (!params.z_order || params.z_order == ui::ZOrderLevel::kNormal)) {
+    // In immersive fullscreen, bubbles will be shown under the toolbar by
+    // default. Fix it by using a higher z-order level.
+    // TODO(mek): Figure out how to make this work with remote remote_cocoa
+    // windows.
+    if (remote_cocoa::IsNSToolbarFullScreenWindow(
+            params.parent.GetNativeNSView().window)) {
       params.z_order = ui::ZOrderLevel::kFloatingWindow;
+    } else if (auto* parent_widget =
+                   Widget::GetWidgetForNativeView(params.parent)) {
+      // If our parent is z-ordered above us, then float a bit higher.
+      params.z_order =
+          std::max(params.z_order.value_or(ui::ZOrderLevel::kNormal),
+                   parent_widget->GetZOrderLevel());
+    }
   }
 
   ns_window_host_->SetParent(parent_host);
