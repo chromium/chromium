@@ -471,9 +471,6 @@ file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
     case ash::MountError::kInvalidMountOptions:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_MOUNT_OPTIONS;
-    case ash::MountError::kInvalidUnmountOptions:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INVALID_UNMOUNT_OPTIONS;
     case ash::MountError::kInsufficientPermissions:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INSUFFICIENT_PERMISSIONS;
@@ -492,8 +489,6 @@ file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
     case ash::MountError::kUnsupportedFilesystem:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM;
-    case ash::MountError::kInvalidArchive:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARCHIVE;
     case ash::MountError::kNeedPassword:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_NEED_PASSWORD;
     case ash::MountError::kInProgress:
@@ -502,10 +497,10 @@ file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
     case ash::MountError::kBusy:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_BUSY;
+    default:
+      LOG(ERROR) << "Unexpected mount error: " << error;
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN;
   }
-
-  NOTREACHED();
-  return file_manager_private::MOUNT_COMPLETED_STATUS_NONE;
 }
 
 EventRouter::EventRouter(Profile* profile)

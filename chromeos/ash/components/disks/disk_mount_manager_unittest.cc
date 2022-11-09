@@ -703,7 +703,7 @@ TEST_F(DiskMountManagerTest, Format_ConcurrentFormatCalls) {
   fake_cros_disks_client_->set_unmount_listener(
       base::BindRepeating(&FakeCrosDisksClient::MakeUnmountFail,
                           base::Unretained(fake_cros_disks_client_),
-                          MountError::kInvalidUnmountOptions));
+                          MountError::kInsufficientPermissions));
   // Start the test.
   DiskMountManager::GetInstance()->FormatMountedDevice(
       kDevice1MountPath, kFormatFileSystemType1, kFormatLabel1);
@@ -1621,7 +1621,8 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_FailFirst) {
       DiskMountManager::GetInstance()->AddDiskForTest(std::move(disk_sda2)));
 
   // Fail the first unmount, but make the second succeed.
-  fake_cros_disks_client_->MakeUnmountFail(MountError::kInvalidUnmountOptions);
+  fake_cros_disks_client_->MakeUnmountFail(
+      MountError::kInsufficientPermissions);
   fake_cros_disks_client_->set_unmount_listener(base::BindRepeating(
       &SetUnmountError, base::Unretained(fake_cros_disks_client_),
       MountError::kSuccess));
@@ -1634,7 +1635,7 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_FailFirst) {
   run_loop.Run();
 
   EXPECT_EQ(2, fake_cros_disks_client_->unmount_call_count());
-  EXPECT_EQ(MountError::kInvalidUnmountOptions, error_code);
+  EXPECT_EQ(MountError::kInsufficientPermissions, error_code);
 }
 
 TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_AlreadyUnmounted) {
