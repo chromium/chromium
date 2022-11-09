@@ -7845,23 +7845,23 @@ const CSSValue* VerticalAlign::CSSValueFromComputedStyleInternal(
 }
 
 void VerticalAlign::ApplyInherit(StyleResolverState& state) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   EVerticalAlign vertical_align = state.ParentStyle()->VerticalAlign();
-  state.Style()->SetVerticalAlign(vertical_align);
+  builder.SetVerticalAlign(vertical_align);
   if (vertical_align == EVerticalAlign::kLength) {
-    state.Style()->SetVerticalAlignLength(
+    builder.SetVerticalAlignLength(
         state.ParentStyle()->GetVerticalAlignLength());
   }
 }
 
 void VerticalAlign::ApplyValue(StyleResolverState& state,
                                const CSSValue& value) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    state.Style()->SetVerticalAlign(
-        identifier_value->ConvertTo<EVerticalAlign>());
+    builder.SetVerticalAlign(identifier_value->ConvertTo<EVerticalAlign>());
   } else {
-    state.Style()->SetVerticalAlignLength(
-        To<CSSPrimitiveValue>(value).ConvertToLength(
-            state.CssToLengthConversionData()));
+    builder.SetVerticalAlignLength(To<CSSPrimitiveValue>(value).ConvertToLength(
+        state.CssToLengthConversionData()));
   }
 }
 

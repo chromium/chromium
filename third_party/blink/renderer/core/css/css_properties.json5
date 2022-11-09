@@ -4960,7 +4960,6 @@
       keywords: ["baseline", "sub", "super", "text-top", "text-bottom", "middle"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
-      writable: true,
     },
     {
       name: "view-timeline-axis",

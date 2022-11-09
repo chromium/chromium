@@ -327,7 +327,6 @@
       type_name: "unsigned",
       default_value: "static_cast<unsigned>(EVerticalAlign::kBaseline)",
       computed_style_custom_functions: ["initial", "getter", "setter"],
-      writable: true,
     },
     {
       name: "VerticalAlignLength",
@@ -338,7 +337,6 @@
       field_group: "box",
       getter: "GetVerticalAlignLength",
       computed_style_custom_functions: ["setter"],
-      writable: true,
     },
     {
       name: "border-image",

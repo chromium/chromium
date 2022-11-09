@@ -728,13 +728,6 @@ class ComputedStyle : public ComputedStyleBase,
   EVerticalAlign VerticalAlign() const {
     return static_cast<EVerticalAlign>(VerticalAlignInternal());
   }
-  void SetVerticalAlign(EVerticalAlign v) {
-    SetVerticalAlignInternal(static_cast<unsigned>(v));
-  }
-  void SetVerticalAlignLength(const Length& length) {
-    SetVerticalAlignInternal(static_cast<unsigned>(EVerticalAlign::kLength));
-    SetVerticalAlignLengthInternal(length);
-  }
 
   // This returns the z-index if it applies (i.e. positioned element or grid or
   // flex children), and 0 otherwise. Note that for most situations,
@@ -3041,6 +3034,15 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetBoxOrdinalGroup(unsigned ordinal_group) {
     SetBoxOrdinalGroupInternal(
         std::min(std::numeric_limits<unsigned>::max() - 1, ordinal_group));
+  }
+
+  // vertical-align
+  void SetVerticalAlign(EVerticalAlign v) {
+    SetVerticalAlignInternal(static_cast<unsigned>(v));
+  }
+  void SetVerticalAlignLength(const Length& length) {
+    SetVerticalAlignInternal(static_cast<unsigned>(EVerticalAlign::kLength));
+    SetVerticalAlignLengthInternal(length);
   }
 
   // widows
