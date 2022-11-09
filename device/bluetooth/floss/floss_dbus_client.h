@@ -307,9 +307,9 @@ template <typename T>
 const DBusTypeInfo& GetDBusTypeInfo(const std::vector<T>*) {
   static base::NoDestructor<DBusTypeInfo> elem_info(
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
-  static base::NoDestructor<DBusTypeInfo> info(
+  static base::NoDestructor<DBusTypeInfo> info{
       {"a" + elem_info->dbus_signature,
-       "vector<" + elem_info->type_name + ">"});
+       "vector<" + elem_info->type_name + ">"}};
   return *info;
 }
 
@@ -319,11 +319,11 @@ const DBusTypeInfo& GetDBusTypeInfo(const std::map<T, U>*) {
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
   static base::NoDestructor<DBusTypeInfo> val_info(
       GetDBusTypeInfo(static_cast<U*>(nullptr)));
-  static base::NoDestructor<DBusTypeInfo> info(
+  static base::NoDestructor<DBusTypeInfo> info{
       {std::string("a{") + key_info->dbus_signature + val_info->dbus_signature +
            std::string("}"),
        std::string("map<") + key_info->type_name + ", " + val_info->type_name +
-           std::string(">")});
+           std::string(">")}};
   return *info;
 }
 
