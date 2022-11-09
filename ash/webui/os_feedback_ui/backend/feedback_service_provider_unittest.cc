@@ -55,6 +55,8 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
 
   std::string GetApplicationLocale() override { return "zh"; }
 
+  bool IsChildAccount() override { return false; }
+
   absl::optional<GURL> GetLastActivePageUrl() override {
     return GURL(kPageUrl);
   }

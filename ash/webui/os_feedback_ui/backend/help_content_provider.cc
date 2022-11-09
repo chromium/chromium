@@ -172,16 +172,22 @@ std::string ExtractLanguage(const std::string& locale) {
 
 std::string ConvertSearchRequestToJson(
     const std::string& app_locale,
+    bool is_child_account,
     const os_feedback_ui::mojom::SearchRequestPtr& request) {
   base::Value::Dict request_dict;
 
   request_dict.Set("helpcenter", "chromeos");
   request_dict.Set("query", request->query);
   request_dict.Set("language", app_locale);
-  request_dict.Set(
-      "max_results",
-      base::NumberToString(request->max_results + kExtraItemsInRawResponse));
 
+  auto requested_results = request->max_results + kExtraItemsInRawResponse;
+
+  // We need to add more buffers for child account. So if lots of help content
+  // for a search are community forum, we may still return a few articles.
+  if (is_child_account) {
+    requested_results += kExtraItemsInRawResponse;
+  }
+  request_dict.Set("max_results", base::NumberToString(requested_results));
   std::string request_content;
   base::JSONWriter::Write(request_dict, &request_content);
   VLOG(2) << request_content;
@@ -204,6 +210,7 @@ HelpContentType ToHelpContentType(const std::string& result_type) {
 }
 
 void PopulateSearchResponse(const std::string& app_locale,
+                            bool is_child_account,
                             const uint32_t max_results,
                             const base::Value& search_result,
                             SearchResponsePtr& search_response) {
@@ -242,24 +249,34 @@ void PopulateSearchResponse(const std::string& app_locale,
     }
     const base::Value::Dict& res_dict = resource.GetDict();
     const std::string* lang_str = res_dict.FindString("language");
-    // Take items in the same language (regardless of regions).
+    // Take items in the same language (regardless of regions). If the account
+    // is a child account, we only add articles to the result.
     if (lang_str && expected_language == ExtractLanguage(*lang_str)) {
-      search_response->results.push_back(GetHelpContent(res_dict));
+      HelpContentPtr help_content = GetHelpContent(res_dict);
+      const HelpContentType type = help_content->content_type;
+      if (type == HelpContentType::kArticle || !is_child_account) {
+        search_response->results.push_back(std::move(help_content));
+      }
     }
   }
 }
 
 HelpContentProvider::HelpContentProvider(
     const std::string& app_locale,
+    const bool is_child_account,
     content::BrowserContext* browser_context)
     : app_locale_(app_locale),
+      is_child_account_(is_child_account),
       url_loader_factory_(browser_context->GetDefaultStoragePartition()
                               ->GetURLLoaderFactoryForBrowserProcess()) {}
 
 HelpContentProvider::HelpContentProvider(
     const std::string& app_locale,
+    const bool is_child_account,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : app_locale_(app_locale), url_loader_factory_(url_loader_factory) {}
+    : app_locale_(app_locale),
+      is_child_account_(is_child_account),
+      url_loader_factory_(url_loader_factory) {}
 
 HelpContentProvider::~HelpContentProvider() = default;
 
@@ -272,7 +289,8 @@ void HelpContentProvider::GetHelpContents(
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kTrafficAnnotation);
   url_loader->AttachStringForUpload(
-      ConvertSearchRequestToJson(app_locale_, request), "application/json");
+      ConvertSearchRequestToJson(app_locale_, is_child_account_, request),
+      "application/json");
 
   auto* const url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
@@ -316,7 +334,8 @@ void HelpContentProvider::OnResponseJsonParsed(
   SearchResponsePtr response = SearchResponse::New();
 
   if (result.has_value()) {
-    PopulateSearchResponse(app_locale_, max_results, *result, response);
+    PopulateSearchResponse(app_locale_, is_child_account_, max_results, *result,
+                           response);
   } else {
     LOG(ERROR)
         << "HelpContentProvider data decoder failed to parse json. Error: "

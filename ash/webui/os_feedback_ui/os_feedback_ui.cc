@@ -153,7 +153,8 @@ OSFeedbackUI::OSFeedbackUI(
       untrusted_origin, ContentSettingsType::JAVASCRIPT);
 
   help_content_provider_ = std::make_unique<feedback::HelpContentProvider>(
-      feedback_delegate->GetApplicationLocale(), browser_context);
+      feedback_delegate->GetApplicationLocale(),
+      feedback_delegate->IsChildAccount(), browser_context);
   feedback_service_provider_ =
       std::make_unique<feedback::FeedbackServiceProvider>(
           std::move(feedback_delegate));

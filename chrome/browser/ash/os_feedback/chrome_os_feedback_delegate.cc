@@ -320,6 +320,10 @@ void ChromeOsFeedbackDelegate::OpenSystemInfoDialog() {
   OpenWebDialog(systemInfoUrl);
 }
 
+bool ChromeOsFeedbackDelegate::IsChildAccount() {
+  return profile_->IsChild();
+}
+
 void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url) {
   Browser* feedback_browser = ash::FindSystemWebAppBrowser(
       profile_, ash::SystemWebAppType::OS_FEEDBACK);

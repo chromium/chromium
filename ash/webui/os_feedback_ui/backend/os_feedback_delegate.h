@@ -50,6 +50,8 @@ class OsFeedbackDelegate {
   // Open system info dialog (which displays the system logs
   // to be sent with the report if the user has opted in).
   virtual void OpenSystemInfoDialog() = 0;
+  // Gets the isChild to check if the account is a unicorn account.
+  virtual bool IsChildAccount() = 0;
 };
 
 }  // namespace ash
