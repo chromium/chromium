@@ -1654,7 +1654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.FirstTimeoutWritingTime" units="seconds"
-    expires_after="2023-03-05">
+    expires_after="2023-05-07">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>System uptime when first timeout writing TPM command occurs</summary>

@@ -6255,7 +6255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Dial.KnownDevicesCount" units="devices"
-    expires_after="2023-03-05">
+    expires_after="2023-05-07">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>

@@ -1504,7 +1504,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.UrlParamFilter.FilteredParamCountExperimental"
-    units="count" expires_after="2023-03-05">
+    units="count" expires_after="2023-05-07">
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
