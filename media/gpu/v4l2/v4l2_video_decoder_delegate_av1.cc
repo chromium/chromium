@@ -177,11 +177,11 @@ void FillQuantizationParams(v4l2_av1_quantization& v4l2_quant,
   v4l2_quant.qm_v = base::checked_cast<uint8_t>(quant.matrix_level[2]);
 }
 
-}  // namespace
-
 // Section 5.9.14. Segmentation params syntax
-void FillSegmentationParams(struct v4l2_av1_segmentation& v4l2_seg,
-                            const libgav1::Segmentation& seg) {
+struct v4l2_av1_segmentation FillSegmentationParams(
+    const libgav1::Segmentation& seg) {
+  struct v4l2_av1_segmentation v4l2_seg = {};
+
   if (seg.enabled)
     v4l2_seg.flags |= V4L2_AV1_SEGMENTATION_FLAG_ENABLED;
 
@@ -216,10 +216,14 @@ void FillSegmentationParams(struct v4l2_av1_segmentation& v4l2_seg,
   }
 
   v4l2_seg.last_active_seg_id = seg.last_active_segment_id;
+
+  return v4l2_seg;
 }
 
 // Section 5.9.15. Tile info syntax
-void FillTileInfo(v4l2_av1_tile_info& v4l2_ti, const libgav1::TileInfo& ti) {
+struct v4l2_av1_tile_info FillTileInfo(const libgav1::TileInfo& ti) {
+  struct v4l2_av1_tile_info v4l2_ti = {};
+
   if (ti.uniform_spacing)
     v4l2_ti.flags |= V4L2_AV1_TILE_INFO_FLAG_UNIFORM_TILE_SPACING;
 
@@ -275,6 +279,8 @@ void FillTileInfo(v4l2_av1_tile_info& v4l2_ti, const libgav1::TileInfo& ti) {
   v4l2_ti.context_update_tile_id = ti.context_update_id;
   v4l2_ti.tile_cols = ti.tile_columns;
   v4l2_ti.tile_rows = ti.tile_rows;
+
+  return v4l2_ti;
 }
 
 // Section 5.9.17. Quantizer index delta parameters syntax
@@ -313,9 +319,10 @@ void FillLoopFilterDeltaParams(struct v4l2_av1_loop_filter& v4l2_lf,
 }
 
 // Section 5.9.19. CDEF params syntax
-void FillCdefParams(struct v4l2_av1_cdef& v4l2_cdef,
-                    const libgav1::Cdef& cdef,
-                    uint8_t color_bitdepth) {
+struct v4l2_av1_cdef FillCdefParams(const libgav1::Cdef& cdef,
+                                    uint8_t color_bitdepth) {
+  struct v4l2_av1_cdef v4l2_cdef = {};
+
   // Damping value parsed in libgav1 is from the spec + (bitdepth - 8).
   // All the strength values parsed in libgav1 are from the spec and left
   // shifted by (bitdepth - 8).
@@ -347,11 +354,15 @@ void FillCdefParams(struct v4l2_av1_cdef& v4l2_cdef,
   SafeArrayMemcpy(v4l2_cdef.y_sec_strength, cdef.y_secondary_strength);
   SafeArrayMemcpy(v4l2_cdef.uv_pri_strength, cdef.uv_primary_strength);
   SafeArrayMemcpy(v4l2_cdef.uv_sec_strength, cdef.uv_secondary_strength);
+
+  return v4l2_cdef;
 }
 
 // 5.9.20. Loop restoration params syntax
-void FillLoopRestorationParams(v4l2_av1_loop_restoration& v4l2_lr,
-                               const libgav1::LoopRestoration& lr) {
+struct v4l2_av1_loop_restoration FillLoopRestorationParams(
+    const libgav1::LoopRestoration& lr) {
+  struct v4l2_av1_loop_restoration v4l2_lr = {};
+
   for (size_t i = 0; i < V4L2_AV1_NUM_PLANES_MAX; i++) {
     switch (lr.type[i]) {
       case libgav1::LoopRestorationType::kLoopRestorationTypeNone:
@@ -386,22 +397,23 @@ void FillLoopRestorationParams(v4l2_av1_loop_restoration& v4l2_lr,
                      return type != libgav1::kLoopRestorationTypeNone;
                    }) != (lr.type + libgav1::kMaxPlanes);
 
-  if (!use_loop_restoration)
-    return;
+  if (use_loop_restoration) {
+    DCHECK_GE(lr.unit_size_log2[0], lr.unit_size_log2[1]);
+    DCHECK_LE(lr.unit_size_log2[0] - lr.unit_size_log2[1], 1);
+    v4l2_lr.lr_unit_shift = lr.unit_size_log2[0] - 6;
+    v4l2_lr.lr_uv_shift = lr.unit_size_log2[0] - lr.unit_size_log2[1];
 
-  DCHECK_GE(lr.unit_size_log2[0], lr.unit_size_log2[1]);
-  DCHECK_LE(lr.unit_size_log2[0] - lr.unit_size_log2[1], 1);
-  v4l2_lr.lr_unit_shift = lr.unit_size_log2[0] - 6;
-  v4l2_lr.lr_uv_shift = lr.unit_size_log2[0] - lr.unit_size_log2[1];
+    // AV1 spec (p.52) uses this formula with hard coded value 2.
+    // https://aomediacodec.github.io/av1-spec/#loop-restoration-params-syntax
+    v4l2_lr.loop_restoration_size[0] =
+        V4L2_AV1_RESTORATION_TILESIZE_MAX >> (2 - v4l2_lr.lr_unit_shift);
+    v4l2_lr.loop_restoration_size[1] =
+        v4l2_lr.loop_restoration_size[0] >> v4l2_lr.lr_uv_shift;
+    v4l2_lr.loop_restoration_size[2] =
+        v4l2_lr.loop_restoration_size[0] >> v4l2_lr.lr_uv_shift;
+  }
 
-  // AV1 spec (p.52) uses this formula with hard coded value 2.
-  // https://aomediacodec.github.io/av1-spec/#loop-restoration-params-syntax
-  v4l2_lr.loop_restoration_size[0] =
-      V4L2_AV1_RESTORATION_TILESIZE_MAX >> (2 - v4l2_lr.lr_unit_shift);
-  v4l2_lr.loop_restoration_size[1] =
-      v4l2_lr.loop_restoration_size[0] >> v4l2_lr.lr_uv_shift;
-  v4l2_lr.loop_restoration_size[2] =
-      v4l2_lr.loop_restoration_size[0] >> v4l2_lr.lr_uv_shift;
+  return v4l2_lr;
 }
 
 // Section 5.9.24. Global motion params syntax
@@ -465,29 +477,26 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
     const AV1ReferenceFrameVector& ref_frames) {
   struct v4l2_ctrl_av1_frame v4l2_frame_params = {};
 
-  struct v4l2_av1_loop_filter v4l2_lf = {};
-  FillLoopFilterParams(v4l2_lf, frame_header.loop_filter);
+  FillLoopFilterParams(v4l2_frame_params.loop_filter, frame_header.loop_filter);
+  FillLoopFilterDeltaParams(v4l2_frame_params.loop_filter,
+                            frame_header.delta_lf);
 
-  FillLoopFilterDeltaParams(v4l2_lf, frame_header.delta_lf);
+  FillQuantizationParams(v4l2_frame_params.quantization,
+                         frame_header.quantizer);
+  FillQuantizerIndexDeltaParams(v4l2_frame_params.quantization, sequence_header,
+                                frame_header);
 
-  struct v4l2_av1_quantization v4l2_quant = {};
-  FillQuantizationParams(v4l2_quant, frame_header.quantizer);
-
-  FillQuantizerIndexDeltaParams(v4l2_quant, sequence_header, frame_header);
-
-  struct v4l2_av1_segmentation v4l2_seg = {};
-  FillSegmentationParams(v4l2_seg, frame_header.segmentation);
+  v4l2_frame_params.segmentation =
+      FillSegmentationParams(frame_header.segmentation);
 
   const auto color_bitdepth = sequence_header.color_config.bitdepth;
-  struct v4l2_av1_cdef v4l2_cdef = {};
-  FillCdefParams(v4l2_cdef, frame_header.cdef,
-                 base::strict_cast<int8_t>(color_bitdepth));
+  v4l2_frame_params.cdef = FillCdefParams(
+      frame_header.cdef, base::strict_cast<int8_t>(color_bitdepth));
 
-  struct v4l2_av1_loop_restoration v4l2_lr = {};
-  FillLoopRestorationParams(v4l2_lr, frame_header.loop_restoration);
+  v4l2_frame_params.loop_restoration =
+      FillLoopRestorationParams(frame_header.loop_restoration);
 
-  struct v4l2_av1_tile_info v4l2_ti = {};
-  FillTileInfo(v4l2_ti, frame_header.tile_info);
+  v4l2_frame_params.tile_info = FillTileInfo(frame_header.tile_info);
 
   v4l2_frame_params.global_motion =
       FillGlobalMotionParams(frame_header.global_motion);
@@ -721,6 +730,8 @@ std::vector<struct v4l2_ctrl_av1_tile_group_entry> FillTileGroupParams(
 
   return tile_group_entry_vector;
 }
+
+}  // namespace
 
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
     V4L2DecodeSurfaceHandler* surface_handler,
