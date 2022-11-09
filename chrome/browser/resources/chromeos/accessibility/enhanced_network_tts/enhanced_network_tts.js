@@ -223,6 +223,9 @@ export class EnhancedNetworkTts {
     } catch (e) {
       console.warn('Could not decode audio data');
       return new Promise(resolve => resolve(null));
+    } finally {
+      // Release system resources.
+      context.close();
     }
 
     if (!audioBuffer) {
