@@ -2505,11 +2505,6 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
 
-  bool translate_only =
-      params->content_device_transform.IsIdentityOrTranslation();
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.SkiaRenderer.DrawTileDrawQuad.CDT.IsTranslateOnly",
-      translate_only);
   bool using_raw_draw = builder.paint_op_buffer();
   if (is_using_raw_draw_) {
     UMA_HISTOGRAM_BOOLEAN(
