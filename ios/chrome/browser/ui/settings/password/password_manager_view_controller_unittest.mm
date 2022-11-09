@@ -17,6 +17,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -210,12 +211,13 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
 
   // Creates and adds a saved password form.  If `is_leaked` is true it marks
   // the credential as leaked.
-  void AddSavedForm1(bool is_leaked = false) {
+  void AddSavedForm1(bool is_leaked = false,
+                     std::u16string username_value = u"test@egmail.com") {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
     form->username_element = u"Email";
-    form->username_value = u"test@egmail.com";
+    form->username_value = username_value;
     form->password_element = u"Passwd";
     form->password_value = u"test";
     form->submit_element = u"signIn";
@@ -461,6 +463,49 @@ TEST_F(PasswordManagerViewControllerTest, DeleteItemsWithDuplicates) {
   // There should be no password sections remaining and no search bar.
   deleteItemAndWait(GetSectionIndex(SectionIdentifierBlocked) - 1, 0);
   EXPECT_EQ(4, NumberOfSections());
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Tests deleting items from saved passwords (as affiliated groups) and blocked
+// passwords sections.
+TEST_F(PasswordManagerViewControllerTest,
+       DeleteAffiliatedGroupsAndBlockedPasswords) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kPasswordsGrouping);
+
+  AddSavedForm1();
+  AddSavedForm1(false, u"test2@egmail.com");
+  AddSavedForm2();
+
+  AddBlockedForm1();
+  AddBlockedForm2();
+
+  // 2 affiliated groups in the Saved Passwords section and 2 blocked passwords
+  // in the Blocked section.
+  EXPECT_EQ(2, NumberOfItemsInSection(
+                   GetSectionIndex(SectionIdentifierSavedPasswords)));
+  EXPECT_EQ(2,
+            NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
+
+  // Delete first affiliated group in Saved Passwords section.
+  deleteItemAndWait(GetSectionIndex(SectionIdentifierSavedPasswords), 0);
+
+  // Should only have 1 affiliated group left in this section.
+  EXPECT_EQ(1, NumberOfItemsInSection(
+                   GetSectionIndex(SectionIdentifierSavedPasswords)));
+  // Blocked section unaffected.
+  EXPECT_EQ(2,
+            NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
+
+  // Delete item in blocked passwords section.
+  deleteItemAndWait(GetSectionIndex(SectionIdentifierBlocked), 0);
+  EXPECT_EQ(1,
+            NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
+  // Saved Passwords section unaffected.
+  EXPECT_EQ(1, NumberOfItemsInSection(
+                   GetSectionIndex(SectionIdentifierSavedPasswords)));
+
+  // There should be no password sections remaining and no search bar.
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
