@@ -30,7 +30,7 @@ void FakeAppLaunchSplashScreenHandler::UpdateAppLaunchState(
 }
 
 AppLaunchSplashScreenHandler::AppLaunchState
-FakeAppLaunchSplashScreenHandler::GetAppLaunchState() {
+FakeAppLaunchSplashScreenHandler::GetAppLaunchState() const {
   return state_;
 }
 

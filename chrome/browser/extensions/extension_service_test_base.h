@@ -161,6 +161,7 @@ class ExtensionServiceTestBase : public testing::Test {
   policy::MockConfigurationPolicyProvider* policy_provider() {
     return &policy_provider_;
   }
+  policy::PolicyService* policy_service() { return policy_service_.get(); }
 
   // If a test uses a feature list, it should be destroyed after
   // |task_environment_|, to avoid tsan data races between the ScopedFeatureList

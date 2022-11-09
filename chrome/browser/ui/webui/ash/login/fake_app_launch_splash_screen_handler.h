@@ -24,7 +24,7 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
 
   KioskAppLaunchError::Error GetErrorMessageType() const;
   void SetNetworkReady(bool ready);
-  AppLaunchState GetAppLaunchState();
+  AppLaunchState GetAppLaunchState() const;
 
  private:
   KioskAppLaunchError::Error error_message_type_ =

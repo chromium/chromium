@@ -9,6 +9,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -220,17 +221,14 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
 
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
-          user->GetAccountId(), user->username_hash(),
-          crosapi::browser_util::PolicyInitState::kAfterInit)) {
-    LOG(WARNING) << "Restarting chrome to run profile migration.";
-    return;
-  }
 
-  if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
-          user->GetAccountId(), user->username_hash(),
-          crosapi::browser_util::PolicyInitState::kAfterInit)) {
-    LOG(WARNING) << "Restarting chrome to run backward profile migration.";
+  // TODO(b/257210467): Remove the need for CHECK_IS_TEST
+  if (!user) {
+    CHECK_IS_TEST();
+  } else if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
+                 user->GetAccountId(), user->username_hash(),
+                 crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    LOG(WARNING) << "Restarting chrome to run profile migration.";
     return;
   }
 
