@@ -37565,6 +37565,7 @@ Called by update_extension_permission.py.-->
   <int value="1211" label="Pairing Failed: Error UI Dismissed By OS"/>
   <int value="1212" label="Pairing Failed: Error UI Settings Button Pressed"/>
   <int value="1213" label="Pairing Failed: Error UI Dismissed By User"/>
+  <int value="1221" label="Pairing Succeeded: Already Paired"/>
 </enum>
 
 <enum name="FastPairHandshakeFailureReason">

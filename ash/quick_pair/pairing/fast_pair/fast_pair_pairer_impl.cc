@@ -243,11 +243,15 @@ void FastPairPairerImpl::StartPairing() {
 
       if (bt_device) {
         if (bt_device->IsBonded()) {
-          // TODO(b/256885576): Add metric to capture this case.
           QP_LOG(INFO) << __func__
                        << ": Trying to pair to device that is already paired; "
                           "returning success.";
           std::move(paired_callback_).Run(device_);
+          // In addition to recording kPairingSuccess in the callback above,
+          // also record that the device was already paired.
+          AttemptRecordingFastPairEngagementFlow(
+              *device_,
+              FastPairEngagementFlowEvent::kPairingSucceededAlreadyPaired);
           AttemptSendAccountKey();
           return;
         }
