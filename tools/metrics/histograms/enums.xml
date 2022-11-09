@@ -44206,6 +44206,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="17" label="Manage Plugin VM sharing menu"/>
   <int value="18" label="Manage Plugin VM sharing toast"/>
   <int value="19" label="Manage Plugin VM sharing toast startup"/>
+  <int value="20" label="Pin to holding space"/>
+  <int value="21" label="Unpin from holding space"/>
 </enum>
 
 <enum name="FileManagerNotificationType">

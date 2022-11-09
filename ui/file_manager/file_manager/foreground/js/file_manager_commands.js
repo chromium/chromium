@@ -588,6 +588,8 @@ CommandHandler.MenuCommandsForUMA = {
   MANAGE_PLUGIN_VM_SHARING_TOAST: 'manage-plugin-vm-sharing-toast',
   MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP:
       'manage-plugin-vm-sharing-toast-startup',
+  PIN_TO_HOLDING_SPACE: 'pin-to-holding-space',
+  UNPIN_FROM_HOLDING_SPACE: 'unpin-from-holding-space',
 };
 
 /**
@@ -619,6 +621,8 @@ CommandHandler.ValidMenuCommandsForUMA = [
   CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING,
   CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING_TOAST,
   CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP,
+  CommandHandler.MenuCommandsForUMA.PIN_TO_HOLDING_SPACE,
+  CommandHandler.MenuCommandsForUMA.UNPIN_FROM_HOLDING_SPACE,
 ];
 console.assert(
     Object.keys(CommandHandler.MenuCommandsForUMA).length ===
@@ -1946,6 +1950,11 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
         if (this.addsItems_) {
           HoldingSpaceUtil.maybeStoreTimeOfFirstPin();
         }
+
+        CommandHandler.recordMenuItemSelected(
+            this.addsItems_ ?
+                CommandHandler.MenuCommandsForUMA.PIN_TO_HOLDING_SPACE :
+                CommandHandler.MenuCommandsForUMA.UNPIN_FROM_HOLDING_SPACE);
       }
 
       /** @override */

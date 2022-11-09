@@ -6,12 +6,29 @@ import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTru
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {metrics} from '../../common/js/metrics.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
 import {CommandHandler} from './file_manager_commands.js';
+
+/**
+ * Mock metrics.recordEnum.
+ * @param {string} name
+ * @param {*} value
+ * @param {Array<*>|number=} opt_validValues
+ */
+metrics.recordEnum = function(name, value, opt_validValues) {
+  if (!Array.isArray(metrics.recordEnumCalls[name])) {
+    metrics.recordEnumCalls[name] = [];
+  }
+  metrics.recordEnumCalls[name].push(value);
+};
+
+metrics.recordEnumCalls = {};
 
 /**
  * Checks that the `toggle-holding-space` command is appropriately enabled/
@@ -28,10 +45,11 @@ export async function testToggleHoldingSpaceCommand(done) {
    * Mock chrome APIs.
    * @type {!Object}
    */
+  let itemUrls = [];
   const mockChrome = {
     fileManagerPrivate: {
       getHoldingSpaceState: (callback) => {
-        callback({itemUrls: []});
+        callback({itemUrls});
         getHoldingSpaceStateCalled = true;
       },
     },
@@ -72,10 +90,12 @@ export async function testToggleHoldingSpaceCommand(done) {
       currentVolumeInfo: {
         volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
       },
+      itemUrls: [],
       selection: [],
       expect: {
         canExecute: false,
         hidden: true,
+        isAdd: false,
       },
     },
     {
@@ -84,11 +104,13 @@ export async function testToggleHoldingSpaceCommand(done) {
       currentVolumeInfo: {
         volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
       },
+      itemUrls: [],
       selection: [downloadFileEntry],
       expect: {
         canExecute: true,
         hidden: false,
         entries: [downloadFileEntry],
+        isAdd: true,
       },
     },
     {
@@ -98,11 +120,29 @@ export async function testToggleHoldingSpaceCommand(done) {
       currentVolumeInfo: {
         volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
       },
+      itemUrls: [],
       selection: [folderEntry],
       expect: {
         canExecute: true,
         hidden: false,
         entries: [folderEntry],
+        isAdd: true,
+      },
+    },
+    {
+      description:
+          'Tests pinned selection from supported volume in `Downloads`',
+      currentRootType: VolumeManagerCommon.RootType.DOWNLOADS,
+      currentVolumeInfo: {
+        volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+      },
+      itemUrls: util.entriesToURLs([downloadFileEntry]),
+      selection: [downloadFileEntry],
+      expect: {
+        canExecute: true,
+        hidden: false,
+        entries: [downloadFileEntry],
+        isAdd: false,
       },
     },
     {
@@ -110,31 +150,37 @@ export async function testToggleHoldingSpaceCommand(done) {
       currentRootType: VolumeManagerCommon.RootType.RECENT,
       currentVolumeInfo: null,
       selection: [downloadFileEntry],
+      itemUrls: [],
       expect: {
         canExecute: true,
         hidden: false,
         entries: [downloadFileEntry],
+        isAdd: true,
       },
     },
     {
       description: 'Test selection from unsupported volume in `Recent`',
       currentRootType: VolumeManagerCommon.RootType.RECENT,
       currentVolumeInfo: null,
+      itemUrls: [],
       selection: [removableFileEntry],
       expect: {
         canExecute: false,
         hidden: true,
+        isAdd: false,
       },
     },
     {
       description: 'Test selection from mix of volumes in `Recent`',
       currentRootType: VolumeManagerCommon.RootType.RECENT,
       currentVolumeInfo: null,
+      itemUrls: [],
       selection: [audioFileEntry, removableFileEntry, downloadFileEntry],
       expect: {
         canExecute: true,
         hidden: false,
         entries: [audioFileEntry, downloadFileEntry],
+        isAdd: true,
       },
     },
   ];
@@ -166,6 +212,9 @@ export async function testToggleHoldingSpaceCommand(done) {
       volumeManager: volumeManager,
     };
 
+    // Mock `chrome.fileManagerPrivate.getHoldingSpaceState()` response.
+    itemUrls = testCase.itemUrls;
+
     // Verify `command.canExecute()` results in expected `event` state.
     getHoldingSpaceStateCalled = false;
     command.canExecute(event, fileManager);
@@ -187,12 +236,21 @@ export async function testToggleHoldingSpaceCommand(done) {
     chrome.fileManagerPrivate.toggleAddedToHoldingSpace = (entries, isAdd) => {
       didInteractWithMockPrivateApi = true;
       assertArrayEquals(entries, testCase.expect.entries);
-      assertTrue(isAdd);
+      assertEquals(isAdd, testCase.expect.isAdd);
     };
+
+    // Reset cache of metrics recorded.
+    metrics.recordEnumCalls['MenuItemSelected'] = [];
 
     // Verify `command.execute()` results in expected mock API interactions.
     command.execute(event, fileManager);
     assertTrue(didInteractWithMockPrivateApi);
+
+    // Verify metrics recorded.
+    assertArrayEquals(
+        metrics.recordEnumCalls['MenuItemSelected'],
+        [testCase.expect.isAdd ? 'pin-to-holding-space' :
+                                 'unpin-from-holding-space']);
   }
 
   done();
