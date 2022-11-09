@@ -6,6 +6,10 @@ assert(is_mac)
 
 import("//testing/test.gni")
 
+source_set("metal_util_types") {
+  sources = [ "types.h" ]
+}
+
 component("metal_util") {
   output_name = "metal"
 
@@ -21,8 +25,9 @@ component("metal_util") {
     "metal_util_export.h",
     "test_shader.h",
     "test_shader.mm",
-    "types.h",
   ]
+
+  public_deps = [ ":metal_util_types" ]
 
   deps = [
     "//base",

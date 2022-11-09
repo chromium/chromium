@@ -35,6 +35,8 @@ class GL_EXPORT ScopedEGLSurfaceIOSurface {
   bool BindTexImage();
   void ReleaseTexImage();
 
+  EGLDisplay GetDisplay() { return display_; }
+
  private:
   explicit ScopedEGLSurfaceIOSurface(EGLDisplay display);
   bool ValidateTarget(unsigned target) const;

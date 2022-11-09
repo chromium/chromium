@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/base",
+  "+components/metal_util/types.h",
   "+components/viz/common/resources/resource_format.h",
   "+mojo/public/cpp/bindings",
   "+third_party/khronos",

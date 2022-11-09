@@ -18,6 +18,10 @@
 #include "ui/gl/gpu_switching_manager.h"
 #endif  // defined(USE_EGL)
 
+#if BUILDFLAG(IS_MAC)
+#include "components/metal_util/types.h"
+#endif
+
 namespace base {
 class CommandLine;
 }  // namespace base
@@ -140,6 +144,20 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   std::unique_ptr<DisplayExtensionsEGL> ext;
 
+#if BUILDFLAG(IS_MAC)
+  bool IsANGLEMetalSharedEventSyncSupported();
+  bool CreateMetalSharedEvent(metal::MTLSharedEventPtr* shared_event_out,
+                              uint64_t* signal_value_out);
+  void WaitForMetalSharedEvent(metal::MTLSharedEventPtr shared_event,
+                               uint64_t signal_value);
+
+  // Call periodically to clean up resources.
+  void CleanupTempEGLSyncObjects();
+
+  // Call once upon shutdown of the display.
+  void CleanupMetalSharedEvent();
+#endif
+
  private:
   friend class GLDisplayManager<GLDisplayEGL>;
   friend class EGLApiTest;
@@ -168,6 +186,11 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   bool egl_android_native_fence_sync_supported_ = false;
 
   std::unique_ptr<EGLGpuSwitchingObserver> gpu_switching_observer_;
+
+#if BUILDFLAG(IS_MAC)
+  metal::MTLSharedEventPtr metal_shared_event_ = nullptr;
+  uint64_t metal_signaled_value_ = 0;
+#endif
 };
 #endif  // defined(USE_EGL)
 

@@ -25,6 +25,10 @@
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/trace_util.h"
 
+#include <EGL/egl.h>
+
+#import <Metal/Metal.h>
+
 namespace gpu {
 
 namespace {
@@ -266,6 +270,28 @@ bool OverlayIOSurfaceRepresentation::IsInUseByWindowServer() const {
       static_cast<gl::GLImageIOSurface*>(gl_image_.get())->io_surface());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// SharedEventAndSignalValue
+
+SharedEventAndSignalValue::SharedEventAndSignalValue(id shared_event,
+                                                     uint64_t signaled_value)
+    : shared_event_(shared_event), signaled_value_(signaled_value) {
+  if (@available(macOS 10.14, *)) {
+    if (shared_event_) {
+      [static_cast<id<MTLSharedEvent>>(shared_event_) retain];
+    }
+  }
+}
+
+SharedEventAndSignalValue::~SharedEventAndSignalValue() {
+  if (@available(macOS 10.14, *)) {
+    if (shared_event_) {
+      [static_cast<id<MTLSharedEvent>>(shared_event_) release];
+    }
+  }
+  shared_event_ = nil;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IOSurfaceImageBacking
 
@@ -377,6 +403,18 @@ std::unique_ptr<gfx::GpuFence> IOSurfaceImageBacking::GetLastWriteGpuFence() {
 
 void IOSurfaceImageBacking::SetReleaseFence(gfx::GpuFenceHandle release_fence) {
   release_fence_ = std::move(release_fence);
+}
+
+void IOSurfaceImageBacking::AddSharedEventAndSignalValue(
+    id shared_event,
+    uint64_t signal_value) {
+  shared_events_and_signal_values_.push_back(
+      std::make_unique<SharedEventAndSignalValue>(shared_event, signal_value));
+}
+
+std::vector<std::unique_ptr<SharedEventAndSignalValue>>
+IOSurfaceImageBacking::TakeSharedEvents() {
+  return std::move(shared_events_and_signal_values_);
 }
 
 void IOSurfaceImageBacking::OnMemoryDump(
@@ -551,6 +589,24 @@ bool IOSurfaceImageBacking::GLTextureImageRepresentationBeginAccess(
   if (!gl_texture_->is_bind_pending())
     return true;
 
+  if (usage() & SHARED_IMAGE_USAGE_WEBGPU &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    // If this image could potentially be shared with WebGPU's Metal
+    // device, it's necessary to synchronize between the two devices.
+    // If any Metal shared events have been enqueued (the assumption
+    // is that this was done by the Dawn representation), wait on
+    // them.
+    gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
+    if (display && display->IsANGLEMetalSharedEventSyncSupported()) {
+      std::vector<std::unique_ptr<SharedEventAndSignalValue>> signals =
+          TakeSharedEvents();
+      for (const auto& signal : signals) {
+        display->WaitForMetalSharedEvent(signal->shared_event(),
+                                         signal->signaled_value());
+      }
+    }
+  }
+
   // Create the EGL surface to bind to the GL texture, if it doesn't exist
   // already.
   if (!egl_surface_) {
@@ -642,6 +698,24 @@ void IOSurfaceImageBacking::GLTextureImageRepresentationEndAccess(
 
   bool needs_synchronization = needs_sync_for_swangle || needs_sync_for_metal;
   if (needs_synchronization) {
+    if (needs_sync_for_metal) {
+      if (@available(macOS 10.14, *)) {
+        if (egl_surface_) {
+          gl::GLDisplayEGL* display =
+              gl::GLDisplayEGL::GetDisplayForCurrentContext();
+          if (display) {
+            metal::MTLSharedEventPtr shared_event = nullptr;
+            uint64_t signal_value = 0;
+            if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
+              AddSharedEventAndSignalValue(shared_event, signal_value);
+            } else {
+              LOG(DFATAL) << "Failed to create Metal shared event";
+            }
+          }
+        }
+      }
+    }
+
     if (!gl_texture_->is_bind_pending()) {
       if (egl_surface_) {
         ScopedRestoreTexture scoped_restore(gl::g_current_gl_context,

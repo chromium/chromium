@@ -137,6 +137,27 @@ class MemoryIOSurfaceRepresentation : public MemoryImageRepresentation {
   scoped_refptr<gl::GLImageMemory> image_memory_;
 };
 
+// This class is only put into unique_ptrs and is never copied or assigned.
+class SharedEventAndSignalValue {
+ public:
+  SharedEventAndSignalValue(id shared_event, uint64_t signaled_value);
+  ~SharedEventAndSignalValue();
+  SharedEventAndSignalValue(const SharedEventAndSignalValue& other) = delete;
+  SharedEventAndSignalValue(SharedEventAndSignalValue&& other) = delete;
+  SharedEventAndSignalValue& operator=(const SharedEventAndSignalValue& other) =
+      delete;
+
+  // Return value is actually id<MTLSharedEvent>.
+  id shared_event() const { return shared_event_; }
+
+  // This is the value which will be signaled on the associated MTLSharedEvent.
+  uint64_t signaled_value() const { return signaled_value_; }
+
+ private:
+  id shared_event_;
+  uint64_t signaled_value_;
+};
+
 // Implementation of SharedImageBacking that creates a GL Texture that is backed
 // by a GLImage and stores it as a gles2::Texture. Can be used with the legacy
 // mailbox implementation.
@@ -164,6 +185,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   GLuint GetGLServiceId() const;
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);
+
+  void AddSharedEventAndSignalValue(id sharedEvent, uint64_t signalValue);
+  std::vector<std::unique_ptr<SharedEventAndSignalValue>> TakeSharedEvents();
 
  private:
   // SharedImageBacking:
@@ -233,6 +257,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // If this backing was displayed as an overlay, this fence may be set.
   // Wait on this fence before allowing another access.
   gfx::GpuFenceHandle release_fence_;
+
+  std::vector<std::unique_ptr<SharedEventAndSignalValue>>
+      shared_events_and_signal_values_;
 
   base::WeakPtrFactory<IOSurfaceImageBacking> weak_factory_;
 };

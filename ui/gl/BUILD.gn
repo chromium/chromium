@@ -399,6 +399,7 @@ component("gl") {
       "egl_surface_io_surface.h",
       "gl_context_cgl.cc",
       "gl_context_cgl.h",
+      "gl_display_egl.mm",
       "gl_fence_apple.cc",
       "gl_fence_apple.h",
       "gl_image_io_surface.h",
@@ -426,6 +427,8 @@ component("gl") {
         "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
       ]
     }
+
+    deps += [ "//components/metal_util:metal_util_types" ]
   }
   if (is_android) {
     defines += [

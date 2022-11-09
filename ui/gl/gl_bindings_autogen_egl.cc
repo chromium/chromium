@@ -34,12 +34,19 @@ void DriverEGL::InitializeStaticBindings() {
       GetGLProcAddress("eglBindTexImage"));
   fn.eglChooseConfigFn = reinterpret_cast<eglChooseConfigProc>(
       GetGLProcAddress("eglChooseConfig"));
+  fn.eglClientWaitSyncFn = reinterpret_cast<eglClientWaitSyncProc>(
+      GetGLProcAddress("eglClientWaitSync"));
   fn.eglClientWaitSyncKHRFn = reinterpret_cast<eglClientWaitSyncKHRProc>(
       GetGLProcAddress("eglClientWaitSyncKHR"));
   fn.eglCopyBuffersFn =
       reinterpret_cast<eglCopyBuffersProc>(GetGLProcAddress("eglCopyBuffers"));
+  fn.eglCopyMetalSharedEventANGLEFn =
+      reinterpret_cast<eglCopyMetalSharedEventANGLEProc>(
+          GetGLProcAddress("eglCopyMetalSharedEventANGLE"));
   fn.eglCreateContextFn = reinterpret_cast<eglCreateContextProc>(
       GetGLProcAddress("eglCreateContext"));
+  fn.eglCreateImageFn =
+      reinterpret_cast<eglCreateImageProc>(GetGLProcAddress("eglCreateImage"));
   fn.eglCreateImageKHRFn = reinterpret_cast<eglCreateImageKHRProc>(
       GetGLProcAddress("eglCreateImageKHR"));
   fn.eglCreatePbufferFromClientBufferFn =
@@ -49,11 +56,19 @@ void DriverEGL::InitializeStaticBindings() {
       GetGLProcAddress("eglCreatePbufferSurface"));
   fn.eglCreatePixmapSurfaceFn = reinterpret_cast<eglCreatePixmapSurfaceProc>(
       GetGLProcAddress("eglCreatePixmapSurface"));
+  fn.eglCreatePlatformPixmapSurfaceFn =
+      reinterpret_cast<eglCreatePlatformPixmapSurfaceProc>(
+          GetGLProcAddress("eglCreatePlatformPixmapSurface"));
+  fn.eglCreatePlatformWindowSurfaceFn =
+      reinterpret_cast<eglCreatePlatformWindowSurfaceProc>(
+          GetGLProcAddress("eglCreatePlatformWindowSurface"));
   fn.eglCreateStreamKHRFn = reinterpret_cast<eglCreateStreamKHRProc>(
       GetGLProcAddress("eglCreateStreamKHR"));
   fn.eglCreateStreamProducerD3DTextureANGLEFn =
       reinterpret_cast<eglCreateStreamProducerD3DTextureANGLEProc>(
           GetGLProcAddress("eglCreateStreamProducerD3DTextureANGLE"));
+  fn.eglCreateSyncFn =
+      reinterpret_cast<eglCreateSyncProc>(GetGLProcAddress("eglCreateSync"));
   fn.eglCreateSyncKHRFn = reinterpret_cast<eglCreateSyncKHRProc>(
       GetGLProcAddress("eglCreateSyncKHR"));
   fn.eglCreateWindowSurfaceFn = reinterpret_cast<eglCreateWindowSurfaceProc>(
@@ -63,12 +78,16 @@ void DriverEGL::InitializeStaticBindings() {
           GetGLProcAddress("eglDebugMessageControlKHR"));
   fn.eglDestroyContextFn = reinterpret_cast<eglDestroyContextProc>(
       GetGLProcAddress("eglDestroyContext"));
+  fn.eglDestroyImageFn = reinterpret_cast<eglDestroyImageProc>(
+      GetGLProcAddress("eglDestroyImage"));
   fn.eglDestroyImageKHRFn = reinterpret_cast<eglDestroyImageKHRProc>(
       GetGLProcAddress("eglDestroyImageKHR"));
   fn.eglDestroyStreamKHRFn = reinterpret_cast<eglDestroyStreamKHRProc>(
       GetGLProcAddress("eglDestroyStreamKHR"));
   fn.eglDestroySurfaceFn = reinterpret_cast<eglDestroySurfaceProc>(
       GetGLProcAddress("eglDestroySurface"));
+  fn.eglDestroySyncFn =
+      reinterpret_cast<eglDestroySyncProc>(GetGLProcAddress("eglDestroySync"));
   fn.eglDestroySyncKHRFn = reinterpret_cast<eglDestroySyncKHRProc>(
       GetGLProcAddress("eglDestroySyncKHR"));
   fn.eglDupNativeFenceFDANDROIDFn =
@@ -120,6 +139,8 @@ void DriverEGL::InitializeStaticBindings() {
       GetGLProcAddress("eglGetPlatformDisplay"));
   fn.eglGetProcAddressFn = reinterpret_cast<eglGetProcAddressProc>(
       GetGLProcAddress("eglGetProcAddress"));
+  fn.eglGetSyncAttribFn = reinterpret_cast<eglGetSyncAttribProc>(
+      GetGLProcAddress("eglGetSyncAttrib"));
   fn.eglGetSyncAttribKHRFn = reinterpret_cast<eglGetSyncAttribKHRProc>(
       GetGLProcAddress("eglGetSyncAttribKHR"));
   fn.eglGetSyncValuesCHROMIUMFn =
@@ -222,6 +243,8 @@ void DriverEGL::InitializeStaticBindings() {
       reinterpret_cast<eglWaitGLProc>(GetGLProcAddress("eglWaitGL"));
   fn.eglWaitNativeFn =
       reinterpret_cast<eglWaitNativeProc>(GetGLProcAddress("eglWaitNative"));
+  fn.eglWaitSyncFn =
+      reinterpret_cast<eglWaitSyncProc>(GetGLProcAddress("eglWaitSync"));
   fn.eglWaitSyncKHRFn =
       reinterpret_cast<eglWaitSyncKHRProc>(GetGLProcAddress("eglWaitSyncKHR"));
 }
@@ -302,6 +325,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
       gfx::HasExtension(extensions, "EGL_ANGLE_iosurface_client_buffer");
   b_EGL_ANGLE_keyed_mutex =
       gfx::HasExtension(extensions, "EGL_ANGLE_keyed_mutex");
+  b_EGL_ANGLE_metal_shared_event_sync =
+      gfx::HasExtension(extensions, "EGL_ANGLE_metal_shared_event_sync");
   b_EGL_ANGLE_power_preference =
       gfx::HasExtension(extensions, "EGL_ANGLE_power_preference");
   b_EGL_ANGLE_query_surface_pointer =
@@ -400,6 +425,13 @@ EGLBoolean EGLApiBase::eglChooseConfigFn(EGLDisplay dpy,
                                        num_config);
 }
 
+EGLint EGLApiBase::eglClientWaitSyncFn(EGLDisplay dpy,
+                                       EGLSync sync,
+                                       EGLint flags,
+                                       EGLTime timeout) {
+  return driver_->fn.eglClientWaitSyncFn(dpy, sync, flags, timeout);
+}
+
 EGLint EGLApiBase::eglClientWaitSyncKHRFn(EGLDisplay dpy,
                                           EGLSyncKHR sync,
                                           EGLint flags,
@@ -413,12 +445,24 @@ EGLBoolean EGLApiBase::eglCopyBuffersFn(EGLDisplay dpy,
   return driver_->fn.eglCopyBuffersFn(dpy, surface, target);
 }
 
+void* EGLApiBase::eglCopyMetalSharedEventANGLEFn(EGLDisplay dpy, EGLSync sync) {
+  return driver_->fn.eglCopyMetalSharedEventANGLEFn(dpy, sync);
+}
+
 EGLContext EGLApiBase::eglCreateContextFn(EGLDisplay dpy,
                                           EGLConfig config,
                                           EGLContext share_context,
                                           const EGLint* attrib_list) {
   return driver_->fn.eglCreateContextFn(dpy, config, share_context,
                                         attrib_list);
+}
+
+EGLImage EGLApiBase::eglCreateImageFn(EGLDisplay dpy,
+                                      EGLContext ctx,
+                                      EGLenum target,
+                                      EGLClientBuffer buffer,
+                                      const EGLAttrib* attrib_list) {
+  return driver_->fn.eglCreateImageFn(dpy, ctx, target, buffer, attrib_list);
 }
 
 EGLImageKHR EGLApiBase::eglCreateImageKHRFn(EGLDisplay dpy,
@@ -452,6 +496,24 @@ EGLSurface EGLApiBase::eglCreatePixmapSurfaceFn(EGLDisplay dpy,
   return driver_->fn.eglCreatePixmapSurfaceFn(dpy, config, pixmap, attrib_list);
 }
 
+EGLSurface EGLApiBase::eglCreatePlatformPixmapSurfaceFn(
+    EGLDisplay dpy,
+    EGLConfig config,
+    void* native_pixmap,
+    const EGLAttrib* attrib_list) {
+  return driver_->fn.eglCreatePlatformPixmapSurfaceFn(
+      dpy, config, native_pixmap, attrib_list);
+}
+
+EGLSurface EGLApiBase::eglCreatePlatformWindowSurfaceFn(
+    EGLDisplay dpy,
+    EGLConfig config,
+    void* native_window,
+    const EGLAttrib* attrib_list) {
+  return driver_->fn.eglCreatePlatformWindowSurfaceFn(
+      dpy, config, native_window, attrib_list);
+}
+
 EGLStreamKHR EGLApiBase::eglCreateStreamKHRFn(EGLDisplay dpy,
                                               const EGLint* attrib_list) {
   return driver_->fn.eglCreateStreamKHRFn(dpy, attrib_list);
@@ -463,6 +525,12 @@ EGLBoolean EGLApiBase::eglCreateStreamProducerD3DTextureANGLEFn(
     EGLAttrib* attrib_list) {
   return driver_->fn.eglCreateStreamProducerD3DTextureANGLEFn(dpy, stream,
                                                               attrib_list);
+}
+
+EGLSync EGLApiBase::eglCreateSyncFn(EGLDisplay dpy,
+                                    EGLenum type,
+                                    const EGLAttrib* attrib_list) {
+  return driver_->fn.eglCreateSyncFn(dpy, type, attrib_list);
 }
 
 EGLSyncKHR EGLApiBase::eglCreateSyncKHRFn(EGLDisplay dpy,
@@ -487,6 +555,10 @@ EGLBoolean EGLApiBase::eglDestroyContextFn(EGLDisplay dpy, EGLContext ctx) {
   return driver_->fn.eglDestroyContextFn(dpy, ctx);
 }
 
+EGLBoolean EGLApiBase::eglDestroyImageFn(EGLDisplay dpy, EGLImage image) {
+  return driver_->fn.eglDestroyImageFn(dpy, image);
+}
+
 EGLBoolean EGLApiBase::eglDestroyImageKHRFn(EGLDisplay dpy, EGLImageKHR image) {
   return driver_->fn.eglDestroyImageKHRFn(dpy, image);
 }
@@ -498,6 +570,10 @@ EGLBoolean EGLApiBase::eglDestroyStreamKHRFn(EGLDisplay dpy,
 
 EGLBoolean EGLApiBase::eglDestroySurfaceFn(EGLDisplay dpy, EGLSurface surface) {
   return driver_->fn.eglDestroySurfaceFn(dpy, surface);
+}
+
+EGLBoolean EGLApiBase::eglDestroySyncFn(EGLDisplay dpy, EGLSync sync) {
+  return driver_->fn.eglDestroySyncFn(dpy, sync);
 }
 
 EGLBoolean EGLApiBase::eglDestroySyncKHRFn(EGLDisplay dpy, EGLSyncKHR sync) {
@@ -634,6 +710,13 @@ EGLDisplay EGLApiBase::eglGetPlatformDisplayFn(EGLenum platform,
 __eglMustCastToProperFunctionPointerType EGLApiBase::eglGetProcAddressFn(
     const char* procname) {
   return driver_->fn.eglGetProcAddressFn(procname);
+}
+
+EGLBoolean EGLApiBase::eglGetSyncAttribFn(EGLDisplay dpy,
+                                          EGLSync sync,
+                                          EGLint attribute,
+                                          EGLAttrib* value) {
+  return driver_->fn.eglGetSyncAttribFn(dpy, sync, attribute, value);
 }
 
 EGLBoolean EGLApiBase::eglGetSyncAttribKHRFn(EGLDisplay dpy,
@@ -896,6 +979,10 @@ EGLBoolean EGLApiBase::eglWaitNativeFn(EGLint engine) {
   return driver_->fn.eglWaitNativeFn(engine);
 }
 
+EGLint EGLApiBase::eglWaitSyncFn(EGLDisplay dpy, EGLSync sync, EGLint flags) {
+  return driver_->fn.eglWaitSyncFn(dpy, sync, flags);
+}
+
 EGLint EGLApiBase::eglWaitSyncKHRFn(EGLDisplay dpy,
                                     EGLSyncKHR sync,
                                     EGLint flags) {
@@ -924,6 +1011,14 @@ EGLBoolean TraceEGLApi::eglChooseConfigFn(EGLDisplay dpy,
                                      num_config);
 }
 
+EGLint TraceEGLApi::eglClientWaitSyncFn(EGLDisplay dpy,
+                                        EGLSync sync,
+                                        EGLint flags,
+                                        EGLTime timeout) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglClientWaitSync");
+  return egl_api_->eglClientWaitSyncFn(dpy, sync, flags, timeout);
+}
+
 EGLint TraceEGLApi::eglClientWaitSyncKHRFn(EGLDisplay dpy,
                                            EGLSyncKHR sync,
                                            EGLint flags,
@@ -939,12 +1034,28 @@ EGLBoolean TraceEGLApi::eglCopyBuffersFn(EGLDisplay dpy,
   return egl_api_->eglCopyBuffersFn(dpy, surface, target);
 }
 
+void* TraceEGLApi::eglCopyMetalSharedEventANGLEFn(EGLDisplay dpy,
+                                                  EGLSync sync) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglCopyMetalSharedEventANGLE");
+  return egl_api_->eglCopyMetalSharedEventANGLEFn(dpy, sync);
+}
+
 EGLContext TraceEGLApi::eglCreateContextFn(EGLDisplay dpy,
                                            EGLConfig config,
                                            EGLContext share_context,
                                            const EGLint* attrib_list) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglCreateContext");
   return egl_api_->eglCreateContextFn(dpy, config, share_context, attrib_list);
+}
+
+EGLImage TraceEGLApi::eglCreateImageFn(EGLDisplay dpy,
+                                       EGLContext ctx,
+                                       EGLenum target,
+                                       EGLClientBuffer buffer,
+                                       const EGLAttrib* attrib_list) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglCreateImage");
+  return egl_api_->eglCreateImageFn(dpy, ctx, target, buffer, attrib_list);
 }
 
 EGLImageKHR TraceEGLApi::eglCreateImageKHRFn(EGLDisplay dpy,
@@ -983,6 +1094,28 @@ EGLSurface TraceEGLApi::eglCreatePixmapSurfaceFn(EGLDisplay dpy,
   return egl_api_->eglCreatePixmapSurfaceFn(dpy, config, pixmap, attrib_list);
 }
 
+EGLSurface TraceEGLApi::eglCreatePlatformPixmapSurfaceFn(
+    EGLDisplay dpy,
+    EGLConfig config,
+    void* native_pixmap,
+    const EGLAttrib* attrib_list) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglCreatePlatformPixmapSurface");
+  return egl_api_->eglCreatePlatformPixmapSurfaceFn(dpy, config, native_pixmap,
+                                                    attrib_list);
+}
+
+EGLSurface TraceEGLApi::eglCreatePlatformWindowSurfaceFn(
+    EGLDisplay dpy,
+    EGLConfig config,
+    void* native_window,
+    const EGLAttrib* attrib_list) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglCreatePlatformWindowSurface");
+  return egl_api_->eglCreatePlatformWindowSurfaceFn(dpy, config, native_window,
+                                                    attrib_list);
+}
+
 EGLStreamKHR TraceEGLApi::eglCreateStreamKHRFn(EGLDisplay dpy,
                                                const EGLint* attrib_list) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglCreateStreamKHR");
@@ -997,6 +1130,13 @@ EGLBoolean TraceEGLApi::eglCreateStreamProducerD3DTextureANGLEFn(
       "gpu", "TraceEGLAPI::eglCreateStreamProducerD3DTextureANGLE");
   return egl_api_->eglCreateStreamProducerD3DTextureANGLEFn(dpy, stream,
                                                             attrib_list);
+}
+
+EGLSync TraceEGLApi::eglCreateSyncFn(EGLDisplay dpy,
+                                     EGLenum type,
+                                     const EGLAttrib* attrib_list) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglCreateSync");
+  return egl_api_->eglCreateSyncFn(dpy, type, attrib_list);
 }
 
 EGLSyncKHR TraceEGLApi::eglCreateSyncKHRFn(EGLDisplay dpy,
@@ -1026,6 +1166,11 @@ EGLBoolean TraceEGLApi::eglDestroyContextFn(EGLDisplay dpy, EGLContext ctx) {
   return egl_api_->eglDestroyContextFn(dpy, ctx);
 }
 
+EGLBoolean TraceEGLApi::eglDestroyImageFn(EGLDisplay dpy, EGLImage image) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglDestroyImage");
+  return egl_api_->eglDestroyImageFn(dpy, image);
+}
+
 EGLBoolean TraceEGLApi::eglDestroyImageKHRFn(EGLDisplay dpy,
                                              EGLImageKHR image) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglDestroyImageKHR");
@@ -1042,6 +1187,11 @@ EGLBoolean TraceEGLApi::eglDestroySurfaceFn(EGLDisplay dpy,
                                             EGLSurface surface) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglDestroySurface");
   return egl_api_->eglDestroySurfaceFn(dpy, surface);
+}
+
+EGLBoolean TraceEGLApi::eglDestroySyncFn(EGLDisplay dpy, EGLSync sync) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglDestroySync");
+  return egl_api_->eglDestroySyncFn(dpy, sync);
 }
 
 EGLBoolean TraceEGLApi::eglDestroySyncKHRFn(EGLDisplay dpy, EGLSyncKHR sync) {
@@ -1207,6 +1357,14 @@ __eglMustCastToProperFunctionPointerType TraceEGLApi::eglGetProcAddressFn(
     const char* procname) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglGetProcAddress");
   return egl_api_->eglGetProcAddressFn(procname);
+}
+
+EGLBoolean TraceEGLApi::eglGetSyncAttribFn(EGLDisplay dpy,
+                                           EGLSync sync,
+                                           EGLint attribute,
+                                           EGLAttrib* value) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglGetSyncAttrib");
+  return egl_api_->eglGetSyncAttribFn(dpy, sync, attribute, value);
 }
 
 EGLBoolean TraceEGLApi::eglGetSyncAttribKHRFn(EGLDisplay dpy,
@@ -1524,6 +1682,11 @@ EGLBoolean TraceEGLApi::eglWaitNativeFn(EGLint engine) {
   return egl_api_->eglWaitNativeFn(engine);
 }
 
+EGLint TraceEGLApi::eglWaitSyncFn(EGLDisplay dpy, EGLSync sync, EGLint flags) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglWaitSync");
+  return egl_api_->eglWaitSyncFn(dpy, sync, flags);
+}
+
 EGLint TraceEGLApi::eglWaitSyncKHRFn(EGLDisplay dpy,
                                      EGLSyncKHR sync,
                                      EGLint flags) {
@@ -1565,6 +1728,18 @@ EGLBoolean LogEGLApi::eglChooseConfigFn(EGLDisplay dpy,
   return result;
 }
 
+EGLint LogEGLApi::eglClientWaitSyncFn(EGLDisplay dpy,
+                                      EGLSync sync,
+                                      EGLint flags,
+                                      EGLTime timeout) {
+  GL_SERVICE_LOG("eglClientWaitSync"
+                 << "(" << dpy << ", " << sync << ", " << flags << ", "
+                 << timeout << ")");
+  EGLint result = egl_api_->eglClientWaitSyncFn(dpy, sync, flags, timeout);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
 EGLint LogEGLApi::eglClientWaitSyncKHRFn(EGLDisplay dpy,
                                          EGLSyncKHR sync,
                                          EGLint flags,
@@ -1587,6 +1762,14 @@ EGLBoolean LogEGLApi::eglCopyBuffersFn(EGLDisplay dpy,
   return result;
 }
 
+void* LogEGLApi::eglCopyMetalSharedEventANGLEFn(EGLDisplay dpy, EGLSync sync) {
+  GL_SERVICE_LOG("eglCopyMetalSharedEventANGLE"
+                 << "(" << dpy << ", " << sync << ")");
+  void* result = egl_api_->eglCopyMetalSharedEventANGLEFn(dpy, sync);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
 EGLContext LogEGLApi::eglCreateContextFn(EGLDisplay dpy,
                                          EGLConfig config,
                                          EGLContext share_context,
@@ -1596,6 +1779,21 @@ EGLContext LogEGLApi::eglCreateContextFn(EGLDisplay dpy,
                  << ", " << static_cast<const void*>(attrib_list) << ")");
   EGLContext result =
       egl_api_->eglCreateContextFn(dpy, config, share_context, attrib_list);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
+EGLImage LogEGLApi::eglCreateImageFn(EGLDisplay dpy,
+                                     EGLContext ctx,
+                                     EGLenum target,
+                                     EGLClientBuffer buffer,
+                                     const EGLAttrib* attrib_list) {
+  GL_SERVICE_LOG("eglCreateImage"
+                 << "(" << dpy << ", " << ctx << ", " << target << ", "
+                 << buffer << ", " << static_cast<const void*>(attrib_list)
+                 << ")");
+  EGLImage result =
+      egl_api_->eglCreateImageFn(dpy, ctx, target, buffer, attrib_list);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }
@@ -1656,6 +1854,36 @@ EGLSurface LogEGLApi::eglCreatePixmapSurfaceFn(EGLDisplay dpy,
   return result;
 }
 
+EGLSurface LogEGLApi::eglCreatePlatformPixmapSurfaceFn(
+    EGLDisplay dpy,
+    EGLConfig config,
+    void* native_pixmap,
+    const EGLAttrib* attrib_list) {
+  GL_SERVICE_LOG("eglCreatePlatformPixmapSurface"
+                 << "(" << dpy << ", " << config << ", "
+                 << static_cast<const void*>(native_pixmap) << ", "
+                 << static_cast<const void*>(attrib_list) << ")");
+  EGLSurface result = egl_api_->eglCreatePlatformPixmapSurfaceFn(
+      dpy, config, native_pixmap, attrib_list);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
+EGLSurface LogEGLApi::eglCreatePlatformWindowSurfaceFn(
+    EGLDisplay dpy,
+    EGLConfig config,
+    void* native_window,
+    const EGLAttrib* attrib_list) {
+  GL_SERVICE_LOG("eglCreatePlatformWindowSurface"
+                 << "(" << dpy << ", " << config << ", "
+                 << static_cast<const void*>(native_window) << ", "
+                 << static_cast<const void*>(attrib_list) << ")");
+  EGLSurface result = egl_api_->eglCreatePlatformWindowSurfaceFn(
+      dpy, config, native_window, attrib_list);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
 EGLStreamKHR LogEGLApi::eglCreateStreamKHRFn(EGLDisplay dpy,
                                              const EGLint* attrib_list) {
   GL_SERVICE_LOG("eglCreateStreamKHR"
@@ -1675,6 +1903,17 @@ EGLBoolean LogEGLApi::eglCreateStreamProducerD3DTextureANGLEFn(
                  << static_cast<const void*>(attrib_list) << ")");
   EGLBoolean result = egl_api_->eglCreateStreamProducerD3DTextureANGLEFn(
       dpy, stream, attrib_list);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
+EGLSync LogEGLApi::eglCreateSyncFn(EGLDisplay dpy,
+                                   EGLenum type,
+                                   const EGLAttrib* attrib_list) {
+  GL_SERVICE_LOG("eglCreateSync"
+                 << "(" << dpy << ", " << type << ", "
+                 << static_cast<const void*>(attrib_list) << ")");
+  EGLSync result = egl_api_->eglCreateSyncFn(dpy, type, attrib_list);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }
@@ -1721,6 +1960,14 @@ EGLBoolean LogEGLApi::eglDestroyContextFn(EGLDisplay dpy, EGLContext ctx) {
   return result;
 }
 
+EGLBoolean LogEGLApi::eglDestroyImageFn(EGLDisplay dpy, EGLImage image) {
+  GL_SERVICE_LOG("eglDestroyImage"
+                 << "(" << dpy << ", " << image << ")");
+  EGLBoolean result = egl_api_->eglDestroyImageFn(dpy, image);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
 EGLBoolean LogEGLApi::eglDestroyImageKHRFn(EGLDisplay dpy, EGLImageKHR image) {
   GL_SERVICE_LOG("eglDestroyImageKHR"
                  << "(" << dpy << ", " << image << ")");
@@ -1742,6 +1989,14 @@ EGLBoolean LogEGLApi::eglDestroySurfaceFn(EGLDisplay dpy, EGLSurface surface) {
   GL_SERVICE_LOG("eglDestroySurface"
                  << "(" << dpy << ", " << surface << ")");
   EGLBoolean result = egl_api_->eglDestroySurfaceFn(dpy, surface);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
+EGLBoolean LogEGLApi::eglDestroySyncFn(EGLDisplay dpy, EGLSync sync) {
+  GL_SERVICE_LOG("eglDestroySync"
+                 << "(" << dpy << ", " << sync << ")");
+  EGLBoolean result = egl_api_->eglDestroySyncFn(dpy, sync);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }
@@ -1992,6 +2247,18 @@ __eglMustCastToProperFunctionPointerType LogEGLApi::eglGetProcAddressFn(
 
   GL_SERVICE_LOG("GL_RESULT: " << reinterpret_cast<void*>(result));
 
+  return result;
+}
+
+EGLBoolean LogEGLApi::eglGetSyncAttribFn(EGLDisplay dpy,
+                                         EGLSync sync,
+                                         EGLint attribute,
+                                         EGLAttrib* value) {
+  GL_SERVICE_LOG("eglGetSyncAttrib"
+                 << "(" << dpy << ", " << sync << ", " << attribute << ", "
+                 << static_cast<const void*>(value) << ")");
+  EGLBoolean result = egl_api_->eglGetSyncAttribFn(dpy, sync, attribute, value);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }
 
@@ -2465,6 +2732,14 @@ EGLBoolean LogEGLApi::eglWaitNativeFn(EGLint engine) {
   GL_SERVICE_LOG("eglWaitNative"
                  << "(" << engine << ")");
   EGLBoolean result = egl_api_->eglWaitNativeFn(engine);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
+EGLint LogEGLApi::eglWaitSyncFn(EGLDisplay dpy, EGLSync sync, EGLint flags) {
+  GL_SERVICE_LOG("eglWaitSync"
+                 << "(" << dpy << ", " << sync << ", " << flags << ")");
+  EGLint result = egl_api_->eglWaitSyncFn(dpy, sync, flags);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }

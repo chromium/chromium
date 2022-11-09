@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/iosurface_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -24,6 +25,7 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_io_surface.h"
+#include "ui/gl/gl_implementation.h"
 
 #import <Metal/Metal.h>
 
@@ -141,6 +143,30 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
     descriptor.ioSurface = io_surface_.get();
     descriptor.plane = 0;
 
+    // If the backing is compatible - essentially, a GLImageIOSurface -
+    // then synchronize with all of the MTLSharedEvents which have been
+    // stored in it as a consequence of earlier BeginAccess/EndAccess calls
+    // against other representations.
+    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+      if (@available(macOS 10.14, *)) {
+        SharedImageBacking* backing = this->backing();
+        // Not possible to reach this with any other type of backing.
+        DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
+        IOSurfaceImageBacking* iosurface_backing =
+            static_cast<IOSurfaceImageBacking*>(backing);
+        std::vector<std::unique_ptr<SharedEventAndSignalValue>> signals =
+            iosurface_backing->TakeSharedEvents();
+        for (const auto& signal : signals) {
+          dawn::native::metal::ExternalImageMTLSharedEventDescriptor
+              external_desc;
+          external_desc.sharedEvent =
+              static_cast<id<MTLSharedEvent>>(signal->shared_event());
+          external_desc.signaledValue = signal->signaled_value();
+          descriptor.waitEvents.push_back(external_desc);
+        }
+      }
+    }
+
     texture_ = dawn::native::metal::WrapIOSurface(device_, &descriptor);
     return texture_;
   }
@@ -150,14 +176,39 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
       return;
     }
 
-    if (dawn::native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
+    dawn::native::metal::ExternalImageIOSurfaceEndAccessDescriptor descriptor;
+    dawn::native::metal::IOSurfaceEndAccess(texture_, &descriptor);
+
+    if (descriptor.isInitialized) {
       SetCleared();
+    }
+
+    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+      if (@available(macOS 10.14, *)) {
+        SharedImageBacking* backing = this->backing();
+        // Not possible to reach this with any other type of backing.
+        DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
+        IOSurfaceImageBacking* iosurface_backing =
+            static_cast<IOSurfaceImageBacking*>(backing);
+        // Dawn's Metal backend has enqueued a MTLSharedEvent which
+        // consumers of the IOSurface must wait upon before attempting to
+        // use that IOSurface on another MTLDevice. Store this event in
+        // the underlying SharedImageBacking.
+        iosurface_backing->AddSharedEventAndSignalValue(
+            descriptor.sharedEvent, descriptor.signaledValue);
+      }
     }
 
     // All further operations on the textures are errors (they would be racy
     // with other backings).
     dawn_procs_.textureDestroy(texture_);
 
+    // TODO(b/252731382): the following WaitForCommandsToBeScheduled call should
+    // no longer be necessary, but for some reason it is. Removing it
+    // reintroduces intermittent renders of black frames to the WebGPU canvas.
+    // This points to another synchronization bug not resolved by the use of
+    // MTLSharedEvent between Dawn and ANGLE's Metal backend.
+    //
     // macOS has a global GPU command queue so synchronization between APIs and
     // devices is automatic. However on Metal, wgpuQueueSubmit "commits" the
     // Metal command buffers but they aren't "scheduled" in the global queue

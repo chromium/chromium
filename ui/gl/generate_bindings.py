@@ -2400,6 +2400,9 @@ EGL_FUNCTIONS = [
   'arguments': 'EGLDisplay dpy, const EGLint* attrib_list, EGLConfig* configs, '
                'EGLint config_size, EGLint* num_config', },
 { 'return_type': 'EGLint',
+  'names': ['eglClientWaitSync'],
+  'arguments': 'EGLDisplay dpy, EGLSync sync, EGLint flags, EGLTime timeout' },
+{ 'return_type': 'EGLint',
   'versions': [{ 'name': 'eglClientWaitSyncKHR',
                  'extensions': [
                    'EGL_KHR_fence_sync',
@@ -2411,10 +2414,21 @@ EGL_FUNCTIONS = [
   'names': ['eglCopyBuffers'],
   'arguments':
       'EGLDisplay dpy, EGLSurface surface, EGLNativePixmapType target', },
+{ 'return_type': 'void*',
+  'versions': [{ 'name': 'eglCopyMetalSharedEventANGLE',
+                 'extensions': [
+                   'EGL_ANGLE_metal_shared_event_sync',
+                 ] }],
+  'arguments': 'EGLDisplay dpy, EGLSync sync', },
 { 'return_type': 'EGLContext',
   'names': ['eglCreateContext'],
   'arguments': 'EGLDisplay dpy, EGLConfig config, EGLContext share_context, '
               'const EGLint* attrib_list', },
+{ 'return_type': 'EGLImage',
+  'names': ['eglCreateImage'],
+  'arguments':
+      'EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, '
+      'const EGLAttrib* attrib_list' },
 { 'return_type': 'EGLImageKHR',
   'versions': [{ 'name': 'eglCreateImageKHR',
                  'extensions':
@@ -2434,6 +2448,14 @@ EGL_FUNCTIONS = [
   'names': ['eglCreatePixmapSurface'],
   'arguments': 'EGLDisplay dpy, EGLConfig config, EGLNativePixmapType pixmap, '
                'const EGLint* attrib_list', },
+{ 'return_type': 'EGLSurface',
+  'names': ['eglCreatePlatformPixmapSurface'],
+  'arguments': 'EGLDisplay dpy, EGLConfig config, void* native_pixmap, '
+               'const EGLAttrib* attrib_list', },
+{ 'return_type': 'EGLSurface',
+  'names': ['eglCreatePlatformWindowSurface'],
+  'arguments': 'EGLDisplay dpy, EGLConfig config, void* native_window, '
+               'const EGLAttrib* attrib_list', },
 { 'return_type': 'EGLStreamKHR',
   'versions': [{ 'name': 'eglCreateStreamKHR',
                  'extensions': ['EGL_KHR_stream'] }],
@@ -2444,6 +2466,9 @@ EGL_FUNCTIONS = [
                       ['EGL_ANGLE_stream_producer_d3d_texture']}],
   'arguments':
       'EGLDisplay dpy, EGLStreamKHR stream, EGLAttrib* attrib_list', },
+{ 'return_type': 'EGLSync',
+  'names': ['eglCreateSync'],
+  'arguments': 'EGLDisplay dpy, EGLenum type, const EGLAttrib* attrib_list' },
 { 'return_type': 'EGLSyncKHR',
   'versions': [{ 'name': 'eglCreateSyncKHR',
                  'extensions': [
@@ -2464,6 +2489,9 @@ EGL_FUNCTIONS = [
   'names': ['eglDestroyContext'],
   'arguments': 'EGLDisplay dpy, EGLContext ctx', },
 { 'return_type': 'EGLBoolean',
+  'names': ['eglDestroyImage'],
+  'arguments': 'EGLDisplay dpy, EGLImage image' },
+{ 'return_type': 'EGLBoolean',
   'versions': [{ 'name' : 'eglDestroyImageKHR',
                  'extensions': ['EGL_KHR_image_base'] }],
   'arguments': 'EGLDisplay dpy, EGLImageKHR image' },
@@ -2474,6 +2502,9 @@ EGL_FUNCTIONS = [
 { 'return_type': 'EGLBoolean',
   'names': ['eglDestroySurface'],
   'arguments': 'EGLDisplay dpy, EGLSurface surface', },
+{ 'return_type': 'EGLBoolean',
+  'names': ['eglDestroySync'],
+  'arguments': 'EGLDisplay dpy, EGLSync sync' },
 { 'return_type': 'EGLBoolean',
   'versions': [{ 'name': 'eglDestroySyncKHR',
                  'extensions': [
@@ -2584,6 +2615,10 @@ EGL_FUNCTIONS = [
   'logging_code': """
   GL_SERVICE_LOG("GL_RESULT: " << reinterpret_cast<void*>(result));
 """, },
+{ 'return_type': 'EGLBoolean',
+  'names': ['eglGetSyncAttrib'],
+  'arguments': 'EGLDisplay dpy, EGLSync sync, EGLint attribute, '
+      'EGLAttrib* value' },
 { 'return_type': 'EGLBoolean',
   'versions': [{ 'name': 'eglGetSyncAttribKHR',
                  'extensions': [
@@ -2785,6 +2820,9 @@ EGL_FUNCTIONS = [
 { 'return_type': 'EGLBoolean',
   'names': ['eglWaitNative'],
   'arguments': 'EGLint engine', },
+{ 'return_type': 'EGLint',
+  'names': ['eglWaitSync'],
+  'arguments': 'EGLDisplay dpy, EGLSync sync, EGLint flags' },
 { 'return_type': 'EGLint',
   'versions': [{ 'name': 'eglWaitSyncKHR',
                  'extensions': ['EGL_KHR_wait_sync'] }],

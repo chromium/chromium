@@ -752,6 +752,10 @@ void GLDisplayEGL::Shutdown() {
   egl_surfaceless_context_supported_ = false;
   egl_context_priority_supported_ = false;
   egl_android_native_fence_sync_supported_ = false;
+
+#if BUILDFLAG(IS_MAC)
+  CleanupMetalSharedEvent();
+#endif
 }
 
 bool GLDisplayEGL::IsInitialized() const {
