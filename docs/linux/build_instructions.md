@@ -331,6 +331,12 @@ collect2: ld terminated with signal 6 Aborted terminate called after throwing an
 collect2: ld terminated with signal 11 [Segmentation fault], core dumped
 ```
 
+or:
+
+```
+LLVM ERROR: out of memory
+```
+
 you are probably running out of memory when linking. You *must* use a 64-bit
 system to build. Try the following build settings (see [GN build
 configuration](https://www.chromium.org/developers/gn-build-configuration) for
@@ -341,6 +347,11 @@ other settings):
 *   Turn off symbols: `symbol_level = 0`
 *   Build in component mode (this is for development only, it will be slower and
     may have broken functionality): `is_component_build = true`
+*   For official (ThinLTO) builds on Linux, increase the vm.max_map_count kernel
+    parameter: increase the `vm.max_map_count` value from default (like 65530)
+    to for example 262144. You can run the `sudo sysctl -w vm.max_map_count=262144`
+    command to set it in the current session from the shell, or add the
+    `vm.max_map_count=262144` to /etc/sysctl.conf to save it permanently.
 
 ### More links
 
