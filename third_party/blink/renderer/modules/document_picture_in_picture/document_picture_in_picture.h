@@ -14,7 +14,7 @@
 namespace blink {
 
 class DocumentPictureInPictureOptions;
-class DocumentPictureInPictureSession;
+class DOMWindow;
 class ExceptionState;
 class ExecutionContext;
 class Navigator;
@@ -35,7 +35,7 @@ class MODULES_EXPORT DocumentPictureInPicture : public ScriptWrappable,
                               DocumentPictureInPictureOptions*,
                               ExceptionState&);
 
-  DocumentPictureInPictureSession* session(ScriptState*) const;
+  DOMWindow* window(ScriptState*) const;
 
   static DocumentPictureInPicture* documentPictureInPicture(ScriptState*,
                                                             Navigator&);

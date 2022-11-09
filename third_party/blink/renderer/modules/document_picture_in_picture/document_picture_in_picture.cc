@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture_session.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
 
 namespace blink {
@@ -74,8 +73,7 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
   return promise;
 }
 
-DocumentPictureInPictureSession* DocumentPictureInPicture::session(
-    ScriptState* script_state) const {
+DOMWindow* DocumentPictureInPicture::window(ScriptState* script_state) const {
   LocalDOMWindow* dom_window = LocalDOMWindow::From(script_state);
   if (!dom_window)
     return nullptr;
@@ -83,7 +81,7 @@ DocumentPictureInPictureSession* DocumentPictureInPicture::session(
   if (!document)
     return nullptr;
   return PictureInPictureControllerImpl::From(*document)
-      .documentPictureInPictureSession();
+      .documentPictureInPictureWindow();
 }
 
 void DocumentPictureInPicture::Trace(Visitor* visitor) const {

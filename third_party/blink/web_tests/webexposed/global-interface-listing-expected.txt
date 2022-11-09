@@ -2160,13 +2160,9 @@ interface DocumentFragment : Node
     method replaceChildren
 interface DocumentPictureInPicture
     attribute @@toStringTag
-    getter session
-    method constructor
-    method requestWindow
-interface DocumentPictureInPictureSession
-    attribute @@toStringTag
     getter window
     method constructor
+    method requestWindow
 interface DocumentTimeline : AnimationTimeline
     attribute @@toStringTag
     method constructor

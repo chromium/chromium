@@ -20,7 +20,6 @@
 namespace blink {
 
 class DocumentPictureInPictureOptions;
-class DocumentPictureInPictureSession;
 class ExceptionState;
 class HTMLVideoElement;
 class PictureInPictureWindow;
@@ -58,11 +57,12 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // request Picture-in-Picture.
   Status IsDocumentAllowed(bool report_failure) const;
 
-  // Returns the Picture-in-Picture window if there is any.
+  // Returns the Picture-in-Picture window if there is any. This is for
+  // video-only PiP.
   PictureInPictureWindow* pictureInPictureWindow() const;
 
-  // Returns the Document Picture-in-Picture session if there is any.
-  DocumentPictureInPictureSession* documentPictureInPictureSession() const;
+  // Returns the Document Picture-in-Picture window if there is any.
+  LocalDOMWindow* documentPictureInPictureWindow() const;
 
   // Returns video element whose autoPictureInPicture attribute was set most
   // recently.
@@ -180,13 +180,13 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // to Auto Picture-in-Picture.
   HeapDeque<Member<HTMLVideoElement>> auto_picture_in_picture_elements_;
 
-  // The Picture-in-Picture window for the associated document.
+  // The Picture-in-Picture window for the associated document. This is for
+  // video-only PiP.
   Member<PictureInPictureWindow> picture_in_picture_window_;
 
-  // The Document Picture-in-Picture session, if any.  This is the holder object
-  // for the Document pip window / document / etc.  It shouldn't be confused
-  // with `video_picture_in_picture_session_`, which is for video-only PiP.
-  Member<DocumentPictureInPictureSession> document_picture_in_picture_session_;
+  // The Document Picture-in-Picture window, if any. It shouldn't be confused
+  // with `picture_in_picture_session_`, which is for video-only PiP.
+  Member<LocalDOMWindow> document_picture_in_picture_window_;
 
   // Mojo bindings for the session observer interface implemented by |this|.
   HeapMojoReceiver<mojom::blink::PictureInPictureSessionObserver,
@@ -197,11 +197,10 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   HeapMojoRemote<mojom::blink::PictureInPictureService>
       picture_in_picture_service_;
 
-  // Instance of the Picture-in-Picture session sent back by the service.  This
-  // is for video-only PiP.  For Document PiP, refer to
-  // `document_picture_in_picture_session_` instead.
+  // Instance of the Picture-in-Picture session sent back by the service. This
+  // is for video-only PiP.
   HeapMojoRemote<mojom::blink::PictureInPictureSession>
-      video_picture_in_picture_session_;
+      picture_in_picture_session_;
 
   // Used to force |CreateDocumentPictureInPictureWindow()| to be asynchronous.
   TaskHandle open_document_pip_task_;

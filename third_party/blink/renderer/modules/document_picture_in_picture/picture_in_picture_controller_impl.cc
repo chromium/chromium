@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
-#include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture_session.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -203,8 +202,8 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
     return;
   }
 
-  video_picture_in_picture_session_.reset();
-  video_picture_in_picture_session_.Bind(
+  picture_in_picture_session_.reset();
+  picture_in_picture_session_.Bind(
       std::move(session_remote),
       element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent));
   if (IsElementAllowed(*element, /*report_failure=*/true) != Status::kEnabled) {
@@ -225,9 +224,9 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
   if (picture_in_picture_element_)
     OnExitedPictureInPicture(nullptr);
 
-  if (document_picture_in_picture_session_) {
+  if (document_picture_in_picture_window_) {
     // TODO(crbug.com/1360452): close the window too.
-    document_picture_in_picture_session_ = nullptr;
+    document_picture_in_picture_window_ = nullptr;
   }
 
   picture_in_picture_element_ = element;
@@ -263,10 +262,10 @@ void PictureInPictureControllerImpl::ExitPictureInPicture(
   if (!EnsureService())
     return;
 
-  if (!video_picture_in_picture_session_.is_bound())
+  if (!picture_in_picture_session_.is_bound())
     return;
 
-  video_picture_in_picture_session_->Stop(
+  picture_in_picture_session_->Stop(
       WTF::BindOnce(&PictureInPictureControllerImpl::OnExitedPictureInPicture,
                     WrapPersistent(this), WrapPersistent(resolver)));
   session_observer_receiver_.reset();
@@ -316,9 +315,9 @@ PictureInPictureWindow* PictureInPictureControllerImpl::pictureInPictureWindow()
   return picture_in_picture_window_;
 }
 
-DocumentPictureInPictureSession*
-PictureInPictureControllerImpl::documentPictureInPictureSession() const {
-  return document_picture_in_picture_session_;
+LocalDOMWindow* PictureInPictureControllerImpl::documentPictureInPictureWindow()
+    const {
+  return document_picture_in_picture_window_;
 }
 
 Element* PictureInPictureControllerImpl::PictureInPictureElement() const {
@@ -384,8 +383,8 @@ bool PictureInPictureControllerImpl::IsEnterAutoPictureInPictureAllowed()
   if (picture_in_picture_element_)
     return false;
 
-  // Don't allow if there's already a Document Picture-in-Picture session.
-  if (document_picture_in_picture_session_)
+  // Don't allow if there's already a Document Picture-in-Picture window.
+  if (document_picture_in_picture_window_)
     return false;
 
   // Don't allow if there's no element eligible to enter Auto Picture-in-Picture
@@ -497,8 +496,7 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ResolveOpenDocumentPictureInPicture();
   }
 
-  document_picture_in_picture_session_ =
-      MakeGarbageCollected<DocumentPictureInPictureSession>(local_dom_window);
+  document_picture_in_picture_window_ = local_dom_window;
 
   // There should not be an unresolved ScriptPromiseResolver at this point.
   // Leaving one unresolved and letting it get garbage collected will crash the
@@ -518,7 +516,7 @@ void PictureInPictureControllerImpl::
   // The document PIP window has been destroyed, so the opener is no longer
   // associated with it.  Allow throttling again.
   SetMayThrottleIfUndrawnFrames(true);
-  document_picture_in_picture_session_ = nullptr;
+  document_picture_in_picture_window_ = nullptr;
 
   // If there is an unresolved promise for a document PiP window, reject it now.
   // Note that we know that it goes with the current session, since we replace
@@ -564,7 +562,7 @@ void PictureInPictureControllerImpl::OnPictureInPictureStateChange() {
   picture_in_picture_element_->BindMediaPlayerReceiver(
       media_player_remote.InitWithNewEndpointAndPassReceiver());
 
-  video_picture_in_picture_session_->Update(
+  picture_in_picture_session_->Update(
       picture_in_picture_element_->GetWebMediaPlayer()->GetDelegateId(),
       std::move(media_player_remote),
       picture_in_picture_element_->GetWebMediaPlayer()->GetSurfaceId().value(),
@@ -598,10 +596,10 @@ void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(picture_in_picture_element_);
   visitor->Trace(auto_picture_in_picture_elements_);
   visitor->Trace(picture_in_picture_window_);
-  visitor->Trace(document_picture_in_picture_session_);
+  visitor->Trace(document_picture_in_picture_window_);
   visitor->Trace(session_observer_receiver_);
   visitor->Trace(picture_in_picture_service_);
-  visitor->Trace(video_picture_in_picture_session_);
+  visitor->Trace(picture_in_picture_session_);
   visitor->Trace(document_pip_context_observer_);
   visitor->Trace(open_document_pip_resolver_);
   PictureInPictureController::Trace(visitor);
@@ -616,7 +614,7 @@ PictureInPictureControllerImpl::PictureInPictureControllerImpl(
       ExecutionContextClient(document.GetExecutionContext()),
       session_observer_receiver_(this, document.GetExecutionContext()),
       picture_in_picture_service_(document.GetExecutionContext()),
-      video_picture_in_picture_session_(document.GetExecutionContext()) {}
+      picture_in_picture_session_(document.GetExecutionContext()) {}
 
 bool PictureInPictureControllerImpl::EnsureService() {
   if (picture_in_picture_service_.is_bound())
@@ -634,9 +632,9 @@ bool PictureInPictureControllerImpl::EnsureService() {
 }
 
 void PictureInPictureControllerImpl::ResolveOpenDocumentPictureInPicture() {
-  CHECK(document_picture_in_picture_session_);
+  CHECK(document_picture_in_picture_window_);
   CHECK(open_document_pip_resolver_);
-  open_document_pip_resolver_->Resolve(document_picture_in_picture_session_);
+  open_document_pip_resolver_->Resolve(document_picture_in_picture_window_);
   open_document_pip_resolver_ = nullptr;
 }
 
