@@ -35,7 +35,7 @@ void DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient* client) {
 
 DlpScopedFileAccessDelegate::DlpScopedFileAccessDelegate(
     chromeos::DlpClient* client)
-    : client_(client) {
+    : client_(client), weak_ptr_factory_(this) {
   DlpFileAccessCopyOrMoveDelegateFactory::Initialize();
 }
 
@@ -83,7 +83,7 @@ void DlpScopedFileAccessDelegate::PostRequestFileAccessToDaemon(
       &chromeos::DlpClient::RequestFileAccess, base::Unretained(client_),
       request,
       base::BindOnce(&DlpScopedFileAccessDelegate::OnResponse,
-                     base::Unretained(this), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(dbus_cb));
 }
