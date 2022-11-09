@@ -47,7 +47,7 @@ TEST_F(ArcCrashCollectorBridgeTest, SetBuildProperties) {
 }
 
 // Tests that DumpCrash doesn't crash.
-// TODO(yusukes): Test the behavior beyond just "no crash".
+// TODO(khmel): Test the behavior beyond just "no crash".
 TEST_F(ArcCrashCollectorBridgeTest, DumpCrash) {
   ASSERT_NE(nullptr, bridge());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",
@@ -56,7 +56,7 @@ TEST_F(ArcCrashCollectorBridgeTest, DumpCrash) {
 }
 
 // Tests that DumpNativeCrash doesn't crash.
-// TODO(yusukes): Test the behavior beyond just "no crash".
+// TODO(khmel): Test the behavior beyond just "no crash".
 TEST_F(ArcCrashCollectorBridgeTest, DumpNativeCrash) {
   ASSERT_NE(nullptr, bridge());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",
@@ -66,7 +66,7 @@ TEST_F(ArcCrashCollectorBridgeTest, DumpNativeCrash) {
 }
 
 // Tests that DumpKernelCrash doesn't crash.
-// TODO(yusukes): Test the behavior beyond just "no crash".
+// TODO(khmel): Test the behavior beyond just "no crash".
 TEST_F(ArcCrashCollectorBridgeTest, DumpKernelCrash) {
   ASSERT_NE(nullptr, bridge());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",

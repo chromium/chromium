@@ -144,7 +144,7 @@ bool HasDiskImage(const vm_tools::concierge::StartArcVmRequest& request,
 }
 
 // A debugd client that can fail to start Concierge.
-// TODO(yusukes): Merge the feature to FakeDebugDaemonClient.
+// TODO(khmel): Merge the feature to FakeDebugDaemonClient.
 class TestDebugDaemonClient : public ash::FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;
@@ -173,7 +173,7 @@ class TestDebugDaemonClient : public ash::FakeDebugDaemonClient {
 };
 
 // A concierge that remembers the parameter passed to StartArcVm.
-// TODO(yusukes): Merge the feature to FakeConciergeClient.
+// TODO(khmel): Merge the feature to FakeConciergeClient.
 class TestConciergeClient : public ash::FakeConciergeClient {
  public:
   static void Initialize() { new TestConciergeClient(); }
@@ -707,7 +707,7 @@ TEST_F(ArcVmClientAdapterTest, SetUserInfo) {
 
 // Tests that SetUserInfo() doesn't crash even when empty strings are passed.
 // Currently, ArcSessionRunner's tests call SetUserInfo() that way.
-// TODO(yusukes): Once ASR's tests are fixed, remove this test and use DCHECKs
+// TODO(khmel): Once ASR's tests are fixed, remove this test and use DCHECKs
 // in SetUserInfo().
 TEST_F(ArcVmClientAdapterTest, SetUserInfoEmpty) {
   adapter()->SetUserInfo(cryptohome::Identification(), std::string(),
@@ -2197,7 +2197,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledNoSystemMemoryInfo) {
 
 // Test that StartArcVmRequest::memory_mib is limited to k32bitVmRamMaxMib when
 // crosvm is a 32-bit process.
-// TODO(yusukes): Remove this once crosvm becomes 64 bit binary on ARM.
+// TODO(khmel): Remove this once crosvm becomes 64 bit binary on ARM.
 TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledOn32Bit) {
   class TestDelegate : public ArcVmClientAdapterDelegate {
     bool GetSystemMemoryInfo(base::SystemMemoryInfoKB* info) override {

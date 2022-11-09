@@ -639,7 +639,7 @@ void ArcInputMethodManagerService::SyncEnabledImesInArc() {
       std::inserter(new_arc_enabled_ime_ids, new_arc_enabled_ime_ids.end()),
       &ash::extension_ime_util::IsArcIME);
 
-  // TODO(yhanada|yusukes): Instead of observing ImeMenuListChanged(), it's
+  // TODO(yhanada): Instead of observing ImeMenuListChanged(), it's
   // probably better to just observe the pref (and not disabling ones still
   // in the prefs.) See also the comment below in the second for-loop.
   const std::set<std::string> enabled_ime_ids_on_prefs =
@@ -665,7 +665,7 @@ void ArcInputMethodManagerService::SyncEnabledImesInArc() {
       // IME on laptop mode wouldn't be propagated to the container. Otherwise,
       // the IME confirmation dialog will be shown again next time when you
       // use the IME in tablet mode.
-      // TODO(yhanada|yusukes): Only observe the prefs and remove the hack.
+      // TODO(yhanada): Only observe the prefs and remove the hack.
       EnableIme(id, false /* enable */);
     }
   }
@@ -737,7 +737,7 @@ void ArcInputMethodManagerService::NotifyInputMethodManagerObservers(
   // Togging the mode may enable or disable all the ARC IMEs. To dynamically
   // reflect the potential state changes to chrome://settings, notify the
   // manager's observers here.
-  // TODO(yusukes): This is a temporary workaround for supporting ARC IMEs
+  // TODO(yhanada): This is a temporary workaround for supporting ARC IMEs
   // and supports neither Chrome OS extensions nor state changes enforced by
   // the policy. The better way to do this is to add a dedicated event to
   // language_settings_private.idl and send the new event to the JS side

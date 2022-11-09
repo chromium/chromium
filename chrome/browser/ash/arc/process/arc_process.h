@@ -51,14 +51,14 @@ class ArcProcess {
 
   // Returns true if the process is important and should be protected more
   // from OOM kills than other processes.
-  // TODO(cylee|yusukes): Check what stock Android does for handling OOM and
-  // modify this function as needed (crbug.com/719537).
+  // TODO(raging): Check what stock Android does for handling OOM and modify
+  // this function as needed (crbug.com/719537).
   bool IsImportant() const;
 
   // Returns true if it is persistent process and should have a lower
   // oom_score_adj.
-  // TODO(cylee|yusukes): Consider removing this function. Having only
-  // IsImportant() might be good enough.
+  // TODO(raging): Consider removing this function. Having only IsImportant()
+  // might be good enough.
   bool IsPersistent() const;
 
   // Returns true if the process is cached or empty and should have a higher

@@ -76,7 +76,7 @@ void OnConfigureUpstartJobs(std::deque<JobDesc> jobs,
 
   if (!result && is_start) {
     LOG(ERROR) << "Failed to start " << job_name;
-    // TODO(yusukes): Record UMA for this case.
+    // TODO(khmel): Record UMA for this case.
     std::move(callback).Run(false);
     return;
   }

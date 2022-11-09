@@ -81,7 +81,7 @@ TEST(ConnectionHolder, GetInstance) {
                          FakeInstance::Version_ + 1, "MethodName"));
 }
 
-// TODO(yusukes|team): Test SetHost() method too.
+// TODO(khmel|team): Test SetHost() method too.
 
 }  // namespace
 }  // namespace arc

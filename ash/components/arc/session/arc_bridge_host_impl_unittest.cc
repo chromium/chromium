@@ -138,7 +138,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(Midis);
     MAKE_INSTANCE_READY(NearbyShare);
     MAKE_INSTANCE_READY(Net);
-    // TODO(yusukes): Test mojom::NotificationsInstance. Unlike others, the
+    // TODO(khmel): Test mojom::NotificationsInstance. Unlike others, the
     // notification instance is not managed by ArcBridgeHostImpl. Since the
     // instance is forwarded to ash, we need a completely different test.
     MAKE_INSTANCE_READY(ObbMounter);

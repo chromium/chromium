@@ -393,7 +393,7 @@ void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
                               CpuRestrictionState::CPU_RESTRICTION_BACKGROUND);
 
   if (arc_has_booted && !never_enforce_quota_ && is_throttling) {
-    // TODO(yusukes): Do not use quota when Android VPN is in use.
+    // TODO(khmel): Do not use quota when Android VPN is in use.
     use_quota = true;
     DVLOG(2) << "Enforcing cfs_quota";
   }
