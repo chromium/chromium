@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
@@ -124,6 +125,7 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    @DisabledTest(message = "https://crbug.com/1378316")
     public void testMicrophoneAndCameraEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", true /* withGesture */);
     }
