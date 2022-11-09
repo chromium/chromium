@@ -126,13 +126,6 @@ export class OutputInterface {
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
-  formatNameFromNode_(data, token, options) {}
-
-  /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
   formatNameOrDescendants_(data, token, options) {}
 
   /**

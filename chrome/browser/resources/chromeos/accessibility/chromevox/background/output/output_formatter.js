@@ -11,6 +11,7 @@ import {OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputInterface} from './output_interface.js';
 import * as outputTypes from './output_types.js';
 
+const NameFromType = chrome.automation.NameFromType;
 const StateType = chrome.automation.StateType;
 
 // TODO(anastasi): Move formatting logic to this class.
@@ -47,7 +48,7 @@ export class OutputFormatter {
     } else if (token === 'urlFilename') {
       this.formatUrlFilename_(this.params_, token, options);
     } else if (token === 'nameFromNode') {
-      this.output_.formatNameFromNode_(this.params_, token, options);
+      this.formatNameFromNode_(this.params_, token, options);
     } else if (token === 'nameOrDescendants') {
       // This token is similar to nameOrTextContent except it gathers
       // rich output for descendants. It also lets name from contents
@@ -214,6 +215,25 @@ export class OutputFormatter {
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    * @private
+   */
+  formatNameFromNode_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    if (node.nameFrom === NameFromType.CONTENTS) {
+      return;
+    }
+
+    options.annotation.push('name');
+    this.output_.append_(buff, node.name || '', options);
+    formatLog.writeTokenWithValue(token, node.name);
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatUrlFilename_(data, token, options) {
     const buff = data.outputBuffer;

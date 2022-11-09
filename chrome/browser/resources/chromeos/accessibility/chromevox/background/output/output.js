@@ -684,21 +684,6 @@ export class Output {
   }
 
   /** @override */
-  formatNameFromNode_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    if (node.nameFrom === NameFromType.CONTENTS) {
-      return;
-    }
-
-    options.annotation.push('name');
-    this.append_(buff, node.name || '', options);
-    formatLog.writeTokenWithValue(token, node.name);
-  }
-
-  /** @override */
   formatNameOrDescendants_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
