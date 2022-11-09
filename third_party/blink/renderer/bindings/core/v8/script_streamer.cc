@@ -35,6 +35,31 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
+namespace recordreplay {
+
+class OrderedAtomicFlag {
+ public:
+  OrderedAtomicFlag()
+    : ordered_lock_id_(recordreplay::CreateOrderedLock("OrderedAtomicFlag"))
+  {}
+
+  void Set() {
+    recordreplay::AutoOrderedLock ordered(ordered_lock_id_);
+    flag_.Set();
+  }
+
+  bool IsSet() const {
+    recordreplay::AutoOrderedLock ordered(ordered_lock_id_);
+    return flag_.IsSet();
+  }
+
+ private:
+  int ordered_lock_id_;
+  base::AtomicFlag flag_;
+};
+
+} // namespace recordreplay
+
 namespace blink {
 
 // SourceStream implements the streaming interface towards V8. The main
@@ -249,7 +274,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
 
   // TODO(leszeks): Make this a DCHECK-only flag.
   base::AtomicFlag ready_to_run_;
-  base::AtomicFlag cancelled_;
+  recordreplay::OrderedAtomicFlag cancelled_;
 
   // Only used by background thread
   ScriptStreamer::LoadingState load_state_ =
