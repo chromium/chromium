@@ -797,15 +797,53 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   return elements_to_reveal.size();
 }
 
+static bool CheckSelf(const Node* node) {
+  if (auto* element = DynamicTo<Element>(node)) {
+    if (auto* context = element->GetDisplayLockContext()) {
+      if (!context->ShouldPaintChildren())
+        return true;
+    }
+  }
+  return false;
+}
+
+bool DisplayLockUtilities::IsDisplayLockedPreventingPaintUnmemoized(
+    const Node& node,
+    bool inclusive_check) {
+  return inclusive_check
+             ? DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+                   node)
+             : DisplayLockUtilities::LockedAncestorPreventingPaint(node);
+}
+
 bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
     const Node* node,
     bool inclusive_check) {
   // If we have a memoizer, consult with it to see if we already know the
   // result. Otherwise, fallback to get-element versions.
   if (memoizer_) {
-    auto result = memoizer_->IsNodeLocked(node);
-    if (result)
-      return *result;
+    // Consult memoizer with it to see if we already know the
+    // result. Otherwise, fallback to get-element versions.
+    auto memoized_result = memoizer_->IsNodeLocked(node);
+    if (memoized_result) {
+      bool final_result =
+          *memoized_result || (inclusive_check && CheckSelf(node));
+#if DCHECK_IS_ON()
+      bool nonmemoized_result =
+          IsDisplayLockedPreventingPaintUnmemoized(*node, inclusive_check);
+      DCHECK_EQ(final_result, nonmemoized_result)
+          << "\nMemoized result did not match non-memoized result for "
+          << (inclusive_check ? "inclusive" : "non-inclusive") << " check."
+          << "\n* node = " << node
+          << "\n* Inclusive ancestor preventing paint: "
+          << DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*node)
+          << "\n* Non-inclusive ancestor preventing paint: "
+          << DisplayLockUtilities::LockedAncestorPreventingPaint(*node);
+#endif
+
+      // The memoizer can only be used for non-inclusive checks.
+      return final_result;
+    }
   } else {
     return inclusive_check
                ? DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
@@ -813,7 +851,7 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
                : DisplayLockUtilities::LockedAncestorPreventingPaint(*node);
   }
 
-  // Do some sanity checks that we cwan early out on.
+  // Do some sanity checks that we can early-out on.
   if (!node->isConnected() ||
       node->GetDocument()
               .GetDisplayLockDocumentState()
@@ -822,17 +860,12 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
     return false;
   }
 
+  // Compute the result by walking the tree and memoize the result.
   // Handle the inclusive check -- that is, check the node itself. Note that
   // it's important not to memoize that since the memoization consists of
   // ancestor checks only.
-  if (inclusive_check) {
-    if (auto* element = DynamicTo<Element>(node)) {
-      if (auto* context = element->GetDisplayLockContext()) {
-        if (!context->ShouldPaintChildren())
-          return true;
-      }
-    }
-  }
+  if (inclusive_check && CheckSelf(node))
+    return true;
 
   // Walk up the ancestor chain, and consult with both the memoizer and check
   // directly if we're skipping paint. When we find a result (or finish the
