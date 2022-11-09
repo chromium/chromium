@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/mac/net/network_fetcher.h"
+#include "chrome/updater/net/network.h"
 
 #import <Foundation/Foundation.h>
+
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #import "base/mac/foundation_util.h"
@@ -23,6 +27,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
+#include "components/update_client/network.h"
 #import "net/base/mac/url_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -281,6 +286,38 @@ class SequencedTaskRunner;
 }
 
 namespace updater {
+
+class NetworkFetcher : public update_client::NetworkFetcher {
+ public:
+  NetworkFetcher();
+  NetworkFetcher& operator=(const NetworkFetcher&) = delete;
+  NetworkFetcher(const NetworkFetcher&) = delete;
+  ~NetworkFetcher() override;
+
+  // NetworkFetcher overrides.
+  void PostRequest(
+      const GURL& url,
+      const std::string& post_data,
+      const std::string& content_type,
+      const base::flat_map<std::string, std::string>& post_additional_headers,
+      update_client::NetworkFetcher::ResponseStartedCallback
+          response_started_callback,
+      update_client::NetworkFetcher::ProgressCallback progress_callback,
+      update_client::NetworkFetcher::PostRequestCompleteCallback
+          post_request_complete_callback) override;
+
+  void DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      update_client::NetworkFetcher::ResponseStartedCallback
+          response_started_callback,
+      update_client::NetworkFetcher::ProgressCallback progress_callback,
+      update_client::NetworkFetcher::DownloadToFileCompleteCallback
+          download_to_file_complete_callback) override;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+};
 
 NetworkFetcher::NetworkFetcher() = default;
 
