@@ -6,7 +6,7 @@ import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {Accelerator, AcceleratorInfo, AcceleratorState, AcceleratorType} from './shortcut_types.js';
+import {Accelerator, AcceleratorId, AcceleratorInfo, AcceleratorState, AcceleratorType} from './shortcut_types.js';
 
 // Returns true if shortcut customization is disabled via the feature flag.
 export const isCustomizationDisabled = (): boolean => {
@@ -42,3 +42,8 @@ export const createEmptyAccelInfoFromAccel =
 export const createEmptyAcceleratorInfo = (): AcceleratorInfo => {
   return createEmptyAccelInfoFromAccel({modifiers: 0, keyCode: 0});
 };
+
+export const getAcceleratorId =
+    (source: string|number, actionId: string|number): AcceleratorId => {
+      return `${source}-${actionId}`;
+    };

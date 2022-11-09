@@ -6,8 +6,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Accelerator, Modifier, MojoAccelerator} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, isCustomizationDisabled} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {areAcceleratorsEqual, getAcceleratorId, isCustomizationDisabled} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('shortcutUtilsTest', function() {
   test('CustomizationDisabled', async () => {
@@ -65,5 +65,10 @@ suite('shortcutUtilsTest', function() {
     // Accelerators and MojoAccelerators are comparable,
     // and shouldn't throw an error.
     assertTrue(areAcceleratorsEqual(accelShiftC, accelShiftCMojo));
+  });
+
+  test('GetAcceleratorId', async () => {
+    assertEquals(`${0}-${80}`, getAcceleratorId(0, 80));
+    assertEquals(`${0}-${80}`, getAcceleratorId('0', '80'));
   });
 });

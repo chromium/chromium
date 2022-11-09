@@ -5,14 +5,9 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {mojoString16ToString} from './mojo_utils.js';
-import {Accelerator, AcceleratorCategory, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutInfoList, MojoAcceleratorConfig, MojoAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual} from './shortcut_utils.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutInfoList, MojoAcceleratorConfig, MojoAcceleratorInfo} from './shortcut_types.js';
+import {areAcceleratorsEqual, getAcceleratorId} from './shortcut_utils.js';
 
-/**
- * A string of the form `{source}-{action_id}`.
- * This concatenation uniquely identifies one {@link Accelerator}.
- */
-type AcceleratorId = string;
 /** The name of an {@link Accelerator}, e.g. "Snap Window Left". */
 type AcceleratorName = string;
 /**
@@ -78,7 +73,7 @@ export class AcceleratorLookupManager {
 
   getAcceleratorInfos(source: number|string, action: number|string):
       AcceleratorInfo[] {
-    const uuid: AcceleratorId = `${source}-${action}`;
+    const uuid: AcceleratorId = getAcceleratorId(source, action);
     const acceleratorInfos = this.acceleratorLookup_.get(uuid);
     assert(acceleratorInfos);
     return acceleratorInfos;
@@ -101,7 +96,7 @@ export class AcceleratorLookupManager {
 
   getAcceleratorName(source: number|string, action: number|string):
       AcceleratorName {
-    const uuid: AcceleratorId = `${source}-${action}`;
+    const uuid: AcceleratorId = getAcceleratorId(source, action);
     const acceleratorName = this.acceleratorNameLookup_.get(uuid);
     assert(acceleratorName);
     return acceleratorName;
@@ -126,7 +121,7 @@ export class AcceleratorLookupManager {
         continue;
       }
       for (const [actionId, accelInfos] of Object.entries(accelInfoMap)) {
-        const id = `${source}-${actionId}`;
+        const id = getAcceleratorId(source, actionId);
         if (!this.acceleratorLookup_.has(id)) {
           this.acceleratorLookup_.set(id, []);
         }
@@ -169,7 +164,7 @@ export class AcceleratorLookupManager {
           .push(Object.assign({}, entry));
 
       // Add the entry to the AcceleratorNameLookup.
-      const uuid = `${entry.source}-${entry.action}`;
+      const uuid = getAcceleratorId(entry.source, entry.action);
       // TODO(jimmyxgong): Use real name lookup instead of using fake_data.js.
       this.acceleratorNameLookup_.set(uuid, entry.description);
     }
@@ -222,7 +217,8 @@ export class AcceleratorLookupManager {
 
     // Update the reverse look up maps.
     this.reverseAcceleratorLookup_.set(
-        this.getKeyForLookup(newAccelInfo.accelerator), `${source}-${action}`);
+        this.getKeyForLookup(newAccelInfo.accelerator),
+        getAcceleratorId(source, action));
     this.reverseAcceleratorLookup_.delete(this.getKeyForLookup(oldAccelerator));
   }
 
@@ -248,7 +244,8 @@ export class AcceleratorLookupManager {
 
     // Update the reverse look up maps.
     this.reverseAcceleratorLookup_.set(
-        this.getKeyForLookup(newAccelInfo.accelerator), `${source}-${action}`);
+        this.getKeyForLookup(newAccelInfo.accelerator),
+        getAcceleratorId(source, action));
   }
 
   removeAccelerator(
