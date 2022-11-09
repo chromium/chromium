@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -307,6 +308,14 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                             && !mHideOverviewOnTabSelecting
                             && !mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) {
                         setTabCarouselVisibility(!mIsIncognito);
+                    }
+                }
+
+                @Override
+                public void didSelectTab(Tab tab, int type, int lastId) {
+                    if (type == TabSelectionType.FROM_CLOSE
+                            && UrlUtilities.isNTPUrl(tab.getUrl())) {
+                        setTabCarouselVisibility(false);
                     }
                 }
             };
