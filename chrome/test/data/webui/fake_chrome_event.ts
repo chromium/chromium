@@ -6,32 +6,26 @@
  * @fileoverview Fake implementations of ChromeEvent.
  */
 
-import {assertFalse, assertTrue} from '../chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 export class FakeChromeEvent {
-  constructor() {
-    /** @type {!Set<!Function>} */
-    this.listeners_ = new Set();
-  }
+  private listeners_: Set<Function> = new Set();
 
-  /** @param {!Function} listener */
-  addListener(listener) {
+  addListener(listener: Function) {
     assertFalse(
         this.listeners_.has(listener),
         'FakeChromeEvent.addListened: Listener already added');
     this.listeners_.add(listener);
   }
 
-  /** @param {!Function} listener */
-  removeListener(listener) {
+  removeListener(listener: Function) {
     assertTrue(
         this.listeners_.has(listener),
         'FakeChromeEvent.removeListener: Listener does not exist');
     this.listeners_.delete(listener);
   }
 
-  /** @param {...} args */
-  callListeners(...args) {
+  callListeners(...args: any[]) {
     this.listeners_.forEach(function(l) {
       l(...args);
     });
