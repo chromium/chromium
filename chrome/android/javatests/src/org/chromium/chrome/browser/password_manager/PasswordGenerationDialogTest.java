@@ -25,6 +25,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -62,6 +63,7 @@ public class PasswordGenerationDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1382439")
     public void testDialogSubviewsData() {
         onView(withId(R.id.generated_password)).check(matches(withText(mGeneratedPassword)));
         onView(withId(R.id.generation_save_explanation))
