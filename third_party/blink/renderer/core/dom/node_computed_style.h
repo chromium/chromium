@@ -32,10 +32,6 @@
 
 namespace blink {
 
-inline ComputedStyle* Node::MutableComputedStyleForEditingDeprecated() const {
-  return const_cast<ComputedStyle*>(GetComputedStyle());
-}
-
 inline const ComputedStyle* Node::GetComputedStyle() const {
   if (IsElementNode()) {
     return HasRareData() ? DataAsNodeRareData()

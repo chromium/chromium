@@ -939,23 +939,27 @@ EditingTriState EditingStyle::TriStateOfStyle(
   bool node_is_start = true;
   for (Node& node : NodeTraversal::StartsAt(*selection.Start().AnchorNode())) {
     if (node.GetLayoutObject() && IsEditable(node)) {
-      auto* node_style =
+      auto* computed_style =
           MakeGarbageCollected<CSSComputedStyleDeclaration>(&node);
-      if (node_style) {
+      CSSStyleDeclaration* node_style = computed_style;
+      if (computed_style) {
         // If the selected element has <sub> or <sup> ancestor element, apply
         // the corresponding style(vertical-align) to it so that
         // document.queryCommandState() works with the style. See bug
         // http://crbug.com/582225.
         if (is_vertical_align_ &&
-            GetIdentifierValue(node_style, CSSPropertyID::kVerticalAlign) ==
+            GetIdentifierValue(computed_style, CSSPropertyID::kVerticalAlign) ==
                 CSSValueID::kBaseline) {
           const auto* vertical_align =
               To<CSSIdentifierValue>(mutable_style_->GetPropertyCSSValue(
                   CSSPropertyID::kVerticalAlign));
           if (EditingStyleUtilities::HasAncestorVerticalAlignStyle(
                   node, vertical_align->GetValueID())) {
-            node.MutableComputedStyleForEditingDeprecated()->SetVerticalAlign(
-                vertical_align->ConvertTo<EVerticalAlign>());
+            auto* mutable_style = computed_style->CopyProperties();
+            mutable_style->SetProperty(CSSPropertyID::kVerticalAlign,
+                                       *vertical_align);
+            node_style = mutable_style->EnsureCSSStyleDeclaration(
+                node.GetExecutionContext());
           }
         }
 
