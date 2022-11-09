@@ -38,15 +38,12 @@ class CORE_EXPORT CSSBitsetBase {
 
   CSSBitsetBase() : chunks_() {}
   CSSBitsetBase(const CSSBitsetBase<kBits>& o) { *this = o; }
-  CSSBitsetBase(std::initializer_list<CSSPropertyID> list) : chunks_() {
-    for (CSSPropertyID id : list)
-      Set(id);
-  }
 
-  // This exists really only for generated code to be able to create global
-  // (const) objects without requiring global constructors.
-  explicit constexpr CSSBitsetBase(const std::array<uint64_t, kChunks>& chunks)
-      : chunks_{chunks} {}
+  // This slightly weird construction helps Clang make an actual
+  // compile-time static value, until we have constinit.
+  template <int N>
+  explicit constexpr CSSBitsetBase(const CSSPropertyID (&list)[N])
+      : chunks_(CreateChunks(list)) {}
 
   CSSBitsetBase& operator=(const CSSBitsetBase& o) = default;
 
@@ -54,21 +51,21 @@ class CORE_EXPORT CSSBitsetBase {
   bool operator!=(const CSSBitsetBase& o) const { return !(*this == o); }
 
   inline void Set(CSSPropertyID id) {
-    size_t bit = static_cast<size_t>(id);
+    size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
     DCHECK_LT(bit, kBits);
-    chunks_[bit / 64] |= (1ull << (bit % 64));
+    chunks_.data()[bit / 64] |= (1ull << (bit % 64));
   }
 
   inline void Or(CSSPropertyID id, bool v) {
-    size_t bit = static_cast<size_t>(id);
+    size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
     DCHECK_LT(bit, kBits);
-    chunks_[bit / 64] |= (static_cast<uint64_t>(v) << (bit % 64));
+    chunks_.data()[bit / 64] |= (static_cast<uint64_t>(v) << (bit % 64));
   }
 
   inline bool Has(CSSPropertyID id) const {
-    size_t bit = static_cast<size_t>(id);
+    size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
     DCHECK_LT(bit, kBits);
-    return chunks_[bit / 64] & (1ull << (bit % 64));
+    return chunks_.data()[bit / 64] & (1ull << (bit % 64));
   }
 
   inline bool HasAny() const {
@@ -144,6 +141,17 @@ class CORE_EXPORT CSSBitsetBase {
 
  private:
   std::array<uint64_t, kChunks> chunks_;
+
+  template <int N>
+  static constexpr std::array<uint64_t, kChunks> CreateChunks(
+      const CSSPropertyID (&list)[N]) {
+    std::array<uint64_t, kChunks> chunks{};
+    for (CSSPropertyID id : list) {
+      unsigned bit = static_cast<unsigned>(id);
+      chunks[bit / 64] |= uint64_t{1} << (bit % 64);
+    }
+    return chunks;
+  }
 };
 
 using CSSBitset = CSSBitsetBase<kNumCSSPropertyIDs>;

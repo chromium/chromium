@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
+#include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -31,60 +32,70 @@ namespace blink {
 
 static inline bool IsSimpleLengthPropertyID(CSSPropertyID property_id,
                                             bool& accepts_negative_numbers) {
-  switch (property_id) {
-    case CSSPropertyID::kBlockSize:
-    case CSSPropertyID::kInlineSize:
-    case CSSPropertyID::kMinBlockSize:
-    case CSSPropertyID::kMinInlineSize:
-    case CSSPropertyID::kFontSize:
-    case CSSPropertyID::kHeight:
-    case CSSPropertyID::kWidth:
-    case CSSPropertyID::kMinHeight:
-    case CSSPropertyID::kMinWidth:
-    case CSSPropertyID::kPaddingBottom:
-    case CSSPropertyID::kPaddingLeft:
-    case CSSPropertyID::kPaddingRight:
-    case CSSPropertyID::kPaddingTop:
-    case CSSPropertyID::kScrollPaddingBlockEnd:
-    case CSSPropertyID::kScrollPaddingBlockStart:
-    case CSSPropertyID::kScrollPaddingBottom:
-    case CSSPropertyID::kScrollPaddingInlineEnd:
-    case CSSPropertyID::kScrollPaddingInlineStart:
-    case CSSPropertyID::kScrollPaddingLeft:
-    case CSSPropertyID::kScrollPaddingRight:
-    case CSSPropertyID::kScrollPaddingTop:
-    case CSSPropertyID::kPaddingBlockEnd:
-    case CSSPropertyID::kPaddingBlockStart:
-    case CSSPropertyID::kPaddingInlineEnd:
-    case CSSPropertyID::kPaddingInlineStart:
-    case CSSPropertyID::kShapeMargin:
-    case CSSPropertyID::kR:
-    case CSSPropertyID::kRx:
-    case CSSPropertyID::kRy:
-      accepts_negative_numbers = false;
-      return true;
-    case CSSPropertyID::kBottom:
-    case CSSPropertyID::kCx:
-    case CSSPropertyID::kCy:
-    case CSSPropertyID::kLeft:
-    case CSSPropertyID::kMarginBottom:
-    case CSSPropertyID::kMarginLeft:
-    case CSSPropertyID::kMarginRight:
-    case CSSPropertyID::kMarginTop:
-    case CSSPropertyID::kOffsetDistance:
-    case CSSPropertyID::kRight:
-    case CSSPropertyID::kTop:
-    case CSSPropertyID::kMarginBlockEnd:
-    case CSSPropertyID::kMarginBlockStart:
-    case CSSPropertyID::kMarginInlineEnd:
-    case CSSPropertyID::kMarginInlineStart:
-    case CSSPropertyID::kX:
-    case CSSPropertyID::kY:
-      accepts_negative_numbers = true;
-      return true;
-    default:
-      return false;
+  static CSSBitset properties{{
+      CSSPropertyID::kBlockSize,
+      CSSPropertyID::kInlineSize,
+      CSSPropertyID::kMinBlockSize,
+      CSSPropertyID::kMinInlineSize,
+      CSSPropertyID::kFontSize,
+      CSSPropertyID::kHeight,
+      CSSPropertyID::kWidth,
+      CSSPropertyID::kMinHeight,
+      CSSPropertyID::kMinWidth,
+      CSSPropertyID::kPaddingBottom,
+      CSSPropertyID::kPaddingLeft,
+      CSSPropertyID::kPaddingRight,
+      CSSPropertyID::kPaddingTop,
+      CSSPropertyID::kScrollPaddingBlockEnd,
+      CSSPropertyID::kScrollPaddingBlockStart,
+      CSSPropertyID::kScrollPaddingBottom,
+      CSSPropertyID::kScrollPaddingInlineEnd,
+      CSSPropertyID::kScrollPaddingInlineStart,
+      CSSPropertyID::kScrollPaddingLeft,
+      CSSPropertyID::kScrollPaddingRight,
+      CSSPropertyID::kScrollPaddingTop,
+      CSSPropertyID::kPaddingBlockEnd,
+      CSSPropertyID::kPaddingBlockStart,
+      CSSPropertyID::kPaddingInlineEnd,
+      CSSPropertyID::kPaddingInlineStart,
+      CSSPropertyID::kShapeMargin,
+      CSSPropertyID::kR,
+      CSSPropertyID::kRx,
+      CSSPropertyID::kRy,
+      CSSPropertyID::kBottom,
+      CSSPropertyID::kCx,
+      CSSPropertyID::kCy,
+      CSSPropertyID::kLeft,
+      CSSPropertyID::kMarginBottom,
+      CSSPropertyID::kMarginLeft,
+      CSSPropertyID::kMarginRight,
+      CSSPropertyID::kMarginTop,
+      CSSPropertyID::kOffsetDistance,
+      CSSPropertyID::kRight,
+      CSSPropertyID::kTop,
+      CSSPropertyID::kMarginBlockEnd,
+      CSSPropertyID::kMarginBlockStart,
+      CSSPropertyID::kMarginInlineEnd,
+      CSSPropertyID::kMarginInlineStart,
+      CSSPropertyID::kX,
+      CSSPropertyID::kY,
+  }};
+  // A subset of the above.
+  static CSSBitset accept_negative{
+      {CSSPropertyID::kBottom, CSSPropertyID::kCx, CSSPropertyID::kCy,
+       CSSPropertyID::kLeft, CSSPropertyID::kMarginBottom,
+       CSSPropertyID::kMarginLeft, CSSPropertyID::kMarginRight,
+       CSSPropertyID::kMarginTop, CSSPropertyID::kOffsetDistance,
+       CSSPropertyID::kRight, CSSPropertyID::kTop,
+       CSSPropertyID::kMarginBlockEnd, CSSPropertyID::kMarginBlockStart,
+       CSSPropertyID::kMarginInlineEnd, CSSPropertyID::kMarginInlineStart,
+       CSSPropertyID::kX, CSSPropertyID::kY}};
+
+  accepts_negative_numbers = accept_negative.Has(property_id);
+  if (accepts_negative_numbers) {
+    DCHECK(properties.Has(property_id));
   }
+  return properties.Has(property_id);
 }
 
 template <typename CharacterType>
@@ -194,49 +205,44 @@ static inline bool ParseSimpleAngle(const CharacterType* characters,
 }
 
 static inline bool IsColorPropertyID(CSSPropertyID property_id) {
-  switch (property_id) {
-    case CSSPropertyID::kCaretColor:
-    case CSSPropertyID::kColor:
-    case CSSPropertyID::kBackgroundColor:
-    case CSSPropertyID::kBorderBottomColor:
-    case CSSPropertyID::kBorderLeftColor:
-    case CSSPropertyID::kBorderRightColor:
-    case CSSPropertyID::kBorderTopColor:
-    case CSSPropertyID::kFill:
-    case CSSPropertyID::kFloodColor:
-    case CSSPropertyID::kLightingColor:
-    case CSSPropertyID::kOutlineColor:
-    case CSSPropertyID::kStopColor:
-    case CSSPropertyID::kStroke:
-    case CSSPropertyID::kBorderBlockEndColor:
-    case CSSPropertyID::kBorderBlockStartColor:
-    case CSSPropertyID::kBorderInlineEndColor:
-    case CSSPropertyID::kBorderInlineStartColor:
-    case CSSPropertyID::kColumnRuleColor:
-    case CSSPropertyID::kTextEmphasisColor:
-    case CSSPropertyID::kWebkitTextFillColor:
-    case CSSPropertyID::kWebkitTextStrokeColor:
-    case CSSPropertyID::kTextDecorationColor:
-      return true;
-    default:
-      return false;
-  }
+  static CSSBitset properties{{
+      CSSPropertyID::kCaretColor,
+      CSSPropertyID::kColor,
+      CSSPropertyID::kBackgroundColor,
+      CSSPropertyID::kBorderBottomColor,
+      CSSPropertyID::kBorderLeftColor,
+      CSSPropertyID::kBorderRightColor,
+      CSSPropertyID::kBorderTopColor,
+      CSSPropertyID::kFill,
+      CSSPropertyID::kFloodColor,
+      CSSPropertyID::kLightingColor,
+      CSSPropertyID::kOutlineColor,
+      CSSPropertyID::kStopColor,
+      CSSPropertyID::kStroke,
+      CSSPropertyID::kBorderBlockEndColor,
+      CSSPropertyID::kBorderBlockStartColor,
+      CSSPropertyID::kBorderInlineEndColor,
+      CSSPropertyID::kBorderInlineStartColor,
+      CSSPropertyID::kColumnRuleColor,
+      CSSPropertyID::kTextEmphasisColor,
+      CSSPropertyID::kWebkitTextFillColor,
+      CSSPropertyID::kWebkitTextStrokeColor,
+      CSSPropertyID::kTextDecorationColor,
+  }};
+  return properties.Has(property_id);
 }
 
 // https://quirks.spec.whatwg.org/#the-hashless-hex-color-quirk
 static inline bool ColorPropertyAllowsQuirkyColor(CSSPropertyID property_id) {
-  switch (property_id) {
-    case CSSPropertyID::kColor:
-    case CSSPropertyID::kBackgroundColor:
-    case CSSPropertyID::kBorderBottomColor:
-    case CSSPropertyID::kBorderLeftColor:
-    case CSSPropertyID::kBorderRightColor:
-    case CSSPropertyID::kBorderTopColor:
-      return true;
-    default:
-      DCHECK(IsColorPropertyID(property_id));
-      return false;
-  }
+  static CSSBitset properties{{
+      CSSPropertyID::kColor,
+      CSSPropertyID::kBackgroundColor,
+      CSSPropertyID::kBorderBottomColor,
+      CSSPropertyID::kBorderLeftColor,
+      CSSPropertyID::kBorderRightColor,
+      CSSPropertyID::kBorderTopColor,
+  }};
+  return properties.Has(property_id);
 }
 
 // Returns the number of initial characters which form a valid double.
@@ -1268,126 +1274,121 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
   }
 }
 
-bool CSSParserFastPaths::IsHandledByKeywordFastPath(CSSPropertyID property_id) {
-  // NOTE: This list must match exactly those properties handled by
-  // IsValidKeywordPropertyAndValue().
-  switch (property_id) {
-    case CSSPropertyID::kAlignmentBaseline:
-    case CSSPropertyID::kAll:
-    case CSSPropertyID::kMixBlendMode:
-    case CSSPropertyID::kIsolation:
-    case CSSPropertyID::kBackgroundRepeatX:
-    case CSSPropertyID::kBackgroundRepeatY:
-    case CSSPropertyID::kBorderBottomStyle:
-    case CSSPropertyID::kBorderCollapse:
-    case CSSPropertyID::kBorderLeftStyle:
-    case CSSPropertyID::kBorderRightStyle:
-    case CSSPropertyID::kBorderTopStyle:
-    case CSSPropertyID::kBoxSizing:
-    case CSSPropertyID::kBufferedRendering:
-    case CSSPropertyID::kCaptionSide:
-    case CSSPropertyID::kClear:
-    case CSSPropertyID::kClipRule:
-    case CSSPropertyID::kColorInterpolation:
-    case CSSPropertyID::kColorInterpolationFilters:
-    case CSSPropertyID::kColorRendering:
-    case CSSPropertyID::kDirection:
-    case CSSPropertyID::kDominantBaseline:
-    case CSSPropertyID::kEmptyCells:
-    case CSSPropertyID::kFillRule:
-    case CSSPropertyID::kFloat:
-    case CSSPropertyID::kForcedColorAdjust:
-    case CSSPropertyID::kHyphens:
-    case CSSPropertyID::kImageRendering:
-    case CSSPropertyID::kListStylePosition:
-    case CSSPropertyID::kMaskType:
-    case CSSPropertyID::kMathShift:
-    case CSSPropertyID::kMathStyle:
-    case CSSPropertyID::kObjectFit:
-    case CSSPropertyID::kOutlineStyle:
-    case CSSPropertyID::kOverflowAnchor:
-    case CSSPropertyID::kOverflowBlock:
-    case CSSPropertyID::kOverflowInline:
-    case CSSPropertyID::kOverflowWrap:
-    case CSSPropertyID::kOverflowX:
-    case CSSPropertyID::kOverflowY:
-    case CSSPropertyID::kBreakAfter:
-    case CSSPropertyID::kBreakBefore:
-    case CSSPropertyID::kBreakInside:
-    case CSSPropertyID::kPageOrientation:
-    case CSSPropertyID::kPointerEvents:
-    case CSSPropertyID::kPosition:
-    case CSSPropertyID::kResize:
-    case CSSPropertyID::kScrollBehavior:
-    case CSSPropertyID::kOverscrollBehaviorInline:
-    case CSSPropertyID::kOverscrollBehaviorBlock:
-    case CSSPropertyID::kOverscrollBehaviorX:
-    case CSSPropertyID::kOverscrollBehaviorY:
-    case CSSPropertyID::kRubyPosition:
-    case CSSPropertyID::kShapeRendering:
-    case CSSPropertyID::kSpeak:
-    case CSSPropertyID::kStrokeLinecap:
-    case CSSPropertyID::kStrokeLinejoin:
-    case CSSPropertyID::kTableLayout:
-    case CSSPropertyID::kTextAlign:
-    case CSSPropertyID::kTextAlignLast:
-    case CSSPropertyID::kTextAnchor:
-    case CSSPropertyID::kTextCombineUpright:
-    case CSSPropertyID::kTextDecorationStyle:
-    case CSSPropertyID::kTextDecorationSkipInk:
-    case CSSPropertyID::kTextOrientation:
-    case CSSPropertyID::kWebkitTextOrientation:
-    case CSSPropertyID::kTextOverflow:
-    case CSSPropertyID::kTextRendering:
-    case CSSPropertyID::kTextTransform:
-    case CSSPropertyID::kUnicodeBidi:
-    case CSSPropertyID::kVectorEffect:
-    case CSSPropertyID::kVisibility:
-    case CSSPropertyID::kAppRegion:
-    case CSSPropertyID::kBackfaceVisibility:
-    case CSSPropertyID::kBorderBlockEndStyle:
-    case CSSPropertyID::kBorderBlockStartStyle:
-    case CSSPropertyID::kBorderInlineEndStyle:
-    case CSSPropertyID::kBorderInlineStartStyle:
-    case CSSPropertyID::kWebkitBoxAlign:
-    case CSSPropertyID::kWebkitBoxDecorationBreak:
-    case CSSPropertyID::kWebkitBoxDirection:
-    case CSSPropertyID::kWebkitBoxOrient:
-    case CSSPropertyID::kWebkitBoxPack:
-    case CSSPropertyID::kColumnFill:
-    case CSSPropertyID::kColumnRuleStyle:
-    case CSSPropertyID::kFlexDirection:
-    case CSSPropertyID::kFlexWrap:
-    case CSSPropertyID::kFontKerning:
-    case CSSPropertyID::kFontOpticalSizing:
-    case CSSPropertyID::kFontSynthesisWeight:
-    case CSSPropertyID::kFontSynthesisStyle:
-    case CSSPropertyID::kFontSynthesisSmallCaps:
-    case CSSPropertyID::kWebkitFontSmoothing:
-    case CSSPropertyID::kLineBreak:
-    case CSSPropertyID::kWebkitLineBreak:
-    case CSSPropertyID::kWebkitPrintColorAdjust:
-    case CSSPropertyID::kWebkitRtlOrdering:
-    case CSSPropertyID::kWebkitRubyPosition:
-    case CSSPropertyID::kWebkitTextCombine:
-    case CSSPropertyID::kWebkitTextSecurity:
-    case CSSPropertyID::kTransformBox:
-    case CSSPropertyID::kTransformStyle:
-    case CSSPropertyID::kWebkitUserDrag:
-    case CSSPropertyID::kWebkitUserModify:
-    case CSSPropertyID::kUserSelect:
-    case CSSPropertyID::kWebkitWritingMode:
-    case CSSPropertyID::kWhiteSpace:
-    case CSSPropertyID::kWordBreak:
-    case CSSPropertyID::kWritingMode:
-    case CSSPropertyID::kScrollbarWidth:
-    case CSSPropertyID::kScrollSnapStop:
-    case CSSPropertyID::kOriginTrialTestProperty:
-      return true;
-    default:
-      return false;
-  }
-}
+// NOTE: This list must match exactly those properties handled by
+// IsValidKeywordPropertyAndValue().
+CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
+    CSSPropertyID::kAlignmentBaseline,
+    CSSPropertyID::kAll,
+    CSSPropertyID::kMixBlendMode,
+    CSSPropertyID::kIsolation,
+    CSSPropertyID::kBackgroundRepeatX,
+    CSSPropertyID::kBackgroundRepeatY,
+    CSSPropertyID::kBorderBottomStyle,
+    CSSPropertyID::kBorderCollapse,
+    CSSPropertyID::kBorderLeftStyle,
+    CSSPropertyID::kBorderRightStyle,
+    CSSPropertyID::kBorderTopStyle,
+    CSSPropertyID::kBoxSizing,
+    CSSPropertyID::kBufferedRendering,
+    CSSPropertyID::kCaptionSide,
+    CSSPropertyID::kClear,
+    CSSPropertyID::kClipRule,
+    CSSPropertyID::kColorInterpolation,
+    CSSPropertyID::kColorInterpolationFilters,
+    CSSPropertyID::kColorRendering,
+    CSSPropertyID::kDirection,
+    CSSPropertyID::kDominantBaseline,
+    CSSPropertyID::kEmptyCells,
+    CSSPropertyID::kFillRule,
+    CSSPropertyID::kFloat,
+    CSSPropertyID::kForcedColorAdjust,
+    CSSPropertyID::kHyphens,
+    CSSPropertyID::kImageRendering,
+    CSSPropertyID::kListStylePosition,
+    CSSPropertyID::kMaskType,
+    CSSPropertyID::kMathShift,
+    CSSPropertyID::kMathStyle,
+    CSSPropertyID::kObjectFit,
+    CSSPropertyID::kOutlineStyle,
+    CSSPropertyID::kOverflowAnchor,
+    CSSPropertyID::kOverflowBlock,
+    CSSPropertyID::kOverflowInline,
+    CSSPropertyID::kOverflowWrap,
+    CSSPropertyID::kOverflowX,
+    CSSPropertyID::kOverflowY,
+    CSSPropertyID::kBreakAfter,
+    CSSPropertyID::kBreakBefore,
+    CSSPropertyID::kBreakInside,
+    CSSPropertyID::kPageOrientation,
+    CSSPropertyID::kPointerEvents,
+    CSSPropertyID::kPosition,
+    CSSPropertyID::kResize,
+    CSSPropertyID::kScrollBehavior,
+    CSSPropertyID::kOverscrollBehaviorInline,
+    CSSPropertyID::kOverscrollBehaviorBlock,
+    CSSPropertyID::kOverscrollBehaviorX,
+    CSSPropertyID::kOverscrollBehaviorY,
+    CSSPropertyID::kRubyPosition,
+    CSSPropertyID::kShapeRendering,
+    CSSPropertyID::kSpeak,
+    CSSPropertyID::kStrokeLinecap,
+    CSSPropertyID::kStrokeLinejoin,
+    CSSPropertyID::kTableLayout,
+    CSSPropertyID::kTextAlign,
+    CSSPropertyID::kTextAlignLast,
+    CSSPropertyID::kTextAnchor,
+    CSSPropertyID::kTextCombineUpright,
+    CSSPropertyID::kTextDecorationStyle,
+    CSSPropertyID::kTextDecorationSkipInk,
+    CSSPropertyID::kTextOrientation,
+    CSSPropertyID::kWebkitTextOrientation,
+    CSSPropertyID::kTextOverflow,
+    CSSPropertyID::kTextRendering,
+    CSSPropertyID::kTextTransform,
+    CSSPropertyID::kUnicodeBidi,
+    CSSPropertyID::kVectorEffect,
+    CSSPropertyID::kVisibility,
+    CSSPropertyID::kAppRegion,
+    CSSPropertyID::kBackfaceVisibility,
+    CSSPropertyID::kBorderBlockEndStyle,
+    CSSPropertyID::kBorderBlockStartStyle,
+    CSSPropertyID::kBorderInlineEndStyle,
+    CSSPropertyID::kBorderInlineStartStyle,
+    CSSPropertyID::kWebkitBoxAlign,
+    CSSPropertyID::kWebkitBoxDecorationBreak,
+    CSSPropertyID::kWebkitBoxDirection,
+    CSSPropertyID::kWebkitBoxOrient,
+    CSSPropertyID::kWebkitBoxPack,
+    CSSPropertyID::kColumnFill,
+    CSSPropertyID::kColumnRuleStyle,
+    CSSPropertyID::kFlexDirection,
+    CSSPropertyID::kFlexWrap,
+    CSSPropertyID::kFontKerning,
+    CSSPropertyID::kFontOpticalSizing,
+    CSSPropertyID::kFontSynthesisWeight,
+    CSSPropertyID::kFontSynthesisStyle,
+    CSSPropertyID::kFontSynthesisSmallCaps,
+    CSSPropertyID::kWebkitFontSmoothing,
+    CSSPropertyID::kLineBreak,
+    CSSPropertyID::kWebkitLineBreak,
+    CSSPropertyID::kWebkitPrintColorAdjust,
+    CSSPropertyID::kWebkitRtlOrdering,
+    CSSPropertyID::kWebkitRubyPosition,
+    CSSPropertyID::kWebkitTextCombine,
+    CSSPropertyID::kWebkitTextSecurity,
+    CSSPropertyID::kTransformBox,
+    CSSPropertyID::kTransformStyle,
+    CSSPropertyID::kWebkitUserDrag,
+    CSSPropertyID::kWebkitUserModify,
+    CSSPropertyID::kUserSelect,
+    CSSPropertyID::kWebkitWritingMode,
+    CSSPropertyID::kWhiteSpace,
+    CSSPropertyID::kWordBreak,
+    CSSPropertyID::kWritingMode,
+    CSSPropertyID::kScrollbarWidth,
+    CSSPropertyID::kScrollSnapStop,
+    CSSPropertyID::kOriginTrialTestProperty,
+}};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {
   return value_id >= CSSValueID::kCaption && value_id <= CSSValueID::kStatusBar;

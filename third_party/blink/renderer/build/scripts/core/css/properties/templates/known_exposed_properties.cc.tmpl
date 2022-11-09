@@ -12,10 +12,10 @@
 
 namespace blink {
 
-const CSSBitset kKnownExposedProperties{std::array<uint64_t, CSSBitset::kChunks>{
-  {% for chunk in known_exposed_properties_bitmask %}
-    0x{{ '%016x' % chunk }}ULL,
+const CSSBitset kKnownExposedProperties{ {
+  {% for property in known_exposed_properties %}
+    CSSPropertyID::{{ property }},
   {% endfor %}
-}};
+} };
 
 }  // namespace blink
