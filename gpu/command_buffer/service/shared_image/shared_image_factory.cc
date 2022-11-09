@@ -367,7 +367,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   auto* factory = GetFactoryByUsage(usage, si_format, size,
                                     /*pixel_data=*/{}, gmb_type);
 
-  if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER) {
+  if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER &&
+      !IsSharedBetweenThreads(usage)) {
     // Check if CompoundImageBacking can hold shared memory buffer plus
     // another GPU backing type to satisfy requirements.
     use_compound = true;
