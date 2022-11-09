@@ -484,11 +484,11 @@ TEST_F(DownloadDisplayControllerTest,
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar3.pdf"),
                    download::DownloadItem::IN_PROGRESS);
   display().HideDetails();
-  // Pop open partial view on completed download.
+  // Don't pop up the view on completed download.
   UpdateDownloadItem(/*item_index=*/2, DownloadState::COMPLETE,
                      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
                      /*show_details_if_done=*/true);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
 }

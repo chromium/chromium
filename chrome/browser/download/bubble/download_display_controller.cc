@@ -153,15 +153,10 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   }
   if (is_done) {
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
-    if (show_details_if_done) {
-      if (display_->IsFullscreenWithParentViewHidden()) {
-        // Suppress the complete event for now because the parent view is
-        // hidden.
-        download_completed_while_fullscreen_ = true;
-      } else if (download::ShouldShowDetailsAutomatically(
-                     browser_->profile())) {
-        display_->ShowDetails();
-      }
+    if (show_details_if_done && display_->IsFullscreenWithParentViewHidden()) {
+      // Suppress the complete event for now because the parent view is
+      // hidden.
+      download_completed_while_fullscreen_ = true;
     }
   }
   std::vector<std::unique_ptr<DownloadUIModel>> all_models =

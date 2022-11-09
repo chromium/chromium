@@ -4811,7 +4811,8 @@ IN_PROC_BROWSER_TEST_F(
     DownloadExtensionBubbleEnabledTest_SetUiOptionsShowDetails) {
   LoadExtension("downloads_split");
   DownloadManager::DownloadVector items;
-  CreateTwoDownloads(&items);
+  CreateFirstSlowTestDownload();
+  GetCurrentManager()->GetAllDownloads(&items);
   ScopedItemVectorCanceller delete_items(&items);
 
   EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
@@ -4819,14 +4820,10 @@ IN_PROC_BROWSER_TEST_F(
   // extension.
   EXPECT_FALSE(GetDownloadToolbarButton()->IsShowingDetails());
 
-  items[0]->Cancel(true);
-  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
-  // Details are not shown because the download item is observed by an
-  // extension.
-  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowingDetails());
-
   DisableExtension(GetExtensionId());
-  items[1]->Cancel(true);
+
+  CreateSecondSlowTestDownload();
+  GetCurrentManager()->GetAllDownloads(&items);
   EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
   // Details are shown because the extension is disabled.
   EXPECT_TRUE(GetDownloadToolbarButton()->IsShowingDetails());
