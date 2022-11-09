@@ -132,11 +132,11 @@ class UnloadController : public WebContentsCollection::Observer,
 
   WebContentsCollection web_contents_collection_;
 
-  // Tracks tabs that need there beforeunload event fired before we can
+  // Tracks tabs that need their beforeunload event fired before we can
   // close the browser. Only gets populated when we try to close the browser.
   UnloadListenerSet tabs_needing_before_unload_fired_;
 
-  // Tracks tabs that need there unload event fired before we can
+  // Tracks tabs that need their unload event fired before we can
   // close the browser. Only gets populated when we try to close the browser.
   UnloadListenerSet tabs_needing_unload_fired_;
 
