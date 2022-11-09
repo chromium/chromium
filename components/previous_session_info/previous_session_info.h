@@ -28,8 +28,8 @@ extern NSString* const kPreviousSessionInfoRestoringSession;
 // Key in the UserDefaults for an array which contains the ids for the connected
 // scene sessions on the previous run.
 extern NSString* const kPreviousSessionInfoConnectedSceneSessionIDs;
-// Key in the UserDefaults for a dictionary with session info params.
-extern NSString* const kPreviousSessionInfoParams;
+// Prefix key in the UserDefaults for a dictionary with session info params.
+extern NSString* const kPreviousSessionInfoParamsPrefix;
 // Key in the UserDefaults for the memory footprint of the browser process.
 extern NSString* const kPreviousSessionInfoMemoryFootprint;
 // Key in the UserDefaults for the number of open tabs.
