@@ -66,7 +66,7 @@ try_.builder(
     cores = None,
     # TODO(crbug.com/1279290) builds with PGO change take long time.
     # Keep in sync with mac-official in ci/chromium.star.
-    execution_timeout = 7 * time.hour,
+    execution_timeout = 9 * time.hour,
     os = os.MAC_ANY,
 )
 
