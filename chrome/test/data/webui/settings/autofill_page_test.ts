@@ -396,7 +396,7 @@ suite('PasswordsUITest', function() {
             const eventDetail = document.createElement('password-list-item');
             eventDetail.entry = entry;
 
-            passwordManager.setRequestCredentialDetailsResponse(entry);
+            passwordManager.setRequestCredentialsDetailsResponse(entry);
 
             dispatchingElement.dispatchEvent(
                 new CustomEvent('password-view-page-requested', {

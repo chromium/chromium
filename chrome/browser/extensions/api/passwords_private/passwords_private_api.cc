@@ -125,37 +125,35 @@ void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
 }
 
 // PasswordsPrivateRequestCredentialDetailsFunction
-ResponseAction PasswordsPrivateRequestCredentialDetailsFunction::Run() {
+ResponseAction PasswordsPrivateRequestCredentialsDetailsFunction::Run() {
   auto parameters =
-      api::passwords_private::RequestCredentialDetails::Params::Create(args());
+      api::passwords_private::RequestCredentialsDetails::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
-      ->RequestCredentialDetails(
-          parameters->id,
-          base::BindOnce(&PasswordsPrivateRequestCredentialDetailsFunction::
-                             GotPasswordUiEntry,
-                         this),
+      ->RequestCredentialsDetails(
+          parameters->ids,
+          base::BindOnce(
+              &PasswordsPrivateRequestCredentialsDetailsFunction::GotPasswords,
+              this),
           GetSenderWebContents());
 
-  // GotPasswordUiEntry() might have responded before we reach this point.
+  // GotPasswords() might have responded before we reach this point.
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void PasswordsPrivateRequestCredentialDetailsFunction::GotPasswordUiEntry(
-    absl::optional<api::passwords_private::PasswordUiEntry> password_ui_entry) {
-  if (password_ui_entry) {
+void PasswordsPrivateRequestCredentialsDetailsFunction::GotPasswords(
+    const PasswordsPrivateDelegate::UiEntries& entries) {
+  if (!entries.empty()) {
     Respond(ArgumentList(
-        api::passwords_private::RequestCredentialDetails::Results::Create(
-            std::move(*password_ui_entry))));
+        api::passwords_private::RequestCredentialsDetails::Results::Create(
+            entries)));
     return;
   }
 
-  Respond(Error(base::StringPrintf(
+  Respond(Error(
       "Could not obtain password entry. Either the user is not "
-      "authenticated or no credential with id = %d could be found.",
-      api::passwords_private::RequestCredentialDetails::Params::Create(args())
-          ->id)));
+      "authenticated or no credential with matching ids could be found."));
 }
 
 // PasswordsPrivateGetSavedPasswordListFunction

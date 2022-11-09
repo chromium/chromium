@@ -210,13 +210,15 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RequestPlaintextPasswordFails) {
   EXPECT_TRUE(RunPasswordsSubtest("requestPlaintextPasswordFails")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RequestCredentialDetails) {
-  EXPECT_TRUE(RunPasswordsSubtest("requestCredentialDetails")) << message_;
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RequestCredentialsDetails) {
+  EXPECT_TRUE(RunPasswordsSubtest("requestCredentialsDetails")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RequestCredentialDetailsFails) {
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       RequestCredentialsDetailsFails) {
   ResetPlaintextPassword();
-  EXPECT_TRUE(RunPasswordsSubtest("requestCredentialDetailsFails")) << message_;
+  EXPECT_TRUE(RunPasswordsSubtest("requestCredentialsDetailsFails"))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetSavedPasswordList) {

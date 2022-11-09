@@ -921,7 +921,7 @@ suite('PasswordsSection', function() {
     assertFalse(isVisible(passwordListItem.$.moreActionsButton));
     const subpageButton = passwordListItem.$.seePasswordDetails;
     assertTrue(isVisible(subpageButton));
-    passwordManager.setRequestCredentialDetailsResponse(item);
+    passwordManager.setRequestCredentialsDetailsResponse(item);
     const PasswordViewPageRequestedEvent =
         eventToPromise('password-view-page-requested', passwordListItem);
     subpageButton.click();

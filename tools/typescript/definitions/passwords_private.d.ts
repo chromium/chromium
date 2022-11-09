@@ -152,8 +152,8 @@ declare global {
       export function undoRemoveSavedPasswordOrException(): void;
       export function requestPlaintextPassword(
           id: number, reason: PlaintextReason): Promise<string>;
-      export function requestCredentialDetails(id: number):
-          Promise<PasswordUiEntry>;
+      export function requestCredentialsDetails(ids: number[]):
+          Promise<PasswordUiEntry[]>;
       export function getSavedPasswordList(): Promise<PasswordUiEntry[]>;
       export function getPasswordExceptionList(): Promise<ExceptionEntry[]>;
       export function movePasswordsToAccount(ids: number[]): void;

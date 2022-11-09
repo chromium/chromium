@@ -85,8 +85,8 @@ constexpr char kHistogramName[] = "PasswordManager.AccessPasswordInSettings";
 
 using MockPlaintextPasswordCallback =
     base::MockCallback<PasswordsPrivateDelegate::PlaintextPasswordCallback>;
-using MockRequestCredentialDetailsCallback = base::MockCallback<
-    PasswordsPrivateDelegate::RequestCredentialDetailsCallback>;
+using MockRequestCredentialsDetailsCallback =
+    base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback>;
 
 class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
  public:
@@ -772,7 +772,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
-       TestPassedReauthOnRequestCredentialDetails) {
+       TestPassedReauthOnRequestCredentialsDetails) {
   password_manager::PasswordForm sample_form = CreateSampleForm();
   sample_form.notes.emplace_back(u"best note ever",
                                  /*date_created=*/base::Time::Now());
@@ -791,16 +791,17 @@ TEST_F(PasswordsPrivateDelegateImplTest,
           [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
                   callback) { std::move(callback).Run(true); }));
 
-  MockRequestCredentialDetailsCallback password_callback;
+  MockRequestCredentialsDetailsCallback password_callback;
   EXPECT_CALL(password_callback, Run)
-      .WillOnce(
-          [&](absl::optional<api::passwords_private::PasswordUiEntry> entry) {
-            EXPECT_THAT(entry->password, Eq("test"));
-            EXPECT_THAT(entry->username, Eq("test@gmail.com"));
-            EXPECT_THAT(entry->note, Eq("best note ever"));
-          });
+      .WillOnce([&](const std::vector<api::passwords_private::PasswordUiEntry>&
+                        entries) {
+        EXPECT_EQ(1u, entries.size());
+        EXPECT_THAT(entries[0].password, Eq("test"));
+        EXPECT_THAT(entries[0].username, Eq("test@gmail.com"));
+        EXPECT_THAT(entries[0].note, Eq("best note ever"));
+      });
 
-  delegate.RequestCredentialDetails(0, password_callback.Get(), nullptr);
+  delegate.RequestCredentialsDetails({0}, password_callback.Get(), nullptr);
 
   histogram_tester().ExpectUniqueSample(
       kHistogramName, password_manager::metrics_util::ACCESS_PASSWORD_VIEWED,
@@ -834,7 +835,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
-       TestFailedReauthOnRequestCredentialDetails) {
+       TestFailedReauthOnRequestCredentialsDetails) {
   SetUpPasswordStores({CreateSampleForm()});
 
   PasswordsPrivateDelegateImpl delegate(profile());
@@ -850,9 +851,9 @@ TEST_F(PasswordsPrivateDelegateImplTest,
           [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
                   callback) { std::move(callback).Run(false); }));
 
-  MockRequestCredentialDetailsCallback password_callback;
-  EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
-  delegate.RequestCredentialDetails(0, password_callback.Get(), nullptr);
+  MockRequestCredentialsDetailsCallback password_callback;
+  EXPECT_CALL(password_callback, Run(testing::IsEmpty()));
+  delegate.RequestCredentialsDetails({0}, password_callback.Get(), nullptr);
 
   // Since Reauth had failed password was not viewed and metric wasn't recorded
   histogram_tester().ExpectTotalCount(kHistogramName, 0);

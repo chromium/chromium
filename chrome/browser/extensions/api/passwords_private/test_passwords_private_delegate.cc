@@ -152,16 +152,18 @@ void TestPasswordsPrivateDelegate::RequestPlaintextPassword(
   std::move(callback).Run(plaintext_password_);
 }
 
-void TestPasswordsPrivateDelegate::RequestCredentialDetails(
-    int id,
-    RequestCredentialDetailsCallback callback,
+void TestPasswordsPrivateDelegate::RequestCredentialsDetails(
+    const std::vector<int>& ids,
+    UiEntriesCallback callback,
     content::WebContents* web_contents) {
   api::passwords_private::PasswordUiEntry entry = CreateEntry(42);
   if (plaintext_password_.has_value()) {
     entry.password = base::UTF16ToUTF8(plaintext_password_.value());
-    std::move(callback).Run(std::move(entry));
+    UiEntries entries;
+    entries.push_back(std::move(entry));
+    std::move(callback).Run({std::move(entries)});
   } else {
-    std::move(callback).Run(std::move(absl::nullopt));
+    std::move(callback).Run({});
   }
 }
 

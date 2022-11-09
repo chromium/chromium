@@ -132,12 +132,12 @@ export interface PasswordManagerProxy {
   undoRemoveSavedPasswordOrException(): void;
 
   /**
-   * Gets the full credential for a given id.
-   * @param id The id for the password entry being being retrieved.
-   * @return A promise that resolves to the full |PasswordUiEntry|.
+   * Gets the list of full (with note and password) credentials for given ids.
+   * @param ids The id for the password entries being retrieved.
+   * @return A promise that resolves to |PasswordUiEntry[]|.
    */
-  requestCredentialDetails(id: number):
-      Promise<chrome.passwordsPrivate.PasswordUiEntry>;
+  requestCredentialsDetails(ids: number[]):
+      Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
 
   /**
    * Gets the saved password for a given id and reason.
@@ -432,8 +432,8 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
   }
 
-  requestCredentialDetails(id: number) {
-    return chrome.passwordsPrivate.requestCredentialDetails(id);
+  requestCredentialsDetails(ids: number[]) {
+    return chrome.passwordsPrivate.requestCredentialsDetails(ids);
   }
 
   requestPlaintextPassword(

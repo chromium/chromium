@@ -197,23 +197,24 @@ var availableTests = [
         });
   },
 
-  function requestCredentialDetails() {
-    chrome.passwordsPrivate.requestCredentialDetails(0, passwordUiEntry => {
+  function requestCredentialsDetails() {
+    chrome.passwordsPrivate.requestCredentialsDetails([0], passwords => {
       // Ensure that the callback is invoked without an error state and the
       // expected plaintext password.
       chrome.test.assertNoLastError();
-      chrome.test.assertEq('plaintext', passwordUiEntry.password);
+      chrome.test.assertEq(1, passwords.length);
+      chrome.test.assertEq('plaintext', passwords[0].password);
       chrome.test.succeed();
     });
   },
 
-  function requestCredentialDetailsFails() {
-    chrome.passwordsPrivate.requestCredentialDetails(123, passwordUiEntry => {
+  function requestCredentialsDetailsFails() {
+    chrome.passwordsPrivate.requestCredentialsDetails([123], passwords => {
       // Ensure that the callback is invoked with an error state and the
       // message contains the right id.
       chrome.test.assertLastError(
           'Could not obtain password entry. Either the user is not ' +
-          'authenticated or no credential with id = 123 could be found.');
+          'authenticated or no credential with matching ids could be found.');
       chrome.test.succeed();
     });
   },

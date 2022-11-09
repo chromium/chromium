@@ -460,9 +460,9 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
           weak_ptr_factory_.GetWeakPtr(), id, reason, std::move(callback)));
 }
 
-void PasswordsPrivateDelegateImpl::RequestCredentialDetails(
-    int id,
-    RequestCredentialDetailsCallback callback,
+void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
+    const std::vector<int>& ids,
+    UiEntriesCallback callback,
     content::WebContents* web_contents) {
   // Save |web_contents| so that it can be used later when OsReauthCall() is
   // called. Note: This is safe because the |web_contents| is used before
@@ -474,7 +474,7 @@ void PasswordsPrivateDelegateImpl::RequestCredentialDetails(
       GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
-          weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback)));
 }
 
 void PasswordsPrivateDelegateImpl::OsReauthCall(
@@ -817,28 +817,39 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
 }
 
 void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
-    int id,
-    RequestCredentialDetailsCallback callback,
+    const std::vector<int>& ids,
+    UiEntriesCallback callback,
     bool authenticated) {
   if (!authenticated) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run({});
     return;
   }
 
-  const CredentialUIEntry* credential = credential_id_generator_.TryGetKey(id);
-  if (!credential) {
-    std::move(callback).Run(absl::nullopt);
-    return;
+  CredentialUIEntry last_entry;
+  std::vector<api::passwords_private::PasswordUiEntry> passwords;
+  for (int id : ids) {
+    const CredentialUIEntry* credential =
+        credential_id_generator_.TryGetKey(id);
+    if (!credential) {
+      continue;
+    }
+
+    api::passwords_private::PasswordUiEntry password_ui_entry =
+        CreatePasswordUiEntryFromCredentialUiEntry(id, *credential);
+    password_ui_entry.password = base::UTF16ToUTF8(credential->password);
+    password_ui_entry.note = base::UTF16ToUTF8(credential->note.value);
+    // password_manager::MovePasswordsToAccountStore() takes care of moving the
+    // entire equivalence class, so passing the first element is fine.
+    passwords.push_back(std::move(password_ui_entry));
+
+    last_entry = *credential;
   }
 
-  api::passwords_private::PasswordUiEntry password_ui_entry =
-      CreatePasswordUiEntryFromCredentialUiEntry(id, *credential);
-  password_ui_entry.password = base::UTF16ToUTF8(credential->password);
-  password_ui_entry.note = base::UTF16ToUTF8(credential->note.value);
-  std::move(callback).Run(std::move(password_ui_entry));
-
-  EmitHistogramsForCredentialAccess(
-      *credential, api::passwords_private::PLAINTEXT_REASON_VIEW);
+  if (!passwords.empty()) {
+    EmitHistogramsForCredentialAccess(
+        last_entry, api::passwords_private::PLAINTEXT_REASON_VIEW);
+  }
+  std::move(callback).Run(std::move(passwords));
 }
 
 void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(

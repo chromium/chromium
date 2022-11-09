@@ -253,15 +253,17 @@ chrome.passwordsPrivate.undoRemoveSavedPasswordOrException = function() {};
 chrome.passwordsPrivate.requestPlaintextPassword = function(id, reason, callback) {};
 
 /**
- * Returns the PasswordUiEntry (with |password| field filled) corresponding to
- * |id|. Note that on some operating systems, this call may result in an
- * OS-level reauthentication. Once the PasswordUiEntry has been fetched, it will
- * be returned via |callback|.
- * @param {number} id The id for the password entry being being retrieved.
- * @param {function(!chrome.passwordsPrivate.PasswordUiEntry): void} callback
- *     The callback that gets invoked with the retrieved PasswordUiEntry.
+ * Returns the PasswordUiEntries (with |password|, |note| field filled)
+ * corresponding to |ids|. Note that on some operating systems, this call may
+ * result in an OS-level reauthentication. Once the PasswordUiEntry has been
+ * fetched, it will be returned via |callback|.
+ * @param {!Array<number>} ids The id for the password entry being being
+ *     retrieved.
+ * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>): void}
+ *     callback The callback that gets invoked with the retrieved
+ *     PasswordUiEntry.
  */
-chrome.passwordsPrivate.requestCredentialDetails = function(id, callback) {};
+chrome.passwordsPrivate.requestCredentialsDetails = function(ids, callback) {};
 
 /**
  * Returns the list of saved passwords.

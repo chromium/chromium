@@ -80,21 +80,24 @@ export const PasswordRequestorMixin = dedupingMixin(
             Promise<chrome.passwordsPrivate.PasswordUiEntry> {
           // <if expr="is_chromeos">
           // If no password was found, refresh auth token and retry.
+
           return new Promise((resolve, reject) => {
             PasswordManagerImpl.getInstance()
-                .requestCredentialDetails(id)
-                .then(resolve)
+                .requestCredentialsDetails([id])
+                .then(passwords => resolve(passwords[0]))
                 .catch(() => {
                   this.tokenRequestManager.request(
                       () => PasswordManagerImpl.getInstance()
-                                .requestCredentialDetails(id)
-                                .then(resolve)
+                                .requestCredentialsDetails([id])
+                                .then(passwords => resolve(passwords[0]))
                                 .catch(reject));
                 });
           });
           // </if>
           // <if expr="not is_chromeos">
-          return PasswordManagerImpl.getInstance().requestCredentialDetails(id);
+          return PasswordManagerImpl.getInstance()
+              .requestCredentialsDetails([id])
+              .then(passwords => passwords[0]);
           // </if>
         }
 

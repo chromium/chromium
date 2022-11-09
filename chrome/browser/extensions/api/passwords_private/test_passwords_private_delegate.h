@@ -54,9 +54,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                                 api::passwords_private::PlaintextReason reason,
                                 PlaintextPasswordCallback callback,
                                 content::WebContents* web_contents) override;
-  void RequestCredentialDetails(int id,
-                                RequestCredentialDetailsCallback callback,
-                                content::WebContents* web_contents) override;
+  void RequestCredentialsDetails(const std::vector<int>& ids,
+                                 UiEntriesCallback callback,
+                                 content::WebContents* web_contents) override;
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
   void ImportPasswords(api::passwords_private::PasswordStoreSet to_store,
