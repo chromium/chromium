@@ -75,7 +75,7 @@ void FakeArCore::SetCameraTexture(uint32_t texture) {
 
 std::vector<float> FakeArCore::TransformDisplayUvCoords(
     const base::span<const float> uvs) const {
-  // Try to match ArCore's transfore values.
+  // Try to match ArCore's transform values.
   //
   // Sample ArCore input: width=1080, height=1795, rotation=0,
   // vecs = (0, 0), (0, 1), (1, 0), (1, 1)
@@ -99,7 +99,9 @@ std::vector<float> FakeArCore::TransformDisplayUvCoords(
   //    uv[4]=(0.0325521, 0)
   //    uv[6]=(0.967448, 0)
   //
-  // TODO(klausw): move this to a unittest.
+  // TODO(https://crbug.com/1382576): This logic is quite complicated,
+  // and the current arcore_device_unittest doesn't really care about
+  // the details.
 
   // SetDisplayGeometry should have been called first.
   DCHECK(frame_size_.width());

@@ -1078,9 +1078,13 @@ void ArCoreGl::GetRenderedFrameStats(WebXrFrame* frame) {
   base::TimeTicks now = base::TimeTicks::Now();
 
   // Get the time when rendering completed from the render completion fence.
-  // TODO(klausw): This is an overestimate in AR compositor mode, the fence
+  //
+  // This is an overestimate in AR compositor mode because the fence
   // completes one frame late. The average_render_time_ calculation should use
-  // the WritesDone time reported via OnBeginFrame's timing_data instead.
+  // the WritesDone time reported via OnBeginFrame's timing_data instead, but
+  // those aren't guaranteed to be available. See also the GPU load
+  // estimate in rendering_time_ratio_ which uses a different calculation.
+  // TODO(https://crbug.com/1382589): revisit this calculation?
   base::TimeTicks completion_time = now;
   DCHECK(frame->render_completion_fence);
   completion_time = static_cast<gl::GLFenceAndroidNativeFenceSync*>(

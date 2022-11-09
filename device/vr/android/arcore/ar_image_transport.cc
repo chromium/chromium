@@ -400,9 +400,10 @@ void ArImageTransport::CopyTextureToFramebuffer(
     const gfx::Transform& uv_transform) {
   DVLOG(2) << __func__;
   // Don't need face culling, depth testing, blending, etc. Turn it all off.
-  // TODO(klausw): see if we can do this one time on initialization. That would
-  // be a tiny bit more efficient, but is only safe if ARCore and ArRenderer
-  // don't modify these states.
+  // It would be a bit more efficient to do this one time on initialization,
+  // but that would only be safe if ARCore and ArRenderer were guaranteed to
+  // not modify these states. For now, keep the redundant operations to avoid
+  // potential hard-to-find bugs.
   glDisable(GL_CULL_FACE);
   glDisable(GL_SCISSOR_TEST);
   glDisable(GL_POLYGON_OFFSET_FILL);

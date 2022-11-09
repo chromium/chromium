@@ -30,7 +30,7 @@ gfx::Size GetMaximumWebVrSize(gvr::GvrApi* gvr_api) {
   // get the same size, the recommended render_width is per eye
   // and the client will use the sum of the left and right width.
   //
-  // TODO(klausw,crbug.com/699350): should we round the recommended
+  // TODO(https://crbug.com/699350): should we round the recommended
   // size to a multiple of 2^N pixels to be friendlier to the GPU? The
   // exact size doesn't matter, and it might be more efficient.
   webvr_size.set_width(webvr_size.width() & ~1);

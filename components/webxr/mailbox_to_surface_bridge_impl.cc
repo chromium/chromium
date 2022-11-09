@@ -304,7 +304,10 @@ bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(
   if (!IsConnected()) {
     // We may not have a context yet, i.e. due to surface initialization
     // being incomplete. This is not an error, but we obviously can't draw
-    // yet. TODO(klausw): change the caller to defer this until we are ready.
+    // yet. This affects the non-shared-buffer path on Android N (or
+    // if UseSharedBuffer was forced to false due to GPU bug workarounds),
+    // and may result in a couple of discarded images while waiting for
+    // initialization which is generally harmless.
     return false;
   }
 
