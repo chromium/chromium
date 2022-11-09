@@ -10,8 +10,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_access_token_fetcher.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -29,7 +33,13 @@ namespace {
 const int kNumFamilyInfoFetcherRetries = 1;
 
 using ::base::BindOnce;
+using ::base::JoinString;
+using ::base::StrCat;
 using ::base::StringPiece;
+using ::base::Time;
+using ::base::TimeDelta;
+using ::base::UmaHistogramEnumeration;
+using ::base::UmaHistogramTimes;
 using ::base::Unretained;
 using ::kids_chrome_management::ListFamilyMembersRequest;
 using ::kids_chrome_management::ListFamilyMembersResponse;
@@ -74,6 +84,39 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   return simple_url_loader;
 }
 
+template <typename Request>
+std::string ConvertRequestTypeToMetricLabel();
+template <>
+std::string ConvertRequestTypeToMetricLabel<ListFamilyMembersRequest>() {
+  return "ListFamilyMembersRequest";
+}
+
+// Metric key
+template <typename Request>
+std::string CreateMetricKey(StringPiece metric_id) {
+  return JoinString(
+      {"Signin", ConvertRequestTypeToMetricLabel<Request>(), metric_id}, ".");
+}
+template <typename Request>
+std::string CreateMetricKey(StringPiece metric_id, StringPiece metric_suffix) {
+  return JoinString({"Signin", ConvertRequestTypeToMetricLabel<Request>(),
+                     metric_id, metric_suffix},
+                    ".");
+}
+
+std::string ConvertStateToMetricLabel(KidsExternalFetcherStatus::State state) {
+  switch (state) {
+    case KidsExternalFetcherStatus::NO_ERROR:
+      return "NoError";
+    case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+      return "AuthError";
+    case KidsExternalFetcherStatus::HTTP_ERROR:
+      return "HttpError";
+    case KidsExternalFetcherStatus::INVALID_RESPONSE:
+      return "InvalidResponse";
+  }
+}
+
 // Determines the response type. See go/system-parameters to verity list of
 // possible One Platform system params.
 const std::string& GetSystemParameters() {
@@ -87,8 +130,8 @@ const std::string& GetPathForRequest(const Request& request);
 
 template <>
 const std::string& GetPathForRequest(const ListFamilyMembersRequest& request) {
-  static const base::NoDestructor<std::string> nonce("families/mine/members?" +
-                                                     GetSystemParameters());
+  static const base::NoDestructor<std::string> nonce(
+      StrCat({"families/mine/members?", GetSystemParameters()}));
   return *nonce;
 }
 
@@ -154,6 +197,22 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
   FetcherImpl& operator=(const FetcherImpl&) = delete;
 
  private:
+  static void WrapCallbackWithMetrics(Callback callback,
+                                      Time start_time,
+                                      KidsExternalFetcherStatus status,
+                                      std::unique_ptr<Response> response) {
+    TimeDelta latency = Time::Now() - start_time;
+    UmaHistogramEnumeration(CreateMetricKey<Request>("Status"), status.state());
+    UmaHistogramTimes(CreateMetricKey<Request>("Latency"), latency);
+    UmaHistogramTimes(CreateMetricKey<Request>(
+                          "Latency", ConvertStateToMetricLabel(status.state())),
+                      latency);
+
+    DCHECK(
+        callback);  // https://chromium.googlesource.com/chromium/src/+/main/docs/callback.md#creating-a-callback-that-does-nothing
+    std::move(callback).Run(status, std::move(response));
+  }
+
   void StartRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GURL endpoint,
@@ -164,25 +223,32 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
     DCHECK(
         callback);  // https://chromium.googlesource.com/chromium/src/+/main/docs/callback.md#creating-a-callback-that-does-nothing
 
+    Callback callback_with_metrics =
+        BindOnce(WrapCallbackWithMetrics, std::move(callback), Time::Now());
+
     if (!access_token.has_value()) {
-      std::move(callback).Run(KidsExternalFetcherStatus::GoogleServiceAuthError(
-                                  access_token.error()),
-                              std::make_unique<Response>());
+      std::move(callback_with_metrics)
+          .Run(KidsExternalFetcherStatus::GoogleServiceAuthError(
+                   access_token.error()),
+               std::make_unique<Response>());
       return;
     }
 
     StringPiece token_value = access_token.value().token;
     net::NetworkTrafficAnnotationTag traffic_annotation =
         GetDefaultNetworkTrafficAnnotationTag<Request>();
+
     simple_url_loader_ = InitializeSimpleUrlLoader(
         request.SerializeAsString(), token_value,
         endpoint.Resolve(GetPathForRequest(request)), traffic_annotation);
 
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
-        BindOnce(&FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
-                 std::move(callback)));  // Unretained(.) is safe because `this`
-                                         // owns `simple_url_loader_`.
+        BindOnce(
+            &FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
+            std::move(
+                callback_with_metrics)));  // Unretained(.) is safe because
+                                           // `this` owns `simple_url_loader_`.
   }
 
   void OnSimpleUrlLoaderComplete(Callback callback,

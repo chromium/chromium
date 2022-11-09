@@ -15,16 +15,19 @@
 
 // Holds the status of the fetch. The callback's response will be set iff the
 // status is ok.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 class KidsExternalFetcherStatus {
  public:
   enum State {
-    NO_ERROR,                   // No error.
-    GOOGLE_SERVICE_AUTH_ERROR,  // Error occurred during the access token
-                                // fetching phase. See GetGoogleServiceAuthError
-                                // for details.
-    HTTP_ERROR,        // The request was performed, but http returned errors.
-    INVALID_RESPONSE,  // The request was performed without error, but http
-                       // response could not be processed or was unexpected.
+    NO_ERROR = 0,                   // No error.
+    GOOGLE_SERVICE_AUTH_ERROR = 1,  // Error occurred during the access token
+                                    // fetching phase. See
+                                    // GetGoogleServiceAuthError for details.
+    HTTP_ERROR = 2,  // The request was performed, but http returned errors.
+    INVALID_RESPONSE = 3,  // The request was performed without error, but http
+                           // response could not be processed or was unexpected.
+    kMaxValue = INVALID_RESPONSE,  // keep last, required for metrics.
   };
   // Status might be used in base::expected context as possible error, since it
   // contains two error-enabled attributes which are copyable / assignable.

@@ -54941,6 +54941,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="kNecessary"/>
 </enum>
 
+<enum name="KidsExternalFetcherStatus">
+  <int value="0" label="NoError"/>
+  <int value="1" label="AuthError"/>
+  <int value="2" label="HttpError"/>
+  <int value="3" label="ParseError"/>
+</enum>
+
 <enum name="KidsManagementURLCheckerResponseStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Network Error"/>

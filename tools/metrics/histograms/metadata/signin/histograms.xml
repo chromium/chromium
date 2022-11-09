@@ -661,6 +661,36 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ListFamilyMembersRequest.Latency" units="ms"
+    expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>Tracks the latency of calls to the Kids Management API.</summary>
+</histogram>
+
+<histogram name="Signin.ListFamilyMembersRequest.Status"
+    enum="KidsExternalFetcherStatus" expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>The status of the fetch to the Kids Management API.</summary>
+</histogram>
+
+<histogram name="Signin.ListFamilyMembersRequest.{Status}.Latency" units="ms"
+    expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Latency of the calls to the Kids Management API that resulted with
+    &quot;{Status}&quot; status.
+  </summary>
+  <token key="Status">
+    <variant name="AuthError" summary="authentication error"/>
+    <variant name="HttpError" summary="transport error"/>
+    <variant name="InvalidResponse" summary="parsing error"/>
+    <variant name="NoError" summary="no error recorded"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.LoadedIdentities.Count" units="identities"
     expires_after="2023-02-26">
   <owner>jlebel@chromium.org</owner>
