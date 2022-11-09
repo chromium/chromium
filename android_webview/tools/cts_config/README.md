@@ -53,6 +53,15 @@ Android release basis by editing
         },
         {
           "apk": "location of the test apk in the cts zip file",
+          "setup_commands": [
+            "<custom shell command to be run on the device (don't include 'adb shell') as a setup step>"
+          ],
+          "teardown_commands": [
+            "<custom shell command to be run on the device (don't include 'adb shell') as a teardown step>"
+          ]
+        },
+        {
+          "apk": "location of the test apk in the cts zip file",
           "excludes": [
             {
               "match": "<class#testcase (wildcard supported) expression of test to skip>",

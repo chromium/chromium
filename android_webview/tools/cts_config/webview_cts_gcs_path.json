@@ -528,15 +528,19 @@
         ],
         "excludes": [
           {
-            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
+            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#testAutofillAndSave",
+            "_bug_id": "crbug.com/1369088"
           },
           {
-            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
+            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#testAugmentedAutoFill_startTypingHideInline",
+            "_bug_id": "crbug.com/1369088"
           }
+        ],
+        "setup_commands": [
+          "cmd autofill set bind-instant-service-allowed true"
+        ],
+        "teardown_commands": [
+          "cmd autofill set bind-instant-service-allowed false"
         ]
       },
       {
@@ -631,26 +635,6 @@
         ],
         "excludes": [
           {
-            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
-          },
-          {
-            "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
-          },
-          {
-            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
-          },
-          {
-            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
-          },
-          {
             "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillAndSave",
             "_bug_id": "crbug.com/1369088"
           },
@@ -670,6 +654,12 @@
             "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#testSave_eachFieldSeparately",
             "_bug_id": "crbug.com/1369088"
           }
+        ],
+        "setup_commands": [
+          "cmd autofill set bind-instant-service-allowed true"
+        ],
+        "teardown_commands": [
+          "cmd autofill set bind-instant-service-allowed false"
         ]
       },
       {
@@ -808,26 +798,6 @@
         ],
         "excludes": [
           {
-            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
-          },
-          {
-            "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
-          },
-          {
-            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
-          },
-          {
-            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#*",
-            "mode": "instant",
-            "_bug_id": "crbug.com/1366101"
-          },
-          {
             "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillAndSave",
             "_bug_id": "crbug.com/1369088"
           },
@@ -847,6 +817,12 @@
             "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#testSave_eachFieldSeparately",
             "_bug_id": "crbug.com/1369088"
           }
+        ],
+        "setup_commands": [
+          "cmd autofill set bind-instant-service-allowed true"
+        ],
+        "teardown_commands": [
+          "cmd autofill set bind-instant-service-allowed false"
         ]
       },
       {

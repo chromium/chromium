@@ -162,6 +162,8 @@ def RunCTS(
     voice_service=None,
     additional_apks=None,
     test_app_mode=None,
+    setup_commands=None,
+    teardown_commands=None,
     json_results_file=None):
   """Run tests in apk using test_runner script at _TEST_RUNNER_PATH.
 
@@ -192,6 +194,14 @@ def RunCTS(
         local_test_runner_args += [
             '--instant-additional-apk', additional_apk_tmp
         ]
+
+  if setup_commands:
+    for cmd in setup_commands:
+      local_test_runner_args += ['--run-setup-command', cmd]
+
+  if teardown_commands:
+    for cmd in teardown_commands:
+      local_test_runner_args += ['--run-teardown-command', cmd]
 
   if json_results_file:
     local_test_runner_args += ['--json-results-file=%s' %
@@ -280,6 +290,10 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
       # services to run
       additional_apks = cts_test_run.get('additional_apks')
 
+      # Some tests require custom setup and/or teardown steps
+      setup_commands = cts_test_run.get('setup_commands')
+      teardown_commands = cts_test_run.get('teardown_commands')
+
       test_app_mode = (_APP_MODE_INSTANT
                        if args.test_apk_as_instant else _APP_MODE_FULL)
 
@@ -299,6 +313,8 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
               voice_service=voice_service,
               additional_apks=additional_apks,
               test_app_mode=test_app_mode,
+              setup_commands=setup_commands,
+              teardown_commands=teardown_commands,
               json_results_file=iteration_json_file.name)
           with open(iteration_json_file.name) as f:
             additional_results_json = json.load(f)
@@ -309,7 +325,9 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
                                       apk=test_apk,
                                       voice_service=voice_service,
                                       additional_apks=additional_apks,
-                                      test_app_mode=test_app_mode)
+                                      test_app_mode=test_app_mode,
+                                      setup_commands=setup_commands,
+                                      teardown_commands=teardown_commands)
       if iteration_cts_result:
         cts_result = iteration_cts_result
     if json_results_file:
