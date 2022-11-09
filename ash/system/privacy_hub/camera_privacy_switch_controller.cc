@@ -60,20 +60,6 @@ CameraPrivacySwitchController::CameraPrivacySwitchController()
     : switch_api_(std::make_unique<VCDPrivacyAdapter>())
 
 {
-  auto device_id_to_privacy_switch_state =
-      media::CameraHalDispatcherImpl::GetInstance()
-          ->AddCameraPrivacySwitchObserver(this);
-  // TODO(b/255248909): Handle multiple cameras with privacy controls properly.
-  for (const auto& it : device_id_to_privacy_switch_state) {
-    cros::mojom::CameraPrivacySwitchState state = it.second;
-    if (state == cros::mojom::CameraPrivacySwitchState::ON) {
-      camera_privacy_switch_state_ = state;
-      break;
-    } else if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
-      camera_privacy_switch_state_ = state;
-    }
-  }
-  media::CameraHalDispatcherImpl::GetInstance()->AddActiveClientObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -94,6 +80,30 @@ void CameraPrivacySwitchController::OnActiveUserPrefServiceChanged(
       prefs::kUserCameraAllowed,
       base::BindRepeating(&CameraPrivacySwitchController::OnPreferenceChanged,
                           base::Unretained(this)));
+
+  // Make sure to add camera observers after pref_change_registrar_ is created
+  // because OnCameraSWPrivacySwitchStateChanged accesses a pref value.
+  if (!is_camera_observer_added_) {
+    // Subscribe to the camera HW/SW privacy switch events.
+    auto device_id_to_privacy_switch_state =
+        media::CameraHalDispatcherImpl::GetInstance()
+            ->AddCameraPrivacySwitchObserver(this);
+    // TODO(b/255248909): Handle multiple cameras with privacy controls
+    // properly.
+    for (const auto& it : device_id_to_privacy_switch_state) {
+      cros::mojom::CameraPrivacySwitchState state = it.second;
+      if (state == cros::mojom::CameraPrivacySwitchState::ON) {
+        camera_privacy_switch_state_ = state;
+        break;
+      } else if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
+        camera_privacy_switch_state_ = state;
+      }
+    }
+    media::CameraHalDispatcherImpl::GetInstance()->AddActiveClientObserver(
+        this);
+    is_camera_observer_added_ = true;
+  }
+
   // To ensure consistent values between the user pref and camera backend
   OnPreferenceChanged(prefs::kUserCameraAllowed);
 }

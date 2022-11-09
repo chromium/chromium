@@ -106,6 +106,7 @@ class ASH_EXPORT CameraPrivacySwitchController
   cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_ =
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
   int active_camera_client_count_ = 0;
+  bool is_camera_observer_added_ = false;
 };
 
 }  // namespace ash
