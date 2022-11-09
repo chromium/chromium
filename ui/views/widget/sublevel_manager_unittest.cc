@@ -16,9 +16,12 @@
 
 namespace views {
 
+enum WidgetShowType { kShowActive, kShowInactive };
+
 class SublevelManagerTest : public ViewsTestBase,
                             public testing::WithParamInterface<
                                 std::tuple<ViewsTestBase::NativeWidgetType,
+                                           WidgetShowType,
                                            Widget::InitParams::Activatable>> {
  public:
   SublevelManagerTest() {
@@ -44,6 +47,15 @@ class SublevelManagerTest : public ViewsTestBase,
     return CreateTestWidget(std::move(params));
   }
 
+  // Call Show() or ShowInactive() depending on WidgetShowType.
+  void ShowWidget(const std::unique_ptr<Widget>& widget) {
+    WidgetShowType show_type = std::get<WidgetShowType>(GetParam());
+    if (show_type == WidgetShowType::kShowActive)
+      widget->Show();
+    else
+      widget->ShowInactive();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -63,7 +75,7 @@ TEST_P(SublevelManagerTest, EnsureSublevel) {
   int order[] = {0, 1, 2};
   do {
     for (int i : order)
-      children[i]->Show();
+      ShowWidget(children[i]);
     for (int i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++) {
         if (i < j) {
@@ -95,8 +107,8 @@ TEST_P(SublevelManagerTest, DISABLED_LevelSupersedeSublevel) {
       CreateChildWidget(root.get(), ui::ZOrderLevel::kFloatingWindow, 0,
                         std::get<Widget::InitParams::Activatable>(GetParam()));
 
-  high_level_widget->Show();
-  low_level_widget->Show();
+  ShowWidget(high_level_widget);
+  ShowWidget(low_level_widget);
 
   EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(high_level_widget.get(),
                                                      low_level_widget.get()));
@@ -119,10 +131,10 @@ TEST_P(SublevelManagerTest, SublevelOnlyEnsuredWithinSameLevel) {
       CreateChildWidget(root.get(), ui::ZOrderLevel::kFloatingWindow, 0,
                         std::get<Widget::InitParams::Activatable>(GetParam()));
 
-  root->Show();
-  low_level_widget2->Show();
-  low_level_widget1->Show();
-  high_level_widget->Show();
+  ShowWidget(root);
+  ShowWidget(low_level_widget2);
+  ShowWidget(low_level_widget1);
+  ShowWidget(high_level_widget);
 
   EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(high_level_widget.get(),
                                                      low_level_widget1.get()));
@@ -145,8 +157,8 @@ TEST_P(SublevelManagerTest, SetSublevel) {
       CreateChildWidget(root.get(), ui::ZOrderLevel::kNormal, 2,
                         std::get<Widget::InitParams::Activatable>(GetParam()));
 
-  child2->Show();
-  child1->Show();
+  ShowWidget(child2);
+  ShowWidget(child1);
   EXPECT_TRUE(
       test::WidgetTest::IsWindowStackedAbove(child2.get(), child1.get()));
 
@@ -189,11 +201,11 @@ TEST_P(SublevelManagerTest, GrandChildren) {
     }
   }
 
-  root->Show();
-  children[1]->Show();
-  children[0]->Show();
-  grand_children[1][0]->Show();
-  grand_children[0][1]->Show();
+  ShowWidget(root);
+  ShowWidget(children[1]);
+  ShowWidget(children[0]);
+  ShowWidget(grand_children[1][0]);
+  ShowWidget(grand_children[0][1]);
 
   EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(children[1].get(),
                                                      children[0].get()));
@@ -214,17 +226,17 @@ TEST_P(SublevelManagerTest, WidgetReparent) {
       CreateChildWidget(root1.get(), ui::ZOrderLevel::kNormal, 1,
                         std::get<Widget::InitParams::Activatable>(GetParam()));
 
-  root1->Show();
-  child->Show();
+  ShowWidget(root1);
+  ShowWidget(child);
 
-  root2->Show();
+  ShowWidget(root2);
   Widget::ReparentNativeView(child->GetNativeView(), root2->GetNativeView());
-  child->Show();
+  ShowWidget(child);
 
 #if !BUILDFLAG(IS_MAC)
   // Mac does not allow re-parenting child widgets to nullptr.
   Widget::ReparentNativeView(child->GetNativeView(), nullptr);
-  child->Show();
+  ShowWidget(child);
 #endif
 }
 
@@ -235,6 +247,8 @@ INSTANTIATE_TEST_SUITE_P(
     SublevelManagerTest,
     ::testing::Combine(
         ::testing::Values(ViewsTestBase::NativeWidgetType::kDefault),
+        ::testing::Values(WidgetShowType::kShowActive,
+                          WidgetShowType::kShowInactive),
         ::testing::Values(Widget::InitParams::Activatable::kNo,
                           Widget::InitParams::Activatable::kNo)));
 

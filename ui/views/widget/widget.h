@@ -1224,6 +1224,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // If a descendent of |root_view_| is focused, then clear the focus.
   void ClearFocusFromWidget();
 
+  // This holds logic that needs to called synchronously after showing, before
+  // the native widget asynchronously invokes OnNativeWidgetVisibilityChanged().
+  void HandleShowRequested();
+
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
 
