@@ -184,7 +184,7 @@ class PDFiumEngineTest : public PDFiumTestBase {
   }
 };
 
-TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdf) {
+TEST_F(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdf) {
   NiceMock<MockTestClient> client;
 
   // ProposeDocumentLayout() gets called twice during loading because
@@ -208,7 +208,7 @@ TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdf) {
   ExpectPageRect(*engine, 4, {38, 1324, 266, 333});
 }
 
-TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdfInTwoUpView) {
+TEST_F(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdfInTwoUpView) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -231,7 +231,7 @@ TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdfInTwoUpView) {
   ExpectPageRect(*engine, 4, {68, 689, 266, 333});
 }
 
-TEST_P(PDFiumEngineTest, AppendBlankPagesWithFewerPages) {
+TEST_F(PDFiumEngineTest, AppendBlankPagesWithFewerPages) {
   NiceMock<MockTestClient> client;
   {
     InSequence normal_then_append;
@@ -252,7 +252,7 @@ TEST_P(PDFiumEngineTest, AppendBlankPagesWithFewerPages) {
   ExpectPageRect(*engine, 2, {5, 697, 266, 333});
 }
 
-TEST_P(PDFiumEngineTest, AppendBlankPagesWithMorePages) {
+TEST_F(PDFiumEngineTest, AppendBlankPagesWithMorePages) {
   NiceMock<MockTestClient> client;
   {
     InSequence normal_then_append;
@@ -277,7 +277,7 @@ TEST_P(PDFiumEngineTest, AppendBlankPagesWithMorePages) {
   ExpectPageRect(*engine, 6, {5, 2085, 266, 333});
 }
 
-TEST_P(PDFiumEngineTest, ProposeDocumentLayoutWithOverlap) {
+TEST_F(PDFiumEngineTest, ProposeDocumentLayoutWithOverlap) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -292,7 +292,7 @@ TEST_P(PDFiumEngineTest, ProposeDocumentLayoutWithOverlap) {
   engine->RotateCounterclockwise();
 }
 
-TEST_P(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
+TEST_F(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -309,7 +309,7 @@ TEST_P(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
   FinishWithPluginSizeUpdated(engine);
 }
 
-TEST_P(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
+TEST_F(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -325,7 +325,7 @@ TEST_P(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
   EXPECT_EQ(gfx::Size(343, 1463), engine->ApplyDocumentLayout(options));
 }
 
-TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
+TEST_F(PDFiumEngineTest, GetDocumentAttachments) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("embedded_attachments.pdf"));
@@ -385,7 +385,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
   }
 }
 
-TEST_P(PDFiumEngineTest, GetInvalidDocumentAttachment) {
+TEST_F(PDFiumEngineTest, GetInvalidDocumentAttachment) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("invalid_attachment.pdf"));
@@ -406,7 +406,7 @@ TEST_P(PDFiumEngineTest, GetInvalidDocumentAttachment) {
   EXPECT_THAT(attachment.modified_date, IsEmpty());
 }
 
-TEST_P(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
+TEST_F(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("embedded_attachments_invalid_data.pdf"));
@@ -426,7 +426,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
   EXPECT_THAT(attachment.modified_date, IsEmpty());
 }
 
-TEST_P(PDFiumEngineTest, NoDocumentAttachmentInfo) {
+TEST_F(PDFiumEngineTest, NoDocumentAttachmentInfo) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -435,7 +435,7 @@ TEST_P(PDFiumEngineTest, NoDocumentAttachmentInfo) {
   EXPECT_EQ(0u, engine->GetDocumentAttachmentInfoList().size());
 }
 
-TEST_P(PDFiumEngineTest, GetDocumentMetadata) {
+TEST_F(PDFiumEngineTest, GetDocumentMetadata) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("document_info.pdf"));
@@ -464,7 +464,7 @@ TEST_P(PDFiumEngineTest, GetDocumentMetadata) {
   EXPECT_EQ(expected_mod_date, doc_metadata.mod_date);
 }
 
-TEST_P(PDFiumEngineTest, GetEmptyDocumentMetadata) {
+TEST_F(PDFiumEngineTest, GetEmptyDocumentMetadata) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -485,7 +485,7 @@ TEST_P(PDFiumEngineTest, GetEmptyDocumentMetadata) {
   EXPECT_TRUE(doc_metadata.mod_date.is_null());
 }
 
-TEST_P(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
+TEST_F(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("linearized.pdf"));
@@ -493,7 +493,7 @@ TEST_P(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
   EXPECT_TRUE(engine->GetDocumentMetadata().linearized);
 }
 
-TEST_P(PDFiumEngineTest, GetBadPdfVersion) {
+TEST_F(PDFiumEngineTest, GetBadPdfVersion) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bad_version.pdf"));
@@ -503,7 +503,7 @@ TEST_P(PDFiumEngineTest, GetBadPdfVersion) {
   EXPECT_EQ(PdfVersion::kUnknown, doc_metadata.version);
 }
 
-TEST_P(PDFiumEngineTest, GetNamedDestination) {
+TEST_F(PDFiumEngineTest, GetNamedDestination) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("named_destinations.pdf"));
@@ -536,7 +536,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   EXPECT_FALSE(invalid_page_number.has_value());
 }
 
-TEST_P(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
+TEST_F(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -549,7 +549,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
   EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 }
 
-TEST_P(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
+TEST_F(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -563,7 +563,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
   EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 }
 
-TEST_P(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
+TEST_F(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -576,7 +576,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
   EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 }
 
-TEST_P(PDFiumEngineTest, OnLeftMouseDownBeforePluginSizeUpdated) {
+TEST_F(PDFiumEngineTest, OnLeftMouseDownBeforePluginSizeUpdated) {
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -591,7 +591,7 @@ TEST_P(PDFiumEngineTest, OnLeftMouseDownBeforePluginSizeUpdated) {
       blink::WebInputEvent::GetStaticTimeStampForTests())));
 }
 
-TEST_P(PDFiumEngineTest, OnLeftMouseDownAfterPluginSizeUpdated) {
+TEST_F(PDFiumEngineTest, OnLeftMouseDownAfterPluginSizeUpdated) {
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -607,23 +607,23 @@ TEST_P(PDFiumEngineTest, OnLeftMouseDownAfterPluginSizeUpdated) {
       blink::WebInputEvent::GetStaticTimeStampForTests())));
 }
 
-TEST_P(PDFiumEngineTest, IncrementalLoadingFeatureDefault) {
+TEST_F(PDFiumEngineTest, IncrementalLoadingFeatureDefault) {
   EXPECT_FALSE(TryLoadIncrementally());
 }
 
-TEST_P(PDFiumEngineTest, IncrementalLoadingFeatureEnabled) {
+TEST_F(PDFiumEngineTest, IncrementalLoadingFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
   EXPECT_TRUE(TryLoadIncrementally());
 }
 
-TEST_P(PDFiumEngineTest, IncrementalLoadingFeatureDisabled) {
+TEST_F(PDFiumEngineTest, IncrementalLoadingFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kPdfIncrementalLoading);
   EXPECT_FALSE(TryLoadIncrementally());
 }
 
-TEST_P(PDFiumEngineTest, RequestThumbnail) {
+TEST_F(PDFiumEngineTest, RequestThumbnail) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -642,7 +642,7 @@ TEST_P(PDFiumEngineTest, RequestThumbnail) {
   }
 }
 
-TEST_P(PDFiumEngineTest, RequestThumbnailLinearized) {
+TEST_F(PDFiumEngineTest, RequestThumbnailLinearized) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
 
@@ -684,7 +684,7 @@ TEST_P(PDFiumEngineTest, RequestThumbnailLinearized) {
   initialize_result.FinishLoading();
 }
 
-TEST_P(PDFiumEngineTest, HandleInputEventKeyDown) {
+TEST_F(PDFiumEngineTest, HandleInputEventKeyDown) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -698,7 +698,7 @@ TEST_P(PDFiumEngineTest, HandleInputEventKeyDown) {
   EXPECT_TRUE(engine->HandleInputEvent(key_down_event));
 }
 
-TEST_P(PDFiumEngineTest, HandleInputEventRawKeyDown) {
+TEST_F(PDFiumEngineTest, HandleInputEventRawKeyDown) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -723,7 +723,7 @@ constexpr char kSelectTextExpectedText[] =
 #endif
 }  // namespace
 
-TEST_P(PDFiumEngineTest, SelectText) {
+TEST_F(PDFiumEngineTest, SelectText) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -737,7 +737,7 @@ TEST_P(PDFiumEngineTest, SelectText) {
   EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SelectTextBackwards) {
+TEST_F(PDFiumEngineTest, SelectTextBackwards) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -763,7 +763,7 @@ TEST_P(PDFiumEngineTest, SelectTextBackwards) {
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SelectTextWithCopyRestriction) {
+TEST_F(PDFiumEngineTest, SelectTextWithCopyRestriction) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("hello_world2_with_copy_restriction.pdf"));
@@ -778,7 +778,7 @@ TEST_P(PDFiumEngineTest, SelectTextWithCopyRestriction) {
   EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SelectCroppedText) {
+TEST_F(PDFiumEngineTest, SelectCroppedText) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
@@ -795,7 +795,7 @@ TEST_P(PDFiumEngineTest, SelectCroppedText) {
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SelectTextWithDoubleClick) {
+TEST_F(PDFiumEngineTest, SelectTextWithDoubleClick) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -812,7 +812,7 @@ TEST_P(PDFiumEngineTest, SelectTextWithDoubleClick) {
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SelectTextWithTripleClick) {
+TEST_F(PDFiumEngineTest, SelectTextWithTripleClick) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -829,7 +829,7 @@ TEST_P(PDFiumEngineTest, SelectTextWithTripleClick) {
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
+TEST_F(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
@@ -864,7 +864,7 @@ TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SelectTextWithNonPrintableCharacter) {
+TEST_F(PDFiumEngineTest, SelectTextWithNonPrintableCharacter) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bug_1357385.pdf"));
@@ -876,11 +876,9 @@ TEST_P(PDFiumEngineTest, SelectTextWithNonPrintableCharacter) {
   EXPECT_EQ("Hello, world!", engine->GetSelectedText());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
-
 using PDFiumEngineDeathTest = PDFiumEngineTest;
 
-TEST_P(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
+TEST_F(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
@@ -902,8 +900,6 @@ TEST_P(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
   EXPECT_DCHECK_DEATH(engine.RequestThumbnail(
       /*page_index=*/1, /*device_pixel_ratio=*/1, mock_callback.Get()));
 }
-
-INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineDeathTest, testing::Bool());
 
 class PDFiumEngineTabbingTest : public PDFiumTestBase {
  public:
@@ -946,7 +942,7 @@ class PDFiumEngineTabbingTest : public PDFiumTestBase {
   }
 };
 
-TEST_P(PDFiumEngineTabbingTest, LinkUnderCursor) {
+TEST_F(PDFiumEngineTabbingTest, LinkUnderCursor) {
   /*
    * Document structure
    * Document
@@ -992,7 +988,7 @@ TEST_P(PDFiumEngineTabbingTest, LinkUnderCursor) {
 }
 
 // Test case for crbug.com/1088296
-TEST_P(PDFiumEngineTabbingTest, LinkUnderCursorAfterTabAndRightClick) {
+TEST_F(PDFiumEngineTabbingTest, LinkUnderCursorAfterTabAndRightClick) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
@@ -1035,7 +1031,7 @@ TEST_P(PDFiumEngineTabbingTest, LinkUnderCursorAfterTabAndRightClick) {
       CreateRightClickWebMouseEventAtPosition(kLinkPosition)));
 }
 
-TEST_P(PDFiumEngineTabbingTest, TabbingSupportedAnnots) {
+TEST_F(PDFiumEngineTabbingTest, TabbingSupportedAnnots) {
   /*
    * Document structure
    * Document
@@ -1091,7 +1087,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingSupportedAnnots) {
             GetFocusedElementType(engine.get()));
 }
 
-TEST_P(PDFiumEngineTabbingTest, TabbingForward) {
+TEST_F(PDFiumEngineTabbingTest, TabbingForward) {
   /*
    * Document structure
    * Document
@@ -1143,7 +1139,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingForward) {
             GetFocusedElementType(engine.get()));
 }
 
-TEST_P(PDFiumEngineTabbingTest, TabbingBackward) {
+TEST_F(PDFiumEngineTabbingTest, TabbingBackward) {
   /*
    * Document structure
    * Document
@@ -1200,7 +1196,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingBackward) {
             GetFocusedElementType(engine.get()));
 }
 
-TEST_P(PDFiumEngineTabbingTest, TabbingWithModifiers) {
+TEST_F(PDFiumEngineTabbingTest, TabbingWithModifiers) {
   /*
    * Document structure
    * Document
@@ -1253,7 +1249,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingWithModifiers) {
       HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kAltKey));
 }
 
-TEST_P(PDFiumEngineTabbingTest, NoFocusableElementTabbing) {
+TEST_F(PDFiumEngineTabbingTest, NoFocusableElementTabbing) {
   /*
    * Document structure
    * Document
@@ -1299,7 +1295,7 @@ TEST_P(PDFiumEngineTabbingTest, NoFocusableElementTabbing) {
             GetFocusedElementType(engine.get()));
 }
 
-TEST_P(PDFiumEngineTabbingTest, RestoringDocumentFocus) {
+TEST_F(PDFiumEngineTabbingTest, RestoringDocumentFocus) {
   /*
    * Document structure
    * Document
@@ -1344,7 +1340,7 @@ TEST_P(PDFiumEngineTabbingTest, RestoringDocumentFocus) {
             GetFocusedElementType(engine.get()));
 }
 
-TEST_P(PDFiumEngineTabbingTest, RestoringAnnotFocus) {
+TEST_F(PDFiumEngineTabbingTest, RestoringAnnotFocus) {
   /*
    * Document structure
    * Document
@@ -1397,7 +1393,7 @@ TEST_P(PDFiumEngineTabbingTest, RestoringAnnotFocus) {
   EXPECT_EQ(1, GetLastFocusedPage(engine.get()));
 }
 
-TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
+TEST_F(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
   /*
    * Document structure
    * Document
@@ -1437,7 +1433,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
   EXPECT_FALSE(engine->CanEditText());
 }
 
-TEST_P(PDFiumEngineTabbingTest, ClearSelectionOnFocusInFormTextArea) {
+TEST_F(PDFiumEngineTabbingTest, ClearSelectionOnFocusInFormTextArea) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
@@ -1461,7 +1457,7 @@ TEST_P(PDFiumEngineTabbingTest, ClearSelectionOnFocusInFormTextArea) {
   EXPECT_EQ(0u, GetSelectionSize(engine.get()));
 }
 
-TEST_P(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
+TEST_F(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
@@ -1497,7 +1493,7 @@ class ScrollingTestClient : public TestClient {
   MOCK_METHOD(void, ScrollToY, (int), (override));
 };
 
-TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
+TEST_F(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
   StrictMock<ScrollingTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
@@ -1550,7 +1546,7 @@ TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));
 }
 
-TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
+TEST_F(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
   StrictMock<ScrollingTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
@@ -1597,8 +1593,6 @@ TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
   ScrollFocusedAnnotationIntoView(engine.get());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTabbingTest, testing::Bool());
-
 class ReadOnlyTestClient : public TestClient {
  public:
   ReadOnlyTestClient() = default;
@@ -1616,7 +1610,7 @@ class ReadOnlyTestClient : public TestClient {
 
 using PDFiumEngineReadOnlyTest = PDFiumTestBase;
 
-TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
+TEST_F(PDFiumEngineReadOnlyTest, KillFormFocus) {
   NiceMock<ReadOnlyTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
@@ -1636,7 +1630,7 @@ TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
   engine->UpdateFocus(true);
 }
 
-TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
+TEST_F(PDFiumEngineReadOnlyTest, UnselectText) {
   NiceMock<ReadOnlyTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -1655,7 +1649,5 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
   EXPECT_CALL(client, SetSelectedText(IsEmpty()));
   engine->SetReadOnly(true);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
 
 }  // namespace chrome_pdf

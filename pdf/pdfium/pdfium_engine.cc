@@ -66,7 +66,6 @@
 #include "third_party/pdfium/public/fpdf_fwlevent.h"
 #include "third_party/pdfium/public/fpdf_ppo.h"
 #include "third_party/pdfium/public/fpdf_searchex.h"
-#include "third_party/pdfium/public/fpdfview.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -503,15 +502,11 @@ void ParamsTransformPageToScreen(unsigned long view_fit_type,
 
 void InitializeSDK(bool enable_v8, FontMappingMode font_mapping_mode) {
   FPDF_LIBRARY_CONFIG config;
-  config.version = 4;
+  config.version = 3;
   config.m_pUserFontPaths = nullptr;
   config.m_pIsolate = nullptr;
   config.m_pPlatform = nullptr;
   config.m_v8EmbedderSlot = gin::kEmbedderPDFium;
-  config.m_RendererType =
-      base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer)
-          ? FPDF_RENDERERTYPE_SKIA
-          : FPDF_RENDERERTYPE_AGG;
 
 #if defined(PDF_ENABLE_V8)
   if (enable_v8) {

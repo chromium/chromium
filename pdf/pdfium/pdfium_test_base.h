@@ -22,7 +22,7 @@ class PDFiumPage;
 class TestClient;
 class TestDocumentLoader;
 
-class PDFiumTestBase : public testing::TestWithParam<bool> {
+class PDFiumTestBase : public testing::Test {
  public:
   PDFiumTestBase();
   PDFiumTestBase(const PDFiumTestBase&) = delete;
