@@ -7608,7 +7608,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPrerenderDUIAndDSE_20220802",
+                    "name": "EnabledPrerenderDUIAndDSE_20221025",
                     "params": {
                         "implementation_type": "use_prefetch"
                     },
@@ -7621,7 +7621,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrerenderDUI_20220802",
+                    "name": "EnabledPrerenderDUI_20221107",
                     "enable_features": [
                         "OmniboxTriggerForPrerender2"
                     ],
@@ -7631,7 +7631,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrefetchDUIControl_20220802",
+                    "name": "EnabledPrefetchDUIControl_20221107",
                     "enable_features": [
                         "OmniboxTriggerForNoStatePrefetch"
                     ],
@@ -7641,7 +7641,7 @@
                     ]
                 },
                 {
-                    "name": "DisabledDUI_20220802",
+                    "name": "DisabledDUI_20221025",
                     "disable_features": [
                         "OmniboxTriggerForNoStatePrefetch",
                         "OmniboxTriggerForPrerender2",
@@ -7649,7 +7649,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrerenderDSE_20220802",
+                    "name": "EnabledPrerenderDSE_20221025",
                     "params": {
                         "implementation_type": "use_prefetch"
                     },
@@ -7658,6 +7658,28 @@
                     ],
                     "disable_features": [
                         "OmniboxTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "HoldbackDisabledPrerenderDUI_20221107",
+                    "enable_features": [
+                        "OmniboxTriggerForPrerender2",
+                        "Prerender2Holdback"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch",
+                        "SupportSearchSuggestionForPrerender2"
+                    ]
+                },
+                {
+                    "name": "HoldbackEnabledPrerenderDUI_20221107",
+                    "enable_features": [
+                        "OmniboxTriggerForPrerender2"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch",
+                        "Prerender2Holdback",
+                        "SupportSearchSuggestionForPrerender2"
                     ]
                 }
             ]
