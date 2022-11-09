@@ -57,9 +57,10 @@ class MockDlpController : public DataTransferDlpController {
                void(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst));
 
-  MOCK_METHOD2(WarnOnPaste,
+  MOCK_METHOD3(WarnOnPaste,
                void(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst));
+                    const ui::DataTransferEndpoint* const data_dst,
+                    base::RepeatingCallback<void()> reporting_cb));
 
   MOCK_METHOD4(WarnOnBlinkPaste,
                void(const ui::DataTransferEndpoint* const data_src,

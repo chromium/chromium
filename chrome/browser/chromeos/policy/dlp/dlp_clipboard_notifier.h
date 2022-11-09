@@ -37,11 +37,12 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override;
 
-  // Warns the user that this paste action is not recommended.
-  // If the type of `data_dst` is kCrostini, kPluginVm or kArc, it will show a
-  // toast instead of a bubble.
+  // Warns the user that this paste action is not recommended and runs
+  // `reporting_cb` if the action is proceeded. If the type of `data_dst` is
+  // kCrostini, kPluginVm or kArc, it will show a toast instead of a bubble.
   void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
-                   const ui::DataTransferEndpoint* const data_dst);
+                   const ui::DataTransferEndpoint* const data_dst,
+                   base::RepeatingCallback<void()> reporting_cb);
 
   // Warns the user that this paste action in Blink is not recommended.
   void WarnOnBlinkPaste(const ui::DataTransferEndpoint* const data_src,
@@ -60,6 +61,7 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
  protected:
   // Exposed for tests to override.
   void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
+                      base::RepeatingCallback<void()> reporting_cb,
                       views::Widget* widget);
   void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst,
                            views::Widget* widget);

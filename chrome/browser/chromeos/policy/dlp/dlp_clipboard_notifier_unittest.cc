@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/types/optional_util.h"
@@ -138,7 +139,8 @@ TEST_P(ClipboardBubbleTestWithParam, WarnBubble) {
                                     views::Widget::ClosedReason::kUnspecified));
   EXPECT_CALL(notifier, ShowWarningBubble);
 
-  notifier.WarnOnPaste(&data_src, base::OptionalToPtr(data_dst));
+  notifier.WarnOnPaste(&data_src, base::OptionalToPtr(data_dst),
+                       base::DoNothing());
 }
 
 INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
@@ -170,7 +172,7 @@ TEST_P(ClipboardBubbleButtonsTestWithParam, ProceedPressed) {
               CloseWidget(testing::_,
                           views::Widget::ClosedReason::kAcceptButtonClicked));
 
-  notifier.ProceedPressed(data_dst, nullptr);
+  notifier.ProceedPressed(data_dst, base::DoNothing(), nullptr);
 
   EXPECT_TRUE(notifier.DidUserApproveDst(&data_dst));
 }
@@ -283,8 +285,8 @@ TEST_F(DlpClipboardNotifierTest, ProceedSavedHistory) {
                           views::Widget::ClosedReason::kAcceptButtonClicked))
       .Times(2);
 
-  notifier.ProceedPressed(url_dst, nullptr);
-  notifier.ProceedPressed(default_dst, nullptr);
+  notifier.ProceedPressed(url_dst, base::DoNothing(), nullptr);
+  notifier.ProceedPressed(default_dst, base::DoNothing(), nullptr);
 
   EXPECT_TRUE(notifier.DidUserApproveDst(&url_dst));
   EXPECT_TRUE(notifier.DidUserApproveDst(&default_dst));
@@ -306,8 +308,8 @@ TEST_F(DlpClipboardNotifierTest, ProceedSavedHistoryVMs) {
                           views::Widget::ClosedReason::kAcceptButtonClicked))
       .Times(2);
 
-  notifier.ProceedPressed(arc_dst, nullptr);
-  notifier.ProceedPressed(crostini_dst, nullptr);
+  notifier.ProceedPressed(arc_dst, base::DoNothing(), nullptr);
+  notifier.ProceedPressed(crostini_dst, base::DoNothing(), nullptr);
 
   EXPECT_TRUE(notifier.DidUserApproveDst(&arc_dst));
   EXPECT_TRUE(notifier.DidUserApproveDst(&crostini_dst));
@@ -412,7 +414,7 @@ TEST_P(ToastTestWithParam, WarnToast) {
 
   EXPECT_CALL(notifier, CloseWidget(testing::_,
                                     views::Widget::ClosedReason::kUnspecified));
-  notifier.WarnOnPaste(&data_src, &data_dst);
+  notifier.WarnOnPaste(&data_src, &data_dst, base::DoNothing());
 }
 
 INSTANTIATE_TEST_SUITE_P(

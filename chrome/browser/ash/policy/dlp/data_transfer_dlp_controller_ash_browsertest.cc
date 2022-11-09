@@ -57,8 +57,10 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
   views::Widget* GetWidget() { return widget_.get(); }
 
-  void ProceedPressed(const ui::DataTransferEndpoint& data_dst) {
-    DlpClipboardNotifier::ProceedPressed(data_dst, GetWidget());
+  void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
+                      base::RepeatingCallback<void()> reporting_cb) {
+    DlpClipboardNotifier::ProceedPressed(data_dst, std::move(reporting_cb),
+                                         GetWidget());
   }
 
   void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst) {
@@ -92,8 +94,9 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
-                   const ui::DataTransferEndpoint* const data_dst) override {
-    helper_->WarnOnPaste(data_src, data_dst);
+                   const ui::DataTransferEndpoint* const data_dst,
+                   base::RepeatingCallback<void()> reporting_cb) override {
+    helper_->WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
   }
 
   void SetBlinkQuitCallback(base::RepeatingClosure cb) {

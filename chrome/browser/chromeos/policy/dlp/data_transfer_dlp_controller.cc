@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -231,12 +232,20 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
       is_read_allowed = false;
       break;
     case DlpRulesManager::Level::kWarn:
+
       if (data_dst && IsVM(data_dst->type())) {
         if (notify_on_paste) {
           ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
                       DlpRulesManager::Level::kWarn,
                       /*is_clipboard_event=*/true);
-          WarnOnPaste(data_src, data_dst);
+
+          auto reporting_cb = base::BindRepeating(
+              &DataTransferDlpController::ReportWarningProceededEvent,
+              weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
+              base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
+              /*is_clipboard_event=*/true);
+
+          WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
         }
       } else if (ShouldCancelOnWarn(data_dst)) {
         is_read_allowed = false;
@@ -245,7 +254,14 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
         ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
                     DlpRulesManager::Level::kWarn,
                     /*is_clipboard_event=*/true);
-        WarnOnPaste(data_src, data_dst);
+
+        auto reporting_cb = base::BindRepeating(
+            &DataTransferDlpController::ReportWarningProceededEvent,
+            weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
+            base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
+            /*is_clipboard_event=*/true);
+
+        WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
         is_read_allowed = false;
       }
       break;
@@ -378,9 +394,10 @@ void DataTransferDlpController::NotifyBlockedPaste(
 
 void DataTransferDlpController::WarnOnPaste(
     const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst) {
+    const ui::DataTransferEndpoint* const data_dst,
+    base::RepeatingCallback<void()> reporting_cb) {
   DCHECK(!(data_dst && data_dst->IsUrlType()));
-  clipboard_notifier_.WarnOnPaste(data_src, data_dst);
+  clipboard_notifier_.WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
 }
 
 void DataTransferDlpController::WarnOnBlinkPaste(

@@ -57,13 +57,22 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   // Should be overridden in tests (increased).
   virtual base::TimeDelta GetSkipReportingTimeout();
 
+  // Protected because it needs to be accessible from tests.
+  void ReportWarningProceededEvent(
+      const absl::optional<ui::DataTransferEndpoint> maybe_data_src,
+      const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
+      const std::string& src_pattern,
+      const std::string& dst_pattern,
+      bool is_clipboard_event);
+
  private:
   virtual void NotifyBlockedPaste(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst);
 
   virtual void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
-                           const ui::DataTransferEndpoint* const data_dst);
+                           const ui::DataTransferEndpoint* const data_dst,
+                           base::RepeatingCallback<void()> reporting_cb);
 
   virtual void WarnOnBlinkPaste(const ui::DataTransferEndpoint* const data_src,
                                 const ui::DataTransferEndpoint* const data_dst,
@@ -102,13 +111,6 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                         const std::string& dst_pattern,
                         DlpRulesManager::Level level,
                         bool is_clipboard_event);
-
-  void ReportWarningProceededEvent(
-      const absl::optional<ui::DataTransferEndpoint> maybe_data_src,
-      const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
-      const std::string& src_pattern,
-      const std::string& dst_pattern,
-      bool is_clipboard_event);
 
   // The solution for the issue of sending multiple reporting events for a
   // single user action. When a user triggers a paste (for instance by pressing

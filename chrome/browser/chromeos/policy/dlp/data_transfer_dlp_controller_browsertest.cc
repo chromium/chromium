@@ -5,10 +5,14 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
@@ -62,8 +66,10 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
   views::Widget* GetWidget() { return widget_.get(); }
 
-  void ProceedPressed(const ui::DataTransferEndpoint& data_dst) {
-    DlpClipboardNotifier::ProceedPressed(data_dst, GetWidget());
+  void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
+                      base::RepeatingCallback<void()> reporting_cb) {
+    DlpClipboardNotifier::ProceedPressed(data_dst, std::move(reporting_cb),
+                                         GetWidget());
   }
 
   void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst) {
@@ -98,8 +104,9 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
-                   const ui::DataTransferEndpoint* const data_dst) override {
-    helper_->WarnOnPaste(data_src, data_dst);
+                   const ui::DataTransferEndpoint* const data_dst,
+                   base::RepeatingCallback<void()> reporting_cb) override {
+    helper_->WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
   }
 
   void SetBlinkQuitCallback(base::RepeatingClosure cb) {
@@ -130,6 +137,17 @@ class FakeDlpController : public DataTransferDlpController,
       return true;
     }
     return false;
+  }
+
+  void ReportWarningProceededEvent(
+      const ui::DataTransferEndpoint* const data_src,
+      const ui::DataTransferEndpoint* const data_dst,
+      const std::string& src_pattern,
+      const std::string& dst_pattern,
+      bool is_clipboard_event) {
+    DataTransferDlpController::ReportWarningProceededEvent(
+        base::OptionalFromPtr(data_src), base::OptionalFromPtr(data_dst),
+        src_pattern, dst_pattern, is_clipboard_event);
   }
 
   raw_ptr<FakeClipboardNotifier> helper_ = nullptr;
@@ -395,12 +413,23 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
                   kMailUrl, "*", DlpRulesManager::Restriction::kClipboard,
                   DlpRulesManager::Level::kWarn)));
 
+  auto data_src = std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl)));
+
   // Accept warning.
   ui::DataTransferEndpoint default_endpoint(ui::EndpointType::kDefault);
-  helper_.ProceedPressed(default_endpoint);
+  auto reporting_cb = base::BindRepeating(
+      &FakeDlpController::ReportWarningProceededEvent,
+      base::Unretained(dlp_controller_.get()), data_src.get(),
+      &default_endpoint, kMailUrl, "*", true);
+  helper_.ProceedPressed(default_endpoint, std::move(reporting_cb));
   EXPECT_TRUE(!widget || widget->IsClosed());
 
   EXPECT_EQ(kClipboardText116, textfield_->GetText());
+
+  ASSERT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                  kMailUrl, "*", DlpRulesManager::Restriction::kClipboard)));
 
   SetClipboardText(kClipboardText2, std::make_unique<ui::DataTransferEndpoint>(
                                         (GURL(kMailUrl))));
@@ -410,12 +439,15 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   textfield_->RequestFocus();
   event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
   event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
-
   EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
   ASSERT_TRUE(dlp_controller_->ObserveWidget());
   widget = helper_.GetWidget()->GetWeakPtr();
   EXPECT_FALSE(widget->IsClosed());
-  EXPECT_EQ(events_.size(), 1u);  // It shouldn't be reported again.
+  EXPECT_EQ(events_.size(), 3u);
+  EXPECT_THAT(events_[2],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kMailUrl, "*", DlpRulesManager::Restriction::kClipboard,
+                  DlpRulesManager::Level::kWarn)));
 
   // Initiate a paste on nullptr data_dst.
   std::u16string result;
@@ -427,9 +459,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   ASSERT_TRUE(dlp_controller_->ObserveWidget());
   widget = helper_.GetWidget()->GetWeakPtr();
   EXPECT_FALSE(widget->IsClosed());
-  // TODO(crbug.com/1380181): The number of events should be 4 not 1 when
-  // warning proceeded events detection is fixed.
-  ASSERT_EQ(events_.size(), 1u);
+  ASSERT_EQ(events_.size(), 3u);
 
   FlushMessageLoop();
 }
