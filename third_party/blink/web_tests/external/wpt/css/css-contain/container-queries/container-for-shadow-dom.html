@@ -227,6 +227,28 @@
   </template></div>
 </div>
 
+<div id="no-container-for-part">
+  <div>
+    <template shadowroot="open">
+      <style>
+        div {
+          width: 200px;
+          container-type: inline-size;
+        }
+        #t11 { color: green; }
+      </style>
+      <div>
+        <span id="t11" part="part"></span>
+      </div>
+    </template>
+    <style>
+      @container (width = 200px) {
+        #no-container-for-part > div::part(part) { color: red; }
+      }
+    </style>
+  </div>
+</div>
+
 <script>
   setup(() => {
     assert_implements_container_queries();
@@ -286,4 +308,9 @@
     const t10 = document.querySelector("#inclusive-ancestor-slot-fallback > div").shadowRoot.querySelector("#t10");
     assert_equals(getComputedStyle(t10).color, green);
   }, "Match container for slot light tree child fallback");
+
+  test(() => {
+    const t11 = document.querySelector("#no-container-for-part > div").shadowRoot.querySelector("#t11");
+    assert_equals(getComputedStyle(t11).color, green);
+  }, "Should not match container inside shadow tree for ::part()");
 </script>

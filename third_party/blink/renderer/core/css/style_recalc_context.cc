@@ -86,12 +86,7 @@ StyleRecalcContext StyleRecalcContext::ForPartRules(Element& host) const {
     return *this;
 
   // The closest container for matching ::part rules is the originating host.
-  // There is no need to walk past the current container.
-  if (Element* host_container =
-          ClosestInclusiveAncestorContainer(host, container)) {
-    return StyleRecalcContext{host_container};
-  }
-  return *this;
+  return StyleRecalcContext{ClosestInclusiveAncestorContainer(host)};
 }
 
 }  // namespace blink
