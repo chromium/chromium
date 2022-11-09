@@ -52,10 +52,14 @@ found in the LICENSE file.
         android:paddingBottom="24dp"
         android:text="@string/parent_website_approval_title"
         android:textAlignment="center"
+        android:importantForAccessibility="yes"
+        android:screenReaderFocusable="true"
+        android:accessibilityTraversalBefore="@+id/website_details_container"
         android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
 
     <!-- The info box showing the website details -->
     <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+        android:id="@+id/website_details_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/website_approval_horizontal_margin"
@@ -69,6 +73,8 @@ found in the LICENSE file.
             android:minHeight="72dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:screenReaderFocusable="true"
+            android:importantForAccessibility="yes"
             android:descendantFocusability="blocksDescendants">
 
             <ImageView
@@ -85,12 +91,14 @@ found in the LICENSE file.
 
             <!-- Details of the domain that will be allowed, and full URL being displayed-->
             <LinearLayout
+                android:id="@+id/url_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
                 android:layout_marginTop="14dp"
                 android:layout_marginBottom="14dp"
                 android:layout_weight="1"
+                android:screenReaderFocusable="true"
                 android:orientation="vertical">
                 <TextView
                     android:id="@+id/all_pages_of"
@@ -98,6 +106,8 @@ found in the LICENSE file.
                     android:layout_height="wrap_content"
                     android:minHeight="20dp"
                     android:ellipsize="end"
+                    android:importantForAccessibility="yes"
+                    android:focusable="false"
                     android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
                 <TextView
                     android:id="@+id/full_url"
@@ -105,6 +115,8 @@ found in the LICENSE file.
                     android:layout_height="wrap_content"
                     android:minHeight="20dp"
                     android:ellipsize="end"
+                    android:importantForAccessibility="yes"
+                    android:focusable="false"
                     android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
             </LinearLayout>
         </LinearLayout>

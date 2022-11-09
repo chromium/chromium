@@ -119,7 +119,11 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
 
     public void setTitle(String childName) {
         DialogTitle titleView = mContentView.findViewById(R.id.website_approval_sheet_title);
-        titleView.setText(mContext.getString(R.string.parent_website_approval_title, childName));
+        String displayedTitle =
+                mContext.getString(R.string.parent_website_approval_title, childName);
+        titleView.setText(displayedTitle);
+        // Set for accessibility announcement.
+        titleView.setContentDescription(displayedTitle);
     }
 
     public void setDomainText(GURL url) {
@@ -127,8 +131,11 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
         // Omit scheme, credentials, path and trivial subdomains
         String formattedDomain =
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(url);
-        domainTextView.setText(mContext.getString(
-                R.string.parent_website_approval_all_of_domain, formattedDomain));
+        String displayedFormattedDomain =
+                mContext.getString(R.string.parent_website_approval_all_of_domain, formattedDomain);
+        domainTextView.setText(displayedFormattedDomain);
+        // Set for accessibility announcement.
+        domainTextView.setContentDescription(displayedFormattedDomain);
     }
 
     @VisibleForTesting
@@ -161,7 +168,10 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
 
     public void setFullUrlText(GURL url) {
         TextView urlTextView = mContentView.findViewById(R.id.full_url);
-        urlTextView.setText(truncateLongUrl(url));
+        String truncatedUrl = truncateLongUrl(url);
+        urlTextView.setText(truncatedUrl);
+        // Set for accessibility announcement.
+        urlTextView.setContentDescription(truncatedUrl);
     }
 
     public void setFaviconBitmap(Bitmap bitmap) {
