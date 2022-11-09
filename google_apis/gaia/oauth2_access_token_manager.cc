@@ -362,16 +362,10 @@ bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
 
 bool OAuth2AccessTokenManager::Fetcher::ShouldRetry(
     const GoogleServiceAuthError& error) const {
-  GoogleServiceAuthError::State error_state = error.state();
-  bool should_retry =
-      error_state == GoogleServiceAuthError::CONNECTION_FAILED ||
-      error_state == GoogleServiceAuthError::REQUEST_CANCELED ||
-      error_state == GoogleServiceAuthError::SERVICE_UNAVAILABLE;
-
-  // Give the delegate a chance to correct the error first.  This is a best
+  // Give the delegate a chance to correct the error first. This is a best
   // effort only.
-  return should_retry || oauth2_access_token_manager_->GetDelegate()
-                             ->FixRequestErrorIfPossible();
+  return error.IsTransientError() || oauth2_access_token_manager_->GetDelegate()
+                                         ->FixRequestErrorIfPossible();
 }
 
 void OAuth2AccessTokenManager::Fetcher::InformWaitingRequests() {
