@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +16,7 @@
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/js_flow_devtools_wrapper.h"
 #include "components/autofill_assistant/browser/js_flow_executor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -36,6 +38,9 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   // Only one flow may run at a time.
   //
   // The last statement of the |js_flow| must be a return statement.
+  //
+  // |startup_param|, if provided, will be added as a const JS variable to the
+  // |js_flow| with a name equal to pair.first and value equal to pair.second.
   //
   // Flows may request additional native actions from the delegate, using the
   // following syntax:
@@ -72,6 +77,7 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   // (4) INVALID_ACTION if the flow attempted to return a prohibited value, such
   // as a string.
   void Start(const std::string& js_flow,
+             absl::optional<std::pair<std::string, std::string>> startup_param,
              base::OnceCallback<void(const ClientStatus&,
                                      std::unique_ptr<base::Value>)>
                  result_callback) override;
@@ -130,6 +136,7 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   int isolated_world_context_id_ = -1;
 
   std::unique_ptr<std::string> js_flow_;
+  absl::optional<std::pair<std::string, std::string>> startup_param_;
 
   base::OnceCallback<void(const ClientStatus&, std::unique_ptr<base::Value>)>
       callback_;

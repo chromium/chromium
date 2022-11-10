@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/bind.h"
@@ -91,20 +92,29 @@ class JsFlowExecutorImplBrowserTest : public BaseBrowserTest {
   }
 
   // Overload, ignore result value, just return the client status.
-  ClientStatus RunTest(const std::string& js_flow) {
+  ClientStatus RunTest(const std::string& js_flow,
+                       std::pair<std::string, std::string> startup_param =
+                           std::make_pair(std::string(), std::string())) {
     std::unique_ptr<base::Value> ignored_result;
-    return RunTest(js_flow, ignored_result);
+    return RunTest(js_flow, ignored_result, startup_param);
   }
 
   ClientStatus RunTest(const std::string& js_flow,
-                       std::unique_ptr<base::Value>& result_value) {
+                       std::unique_ptr<base::Value>& result_value,
+                       std::pair<std::string, std::string> startup_param =
+                           std::make_pair(std::string(), std::string())) {
     ClientStatus status;
     base::RunLoop run_loop;
+    absl::optional<std::pair<std::string, std::string>> opt_startup_param;
+    if (!startup_param.first.empty()) {
+      opt_startup_param = startup_param;
+    }
 
     flow_executor_->Start(
-        js_flow, base::BindOnce(&JsFlowExecutorImplBrowserTest::OnFlowFinished,
-                                base::Unretained(this), run_loop.QuitClosure(),
-                                &status, std::ref(result_value)));
+        js_flow, opt_startup_param,
+        base::BindOnce(&JsFlowExecutorImplBrowserTest::OnFlowFinished,
+                       base::Unretained(this), run_loop.QuitClosure(), &status,
+                       std::ref(result_value)));
     run_loop.Run();
 
     return status;
@@ -565,6 +575,22 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest,
                       result),
               Property(&ClientStatus::proto_status, ACTION_APPLIED));
   EXPECT_EQ(*result, base::Value(2));
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest,
+                       StartupParamIsSetCorrectly) {
+  const std::string js_flow = "return {startupParam: MY_STARTUP_PARAM};";
+
+  std::unique_ptr<base::Value> result;
+  EXPECT_THAT(RunTest(js_flow, result, /* startup_param = */
+                      std::make_pair(std::string("MY_STARTUP_PARAM"),
+                                     std::string("hello world"))),
+              Property(&ClientStatus::proto_status, ACTION_APPLIED));
+
+  ASSERT_THAT(result, NotNull());
+  EXPECT_TRUE(result->is_dict());
+  EXPECT_THAT(result->GetIfDict()->FindString("startupParam"),
+              Pointee(std::string("hello world")));
 }
 
 }  // namespace

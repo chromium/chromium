@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/actions/js_flow_action.h"
+#include <string>
+#include <utility>
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
@@ -14,6 +16,7 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 namespace {
@@ -27,6 +30,7 @@ using ::testing::Eq;
 using ::testing::Property;
 using ::testing::SaveArgPointee;
 using ::testing::WithArg;
+using ::testing::WithArgs;
 
 // Parses |json| as a base::Value. No error handling - this will crash for
 // invalid json inputs.
@@ -42,13 +46,13 @@ class MockJsFlowExecutor : public JsFlowExecutor {
   MockJsFlowExecutor() = default;
   ~MockJsFlowExecutor() override = default;
 
-  MOCK_METHOD(
-      void,
+  MOCK_METHOD3(
       Start,
-      (const std::string& js_flow,
-       base::OnceCallback<void(const ClientStatus&,
-                               std::unique_ptr<base::Value>)> result_callback),
-      (override));
+      void(const std::string& js_flow,
+           absl::optional<std::pair<std::string, std::string>> startup_param,
+           base::OnceCallback<void(const ClientStatus&,
+                                   std::unique_ptr<base::Value>)>
+               result_callback));
 };
 
 class JsFlowActionTest : public testing::Test {
@@ -77,8 +81,8 @@ class JsFlowActionTest : public testing::Test {
 TEST_F(JsFlowActionTest, SmokeTest) {
   auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
 
-  EXPECT_CALL(*mock_js_flow_executor, Start("", _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
+  EXPECT_CALL(*mock_js_flow_executor, Start)
+      .WillOnce(RunOnceCallback<2>(ClientStatus(ACTION_APPLIED),
                                    /* return_value = */ nullptr));
   EXPECT_CALL(
       callback_,
@@ -144,7 +148,7 @@ TEST_F(JsFlowActionTest, NativeActionSucceeds) {
   ActionProto native_action;
   native_action.mutable_tell()->set_message("Hello World!");
   EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
-      .WillOnce(WithArg<1>([&](auto finished_callback) {
+      .WillOnce(WithArg<2>([&](auto finished_callback) {
         std::string serialized_native_action;
         native_action.tell().SerializeToString(&serialized_native_action);
 
@@ -176,7 +180,7 @@ TEST_F(JsFlowActionTest, NativeActionFails) {
   // ShowCast without a selector is invalid.
   native_action.mutable_show_cast();
   EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
-      .WillOnce(WithArg<1>([&](auto finished_callback) {
+      .WillOnce(WithArg<2>([&](auto finished_callback) {
         std::string serialized_native_action;
         native_action.show_cast().SerializeToString(&serialized_native_action);
 
@@ -203,8 +207,8 @@ TEST_F(JsFlowActionTest, NativeActionFails) {
 TEST_F(JsFlowActionTest, WritesFlowResultAsJsonDictToActionResult) {
   auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
 
-  EXPECT_CALL(*mock_js_flow_executor, Start("", _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
+  EXPECT_CALL(*mock_js_flow_executor, Start)
+      .WillOnce(RunOnceCallback<2>(ClientStatus(ACTION_APPLIED),
                                    /* return_value = */ UniqueValueFromJson(R"(
         {
           "status": 3,
@@ -228,8 +232,8 @@ TEST_F(JsFlowActionTest, WritesFlowResultAsJsonDictToActionResult) {
 TEST_F(JsFlowActionTest, AllowsFlowsWithoutReturnValue) {
   auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
 
-  EXPECT_CALL(*mock_js_flow_executor, Start("", _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
+  EXPECT_CALL(*mock_js_flow_executor, Start)
+      .WillOnce(RunOnceCallback<2>(ClientStatus(ACTION_APPLIED),
                                    /* return_value = */ nullptr));
 
   ProcessedActionProto processed_action_capture;
@@ -245,8 +249,8 @@ TEST_F(JsFlowActionTest, AllowsFlowsWithoutReturnValue) {
 TEST_F(JsFlowActionTest, AllowsFlowsReturningStatusWithoutResult) {
   auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
 
-  EXPECT_CALL(*mock_js_flow_executor, Start("", _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
+  EXPECT_CALL(*mock_js_flow_executor, Start)
+      .WillOnce(RunOnceCallback<2>(ClientStatus(ACTION_APPLIED),
                                    /* return_value = */ UniqueValueFromJson(R"(
         {
           "status": 3
@@ -267,7 +271,7 @@ TEST_F(JsFlowActionTest, RemovesOriginalProtoFromTheProcessedAction) {
   auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
 
   EXPECT_CALL(*mock_js_flow_executor, Start)
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
+      .WillOnce(RunOnceCallback<2>(ClientStatus(ACTION_APPLIED),
                                    /* return_value = */ nullptr));
 
   ProcessedActionProto processed_action_capture;
@@ -288,7 +292,7 @@ TEST_F(JsFlowActionTest, NativeActionReturnsNavigationStarted) {
   auto action = CreateAction(std::move(mock_js_flow_executor));
 
   EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
-      .WillOnce(WithArg<1>([&](auto finished_callback) {
+      .WillOnce(WithArg<2>([&](auto finished_callback) {
         ActionProto native_action;
         native_action.mutable_wait_for_dom()->mutable_wait_condition();
 
@@ -325,7 +329,7 @@ TEST_F(JsFlowActionTest, NativeActionReturnsActionResult) {
   auto action = CreateAction(std::move(mock_js_flow_executor));
 
   EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
-      .WillOnce(WithArg<1>([&](auto finished_callback) {
+      .WillOnce(WithArg<2>([&](auto finished_callback) {
         ActionProto native_action;
         native_action.mutable_wait_for_dom()->mutable_wait_condition();
 
@@ -369,7 +373,7 @@ TEST_F(JsFlowActionTest, NativeActionReturnsAutofillErrorInfo) {
   auto action = CreateAction(std::move(mock_js_flow_executor));
 
   EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
-      .WillOnce(WithArg<1>([&](auto finished_callback) {
+      .WillOnce(WithArg<2>([&](auto finished_callback) {
         ActionProto native_action;
         native_action.mutable_wait_for_dom()->mutable_wait_condition();
 
@@ -405,6 +409,30 @@ TEST_F(JsFlowActionTest, NativeActionReturnsAutofillErrorInfo) {
                                                              "\"}"))));
 
   action->ProcessAction(callback_.Get());
+}
+
+TEST_F(JsFlowActionTest, StartupParamsAreForwarded) {
+  auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
+  auto* mock_js_flow_executor_ptr = mock_js_flow_executor.get();
+  proto_.set_startup_param_name("foo");
+  proto_.set_startup_param_value("bar");
+  auto action = CreateAction(std::move(mock_js_flow_executor));
+
+  ActionProto native_action;
+  native_action.mutable_tell()->set_message("Hello World!");
+  EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
+      .WillOnce(WithArgs<1, 2>([&](const auto& startup_param,
+                                   auto finished_callback) {
+        EXPECT_EQ(startup_param,
+                  std::make_pair(std::string("foo"), std::string("bar")));
+        std::move(finished_callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
+      }));
+  ProcessedActionProto processed_action_capture;
+  EXPECT_CALL(callback_, Run)
+      .WillOnce(SaveArgPointee<0>(&processed_action_capture));
+  action->ProcessAction(callback_.Get());
+
+  EXPECT_THAT(processed_action_capture.status(), Eq(ACTION_APPLIED));
 }
 
 }  // namespace autofill_assistant

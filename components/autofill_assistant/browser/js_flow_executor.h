@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include "base/callback_forward.h"
 #include "base/values.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -34,11 +36,15 @@ class JsFlowExecutor {
   virtual ~JsFlowExecutor() = default;
 
   // Runs the specified JS flow. Refer to the specific implementation for more
-  // details.
-  virtual void Start(const std::string& js_flow,
-                     base::OnceCallback<void(const ClientStatus&,
-                                             std::unique_ptr<base::Value>)>
-                         result_callback) = 0;
+  // details. If |startup_param| is provided, it will be made available to the
+  // main |js_flow| as a variable of the same name and value (as such, the name
+  // must be a valid JS variable name).
+  virtual void Start(
+      const std::string& js_flow,
+      absl::optional<std::pair<std::string, std::string>> startup_param,
+      base::OnceCallback<void(const ClientStatus&,
+                              std::unique_ptr<base::Value>)>
+          result_callback) = 0;
 };
 
 }  // namespace autofill_assistant

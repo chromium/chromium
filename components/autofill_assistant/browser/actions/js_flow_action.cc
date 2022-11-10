@@ -10,6 +10,7 @@
 #include "components/autofill_assistant/browser/js_flow_executor_impl.h"
 #include "components/autofill_assistant/browser/js_flow_util.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -102,9 +103,14 @@ void JsFlowAction::OnNativeActionFinished(
 void JsFlowAction::InternalProcessAction(ProcessActionCallback callback) {
   base::FieldTrialList::CreateFieldTrial(kJsFlowActionSyntheticFieldTrialName,
                                          kJsFlowActionEnabledGroup);
+  absl::optional<std::pair<std::string, std::string>> startup_param;
+  if (!proto_.js_flow().startup_param_name().empty()) {
+    startup_param = std::make_pair(proto_.js_flow().startup_param_name(),
+                                   proto_.js_flow().startup_param_value());
+  }
 
   js_flow_executor_->Start(
-      proto_.js_flow().js_flow(),
+      proto_.js_flow().js_flow(), startup_param,
       base::BindOnce(&JsFlowAction::OnFlowFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

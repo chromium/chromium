@@ -122,6 +122,7 @@ JsFlowExecutorImpl::~JsFlowExecutorImpl() = default;
 
 void JsFlowExecutorImpl::Start(
     const std::string& js_flow,
+    absl::optional<std::pair<std::string, std::string>> startup_param,
     base::OnceCallback<void(const ClientStatus&, std::unique_ptr<base::Value>)>
         callback) {
   Metrics::RecordJsFlowStartedEvent(
@@ -136,6 +137,7 @@ void JsFlowExecutorImpl::Start(
   }
 
   js_flow_ = std::make_unique<std::string>(js_flow);
+  startup_param_ = startup_param;
   callback_ = std::move(callback);
 
   js_flow_devtools_wrapper_->GetDevtoolsAndMaybeInit(base::BindOnce(
@@ -144,7 +146,15 @@ void JsFlowExecutorImpl::Start(
 
 // Wraps the main js_flow in an async function as well as making
 // runNativeAction, client constants (e.g. LINE_OFFSET) available to the flow.
-std::string CreateWrappedJsFlow(const std::string& js_flow) {
+std::string CreateWrappedJsFlow(
+    const std::string& js_flow,
+    absl::optional<std::pair<std::string, std::string>> startup_param) {
+  std::string startup_param_variable;
+  if (startup_param) {
+    startup_param_variable = base::StrCat(
+        {"const ", startup_param->first, " = '", startup_param->second, "';"});
+  }
+
   return base::StrCat(
       {// The leading wrapper contains the runNativeAction
        // function as well as the first part of the anonymous
@@ -163,6 +173,8 @@ std::string CreateWrappedJsFlow(const std::string& js_flow) {
        // The DebugMode command line switch, if true more info will be logged.
        "const DEBUG_MODE = ", js_flow_util::IsDebugMode() ? "true" : "false",
        ";",
+       // Optional startup parameter.
+       startup_param_variable,
        // New line so the js flow starts from the first column.
        // Added to kJsLineOffset.
        "\n",
@@ -194,7 +206,7 @@ void JsFlowExecutorImpl::InternalStart(const ClientStatus& status,
   // the flow may fulfill to request execution of a native action.
   RefreshNativeActionPromise();
 
-  const auto wrapped_js_flow = CreateWrappedJsFlow(*js_flow_);
+  const auto wrapped_js_flow = CreateWrappedJsFlow(*js_flow_, startup_param_);
 
   Metrics::RecordJsFlowStartedEvent(
       Metrics::JsFlowStartedEvent::SCRIPT_STARTED);

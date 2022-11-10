@@ -3695,6 +3695,12 @@ message JsFlowProto {
   // ActionsResponseProto::js_flow_library needs to be evaluated first.
   optional string js_flow = 1;
 
+  // If provided, will allocate and populate a JS variable of the specified
+  // name and value. This can be used to inject information into the flow. The
+  // name must be a valid JS variable name.
+  optional string startup_param_name = 3;
+  optional string startup_param_value = 4;
+
   reserved 2;
 }
 
