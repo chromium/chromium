@@ -6,6 +6,8 @@ import os
 
 USE_PYTHON3 = True
 
+PRESUBMIT_VERSION = '2.0.0'
+
 ANDROID_ALLOWED_LICENSES = [
   'A(pple )?PSL 2(\.0)?',
   'Android Software Development Kit License',
@@ -39,7 +41,7 @@ def LicenseIsCompatibleWithAndroid(input_api, license):
       break
   return has_compatible_license
 
-def _CheckThirdPartyReadmesUpdated(input_api, output_api):
+def CheckThirdPartyReadmesUpdated(input_api, output_api):
   """
   Checks to make sure that README.chromium files are properly updated
   when dependencies in third_party are modified.
@@ -161,9 +163,3 @@ def _IgnoreIfDeleting(input_api, output_api, affected_file, errors):
         errors.append(output_api.PresubmitError(
           'Third party README should only be removed when the whole\n'
           'directory is being removed.\n', [f, affected_file]))
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  results = []
-  results.extend(_CheckThirdPartyReadmesUpdated(input_api, output_api))
-  return results
