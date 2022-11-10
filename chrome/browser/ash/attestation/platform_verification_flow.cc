@@ -41,6 +41,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace {
@@ -239,9 +240,13 @@ void PlatformVerificationFlow::GetCertificate(
       base::BindOnce(&PlatformVerificationFlow::OnCertificateReady, this,
                      context, context->data.account_id, std::move(timer));
   attestation_flow_->GetCertificate(
-      PROFILE_CONTENT_PROTECTION_CERTIFICATE, context->data.account_id,
-      context->data.service_id, force_new_key, ::attestation::KEY_TYPE_RSA,
-      std::string() /*key_name*/, std::move(certificate_callback));
+      /*certificate_profile=*/PROFILE_CONTENT_PROTECTION_CERTIFICATE,
+      /*account_id=*/context->data.account_id,
+      /*request_origin=*/context->data.service_id,
+      /*force_new_key=*/force_new_key,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/std::move(certificate_callback));
 }
 
 void PlatformVerificationFlow::OnCertificateReady(
@@ -324,13 +329,15 @@ void PlatformVerificationFlow::OnChallengeReady(
         base::BindOnce(&PlatformVerificationFlow::RenewCertificateCallback,
                        this, std::move(certificate_chain));
     attestation_flow_->GetCertificate(
-        PROFILE_CONTENT_PROTECTION_CERTIFICATE, context.account_id,
-        context.service_id,
-        true,  // force_new_key
-        ::attestation::KEY_TYPE_RSA,
-        std::string(),  // key_name, empty means a default one will be
-                        // generated.
-        std::move(renew_callback));
+        /*certificate_profile=*/PROFILE_CONTENT_PROTECTION_CERTIFICATE,
+        /*account_id=*/context.account_id,
+        /*request_origin=*/context.service_id,
+        /*force_new_key=*/true,  // force_new_key
+        /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+        /*key_name=*/std::string(),  // key_name, empty means a default one will
+                                     // be generated.
+        /*profile_specific_data=*/absl::nullopt,
+        /*callback=*/std::move(renew_callback));
   }
 }
 

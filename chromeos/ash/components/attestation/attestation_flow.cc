@@ -99,6 +99,7 @@ void AttestationFlow::GetCertificate(
     bool force_new_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
+    const absl::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback) {
   std::string attestation_key_name =
       !key_name.empty()

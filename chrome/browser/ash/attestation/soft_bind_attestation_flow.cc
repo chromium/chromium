@@ -22,6 +22,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/der/tag.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
@@ -188,10 +189,14 @@ void SoftBindAttestationFlow::GetCertificateInternal(
   AttestationFlow::CertificateCallback certificate_callback =
       base::BindOnce(&SoftBindAttestationFlow::OnCertificateReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(session));
-  attestation_flow_->GetCertificate(PROFILE_SOFT_BIND_CERTIFICATE, account_id,
-                                    /*request_origin=*/std::string(),
-                                    force_new_key, ::attestation::KEY_TYPE_RSA,
-                                    key_name, std::move(certificate_callback));
+  attestation_flow_->GetCertificate(
+      /*certificate_profile=*/PROFILE_SOFT_BIND_CERTIFICATE,
+      /*account_id=*/account_id,
+      /*request_origin=*/std::string(),
+      /*force_new_key=*/force_new_key,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/key_name, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/std::move(certificate_callback));
 }
 
 void SoftBindAttestationFlow::OnCertificateReady(
@@ -346,9 +351,12 @@ void SoftBindAttestationFlow::OnCertificateSigned(
         &SoftBindAttestationFlow::RenewCertificateCallback,
         weak_ptr_factory_.GetWeakPtr(), std::move(certificate_chain));
     attestation_flow_->GetCertificate(
-        PROFILE_SOFT_BIND_CERTIFICATE, session->GetAccountId(),
+        /*certificate_profile=*/PROFILE_SOFT_BIND_CERTIFICATE,
+        /*account_id=*/session->GetAccountId(),
         /*request_origin=*/std::string(), /*force_new_key=*/true,
-        ::attestation::KEY_TYPE_RSA, kSoftBindKey, std::move(renew_callback));
+        /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+        /*key_name=*/kSoftBindKey, /*profile_specific_data=*/absl::nullopt,
+        /*callback=*/std::move(renew_callback));
   }
 }
 

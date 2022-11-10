@@ -127,7 +127,7 @@ struct CallbackHolder {
 class MockableFakeAttestationFlow : public MockAttestationFlow {
  public:
   MockableFakeAttestationFlow() {
-    ON_CALL(*this, GetCertificate(_, _, _, _, _, _, _))
+    ON_CALL(*this, GetCertificate(_, _, _, _, _, _, _, _))
         .WillByDefault(
             Invoke(this, &MockableFakeAttestationFlow::GetCertificateInternal));
   }
@@ -142,6 +142,8 @@ class MockableFakeAttestationFlow : public MockAttestationFlow {
       bool /*force_new_key*/,
       ::attestation::KeyType /*key_crypto_type*/,
       const std::string& key_name,
+      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+          profile_specific_data,
       CertificateCallback callback) {
     std::string certificate;
     if (status_ == ATTESTATION_SUCCESS) {
@@ -520,7 +522,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, GetCertificateFailed) {
   const AttestationKeyType key_type = KEY_DEVICE;
 
   mock_attestation_flow_.set_status(ATTESTATION_UNSPECIFIED_FAILURE);
-  EXPECT_CALL(mock_attestation_flow_, GetCertificate(_, _, _, _, _, _, _));
+  EXPECT_CALL(mock_attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _));
 
   RunOneStepAndExpect(
       key_type, /*will_register_key=*/false, kEmptyKeyName,
@@ -595,7 +597,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
   const char* const key_name = GetDefaultKeyName(key_type);
 
   EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, key_name, _));
+              GetCertificate(_, _, _, _, _, key_name, _, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_key_label(key_name);
@@ -617,7 +619,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
 
   EXPECT_CALL(
       mock_attestation_flow_,
-      GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_RSA, key_name, _));
+      GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_RSA, key_name, _, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_key_label(GetDefaultKeyName(key_type));
@@ -660,7 +662,7 @@ TEST_F(TpmChallengeKeySubtleTestECC, DeviceKeyRegisteredSuccessECC) {
 
   EXPECT_CALL(
       mock_attestation_flow_,
-      GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_ECC, key_name, _));
+      GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_ECC, key_name, _, _));
 
   RunOneStepAndExpect(key_type, /*will_register_key=*/true, key_name,
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
@@ -671,7 +673,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
   const char* const key_name = GetDefaultKeyName(key_type);
 
   EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, key_name, _));
+              GetCertificate(_, _, _, _, _, key_name, _, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_username(kTestUserEmail);
@@ -693,7 +695,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
   const char* const key_name = kNonDefaultKeyName;
 
   EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, key_name, _));
+              GetCertificate(_, _, _, _, _, key_name, _, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_username(kTestUserEmail);
@@ -722,7 +724,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, SignChallengeFailed) {
   const AttestationKeyType key_type = KEY_DEVICE;
 
   EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, GetDefaultKeyName(key_type), _));
+              GetCertificate(_, _, _, _, _, GetDefaultKeyName(key_type), _, _));
 
   // The signing operations fails because we don't allowlist any key.
   RunTwoStepsAndExpect(
@@ -811,7 +813,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, GetPublicKeyFailed) {
   const char* const key_name = kNonDefaultKeyName;
 
   EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, key_name, _));
+              GetCertificate(_, _, _, _, _, key_name, _, _));
 
   // Force the attestation client to report absence even after successful
   // attestation flow.
@@ -837,7 +839,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
           testing::Invoke(&callback_holder, &CallbackHolderT::SaveCallback));
 
   EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, key_name, _));
+              GetCertificate(_, _, _, _, _, key_name, _, _));
 
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartPrepareKeyStep(
@@ -867,7 +869,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, NoCertificateUploaderSuccess) {
       &mock_attestation_flow_, /*machine_certificate_uploader=*/nullptr);
 
   EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, key_name, _));
+              GetCertificate(_, _, _, _, _, key_name, _, _));
 
   RunOneStepAndExpect(KEY_USER,
                       /*will_register_key=*/true, key_name,
@@ -880,7 +882,7 @@ TEST_F(KioskTpmChallengeKeySubtleTest, IncludesCustomerId) {
   const char* const key_name = GetDefaultKeyName(key_type);
 
   EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, key_name, _));
+              GetCertificate(_, _, _, _, _, key_name, _, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_username(kTestUserEmail);

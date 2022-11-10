@@ -1901,7 +1901,7 @@ void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
   settings_provider_ = settings_helper_.device_settings();
 
   ON_CALL(mock_attestation_flow_, GetCertificate)
-      .WillByDefault(WithArgs<6>(Invoke(FakeGetCertificateCallbackTrue)));
+      .WillByDefault(WithArgs<7>(Invoke(FakeGetCertificateCallbackTrue)));
 
   // By default make it reply that the certificate is already uploaded.
   ON_CALL(mock_cert_uploader_, WaitForUploadComplete)

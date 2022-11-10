@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -38,13 +39,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
 
   ~AttestationFlowAdaptive() override;
 
-  void GetCertificate(AttestationCertificateProfile certificate_profile,
-                      const AccountId& account_id,
-                      const std::string& request_origin,
-                      bool force_new_key,
-                      ::attestation::KeyType key_crypto_type,
-                      const std::string& key_name,
-                      CertificateCallback callback) override;
+  void GetCertificate(
+      AttestationCertificateProfile certificate_profile,
+      const AccountId& account_id,
+      const std::string& request_origin,
+      bool force_new_key,
+      ::attestation::KeyType key_crypto_type,
+      const std::string& key_name,
+      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+          profile_specific_data,
+      CertificateCallback callback) override;
 
  private:
   // The collection of parameters of `GetCertificate()` except for the callback.

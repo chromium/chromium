@@ -48,6 +48,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -514,10 +515,13 @@ void EnrollmentHandler::StartAttestationBasedEnrollmentFlow(
       base::BindOnce(&EnrollmentHandler::HandleRegistrationCertificateResult,
                      weak_ptr_factory_.GetWeakPtr(), is_initial_attempt);
   attestation_flow_->GetCertificate(
-      ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-      EmptyAccountId(), /*request_origin=*/std::string(), force_new_key,
-      ::attestation::KEY_TYPE_ECC, /*=key_name=*/std::string(),
-      std::move(callback));
+      /*certificate_profile=*/ash::attestation::
+          PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
+      /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
+      /*force_new_key=*/force_new_key,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
+      /*=key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/std::move(callback));
 }
 
 void EnrollmentHandler::HandleRegistrationCertificateResult(

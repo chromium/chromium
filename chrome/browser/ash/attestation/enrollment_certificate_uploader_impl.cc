@@ -22,6 +22,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -100,11 +101,15 @@ void EnrollmentCertificateUploaderImpl::GetCertificate(bool force_new_key) {
 
   VLOG_IF(1, force_new_key) << "Fetching certificate with new key";
   attestation_flow_->GetCertificate(
-      PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-      EmptyAccountId(),  // Not used.
-      std::string(),     // Not used.
-      force_new_key, ::attestation::KEY_TYPE_ECC,
-      std::string(),  // Leave key name empty to generate a default name.
+      /*certificate_profile=*/PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
+      /*account_id=*/EmptyAccountId(),   // Not used.
+      /*request_origin=*/std::string(),  // Not used.
+      /*force_new_key=*/force_new_key,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
+      /*key_name=*/std::string(),  // Leave key name empty to generate a default
+                                   // name.
+      /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(
           [](const base::RepeatingCallback<void(const std::string&)> on_success,
              const base::RepeatingCallback<void(AttestationStatus)> on_failure,

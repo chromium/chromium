@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 class AccountId;
@@ -78,16 +79,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   //   key_crypto_type - The crypto type of the key.
   //   key_name - The name of the key. If left empty, a default name derived
   //              from the |certificate_profile| and |account_id| will be used.
+  //   profile_specific_data - Optional certificate profile specific data. The
+  //                           type must correspond to `certificate_profile`.
   //   callback - A callback which will be called when the operation completes.
   //              On success |result| will be true and |data| will contain the
   //              PCA-issued certificate chain in PEM format.
-  void GetCertificate(AttestationCertificateProfile certificate_profile,
-                      const AccountId& account_id,
-                      const std::string& request_origin,
-                      bool force_new_key,
-                      ::attestation::KeyType key_crypto_type,
-                      const std::string& key_name,
-                      CertificateCallback callback) override;
+  void GetCertificate(
+      AttestationCertificateProfile certificate_profile,
+      const AccountId& account_id,
+      const std::string& request_origin,
+      bool force_new_key,
+      ::attestation::KeyType key_crypto_type,
+      const std::string& key_name,
+      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+          profile_specific_data,
+      CertificateCallback callback) override;
 
  private:
   // Asynchronously waits for attestation to be ready and start enrollment once

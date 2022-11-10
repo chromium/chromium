@@ -39,6 +39,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -519,9 +520,12 @@ void TpmChallengeKeySubtleImpl::AskForUserConsentCallback(bool result) {
 
   // Generate a new key and have it signed by PCA.
   attestation_flow_->GetCertificate(
-      GetCertificateProfile(), GetAccountIdForAttestationFlow(),
+      /*certificate_profile=*/GetCertificateProfile(),
+      /*account_id=*/GetAccountIdForAttestationFlow(),
       /*request_origin=*/std::string(),  // Not used.
-      /*force_new_key=*/true, key_crypto_type_, key_name_,
+      /*force_new_key=*/true, /*key_crypto_type=*/key_crypto_type_,
+      /*key_name=*/key_name_, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(&TpmChallengeKeySubtleImpl::GetCertificateCallback,
                      weak_factory_.GetWeakPtr()));
 }

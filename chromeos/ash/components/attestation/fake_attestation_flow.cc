@@ -11,6 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -32,6 +33,8 @@ void FakeAttestationFlow::GetCertificate(
     bool /*force_new_key*/,
     ::attestation::KeyType /*key_crypto_type*/,
     const std::string& /*key_name*/,
+    const absl::optional<
+        AttestationFlow::CertProfileSpecificData>& /*profile_specific_data*/,
     CertificateCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

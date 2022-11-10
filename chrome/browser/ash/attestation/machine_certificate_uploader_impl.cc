@@ -134,12 +134,15 @@ void MachineCertificateUploaderImpl::Start() {
 void MachineCertificateUploaderImpl::GetNewCertificate() {
   // We can reuse the dbus callback handler logic.
   attestation_flow_->GetCertificate(
-      PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
-      EmptyAccountId(),  // Not used.
-      std::string(),     // Not used.
-      true,              // Force a new key to be generated.
-      ::attestation::KEY_TYPE_RSA,
-      std::string(),  // Leave key name empty to generate a default name.
+      /*certificate_profile=*/PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
+      /*account_id=*/EmptyAccountId(),   // Not used.
+      /*request_origin=*/std::string(),  // Not used.
+      /*force_new_key=*/true,            // Force a new key to be generated.
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/std::string(),  // Leave key name empty to generate a default
+                                   // name.
+      /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(
           [](const base::RepeatingCallback<void(const std::string&)> on_success,
              const base::RepeatingCallback<void(AttestationStatus)> on_failure,

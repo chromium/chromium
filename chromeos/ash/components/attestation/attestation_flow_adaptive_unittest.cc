@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -118,9 +119,9 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
       *(test_factory->GetDefaultMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
-                     kFakeKeyName, _))
+                     kFakeKeyName, _, _))
       .WillOnce(
-          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -140,8 +141,12 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
       std::unique_ptr<AttestationFlowFactory>(test_factory));
 
   flow.GetCertificate(
-      kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
+      /*certificate_profile=*/kFakeProfile,
+      /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
+      /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -163,9 +168,9 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccessWithECC) {
       *(test_factory->GetDefaultMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_ECC,
-                     kFakeKeyName, _))
+                     kFakeKeyName, _, _))
       .WillOnce(
-          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -185,8 +190,12 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccessWithECC) {
       std::unique_ptr<AttestationFlowFactory>(test_factory));
 
   flow.GetCertificate(
-      kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      ::attestation::KEY_TYPE_ECC, kFakeKeyName,
+      /*certificate_profile=*/kFakeProfile,
+      /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
+      /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -208,18 +217,18 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
       *(test_factory->GetDefaultMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
-                     kFakeKeyName, _))
+                     kFakeKeyName, _, _))
       .WillOnce(
-          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
           })));
   EXPECT_CALL(
       *(test_factory->GetFallbackMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
-                     kFakeKeyName, _))
+                     kFakeKeyName, _, _))
       .WillOnce(
-          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -239,8 +248,12 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
       std::unique_ptr<AttestationFlowFactory>(test_factory));
 
   flow.GetCertificate(
-      kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
+      /*certificate_profile=*/kFakeProfile,
+      /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
+      /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -263,9 +276,9 @@ TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
       *(test_factory->GetFallbackMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
-                     kFakeKeyName, _))
+                     kFakeKeyName, _, _))
       .WillOnce(
-          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -285,8 +298,12 @@ TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
       std::unique_ptr<AttestationFlowFactory>(test_factory));
 
   flow.GetCertificate(
-      kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
+      /*certificate_profile=*/kFakeProfile,
+      /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
+      /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -309,10 +326,10 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
       *(test_factory->GetFallbackMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
-                     kFakeKeyName, _))
+                     kFakeKeyName, _, _))
       .Times(2)
       .WillRepeatedly(
-          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -332,8 +349,12 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
       std::unique_ptr<AttestationFlowFactory>(test_factory));
 
   flow.GetCertificate(
-      kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
+      /*certificate_profile=*/kFakeProfile,
+      /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
+      /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -341,8 +362,12 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
 
   base::RunLoop run_loop_again;
   flow.GetCertificate(
-      kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
+      /*certificate_profile=*/kFakeProfile,
+      /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
+      /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
       base::BindOnce(callback, &run_loop_again, &result_status, &result_cert));
   run_loop_again.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);

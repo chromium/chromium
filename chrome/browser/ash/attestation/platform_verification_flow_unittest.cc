@@ -100,8 +100,8 @@ class PlatformVerificationFlowTest : public ::testing::Test {
     // Configure the mock AttestationFlow to call FakeGetCertificate.
     EXPECT_CALL(mock_attestation_flow_,
                 GetCertificate(PROFILE_CONTENT_PROTECTION_CERTIFICATE,
-                               account_id, kTestID, _, _, _, _))
-        .WillRepeatedly(WithArgs<6>(
+                               account_id, kTestID, _, _, _, _, _))
+        .WillRepeatedly(WithArgs<7>(
             Invoke(this, &PlatformVerificationFlowTest::FakeGetCertificate)));
 
     const std::string expected_key_name =

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -20,13 +21,16 @@ class FakeAttestationFlow : public AttestationFlow {
   explicit FakeAttestationFlow(const std::string& certificate);
   ~FakeAttestationFlow() override;
 
-  void GetCertificate(AttestationCertificateProfile certificate_profile,
-                      const AccountId& account_id,
-                      const std::string& request_origin,
-                      bool force_new_key,
-                      ::attestation::KeyType key_crypto_type,
-                      const std::string& key_name,
-                      CertificateCallback callback) override;
+  void GetCertificate(
+      AttestationCertificateProfile certificate_profile,
+      const AccountId& account_id,
+      const std::string& request_origin,
+      bool force_new_key,
+      ::attestation::KeyType key_crypto_type,
+      const std::string& key_name,
+      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+          profile_specific_data,
+      CertificateCallback callback) override;
 
  private:
   std::string certificate_;

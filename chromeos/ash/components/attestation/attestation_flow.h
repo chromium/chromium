@@ -16,6 +16,8 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 class AccountId;
@@ -64,6 +66,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   using CertificateCallback =
       base::OnceCallback<void(AttestationStatus status,
                               const std::string& pem_certificate_chain)>;
+
+  // Certificate profile specific request data. Loosely corresponds to `oneof`
+  // the proto fields at `GetCertificateRequest::metadata` in
+  // `third_party/cros_system_api/dbus/attestation/interface.proto`.
+  // `CertProfileSpecificData` itself is equivalent to a type-safe tagged union
+  // type that can represent any of the types inside the `absl::variant`.
+  using CertProfileSpecificData =
+      absl::variant<::attestation::DeviceSetupCertificateRequestMetadata>;
 
   // Returns the attestation key type for a given |certificate_profile|.
   //
@@ -114,16 +124,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   key_crypto_type - The crypto type of the key.
   //   key_name - The name of the key. If left empty, a default name derived
   //              from the |certificate_profile| and |account_id| will be used.
+  //   profile_specific_data - Optional certificate profile specific data. The
+  //                           type must correspond to `certificate_profile`.
   //   callback - A callback which will be called when the operation completes.
   //              On success |result| will be true and |data| will contain the
   //              PCA-issued certificate chain in PEM format.
-  virtual void GetCertificate(AttestationCertificateProfile certificate_profile,
-                              const AccountId& account_id,
-                              const std::string& request_origin,
-                              bool force_new_key,
-                              ::attestation::KeyType key_crypto_type,
-                              const std::string& key_name,
-                              CertificateCallback callback);
+  virtual void GetCertificate(
+      AttestationCertificateProfile certificate_profile,
+      const AccountId& account_id,
+      const std::string& request_origin,
+      bool force_new_key,
+      ::attestation::KeyType key_crypto_type,
+      const std::string& key_name,
+      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      CertificateCallback callback);
 
  private:
   // Handles the result of a call to `GetStatus()` for enrollment status.
