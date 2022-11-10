@@ -740,6 +740,8 @@ class ClipboardHistoryPasteTypeBrowserTest
     }
   }
 
+  content::WebContents* web_contents() { return web_contents_; }
+
  private:
   // Returns all valid data formats for the last paste.
   base::Value::List GetLastPaste() {
@@ -906,6 +908,14 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryPasteTypeBrowserTest,
 
   // Verify the clipboard buffer is restored to initial state.
   ClipboardDataWaiter().WaitFor(&clipboard_data);
+}
+
+// Regression test for crbug.com/1363828 --- verifies that
+// `WebContents::Paste()` works, since that's necessary for the html preview.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryPasteTypeBrowserTest, PasteCommand) {
+  SetClipboardTextAndHtml("A", "<span>A</span>");
+  web_contents()->Paste();
+  WaitForWebContentsPaste("A", /*paste_plain_text=*/false);
 }
 
 class ClipboardHistoryReorderBrowserTest

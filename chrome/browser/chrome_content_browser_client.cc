@@ -6478,7 +6478,7 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
 
   // Paste requires either (1) user activation, ...
   if (WebContents::FromRenderFrameHost(render_frame_host)
-          ->HasRecentInteractiveInputEvent()) {
+          ->HasRecentInteraction()) {
     return true;
   }
 

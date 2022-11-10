@@ -74,7 +74,7 @@ class WindowManagementPermissionContextTest : public InProcessBrowserTest {
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(false, EvalJs(tab, await_activation_expiry_script,
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-    EXPECT_FALSE(tab->HasRecentInteractiveInputEvent());
+    EXPECT_FALSE(tab->HasRecentInteraction());
   }
 
   net::EmbeddedTestServer* https_test_server() {

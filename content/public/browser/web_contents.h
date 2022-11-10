@@ -1287,8 +1287,8 @@ class WebContents : public PageNavigator,
   // that an action that requires a user gesture actually has one in the
   // trustworthy browser process, rather than relying on the untrustworthy
   // renderer. This should be eventually merged into and accounted for in the
-  // user activation work.
-  virtual bool HasRecentInteractiveInputEvent() = 0;
+  // user activation work: crbug.com/848778
+  virtual bool HasRecentInteraction() = 0;
 
   // Sets a flag that causes the WebContents to ignore input events.
   virtual void SetIgnoreInputEvents(bool ignore_input_events) = 0;

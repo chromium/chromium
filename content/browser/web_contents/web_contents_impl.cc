@@ -2310,10 +2310,12 @@ void WebContentsImpl::WasHidden() {
   UpdateVisibilityAndNotifyPageAndView(Visibility::HIDDEN);
 }
 
-bool WebContentsImpl::HasRecentInteractiveInputEvent() {
+bool WebContentsImpl::HasRecentInteraction() {
+  if (last_interaction_time_.is_null())
+    return false;
+
   static constexpr base::TimeDelta kMaxInterval = base::Seconds(5);
-  base::TimeDelta delta =
-      ui::EventTimeForNow() - last_interactive_input_event_time_;
+  base::TimeDelta delta = ui::EventTimeForNow() - last_interaction_time_;
   // Note: the expectation is that the caller is typically expecting an input
   // event, e.g. validating that a WebUI message that requires a gesture is
   // actually attached to a gesture.
@@ -4786,6 +4788,7 @@ void WebContentsImpl::Undo() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->Undo();
   RecordAction(base::UserMetricsAction("Undo"));
 }
@@ -4796,6 +4799,7 @@ void WebContentsImpl::Redo() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->Redo();
   RecordAction(base::UserMetricsAction("Redo"));
 }
@@ -4806,6 +4810,7 @@ void WebContentsImpl::Cut() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->Cut();
   RecordAction(base::UserMetricsAction("Cut"));
 }
@@ -4816,6 +4821,7 @@ void WebContentsImpl::Copy() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->Copy();
   RecordAction(base::UserMetricsAction("Copy"));
 }
@@ -4827,6 +4833,7 @@ void WebContentsImpl::CopyToFindPboard() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   // Windows/Linux don't have the concept of a find pasteboard.
   input_handler->CopyToFindPboard();
   RecordAction(base::UserMetricsAction("CopyToFindPboard"));
@@ -4839,6 +4846,7 @@ void WebContentsImpl::Paste() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->Paste();
   observers_.NotifyObservers(&WebContentsObserver::OnPaste);
   RecordAction(base::UserMetricsAction("Paste"));
@@ -4850,6 +4858,7 @@ void WebContentsImpl::PasteAndMatchStyle() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->PasteAndMatchStyle();
   observers_.NotifyObservers(&WebContentsObserver::OnPaste);
   RecordAction(base::UserMetricsAction("PasteAndMatchStyle"));
@@ -4861,6 +4870,7 @@ void WebContentsImpl::Delete() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->Delete();
   RecordAction(base::UserMetricsAction("DeleteSelection"));
 }
@@ -4871,6 +4881,7 @@ void WebContentsImpl::SelectAll() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->SelectAll();
   RecordAction(base::UserMetricsAction("SelectAll"));
 }
@@ -4881,6 +4892,7 @@ void WebContentsImpl::CollapseSelection() {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->CollapseSelection();
 }
 
@@ -4898,6 +4910,7 @@ void WebContentsImpl::Replace(const std::u16string& word) {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->Replace(word);
 }
 
@@ -4907,6 +4920,7 @@ void WebContentsImpl::ReplaceMisspelling(const std::u16string& word) {
   if (!input_handler)
     return;
 
+  last_interaction_time_ = ui::EventTimeForNow();
   input_handler->ReplaceMisspelling(word);
 }
 
@@ -7966,7 +7980,7 @@ void WebContentsImpl::DidReceiveInputEvent(
     return;
 
   if (event.GetType() != blink::WebInputEvent::Type::kGestureScrollBegin)
-    last_interactive_input_event_time_ = ui::EventTimeForNow();
+    last_interaction_time_ = ui::EventTimeForNow();
 
   observers_.NotifyObservers(&WebContentsObserver::DidGetUserInteraction,
                              event);
