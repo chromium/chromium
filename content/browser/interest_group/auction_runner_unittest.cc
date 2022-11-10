@@ -1508,13 +1508,15 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
   // Resume all worklets paused waiting for debugger on startup.
   void ResumeAllPaused() {
     for (const auto& svc : auction_worklet_services_) {
-      svc->AuctionV8HelperForTesting()->v8_runner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](scoped_refptr<auction_worklet::AuctionV8Helper> v8_helper) {
-                v8_helper->ResumeAllForTesting();
-              },
-              svc->AuctionV8HelperForTesting()));
+      for (const auto& v8_helper : svc->AuctionV8HelpersForTesting()) {
+        v8_helper->v8_runner()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](scoped_refptr<auction_worklet::AuctionV8Helper> v8_helper) {
+                  v8_helper->ResumeAllForTesting();
+                },
+                v8_helper));
+      }
     }
   }
 

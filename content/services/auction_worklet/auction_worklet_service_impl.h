@@ -48,7 +48,7 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   static std::unique_ptr<AuctionWorkletServiceImpl> CreateForService(
       mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
 
-  scoped_refptr<AuctionV8Helper> AuctionV8HelperForTesting();
+  std::vector<scoped_refptr<AuctionV8Helper>> AuctionV8HelpersForTesting();
 
   // mojom::AuctionWorkletService implementation:
   void LoadBidderWorklet(
@@ -87,11 +87,12 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
 
-  // This should be before `bidder_worklets_` and `seller_worklets_` as it needs
-  // to be destroyed after them, as the actual destruction of V8HelperHolder
-  // may need to block to get V8 shutdown cleanly, which is helped by worklets
-  // not being around to produce more work.
-  scoped_refptr<V8HelperHolder> auction_v8_helper_holder_;
+  // These should be before `bidder_worklets_` and `seller_worklets_` as they
+  // need to be destroyed after them, as the actual destruction of
+  // V8HelperHolder may need to block to get V8 shutdown cleanly, which is
+  // helped by worklets not being around to produce more work.
+  scoped_refptr<V8HelperHolder> auction_bidder_v8_helper_holder_;
+  scoped_refptr<V8HelperHolder> auction_seller_v8_helper_holder_;
 
   // This is bound when created via CreateForService(); in case of
   // CreateForRenderer() an external SelfOwnedReceiver is used instead.

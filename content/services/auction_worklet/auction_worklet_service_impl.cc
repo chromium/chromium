@@ -24,42 +24,76 @@
 
 namespace auction_worklet {
 
-// Make sure we only use a single AuctionV8Helper, including V8 thread and V8
-// isolate, no matter how many services there are. Assumes usages from a single
-// thread. In kDedicated mode, assumes this will be destroyed strictly before
-// task scheduling is shut down.
+// V8HelperHolder exists to make sure we don't end up creating a fresh V8 thread
+// every time a new service instance is created. It itself must be accessed from
+// a single thread, and should be destroyed before task scheduling is shut down.
+//
+// It has two modes:
+//
+// 1) Dedicated process mode, for running as a service. In that case, it only
+//    ends up using one V8 thread, as service process isolation will ensure that
+//    SellerInstance() and BidderInstance() will not both be called in the same
+///   process.  It also makes sure to wait to fully unwind the V8 thread
+//    in its destructor, since that must be done before task scheduler shutdown
+//    to avoid crashes from V8 GC trying to post tasks.
+//
+// 2) Shared process mode, for running inside a renderer. In that case, it
+//    provides up two V8 threads --- one for seller, one for bidder --- to
+//    provide the base level of parallelism one would have with those getting
+//    separate processes.
 class AuctionWorkletServiceImpl::V8HelperHolder
     : public base::RefCounted<V8HelperHolder> {
  public:
-  static V8HelperHolder* Instance(ProcessModel process_model) {
-    if (!g_instance)
-      g_instance = new V8HelperHolder(process_model);
-    DCHECK_CALLED_ON_VALID_SEQUENCE(g_instance->sequence_checker_);
-    return g_instance;
+  enum class WorkletType {
+    kBidder,
+    kSeller,
+  };
+
+  static scoped_refptr<V8HelperHolder> BidderInstance(
+      ProcessModel process_model) {
+    if (!g_bidder_instance) {
+      g_bidder_instance =
+          new V8HelperHolder(process_model, WorkletType::kBidder);
+    }
+    DCHECK_CALLED_ON_VALID_SEQUENCE(g_bidder_instance->sequence_checker_);
+    return g_bidder_instance;
   }
 
-  const scoped_refptr<AuctionV8Helper>& v8_helper() {
+  static scoped_refptr<V8HelperHolder> SellerInstance(
+      ProcessModel process_model) {
+    if (!g_seller_instance) {
+      g_seller_instance =
+          new V8HelperHolder(process_model, WorkletType::kSeller);
+    }
+    DCHECK_CALLED_ON_VALID_SEQUENCE(g_seller_instance->sequence_checker_);
+    return g_seller_instance;
+  }
+
+  const scoped_refptr<AuctionV8Helper>& V8Helper() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!auction_v8_helper_) {
+      auction_v8_helper_ =
+          AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+      if (process_model_ == ProcessModel::kDedicated) {
+        auction_v8_helper_->SetDestroyedCallback(base::BindOnce(
+            &V8HelperHolder::FinishedDestroying, base::Unretained(this)));
+      }
+    }
     return auction_v8_helper_;
   }
 
  private:
   friend class base::RefCounted<V8HelperHolder>;
 
-  explicit V8HelperHolder(ProcessModel process_model)
-      : auction_v8_helper_(
-            AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner())),
-        process_model_(process_model) {
+  explicit V8HelperHolder(ProcessModel process_model, WorkletType worklet_type)
+      : process_model_(process_model), worklet_type_(worklet_type) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (process_model_ == ProcessModel::kDedicated) {
-      auction_v8_helper_->SetDestroyedCallback(base::BindOnce(
-          &V8HelperHolder::FinishedDestroying, base::Unretained(this)));
-    }
+    DCHECK_EQ(*GetHelperHolderInstance(), nullptr);
   }
 
   ~V8HelperHolder() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (process_model_ == ProcessModel::kDedicated) {
+    if (process_model_ == ProcessModel::kDedicated && auction_v8_helper_) {
       // ~V8HelperHolder running means there are no more instances of the
       // service, so the service process itself may be about to be shutdown.
       // Wait until `auction_v8_helper_` is destroyed to make sure no V8 things
@@ -68,7 +102,10 @@ class AuctionWorkletServiceImpl::V8HelperHolder
       auction_v8_helper_.reset();
       wait_for_v8_shutdown_.Wait();
     }
-    g_instance = nullptr;
+
+    V8HelperHolder** instance = GetHelperHolderInstance();
+    DCHECK_EQ(*instance, this);
+    *instance = nullptr;
   }
 
   void FinishedDestroying() {
@@ -78,17 +115,28 @@ class AuctionWorkletServiceImpl::V8HelperHolder
     wait_for_v8_shutdown_.Signal();
   }
 
-  static V8HelperHolder* g_instance;
+  V8HelperHolder** GetHelperHolderInstance() {
+    if (worklet_type_ == WorkletType::kBidder)
+      return &g_bidder_instance;
+    else
+      return &g_seller_instance;
+  }
+
+  static V8HelperHolder* g_bidder_instance;
+  static V8HelperHolder* g_seller_instance;
 
   scoped_refptr<AuctionV8Helper> auction_v8_helper_;
   const ProcessModel process_model_;
-  base::WaitableEvent wait_for_v8_shutdown_;
+  const WorkletType worklet_type_;
 
+  base::WaitableEvent wait_for_v8_shutdown_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 AuctionWorkletServiceImpl::V8HelperHolder*
-    AuctionWorkletServiceImpl::V8HelperHolder::g_instance = nullptr;
+    AuctionWorkletServiceImpl::V8HelperHolder::g_bidder_instance = nullptr;
+AuctionWorkletServiceImpl::V8HelperHolder*
+    AuctionWorkletServiceImpl::V8HelperHolder::g_seller_instance = nullptr;
 
 // static
 void AuctionWorkletServiceImpl::CreateForRenderer(
@@ -111,14 +159,20 @@ AuctionWorkletServiceImpl::CreateForService(
 AuctionWorkletServiceImpl::AuctionWorkletServiceImpl(
     ProcessModel process_model,
     mojo::PendingReceiver<mojom::AuctionWorkletService> receiver)
-    : auction_v8_helper_holder_(V8HelperHolder::Instance(process_model)),
+    : auction_bidder_v8_helper_holder_(
+          V8HelperHolder::BidderInstance(process_model)),
+      auction_seller_v8_helper_holder_(
+          V8HelperHolder::SellerInstance(process_model)),
       receiver_(this, std::move(receiver)) {}
 
 AuctionWorkletServiceImpl::~AuctionWorkletServiceImpl() = default;
 
-scoped_refptr<AuctionV8Helper>
-AuctionWorkletServiceImpl::AuctionV8HelperForTesting() {
-  return auction_v8_helper_holder_->v8_helper();
+std::vector<scoped_refptr<AuctionV8Helper>>
+AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
+  std::vector<scoped_refptr<AuctionV8Helper>> result;
+  result.push_back(auction_bidder_v8_helper_holder_->V8Helper());
+  result.push_back(auction_seller_v8_helper_holder_->V8Helper());
+  return result;
 }
 
 void AuctionWorkletServiceImpl::LoadBidderWorklet(
@@ -133,7 +187,7 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     bool has_experiment_group_id,
     uint16_t experiment_group_id) {
   auto bidder_worklet = std::make_unique<BidderWorklet>(
-      auction_v8_helper_holder_->v8_helper(), pause_for_debugger_on_start,
+      auction_bidder_v8_helper_holder_->V8Helper(), pause_for_debugger_on_start,
       std::move(pending_url_loader_factory), script_source_url, wasm_helper_url,
       trusted_bidding_signals_url, top_window_origin,
       has_experiment_group_id ? absl::make_optional(experiment_group_id)
@@ -159,7 +213,7 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     bool has_experiment_group_id,
     uint16_t experiment_group_id) {
   auto seller_worklet = std::make_unique<SellerWorklet>(
-      auction_v8_helper_holder_->v8_helper(), pause_for_debugger_on_start,
+      auction_seller_v8_helper_holder_->V8Helper(), pause_for_debugger_on_start,
       std::move(pending_url_loader_factory), decision_logic_url,
       trusted_scoring_signals_url, top_window_origin,
       has_experiment_group_id ? absl::make_optional(experiment_group_id)
