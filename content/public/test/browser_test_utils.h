@@ -628,10 +628,6 @@ struct JsLiteralHelper {
   }
 
   static base::Value Convert(const base::Value& value) { return value.Clone(); }
-
-  static base::Value Convert(const base::ListValue& value) {
-    return value.Clone();
-  }
 };
 
 // Specialization allowing GURL to be passed to StringifyJsLiteral.
