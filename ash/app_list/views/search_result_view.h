@@ -157,11 +157,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
       views::FlexLayoutView* title_container,
       views::FlexLayoutView* details_container);
 
- private:
-  friend class test::SearchResultListViewTest;
-  friend class SearchResultListView;
-  friend class SearchResultViewWidgetTest;
-
   void set_multi_line_details_height_for_test(int height) {
     multi_line_details_height_ = height;
   }
@@ -185,6 +180,11 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   views::Label* get_result_text_separator_label_for_test() {
     return result_text_separator_label_;
   }
+
+ private:
+  friend class test::SearchResultListViewTest;
+  friend class SearchResultListView;
+  friend class SearchResultViewWidgetTest;
 
   int PreferredHeight() const;
   int PrimaryTextHeight() const;

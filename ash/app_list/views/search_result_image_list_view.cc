@@ -88,6 +88,7 @@ void SearchResultImageListView::AppendShownResultMetadata(
 absl::optional<SearchResultContainerView::ResultsAnimationInfo>
 SearchResultImageListView::ScheduleResultAnimations(
     const ResultsAnimationInfo& aggregate_animation_info) {
+  SetVisible(true);
   // TODO(crbug.com/1352636) Update once animations are defined by UX. There is
   // no animation information to be returned for this container.
   return absl::nullopt;

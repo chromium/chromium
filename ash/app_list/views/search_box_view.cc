@@ -714,8 +714,8 @@ void SearchBoxView::ProcessAutocomplete(
   SearchResult* const first_visible_result = first_result_view->result();
 
   // Do not autocomplete on answer cards.
-  if (first_visible_result->display_type() ==
-      SearchResultDisplayType::kAnswerCard) {
+  if (!first_visible_result || first_visible_result->display_type() ==
+                                   SearchResultDisplayType::kAnswerCard) {
     return;
   }
 
@@ -1224,6 +1224,9 @@ bool SearchBoxView::HandleGestureEvent(views::Textfield* sender,
 
 void SearchBoxView::UpdateSearchBoxForSelectedResult(
     SearchResult* selected_result) {
+  if (!selected_result)
+    return;
+
   if (selected_result->result_type() ==
           AppListSearchResultType::kInternalPrivacyInfo ||
       selected_result->display_type() == SearchResultDisplayType::kAnswerCard) {

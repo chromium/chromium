@@ -41,6 +41,8 @@ void TestAppListClient::StartZeroStateSearch(base::OnceClosure on_done,
 
 void TestAppListClient::StartSearch(const std::u16string& trimmed_query) {
   search_queries_.push_back(trimmed_query);
+  if (search_callback_)
+    search_callback_.Run(trimmed_query);
 }
 
 void TestAppListClient::OpenSearchResult(int profile_id,

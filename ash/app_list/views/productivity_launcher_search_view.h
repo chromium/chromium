@@ -50,6 +50,7 @@ class ASH_EXPORT ProductivityLauncherSearchView
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,

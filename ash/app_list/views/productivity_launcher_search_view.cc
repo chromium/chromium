@@ -102,6 +102,7 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
     new_container->SetResults(
         AppListModelProvider::Get()->search_model()->results());
     new_container->set_delegate(this);
+    new_container->SetVisible(false);
     result_container_views_.push_back(new_container);
   };
 
@@ -268,6 +269,15 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
   }
 }
 
+void ProductivityLauncherSearchView::VisibilityChanged(View* starting_from,
+                                                       bool is_visible) {
+  if (!is_visible) {
+    result_selection_controller_->ClearSelection();
+    for (auto* container : result_container_views_)
+      container->ResetAndHide();
+  }
+}
+
 void ProductivityLauncherSearchView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   if (!GetVisible())
@@ -305,6 +315,9 @@ void ProductivityLauncherSearchView::OnActiveAppListModelsChanged(
 }
 
 void ProductivityLauncherSearchView::UpdateForNewSearch(bool search_active) {
+  for (auto* container : result_container_views_)
+    container->SetActive(search_active);
+
   if (app_list_features::IsDynamicSearchUpdateAnimationEnabled()) {
     if (search_active) {
       // Scan result_container_views_ to see if there are any in progress

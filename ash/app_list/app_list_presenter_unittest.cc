@@ -3211,21 +3211,28 @@ TEST_F(AppListTabletTest,
       GetResultSelectionController();
 
   // Add search results to the search model.
+  // Click on the search box to activate search.
+  GetEventGenerator()->GestureTapAt(SearchBoxCenterPoint());
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  ASSERT_FALSE(result_selection_controller->selected_result());
+
+  // Start search.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_A, 0);
+
+  // Add some search results to the search model.
   SearchModel* search_model = GetSearchModel();
   search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion1"));
   search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion2"));
+
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+
   // The results are updated asynchronously. Wait until the update is finished.
   base::RunLoop().RunUntilIdle();
 
   // Click the search box, the result selection should be the first one in
   // default.
-  GetEventGenerator()->GestureTapAt(SearchBoxCenterPoint());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-
-  // Show the search page.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_A, 0);
-  EXPECT_TRUE(AppListSearchResultPageVisible());
 
   EXPECT_TRUE(search_box_view->is_search_box_active());
   ASSERT_TRUE(result_selection_controller->selected_result());

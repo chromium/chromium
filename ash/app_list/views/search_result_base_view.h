@@ -57,9 +57,6 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   SearchResult* result() const { return result_; }
   void SetResult(SearchResult* result);
 
-  // Invoked before changing |result_| to |new_result|.
-  virtual void OnResultChanging(SearchResult* new_result) {}
-
   // Invoked after |result_| is updated.
   virtual void OnResultChanged() {}
 

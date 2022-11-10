@@ -97,6 +97,12 @@ class TestAppListClient : public AppListClient {
   // the first call.
   std::vector<std::u16string> GetAndResetPastSearchQueries();
 
+  using SearchCallback =
+      base::RepeatingCallback<void(const std::u16string& query)>;
+  void set_search_callback(SearchCallback callback) {
+    search_callback_ = std::move(callback);
+  }
+
  private:
   // Called in response to StartZeroStateSearch() when
   // `run_zero_state_callback_immediately_` is false. Counts calls via
@@ -111,6 +117,11 @@ class TestAppListClient : public AppListClient {
   int activate_item_count_ = 0;
   std::string activate_item_last_id_;
   std::string last_opened_search_result_;
+
+  // If not null, callback that will be run on each search request. It can be
+  // used by tests to inject results to search model in response to search
+  // queries.
+  SearchCallback search_callback_;
 
   base::WeakPtrFactory<TestAppListClient> weak_factory_{this};
 };

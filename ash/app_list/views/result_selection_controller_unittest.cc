@@ -96,6 +96,7 @@ class TestContainer : public SearchResultContainerView {
                 test::AppListTestViewDelegate* view_delegate)
       : SearchResultContainerView(view_delegate) {
     set_horizontally_traversable(params.horizontal);
+    SetActive(true);
 
     for (int i = 0; i < params.result_count; ++i) {
       std::string result_id =

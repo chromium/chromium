@@ -18,20 +18,48 @@ SearchResultContainerView::SearchResultContainerView(
 }
 
 SearchResultContainerView::~SearchResultContainerView() {
-  if (results_)
+  if (results_ && active_)
     results_->RemoveObserver(this);
 }
 
 void SearchResultContainerView::SetResults(
     SearchModel::SearchResults* results) {
-  if (results_)
+  if (results_ && active_)
     results_->RemoveObserver(this);
 
   results_ = results;
-  if (results_)
+  if (results_ && active_)
     results_->AddObserver(this);
 
-  Update();
+  if (active_)
+    Update();
+}
+
+void SearchResultContainerView::SetActive(bool active) {
+  if (active_ == active)
+    return;
+  active_ = active;
+
+  if (!active_)
+    update_factory_.InvalidateWeakPtrs();
+
+  if (results_) {
+    if (active_)
+      results_->AddObserver(this);
+    else
+      results_->RemoveObserver(this);
+  }
+}
+
+void SearchResultContainerView::ResetAndHide() {
+  SetVisible(false);
+
+  for (int i = 0; i < num_results(); ++i) {
+    SearchResultBaseView* const result_view = GetResultViewAt(i);
+    result_view->SetResult(nullptr);
+    result_view->SetVisible(false);
+  }
+  num_results_ = 0;
 }
 
 absl::optional<SearchResultContainerView::ResultsAnimationInfo>
@@ -54,6 +82,8 @@ bool SearchResultContainerView::HasAnimatingChildView() {
 void SearchResultContainerView::OnSelectedResultChanged() {}
 
 void SearchResultContainerView::Update() {
+  DCHECK(active_);
+
   update_factory_.InvalidateWeakPtrs();
   num_results_ = DoUpdate();
   Layout();
@@ -103,17 +133,17 @@ SearchResultBaseView* SearchResultContainerView::GetFirstResultView() {
   return num_results_ <= 0 ? nullptr : GetResultViewAt(0);
 }
 
-void SearchResultContainerView::SetShown(bool shown) {
-  if (shown_ == shown) {
-    return;
-  }
-  shown_ = shown;
-  OnShownChanged();
+bool SearchResultContainerView::RunScheduledUpdateForTest() {
+  if (!UpdateScheduled())
+    return false;
+  Update();
+  return true;
 }
 
-void SearchResultContainerView::OnShownChanged() {}
-
 void SearchResultContainerView::ScheduleUpdate() {
+  if (!active_)
+    return;
+
   // When search results are added one by one, each addition generates an update
   // request. Consolidates those update requests into one Update call.
   if (!update_factory_.HasWeakPtrs()) {

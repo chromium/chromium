@@ -429,11 +429,7 @@ int SearchResultListView::DoUpdate() {
   }
 
   if (!enabled_ || !GetWidget() || !GetWidget()->IsVisible()) {
-    SetVisible(false);
-    for (auto* result_view : search_result_views_) {
-      result_view->SetResult(nullptr);
-      result_view->SetVisible(false);
-    }
+    ResetAndHide();
     return 0;
   }
 

@@ -691,9 +691,6 @@ void SearchResultPageView::OnHidden() {
   notify_a11y_results_changed_timer_.Stop();
   dialog_controller_->Reset(false);
   SetVisible(false);
-  for (auto* container_view : result_container_views_) {
-    container_view->SetShown(false);
-  }
 
   AppListPage::contents_view()
       ->GetSearchBoxView()
@@ -704,10 +701,6 @@ void SearchResultPageView::OnShown() {
   AppListPage::OnShown();
 
   dialog_controller_->Reset(true);
-
-  for (auto* container_view : result_container_views_) {
-    container_view->SetShown(ShouldShowSearchResultView());
-  }
 
   AppListPage::contents_view()
       ->GetSearchBoxView()

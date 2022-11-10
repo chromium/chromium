@@ -68,6 +68,7 @@ class SearchResultListViewTest : public views::test::WidgetTest,
         SearchResultView::SearchResultViewType::kDefault, true, absl::nullopt);
     default_view_->SetListType(
         SearchResultListView::SearchResultListType::kBestMatch);
+    default_view_->SetActive(true);
 
     answer_card_view_ = std::make_unique<SearchResultListView>(
         nullptr, &view_delegate_, nullptr,
@@ -75,6 +76,7 @@ class SearchResultListViewTest : public views::test::WidgetTest,
         absl::nullopt);
     answer_card_view_->SetListType(
         SearchResultListView::SearchResultListType::kAnswerCard);
+    answer_card_view_->SetActive(true);
 
     widget_->SetBounds(gfx::Rect(0, 0, 700, 500));
     widget_->GetContentsView()->AddChildView(default_view_.get());

@@ -59,6 +59,18 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
 
   virtual SearchResultBaseView* GetResultViewAt(size_t index) = 0;
 
+  // Activates or deactivates results container - when not active, the container
+  // will not react to search model updates. Generally, container will be active
+  // when search is in progress in the launcher UI that owns the results
+  // container.
+  // Setting the container as inactive will not clear results, so results remain
+  // shown during search results UI hide animation. To clear the container when
+  // the search UI gets hidden, call `ResetAndHide()`.
+  void SetActive(bool active);
+
+  // Clears all results in the container, and hides the container view.
+  void ResetAndHide();
+
   // Information needed to configure search result visibility animations when
   // result updates are animated.
   struct ResultsAnimationInfo {
@@ -138,13 +150,11 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // not exist.
   SearchResultBaseView* GetFirstResultView();
 
-  // Called from SearchResultPageView OnShown/OnHidden
-  void SetShown(bool shown);
-  bool shown() const { return shown_; }
-  // Called when SetShowing has changed a result.
-  virtual void OnShownChanged();
-
   AppListViewDelegate* view_delegate() const { return view_delegate_; }
+
+  // Runs scheduled update for the view. Returns whether the update was
+  // actually run (i.e. whether an update was scheduled).
+  bool RunScheduledUpdateForTest();
 
  private:
   // Schedules an Update call using |update_factory_|. Do nothing if there is a
@@ -164,8 +174,11 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   SearchModel::SearchResults* results_ = nullptr;  // Owned by SearchModel.
 
   // view delegate for notifications.
-  bool shown_ = false;
   AppListViewDelegate* const view_delegate_;
+
+  // Whether the container is observing search result model, and updating when
+  // results in the model change.
+  bool active_ = false;
 
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       result_view_observations_{this};
