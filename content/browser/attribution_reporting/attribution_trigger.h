@@ -11,10 +11,13 @@
 
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/filters.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
+
+namespace attribution_reporting {
+class AggregatableTriggerData;
+}  // namespace attribution_reporting
 
 namespace content {
 
@@ -110,7 +113,8 @@ class CONTENT_EXPORT AttributionTrigger {
       absl::optional<uint64_t> debug_key,
       absl::optional<uint64_t> aggregatable_dedup_key,
       std::vector<EventTriggerData> event_triggers,
-      std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data,
+      std::vector<attribution_reporting::AggregatableTriggerData>
+          aggregatable_trigger_data,
       attribution_reporting::AggregatableValues aggregatable_values);
 
   AttributionTrigger(const AttributionTrigger&);
@@ -141,7 +145,7 @@ class CONTENT_EXPORT AttributionTrigger {
     return event_triggers_;
   }
 
-  const std::vector<AttributionAggregatableTriggerData>&
+  const std::vector<attribution_reporting::AggregatableTriggerData>&
   aggregatable_trigger_data() const {
     return aggregatable_trigger_data_;
   }
@@ -170,7 +174,8 @@ class CONTENT_EXPORT AttributionTrigger {
 
   std::vector<EventTriggerData> event_triggers_;
 
-  std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data_;
+  std::vector<attribution_reporting::AggregatableTriggerData>
+      aggregatable_trigger_data_;
   attribution_reporting::AggregatableValues aggregatable_values_;
 };
 

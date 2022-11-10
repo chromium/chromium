@@ -22,11 +22,11 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -287,7 +287,8 @@ class AttributionSimulatorInputParser {
     attribution_reporting::Filters filters;
     attribution_reporting::Filters not_filters;
     std::vector<AttributionTrigger::EventTriggerData> event_triggers;
-    std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
+    std::vector<attribution_reporting::AggregatableTriggerData>
+        aggregatable_trigger_data;
     attribution_reporting::AggregatableValues aggregatable_values;
     absl::optional<uint64_t> aggregatable_dedup_key;
 
@@ -570,11 +571,12 @@ class AttributionSimulatorInputParser {
     return source_keys;
   }
 
-  std::vector<AttributionAggregatableTriggerData> ParseAggregatableTriggerData(
-      const base::Value::Dict& dict) {
+  std::vector<attribution_reporting::AggregatableTriggerData>
+  ParseAggregatableTriggerData(const base::Value::Dict& dict) {
     static constexpr char kKey[] = "aggregatable_trigger_data";
 
-    std::vector<AttributionAggregatableTriggerData> aggregatable_triggers;
+    std::vector<attribution_reporting::AggregatableTriggerData>
+        aggregatable_triggers;
 
     const base::Value* values = dict.Find(kKey);
     if (!values)
@@ -612,9 +614,10 @@ class AttributionSimulatorInputParser {
               attribution_reporting::Filters not_filters =
                   ParseFilters(trigger_dict, "not_filters");
 
-              auto trigger_data = AttributionAggregatableTriggerData::Create(
-                  key, std::move(source_keys), std::move(filters),
-                  std::move(not_filters));
+              auto trigger_data =
+                  attribution_reporting::AggregatableTriggerData::Create(
+                      key, std::move(source_keys), std::move(filters),
+                      std::move(not_filters));
               if (!trigger_data)
                 *Error() << "invalid";
 

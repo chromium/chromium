@@ -30,7 +30,6 @@
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -56,6 +55,10 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
+
+namespace attribution_reporting {
+class AggregatableTriggerData;
+}  // namespace attribution_reporting
 
 namespace mojo {
 
@@ -542,8 +545,7 @@ class TriggerBuilder {
   TriggerBuilder& SetDebugKey(absl::optional<uint64_t> debug_key);
 
   TriggerBuilder& SetAggregatableTriggerData(
-      std::vector<AttributionAggregatableTriggerData>
-          aggregatable_trigger_data);
+      std::vector<attribution_reporting::AggregatableTriggerData>);
 
   TriggerBuilder& SetAggregatableValues(
       attribution_reporting::AggregatableValues);
@@ -561,7 +563,8 @@ class TriggerBuilder {
   int64_t priority_ = 0;
   absl::optional<uint64_t> dedup_key_;
   absl::optional<uint64_t> debug_key_;
-  std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data_;
+  std::vector<attribution_reporting::AggregatableTriggerData>
+      aggregatable_trigger_data_;
   attribution_reporting::AggregatableValues aggregatable_values_;
   absl::optional<uint64_t> aggregatable_dedup_key_;
 };
@@ -658,9 +661,6 @@ bool operator==(const AttributionReport& a, const AttributionReport& b);
 
 bool operator==(const SendResult& a, const SendResult& b);
 
-bool operator==(const AttributionAggregatableTriggerData& a,
-                const AttributionAggregatableTriggerData& b);
-
 std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::EventLevelResult status);
 
@@ -714,10 +714,6 @@ std::ostream& operator<<(std::ostream& out,
                          StoredSource::ActiveState active_state);
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
-
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionAggregatableTriggerData& trigger_data);
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManager* manager);

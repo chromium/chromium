@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -663,7 +664,8 @@ TriggerBuilder& TriggerBuilder::SetDebugKey(
 }
 
 TriggerBuilder& TriggerBuilder::SetAggregatableTriggerData(
-    std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data) {
+    std::vector<attribution_reporting::AggregatableTriggerData>
+        aggregatable_trigger_data) {
   aggregatable_trigger_data_ = std::move(aggregatable_trigger_data);
   return *this;
 }
@@ -918,15 +920,6 @@ bool operator==(const SendResult& a, const SendResult& b) {
   const auto tie = [](const SendResult& info) {
     return std::make_tuple(info.status, info.network_error,
                            info.http_response_code);
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const AttributionAggregatableTriggerData& a,
-                const AttributionAggregatableTriggerData& b) {
-  const auto tie = [](const AttributionAggregatableTriggerData& trigger_data) {
-    return std::make_tuple(trigger_data.key_piece(), trigger_data.source_keys(),
-                           trigger_data.filters(), trigger_data.not_filters());
   };
   return tie(a) == tie(b);
 }
@@ -1292,21 +1285,6 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
   }
 }
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionAggregatableTriggerData& trigger_data) {
-  out << "{key_piece=" << trigger_data.key_piece() << ",source_keys=[";
-
-  const char* separator = "";
-  for (const auto& key : trigger_data.source_keys()) {
-    out << separator << key;
-    separator = ", ";
-  }
-
-  return out << "],filters=" << trigger_data.filters()
-             << ",not_filters=" << trigger_data.not_filters() << "}";
-}
-
 AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
     const {
   Map map;
@@ -1427,14 +1405,15 @@ SourceBuilder TestAggregatableSourceProvider::GetBuilder(
 
 TriggerBuilder DefaultAggregatableTriggerBuilder(
     const std::vector<uint32_t>& histogram_values) {
-  std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
+  std::vector<attribution_reporting::AggregatableTriggerData>
+      aggregatable_trigger_data;
 
   attribution_reporting::AggregatableValues::Values aggregatable_values;
 
   for (size_t i = 0; i < histogram_values.size(); ++i) {
     std::string key_id = base::NumberToString(i);
     aggregatable_trigger_data.push_back(
-        AttributionAggregatableTriggerData::CreateForTesting(
+        *attribution_reporting::AggregatableTriggerData::Create(
             absl::MakeUint128(/*high=*/i, /*low=*/0),
             /*source_keys=*/base::flat_set<std::string>{key_id},
             /*filters=*/attribution_reporting::Filters(),

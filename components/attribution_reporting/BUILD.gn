@@ -12,6 +12,8 @@ mojom("source_registration_error_mojom") {
 
 component("attribution_reporting") {
   sources = [
+    "aggregatable_trigger_data.cc",
+    "aggregatable_trigger_data.h",
     "aggregatable_values.cc",
     "aggregatable_values.h",
     "aggregation_keys.cc",

@@ -15,12 +15,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -100,14 +100,16 @@ void ReportBadMessageInsecureReportingOrigin() {
       "AttributionDataHost: Reporting origin must be secure.");
 }
 
-absl::optional<std::vector<AttributionAggregatableTriggerData>> FromMojo(
+absl::optional<std::vector<attribution_reporting::AggregatableTriggerData>>
+FromMojo(
     std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr> mojo) {
   if (mojo.size() >
       attribution_reporting::kMaxAggregatableTriggerDataPerTrigger) {
     return absl::nullopt;
   }
 
-  std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
+  std::vector<attribution_reporting::AggregatableTriggerData>
+      aggregatable_trigger_data;
   aggregatable_trigger_data.reserve(mojo.size());
 
   for (auto& aggregatable_trigger : mojo) {
@@ -123,8 +125,8 @@ absl::optional<std::vector<AttributionAggregatableTriggerData>> FromMojo(
     if (!not_filters.has_value())
       return absl::nullopt;
 
-    absl::optional<AttributionAggregatableTriggerData> data =
-        AttributionAggregatableTriggerData::Create(
+    absl::optional<attribution_reporting::AggregatableTriggerData> data =
+        attribution_reporting::AggregatableTriggerData::Create(
             aggregatable_trigger->key_piece,
             std::move(aggregatable_trigger->source_keys), std::move(*filters),
             std::move(*not_filters));
@@ -528,7 +530,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
         std::move(*event_filters), std::move(*not_event_filters));
   }
 
-  absl::optional<std::vector<AttributionAggregatableTriggerData>>
+  absl::optional<std::vector<attribution_reporting::AggregatableTriggerData>>
       aggregatable_trigger_data =
           FromMojo(std::move(data->aggregatable_trigger_data));
   if (!aggregatable_trigger_data.has_value()) {

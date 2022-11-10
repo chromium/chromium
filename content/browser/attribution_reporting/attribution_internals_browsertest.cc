@@ -14,11 +14,11 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -1034,13 +1034,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               /*not_filters=*/
               *AttributionFilters::Create({{"e", {"f"}}})),
       },
-      {AttributionAggregatableTriggerData::CreateForTesting(
+      {*attribution_reporting::AggregatableTriggerData::Create(
            /*key_piece=*/345,
            /*source_keys=*/{"a"},
            /*filters=*/
            *AttributionFilters::Create({{"c", {"d"}}}),
            /*not_filters=*/AttributionFilters()),
-       AttributionAggregatableTriggerData::CreateForTesting(
+       *attribution_reporting::AggregatableTriggerData::Create(
            /*key_piece=*/678,
            /*source_keys=*/{"b"},
            /*filters=*/AttributionFilters(),

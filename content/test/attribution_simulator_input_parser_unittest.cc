@@ -12,11 +12,11 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -442,7 +442,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       /*debug_key=*/absl::nullopt,
                       /*aggregatable_dedup_key=*/789,
                       /*event_triggers=*/{},
-                      {AttributionAggregatableTriggerData::CreateForTesting(
+                      {*attribution_reporting::AggregatableTriggerData::Create(
                           absl::MakeUint128(/*high=*/0, /*low=*/1),
                           /*source_keys=*/{"a"},
                           /*filters=*/AttributionFilters(),

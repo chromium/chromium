@@ -409,8 +409,6 @@ source_set("browser") {
     "attribution_reporting/aggregatable_attribution_utils.h",
     "attribution_reporting/aggregatable_histogram_contribution.cc",
     "attribution_reporting/aggregatable_histogram_contribution.h",
-    "attribution_reporting/attribution_aggregatable_trigger_data.cc",
-    "attribution_reporting/attribution_aggregatable_trigger_data.h",
     "attribution_reporting/attribution_config.cc",
     "attribution_reporting/attribution_cookie_checker.h",
     "attribution_reporting/attribution_cookie_checker_impl.cc",

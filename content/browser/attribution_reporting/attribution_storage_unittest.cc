@@ -25,11 +25,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -2640,12 +2640,13 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
 TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
   const auto origin = url::Origin::Create(GURL("https://r.test"));
 
-  std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data{
-      AttributionAggregatableTriggerData::CreateForTesting(
-          absl::MakeUint128(/*high=*/1, /*low=*/0),
-          /*source_keys=*/{"0"},
-          /*filters=*/AttributionFilters(),
-          /*not_filters=*/AttributionFilters())};
+  std::vector<attribution_reporting::AggregatableTriggerData>
+      aggregatable_trigger_data{
+          *attribution_reporting::AggregatableTriggerData::Create(
+              absl::MakeUint128(/*high=*/1, /*low=*/0),
+              /*source_keys=*/{"0"},
+              /*filters=*/AttributionFilters(),
+              /*not_filters=*/AttributionFilters())};
 
   auto aggregatable_values =
       *attribution_reporting::AggregatableValues::Create({{"0", 1}});
@@ -2827,17 +2828,18 @@ TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
               *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
-  EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(
-                TriggerBuilder()
-                    .SetAggregatableTriggerData(
-                        {AttributionAggregatableTriggerData::CreateForTesting(
-                            absl::MakeUint128(/*high=*/1, /*low=*/0),
-                            /*source_keys=*/{"0"},
-                            /*filters=*/
-                            AttributionFilters(),
-                            /*not_filters=*/AttributionFilters())})
-                    .Build()),
-            AttributionTrigger::AggregatableResult::kNoHistograms);
+  EXPECT_EQ(
+      MaybeCreateAndStoreAggregatableReport(
+          TriggerBuilder()
+              .SetAggregatableTriggerData(
+                  {*attribution_reporting::AggregatableTriggerData::Create(
+                      absl::MakeUint128(/*high=*/1, /*low=*/0),
+                      /*source_keys=*/{"0"},
+                      /*filters=*/
+                      AttributionFilters(),
+                      /*not_filters=*/AttributionFilters())})
+              .Build()),
+      AttributionTrigger::AggregatableResult::kNoHistograms);
 }
 
 TEST_F(AttributionStorageTest,

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {
@@ -32,7 +33,8 @@ AttributionTrigger::AttributionTrigger(
     absl::optional<uint64_t> debug_key,
     absl::optional<uint64_t> aggregatable_dedup_key,
     std::vector<EventTriggerData> event_triggers,
-    std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data,
+    std::vector<attribution_reporting::AggregatableTriggerData>
+        aggregatable_trigger_data,
     attribution_reporting::AggregatableValues aggregatable_values)
     : destination_origin_(std::move(destination_origin)),
       reporting_origin_(std::move(reporting_origin)),
