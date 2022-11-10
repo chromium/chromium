@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_SERVICE_ROUTER_H_
 #define COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_SERVICE_ROUTER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,6 +34,8 @@ class ScreenAIServiceRouter : public KeyedService {
 
  private:
   mojo::Remote<mojom::ScreenAIService> screen_ai_service_;
+
+  base::WeakPtrFactory<ScreenAIServiceRouter> weak_ptr_factory_{this};
 };
 
 }  // namespace screen_ai

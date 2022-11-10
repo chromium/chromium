@@ -57,84 +57,50 @@ std::vector<char> LoadModelFile(base::File& model_file) {
   return buffer;
 }
 
-}  // namespace
-
-ScreenAIService::ScreenAIService(
-    mojo::PendingReceiver<mojom::ScreenAIService> receiver)
-    : task_runner_(new base::DeferredSequencedTaskRunner(
-          base::ThreadTaskRunnerHandle::Get())),
-      receiver_(this, std::move(receiver)) {}
-
-ScreenAIService::~ScreenAIService() = default;
-
-void LibraryFunctions::LoadFunctions(base::ScopedNativeLibrary& library) {
-  // General functions.
-  get_library_version_ = reinterpret_cast<GetLibraryVersion>(
-      library.GetFunctionPointer("GetLibraryVersion"));
-  DCHECK(get_library_version_);
-  enable_debug_mode_ = reinterpret_cast<EnableDebugMode>(
-      library.GetFunctionPointer("EnableDebugMode"));
-  DCHECK(enable_debug_mode_);
-
-  // Main Content Extraction functions.
-  init_main_content_extraction_ = reinterpret_cast<InitMainContentExtraction>(
-      library.GetFunctionPointer("InitMainContentExtraction"));
-  DCHECK(init_main_content_extraction_);
-  extract_main_content_ = reinterpret_cast<ExtractMainContent>(
-      library.GetFunctionPointer("ExtractMainContent"));
-  DCHECK(extract_main_content_);
-
-// Visual Annotation functions.
-// TODO(https://crbug.com/1278249): Enable when ScreenAI is supported on
-// Windows.
 #if !BUILDFLAG(IS_WIN)
-  init_visual_annotation_ = reinterpret_cast<InitVisualAnnotations>(
-      library.GetFunctionPointer("InitVisualAnnotations"));
-  DCHECK(init_visual_annotation_);
-  annotate_ =
-      reinterpret_cast<Annotate>(library.GetFunctionPointer("Annotate"));
-  DCHECK(annotate_);
-#endif  // !BUILDFLAG(IS_WIN)
+NO_SANITIZE("cfi-icall")
+bool CallInitVisualAnnotationsFunction(LibraryFunctions* library_functions,
+                                       const base::FilePath& models_folder) {
+  return library_functions->init_visual_annotation_(
+      models_folder.MaybeAsASCII().c_str());
+}
+#endif
+
+NO_SANITIZE("cfi-icall")
+bool CallInitMainContentExtractionFunction(LibraryFunctions* library_functions,
+                                           base::File& model_config_file,
+                                           base::File& model_tflite_file) {
+  std::vector<char> model_config = LoadModelFile(model_config_file);
+  std::vector<char> model_tflite = LoadModelFile(model_tflite_file);
+  if (model_config.empty() || model_tflite.empty())
+    return false;
+
+  return library_functions->init_main_content_extraction_(
+      model_config.data(), model_config.size(), model_tflite.data(),
+      model_tflite.size());
 }
 
-void ScreenAIService::LoadLibrary(base::File model_config,
-                                  base::File model_tflite,
-                                  const base::FilePath& library_path) {
-  DCHECK(!library_.get());
-
-  // LoadLibrary will be run before all other requests to this service, but may
-  // be called after queuing one or more requests. Therefore if we use WeakPtr
-  // here, it may be taken after the other requests but released before them and
-  // that creates a sequencing error, hence used |unretained(this)|.
-  // This object gets destroyed only when service is shutting down, so unless
-  // the service would be destroyed immediately after LoadLibrary request is
-  // triggered, using 'this' unretained is safe.
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ScreenAIService::LoadLibraryInternal,
-                     base::Unretained(this), std::move(model_config),
-                     std::move(model_tflite), library_path),
-      base::BindOnce(
-          [](scoped_refptr<base::DeferredSequencedTaskRunner> task_runner) {
-            task_runner->Start();
-          },
-          task_runner_));
+NO_SANITIZE("cfi-icall")
+void CallEnableDebugMode(LibraryFunctions* library_functions) {
+  library_functions->enable_debug_mode_();
 }
 
-void ScreenAIService::LoadLibraryInternal(base::File model_config,
-                                          base::File model_tflite,
-                                          const base::FilePath& library_path) {
+std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
+    base::File model_config,
+    base::File model_tflite,
+    const base::FilePath& library_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  library_ = base::ScopedNativeLibrary(library_path);
-  library_functions_.LoadFunctions(library_);
+  std::unique_ptr<LibraryFunctions> library_functions =
+      std::make_unique<LibraryFunctions>(library_path);
+
   if (features::IsScreenAIDebugModeEnabled())
-    CallEnableDebugMode();
+    CallEnableDebugMode(library_functions.get());
   bool init_ok = true;
 #if !BUILDFLAG(IS_WIN)
   if (features::IsPdfOcrEnabled() ||
       features::IsScreenAIVisualAnnotationsEnabled()) {
-    if (!CallInitVisualAnnotationsFunction(library_path.DirName())) {
+    if (!CallInitVisualAnnotationsFunction(library_functions.get(),
+                                           library_path.DirName())) {
       init_ok = false;
       base::UmaHistogramEnumeration(
           "Accessibility.ScreenAI.LoadLibraryResult",
@@ -144,7 +110,8 @@ void ScreenAIService::LoadLibraryInternal(base::File model_config,
 #endif
 
   if (init_ok && features::IsReadAnythingWithScreen2xEnabled()) {
-    if (!CallInitMainContentExtractionFunction(model_config, model_tflite)) {
+    if (!CallInitMainContentExtractionFunction(library_functions.get(),
+                                               model_config, model_tflite)) {
       init_ok = false;
       base::UmaHistogramEnumeration(
           "Accessibility.ScreenAI.LoadLibraryResult",
@@ -159,36 +126,68 @@ void ScreenAIService::LoadLibraryInternal(base::File model_config,
 
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
                                 ScreenAILoadLibraryResult::kAllOk);
+
+  return library_functions;
 }
 
-NO_SANITIZE("cfi-icall")
-bool ScreenAIService::CallInitVisualAnnotationsFunction(
-    const base::FilePath& models_folder) {
-#if BUILDFLAG(IS_WIN)
-  return false;
-#else
-  return library_functions_.init_visual_annotation_(
-      models_folder.MaybeAsASCII().c_str());
-#endif
+}  // namespace
+
+ScreenAIService::ScreenAIService(
+    mojo::PendingReceiver<mojom::ScreenAIService> receiver)
+    : task_runner_(new base::DeferredSequencedTaskRunner(
+          base::ThreadTaskRunnerHandle::Get())),
+      receiver_(this, std::move(receiver)) {}
+
+ScreenAIService::~ScreenAIService() = default;
+
+LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
+  library_ = base::ScopedNativeLibrary(library_path);
+
+  // General functions.
+  get_library_version_ = reinterpret_cast<GetLibraryVersion>(
+      library_.GetFunctionPointer("GetLibraryVersion"));
+  DCHECK(get_library_version_);
+  enable_debug_mode_ = reinterpret_cast<EnableDebugMode>(
+      library_.GetFunctionPointer("EnableDebugMode"));
+  DCHECK(enable_debug_mode_);
+
+  // Main Content Extraction functions.
+  init_main_content_extraction_ = reinterpret_cast<InitMainContentExtraction>(
+      library_.GetFunctionPointer("InitMainContentExtraction"));
+  DCHECK(init_main_content_extraction_);
+  extract_main_content_ = reinterpret_cast<ExtractMainContent>(
+      library_.GetFunctionPointer("ExtractMainContent"));
+  DCHECK(extract_main_content_);
+
+// Visual Annotation functions.
+// TODO(https://crbug.com/1278249): Enable when ScreenAI is supported on
+// Windows.
+#if !BUILDFLAG(IS_WIN)
+  init_visual_annotation_ = reinterpret_cast<InitVisualAnnotations>(
+      library_.GetFunctionPointer("InitVisualAnnotations"));
+  DCHECK(init_visual_annotation_);
+  annotate_ =
+      reinterpret_cast<Annotate>(library_.GetFunctionPointer("Annotate"));
+  DCHECK(annotate_);
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
-NO_SANITIZE("cfi-icall")
-bool ScreenAIService::CallInitMainContentExtractionFunction(
-    base::File& model_config_file,
-    base::File& model_tflite_file) {
-  std::vector<char> model_config = LoadModelFile(model_config_file);
-  std::vector<char> model_tflite = LoadModelFile(model_tflite_file);
-  if (model_config.empty() || model_tflite.empty())
-    return false;
-
-  return library_functions_.init_main_content_extraction_(
-      model_config.data(), model_config.size(), model_tflite.data(),
-      model_tflite.size());
+void ScreenAIService::LoadLibrary(base::File model_config,
+                                  base::File model_tflite,
+                                  const base::FilePath& library_path) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&LoadAndInitializeLibrary, std::move(model_config),
+                     std::move(model_tflite), library_path),
+      base::BindOnce(&ScreenAIService::SetLibraryFunctions,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-NO_SANITIZE("cfi-icall")
-void ScreenAIService::CallEnableDebugMode() {
-  library_functions_.enable_debug_mode_();
+void ScreenAIService::SetLibraryFunctions(
+    std::unique_ptr<LibraryFunctions> library_functions) {
+  library_functions_ = std::move(library_functions);
+  task_runner_->Start();
 }
 
 void ScreenAIService::BindAnnotator(
@@ -290,9 +289,9 @@ bool ScreenAIService::CallLibraryAnnotateFunction(
   NOTIMPLEMENTED();
   return false;
 #else
-  DCHECK(library_functions_.annotate_);
-  return library_functions_.annotate_(image, annotation_proto,
-                                      annotation_proto_length);
+  DCHECK(library_functions_);
+  return library_functions_->annotate_(image, annotation_proto,
+                                       annotation_proto_length);
 #endif
 }
 
@@ -349,8 +348,8 @@ bool ScreenAIService::CallLibraryExtractMainContentFunction(
     const uint32_t serialized_snapshot_length,
     int32_t*& node_ids,
     uint32_t& nodes_count) {
-  DCHECK(library_functions_.extract_main_content_);
-  return library_functions_.extract_main_content_(
+  DCHECK(library_functions_);
+  return library_functions_->extract_main_content_(
       serialized_snapshot, serialized_snapshot_length, node_ids, nodes_count);
 }
 

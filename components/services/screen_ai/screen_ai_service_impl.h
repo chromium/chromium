@@ -28,12 +28,10 @@ using ContentExtractionCallback =
 // Defines and keeps pointers to ScreenAI library functions.
 class LibraryFunctions {
  public:
-  LibraryFunctions() = default;
+  explicit LibraryFunctions(const base::FilePath& library_path);
   LibraryFunctions(const LibraryFunctions&) = delete;
   LibraryFunctions& operator=(const LibraryFunctions&) = delete;
   ~LibraryFunctions() = default;
-
-  void LoadFunctions(base::ScopedNativeLibrary& library);
 
 #if !BUILDFLAG(IS_WIN)
   // Initializes the pipeline for layout extraction and OCR.
@@ -82,6 +80,9 @@ class LibraryFunctions {
   // Gets the library version number.
   typedef void (*GetLibraryVersion)(char*& version_string);
   GetLibraryVersion get_library_version_ = nullptr;
+
+ private:
+  base::ScopedNativeLibrary library_;
 };
 
 // Uses a local machine intelligence library to augment the accessibility
@@ -99,9 +100,10 @@ class ScreenAIService : public mojom::ScreenAIService,
   ScreenAIService& operator=(const ScreenAIService&) = delete;
   ~ScreenAIService() override;
 
+  void SetLibraryFunctions(std::unique_ptr<LibraryFunctions> library_functions);
+
  private:
-  base::ScopedNativeLibrary library_;
-  LibraryFunctions library_functions_;
+  std::unique_ptr<LibraryFunctions> library_functions_;
 
   // mojom::ScreenAIAnnotator:
   void Annotate(const SkBitmap& image,
@@ -131,20 +133,13 @@ class ScreenAIService : public mojom::ScreenAIService,
           main_content_extractor) override;
 
   // Wrapper functions for task scheduler.
-  void LoadLibraryInternal(base::File model_config,
-                           base::File model_tflite,
-                           const base::FilePath& library_path);
   void AnnotateInternal(const SkBitmap& image,
                         const ui::AXTreeID& parent_tree_id,
                         ui::AXTreeUpdate* annotation);
   void ExtractMainContentInternal(const ui::AXTreeUpdate& snapshot,
                                   std::vector<int32_t>* content_node_ids);
 
-  // Library function calls are isloated to have specific compiler directives.
-  bool CallInitVisualAnnotationsFunction(const base::FilePath& models_folder);
-  bool CallInitMainContentExtractionFunction(base::File& model_config_file,
-                                             base::File& model_tflite_file);
-  void CallEnableDebugMode();
+  // Library function calls are isolated to have specific compiler directives.
   bool CallLibraryAnnotateFunction(const SkBitmap& image,
                                    char*& annotation_proto,
                                    uint32_t& annotation_proto_length);

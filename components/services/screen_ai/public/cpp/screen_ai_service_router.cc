@@ -100,21 +100,21 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
           .Pass());
   DCHECK(screen_ai_service_.is_bound());
 
-  // This class is destroyed only on browser shutdown and profile destruction,
-  // so it's safe to send the unretained pointer.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ComponentModelFiles::LoadComponentFiles),
       base::BindOnce(
-          [](ScreenAIServiceRouter* service_router,
+          [](base::WeakPtr<ScreenAIServiceRouter> service_router,
              std::unique_ptr<ComponentModelFiles> model_files) {
+            if (!service_router)
+              return;
             service_router->screen_ai_service_->LoadLibrary(
                 std::move(model_files->screen2x_model_config_),
                 std::move(model_files->screen2x_model_),
                 model_files->library_binary_path_);
           },
-          base::Unretained(this)));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace screen_ai
