@@ -10,6 +10,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace chromeos {
 
@@ -20,6 +21,11 @@ constexpr int kMultitaskHalfButtonHeight = 72;
 constexpr int kMultitaskOneThirdButtonWidth = 38;
 constexpr int kMultitaskTwoThirdButtonWidth = 70;
 
+// The preferred insets would be 4 on each side.
+constexpr gfx::Insets kPreferredInsets(4);
+
+// The two buttons share an edge so the inset on both sides needs to be halved
+// so that visually we get the preferred insets above.
 constexpr gfx::Insets kPrimaryLandscapeInsets = gfx::Insets::TLBR(4, 4, 4, 2);
 constexpr gfx::Insets kPrimaryPortraitInsets = gfx::Insets::TLBR(4, 4, 2, 4);
 constexpr gfx::Insets kSecondaryLandscapeInsets = gfx::Insets::TLBR(4, 2, 4, 4);
@@ -49,6 +55,11 @@ class SplitButtonView::SplitButton : public views::Button {
         button_color_(kMultitaskButtonDefaultColor),
         insets_(insets),
         hovered_callback_(std::move(hovered_callback)) {
+    // Subtract by the preferred insets so that the focus ring is drawn around
+    // the painted region below. Also, use the parent's rounded radius so the
+    // ring matches the parent border.
+    views::InstallRoundRectHighlightPathGenerator(
+        this, insets - kPreferredInsets, kMultitaskBaseButtonBorderRadius);
     SetTooltipText(name);
   }
 
@@ -76,7 +87,7 @@ class SplitButtonView::SplitButton : public views::Button {
 
  private:
   SkColor button_color_;
-  // The insert between the button window pattern and the border.
+  // The inset between the button window pattern and the border.
   gfx::Insets insets_;
   // Callback to `SplitButtonView` to change button color.
   // When one split button is hovered, both split buttons on SplitButtonView
