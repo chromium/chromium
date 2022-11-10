@@ -6,8 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
@@ -20,6 +22,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 static constexpr char kServerUrl[] =
@@ -76,10 +79,21 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
   EXPECT_EQ(content_type, "application/json");
-  EXPECT_EQ(body,
-            "{\"board\":\"brya\",\"chrome_os_version\":{\"ash_chrome\":\"10.10."
-            "10\",\"platform\":\"12345.0.0\"},\"language\":\"en-US\",\"model\":"
-            "\"taniks\"}");
+
+  absl::optional<base::Value> request = base::JSONReader::Read(body);
+  ASSERT_TRUE(request.has_value() && request->is_dict());
+
+  base::Value::Dict& request_dict = request->GetDict();
+  EXPECT_EQ(*request_dict.FindString("board"), "brya");
+  EXPECT_EQ(*request_dict.FindString("language"), "en-US");
+  EXPECT_EQ(*request_dict.FindString("model"), "taniks");
+  EXPECT_EQ(*request_dict.FindInt("user_type"),
+            apps::proto::AppProvisioningRequest::USERTYPE_UNMANAGED);
+  EXPECT_EQ(
+      *request_dict.FindDict("chrome_os_version")->FindString("ash_chrome"),
+      "10.10.10");
+  EXPECT_EQ(*request_dict.FindDict("chrome_os_version")->FindString("platform"),
+            "12345.0.0");
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
@@ -89,15 +103,12 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
 
   url_loader_factory_.AddResponse(kServerUrl, response.SerializeAsString());
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<std::vector<PreloadAppDefinition>> test_callback;
   server_connector_.GetAppsForFirstLogin(
-      DeviceInfo(), test_shared_loader_factory_,
-      base::BindLambdaForTesting([&](std::vector<PreloadAppDefinition> apps) {
-        EXPECT_EQ(apps.size(), 1u);
-        EXPECT_EQ(apps[0].GetName(), "Peanut Types");
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+      DeviceInfo(), test_shared_loader_factory_, test_callback.GetCallback());
+  auto apps = test_callback.Get();
+  EXPECT_EQ(apps.size(), 1u);
+  EXPECT_EQ(apps[0].GetName(), "Peanut Types");
 }
 
 }  // namespace apps
