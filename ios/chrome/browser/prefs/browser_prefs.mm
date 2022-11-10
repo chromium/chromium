@@ -121,6 +121,9 @@ const char kDataSaverEnabled[] = "spdy_proxy.enabled";
 // Deprecated 09/2022.
 const char kPrefPromoObject[] = "ios.ntppromo";
 
+// Deprecated 11/2022.
+const char kLocalConsentsDictionary[] = "local_consents";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -201,6 +204,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // times a user should see autofill branding animation after installation.
   registry->RegisterIntegerPref(
       prefs::kAutofillBrandingIconAnimationRemainingCountPrefName, 2);
+
+  registry->RegisterDictionaryPref(kLocalConsentsDictionary);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -349,6 +354,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 09/2022
   prefs->ClearPref(kPrefPromoObject);
+
+  // Added 11/2022.
+  prefs->ClearPref(kLocalConsentsDictionary);
 }
 
 // This method should be periodically pruned of year+ old migrations.

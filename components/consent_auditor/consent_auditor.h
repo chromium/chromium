@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CONSENT_AUDITOR_CONSENT_AUDITOR_H_
 #define COMPONENTS_CONSENT_AUDITOR_CONSENT_AUDITOR_H_
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -94,14 +92,6 @@ class ConsentAuditor : public KeyedService {
   virtual void RecordAutofillAssistantConsent(
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) = 0;
-
-  // Records that the user consented to a |feature|. The user was presented with
-  // |description_text| and accepted it by interacting |confirmation_text|
-  // (e.g. clicking on a button; empty if not applicable).
-  // Returns true if successful.
-  virtual void RecordLocalConsent(const std::string& feature,
-                                  const std::string& description_text,
-                                  const std::string& confirmation_text) = 0;
 
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>

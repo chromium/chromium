@@ -17,7 +17,6 @@
 #import "components/consent_auditor/consent_sync_bridge.h"
 #import "components/consent_auditor/consent_sync_bridge_impl.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_model_type_processor.h"
 #import "components/sync/model/model_type_store_service.h"
@@ -81,15 +80,8 @@ std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
           std::move(store_factory), std::move(change_processor));
 
   return std::make_unique<consent_auditor::ConsentAuditorImpl>(
-      ios_browser_state->GetPrefs(), std::move(consent_sync_bridge),
-      // The browser version and locale do not change runtime, so we can pass
-      // them directly.
-      version_info::GetVersionNumber(),
+      std::move(consent_sync_bridge),
+      // The locale doesn't change at runtime, so we can pass it directly.
       GetApplicationContext()->GetApplicationLocale(),
       base::DefaultClock::GetInstance());
-}
-
-void ConsentAuditorFactory::RegisterBrowserStatePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  consent_auditor::ConsentAuditorImpl::RegisterProfilePrefs(registry);
 }

@@ -85,13 +85,6 @@ void FakeConsentAuditor::RecordGaiaConsent(
   recorded_statuses_.push_back(status);
 }
 
-void FakeConsentAuditor::RecordLocalConsent(
-    const std::string& feature,
-    const std::string& description_text,
-    const std::string& confirmation_text) {
-  NOTIMPLEMENTED();
-}
-
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 FakeConsentAuditor::GetControllerDelegate() {
   NOTIMPLEMENTED();

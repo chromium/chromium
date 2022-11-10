@@ -773,6 +773,9 @@ const char kPrimaryProfileFirstRunFinished[] =
     "lacros.primary_profile_first_run_finished";
 #endif
 
+// Deprecated 11/2022.
+const char kLocalConsentsDictionary[] = "local_consents";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -838,6 +841,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   registry->RegisterBooleanPref(kPrimaryProfileFirstRunFinished, false);
 #endif
+
+  // Deprecated 11/2022.
+  registry->RegisterDictionaryPref(kLocalConsentsDictionary);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1749,6 +1755,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
     local_state->SetBoolean(prefs::kFirstRunFinished, old_value);
   }
 #endif
+
+  // Added 11/2022.
+  local_state->ClearPref(kLocalConsentsDictionary);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

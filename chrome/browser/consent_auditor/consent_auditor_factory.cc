@@ -17,12 +17,9 @@
 #include "components/consent_auditor/consent_auditor_impl.h"
 #include "components/consent_auditor/consent_sync_bridge.h"
 #include "components/consent_auditor/consent_sync_bridge_impl.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
-#include "components/version_info/version_info.h"
 
 // static
 ConsentAuditorFactory* ConsentAuditorFactory::GetInstance() {
@@ -66,16 +63,8 @@ KeyedService* ConsentAuditorFactory::BuildServiceInstanceFor(
           std::move(store_factory), std::move(change_processor));
 
   return new consent_auditor::ConsentAuditorImpl(
-      profile->GetPrefs(), std::move(consent_sync_bridge),
-      // The browser version and locale do not change runtime, so we can pass
-      // them directly.
-      version_info::GetVersionNumber(),
+      std::move(consent_sync_bridge),
+      // The locale doesn't change at runtime, so we can pass it directly.
       g_browser_process->GetApplicationLocale(),
       base::DefaultClock::GetInstance());
-}
-
-// static
-void ConsentAuditorFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  consent_auditor::ConsentAuditorImpl::RegisterProfilePrefs(registry);
 }

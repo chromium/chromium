@@ -14,13 +14,10 @@ static_library("consent_auditor") {
     "consent_sync_bridge.h",
     "consent_sync_bridge_impl.cc",
     "consent_sync_bridge_impl.h",
-    "pref_names.cc",
-    "pref_names.h",
   ]
 
   deps = [
     "//components/keyed_service/core",
-    "//components/prefs",
     "//components/sync",
   ]
 }
@@ -55,7 +52,6 @@ source_set("unit_tests") {
   deps = [
     ":consent_auditor",
     "//base/test:test_support",
-    "//components/prefs:test_support",
     "//components/sync",
     "//components/sync:test_support",
     "//components/variations:test_support",

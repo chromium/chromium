@@ -14,7 +14,5 @@ not from the backend code or pref change observers. The latter could cause
 the consent to be wrongfully recorded if feature was enabled through other
 means (through extensions, a new UI surface added, or even a bug).
 
-Consents related to local features will be stored in a local preference.
-
 Consents related to features for signed-in users will be stored in the user's
 Google account.

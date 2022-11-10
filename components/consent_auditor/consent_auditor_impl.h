@@ -14,16 +14,11 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/consent_auditor/consent_sync_bridge.h"
 
-class PrefService;
-class PrefRegistrySimple;
-
 namespace consent_auditor {
 
 class ConsentAuditorImpl : public ConsentAuditor {
  public:
-  ConsentAuditorImpl(PrefService* pref_service,
-                     std::unique_ptr<ConsentSyncBridge> consent_sync_bridge,
-                     const std::string& app_version,
+  ConsentAuditorImpl(std::unique_ptr<ConsentSyncBridge> consent_sync_bridge,
                      const std::string& app_locale,
                      base::Clock* clock);
 
@@ -34,9 +29,6 @@ class ConsentAuditorImpl : public ConsentAuditor {
 
   // KeyedService (through ConsentAuditor) implementation.
   void Shutdown() override;
-
-  // Registers the preferences needed by this service.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void RecordArcPlayConsent(
       const CoreAccountId& account_id,
@@ -65,16 +57,11 @@ class ConsentAuditorImpl : public ConsentAuditor {
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent)
       override;
-  void RecordLocalConsent(const std::string& feature,
-                          const std::string& description_text,
-                          const std::string& confirmation_text) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;
 
  private:
-  const raw_ptr<PrefService> pref_service_;
   const std::unique_ptr<ConsentSyncBridge> consent_sync_bridge_;
-  const std::string app_version_;
   const std::string app_locale_;
   const raw_ptr<base::Clock> clock_;
 };

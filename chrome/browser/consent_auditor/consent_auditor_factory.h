@@ -16,10 +16,6 @@ namespace consent_auditor {
 class ConsentAuditor;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 class Profile;
 
 class ConsentAuditorFactory : public ProfileKeyedServiceFactory {
@@ -42,8 +38,6 @@ class ConsentAuditorFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 #endif  // CHROME_BROWSER_CONSENT_AUDITOR_CONSENT_AUDITOR_FACTORY_H_
