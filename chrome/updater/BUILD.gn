@@ -14,7 +14,6 @@ import("//testing/test.gni")
 # dependencies are modified until a presubmit is written to automatically
 # check that the C++ includes match the build dependency graph.
 
-# TODO(sorin): make the code build on Linux. https://crbug.com/1014320
 group("updater") {
   if (is_win) {
     deps = [ "//chrome/updater/win" ]
@@ -194,7 +193,7 @@ if (is_win || is_mac || is_linux) {
         "mac/setup/setup.mm",
         "mac/update_service_internal_proxy.h",
         "mac/update_service_internal_proxy.mm",
-        "net/network_fetcher.mm",
+        "net/network_fetcher_mac.mm",
         "policy/mac/managed_preference_policy_manager.h",
         "policy/mac/managed_preference_policy_manager.mm",
         "policy/mac/managed_preference_policy_manager_impl.h",
@@ -330,11 +329,9 @@ if (is_win || is_mac || is_linux) {
         "device_management/dm_storage_linux.cc",
         "linux/ipc_support.cc",
         "linux/ipc_support.h",
-        "linux/net/libcurl_network_fetcher.cc",
-        "linux/net/libcurl_network_fetcher.h",
-        "linux/net/network.cc",
         "linux/setup/setup.h",
         "linux/update_service_internal_proxy.cc",
+        "net/network_fetcher_linux.cc",
         "prefs_linux.cc",
         "setup_linux.cc",
         "update_usage_stats_task_linux.cc",
