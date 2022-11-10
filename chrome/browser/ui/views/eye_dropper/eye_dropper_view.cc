@@ -82,8 +82,10 @@ EyeDropperView::ScreenCapturer::ScreenCapturer() {
   // TODO(iopopesc): Update the captured frame after a period of time to match
   // latest content on screen.
   capturer_ = content::desktop_capture::CreateScreenCapturer();
-  capturer_->Start(this);
-  capturer_->CaptureFrame();
+  if (capturer_) {
+    capturer_->Start(this);
+    capturer_->CaptureFrame();
+  }
 }
 
 void EyeDropperView::ScreenCapturer::OnCaptureResult(
