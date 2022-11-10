@@ -48,7 +48,7 @@ void LogLatency(base::TimeDelta latency) {
                           latency);
 }
 
-// TODO(crbug.com/1258415): This exists to reroute results depending on which
+// TODO(crbug.com/1378869): This exists to reroute results depending on which
 // launcher is enabled, and should be removed after the new launcher launch.
 ash::SearchResultDisplayType GetDisplayType() {
   return ash::features::IsProductivityLauncherEnabled()

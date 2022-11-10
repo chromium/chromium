@@ -47,8 +47,8 @@ bool ShouldIgnoreResult(const ChromeSearchResult* result) {
   // - 'magnifying glass' results: WEB_QUERY, SEARCH_SUGGEST,
   //   SEARCH_SUGGEST_PERSONALIZED.
   //
-  // TODO(crbug.com/1258415): We should have a more robust way of determining
-  // omnibox subtypes than using the metrics type.
+  // This is determined using the omnibox metrics type, which is currently the
+  // only type that gives sufficient granularity.
   return result->metrics_type() == ash::OMNIBOX_ANSWER ||
          result->metrics_type() == ash::OMNIBOX_CALCULATOR ||
          result->metrics_type() == ash::OMNIBOX_WEB_QUERY ||

@@ -20,12 +20,12 @@ namespace ash {
 class ThumbnailLoader;
 namespace string_matching {
 class TokenizedString;
-}
-}
+}  // namespace string_matching
+}  // namespace ash
 
 namespace app_list {
 
-// TODO(crbug.com/1258415): We should split this into four subclasses:
+// This result class is shared between four file search providers:
 // {drive,local} {zero-state,search}.
 class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
  public:

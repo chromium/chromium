@@ -50,7 +50,6 @@ void AppSearchProvider::Start(const std::u16string& query) {
   query_ = query;
   query_start_time_ = base::TimeTicks::Now();
   // We only need to record app search latency for queries started by user.
-  // TODO(crbug.com/1258415): Is this needed?
   record_query_uma_ = true;
 
   {

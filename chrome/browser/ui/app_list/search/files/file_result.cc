@@ -246,10 +246,8 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
 }
 
 void FileResult::UpdateIcon() {
-  // Launcher search results UI is light by default, so use icons for light
-  // background if dark/light mode feature is not enabled. Productivity launcher
-  // has dark background by default, so use icons for dark background in that
-  // case.
+  // Launcher search results UI is dark by default, so use icons for dark
+  // background if dark/light mode feature is not enabled.
   const bool is_dark_light_enabled = ash::features::IsDarkLightModeEnabled();
   // DarkLightModeController might be nullptr in tests.
   auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
@@ -257,6 +255,7 @@ void FileResult::UpdateIcon() {
       dark_light_mode_controller &&
       dark_light_mode_controller->IsDarkModeEnabled();
   const bool dark_background = !is_dark_light_enabled || is_dark_mode_enabled;
+
   if (display_type() == DisplayType::kChip) {
     SetChipIcon(chromeos::GetChipIconForPath(filepath_, dark_background));
   } else if (display_type() == DisplayType::kContinue) {

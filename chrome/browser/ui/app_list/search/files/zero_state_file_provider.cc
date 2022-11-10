@@ -47,7 +47,7 @@ bool IsScreenshot(const base::FilePath& path,
          path.BaseName().value().rfind("Screenshot", 0) == 0;
 }
 
-// TODO(crbug.com/1258415): This exists to reroute results depending on which
+// TODO(crbug.com/1378869): This exists to reroute results depending on which
 // launcher is enabled, and should be removed after the new launcher launch.
 ash::SearchResultDisplayType GetDisplayType() {
   return ash::features::IsProductivityLauncherEnabled()
@@ -118,12 +118,6 @@ void ZeroStateFileProvider::SetSearchResults(
           ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(),
           results[i].score.value(), std::u16string(), FileResult::Type::kFile,
           profile_);
-      // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher
-      // is enabled. We should implement new thumbnail logic for Continue
-      // results if necessary.
-      if (result->display_type() == ash::SearchResultDisplayType::kList) {
-        result->RequestThumbnail(&thumbnail_loader_);
-      }
       new_results.push_back(std::move(result));
     }
   }
