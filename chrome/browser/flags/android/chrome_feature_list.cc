@@ -256,7 +256,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kIsVoiceSearchEnabledCache,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
-    &kNewInstanceFromDraggedLink,
     &kNewTabPageTilesTitleWrapAround,
     &kNewWindowAppMenu,
     &kNotificationPermissionVariant,
@@ -808,10 +807,6 @@ BASE_FEATURE(kSearchEnginePromoNewDevice,
 
 BASE_FEATURE(kSearchEnginePromoNewDeviceV2,
              "SearchEnginePromo.NewDeviceVer2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNewInstanceFromDraggedLink,
-             "NewInstanceFromDraggedLink",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageTilesTitleWrapAround,

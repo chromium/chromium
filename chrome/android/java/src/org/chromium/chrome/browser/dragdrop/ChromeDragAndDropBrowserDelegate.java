@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -67,8 +66,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     @Override
     public Intent createLinkIntent(String urlString) {
         Intent intent = null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_INSTANCE_FROM_DRAGGED_LINK)
-                && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             intent = MultiWindowUtils.createNewWindowIntent(mContext.getApplicationContext(),
                     MultiWindowUtils.getInstanceIdForViewIntent(), true, false);
             intent.setData(Uri.parse(urlString));

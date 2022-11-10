@@ -41,7 +41,6 @@ import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -70,7 +69,6 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Before
     public void setup() throws NameNotFoundException {
         mTestValues = new TestValues();
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.NEW_INSTANCE_FROM_DRAGGED_LINK, true);
         mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, true);
         FeatureList.setTestValues(mTestValues);
 

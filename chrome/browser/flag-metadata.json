@@ -4776,11 +4776,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "new-instance-from-dragged-link",
-    "owners": [ "aishwaryarj", "clank-app-team@google.com" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "new-mobile-identity-consistency-fre",
     "owners": [ "jlebel", "chrome-signin-team" ],
     "expiry_milestone": 112

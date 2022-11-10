@@ -9158,11 +9158,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchDragAndContextMenuName,
      flag_descriptions::kTouchDragAndContextMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kTouchDragAndContextMenu)},
-
-    {"new-instance-from-dragged-link",
-     flag_descriptions::kNewInstanceFromDraggedLinkName,
-     flag_descriptions::kNewInstanceFromDraggedLinkDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kNewInstanceFromDraggedLink)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-update-virtual-card-enrollment",
