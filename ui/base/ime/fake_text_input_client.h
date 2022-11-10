@@ -100,7 +100,7 @@ class FakeTextInputClient : public TextInputClient {
   gfx::Range composition_range_;
   std::vector<ui::ImeTextSpan> ime_text_spans_;
   gfx::Range autocorrect_range_;
-  ukm::SourceId source_id_;
+  ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 };
 
 }  // namespace ui

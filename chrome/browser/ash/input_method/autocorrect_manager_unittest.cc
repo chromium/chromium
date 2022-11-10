@@ -15,7 +15,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -35,6 +37,8 @@ using ::testing::_;
 using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Return;
+
+using UkmEntry = ukm::builders::InputMethod_Assistive_AutocorrectV2;
 
 constexpr char kCoverageHistogramName[] = "InputMethod.Assistive.Coverage";
 constexpr char kSuccessHistogramName[] = "InputMethod.Assistive.Success";
@@ -372,7 +376,8 @@ class AutocorrectManagerTest : public testing::Test {
     keyboard_client_->set_keyboard_visible_for_test(false);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ::base::test::ScopedFeatureList feature_list_;
   ui::MockIMEInputContextHandler mock_ime_input_context_handler_;
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler_;
@@ -2259,6 +2264,286 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<PkUserPrefCase> info) {
       return info.param.test_name;
     });
+
+class AutocorrectManagerUkmMetricsTest : public AutocorrectManagerTest {
+ protected:
+  AutocorrectManagerUkmMetricsTest() {
+    ukm::SourceId source_id = test_recorder_.GetNewSourceID();
+    test_recorder_.UpdateSourceURL(source_id,
+                                   GURL("https://test.example.com/"));
+
+    fake_text_input_client_.set_source_id(source_id);
+    ui::IMEBridge::Get()->SetInputContextHandler(&mock_input_method_ash_);
+
+    mock_input_method_ash_.SetFocusedTextInputClient(&fake_text_input_client_);
+  }
+
+  ui::FakeTextInputClient fake_text_input_client_{ui::TEXT_INPUT_TYPE_TEXT};
+  ui::InputMethodAsh mock_input_method_ash_{nullptr};
+  ukm::TestAutoSetUkmRecorder test_recorder_;
+};
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForUnderlinedSuggestion) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(AutocorrectCompatibilitySummary::kUnderlined));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       DoesNotRecordsAppCompatUkmForInvalidSourceId) {
+  fake_text_input_client_.set_source_id(ukm::kInvalidSourceId);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForVKUnderlinedSuggestion) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], UkmEntry::kCompatibilitySummary_VKName,
+      static_cast<int>(AutocorrectCompatibilitySummary::kUnderlined));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest, RecordsAppCompatUkmForInvalidRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  task_environment_.FastForwardBy(base::Milliseconds(501));
+
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(2u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(AutocorrectCompatibilitySummary::kInvalidRange));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForRevertedSuggestion) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(501));
+
+  manager_.UndoAutocorrect();
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(2u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(AutocorrectCompatibilitySummary::kReverted));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest, RecordsAppCompatUkmForWindowShown) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // This suppresses strict mock.
+  EXPECT_CALL(mock_suggestion_handler_, SetAssistiveWindowProperties(_, _, _));
+
+  manager_.OnSurroundingTextChanged(u"the ", 0, 0);
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(2u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(AutocorrectCompatibilitySummary::kWindowShown));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForVeryFastAcceptedSuggestion) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+
+  // Implicitly accept autocorrect.
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(3u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserAcceptedAutocorrect));
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[2], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kVeryFastAcceptedAutocorrect));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForFastAcceptedSuggestion) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  // Implicitly accept autocorrect.
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(3u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserAcceptedAutocorrect));
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[2], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kFastAcceptedAutocorrect));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForAcceptedSuggestion) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(501));
+
+  // Implicitly accept autocorrect.
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(2u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserAcceptedAutocorrect));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForVeryFastRejectedSuggestion) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+
+  // Clear the range.
+  mock_input_method_ash_.SetAutocorrectRange(gfx::Range(), base::DoNothing());
+  // Process the cleared range ('the' is mutated to implicitly reject it).
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(3u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserActionClearedUnderline));
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[2], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kVeryFastRejectedAutocorrect));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForFastRejectedSuggestion) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  // Clear the range.
+  mock_input_method_ash_.SetAutocorrectRange(gfx::Range(), base::DoNothing());
+  // Process the cleared range ('the' is mutated to implicitly reject it).
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(3u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserActionClearedUnderline));
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[2], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kFastRejectedAutocorrect));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForRejectedSuggestion) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(501));
+
+  // Clear the range.
+  mock_input_method_ash_.SetAutocorrectRange(gfx::Range(), base::DoNothing());
+  // Process the cleared range ('the' is mutated to implicitly reject it).
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(2u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserActionClearedUnderline));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest,
+       RecordsAppCompatUkmForVeryFastExitField) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  manager_.OnBlur();
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(3u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserExitedTextFieldWithUnderline));
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[2], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(AutocorrectCompatibilitySummary::kVeryFastExitField));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest, RecordsAppCompatUkmForFastExitField) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  manager_.OnBlur();
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserExitedTextFieldWithUnderline));
+  EXPECT_EQ(3u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[2], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(AutocorrectCompatibilitySummary::kFastExitField));
+}
+
+TEST_F(AutocorrectManagerUkmMetricsTest, RecordsAppCompatUkmForExitField) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  task_environment_.FastForwardBy(base::Milliseconds(501));
+  manager_.OnBlur();
+
+  auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(2u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
+      static_cast<int>(
+          AutocorrectCompatibilitySummary::kUserExitedTextFieldWithUnderline));
+}
 
 }  // namespace
 }  // namespace input_method
