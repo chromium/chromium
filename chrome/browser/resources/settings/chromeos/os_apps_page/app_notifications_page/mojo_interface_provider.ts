@@ -4,22 +4,14 @@
 
 import {AppNotificationsHandler, AppNotificationsHandlerInterface} from '../../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
 
-/**
- * @type {?AppNotificationsHandlerInterface}
- */
-let appNotificationProvider = null;
+let appNotificationProvider: AppNotificationsHandlerInterface|null = null;
 
-/**
- * @param {!AppNotificationsHandlerInterface} testProvider
- */
-export function setAppNotificationProviderForTesting(testProvider) {
+export function setAppNotificationProviderForTesting(
+    testProvider: AppNotificationsHandlerInterface): void {
   appNotificationProvider = testProvider;
 }
 
-/**
- * @return {!AppNotificationsHandlerInterface}
- */
-export function getAppNotificationProvider() {
+export function getAppNotificationProvider(): AppNotificationsHandlerInterface {
   // For testing only.
   if (appNotificationProvider) {
     return appNotificationProvider;

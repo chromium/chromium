@@ -2,48 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './app_notification_row.js';
-import '../../../controls/settings_toggle_button.js';
-
-import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {AppNotificationsObserverInterface, AppNotificationsObserverReceiver} from '../../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
-import {Setting} from '../../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../../router.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_linking_behavior.js';
-import {recordSettingChange} from '../../metrics_recorder.js';
-import {routes} from '../../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../../route_observer_behavior.js';
-import {isAppInstalled} from '../os_apps_page.js';
-
-import {getAppNotificationProvider} from './mojo_interface_provider.js';
-
 /**
  * @fileoverview
  * 'app-notifications-page' is responsible for containing controls for
  * notifications of all apps.
- * TODO(ethanimooney): Implement this skeleton element.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const AppNotificationsSubpageBase = mixinBehaviors(
-    [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement);
+import './app_notification_row.js';
+import '../../../controls/settings_toggle_button.js';
 
-/** @polymer */
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {App, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver} from '../../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
+import {SettingChangeValue} from '../../../mojom-webui/search/user_action_recorder.mojom-webui.js';
+import {Setting} from '../../../mojom-webui/setting.mojom-webui.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_linking_behavior.js';
+import {recordSettingChange} from '../../metrics_recorder.js';
+import {routes} from '../../os_route.js';
+import {isAppInstalled} from '../os_apps_page.js';
+
+import {getTemplate} from './app_notifications_subpage.html.js';
+import {getAppNotificationProvider} from './mojo_interface_provider.js';
+
+const AppNotificationsSubpageBase =
+    mixinBehaviors([DeepLinkingBehavior], RouteObserverMixin(PolymerElement)) as
+    {
+      new (): PolymerElement & RouteObserverMixinInterface &
+          DeepLinkingBehaviorInterface,
+    };
+
 export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   static get is() {
     return 'settings-app-notifications-subpage';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -58,7 +55,6 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
 
       /**
        * Reflects the Do Not Disturb property.
-       * @private
        */
       isDndEnabled_: {
         type: Boolean,
@@ -69,18 +65,12 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
 
       /**
        * A virtual pref to reflect the Do Not Disturb state.
-       * @type {chrome.settingsPrivate.PrefObject}
-       * @private
        */
       virtualDndPref_: {
         type: Object,
         computed: 'getVirtualDndPref_(isDndEnabled_)',
       },
 
-      /**
-       * @type {!Array<!Object>}
-       * @private
-       */
       appList_: {
         type: Array,
         value: [],
@@ -88,7 +78,6 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
 
       /**
        * Whether the App Badging toggle is visible.
-       * @type {boolean}
        */
       showAppBadgingToggle_: {
         type: Boolean,
@@ -99,7 +88,6 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -111,21 +99,27 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     };
   }
 
+  prefs: {[key: string]: any};
+  private appList_: App[];
+  private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver|
+      null;
+  private isDndEnabled_: boolean;
+  private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
+  private showAppBadgingToggle_: boolean;
+  private virtualDndPref_: chrome.settingsPrivate.PrefObject<boolean>;
+
   constructor() {
     super();
 
-    /** @private */
     this.mojoInterfaceProvider_ = getAppNotificationProvider();
 
     /**
      * Receiver responsible for observing app notification events.
-     * @private {?AppNotificationsObserverReceiver}
      */
     this.appNotificationsObserverReceiver_ = null;
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.startObservingAppNotifications_();
     this.mojoInterfaceProvider_.getQuietMode().then((result) => {
@@ -136,17 +130,12 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     });
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
-    this.appNotificationsObserverReceiver_.$.close();
+    this.appNotificationsObserverReceiver_!.$.close();
   }
 
-  /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   */
-  currentRouteChanged(route) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.APP_NOTIFICATIONS) {
       return;
@@ -154,25 +143,20 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     this.attemptDeepLink();
   }
 
-  /** @private */
-  startObservingAppNotifications_() {
+  private startObservingAppNotifications_(): void {
     this.appNotificationsObserverReceiver_ =
-        new AppNotificationsObserverReceiver(
-            /**
-             * @type {!AppNotificationsObserverInterface}
-             */
-            (this));
+        new AppNotificationsObserverReceiver(this);
     this.mojoInterfaceProvider_.addObserver(
         this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   /** Override ash.settings.appNotification.onQuietModeChanged */
-  onQuietModeChanged(enabled) {
+  onQuietModeChanged(enabled: boolean): void {
     this.isDndEnabled_ = enabled;
   }
 
   /** Override ash.settings.appNotification.onNotificationAppChanged */
-  onNotificationAppChanged(updatedApp) {
+  onNotificationAppChanged(updatedApp: App): void {
     // Using Polymer mutation methods do not properly handle splice updates with
     // object that have deep properties. Create and assign a copy list instead.
     const appList = Array.from(this.appList_);
@@ -196,19 +180,15 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     this.appList_ = appList;
   }
 
-  /** @private */
-  setQuietMode_() {
+  private setQuietMode_(): void {
     this.isDndEnabled_ = !this.isDndEnabled_;
     this.mojoInterfaceProvider_.setQuietMode(this.isDndEnabled_);
     recordSettingChange(
-        Setting.kDoNotDisturbOnOff, {boolValue: this.isDndEnabled_});
+        Setting.kDoNotDisturbOnOff,
+        {boolValue: this.isDndEnabled_} as SettingChangeValue);
   }
 
-  /**
-   * @return {!chrome.settingsPrivate.PrefObject}
-   * @private
-   */
-  getVirtualDndPref_() {
+  private getVirtualDndPref_(): chrome.settingsPrivate.PrefObject<boolean> {
     return {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -218,13 +198,15 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
 
   /**
    * A function used for sorting languages alphabetically.
-   * @param {!Object} first An app array item.
-   * @param {!Object} second An app array item.
-   * @return {number} The result of the comparison.
-   * @private
    */
-  alphabeticalSort_(first, second) {
-    return first.title.localeCompare(second.title);
+  private alphabeticalSort_(first: App, second: App): number {
+    return first.title!.localeCompare(second.title!);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-app-notifications-subpage': AppNotificationsSubpage;
   }
 }
 
