@@ -177,13 +177,15 @@ void Service::InitializeDeviceMonitor() {
 
   TRACE_EVENT0("audio", "audio::Service::InitializeDeviceMonitor");
 
-  audio_device_listener_mac_ = std::make_unique<media::AudioDeviceListenerMac>(
+  audio_device_listener_mac_ = media::AudioDeviceListenerMac::Create(
       media::BindToCurrentLoop(base::BindRepeating([] {
         if (auto* monitor = base::SystemMonitor::Get())
           monitor->ProcessDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
       })),
-      true /* monitor_default_input */, true /* monitor_addition_removal */,
-      true /* monitor_sources */);
+      /*monitor_sample_rate_changes=*/false,
+      /*monitor_default_input=*/true,
+      /*monitor_addition_removal=*/true,
+      /*monitor_sources=*/true);
 #endif
 }
 

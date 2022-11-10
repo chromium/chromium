@@ -40,6 +40,10 @@
 
 namespace media {
 
+BASE_FEATURE(kMonitorOutputSampleRateChangesMac,
+             "MonitorOutputSampleRateChangesMac",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Maximum number of output streams that can be open simultaneously.
 static const int kMaxOutputStreams = 50;
 
@@ -718,9 +722,14 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
     // even if OSX calls us on the right thread.  Some CoreAudio drivers will
     // fire the callbacks during stream creation, leading to re-entrancy issues
     // otherwise.  See http://crbug.com/349604
-    output_device_listener_ = std::make_unique<AudioDeviceListenerMac>(
+    output_device_listener_ = AudioDeviceListenerMac::Create(
         BindToCurrentLoop(base::BindRepeating(
-            &AudioManagerMac::HandleDeviceChanges, base::Unretained(this))));
+            &AudioManagerMac::HandleDeviceChanges, base::Unretained(this))),
+        /*monitor_sample_rate_changes=*/
+        base::FeatureList::IsEnabled(kMonitorOutputSampleRateChangesMac),
+        /*monitor_default_input=*/false,
+        /*monitor_addition_removal=*/false,
+        /*monitor_sources=*/false);
     device_listener_first_init = true;
   }
 
@@ -901,6 +910,10 @@ void AudioManagerMac::HandleDeviceChanges() {
     return;
   }
 
+  DVLOG(1) << __func__
+           << " device changed: " << (current_sample_rate_ != new_sample_rate)
+           << " current sample rate: " << current_sample_rate_
+           << " new sample rate: " << new_sample_rate;
   current_sample_rate_ = new_sample_rate;
   current_output_device_ = new_output_device;
   NotifyAllOutputDeviceChangeListeners();

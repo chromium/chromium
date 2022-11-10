@@ -36,6 +36,11 @@ const AudioObjectPropertyAddress
         kAudioHardwarePropertyDevices, kAudioObjectPropertyScopeGlobal,
         kAudioObjectPropertyElementMaster};
 
+const AudioObjectPropertyAddress
+    AudioDeviceListenerMac::kPropertyOutputSampleRateChanged = {
+        kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMaster};
+
 const AudioObjectPropertyAddress kPropertyOutputSourceChanged = {
     kAudioDevicePropertyDataSource, kAudioDevicePropertyScopeOutput,
     kAudioObjectPropertyElementMaster};
@@ -46,14 +51,26 @@ const AudioObjectPropertyAddress kPropertyInputSourceChanged = {
 
 class AudioDeviceListenerMac::PropertyListener {
  public:
+  using SystemCallback =
+      base::OnceCallback<OSStatus(AudioObjectID inObjectID,
+                                  const AudioObjectPropertyAddress* inAddress,
+                                  AudioObjectPropertyListenerProc inListener,
+                                  void* inClientData)>;
+
+  // |remove_listener_callback| is guaranteed to be synchronously called in the
+  // deleter.
   static std::unique_ptr<PropertyListener, PropertyListenerDeleter> Create(
       AudioObjectID monitored_object,
       const AudioObjectPropertyAddress* property,
-      base::RepeatingClosure callback) {
-    std::unique_ptr<PropertyListener, PropertyListenerDeleter> listener{
-        new PropertyListener(monitored_object, property)};
+      base::RepeatingClosure on_change_callback,
+      SystemCallback add_listener_callback,
+      SystemCallback remove_listener_callback) {
+    std::unique_ptr<PropertyListener, PropertyListenerDeleter> listener(
+        new PropertyListener(monitored_object, property));
 
-    if (!listener->StartListening(std::move(callback)))
+    if (!listener->StartListening(std::move(on_change_callback),
+                                  std::move(add_listener_callback),
+                                  std::move(remove_listener_callback)))
       listener.reset();
 
     return listener;
@@ -87,21 +104,26 @@ class AudioDeviceListenerMac::PropertyListener {
   ~PropertyListener() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     DCHECK(!callback_);
+    DCHECK(remove_listener_callback_.is_null());
   }
 
-  bool StartListening(base::RepeatingClosure callback) {
+  bool StartListening(base::RepeatingClosure callback,
+                      SystemCallback add_listener_callback,
+                      SystemCallback remove_listener_callback) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     DCHECK(callback_.is_null());
 
-    OSStatus result = AudioObjectAddPropertyListener(
-        monitored_object_, property_,
-        &AudioDeviceListenerMac::PropertyListener::OnEvent, this);
+    OSStatus result =
+        std::move(add_listener_callback)
+            .Run(monitored_object_, property_,
+                 &AudioDeviceListenerMac::PropertyListener::OnEvent, this);
     if (noErr == result) {
       callback_ = std::move(callback);
+      remove_listener_callback_ = std::move(remove_listener_callback);
       return true;
     }
 
-    OSSTATUS_DLOG(ERROR, result) << "AudioObjectAddPropertyListener() failed!";
+    OSSTATUS_DLOG(ERROR, result) << "AddPropertyListener() failed!";
     return false;
   }
 
@@ -111,11 +133,13 @@ class AudioDeviceListenerMac::PropertyListener {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (callback_.is_null())
       return false;
-    OSStatus result = AudioObjectRemovePropertyListener(
-        monitored_object_, property_,
-        &AudioDeviceListenerMac::PropertyListener::OnEvent, this);
+    DCHECK(!remove_listener_callback_.is_null());
+    OSStatus result =
+        std::move(remove_listener_callback_)
+            .Run(monitored_object_, property_,
+                 &AudioDeviceListenerMac::PropertyListener::OnEvent, this);
     OSSTATUS_DLOG_IF(ERROR, result != noErr, result)
-        << "AudioObjectRemovePropertyListener() failed!";
+        << "RemovePropertyListener() failed!";
     auto callback(std::move(callback_));
     DCHECK(callback_.is_null());
     return true;
@@ -167,6 +191,7 @@ class AudioDeviceListenerMac::PropertyListener {
   THREAD_CHECKER(thread_checker_);
 
   base::RepeatingClosure callback_ GUARDED_BY_CONTEXT(thread_checker_);
+  SystemCallback remove_listener_callback_ GUARDED_BY_CONTEXT(thread_checker_);
 
   base::WeakPtr<PropertyListener> weak_this_for_events_;
   base::WeakPtrFactory<PropertyListener> weak_factory_{this};
@@ -196,51 +221,92 @@ void AudioDeviceListenerMac::PropertyListenerDeleter::operator()(
           listener),
       base::Seconds(1));
 }
-
-AudioDeviceListenerMac::AudioDeviceListenerMac(
-    const base::RepeatingClosure listener_cb,
+// static
+std::unique_ptr<AudioDeviceListenerMac> AudioDeviceListenerMac::Create(
+    base::RepeatingClosure listener_cb,
+    bool monitor_output_sample_rate_changes,
     bool monitor_default_input,
     bool monitor_addition_removal,
-    bool monitor_sources)
-    : listener_cb_(std::move(listener_cb)) {
-  // Changes to the default output device are always monitored.
-  default_output_listener_ = PropertyListener::Create(
-      kAudioObjectSystemObject, &kDefaultOutputDeviceChangePropertyAddress,
-      listener_cb_);
-
-  if (monitor_default_input) {
-    default_input_listener_ = PropertyListener::Create(
-        kAudioObjectSystemObject, &kDefaultInputDeviceChangePropertyAddress,
-        listener_cb_);
-  }
-  if (monitor_addition_removal) {
-    addition_removal_listener_ = PropertyListener::Create(
-        kAudioObjectSystemObject, &kDevicesPropertyAddress,
-        monitor_sources ? base::BindRepeating(
-                              &AudioDeviceListenerMac::OnDevicesAddedOrRemoved,
-                              base::Unretained(this))
-                        : listener_cb_);
-
-    // Sources can be monitored only if addition/removal is monitored.
-    if (monitor_sources)
-      UpdateSourceListeners();
-  }
+    bool monitor_sources) {
+  // No make_unique<> since the constructor is private.
+  std::unique_ptr<AudioDeviceListenerMac> device_listener(
+      new AudioDeviceListenerMac(
+          std::move(listener_cb), monitor_output_sample_rate_changes,
+          monitor_default_input, monitor_addition_removal, monitor_sources));
+  device_listener->CreatePropertyListeners();
+  return device_listener;
 }
 
 AudioDeviceListenerMac::~AudioDeviceListenerMac() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void AudioDeviceListenerMac::OnDevicesAddedOrRemoved() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  UpdateSourceListeners();
-  listener_cb_.Run();
+AudioDeviceListenerMac::AudioDeviceListenerMac(
+    const base::RepeatingClosure listener_cb,
+    bool monitor_output_sample_rate_changes,
+    bool monitor_default_input,
+    bool monitor_addition_removal,
+    bool monitor_sources)
+    : listener_cb_(std::move(listener_cb)),
+      monitor_default_input_(monitor_default_input),
+      monitor_addition_removal_(monitor_addition_removal),
+      monitor_output_sample_rate_changes_(monitor_output_sample_rate_changes),
+      monitor_sources_(monitor_sources) {
+  DVLOG(1) << __func__ << " this=" << this
+           << " monitor_output_sample_rate_changes "
+           << monitor_output_sample_rate_changes << " monitor_default_input "
+           << monitor_default_input << " monitor_addition_removal "
+           << " monitor_sources " << monitor_sources;
 }
 
-void AudioDeviceListenerMac::UpdateSourceListeners() {
+void AudioDeviceListenerMac::CreatePropertyListeners() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::vector<AudioObjectID> device_ids =
-      core_audio_mac::GetAllAudioDeviceIDs();
+  DCHECK(!default_output_listener_);
+
+  // Changes to the default output device are always monitored.
+  default_output_listener_ = CreatePropertyListener(
+      kAudioObjectSystemObject, &kDefaultOutputDeviceChangePropertyAddress,
+      listener_cb_);
+
+  if (monitor_default_input_) {
+    default_input_listener_ = CreatePropertyListener(
+        kAudioObjectSystemObject, &kDefaultInputDeviceChangePropertyAddress,
+        listener_cb_);
+  }
+
+  if (monitor_addition_removal_ || monitor_output_sample_rate_changes_ ||
+      monitor_sources_) {
+    addition_removal_listener_ = CreatePropertyListener(
+        kAudioObjectSystemObject, &kDevicesPropertyAddress,
+        base::BindRepeating(&AudioDeviceListenerMac::OnDevicesAddedOrRemoved,
+                            base::Unretained(this)));
+    // Even if |addition_removal_listener_| creation failed we still want to
+    // monitor at least the devices we see at the moment.
+    UpdateDevicePropertyListeners();
+  }
+}
+
+void AudioDeviceListenerMac::OnDevicesAddedOrRemoved() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  UpdateDevicePropertyListeners();
+  if (monitor_addition_removal_)
+    listener_cb_.Run();
+}
+
+void AudioDeviceListenerMac::UpdateDevicePropertyListeners() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::vector<AudioObjectID> device_ids = GetAllAudioDeviceIDs();
+  if (monitor_sources_)
+    UpdateSourceListeners(device_ids);
+  if (monitor_output_sample_rate_changes_)
+    UpdateOutputSampleRateListeners(device_ids);
+}
+
+void AudioDeviceListenerMac::UpdateSourceListeners(
+    const std::vector<AudioObjectID>& device_ids) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(monitor_sources_);
+  DVLOG(1) << __func__ << " this=" << this;
   for (bool is_input : {true, false}) {
     for (auto device_id : device_ids) {
       const AudioObjectPropertyAddress* property_address =
@@ -253,8 +319,8 @@ void AudioDeviceListenerMac::UpdateSourceListeners() {
         if (!is_monitored) {
           // Start monitoring if the device has source and is not currently
           // being monitored.
-          auto source_listener = PropertyListener::Create(
-              device_id, property_address, listener_cb_);
+          auto source_listener =
+              CreatePropertyListener(device_id, property_address, listener_cb_);
           if (source_listener) {
             source_listeners_[key] = std::move(source_listener);
           }
@@ -268,6 +334,77 @@ void AudioDeviceListenerMac::UpdateSourceListeners() {
   }
 }
 
+void AudioDeviceListenerMac::UpdateOutputSampleRateListeners(
+    const std::vector<AudioObjectID>& device_ids) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(monitor_output_sample_rate_changes_);
+
+  OutputSampleRateListenerMap new_listeners;
+  for (auto device_id : device_ids) {
+    if (!IsOutputDevice(device_id))
+      continue;
+
+    auto listener_iter = output_sample_rate_listeners_.find(device_id);
+    if (listener_iter != output_sample_rate_listeners_.end()) {
+      // Continue monitoring.
+      new_listeners[device_id] = std::move(listener_iter->second);
+      continue;
+    }
+    // Start monitoring
+    auto new_listener = CreatePropertyListener(
+        device_id, &kPropertyOutputSampleRateChanged, listener_cb_);
+    if (new_listener)
+      new_listeners[device_id] = std::move(new_listener);
+  }
+
+  // Drop all the listeners not in |device_ids|.
+  output_sample_rate_listeners_.swap(new_listeners);
+
+  DVLOG(1) << __func__ << " this=" << this
+           << " listener count: " << output_sample_rate_listeners_.size();
+}
+
+AudioDeviceListenerMac::PropertyListenerPtr
+AudioDeviceListenerMac::CreatePropertyListener(
+    AudioObjectID monitored_object,
+    const AudioObjectPropertyAddress* property,
+    base::RepeatingClosure listener_cb) {
+  // Unretained is safe because the callbacks are guaranteed to be called only
+  // while |this| holds the listener.
+  return PropertyListener::Create(
+      monitored_object, property, std::move(listener_cb),
+      base::BindOnce(&AudioDeviceListenerMac::AddPropertyListener,
+                     base::Unretained(this)),
+      base::BindOnce(&AudioDeviceListenerMac::RemovePropertyListener,
+                     base::Unretained(this)));
+}
+
+std::vector<AudioObjectID> AudioDeviceListenerMac::GetAllAudioDeviceIDs() {
+  return core_audio_mac::GetAllAudioDeviceIDs();
+}
+
+bool AudioDeviceListenerMac::IsOutputDevice(AudioObjectID id) {
+  return core_audio_mac::IsOutputDevice(id);
+}
+
+OSStatus AudioDeviceListenerMac::AddPropertyListener(
+    AudioObjectID inObjectID,
+    const AudioObjectPropertyAddress* inAddress,
+    AudioObjectPropertyListenerProc inListener,
+    void* inClientData) {
+  return AudioObjectAddPropertyListener(inObjectID, inAddress, inListener,
+                                        inClientData);
+}
+
+OSStatus AudioDeviceListenerMac::RemovePropertyListener(
+    AudioObjectID inObjectID,
+    const AudioObjectPropertyAddress* inAddress,
+    AudioObjectPropertyListenerProc inListener,
+    void* inClientData) {
+  return AudioObjectRemovePropertyListener(inObjectID, inAddress, inListener,
+                                           inClientData);
+}
+
 std::vector<void*> AudioDeviceListenerMac::GetPropertyListenersForTesting()
     const {
   std::vector<void*> listeners;
@@ -278,6 +415,8 @@ std::vector<void*> AudioDeviceListenerMac::GetPropertyListenersForTesting()
   if (addition_removal_listener_)
     listeners.push_back(addition_removal_listener_.get());
   for (const auto& listener_pair : source_listeners_)
+    listeners.push_back(listener_pair.second.get());
+  for (const auto& listener_pair : output_sample_rate_listeners_)
     listeners.push_back(listener_pair.second.get());
   return listeners;
 }
