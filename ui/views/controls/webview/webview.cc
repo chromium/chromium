@@ -258,14 +258,6 @@ void WebView::AboutToRequestFocusFromTabTraversal(bool reverse) {
     web_contents()->FocusThroughTabTraversal(reverse);
 }
 
-void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kWebView;
-  // A webview does not need an accessible name as the document title is
-  // provided via other means. Providing it here would be redundant.
-  // Mark the name as explicitly empty so that accessibility_checks pass.
-  node_data->SetNameExplicitlyEmpty();
-}
-
 void WebView::AddedToWidget() {
   if (!web_contents())
     return;
@@ -375,6 +367,14 @@ void WebView::ResizeDueToAutoResize(content::WebContents* source,
     return;
 
   SetPreferredSize(new_size);
+}
+
+void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kWebView;
+  // A webview does not need an accessible name as the document title is
+  // provided via other means. Providing it here would be redundant.
+  // Mark the name as explicitly empty so that accessibility_checks pass.
+  node_data->SetNameExplicitlyEmpty();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

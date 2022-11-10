@@ -124,6 +124,9 @@ class WEBVIEW_EXPORT WebView : public View,
     ~ScopedWebContentsCreatorForTesting();
   };
 
+  // View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  protected:
   // Called when the web contents is successfully attached.
   virtual void OnWebContentsAttached() {}
@@ -135,7 +138,7 @@ class WEBVIEW_EXPORT WebView : public View,
   const gfx::Size& min_size() const { return min_size_; }
   const gfx::Size& max_size() const { return max_size_; }
 
-  // Overridden from View:
+  // View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
@@ -143,7 +146,6 @@ class WEBVIEW_EXPORT WebView : public View,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void AddedToWidget() override;
 

@@ -78,6 +78,10 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(
   SetOrientation(views::LayoutOrientation::kVertical);
   SetMainAxisAlignment(views::LayoutAlignment::kStart);
 
+  // Allow view to be focusable in order to receive focus when side panel is
+  // opened.
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+
   // Stretch views to fill horizontal bounds.
   SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
@@ -206,6 +210,11 @@ void LensUnifiedSidePanelView::PrimaryPageChanged(content::Page& page) {
     SetContentAndNewTabButtonVisible(/* visible= */ true,
                                      enable_new_tab_button);
   }
+}
+
+void LensUnifiedSidePanelView::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  return web_view_->GetAccessibleNodeData(node_data);
 }
 
 bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {

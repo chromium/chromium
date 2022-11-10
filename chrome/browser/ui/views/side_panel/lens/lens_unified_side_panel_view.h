@@ -38,6 +38,7 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
 
   // views::View
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   content::WebContents* GetWebContents();
 
