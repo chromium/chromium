@@ -15,9 +15,214 @@
 #include "base/notreached.h"
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
+#include "media/gpu/macros.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/parsers/vp8_parser.h"
 
+namespace {
+// Section 9.4. Loop filter type and levels syntax in VP8 specs.
+// https://datatracker.ietf.org/doc/rfc6386/
+struct v4l2_vp8_loop_filter FillV4L2VP8LoopFilterHeader(
+    const media::Vp8LoopFilterHeader& vp8_lf_hdr) {
+  struct v4l2_vp8_loop_filter v4l2_lf = {};
+
+  v4l2_lf.sharpness_level = vp8_lf_hdr.sharpness_level;
+  v4l2_lf.level = vp8_lf_hdr.level;
+  if (vp8_lf_hdr.type == 1)
+    v4l2_lf.flags |= V4L2_VP8_LF_FILTER_TYPE_SIMPLE;
+  if (vp8_lf_hdr.loop_filter_adj_enable)
+    v4l2_lf.flags |= V4L2_VP8_LF_ADJ_ENABLE;
+  if (vp8_lf_hdr.mode_ref_lf_delta_update)
+    v4l2_lf.flags |= V4L2_VP8_LF_DELTA_UPDATE;
+
+  static_assert(
+      std::size(decltype(v4l2_lf.ref_frm_delta){}) == media::kNumBlockContexts,
+      "Invalid size of ref_frm_delta");
+
+  static_assert(
+      std::size(decltype(v4l2_lf.mb_mode_delta){}) == media::kNumBlockContexts,
+      "Invalid size of mb_mode_delta");
+
+  media::SafeArrayMemcpy(v4l2_lf.ref_frm_delta, vp8_lf_hdr.ref_frame_delta);
+  media::SafeArrayMemcpy(v4l2_lf.mb_mode_delta, vp8_lf_hdr.mb_mode_delta);
+
+  return v4l2_lf;
+}
+
+// Section 9.6. Dequantization indices.
+struct v4l2_vp8_quantization FillV4L2Vp8QuantizationHeader(
+    const media::Vp8QuantizationHeader& vp8_quantization_hdr) {
+  struct v4l2_vp8_quantization v4l2_quant = {};
+
+  v4l2_quant.y_ac_qi = base::checked_cast<__u8>(vp8_quantization_hdr.y_ac_qi);
+  v4l2_quant.y_dc_delta =
+      base::checked_cast<__s8>(vp8_quantization_hdr.y_dc_delta);
+  v4l2_quant.y2_dc_delta =
+      base::checked_cast<__s8>(vp8_quantization_hdr.y2_dc_delta);
+  v4l2_quant.y2_ac_delta =
+      base::checked_cast<__s8>(vp8_quantization_hdr.y2_ac_delta);
+  v4l2_quant.uv_dc_delta =
+      base::checked_cast<__s8>(vp8_quantization_hdr.uv_dc_delta);
+  v4l2_quant.uv_ac_delta =
+      base::checked_cast<__s8>(vp8_quantization_hdr.uv_ac_delta);
+
+  return v4l2_quant;
+}
+
+// Section 9.9.  DCT Coefficient Probability Update
+struct v4l2_vp8_entropy FillV4L2VP8EntropyHeader(
+    const media::Vp8EntropyHeader& vp8_entropy_hdr) {
+  struct v4l2_vp8_entropy v4l2_entr = {};
+
+  static_assert(
+      std::size(decltype(v4l2_entr.coeff_probs){}) == media::kNumBlockTypes,
+      "Invalid size of coeff_probs");
+
+  static_assert(
+      std::size(decltype(v4l2_entr.y_mode_probs){}) == media::kNumYModeProbs,
+      "Invalid size of y_mode_probs");
+
+  static_assert(
+      std::size(decltype(v4l2_entr.uv_mode_probs){}) == media::kNumUVModeProbs,
+      "Invalid size of uv_mode_probs");
+
+  static_assert(
+      std::size(decltype(v4l2_entr.mv_probs){}) == media::kNumMVContexts,
+      "Invalid size of mv_probs");
+
+  media::SafeArrayMemcpy(v4l2_entr.coeff_probs, vp8_entropy_hdr.coeff_probs);
+  media::SafeArrayMemcpy(v4l2_entr.y_mode_probs, vp8_entropy_hdr.y_mode_probs);
+  media::SafeArrayMemcpy(v4l2_entr.uv_mode_probs,
+                         vp8_entropy_hdr.uv_mode_probs);
+  media::SafeArrayMemcpy(v4l2_entr.mv_probs, vp8_entropy_hdr.mv_probs);
+  return v4l2_entr;
+}
+
+// Section 9.3. Segment-Based Adjustments
+struct v4l2_vp8_segment FillV4L2VP8SegmentationHeader(
+    const media::Vp8SegmentationHeader& vp8_segmentation_hdr) {
+  struct v4l2_vp8_segment v4l2_segment = {};
+  if (vp8_segmentation_hdr.segmentation_enabled)
+    v4l2_segment.flags |= V4L2_VP8_SEGMENT_FLAG_ENABLED;
+  if (vp8_segmentation_hdr.update_mb_segmentation_map)
+    v4l2_segment.flags |= V4L2_VP8_SEGMENT_FLAG_UPDATE_MAP;
+  if (vp8_segmentation_hdr.update_segment_feature_data)
+    v4l2_segment.flags |= V4L2_VP8_SEGMENT_FLAG_UPDATE_FEATURE_DATA;
+  if (vp8_segmentation_hdr.segment_feature_mode)
+    v4l2_segment.flags |= V4L2_VP8_SEGMENT_FLAG_DELTA_VALUE_MODE;
+
+  static_assert(
+      std::size(decltype(v4l2_segment.quant_update){}) == media::kMaxMBSegments,
+      "Invalid size of quant_update");
+
+  static_assert(
+      std::size(decltype(v4l2_segment.lf_update){}) == media::kMaxMBSegments,
+      "Invalid size of lf_update");
+
+  static_assert(std::size(decltype(v4l2_segment.segment_probs){}) ==
+                    media::kNumMBFeatureTreeProbs,
+                "Invalid size of segment_probs");
+
+  media::SafeArrayMemcpy(v4l2_segment.quant_update,
+                         vp8_segmentation_hdr.quantizer_update_value);
+  media::SafeArrayMemcpy(v4l2_segment.lf_update,
+                         vp8_segmentation_hdr.lf_update_value);
+  media::SafeArrayMemcpy(v4l2_segment.segment_probs,
+                         vp8_segmentation_hdr.segment_prob);
+  v4l2_segment.padding = 0;
+
+  return v4l2_segment;
+}
+
+// Sets up per frame parameters |v4l2_frame_headers| needed for VP8 decoding
+// with VIDIOC_S_EXT_CTRLS ioctl call.
+// Syntax from VP8 specs: https://datatracker.ietf.org/doc/rfc6386/
+struct v4l2_ctrl_vp8_frame SetupFrameHeaders(
+    const media::Vp8FrameHeader& frame_hdr,
+    std::array<scoped_refptr<media::v4l2_test::MmapedBuffer>,
+               media::kNumVp8ReferenceBuffers> ref_frames_) {
+  struct v4l2_ctrl_vp8_frame v4l2_frame_headers = {};
+
+  v4l2_frame_headers.lf = FillV4L2VP8LoopFilterHeader(frame_hdr.loopfilter_hdr);
+  v4l2_frame_headers.quant =
+      FillV4L2Vp8QuantizationHeader(frame_hdr.quantization_hdr);
+
+  v4l2_frame_headers.coder_state.range = frame_hdr.bool_dec_range;
+  v4l2_frame_headers.coder_state.value = frame_hdr.bool_dec_value;
+  v4l2_frame_headers.coder_state.bit_count = frame_hdr.bool_dec_count;
+
+  v4l2_frame_headers.width = frame_hdr.width;
+  v4l2_frame_headers.height = frame_hdr.height;
+
+  v4l2_frame_headers.horizontal_scale = frame_hdr.horizontal_scale;
+  v4l2_frame_headers.vertical_scale = frame_hdr.vertical_scale;
+
+  v4l2_frame_headers.version = frame_hdr.version;
+  v4l2_frame_headers.prob_skip_false = frame_hdr.prob_skip_false;
+  v4l2_frame_headers.prob_intra = frame_hdr.prob_intra;
+  v4l2_frame_headers.prob_last = frame_hdr.prob_last;
+  v4l2_frame_headers.prob_gf = frame_hdr.prob_gf;
+  v4l2_frame_headers.num_dct_parts = frame_hdr.num_of_dct_partitions;
+
+  v4l2_frame_headers.first_part_size = frame_hdr.num_of_dct_partitions;
+  // https://lwn.net/Articles/793069/: macroblock_bit_offset is renamed to
+  // first_part_header_bits
+  v4l2_frame_headers.first_part_header_bits = frame_hdr.macroblock_bit_offset;
+
+  if (frame_hdr.frame_type == media::Vp8FrameHeader::KEYFRAME)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_KEY_FRAME;
+  if (frame_hdr.show_frame)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SHOW_FRAME;
+  if (frame_hdr.mb_no_skip_coeff)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_MB_NO_SKIP_COEFF;
+  if (frame_hdr.sign_bias_golden)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SIGN_BIAS_GOLDEN;
+  if (frame_hdr.sign_bias_alternate)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SIGN_BIAS_ALT;
+
+  static_assert(std::size(decltype(v4l2_frame_headers.dct_part_sizes){}) ==
+                    media::kMaxDCTPartitions,
+                "Invalid size of dct_part_sizes");
+
+  for (size_t i = 0; i < frame_hdr.num_of_dct_partitions &&
+                     i < std::size(v4l2_frame_headers.dct_part_sizes);
+       ++i) {
+    v4l2_frame_headers.dct_part_sizes[i] =
+        static_cast<size_t>(frame_hdr.dct_partition_sizes[i]);
+  }
+
+  v4l2_frame_headers.entropy = FillV4L2VP8EntropyHeader(frame_hdr.entropy_hdr);
+  v4l2_frame_headers.segment =
+      FillV4L2VP8SegmentationHeader(frame_hdr.segmentation_hdr);
+
+  constexpr uint64_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
+  // We need to convert a reference frame's frame_number() (in  microseconds)
+  // to reference ID (in nanoseconds). Technically, v4l2_timeval_to_ns() is
+  // suggested to be used to convert timestamp to nanoseconds, but multiplying
+  // the microseconds part of timestamp |tv_usec| by |kTimestampToNanoSecs| to
+  // make it nanoseconds is also known to work. This is how it is implemented
+  // in v4l2 video decode accelerator tests as well as in gstreamer.
+  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
+  constexpr size_t kTimestampToNanoSecs = 1000;
+  v4l2_frame_headers.last_frame_ts =
+      ref_frames_[media::VP8_FRAME_LAST]
+          ? (ref_frames_[media::VP8_FRAME_LAST]->frame_number() *
+             kTimestampToNanoSecs)
+          : kInvalidSurface;
+  v4l2_frame_headers.golden_frame_ts =
+      ref_frames_[media::VP8_FRAME_GOLDEN]
+          ? (ref_frames_[media::VP8_FRAME_GOLDEN]->frame_number() *
+             kTimestampToNanoSecs)
+          : kInvalidSurface;
+  v4l2_frame_headers.alt_frame_ts =
+      ref_frames_[media::VP8_FRAME_ALTREF]
+          ? (ref_frames_[media::VP8_FRAME_ALTREF]->frame_number() *
+             kTimestampToNanoSecs)
+          : kInvalidSurface;
+
+  return v4l2_frame_headers;
+}
+}  // namespace
 namespace media {
 namespace v4l2_test {
 
@@ -157,6 +362,22 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
+
+  struct v4l2_ctrl_vp8_frame v4l2_frame_headers =
+      SetupFrameHeaders(frame_hdr, ref_frames_);
+
+  // Set controls required by the OUTPUT format to enumerate the CAPTURE formats
+  struct v4l2_ext_control ext_ctrl = {.id = V4L2_CID_STATELESS_VP8_FRAME,
+                                      .size = sizeof(v4l2_frame_headers),
+                                      .ptr = &v4l2_frame_headers};
+
+  struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ext_ctrl};
+
+  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls))
+    LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
+
+  if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
+    LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
 
   return VideoDecoder::kOk;
 }

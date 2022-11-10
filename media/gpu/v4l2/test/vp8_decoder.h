@@ -48,6 +48,9 @@ class Vp8Decoder : public VideoDecoder {
 
   // VP8-specific data.
   const std::unique_ptr<Vp8Parser> vp8_parser_;
+
+  // Reference frames currently in use.
+  std::array<scoped_refptr<MmapedBuffer>, kNumVp8ReferenceBuffers> ref_frames_;
 };
 
 }  // namespace v4l2_test
