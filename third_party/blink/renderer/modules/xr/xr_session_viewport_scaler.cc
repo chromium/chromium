@@ -13,7 +13,8 @@ namespace blink {
 
 namespace {
 
-// Minimum and maximum viewport scale factors.
+// Minimum and maximum viewport scale factors. The min value is
+// additionally clamped by kMinViewportScale in xr_view.cc.
 constexpr float kMinScale = 0.25f;
 constexpr float kMaxScale = 1.0f;
 

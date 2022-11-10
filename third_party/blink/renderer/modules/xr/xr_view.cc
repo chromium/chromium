@@ -21,10 +21,10 @@ namespace {
 
 // Arbitrary minimum size multiplier for dynamic viewport scaling,
 // where 1.0 is full framebuffer size (which may in turn be adjusted
-// by framebufferScaleFactor). TODO(klausw): a value around 0.2 would
-// be more reasonable. Intentionally allow extreme viewport scaling
-// to make the effect more obvious in initial testing.
-constexpr double kMinViewportScale = 0.05;
+// by framebufferScaleFactor). This should be less than or equal to
+// kMinScale in xr_session_viewport_scaler.cc to allow use of the full
+// dynamic viewport scaling range.
+constexpr double kMinViewportScale = 0.125;
 
 const double kDegToRad = M_PI / 180.0;
 
