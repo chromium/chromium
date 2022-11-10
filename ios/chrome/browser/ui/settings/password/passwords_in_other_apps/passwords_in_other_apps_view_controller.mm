@@ -648,10 +648,16 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 }
 
 - (NSArray<NSString*>*)steps {
+  BOOL isIOS16AndAbove = NO;
+  if (@available(iOS 16, *)) {
+    isIOS16AndAbove = YES;
+  }
   if (self.useShortInstruction) {
     return @[
       l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
+          isIOS16AndAbove
+              ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16
+              : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
       l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
     ];
@@ -663,7 +669,9 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
         : l10n_util::GetNSString(
               IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2),
-    l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
+    l10n_util::GetNSString(
+        isIOS16AndAbove ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16
+                        : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
   ];
 }
@@ -689,8 +697,14 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 
 // Returns caption text that shows below the subtitle in turnOffInstructions.
 - (UITextView*)drawCaptionTextView {
-  NSString* text =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION);
+  NSString* text;
+  if (@available(iOS 16, *)) {
+    text = l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
+  } else {
+    text = l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION);
+  }
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kGrey600Color],
     NSFontAttributeName :
