@@ -197,7 +197,7 @@ class ASH_EXPORT ProjectorControllerImpl
   std::unique_ptr<ProjectorMetadataController> metadata_controller_;
 
   // Whether SODA is available on the device.
-  SpeechRecognitionAvailability speech_recognition_availability_ =
+  SpeechRecognitionAvailability on_device_speech_recognition_availability_ =
       SpeechRecognitionAvailability::kOnDeviceSpeechRecognitionNotSupported;
 
   // Whether speech recognition is taking place or not.

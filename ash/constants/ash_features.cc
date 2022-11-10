@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chromeos/constants/chromeos_features.h"
 
@@ -976,6 +977,12 @@ BASE_FEATURE(kFloatingWorkspace,
 // Enables or disables Floating Workspace V2 feature on ChromeOS
 BASE_FEATURE(kFloatingWorkspaceV2,
              "FloatingWorkspaceV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, makes the Projector app use server side speech
+// recognition instead of on-device speech recognition.
+BASE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev,
+             "ForceEnableServerSideSpeechRecognitionForDev",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to allow keeping full screen mode after unlock.
@@ -2561,6 +2568,15 @@ bool IsFloatingWorkspaceV2Enabled() {
   return base::FeatureList::IsEnabled(kFloatingWorkspaceV2);
 }
 
+bool ShouldForceEnableServerSideSpeechRecognitionForDev() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return base::FeatureList::IsEnabled(
+      kForceEnableServerSideSpeechRecognitionForDev);
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING);
+}
+
 bool IsFullscreenAfterUnlockAllowed() {
   return base::FeatureList::IsEnabled(kFullscreenAfterUnlockAllowed);
 }
@@ -2665,9 +2681,14 @@ bool IsInstantTetheringBackgroundAdvertisingSupported() {
 }
 
 bool IsInternalServerSideSpeechRecognitionEnabled() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(b/245614967): Once ready, enable this feature under
   // kProjectorBleedingEdgeExperience flag as well.
-  return base::FeatureList::IsEnabled(kInternalServerSideSpeechRecognition);
+  return ShouldForceEnableServerSideSpeechRecognitionForDev() ||
+         base::FeatureList::IsEnabled(kInternalServerSideSpeechRecognition);
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 bool IsJellyEnabled() {

@@ -34,12 +34,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -124,16 +127,14 @@ class ProjectorMetadataControllerForTest : public ProjectorMetadataController {
 class ProjectorControllerTest : public AshTestBase {
  public:
   ProjectorControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProjector, features::kProjectorAnnotator}, {});
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ProjectorControllerTest(const ProjectorControllerTest&) = delete;
   ProjectorControllerTest& operator=(const ProjectorControllerTest&) = delete;
 
   // AshTestBase:
   void SetUp() override {
+    InitFeatureFlags();
     AshTestBase::SetUp();
 
     controller_ =
@@ -165,6 +166,31 @@ class ProjectorControllerTest : public AshTestBase {
   }
 
  protected:
+  virtual void InitFeatureFlags() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kProjector, features::kProjectorAnnotator}, {});
+  }
+
+  void InitFakeMic(bool mic_present) {
+    if (!mic_present) {
+      CrasAudioHandler::Get()->SetActiveInputNodes({});
+      return;
+    }
+
+    const AudioNodeInfo kInternalMic[] = {
+        {true, 55555, "Fake Mic", "INTERNAL_MIC", "Internal Mic"}};
+    const AudioNode audio_node =
+        AudioNode(kInternalMic->is_input, kInternalMic->id,
+                  /*has_v2_stable_device_id=*/false, kInternalMic->id,
+                  /*stable_device_id_v2=*/0, kInternalMic->device_name,
+                  kInternalMic->type, kInternalMic->name, /*active=*/false,
+                  /*plugged_time=*/0, /*max_supported_channels=*/1,
+                  /*audio_effect=*/1, /*number_of_volume_steps=*/25);
+    FakeCrasAudioClient::Get()->SetAudioNodesForTesting({audio_node});
+
+    CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});
+  }
+
   MockProjectorUiController* mock_ui_controller_ = nullptr;
   MockProjectorMetadataController* mock_metadata_controller_ = nullptr;
   ProjectorMetadataControllerForTest* metadata_controller_;
@@ -173,7 +199,6 @@ class ProjectorControllerTest : public AshTestBase {
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
 
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -196,24 +221,13 @@ TEST_F(ProjectorControllerTest, OnAudioNodesChanged) {
   ON_CALL(mock_client_, IsDriveFsMounted())
       .WillByDefault(testing::Return(true));
 
-  const AudioNodeInfo kInternalMic[] = {
-      {true, 55555, "Fake Mic", "INTERNAL_MIC", "Internal Mic"}};
-  const AudioNode audio_node =
-      AudioNode(kInternalMic->is_input, kInternalMic->id,
-                /*has_v2_stable_device_id=*/false, kInternalMic->id,
-                /*stable_device_id_v2=*/0, kInternalMic->device_name,
-                kInternalMic->type, kInternalMic->name, /*active=*/false,
-                /*plugged_time=*/0, /*max_supported_channels=*/1,
-                /*audio_effect=*/1, /*number_of_volume_steps=*/25);
-  FakeCrasAudioClient::Get()->SetAudioNodesForTesting({audio_node});
-
-  CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});
+  InitFakeMic(/*mic_present=*/true);
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
                   NewScreencastPreconditionState::kEnabled, {})));
   controller_->OnAudioNodesChanged();
 
-  CrasAudioHandler::Get()->SetActiveInputNodes({});
+  InitFakeMic(/*mic_present=*/false);
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
                   NewScreencastPreconditionState::kDisabled,
@@ -555,5 +569,49 @@ TEST_F(ProjectorControllerTest, SuppressDriveNotification) {
       }));
   run_loop.Run();
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+class ProjectorControllerTestServerBased : public ProjectorControllerTest {
+ public:
+  ProjectorControllerTestServerBased() = default;
+  ProjectorControllerTestServerBased(
+      const ProjectorControllerTestServerBased&) = delete;
+  ProjectorControllerTestServerBased& operator=(
+      const ProjectorControllerTestServerBased&) = delete;
+  ~ProjectorControllerTestServerBased() override = default;
+
+  void InitFeatureFlags() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kProjector, features::kProjectorAnnotator,
+         features::kForceEnableServerSideSpeechRecognitionForDev},
+        {});
+  }
+};
+
+TEST_F(ProjectorControllerTestServerBased, GetNewScreencastPrecondition) {
+  InitFakeMic(/*mic_present=*/true);
+  ON_CALL(mock_client_, IsDriveFsMountFailed())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(mock_client_, IsDriveFsMounted())
+      .WillByDefault(testing::Return(true));
+  UErrorCode error_code = U_ZERO_ERROR;
+
+  icu::Locale::setDefault(icu::Locale::getUS(), error_code);
+  auto precondition = controller_->GetNewScreencastPrecondition();
+  EXPECT_EQ(precondition, NewScreencastPrecondition(
+                              NewScreencastPreconditionState::kEnabled,
+                              {NewScreencastPreconditionReason::
+                                   kEnabledByServerSideSpeechRecognition}));
+
+  icu::Locale::setDefault(icu::Locale::getRoot(), error_code);
+  precondition = controller_->GetNewScreencastPrecondition();
+  EXPECT_EQ(precondition,
+            NewScreencastPrecondition(
+                NewScreencastPreconditionState::kDisabled,
+                {NewScreencastPreconditionReason::kUserLocaleNotSupported}));
+}
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace ash

@@ -113,8 +113,11 @@ void ProjectorSodaInstallationController::OnSodaInstallError(
               kSodaInstallationErrorNeedsReboot);
       break;
   }
-
-  app_client_->OnSodaInstallError();
+  // TODO(b/245616124): When there is a SODA installation error,
+  // notify the client of the error only when server side recognition is
+  // not available.
+  if (!ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev())
+    app_client_->OnSodaInstallError();
 }
 
 void ProjectorSodaInstallationController::OnSodaProgress(

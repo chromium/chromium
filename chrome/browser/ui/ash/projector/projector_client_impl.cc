@@ -75,11 +75,10 @@ ProjectorClientImpl::~ProjectorClientImpl() {
 }
 
 void ProjectorClientImpl::StartSpeechRecognition() {
-  // ProjectorController should only request for speech recognition after it
-  // has been informed that recognition is available.
-  // TODO(crbug.com/1165437): Dynamically determine language code.
-  DCHECK(SpeechRecognitionRecognizerClientImpl::
-             IsOnDeviceSpeechRecognizerAvailable(GetLocale()));
+  // TODO(b/245613717): Use SpeechRecognitionRecognizerClient factory to
+  // handle the creation of the recognizer.
+  bool should_use_server_based =
+      ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev();
 
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
@@ -88,7 +87,7 @@ void ProjectorClientImpl::StartSpeechRecognition() {
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
           /*enable_formatting=*/true, GetLocale(),
-          /*is_server_based=*/false,
+          /*is_server_based=*/should_use_server_based,
           media::mojom::RecognizerClientType::kProjector));
 }
 
