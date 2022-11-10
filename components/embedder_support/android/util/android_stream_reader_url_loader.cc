@@ -36,12 +36,6 @@ namespace {
 const char kHTTPOkText[] = "OK";
 const char kHTTPNotFoundText[] = "Not Found";
 
-// If InputStream.available() returns less than this, kMinReadSize will be used
-// instead.
-const int kMinAvailableValueToIgnore = 16;
-
-// The smallest amount we'll try to read at a time.
-const int kMinReadSize = 1024;
 }  // namespace
 
 namespace {
@@ -102,8 +96,14 @@ class InputStreamReaderWrapper
       if (input_stream_->BytesAvailable(&available) && available > 0) {
         // Some implementations might return 1 even when there's more data. To
         // avoid slowdowns in that case use a minimum of 1KB to read.
-        if (available < kMinAvailableValueToIgnore)
-          available = kMinReadSize;
+        if (available <
+            net::features::
+                kOptimizeNetworkBuffersMinInputStreamAvailableValueToIgnore
+                    .Get()) {
+          available =
+              net::features::kOptimizeNetworkBuffersMinInputStreamReadSize
+                  .Get();
+        }
 
         // Make sure a we don't read past the buffer size.
         buffer_size = std::min(available, buffer_size);
