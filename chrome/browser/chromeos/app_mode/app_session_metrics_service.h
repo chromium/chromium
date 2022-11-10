@@ -65,7 +65,6 @@ class AppSessionMetricsService {
   void RecordKioskSessionStarted();
   void RecordKioskSessionWebStarted();
   void RecordKioskSessionStopped();
-  void RecordKioskSessionCrashed();
   void RecordKioskSessionPluginCrashed();
   void RecordKioskSessionPluginHung();
 

@@ -186,14 +186,6 @@ void AppSessionMetricsService::RecordKioskSessionStopped() {
                              kKioskSessionDurationInDaysNormalHistogram);
 }
 
-void AppSessionMetricsService::RecordKioskSessionCrashed() {
-  if (!IsKioskSessionRunning())
-    return;
-  RecordKioskSessionState(KioskSessionState::kCrashed);
-  RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
-                             kKioskSessionDurationInDaysCrashedHistogram);
-}
-
 void AppSessionMetricsService::RecordPreviousKioskSessionCrashed(
     const base::Time& start_time) const {
   RecordKioskSessionState(KioskSessionState::kCrashed);
