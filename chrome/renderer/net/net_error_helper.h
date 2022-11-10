@@ -34,10 +34,6 @@ namespace error_page {
 class Error;
 }
 
-namespace network {
-struct ResourceRequest;
-}
-
 // Listens for NetErrorInfo messages from the NetErrorTabHelper on the
 // browser side and updates the error page with more details (currently, just
 // DNS probe results) if/when available.
@@ -82,10 +78,6 @@ class NetErrorHelper
                         std::string* error_html);
 
  private:
-  // Returns ResourceRequest filled with |url|. It has request_initiator from
-  // the frame origin and origin header with "null" for a unique origin.
-  std::unique_ptr<network::ResourceRequest> CreatePostRequest(
-      const GURL& url) const;
   chrome::mojom::NetworkDiagnostics* GetRemoteNetworkDiagnostics();
   chrome::mojom::NetworkEasterEgg* GetRemoteNetworkEasterEgg();
   chrome::mojom::NetErrorPageSupport* GetRemoteNetErrorPageSupport();

@@ -188,34 +188,6 @@ void NetErrorHelper::PrepareErrorPage(
                           std::move(alternative_error_page_info), error_html);
 }
 
-std::unique_ptr<network::ResourceRequest> NetErrorHelper::CreatePostRequest(
-    const GURL& url) const {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = url;
-  resource_request->method = "POST";
-  resource_request->destination = network::mojom::RequestDestination::kEmpty;
-  resource_request->resource_type =
-      static_cast<int>(blink::mojom::ResourceType::kSubResource);
-
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  resource_request->site_for_cookies = frame->GetDocument().SiteForCookies();
-  // The security origin of the error page should exist and be opaque.
-  DCHECK(!frame->GetDocument().GetSecurityOrigin().IsNull());
-  DCHECK(frame->GetDocument().GetSecurityOrigin().IsOpaque());
-  // All requests coming from a renderer process have to use |request_initiator|
-  // that matches the |request_initiator_origin_lock| set by the browser when
-  // creating URLLoaderFactory exposed to the renderer.
-  blink::WebSecurityOrigin origin = frame->GetDocument().GetSecurityOrigin();
-  resource_request->request_initiator = static_cast<url::Origin>(origin);
-  // Since the page is trying to fetch cross-origin resources (which would
-  // be protected by CORB in no-cors mode), we need to ask for CORS.  See also
-  // https://crbug.com/932542.
-  resource_request->mode = network::mojom::RequestMode::kCors;
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kOrigin,
-                                      origin.ToString().Ascii());
-  return resource_request;
-}
-
 chrome::mojom::NetworkDiagnostics*
 NetErrorHelper::GetRemoteNetworkDiagnostics() {
   if (!remote_network_diagnostics_) {
