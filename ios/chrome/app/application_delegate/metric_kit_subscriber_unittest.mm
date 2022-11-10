@@ -47,6 +47,7 @@ class MetricKitSubscriberTest : public PlatformTest {
   void TearDown() override {
     crash_reporter::internal::SetCrashReportDatabaseForTesting(nullptr,
                                                                nullptr);
+    crash_reporter::SetCrashpadRunning(false);
   }
 
   auto Database() { return database_.get(); }
