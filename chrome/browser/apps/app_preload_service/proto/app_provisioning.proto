@@ -8,15 +8,34 @@ option optimize_for = LITE_RUNTIME;
 
 package apps.proto;
 
-// An identical copy of this proto is maintained in the server code base.
-// http://google3/chrome/chromeos/apps_foundation/almanac/fondue/boq/api/app_provisioning.proto
-// Any changes made here must also be made in the file above.
+// This file is a mirror of the proto file maintained in the server code base at
+// go/app-provisioning-service-proto. Changes should be made by updating the
+// server code base and then copying the result to Chromium.
 // In the future this file will be add only, however breaking changes can be
 // be made until the interface is finalized (currently aimed for M110).
 
 // TODO(b/243338003): Review and finalise API. >> THIS IS A DRAFT API ONLY <<
 
 message AppProvisioningRequest {
+  enum UserType {
+    // Default for deserialization when an unexpected value is encountered.
+    // Indicates to the client that the server has a new platform and needs
+    // the proto file updated.
+    USERTYPE_UNKNOWN = 0;
+
+    // Normal consumer.
+    USERTYPE_UNMANAGED = 1;
+
+    // Enterprise, education, etc.
+    USERTYPE_MANAGED = 2;
+
+    // A child account that has restricted access to adult content.
+    USERTYPE_CHILD = 3;
+
+    // A guest account on the device.
+    USERTYPE_GUEST = 4;
+  }
+
   // The board identifier for the device sending the request.
   optional string board = 1;
 
@@ -46,6 +65,9 @@ message AppProvisioningRequest {
     // Chrome OS platform version.
     optional string platform = 2;
   }
+
+  // The type of user account making this request.
+  optional UserType user_type = 6;
 }
 
 message AppProvisioningResponse {
