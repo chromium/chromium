@@ -329,7 +329,7 @@
       // Makes autofill look across shadow boundaries when collecting form
       // controls to fill.
       name: "AutofillShadowDOM",
-      status: "experimental",
+      status: "stable",
       base_feature: "AutofillShadowDOM",
     },
     {
