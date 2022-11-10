@@ -66,6 +66,29 @@ constexpr auto kAllowedResponseStatuses =
   return total_bytes;
 }
 
+auto SplitEventsIntoMultiDayAndSameDay(const ash::SingleDayEventList& list) {
+  std::list<CalendarEvent> multi_day_events;
+  std::list<CalendarEvent> same_day_events;
+
+  for (const CalendarEvent& event : list) {
+    if (event.all_day_event() || ash::calendar_utils::IsMultiDayEvent(&event))
+      multi_day_events.push_back(std::move(event));
+    else
+      same_day_events.push_back(std::move(event));
+  }
+
+  return std::make_tuple(std::move(multi_day_events),
+                         std::move(same_day_events));
+}
+
+void SortByDateAscending(
+    std::list<google_apis::calendar::CalendarEvent>& events) {
+  events.sort([](google_apis::calendar::CalendarEvent& a,
+                 google_apis::calendar::CalendarEvent& b) {
+    return a.start_time().date_time() < b.start_time().date_time();
+  });
+}
+
 }  // namespace
 
 namespace ash {
@@ -446,7 +469,14 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
   if (it2 == month.end())
     return event_list;
 
-  return it2->second;
+  auto events = it2->second;
+  SortByDateAscending(events);
+  return events;
+}
+
+std::tuple<SingleDayEventList, SingleDayEventList>
+CalendarModel::FindEventsSplitByMultiDayAndSameDay(base::Time day) const {
+  return SplitEventsIntoMultiDayAndSameDay(FindEvents(day));
 }
 
 CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(

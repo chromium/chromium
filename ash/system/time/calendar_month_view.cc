@@ -120,10 +120,10 @@ void CalendarDateCellView::OnThemeChanged() {
   // Gray-out the date that is not in the current month.
   if (features::IsCalendarJellyEnabled()) {
     SetEnabledTextColors(
-        grayed_out_ ? GetColorProvider()->GetColor(static_cast<ui::ColorId>(
-                          cros_tokens::kCrosSysDisabled))
-                    : GetColorProvider()->GetColor(static_cast<ui::ColorId>(
-                          cros_tokens::kCrosSysOnPrimaryContainer)));
+        grayed_out_
+            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysDisabled)
+            : GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysOnPrimaryContainer));
   } else {
     SetEnabledTextColors(grayed_out_ ? calendar_utils::GetDisabledTextColor()
                                      : calendar_utils::GetPrimaryTextColor());
@@ -141,15 +141,13 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   const AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor bg_color =
       features::IsCalendarJellyEnabled()
-          ? GetColorProvider()->GetColor(
-                static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimaryContainer))
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimaryContainer)
           : color_provider->GetControlsLayerColor(
                 AshColorProvider::ControlsLayerType::
                     kControlBackgroundColorActive);
   const SkColor border_color =
       features::IsCalendarJellyEnabled()
-          ? GetColorProvider()->GetColor(
-                static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimaryContainer))
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimaryContainer)
           : color_provider->GetControlsLayerColor(
                 AshColorProvider::ControlsLayerType::kFocusRingColor);
 
@@ -339,8 +337,8 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   if (event_number_ == 0)
     return;
 
-  const SkColor jelly_color = GetColorProvider()->GetColor(
-      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnPrimaryContainer));
+  const SkColor jelly_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimaryContainer);
   const SkColor indicator_color =
       features::IsCalendarJellyEnabled() ? jelly_color
       : is_today_ ? AshColorProvider::Get()->GetBaseLayerColor(

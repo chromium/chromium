@@ -145,6 +145,19 @@ SingleDayEventList CalendarViewController::SelectedDateEvents() {
       ApplyTimeDifference(selected_date_.value()));
 }
 
+std::tuple<SingleDayEventList, SingleDayEventList>
+CalendarViewController::SelectedDateEventsSplitByMultiDayAndSameDay() {
+  if (!selected_date_.has_value())
+    return std::make_tuple(std::list<google_apis::calendar::CalendarEvent>(),
+                           std::list<google_apis::calendar::CalendarEvent>());
+
+  return Shell::Get()
+      ->system_tray_model()
+      ->calendar_model()
+      ->FindEventsSplitByMultiDayAndSameDay(
+          ApplyTimeDifference(selected_date_.value()));
+}
+
 int CalendarViewController::GetEventNumber(base::Time date) {
   return Shell::Get()->system_tray_model()->calendar_model()->EventsNumberOfDay(
       ApplyTimeDifference(date),

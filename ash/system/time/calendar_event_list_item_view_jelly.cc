@@ -197,8 +197,8 @@ CalendarEventListItemViewJelly::~CalendarEventListItemViewJelly() = default;
 
 void CalendarEventListItemViewJelly::OnThemeChanged() {
   views::View::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(GetColorProvider()->GetColor(
-      static_cast<ui::ColorId>(cros_tokens::kCrosSysSurface))));
+  SetBackground(views::CreateSolidBackground(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface)));
 }
 
 bool CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {

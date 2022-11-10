@@ -1201,4 +1201,46 @@ TEST_F(CalendarModelTest, FindFetchingStatus) {
                 calendar_utils::GetStartOfMonthUTC(fetching_date)));
 }
 
+TEST_F(CalendarModelTest, FindEventsSplitByMultiDayAndSameDay) {
+  // Set timezone and fake now.
+  const char* kNow = "10 Nov 2022 13:00 GMT+5";
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT+5");
+  SetTodayFromStr(kNow);
+
+  const char* kSummary = "summary";
+
+  const char* kMultiDayId = "multi-day";
+  const char* kMultiDayEventStartTime = "10 Nov 2022 12:00 GMT";
+  const char* kMultiDayEventEndTime = "12 Nov 2022 10:00 GMT";
+
+  const char* kSameDayId = "same-day";
+  const char* kSameDayEventStartTime = "10 Nov 2022 09:00 GMT";
+  const char* kSameDayEventEndTime = "10 Nov 2022 10:00 GMT";
+
+  auto multi_day_event = calendar_test_utils::CreateEvent(
+      kMultiDayId, kSummary, kMultiDayEventStartTime, kMultiDayEventEndTime);
+  auto same_day_event = calendar_test_utils::CreateEvent(
+      kSameDayId, kSummary, kSameDayEventStartTime, kSameDayEventEndTime);
+
+  // Prepare mock events list.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(std::move(multi_day_event));
+  event_list->InjectItemForTesting(std::move(same_day_event));
+
+  // Mock the events are fetched.
+  MockOnEventsFetched(calendar_utils::GetStartOfMonthUTC(
+                          calendar_test_utils::GetTimeFromString(kNow)),
+                      google_apis::ApiErrorCode::HTTP_SUCCESS,
+                      event_list.get());
+
+  auto [multi_day_events, same_day_events] =
+      calendar_model_->FindEventsSplitByMultiDayAndSameDay(now_);
+
+  EXPECT_EQ(multi_day_events.size(), size_t(1));
+  EXPECT_EQ(multi_day_events.back().id(), kMultiDayId);
+  EXPECT_EQ(same_day_events.size(), size_t(1));
+  EXPECT_EQ(same_day_events.back().id(), kSameDayId);
+}
+
 }  // namespace ash

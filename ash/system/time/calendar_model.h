@@ -116,6 +116,11 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // likely to be pruned if we need to trim down to stay within storage limits.
   SingleDayEventList FindEvents(base::Time day) const;
 
+  // Uses the `FindEvents` method to get events for that day and then filters
+  // the result into two lists of multi-day and same day events.
+  std::tuple<SingleDayEventList, SingleDayEventList>
+  FindEventsSplitByMultiDayAndSameDay(base::Time day) const;
+
   // Checks the `FetchingStatus` of a given start time.
   FetchingStatus FindFetchingStatus(base::Time start_time) const;
 
