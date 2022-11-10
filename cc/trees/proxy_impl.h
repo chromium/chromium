@@ -137,8 +137,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   bool IsInSynchronousComposite() const override;
   void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& id) override;
-  void ReportEventLatency(
-      std::vector<EventLatencyTracker::LatencyData> latencies) override;
 
   // SchedulerClient implementation
   bool WillBeginImplFrame(const viz::BeginFrameArgs& args) override;

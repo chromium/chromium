@@ -767,12 +767,6 @@ void Compositor::NotifyThroughputTrackerResults(
     ReportMetricsForTracker(pair.first, std::move(pair.second));
 }
 
-void Compositor::ReportEventLatency(
-    std::vector<cc::EventLatencyTracker::LatencyData> latencies) {
-  if (auto* recorder = cc::CustomMetricRecorder::Get())
-    recorder->ReportEventLatency(std::move(latencies));
-}
-
 void Compositor::DidReceiveCompositorFrameAck() {
   ++activated_frame_count_;
   for (auto& observer : observer_list_)

@@ -184,9 +184,6 @@ class LayerTreeHostImplClient {
 
   virtual size_t CommitDurationSampleCountForTesting() const = 0;
 
-  virtual void ReportEventLatency(
-      std::vector<EventLatencyTracker::LatencyData> latencies) = 0;
-
  protected:
   virtual ~LayerTreeHostImplClient() = default;
 };

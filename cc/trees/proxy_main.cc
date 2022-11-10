@@ -489,11 +489,6 @@ void ProxyMain::DidObserveFirstScrollDelay(
                                                first_scroll_timestamp);
 }
 
-void ProxyMain::ReportEventLatency(
-    std::vector<EventLatencyTracker::LatencyData> latencies) {
-  layer_tree_host_->ReportEventLatency(std::move(latencies));
-}
-
 void ProxyMain::NotifyTransitionRequestFinished(uint32_t sequence_id) {
   layer_tree_host_->NotifyTransitionRequestsFinished({sequence_id});
 }

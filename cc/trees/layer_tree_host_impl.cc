@@ -56,6 +56,7 @@
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/viewport.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
+#include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -2287,7 +2288,8 @@ void LayerTreeHostImpl::OnCompositorFrameTransitionDirectiveProcessed(
 
 void LayerTreeHostImpl::ReportEventLatency(
     std::vector<EventLatencyTracker::LatencyData> latencies) {
-  client_->ReportEventLatency(std::move(latencies));
+  if (auto* recorder = CustomMetricRecorder::Get())
+    recorder->ReportEventLatency(std::move(latencies));
 }
 
 void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {

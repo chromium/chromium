@@ -58,8 +58,6 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override {}
-  void ReportEventLatency(
-      std::vector<EventLatencyTracker::LatencyData> latencies) override {}
 };
 
 }  // namespace cc

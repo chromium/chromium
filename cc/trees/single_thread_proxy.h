@@ -149,8 +149,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       const base::flat_set<viz::FrameSinkId>& ids) override;
   void ClearHistory() override;
   size_t CommitDurationSampleCountForTesting() const override;
-  void ReportEventLatency(
-      std::vector<EventLatencyTracker::LatencyData> latencies) override;
 
   void RequestNewLayerTreeFrameSink();
 

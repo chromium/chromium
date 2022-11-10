@@ -107,6 +107,7 @@ void UiMetricsRecorder::ReportPercentDroppedFramesInOneSecondWindow(
 
 void UiMetricsRecorder::ReportEventLatency(
     std::vector<cc::EventLatencyTracker::LatencyData> latencies) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& latency : latencies) {
     base::UmaHistogramCustomMicrosecondsTimes(
         base::StrCat({"Ash.EventLatency.",

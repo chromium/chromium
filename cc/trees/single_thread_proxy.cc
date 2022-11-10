@@ -921,14 +921,6 @@ size_t SingleThreadProxy::CommitDurationSampleCountForTesting() const {
       ->CommitDurationSampleCountForTesting();  // IN-TEST
 }
 
-void SingleThreadProxy::ReportEventLatency(
-    std::vector<EventLatencyTracker::LatencyData> latencies) {
-  DCHECK(!task_runner_provider_->HasImplThread() ||
-         task_runner_provider_->IsImplThread());
-  DebugScopedSetMainThread main(task_runner_provider_);
-  layer_tree_host_->ReportEventLatency(std::move(latencies));
-}
-
 void SingleThreadProxy::SetRenderFrameObserver(
     std::unique_ptr<RenderFrameMetadataObserver> observer) {
   DCHECK(task_runner_provider_->IsMainThread());
