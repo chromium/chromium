@@ -6,6 +6,7 @@
 
 #include <unicode/unistr.h>
 
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -104,11 +105,9 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
 TEST(UTF16RagelIteratorTest, InvalidOperationOnEmpty) {
   UTF16RagelIterator ragel_iterator;
   CHECK_EQ(ragel_iterator.Cursor(), 0u);
-#if DCHECK_IS_ON()
-  EXPECT_DEATH_IF_SUPPORTED(ragel_iterator++, "");
-  EXPECT_DEATH_IF_SUPPORTED(ragel_iterator--, "");
-  EXPECT_DEATH_IF_SUPPORTED(*ragel_iterator, "");
-#endif
+  EXPECT_DCHECK_DEATH(ragel_iterator++);
+  EXPECT_DCHECK_DEATH(ragel_iterator--);
+  EXPECT_DCHECK_DEATH(*ragel_iterator);
 }
 
 TEST(UTF16RagelIteratorTest, CursorPositioning) {
@@ -129,11 +128,8 @@ TEST(UTF16RagelIteratorTest, CursorPositioning) {
   CHECK_EQ(*(ragel_iterator.SetCursor(6)),
            UTF16RagelIterator::EMOJI_TEXT_PRESENTATION);
 
-#if DCHECK_IS_ON()
-  EXPECT_DEATH_IF_SUPPORTED(ragel_iterator.SetCursor(-1), "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      ragel_iterator.SetCursor(ragel_iterator.end().Cursor()), "");
-#endif
+  EXPECT_DCHECK_DEATH(ragel_iterator.SetCursor(-1));
+  EXPECT_DCHECK_DEATH(ragel_iterator.SetCursor(ragel_iterator.end().Cursor()));
 }
 
 }  // namespace blink
