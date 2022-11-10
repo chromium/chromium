@@ -120,7 +120,6 @@ crbug.com/1170840 [ mac amd renderer-skia-gl ] GpuProcess_mac_webgl_terminated_h
 crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 
-crbug.com/1321145 [ fuchsia fuchsia-board-qemu-x64 ] * [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
