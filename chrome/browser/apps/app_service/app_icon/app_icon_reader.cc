@@ -6,15 +6,15 @@
 
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace {
 
 std::vector<uint8_t> ReadOnBackgroundThread(Profile* profile,
                                             const std::string& app_id,
-                                            int32_t size_hint_in_dip,
-                                            apps::IconEffects icon_effects) {
-  const auto icon_path = apps::GetIconPath(profile, app_id, size_hint_in_dip);
+                                            int32_t icon_size_in_px) {
+  const auto icon_path = apps::GetIconPath(profile, app_id, icon_size_in_px);
   if (icon_path.empty() || !base::PathExists(icon_path)) {
     return std::vector<uint8_t>{};
   }
@@ -50,7 +50,9 @@ void AppIconReader::ReadIcons(const std::string& app_id,
         base::ThreadPool::PostTaskAndReplyWithResult(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
             base::BindOnce(&ReadOnBackgroundThread, profile_, app_id,
-                           size_hint_in_dip, icon_effects),
+                           apps_util::ConvertDipToPx(
+                               size_hint_in_dip,
+                               /*quantize_to_supported_scale_factor=*/true)),
             base::BindOnce(&AppIconReader::OnIconRead,
                            weak_ptr_factory_.GetWeakPtr(), icon_type,
                            std::move(callback)));

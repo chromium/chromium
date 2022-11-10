@@ -21,9 +21,9 @@ namespace apps {
 
 base::FilePath GetIconPath(Profile* profile,
                            const std::string& app_id,
-                           int32_t size_hint_in_dip) {
+                           int32_t icon_size_in_px) {
   DCHECK(profile);
-  auto icon_file_name = base::StringPrintf(kIconNameTemplate, size_hint_in_dip);
+  auto icon_file_name = base::StringPrintf(kIconNameTemplate, icon_size_in_px);
   return profile->GetPath()
       .AppendASCII(kAppService)
       .AppendASCII(kIcon)

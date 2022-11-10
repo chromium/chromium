@@ -64,7 +64,7 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
 // Constructs path to app icon for specific scale factor.
 base::FilePath GetIconPath(Profile* profile,
                            const std::string& app_id,
-                           int32_t size_hint_in_dip);
+                           int32_t icon_size_in_px);
 
 }  // namespace apps
 
