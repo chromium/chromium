@@ -4,7 +4,7 @@ default: none
 desc: |-
   This setting decides how much user data is kept after <ph name="LACROS_NAME">Lacros</ph> is disabled.
 
-        If the policy is set to <ph name="LACROS_BACKWARD_MIGRATION_NONE">none</ph>, backward data migration is not performed.
+        If the policy is set to <ph name="LACROS_BACKWARD_MIGRATION_NONE">none</ph> or unset, backward data migration is not performed.
 
         If the policy is set to <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE">keep_none</ph>, all user data is removed. This is the safest option.
 
@@ -15,8 +15,6 @@ example_value: keep_all
 features:
   dynamic_refresh: false
   per_profile: false
-future_on:
-- chrome_os
 items:
 - caption: After <ph name="LACROS_NAME">Lacros</ph> is disabled, data migration is
     not performed. The <ph name="LACROS_NAME">Lacros</ph> folder is removed and users
@@ -45,5 +43,7 @@ schema:
   - keep_safe_data
   - keep_all
   type: string
+supported_on:
+- chrome_os:110-
 tags: []
 type: string-enum
