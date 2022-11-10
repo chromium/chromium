@@ -99,6 +99,10 @@ std::string GetPolicyWithOneTemplate() {
          "]";
 }
 
+std::string GetUnParseableTemplate() {
+  return "????????/asdfg;.lkawhuerfflizHxcbklnmzd;kldfgjha;owwem";
+}
+
 // Verifies that the status passed into it is kOk
 void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
@@ -939,6 +943,25 @@ TEST_F(LocalDeskDataManagerTest, DeleteSameEntryAgain) {
 
   VerifyAllEntries(0ul, "Delete one entry");
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(LocalDeskDataManagerTest, CanHandleFileErrorGracefully) {
+  base::ScopedTempDir local_temp_dir;
+  EXPECT_TRUE(local_temp_dir.CreateUniqueTempDir());
+
+  // Write out file that should not be parseable.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  base::FilePath path_to_dir = local_temp_dir.GetPath().Append("saveddesk");
+  base::CreateDirectory(path_to_dir);
+  EXPECT_TRUE(base::WriteFile(path_to_dir.Append("bad_format.saveddesk"),
+                              GetUnParseableTemplate()));
+
+  auto local_data_manager = std::make_unique<LocalDeskDataManager>(
+      local_temp_dir.GetPath(), account_id_);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(local_data_manager->GetEntryCount(), static_cast<size_t>(0));
 }
 
 }  // namespace desks_storage
