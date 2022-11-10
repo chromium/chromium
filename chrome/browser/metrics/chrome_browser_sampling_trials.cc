@@ -136,8 +136,17 @@ void CreateFallbackSamplingTrialsIfNeeded(
   if (!base::FieldTrialList::TrialExists(kSamplingTrialName)) {
     // On all channels except stable, we sample out at a minimal rate to ensure
     // the code paths are exercised in the wild before hitting stable.
-    const int kPreStableSampledInRatePerMille = 990;
-    const int kStableSampledInRatePerMille = 100;
+    const int kPreStableSampledInRatePerMille = 990;  // 99%
+
+    int kStableSampledInRatePerMille = 100;  // 10%
+
+#if BUILDFLAG(IS_ANDROID)
+    // We use 5.3% for this set of users to work around an old bug
+    // (crbug/1306481). This should be ~10% in practice.
+    kStableSampledInRatePerMille = 53;  // 5.3%
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
     CreateFallbackSamplingTrial(
         entropy_provider, kSamplingTrialName,
         metrics::internal::kMetricsReportingFeature.name,
@@ -150,8 +159,11 @@ void CreateFallbackSamplingTrialsIfNeeded(
   if (!base::FieldTrialList::TrialExists(kPostFREFixSamplingTrialName)) {
     // On all channels except stable, we sample out at a minimal rate to ensure
     // the code paths are exercised in the wild before hitting stable.
-    const int kPreStableSampledInRatePerMille = 990;
-    const int kStableSampledInRatePerMille = 190;
+    const int kPreStableSampledInRatePerMille = 990;  // 99%
+
+    // This is meant to be 10%, and this population, unlike the set of users
+    // under the kSamplingTrialName trial should correctly be 10% in practice.
+    const int kStableSampledInRatePerMille = 100;  // 10%
     CreateFallbackSamplingTrial(
         entropy_provider, kPostFREFixSamplingTrialName,
         metrics::internal::kPostFREFixMetricsReportingFeature.name,
