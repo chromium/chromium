@@ -20,15 +20,17 @@ assert(is_chromeos_ash, "ChromeOS Settings is ChromeOS only")
 # root_gen_dir is "gen"
 # target_gen_dir is "gen/chrome/browser/resources/settings/chromeos"
 
-preprocessed_folder = "preprocessed"
-preprocessed_ts_folder = "preprocessed_ts"
+tsc_input_folder = "tsc_input"
+tsc_input_dir = "$target_gen_dir/$tsc_input_folder"
+tsc_output_folder = "tsc"
+tsc_output_dir = "$target_gen_dir/$tsc_output_folder"
 
 if (optimize_webui) {
   build_manifest_v3 = "build_v3_manifest.json"
 
   optimize_webui("optimize_bundle") {
     host = "os-settings"
-    input = rebase_path("$target_gen_dir/$preprocessed_folder", root_build_dir)
+    input = rebase_path(tsc_output_dir, root_build_dir)
     js_module_in_files = [
       "chromeos/lazy_load.js",
       "chromeos/os_settings.js",
@@ -93,35 +95,24 @@ ts_library("build_ts") {
     ":generate_html_wrapper_files",
     ":generate_mojom_webui",
     ":preprocess",
-    ":preprocess_gen_web_component_files",
+    ":preprocess_generated_web_component_files",
     "//ash/webui/common/resources:generate_definitions",
   ]
-  definitions = [
-    "//tools/typescript/definitions/bluetooth.d.ts",
-    "//tools/typescript/definitions/bluetooth_private.d.ts",
-    "//tools/typescript/definitions/chrome_send.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/pending.d.ts",
-    "//tools/typescript/definitions/quick_unlock_private.d.ts",
-    "//tools/typescript/definitions/runtime.d.ts",
-    "//tools/typescript/definitions/settings_private.d.ts",
-    "//tools/typescript/definitions/system_display.d.ts",
-    "//tools/typescript/definitions/tabs.d.ts",
-  ]
-  root_dir = "$target_gen_dir/$preprocessed_ts_folder"
+  definitions = ts_definition_files
+  root_dir = tsc_input_dir
   in_files = src_ts_files + html_wrapper_files + css_wrapper_files +
-             gen_web_component_files + mojom_webui_files
-  out_dir = "$target_gen_dir/$preprocessed_folder"
+             generated_web_component_files + mojom_webui_files
+  out_dir = tsc_output_dir
 }
 
 preprocess_if_expr("preprocess") {
   defines = chrome_grit_defines
   in_folder = "../"
   in_files = src_ts_files + html_files + css_files
-  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
+  out_folder = tsc_input_dir
 }
 
-preprocess_if_expr("preprocess_gen_web_component_files") {
+preprocess_if_expr("preprocess_generated_web_component_files") {
   defines = chrome_grit_defines
   deps = [
     # preprocess should happen before these code gen.
@@ -130,25 +121,25 @@ preprocess_if_expr("preprocess_gen_web_component_files") {
     ":generate_web_components",
   ]
   in_folder = get_path_info("../", "gen_dir")
-  in_files = gen_web_component_files
-  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
+  in_files = generated_web_component_files
+  out_folder = tsc_input_dir
 }
 
 html_to_wrapper("generate_html_wrapper_files") {
   deps = [ ":preprocess" ]
   in_files = html_files
-  in_folder = "$target_gen_dir/$preprocessed_ts_folder"
-  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
+  in_folder = tsc_input_dir
+  out_folder = tsc_input_dir
 }
 
 css_to_wrapper("generate_css_wrapper_files") {
   deps = [ ":preprocess" ]
   in_files = css_files
-  in_folder = "$target_gen_dir/$preprocessed_ts_folder"
-  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
+  in_folder = tsc_input_dir
+  out_folder = tsc_input_dir
 }
 
-# Generate all WebUI mojom files and copy them to preprocessed_ts_folder to be
+# Generate all WebUI mojom files and copy them to tsc_input_dir to be
 # input to ts_library(). These files are bundled in optimized builds.
 group("generate_mojom_webui") {
   public_deps = [
@@ -163,7 +154,7 @@ group("generate_mojom_webui") {
 copy("generate_cros_audio_config_mojo_webui") {
   deps = [ "//chromeos/ash/components/audio/public/mojom:mojom_webui_js" ]
   sources = [ "$root_gen_dir/mojom-webui/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/audio/{{source_file_part}}" ]
+  outputs = [ "$tsc_input_dir/mojom-webui/audio/{{source_file_part}}" ]
 }
 
 copy("generate_settings_mojo_webui") {
@@ -173,15 +164,14 @@ copy("generate_settings_mojo_webui") {
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom-webui.js",
   ]
-  outputs = [
-    "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/{{source_file_part}}",
-  ]
+  outputs = [ "$tsc_input_dir/mojom-webui/{{source_file_part}}" ]
 }
 
 copy("generate_personalization_search_mojo_webui") {
   deps = [ "//ash/webui/personalization_app/search:mojo_bindings_webui_js" ]
   sources = [ "$root_gen_dir/mojom-webui/ash/webui/personalization_app/search/search.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/personalization/{{source_file_part}}" ]
+  outputs =
+      [ "$tsc_input_dir/mojom-webui/personalization/{{source_file_part}}" ]
 }
 
 copy("generate_ash_search_mojo_webui") {
@@ -192,7 +182,7 @@ copy("generate_ash_search_mojo_webui") {
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-webui.js",
   ]
-  outputs = [ "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/search/{{source_file_part}}" ]
+  outputs = [ "$tsc_input_dir/mojom-webui/search/{{source_file_part}}" ]
 }
 
 copy("generate_app_notification_mojo_webui") {
@@ -200,7 +190,7 @@ copy("generate_app_notification_mojo_webui") {
     "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_webui_js",
   ]
   sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/os_apps_page/{{source_file_part}}" ]
+  outputs = [ "$tsc_input_dir/mojom-webui/os_apps_page/{{source_file_part}}" ]
 }
 
 grit("resources") {
