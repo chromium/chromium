@@ -18,5 +18,11 @@ export const AbstractRole = {
   SPAN: 'abstractSpan',
 };
 
-/** @typedef {!chrome.automation.RoleType|!AbstractRole} */
+/** @enum {string} */
+export const CustomRole = {
+  DEFAULT: 'default',
+  NO_ROLE: 'noRole',
+};
+
+/** @typedef {!chrome.automation.RoleType|!AbstractRole|!CustomRole} */
 export let ChromeVoxRole;

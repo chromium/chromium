@@ -5,9 +5,12 @@
 /**
  * @fileoverview Contains the rules for output based on type information.
  */
+import {AbstractRole, ChromeVoxRole, CustomRole} from '../../common/role_type.js';
+
 import {OutputCustomEvent, OutputEventType} from './output_types.js';
 
 const EventType = chrome.automation.EventType;
+const RoleType = chrome.automation.RoleType;
 
 /**
  * @typedef {{
@@ -23,8 +26,8 @@ export class OutputRule {
   constructor(event) {
     /** @private {!OutputEventType} */
     this.event_ = this.getEvent_(event);
-    /** @private {string|undefined} */
-    this.role_;
+    /** @private {!ChromeVoxRole} */
+    this.role_ = CustomRole.DEFAULT;
     /** @private {string|undefined} */
     this.navigation_;
     /** @private {string|undefined} */
@@ -45,10 +48,6 @@ export class OutputRule {
 
   /** @return {!OutputRuleSpecifier} */
   get specifier() {
-    if (this.event_ === undefined || this.role_ === undefined) {
-      throw new Error(
-          'Cannot have a completed rule without both an event and a role.');
-    }
     return /** @type {!OutputRuleSpecifier} */ ({
       event: this.event_,
       role: this.role_,
@@ -61,7 +60,7 @@ export class OutputRule {
   // TODO(anastasi): move the logic for determining the below properties into
   // this class.
 
-  /** @param {string|undefined} role */
+  /** @param {!ChromeVoxRole} role */
   set role(role) {
     this.role_ = role;
   }
@@ -78,7 +77,7 @@ export class OutputRule {
   get event() {
     return this.event_;
   }
-  /** @return {string|undefined} */
+  /** @return {!ChromeVoxRole} */
   get role() {
     return this.role_;
   }
@@ -93,34 +92,54 @@ export class OutputRule {
 }
 
 /**
- * Rules specifying format of AutomationNodes for output.
- * @type {!Object<Object<Object<string>>>}
- * Please see below for more information on properties.
+ * An object that specifies the rules for outputting a certain role on a
+ * specific event, based on the type of output.
+ *
  * speak: The speech rule for when ChromeVox range lands exactly on the node.
  * braille: The braille rule for when ChromeVox range lands exactly on the node.
  * enter: The rule for when ChromeVox range enters the node's subtree.
  *    Can contain speak and braille properties.
  * leave: The rule for when ChromeVox range exits the node's subtree.
  * startOf: The rule applied for each ancestor diff of a range and its previous
- * leaf range. endOf: The rule applied for each ancestor diff of a range and its
+ * leaf range.
+ * endOf: The rule applied for each ancestor diff of a range and its
  * next leaf range.
+ *
+ * @typedef {{
+ *     speak: (string|undefined),
+ *     braille: (string|undefined),
+ *     enter: (string|undefined|{
+ *                speak: (string|undefined),
+ *                braille: (string|undefined)
+ *            }),
+ *     leave: (string|undefined),
+ *     startOf: (string|undefined),
+ *     endOf: (string|undefined)
+ * }}
+ */
+let OutputRuleDefinition;
+
+/**
+ * Rules specifying format of AutomationNodes for output.
+ * @type {Object<OutputEventType, Object<ChromeVoxRole, !OutputRuleDefinition>>}
+ * Please see above for more information on properties.
  */
 OutputRule.RULES = {
   navigate: {
-    'default': {
+    [CustomRole.DEFAULT]: {
       speak: `$name $node(activeDescendant) $value $state $restriction $role
           $description`,
       braille: ``,
     },
-    abstractContainer: {
+    [AbstractRole.CONTAINER]: {
       startOf: `$nameFromNode $role $state $description`,
       endOf: `@end_of_container($role)`,
     },
-    abstractFormFieldContainer: {
+    [AbstractRole.FORM_FIELD_CONTAINER]: {
       enter: `$nameFromNode $role $state $description`,
       leave: `@exited_container($role)`,
     },
-    abstractItem: {
+    [AbstractRole.ITEM]: {
       // Note that ChromeVox generally does not output position/count. Only for
       // some roles (see sub-output rules) or when explicitly provided by an
       // author (via posInSet), do we include them in the output.
@@ -130,42 +149,42 @@ OutputRule.RULES = {
           $if($posInSet, @describe_index($posInSet, $setSize))
           $description $restriction`,
     },
-    abstractList: {
+    [AbstractRole.LIST]: {
       startOf: `$nameFromNode $role @@list_with_items($setSize)
           $restriction $description`,
       endOf: `@end_of_container($role) @@list_nested_level($listNestedLevel)`,
     },
-    abstractNameFromContents: {
+    [AbstractRole.NAME_FROM_CONTENTS]: {
       speak: `$nameOrDescendants $node(activeDescendant) $value $state
           $restriction $role $description`,
     },
-    abstractRange: {
+    [AbstractRole.RANGE]: {
       speak: `$name $node(activeDescendant) $description $role
           $if($value, $value, $if($valueForRange, $valueForRange))
           $state $restriction
           $if($minValueForRange, @aria_value_min($minValueForRange))
           $if($maxValueForRange, @aria_value_max($maxValueForRange))`,
     },
-    abstractSpan: {
+    [AbstractRole.SPAN]: {
       startOf: `$nameFromNode $role $state $description`,
       endOf: `@end_of_container($role)`,
     },
-    alert: {
+    [RoleType.ALERT]: {
       enter: `$name $role $state`,
       speak: `$earcon(ALERT_NONMODAL) $role $nameOrTextContent $description
           $state`,
     },
-    alertDialog: {
+    [RoleType.ALERT_DIALOG]: {
       enter: `$earcon(ALERT_MODAL) $name $state $description $roleDescription
           $textContent`,
       speak: `$earcon(ALERT_MODAL) $name $nameOrTextContent $description $state
           $role`,
     },
-    button: {
+    [RoleType.BUTTON]: {
       speak: `$name $node(activeDescendant) $state $restriction $role
           $description`,
     },
-    cell: {
+    [RoleType.CELL]: {
       enter: {
         speak: `$cellIndexText $node(tableCellColumnHeaders) $nameFromNode
             $roleDescription $state`,
@@ -179,35 +198,36 @@ OutputRule.RULES = {
           $description
           $if($selected, @aria_selected_true)`,
     },
-    checkBox: {
+    [RoleType.CHECK_BOX]: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $name $role $if($checkedStateDescription, $checkedStateDescription, $checked)
           $description $state $restriction`,
     },
-    client: {speak: `$name`},
-    comboBoxMenuButton: {
+    [RoleType.CLIENT]: {speak: `$name`},
+    [RoleType.COMBO_BOX_MENU_BUTTON]: {
       speak: `$name $value $role @aria_has_popup
           $if($setSize, @@list_with_items($setSize))
           $state $restriction $description`,
     },
-    date: {enter: `$nameFromNode $role $state $restriction $description`},
-    dialog: {enter: `$nameFromNode $role $description`},
-    genericContainer: {
+    [RoleType.DATE]:
+        {enter: `$nameFromNode $role $state $restriction $description`},
+    [RoleType.DIALOG]: {enter: `$nameFromNode $role $description`},
+    [RoleType.GENERIC_CONTAINER]: {
       enter: `$nameFromNode $description $state`,
       speak: `$nameOrTextContent $description $state`,
     },
-    embeddedObject: {speak: `$name`},
-    grid: {
+    [RoleType.EMBEDDED_OBJECT]: {speak: `$name`},
+    [RoleType.GRID]: {
       speak: `$name $node(activeDescendant) $role $state $restriction
           $description`,
     },
-    group: {
+    [RoleType.GROUP]: {
       enter: `$nameFromNode $roleDescription $state $restriction $description`,
       speak: `$nameOrDescendants $value $state $restriction $roleDescription
           $description`,
       leave: ``,
     },
-    heading: {
+    [RoleType.HEADING]: {
       enter: `!relativePitch(hierarchicalLevel)
           $nameFromNode=
           $if($hierarchicalLevel, @tag_h+$hierarchicalLevel, $role) $state
@@ -217,33 +237,34 @@ OutputRule.RULES = {
           $if($hierarchicalLevel, @tag_h+$hierarchicalLevel, $role) $state
           $restriction $description`,
     },
-    image: {
+    [RoleType.IMAGE]: {
       speak: `$if($name, $name,
           $if($imageAnnotation, $imageAnnotation, $urlFilename))
           $value $state $role $description`,
     },
-    imeCandidate:
+    [RoleType.IME_CANDIDATE]:
         {speak: '$name $phoneticReading @describe_index($posInSet, $setSize)'},
-    inlineTextBox: {speak: `$precedingBullet $name=`},
-    inputTime: {enter: `$nameFromNode $role $state $restriction $description`},
-    labelText: {
+    [RoleType.INLINE_TEXT_BOX]: {speak: `$precedingBullet $name=`},
+    [RoleType.INPUT_TIME]:
+        {enter: `$nameFromNode $role $state $restriction $description`},
+    [RoleType.LABEL_TEXT]: {
       speak: `$name $value $state $restriction $roleDescription $description`,
     },
-    lineBreak: {speak: `$name=`},
-    link: {
+    [RoleType.LINE_BREAK]: {speak: `$name=`},
+    [RoleType.LINK]: {
       enter: `$nameFromNode= $role $state $restriction`,
       speak: `$name $value $state $restriction
           $if($inPageLinkTarget, @internal_link, $role) $description`,
     },
-    list: {
+    [RoleType.LIST]: {
       speak: `$nameFromNode $descendants $role
           @@list_with_items($setSize) $description $state`,
     },
-    listBox: {
+    [RoleType.LIST_BOX]: {
       enter: `$nameFromNode $role @@list_with_items($setSize)
           $restriction $description`,
     },
-    listBoxOption: {
+    [RoleType.LIST_BOX_OPTION]: {
       speak: `$state $name $role @describe_index($posInSet, $setSize)
           $description $restriction
           $nif($selected, @aria_selected_false)`,
@@ -251,29 +272,29 @@ OutputRule.RULES = {
           $description $restriction
           $if($selected, @aria_selected_true, @aria_selected_false)`,
     },
-    listMarker: {speak: `$name`},
-    menu: {
+    [RoleType.LIST_MARKER]: {speak: `$name`},
+    [RoleType.MENU]: {
       enter: `$name $role `,
       speak: `$name $node(activeDescendant)
           $role @@list_with_items($setSize) $description $state $restriction`,
     },
-    menuItem: {
+    [RoleType.MENU_ITEM]: {
       speak: `$name $role $if($hasPopup, @has_submenu)
           @describe_index($posInSet, $setSize) $description $state $restriction`,
     },
-    menuItemCheckBox: {
+    [RoleType.MENU_ITEM_CHECK_BOX]: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $name $role $checked $state $restriction $description
           @describe_index($posInSet, $setSize)`,
     },
-    menuItemRadio: {
+    [RoleType.MENU_ITEM_RADIO]: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $if($checked, @describe_menu_item_radio_selected($name),
           @describe_menu_item_radio_unselected($name)) $state $roleDescription
           $restriction $description
           @describe_index($posInSet, $setSize)`,
     },
-    menuListOption: {
+    [RoleType.MENU_LIST_OPTION]: {
       speak: `$name $role @describe_index($posInSet, $setSize) $state
           $nif($selected, @aria_selected_false)
           $restriction $description`,
@@ -281,63 +302,66 @@ OutputRule.RULES = {
           $if($selected, @aria_selected_true, @aria_selected_false)
           $restriction $description`,
     },
-    paragraph: {speak: `$nameOrDescendants $roleDescription`},
-    radioButton: {
+    [RoleType.PARAGRAPH]: {speak: `$nameOrDescendants $roleDescription`},
+    [RoleType.RADIO_BUTTON]: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $if($checked, @describe_radio_selected($name),
           @describe_radio_unselected($name))
           @describe_index($posInSet, $setSize)
           $roleDescription $description $state $restriction`,
     },
-    rootWebArea: {enter: `$name`, speak: `$if($name, $name, @web_content)`},
-    region: {speak: `$state $nameOrTextContent $description $roleDescription`},
-    row: {
+    [RoleType.ROOT_WEB_AREA]:
+        {enter: `$name`, speak: `$if($name, $name, @web_content)`},
+    [RoleType.REGION]:
+        {speak: `$state $nameOrTextContent $description $roleDescription`},
+    [RoleType.ROW]: {
       startOf: `$node(tableRowHeader) $roleDescription
           $if($hierarchicalLevel, @describe_depth($hierarchicalLevel))`,
       speak: ` $if($hierarchicalLevel, @describe_depth($hierarchicalLevel))
           $name $node(activeDescendant) $value $state $restriction $role
           $if($selected, @aria_selected_true) $description`,
     },
-    staticText: {speak: `$precedingBullet $name= $description`},
-    switch: {
+    [RoleType.STATIC_TEXT]: {speak: `$precedingBullet $name= $description`},
+    [RoleType.SWITCH]: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $if($checked, @describe_switch_on($name),
           @describe_switch_off($name)) $roleDescription
           $description $state $restriction`,
     },
-    tab: {
+    [RoleType.TAB]: {
       speak: `@describe_tab($name) $roleDescription $description
           @describe_index($posInSet, $setSize) $state $restriction
           $if($selected, @aria_selected_true)`,
     },
-    table: {
+    [RoleType.TABLE]: {
       enter: `$roleDescription @table_summary($name,
           $if($ariaRowCount, $ariaRowCount, $tableRowCount),
           $if($ariaColumnCount, $ariaColumnCount, $tableColumnCount))
           $node(tableHeader)`,
     },
-    tabList: {
+    [RoleType.TAB_LIST]: {
       speak: `$name $node(activeDescendant) $state $restriction $role
           $description`,
     },
-    textField: {
+    [RoleType.TEXT_FIELD]: {
       speak: `$name $value
           $if($roleDescription, $roleDescription,
               $if($multiline, @tag_textarea,
                   $if($inputType, $inputType, $role)))
           $description $state $restriction`,
     },
-    timer: {
+    [RoleType.TIMER]: {
       speak: `$nameFromNode $descendants $value $state $role
         $description`,
     },
-    toggleButton: {
+    [RoleType.TOGGLE_BUTTON]: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $name $role $pressed $description $state $restriction`,
     },
-    toolbar: {enter: `$name $role $description $restriction`},
-    tree: {enter: `$name $role @@list_with_items($setSize) $restriction`},
-    treeItem: {
+    [RoleType.TOOLBAR]: {enter: `$name $role $description $restriction`},
+    [RoleType.TREE]:
+        {enter: `$name $role @@list_with_items($setSize) $restriction`},
+    [RoleType.TREE_ITEM]: {
       enter: `$role $expanded $collapsed $restriction
           @describe_index($posInSet, $setSize)
           @describe_depth($hierarchicalLevel)`,
@@ -347,24 +371,28 @@ OutputRule.RULES = {
           @describe_index($posInSet, $setSize)
           @describe_depth($hierarchicalLevel)`,
     },
-    unknown: {speak: ``},
-    window: {
+    [RoleType.UNKNOWN]: {speak: ``},
+    [RoleType.WINDOW]: {
       enter: `@describe_window($name) $description`,
       speak: `@describe_window($name) $description $earcon(OBJECT_OPEN)`,
     },
   },
-  [EventType.MENU_START]:
-      {'default': {speak: `@chrome_menu_opened($name)  $earcon(OBJECT_OPEN)`}},
-  [EventType.MENU_END]:
-      {'default': {speak: `@chrome_menu_closed $earcon(OBJECT_CLOSE)`}},
+  [EventType.MENU_START]: {
+    [CustomRole.DEFAULT]:
+        {speak: `@chrome_menu_opened($name)  $earcon(OBJECT_OPEN)`},
+  },
+  [EventType.MENU_END]: {
+    [CustomRole.DEFAULT]: {speak: `@chrome_menu_closed $earcon(OBJECT_CLOSE)`},
+  },
   [EventType.MENU_LIST_VALUE_CHANGED]: {
-    'default': {
+    [CustomRole.DEFAULT]: {
       speak: `$value $name
           $find({"state": {"selected": true, "invisible": false}},
           @describe_index($posInSet, $setSize)) `,
     },
   },
   [EventType.ALERT]: {
-    default: {speak: `$earcon(ALERT_NONMODAL) $nameOrTextContent $description`},
+    [CustomRole.DEFAULT]:
+        {speak: `$earcon(ALERT_NONMODAL) $nameOrTextContent $description`},
   },
 };

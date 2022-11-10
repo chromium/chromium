@@ -16,6 +16,7 @@ import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
 import {LogType} from '../../common/log_types.js';
 import {Msgs} from '../../common/msgs.js';
+import {CustomRole} from '../../common/role_type.js';
 import {Spannable} from '../../common/spannable.js';
 import {QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_interface.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
@@ -1565,13 +1566,15 @@ export class Output {
       }
 
       const parentRole = roleInfo.inherits;
-      if (eventBlock[formatNode.role] &&
+      if (formatNode.role && eventBlock[formatNode.role] &&
           eventBlock[formatNode.role][formatName]) {
         rule.role = formatNode.role;
-      } else if (eventBlock[parentRole] && eventBlock[parentRole][formatName]) {
+      } else if (
+          parentRole && eventBlock[parentRole] &&
+          eventBlock[parentRole][formatName]) {
         rule.role = parentRole;
       } else {
-        rule.role = 'default';
+        rule.role = CustomRole.DEFAULT;
       }
 
       if (eventBlock[rule.role][formatName]) {
@@ -1628,18 +1631,19 @@ export class Output {
 
     const rule = new OutputRule(type);
     const eventBlock = OutputRule.RULES[rule.event];
-    const parentRole = (OutputRoleInfo[node.role] || {}).inherits || '';
+    const parentRole =
+        (OutputRoleInfo[node.role] || {}).inherits || CustomRole.NO_ROLE;
     /**
      * Use OutputRule.RULES for node.role if exists.
      * If not, use OutputRule.RULES for parentRole if exists.
-     * If not, use OutputRule.RULES for 'default'.
+     * If not, use OutputRule.RULES for CustomRole.DEFAULT.
      */
     if (node.role && (eventBlock[node.role] || {}).speak !== undefined) {
       rule.role = node.role;
     } else if ((eventBlock[parentRole] || {}).speak !== undefined) {
       rule.role = parentRole;
     } else {
-      rule.role = 'default';
+      rule.role = CustomRole.DEFAULT;
     }
     rule.output = 'speak';
     if (this.formatOptions_.braille) {
