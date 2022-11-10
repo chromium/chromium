@@ -58,7 +58,6 @@ InstallableParams ParamsToPerformManifestAndIconFetch() {
   params.valid_primary_icon = true;
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  params.wait_for_worker = !features::SkipInstallServiceWorkerCheck();
   return params;
 }
 
@@ -68,9 +67,6 @@ InstallableParams ParamsToPerformInstallableCheck() {
   params.valid_manifest = true;
   params.has_worker = !features::SkipInstallServiceWorkerCheck();
   params.wait_for_worker = !features::SkipInstallServiceWorkerCheck();
-  params.valid_primary_icon = true;
-  params.prefer_maskable_icon =
-      WebappsIconUtils::DoesAndroidSupportMaskableIcons();
   return params;
 }
 
