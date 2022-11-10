@@ -90,7 +90,7 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
 TEST_F(PrivacyIndicatorsControllerTest, NotificationMetadata) {
   std::string app_id = "test_app_id";
   std::u16string app_name = u"test_app_name";
-  std::string notification_id = kPrivacyIndicatorsNotificationIdPrefix + app_id;
+  std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
   ash::ModifyPrivacyIndicatorsNotification(
       app_id, app_name, /*is_camera_used=*/true, /*is_microphone_used=*/true,
@@ -106,7 +106,7 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationMetadata) {
 
 TEST_F(PrivacyIndicatorsControllerTest, NotificationClickButton) {
   std::string app_id = "test_app_id";
-  std::string notification_id = kPrivacyIndicatorsNotificationIdPrefix + app_id;
+  std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
   ash::ModifyPrivacyIndicatorsNotification(
       app_id, u"test_app_name", /*is_camera_used=*/true,

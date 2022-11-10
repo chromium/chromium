@@ -44,6 +44,10 @@ class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
   const AppActionClosure launch_settings_;
 };
 
+// Get the id of the privacy indicators notification associated with `app_id`.
+std::string ASH_EXPORT
+GetPrivacyIndicatorsNotificationId(const std::string& app_id);
+
 // Create a notification with the customized metadata for privacy indicators.
 // The given scoped_refptr for `delegate` will be passed as a parameter for
 // CreateSystemNotification() in case of adding/updating the notification, can

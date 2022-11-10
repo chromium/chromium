@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -318,9 +319,14 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   void CloseNotification(NotificationType type) const {
     DCHECK_NE(type, kNoNotification);
 
+    auto notification_id = GetNotificationId(vm_type_, type);
+    if (ash::features::IsPrivacyIndicatorsEnabled()) {
+      notification_id =
+          ash::GetPrivacyIndicatorsNotificationId(notification_id);
+    }
+
     NotificationDisplayService::GetForProfile(profile_)->Close(
-        NotificationHandler::Type::TRANSIENT,
-        GetNotificationId(vm_type_, type));
+        NotificationHandler::Type::TRANSIENT, notification_id);
   }
 
   // message_center::NotificationObserver:
