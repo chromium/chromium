@@ -22,15 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Cookie.BackingStoreUpdateResults" enum="BackingStoreResults"
-    expires_after="M82">
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    Whether or not updates to the backing store succeeded or failed, recorded
-    every update.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.ClockSkew.ExpiredWithoutSkew" enum="Boolean"
     expires_after="2023-05-07">
   <owner>kyraseevers@chromium.org</owner>
@@ -796,56 +787,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.TimeDatabaseMigrationToV11" units="ms"
-    expires_after="2020-10-17">
-  <owner>bingler@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v10 cookie database to v11. Migration
-    occurs upon first startup of a browser version with v11 database code.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeDatabaseMigrationToV12" units="ms"
-    expires_after="2020-11-20">
-  <owner>bingler@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v11 cookie database to v12. Migration
-    occurs upon first startup of a browser version with v12 database code.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeDatabaseMigrationToV15" units="ms"
-    expires_after="2022-02-01">
-  <owner>dylancutler@google.com</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v14 cookie database to v15. Migration
-    occurs upon first startup of a browser version with v15 database code.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeDatabaseMigrationToV16" units="ms"
-    expires_after="2022-02-01">
-  <owner>dylancutler@google.com</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v15 cookie database to v16. Migration
-    occurs upon first startup of a browser version with v15 database code.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeDatabaseMigrationToV17" units="ms"
-    expires_after="2022-06-01">
-  <owner>dylancutler@google.com</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v16 cookie database to v17. Migration
-    occurs upon first startup of a browser version with v16 database code.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.TimeDatabaseMigrationToV18" units="ms"
     expires_after="2023-04-16">
   <owner>arichiv@chromium.org</owner>
@@ -854,12 +795,6 @@ chromium-metrics-reviews@google.com.
     The amount of time (ms) to migrate a v17 cookie database to v18. Migration
     occurs upon first startup of a browser version with v17 database code.
   </summary>
-</histogram>
-
-<histogram name="Cookie.TimeDatabaseMigrationToV9" units="ms"
-    expires_after="2018-08-30">
-  <owner>erikchen@chromium.org</owner>
-  <summary>The amount of time (ms) to migrate a v8 database to v9.</summary>
 </histogram>
 
 <histogram name="Cookie.TimeKeyLoadTotalWait" units="ms"

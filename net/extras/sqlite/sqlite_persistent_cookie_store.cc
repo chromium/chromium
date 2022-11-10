@@ -1162,7 +1162,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   }
 
   if (cur_version == 11) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV12");
     sql::Transaction transaction(db());
     if (!transaction.Begin())
       return absl::nullopt;
@@ -1261,8 +1260,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   }
 
   if (cur_version == 14) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV15");
-
     sql::Transaction transaction(db());
     if (!transaction.Begin())
       return absl::nullopt;
@@ -1299,8 +1296,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   }
 
   if (cur_version == 15) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV16");
-
     sql::Transaction transaction(db());
     if (!transaction.Begin())
       return absl::nullopt;
@@ -1337,8 +1332,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   }
 
   if (cur_version == 16) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV17");
-
     sql::Transaction transaction(db());
     if (!transaction.Begin())
       return absl::nullopt;
