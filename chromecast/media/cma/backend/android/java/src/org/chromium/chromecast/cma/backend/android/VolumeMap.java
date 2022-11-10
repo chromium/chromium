@@ -10,8 +10,6 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.util.SparseIntArray;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -23,7 +21,6 @@ import org.chromium.chromecast.media.AudioContentType;
  * and dBFS values. It uses an Android API that was made public in SDK version 28.
  */
 @JNINamespace("chromecast::media")
-@RequiresApi(Build.VERSION_CODES.N)
 public final class VolumeMap {
     private static final String TAG = "VolumeMap";
 

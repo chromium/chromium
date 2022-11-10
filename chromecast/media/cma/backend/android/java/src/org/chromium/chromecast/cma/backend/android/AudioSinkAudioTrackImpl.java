@@ -14,7 +14,6 @@ import android.util.Pair;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -51,7 +50,6 @@ import java.util.Queue;
  *
  */
 @JNINamespace("chromecast::media")
-@RequiresApi(Build.VERSION_CODES.N)
 class AudioSinkAudioTrackImpl {
     private static final String TAG = "AATrack";
     private static final int DEBUG_LEVEL = 0;
@@ -466,11 +464,7 @@ class AudioSinkAudioTrackImpl {
     }
 
     int getUnderrunCount() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return mAudioTrack.getUnderrunCount();
-        }
-        // Using pre-N API.
-        return 0;
+        return mAudioTrack.getUnderrunCount();
     }
 
     /**

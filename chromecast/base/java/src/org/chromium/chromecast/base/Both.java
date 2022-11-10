@@ -4,8 +4,6 @@
 
 package org.chromium.chromecast.base;
 
-import android.annotation.SuppressLint;
-
 import org.chromium.base.Consumer;
 import org.chromium.base.Function;
 
@@ -61,7 +59,6 @@ public class Both<A, B> {
         return false;
     }
 
-    @SuppressLint("NewApi")
     @Override
     public int hashCode() {
         return Objects.hash(this.first, this.second);
