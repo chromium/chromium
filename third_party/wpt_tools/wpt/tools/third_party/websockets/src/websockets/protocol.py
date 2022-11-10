@@ -232,13 +232,9 @@ class WebSocketCommonProtocol(asyncio.Protocol):
         self._paused = False
         self._drain_waiter: Optional[asyncio.Future[None]] = None
 
-        # Argument `loop` is removed from the `Lock`:
-        # > The loop parameter has been removed.
-        # https://docs.python.org/3/whatsnew/3.10.html
-        if sys.version_info[:2] >= (3, 8):
-            self._drain_lock = asyncio.Lock()
-        else:
-            self._drain_lock = asyncio.Lock(loop=loop)
+        self._drain_lock = asyncio.Lock(
+            **({"loop": loop} if sys.version_info[:2] < (3, 8) else {})
+        )
 
         # This class implements the data transfer and closing handshake, which
         # are shared between the client-side and the server-side.
@@ -317,7 +313,7 @@ class WebSocketCommonProtocol(asyncio.Protocol):
                 # in a loop would never call connection_lost(), so it
                 # would not see an error when the socket is closed.
                 await asyncio.sleep(
-                    0, loop=self.loop if sys.version_info[:2] < (3, 8) else None
+                    0, **({"loop": self.loop} if sys.version_info[:2] < (3, 8) else {})
                 )
         await self._drain_helper()
 
@@ -495,7 +491,7 @@ class WebSocketCommonProtocol(asyncio.Protocol):
                 # pop_message_waiter and self.transfer_data_task.
                 await asyncio.wait(
                     [pop_message_waiter, self.transfer_data_task],
-                    loop=self.loop if sys.version_info[:2] < (3, 8) else None,
+                    **({"loop": self.loop} if sys.version_info[:2] < (3, 8) else {}),
                     return_when=asyncio.FIRST_COMPLETED,
                 )
             finally:
@@ -680,7 +676,7 @@ class WebSocketCommonProtocol(asyncio.Protocol):
             await asyncio.wait_for(
                 self.write_close_frame(serialize_close(code, reason)),
                 self.close_timeout,
-                loop=self.loop if sys.version_info[:2] < (3, 8) else None,
+                **({"loop": self.loop} if sys.version_info[:2] < (3, 8) else {}),
             )
         except asyncio.TimeoutError:
             # If the close frame cannot be sent because the send buffers
@@ -701,7 +697,7 @@ class WebSocketCommonProtocol(asyncio.Protocol):
             await asyncio.wait_for(
                 self.transfer_data_task,
                 self.close_timeout,
-                loop=self.loop if sys.version_info[:2] < (3, 8) else None,
+                **({"loop": self.loop} if sys.version_info[:2] < (3, 8) else {}),
             )
         except (asyncio.TimeoutError, asyncio.CancelledError):
             pass
@@ -1122,7 +1118,7 @@ class WebSocketCommonProtocol(asyncio.Protocol):
             while True:
                 await asyncio.sleep(
                     self.ping_interval,
-                    loop=self.loop if sys.version_info[:2] < (3, 8) else None,
+                    **({"loop": self.loop} if sys.version_info[:2] < (3, 8) else {}),
                 )
 
                 # ping() raises CancelledError if the connection is closed,
@@ -1138,7 +1134,7 @@ class WebSocketCommonProtocol(asyncio.Protocol):
                         await asyncio.wait_for(
                             ping_waiter,
                             self.ping_timeout,
-                            loop=self.loop if sys.version_info[:2] < (3, 8) else None,
+                            **({"loop": self.loop} if sys.version_info[:2] < (3, 8) else {}),
                         )
                     except asyncio.TimeoutError:
                         logger.debug("%s ! timed out waiting for pong", self.side)
@@ -1230,7 +1226,7 @@ class WebSocketCommonProtocol(asyncio.Protocol):
                 await asyncio.wait_for(
                     asyncio.shield(self.connection_lost_waiter),
                     self.close_timeout,
-                    loop=self.loop if sys.version_info[:2] < (3, 8) else None,
+                    **({"loop": self.loop} if sys.version_info[:2] < (3, 8) else {}),
                 )
             except asyncio.TimeoutError:
                 pass
