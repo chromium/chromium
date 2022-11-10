@@ -6,9 +6,11 @@ found in the LICENSE file.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:paddingHorizontal="@dimen/ttf_for_payments_sheet_padding_horizontal">
+
   <ImageView
       android:id="@+id/drag_handlebar"
       android:layout_alignParentTop="true"
@@ -27,4 +29,14 @@ found in the LICENSE file.
       android:layout_height="@dimen/ttf_for_payments_product_icon_height"
       android:layout_marginVertical="@dimen/ttf_for_payments_product_icon_margin_vertical"
       android:importantForAccessibility="no"/>
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/sheet_item_list"
+      android:layout_below="@id/branding_icon"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="@dimen/touch_to_fill_payments_sheet_margin"
+      android:clipToPadding="false"
+      android:divider="@null"
+      tools:listitem="@layout/touch_to_fill_credit_card_sheet_item"/>
 </RelativeLayout>
