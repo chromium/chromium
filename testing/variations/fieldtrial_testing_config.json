@@ -9698,6 +9698,34 @@
             ]
         }
     ],
+    "ScaleScrollbarAnimationTiming": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "fade_delay_scaling_factor": "2.0",
+                        "fade_duration_scaling_factor": "0.5"
+                    },
+                    "enable_features": [
+                        "ScaleScrollbarAnimationTiming"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScrollUnification": [
         {
             "platforms": [
