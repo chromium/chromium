@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/element_timing_utils.h"
 
+#include "third_party/blink/renderer/core/frame/local_frame_client_impl.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -26,6 +27,9 @@ gfx::RectF ElementTimingUtils::ComputeIntersectionRect(
                                                 ->FirstFragment()
                                                 .LocalBorderBoxProperties(),
                                             visual_rect);
+  if (!frame->Client()->IsLocalFrameClientImpl()) {
+    return gfx::RectF();
+  }
   WebFrameWidgetImpl* widget =
       WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
   DCHECK(widget);
