@@ -19,8 +19,8 @@ class TestWPTServe(LoggingTestCase):
         self.host = MockHost()
         self.port = TestPort(self.host)
         self.host.filesystem.write_text_file(
-            '/mock-checkout/third_party/wpt_tools/wpt.config.json',
-            '{"ports": {}, "aliases": []}')
+            '/mock-checkout/third_party/blink/web_tests/'
+            'external/wpt/config.json', '{"ports": {}, "aliases": []}')
         # crbug.com/1308877: `web_test_runner.Worker.__del__` can log:
         #   worker/0 cleaning up
         #   worker/0 killing driver

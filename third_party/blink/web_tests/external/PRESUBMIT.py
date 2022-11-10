@@ -69,10 +69,13 @@ def _LintWPT(input_api, output_api):
         linter_path,
         'lint',
         '--repo-root=%s' % wpt_path,
+        # To avoid false positives, do not lint files not upstreamed from
+        # Chromium.
         '--ignore-glob=*-expected.txt',
         '--ignore-glob=*.ini',
         '--ignore-glob=*DIR_METADATA',
         '--ignore-glob=*OWNERS',
+        '--ignore-glob=config.json',
         '--paths-file=%s' % paths_name,
     ]
 

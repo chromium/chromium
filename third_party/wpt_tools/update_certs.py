@@ -42,25 +42,27 @@ def main():
         if subprocess.call('git add -v ' + os.path.join(cert_dir, '*'), shell=True) != 0:
             sys.exit(1)
 
-        print('\n===> Updating wpt.config.json and base.py...')
+        print('\n===> Updating config.json and base.py...')
         key_basename = os.path.basename(key_path)
         pem_basename = os.path.basename(pem_path)
-        config_path = os.path.join(_THIS_DIR, 'wpt.config.json')
-        if subprocess.call(['sed', '-i', '', '-E',
+        config_path = os.path.join(_THIS_DIR, os.pardir, 'blink', 'web_tests',
+                                   'external', 'wpt', 'config.json')
+        if subprocess.call(['sed', '-i', '-E',
                             's%/[^/]+[.]key%/{key}%g;s%/[^/]+[.]pem%/{pem}%g'.format(
                                 key=key_basename, pem=pem_basename),
                             config_path]) != 0:
             sys.exit(1)
-        base_py_path = os.path.join(_THIS_DIR, '..', '..',
-                                    'web_tests', 'port', 'base.py')
+        base_py_path = os.path.join(_THIS_DIR, os.pardir, 'blink', 'tools',
+                                    'blinkpy', 'web_tests', 'port', 'base.py')
         proc = subprocess.Popen('openssl x509 -noout -pubkey -in ' + pem_path +
                                 ' | openssl pkey -pubin -outform der'
                                 ' | openssl dgst -sha256 -binary'
                                 ' | base64', shell=True, stdout=subprocess.PIPE)
         base64, _ = proc.communicate()
-        if subprocess.call(['sed', '-i', '', '-E',
+        assert base64.isascii()
+        if subprocess.call(['sed', '-i', '-E',
                             's%WPT_FINGERPRINT = \'.*\'%WPT_FINGERPRINT = \'' +
-                            base64.strip() + '\'%', base_py_path]) != 0:
+                            base64.decode().strip() + '\'%', base_py_path]) != 0:
             sys.exit(1)
         if subprocess.call(['git', 'add', '-v', config_path, base_py_path]) != 0:
             sys.exit(1)
