@@ -71,6 +71,18 @@ const char kLastActiveUser[] = "LastActiveUser";
 // one regular user logging out and a different regular user logging in.
 const int kLogoutToLoginDelayMaxSec = 1800;
 
+// Stores a dictionary that describes who is the owner user of the device.
+// If present, currently always contains "type": 1 (i.e. kGoogleEmail) and
+// "account" that holds of the email of the owner user.
+const char kOwnerAccount[] = "owner.account";
+// Inner fields for the kOwnerAccount dict.
+constexpr char kOwnerAccountType[] = "type";
+constexpr char kOwnerAccountIdentity[] = "account";
+
+// Used for serializing information about the owner user. The existing entries
+// should never be deleted / renumbered.
+enum class OwnerAccountType { kGoogleEmail = 1 };
+
 // This reads integer value from kUserType Local State preference and
 // interprets it as UserType. It is used in initial users load.
 UserType GetStoredUserType(const base::Value::Dict& prefs_user_types,
@@ -135,6 +147,7 @@ void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kUserForceOnlineSignin);
   registry->RegisterDictionaryPref(kUserType);
   registry->RegisterStringPref(kLastActiveUser, std::string());
+  registry->RegisterDictionaryPref(kOwnerAccount);
 
   UserDirectoryIntegrityManager::RegisterLocalStatePrefs(registry);
   KnownUser::RegisterPrefs(registry);
@@ -526,6 +539,33 @@ void UserManagerBase::SaveUserType(const User* user) {
   ScopedDictPrefUpdate user_type_update(GetLocalState(), kUserType);
   user_type_update->Set(user->GetAccountId().GetAccountIdKey(),
                         static_cast<int>(user->GetType()));
+  GetLocalState()->CommitPendingWrite();
+}
+
+absl::optional<std::string> UserManagerBase::GetOwnerEmail() {
+  const base::Value::Dict& owner = GetLocalState()->GetDict(kOwnerAccount);
+  absl::optional<int> type = owner.FindInt(kOwnerAccountType);
+  if (!type.has_value() || (static_cast<OwnerAccountType>(type.value())) !=
+                               OwnerAccountType::kGoogleEmail) {
+    return absl::nullopt;
+  }
+
+  const std::string* email = owner.FindString(kOwnerAccountIdentity);
+  if (!email) {
+    return absl::nullopt;
+  }
+  return *email;
+}
+
+void UserManagerBase::RecordOwner(const AccountId& owner) {
+  base::Value::Dict owner_dict;
+  owner_dict.Set(kOwnerAccountType,
+                 static_cast<int>(OwnerAccountType::kGoogleEmail));
+  owner_dict.Set(kOwnerAccountIdentity, owner.GetUserEmail());
+  GetLocalState()->SetDict(kOwnerAccount, std::move(owner_dict));
+  // The information about the owner might be needed for recovery if Chrome
+  // crashes before establishing ownership, so it needs to be written on disk as
+  // soon as possible.
   GetLocalState()->CommitPendingWrite();
 }
 

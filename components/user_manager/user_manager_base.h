@@ -114,6 +114,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                             const std::string& display_email) override;
   UserType GetUserType(const AccountId& account_id) override;
   void SaveUserType(const User* user) override;
+  absl::optional<std::string> GetOwnerEmail() override;
+  void RecordOwner(const AccountId& owner) override;
   void UpdateUserAccountData(const AccountId& account_id,
                              const UserAccountData& account_data) override;
   bool IsCurrentUserOwner() const override;

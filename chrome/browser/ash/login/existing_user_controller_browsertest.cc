@@ -1467,6 +1467,12 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
   // Verify that no managed warning is shown for an unmanaged user.
   EXPECT_FALSE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       not_managed_user_.account_id));
+
+  // Verify that the owner user gets saved into local state.
+  absl::optional<std::string> owner =
+      user_manager::UserManager::Get()->GetOwnerEmail();
+  ASSERT_TRUE(owner.has_value());
+  EXPECT_EQ(owner.value(), not_managed_user_.account_id.GetUserEmail());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

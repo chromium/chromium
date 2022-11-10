@@ -46,6 +46,8 @@ namespace ash {
 // TODO(https://crbug.com/1164001): remove after the class is migrated
 using ::chromeos::SystemSaltGetter;
 
+static constexpr char kEmail[] = "user@example.com";
+
 class UnittestRemoveUserDelegate : public user_manager::RemoveUserDelegate {
  public:
   explicit UnittestRemoveUserDelegate(const AccountId& expected_account_id)
@@ -415,6 +417,24 @@ TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {
       user_manager::ProfileRequiresPolicy::kUnknown,
       known_user.GetProfileRequiresPolicy(owner_account_id_at_invalid_domain_));
   ResetUserManager();
+}
+
+// Test that |RecordOwner| can save owner email into local state and
+// |GetOwnerEmail| can retrieve it.
+TEST_F(UserManagerTest, RecordOwner) {
+  // Initially `GetOwnerEmail` should return a nullopt.
+  absl::optional<std::string> owner =
+      user_manager::UserManager::Get()->GetOwnerEmail();
+  EXPECT_FALSE(owner.has_value());
+
+  // Save a user as an owner.
+  user_manager::UserManager::Get()->RecordOwner(
+      AccountId::FromUserEmail(kEmail));
+
+  // Now `GetOwnerEmail` should return the email of the user above.
+  owner = user_manager::UserManager::Get()->GetOwnerEmail();
+  ASSERT_TRUE(owner.has_value());
+  EXPECT_EQ(owner.value(), kEmail);
 }
 
 }  // namespace ash
