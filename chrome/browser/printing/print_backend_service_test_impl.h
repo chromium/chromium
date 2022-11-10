@@ -20,8 +20,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/containers/queue.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "chrome/services/printing/public/mojom/printer_xml_parser.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "printing/mojom/print.mojom.h"
 #endif
 
@@ -35,7 +33,6 @@ class Size;
 namespace printing {
 
 #if BUILDFLAG(IS_WIN)
-class PrinterXmlParserImpl;
 struct RenderPrintedPageData;
 #endif
 
@@ -101,8 +98,6 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   void set_rendering_delayed_until_page(uint32_t page_number) {
     rendering_delayed_until_page_number_ = page_number;
   }
-
-  mojo::PendingRemote<mojom::PrinterXmlParser> GetPrinterXmlParserRemote();
 #endif
 
  private:
@@ -132,9 +127,6 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
 
   // The queue of pages whose rendering processing is being delayed.
   base::queue<std::unique_ptr<RenderPrintedPageData>> delayed_rendering_pages_;
-
-  // Used to parse XPS XML capabilities.
-  std::unique_ptr<PrinterXmlParserImpl> xml_parser_;
 #endif
 
   scoped_refptr<TestPrintBackend> test_print_backend_;

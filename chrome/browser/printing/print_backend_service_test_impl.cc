@@ -14,14 +14,6 @@
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "printing/backend/test_print_backend.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <memory>
-
-#include "chrome/browser/printing/printer_xml_parser_impl.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "printing/printing_features.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace printing {
 
 #if BUILDFLAG(IS_WIN)
@@ -177,15 +169,6 @@ void PrintBackendServiceTestImpl::TerminateConnection() {
   receiver_.reset();
 }
 
-#if BUILDFLAG(IS_WIN)
-mojo::PendingRemote<mojom::PrinterXmlParser>
-PrintBackendServiceTestImpl::GetPrinterXmlParserRemote() {
-  if (!xml_parser_)
-    xml_parser_ = std::make_unique<PrinterXmlParserImpl>();
-  return xml_parser_->GetRemote();
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 // static
 std::unique_ptr<PrintBackendServiceTestImpl>
 PrintBackendServiceTestImpl::LaunchForTesting(
@@ -199,11 +182,6 @@ PrintBackendServiceTestImpl::LaunchForTesting(
   auto service = base::WrapUnique(
       new PrintBackendServiceTestImpl(std::move(receiver), std::move(backend)));
   service->Init(/*locale=*/std::string());
-
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kReadPrinterCapabilitiesWithXps))
-    service->BindPrinterXmlParser(service->GetPrinterXmlParserRemote());
-#endif  // BUILDFLAG(IS_WIN)
 
   // Register this test version of print backend service to be used instead of
   // launching instances out-of-process on-demand.
