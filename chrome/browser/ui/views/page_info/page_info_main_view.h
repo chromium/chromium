@@ -25,7 +25,7 @@ class LabelButton;
 
 class ChromePageInfoUiDelegate;
 class ChosenObjectView;
-class PageInfoHoverButton;
+class RichHoverButton;
 class PageInfoNavigationHandler;
 class PageInfoSecurityContentView;
 class PermissionToggleRowView;
@@ -133,13 +133,13 @@ class PageInfoMainView : public views::View,
   std::u16string details_text_ = std::u16string();
 
   // The button that opens the "Connection" subpage.
-  raw_ptr<PageInfoHoverButton, DanglingUntriaged> connection_button_ = nullptr;
+  raw_ptr<RichHoverButton, DanglingUntriaged> connection_button_ = nullptr;
 
   // The view that contains the certificate, cookie, and permissions sections.
   raw_ptr<views::View> site_settings_view_ = nullptr;
 
   // The button that opens the "Cookies" dialog.
-  raw_ptr<PageInfoHoverButton> cookie_button_ = nullptr;
+  raw_ptr<RichHoverButton> cookie_button_ = nullptr;
 
   // The button that opens up "Site Settings".
   raw_ptr<views::View> site_settings_link_ = nullptr;

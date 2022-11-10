@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/page_info/core/page_info_history_data_source.h"
@@ -55,7 +55,7 @@ void PageInfoHistoryController::UpdateRow(base::Time last_visit) {
 std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
     std::u16string last_visit) {
   // TODO(crbug.com/1275042): Use correct icons and strings (tooltip).
-  return std::make_unique<PageInfoHoverButton>(
+  return std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoHistoryController::OpenHistoryPage,
                           weak_factory_.GetWeakPtr()),
       PageInfoViewFactory::GetHistoryIcon(), IDS_PAGE_INFO_HISTORY, last_visit,

@@ -28,11 +28,11 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
-#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -243,19 +243,19 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   std::u16string GetCertificateButtonTitle() const {
     // Only PageInfoBubbleViewBrowserTest can access certificate_button_ in
     // PageInfoBubbleView, or title() in HoverButton.
-    auto* certificate_button = static_cast<PageInfoHoverButton*>(
+    auto* certificate_button = static_cast<RichHoverButton*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER));
-    return certificate_button->title()->GetText();
+    return certificate_button->GetTitleViewForTesting()->GetText();
   }
 
   std::u16string GetCertificateButtonSubtitle() const {
-    auto* certificate_button = static_cast<PageInfoHoverButton*>(
+    auto* certificate_button = static_cast<RichHoverButton*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER));
-    return certificate_button->subtitle()->GetText();
+    return certificate_button->GetSubTitleViewForTesting()->GetText();
   }
 
   const std::u16string GetPageInfoBubbleViewDetailText() {
@@ -277,7 +277,9 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION);
-    return static_cast<PageInfoHoverButton*>(button)->title()->GetText();
+    return static_cast<RichHoverButton*>(button)
+        ->GetTitleViewForTesting()
+        ->GetText();
   }
 
   void SetupSentimentServiceExpectations(bool interacted) {

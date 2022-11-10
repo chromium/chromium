@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
-#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
@@ -170,8 +170,8 @@ class PageInfoBubbleViewTestApi {
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS);
   }
 
-  PageInfoHoverButton* certificate_button() const {
-    return static_cast<PageInfoHoverButton*>(bubble_delegate_->GetViewByID(
+  RichHoverButton* certificate_button() const {
+    return static_cast<RichHoverButton*>(bubble_delegate_->GetViewByID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER));
   }
@@ -234,7 +234,9 @@ class PageInfoBubbleViewTestApi {
     auto* button = bubble_delegate_->GetViewByID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION);
-    return static_cast<PageInfoHoverButton*>(button)->title()->GetText();
+    return static_cast<RichHoverButton*>(button)
+        ->GetTitleViewForTesting()
+        ->GetText();
   }
 
   std::u16string GetSecuritySummaryText() {
@@ -293,8 +295,8 @@ class PageInfoBubbleViewTestApi {
 
   std::u16string GetCertificateButtonSubtitleText() const {
     EXPECT_TRUE(certificate_button());
-    EXPECT_TRUE(certificate_button()->subtitle());
-    return certificate_button()->subtitle()->GetText();
+    EXPECT_TRUE(certificate_button()->GetSubTitleViewForTesting());
+    return certificate_button()->GetSubTitleViewForTesting()->GetText();
   }
 
   const views::View::Views& GetChosenObjectChildren() {

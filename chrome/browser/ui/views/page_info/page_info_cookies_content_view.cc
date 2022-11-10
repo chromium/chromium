@@ -105,7 +105,7 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
   // Create the cookie button, with a temporary value for the subtitle text
   // since the site count is not yet known.
   cookies_dialog_button_ = cookies_buttons_container_view_->AddChildView(
-      std::make_unique<PageInfoHoverButton>(
+      std::make_unique<RichHoverButton>(
           base::BindRepeating(
               [](PageInfoCookiesContentView* view) {
                 view->presenter_->OpenCookiesDialog();
@@ -342,7 +342,7 @@ void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
   // Create the fps_button with temporary values for title and subtitle
   // as we don't have data yet, it will be updated.
   fps_button_ = cookies_buttons_container_view_->AddChildView(
-      std::make_unique<PageInfoHoverButton>(
+      std::make_unique<RichHoverButton>(
           base::BindRepeating(
               &PageInfoCookiesContentView::FpsSettingsButtonClicked,
               base::Unretained(this)),

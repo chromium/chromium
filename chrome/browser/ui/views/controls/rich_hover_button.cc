@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,7 +28,7 @@ namespace {
 std::unique_ptr<views::View> CreateIconView(const ui::ImageModel& icon_image) {
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(icon_image);
-  // Make sure hovering over the icon also hovers the `PageInfoHoverButton`.
+  // Make sure hovering over the icon also hovers the `RichHoverButton`.
   icon->SetCanProcessEventsWithinSubtree(false);
   // Don't cover |icon| when the ink drops are being painted.
   icon->SetPaintToLayer();
@@ -38,7 +38,7 @@ std::unique_ptr<views::View> CreateIconView(const ui::ImageModel& icon_image) {
 
 }  // namespace
 
-PageInfoHoverButton::PageInfoHoverButton(
+RichHoverButton::RichHoverButton(
     views::Button::PressedCallback callback,
     const ui::ImageModel& main_image_icon,
     int title_resource_id,
@@ -56,10 +56,7 @@ PageInfoHoverButton::PageInfoHoverButton(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   views::style::TextContext text_context =
       views::style::CONTEXT_DIALOG_BODY_TEXT;
-  // TODO(olesiamarukhno): Unify the column width through all views in the
-  // page info (PageInfoHoverButton, PermissionSelectorRow, ChosenObjectView,
-  // SecurityInformationView). Currently, it isn't same everywhere and it
-  // causes label text next to icon not to be aligned by 1 or 2px.
+
   views::TableLayout* table_layout =
       SetLayoutManager(std::make_unique<views::TableLayout>());
   table_layout
@@ -158,8 +155,8 @@ PageInfoHoverButton::PageInfoHoverButton(
   Layout();
 }
 
-void PageInfoHoverButton::SetTitleText(int title_resource_id,
-                                       const std::u16string& secondary_text) {
+void RichHoverButton::SetTitleText(int title_resource_id,
+                                   const std::u16string& secondary_text) {
   DCHECK(title_);
   title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
   if (!secondary_text.empty()) {
@@ -168,23 +165,31 @@ void PageInfoHoverButton::SetTitleText(int title_resource_id,
   UpdateAccessibleName();
 }
 
-void PageInfoHoverButton::SetTitleText(const std::u16string& title_text) {
+void RichHoverButton::SetTitleText(const std::u16string& title_text) {
   DCHECK(title_);
   title_->SetText(title_text);
   UpdateAccessibleName();
 }
 
-void PageInfoHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
+void RichHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
   DCHECK(subtitle_);
   subtitle_->SetText(subtitle_text);
   UpdateAccessibleName();
 }
 
-void PageInfoHoverButton::SetSubtitleMultiline(bool is_multiline) {
+void RichHoverButton::SetSubtitleMultiline(bool is_multiline) {
   subtitle()->SetMultiLine(is_multiline);
 }
 
-void PageInfoHoverButton::UpdateAccessibleName() {
+const views::StyledLabel* RichHoverButton::GetTitleViewForTesting() const {
+  return title_;
+}
+
+const views::Label* RichHoverButton::GetSubTitleViewForTesting() const {
+  return subtitle_;
+}
+
+void RichHoverButton::UpdateAccessibleName() {
   const std::u16string title_text =
       secondary_label_ == nullptr
           ? title()->GetText()
@@ -197,22 +202,22 @@ void PageInfoHoverButton::UpdateAccessibleName() {
   HoverButton::SetAccessibleName(accessible_name);
 }
 
-gfx::Size PageInfoHoverButton::CalculatePreferredSize() const {
+gfx::Size RichHoverButton::CalculatePreferredSize() const {
   return Button::CalculatePreferredSize();
 }
 
-int PageInfoHoverButton::GetHeightForWidth(int w) const {
+int RichHoverButton::GetHeightForWidth(int w) const {
   return Button::GetHeightForWidth(w);
 }
 
-void PageInfoHoverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+void RichHoverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   return Button::OnBoundsChanged(previous_bounds);
 }
 
-views::View* PageInfoHoverButton::GetTooltipHandlerForPoint(
+views::View* RichHoverButton::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return Button::GetTooltipHandlerForPoint(point);
 }
 
-BEGIN_METADATA(PageInfoHoverButton, HoverButton)
+BEGIN_METADATA(RichHoverButton, HoverButton)
 END_METADATA

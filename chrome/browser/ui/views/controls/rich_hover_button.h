@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_
 
 #include <string>
 
@@ -24,14 +24,12 @@ class StyledLabel;
 class View;
 }  // namespace views
 
-class PageInfoBubbleViewBrowserTest;
-
 // Hoverable button containing icon, styled title, and (multi-line) subtitle.
-// 'PageInfoHoverButton' inherits the interaction behavior from 'HoverButton'
+// 'RichHoverButton' inherits the interaction behavior from 'HoverButton'
 // but sets up its own layout and content.
-class PageInfoHoverButton : public HoverButton {
+class RichHoverButton : public HoverButton {
  public:
-  METADATA_HEADER(PageInfoHoverButton);
+  METADATA_HEADER(RichHoverButton);
 
   // Creates a hoverable button that displays the string given by
   // |title_resource_id| and |secondary_text| and displays the latter part in
@@ -44,7 +42,7 @@ class PageInfoHoverButton : public HoverButton {
   // |-------------------------------------------------------------------------|
   // |      | |subtitle_text|                                                  |
   // *-------------------------------------------------------------------------*
-  PageInfoHoverButton(
+  RichHoverButton(
       views::Button::PressedCallback callback,
       const ui::ImageModel& main_image_icon,
       int title_resource_id,
@@ -55,10 +53,10 @@ class PageInfoHoverButton : public HoverButton {
       absl::optional<ui::ImageModel> action_image_icon = absl::nullopt,
       absl::optional<ui::ImageModel> state_icon = absl::nullopt);
 
-  PageInfoHoverButton(const PageInfoHoverButton&) = delete;
-  PageInfoHoverButton& operator=(const PageInfoHoverButton&) = delete;
+  RichHoverButton(const RichHoverButton&) = delete;
+  RichHoverButton& operator=(const RichHoverButton&) = delete;
 
-  ~PageInfoHoverButton() override = default;
+  ~RichHoverButton() override = default;
 
   // Updates the title text, and applies the secondary style to the secondary
   // text portion, if present.
@@ -71,6 +69,9 @@ class PageInfoHoverButton : public HoverButton {
 
   void SetSubtitleMultiline(bool is_multiline);
 
+  const views::StyledLabel* GetTitleViewForTesting() const;
+  const views::Label* GetSubTitleViewForTesting() const;
+
  protected:
   views::StyledLabel* title() const { return title_; }
   views::Label* subtitle() const { return subtitle_; }
@@ -81,15 +82,11 @@ class PageInfoHoverButton : public HoverButton {
   int GetHeightForWidth(int w) const override;
 
  private:
-  friend class PageInfoBubbleViewBrowserTest;
-  friend class test::PageInfoBubbleViewTestApi;
-
   void UpdateAccessibleName();
 
   raw_ptr<views::StyledLabel> title_ = nullptr;
-  // Shows secondary text on right side. Used for page info v2 only.
   raw_ptr<views::Label> secondary_label_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_

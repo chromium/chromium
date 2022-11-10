@@ -26,7 +26,10 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   auto hover_button_insets = layout_provider->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
-
+  // TODO(olesiamarukhno): Unify the column width through all views in the
+  // page info (RichHoverButton, PermissionSelectorRow, ChosenObjectView,
+  // SecurityInformationView). Currently, it isn't same everywhere and it
+  // causes label text next to icon not to be aligned by 1 or 2px.
   views::TableLayout* layout =
       SetLayoutManager(std::make_unique<views::TableLayout>());
   layout->AddPaddingColumn(views::TableLayout::kFixedSize, side_margin)

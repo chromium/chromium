@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_history_controller.h"
-#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -108,7 +108,7 @@ PageInfoMainView::PageInfoMainView(
   int tooltip_text_id = 0;
   if (ui_delegate_->ShouldShowSiteSettings(&link_text_id, &tooltip_text_id) &&
       !base::FeatureList::IsEnabled(page_info::kPageInfoHideSiteSettings)) {
-    site_settings_link_ = AddChildView(std::make_unique<PageInfoHoverButton>(
+    site_settings_link_ = AddChildView(std::make_unique<RichHoverButton>(
         base::BindRepeating(
             [](PageInfoMainView* view) {
               view->HandleMoreInfoRequest(view->site_settings_link_);
@@ -149,7 +149,7 @@ void PageInfoMainView::EnsureCookieInfo() {
     if (base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
       // Create a simple cookie button, that opens a cookies subpage.
       cookie_button_ = site_settings_view_->AddChildView(std::make_unique<
-                                                         PageInfoHoverButton>(
+                                                         RichHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
           icon, IDS_PAGE_INFO_COOKIES_HEADER, std::u16string(),
@@ -160,7 +160,7 @@ void PageInfoMainView::EnsureCookieInfo() {
       // Create the cookie button, leaving the secondary text blank since the
       // cookie count is not yet known.
       cookie_button_ = site_settings_view_->AddChildView(std::make_unique<
-                                                         PageInfoHoverButton>(
+                                                         RichHoverButton>(
           base::BindRepeating(
               [](PageInfoMainView* view) {
                 view->HandleMoreInfoRequest(view->cookie_button_);
@@ -356,7 +356,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // is the bubble view which is the owner of this view and therefore will
     // always exist when this view exists.
     connection_button_ = security_container_view_->AddChildView(
-        std::make_unique<PageInfoHoverButton>(
+        std::make_unique<RichHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
                                 base::Unretained(navigation_handler_)),
             PageInfoViewFactory::GetConnectionSecureIcon(), 0, std::u16string(),
@@ -575,7 +575,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
       ->SetOrientation(views::LayoutOrientation::kVertical);
   about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
 
-  PageInfoHoverButton* about_this_site_button = nullptr;
+  RichHoverButton* about_this_site_button = nullptr;
 
   if (page_info::IsMoreAboutThisSiteFeatureEnabled()) {
     const auto& description =
@@ -584,8 +584,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
             : l10n_util::GetStringUTF16(
                   IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
 
-    about_this_site_button = about_this_site_section->AddChildView(
-        std::make_unique<PageInfoHoverButton>(
+    about_this_site_button =
+        about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
             base::BindRepeating(
                 [](PageInfoMainView* view, GURL more_info_url,
                    bool has_description, const ui::Event& event) {
@@ -605,8 +605,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
     // The kPageInfoAboutThisSiteDescriptionPlaceholder feature must only be
     // enabled together with kPageInfoAboutThisSiteMoreInfo
     DCHECK(info.has_description());
-    about_this_site_button = about_this_site_section->AddChildView(
-        std::make_unique<PageInfoHoverButton>(
+    about_this_site_button =
+        about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
             base::BindRepeating(
                 [](PageInfoMainView* view,
                    const page_info::proto::SiteInfo& info) {
@@ -632,18 +632,17 @@ PageInfoMainView::CreateAdPersonalizationSection() {
   ads_personalization_section
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  ads_personalization_section->AddChildView(
-      std::make_unique<PageInfoHoverButton>(
-          base::BindRepeating(
-              [](PageInfoMainView* view) {
-                view->navigation_handler_->OpenAdPersonalizationPage();
-              },
-              this),
-          PageInfoViewFactory::GetAdPersonalizationIcon(),
-          IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER, std::u16string(),
-          PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_TOOLTIP),
-          std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()));
+  ads_personalization_section->AddChildView(std::make_unique<RichHoverButton>(
+      base::BindRepeating(
+          [](PageInfoMainView* view) {
+            view->navigation_handler_->OpenAdPersonalizationPage();
+          },
+          this),
+      PageInfoViewFactory::GetAdPersonalizationIcon(),
+      IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER, std::u16string(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_TOOLTIP),
+      std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()));
 
   return ads_personalization_section;
 }

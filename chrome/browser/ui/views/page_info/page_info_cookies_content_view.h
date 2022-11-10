@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
 
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
-#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -76,7 +76,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   raw_ptr<views::View> cookies_buttons_container_view_ = nullptr;
 
   // The button that opens Cookie Dialog and displays a number of allowed sites.
-  raw_ptr<PageInfoHoverButton> cookies_dialog_button_ = nullptr;
+  raw_ptr<RichHoverButton> cookies_dialog_button_ = nullptr;
 
   // The view that contains toggle for blocking third party cookies
   // and displays information with a number of blocked sites.
@@ -95,7 +95,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // The button that displays First-Party-Set information with a link to
   // 'All sites' settings page.
-  raw_ptr<PageInfoHoverButton> fps_button_ = nullptr;
+  raw_ptr<RichHoverButton> fps_button_ = nullptr;
 
   // Used to keep track if it's the first time for this instance recording the
   // FPS info histogram. Needed to not record the histogram each time page info

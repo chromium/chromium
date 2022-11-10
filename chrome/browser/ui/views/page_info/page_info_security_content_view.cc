@@ -111,7 +111,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
       RemoveChildViewT(certificate_button_.get());
     }
     certificate_button_ = AddChildView(
-        std::make_unique<PageInfoHoverButton>(
+        std::make_unique<RichHoverButton>(
             base::BindRepeating(
                 [](PageInfoSecurityContentView* view) {
                   view->presenter_->OpenCertificateDialog(
