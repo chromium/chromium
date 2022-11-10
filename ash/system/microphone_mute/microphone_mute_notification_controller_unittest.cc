@@ -196,10 +196,10 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
   SetNumberOfActiveInputStreams(1);
   EXPECT_FALSE(GetNotification());
 
-  // Mute the mic, a notification should be shown, but not as a popup.
+  // Mute the mic, a notification should be shown and also popup.
   MuteMicrophone();
   EXPECT_TRUE(GetNotification());
-  EXPECT_FALSE(GetPopupNotification());
+  EXPECT_TRUE(GetPopupNotification());
 }
 
 TEST_F(MicrophoneMuteNotificationControllerTest,
@@ -365,9 +365,9 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
   SetNumberOfActiveInputStreams(1);
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
-  // Notification should be shown, but not as a popup.
+  // Notification should be shown and also popup.
   EXPECT_TRUE(GetNotification());
-  EXPECT_FALSE(GetPopupNotification());
+  EXPECT_TRUE(GetPopupNotification());
 
   // Add another audio input stream, and verify the notification popup shows.
   LaunchApp(u"junior1");
@@ -391,6 +391,43 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
 
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest, MetricCollection) {
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
+                true),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
+                false),
+            0);
+
+  MicrophoneMuteNotificationController::SetAndLogMicrophoneMute(true);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
+                true),
+            0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
+                false),
+            1);
+
+  MicrophoneMuteNotificationController::SetAndLogMicrophoneMute(false);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
+                true),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
+                false),
+            1);
 }
 
 }  // namespace ash

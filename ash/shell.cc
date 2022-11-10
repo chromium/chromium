@@ -1035,9 +1035,6 @@ void Shell::Init(
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.
-  if (features::IsCrosPrivacyHubEnabled()) {
-    privacy_hub_controller_ = std::make_unique<PrivacyHubController>();
-  }
   touch_devices_controller_ = std::make_unique<TouchDevicesController>();
   detachable_base_handler_ =
       std::make_unique<DetachableBaseHandler>(local_state_);
@@ -1410,6 +1407,11 @@ void Shell::Init(
 
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();
+
+  if (features::IsCrosPrivacyHubEnabled()) {
+    // One of the subcontrollers accesses the SystemNotificationController.
+    privacy_hub_controller_ = std::make_unique<PrivacyHubController>();
+  }
 
   // WmModeController should be created before initializing the window tree
   // hosts, since the latter will initialize the shelf on each display, which

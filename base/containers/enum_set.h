@@ -263,6 +263,11 @@ class EnumSet {
     return (enums_ & other.enums_) == other.enums_;
   }
 
+  // Returns true if the given set contains any value of our set.
+  bool HasAny(EnumSet other) const {
+    return (enums_ & other.enums_).count() > 0;
+  }
+
   // Returns true iff our set is empty.
   bool Empty() const { return !enums_.any(); }
 

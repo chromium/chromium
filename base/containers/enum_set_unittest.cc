@@ -232,6 +232,23 @@ TEST_F(EnumSetTest, HasAll) {
   EXPECT_TRUE(enums3.HasAll(enums3));
 }
 
+TEST_F(EnumSetTest, HasAny) {
+  const TestEnumSet enums1(TestEnum::TEST_4, TestEnum::TEST_5);
+  const TestEnumSet enums2(TestEnum::TEST_3, TestEnum::TEST_4);
+  const TestEnumSet enums3(TestEnum::TEST_1, TestEnum::TEST_2);
+  EXPECT_TRUE(enums1.HasAny(enums1));
+  EXPECT_TRUE(enums1.HasAny(enums2));
+  EXPECT_FALSE(enums1.HasAny(enums3));
+
+  EXPECT_TRUE(enums2.HasAny(enums1));
+  EXPECT_TRUE(enums2.HasAny(enums2));
+  EXPECT_FALSE(enums2.HasAny(enums3));
+
+  EXPECT_FALSE(enums3.HasAny(enums1));
+  EXPECT_FALSE(enums3.HasAny(enums2));
+  EXPECT_TRUE(enums3.HasAny(enums3));
+}
+
 TEST_F(EnumSetTest, Iterators) {
   const TestEnumSet enums1(TestEnum::TEST_4, TestEnum::TEST_5);
   TestEnumSet enums2;

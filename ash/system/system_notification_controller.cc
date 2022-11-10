@@ -15,6 +15,7 @@
 #include "ash/system/network/wifi_toggle_notification_controller.h"
 #include "ash/system/power/power_notification_controller.h"
 #include "ash/system/privacy/screen_security_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/session/session_limit_notification_controller.h"
 #include "ash/system/tracing_notification_controller.h"
 #include "ash/system/update/update_notification_controller.h"
@@ -39,6 +40,8 @@ SystemNotificationController::SystemNotificationController()
   if (features::IsMicMuteNotificationsEnabled()) {
     microphone_mute_ = std::make_unique<MicrophoneMuteNotificationController>();
   }
+  privacy_hub_ = std::make_unique<PrivacyHubNotificationController>(
+      microphone_mute_.get());
 
   if (features::IsSimLockPolicyEnabled()) {
     managed_sim_lock_notifier_ =

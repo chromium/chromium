@@ -15,7 +15,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
-#include "base/bind.h"
+#include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
+#include "ash/system/system_notification_controller.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -118,7 +119,11 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
       pref_val == CameraSWPrivacySwitchSetting::kDisabled) {
     // Show notification in case we switch off the camera when the camera is
     // used by an app.
-    ShowCameraOffNotification();
+    Shell::Get()
+        ->system_notification_controller()
+        ->privacy_hub()
+        ->ShowSensorDisabledNotification(
+            PrivacyHubNotificationController::Sensor::kCamera);
   }
 }
 
@@ -129,6 +134,17 @@ CameraPrivacySwitchController::GetUserSwitchPreference() {
 
   return allowed ? CameraSWPrivacySwitchSetting::kEnabled
                  : CameraSWPrivacySwitchSetting::kDisabled;
+}
+
+// static
+void CameraPrivacySwitchController::SetAndLogCameraPreferenceFromNotification(
+    const bool enabled) {
+  PrefService* const pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (pref_service) {
+    pref_service->SetBoolean(prefs::kUserCameraAllowed, enabled);
+    privacy_hub_metrics::LogCameraEnabledFromNotification(enabled);
+  }
 }
 
 void CameraPrivacySwitchController::SetCameraPrivacySwitchAPIForTest(
@@ -216,14 +232,7 @@ void CameraPrivacySwitchController::ShowNotification(
                   // Click on the notification body is no-op.
                   return;
                 }
-                PrefService* const pref_service =
-                    Shell::Get()->session_controller()->GetActivePrefService();
-                if (pref_service) {
-                  pref_service->SetBoolean(prefs::kUserCameraAllowed,
-                                           camera_enabled);
-                  privacy_hub_metrics::LogCameraEnabledFromNotification(
-                      camera_enabled);
-                }
+                SetAndLogCameraPreferenceFromNotification(camera_enabled);
               },
               action_enables_camera));
 
@@ -245,18 +254,19 @@ void CameraPrivacySwitchController::ShowNotification(
 }
 
 void CameraPrivacySwitchController::ClearSWSwitchNotifications() {
-  constexpr std::array kNotificationIds = {
-      kPrivacyHubCameraOffNotificationId,
-      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId};
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
   if (!message_center) {
     return;
   }
-  for (const char* notification_id : kNotificationIds) {
-    message_center->RemoveNotification(notification_id,
-                                       /*by_user=*/false);
-  }
+  Shell::Get()
+      ->system_notification_controller()
+      ->privacy_hub()
+      ->RemoveSensorDisabledNotification(
+          PrivacyHubNotificationController::Sensor::kCamera);
+  message_center->RemoveNotification(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
+      /*by_user=*/false);
 }
 
 void CameraPrivacySwitchController::OnActiveClientChange(
@@ -274,14 +284,21 @@ void CameraPrivacySwitchController::OnActiveClientChange(
   // the camera is disabled by the software switch.
   if (is_new_active_client &&
       GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kDisabled) {
-    ShowCameraOffNotification();
+    Shell::Get()
+        ->system_notification_controller()
+        ->privacy_hub()
+        ->ShowSensorDisabledNotification(
+            PrivacyHubNotificationController::Sensor::kCamera);
   }
 
   // Remove existing software switch notification when the number of active
   // clients is 0.
   if (active_camera_client_count_ == 0) {
-    message_center::MessageCenter::Get()->RemoveNotification(
-        kPrivacyHubCameraOffNotificationId, /*by_user=*/false);
+    Shell::Get()
+        ->system_notification_controller()
+        ->privacy_hub()
+        ->RemoveSensorDisabledNotification(
+            PrivacyHubNotificationController::Sensor::kCamera);
   }
 }
 

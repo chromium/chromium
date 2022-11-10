@@ -46,6 +46,11 @@ class ASH_EXPORT MicrophoneMuteNotificationController
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnNumberOfInputStreamsWithPermissionChanged() override;
 
+  static const char kNotificationId[];
+
+  // Set the microphone input to `muted` and log the interaction.
+  static void SetAndLogMicrophoneMute(bool muted);
+
  private:
   friend class MicrophoneMuteNotificationControllerTest;
 
@@ -74,8 +79,6 @@ class ASH_EXPORT MicrophoneMuteNotificationController
   // ash::CrasAudioClient::NumberOfInputStreamsWithPermissionChanged() for more
   // details.
   int CountActiveInputStreams();
-
-  static const char kNotificationId[];
 
   // Whether the microphone is muted.
   bool mic_mute_on_ = false;

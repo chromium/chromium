@@ -363,4 +363,43 @@ TEST_F(PrivacyHubCameraControllerTests, NotificationRemovedWhenNoClient) {
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 }
 
+TEST_F(PrivacyHubCameraControllerTests, MetricCollection) {
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            0);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                false),
+            0);
+
+  CameraPrivacySwitchController::SetAndLogCameraPreferenceFromNotification(
+      false);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            0);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                false),
+            1);
+
+  CameraPrivacySwitchController::SetAndLogCameraPreferenceFromNotification(
+      true);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                false),
+            1);
+}
+
 }  // namespace ash
