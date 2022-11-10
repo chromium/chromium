@@ -51,6 +51,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Installer.Postinstall.EfiBootEntryCount" units="entries"
+    expires_after="2023-10-01">
+  <owner>tbrandston@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Total number of EFI Boot* entries seen during postinstall, before making any
+    modifications.
+
+    Growth in higher buckets across releases warrants additional investigation:
+    are we accidentally creating excess entries?
+
+    This is reported during postinstall, only on ChromeOS, and only when
+    USE=postinst_metrics. There's also an increased risk of losing metrics
+    recorded in postinstall, see:
+    https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/installer/docs/postinst_metrics.md
+  </summary>
+</histogram>
+
+<histogram name="Installer.Postinstall.EfiBootFailedLoad" units="entries"
+    expires_after="2023-10-01">
+  <owner>tbrandston@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    The number of EFI Boot* entries that we couldn't load.
+
+    We have seen bugs result in failure to read entries.
+
+    This is reported during postinstall, only on ChromeOS, and only when
+    USE=postinst_metrics. There's also an increased risk of losing metrics
+    recorded in postinstall, see:
+    https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/installer/docs/postinst_metrics.md
+  </summary>
+</histogram>
+
+<histogram name="Installer.Postinstall.EfiManagementEvent"
+    enum="ChromeOSEfiManagementEvent" expires_after="2023-10-01">
+  <owner>tbrandston@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Event of interest from EFI boot entry management. Intended mainly to asses
+    the frequency of various expected-to-be-rare errors or uncommon occurrances.
+
+    This is reported in multiple, potentially-overlapping places, so the total
+    number of events is not necessarily meaningful. Instead look at the count of
+    individual buckets over time.
+
+    This is reported during postinstall, only on ChromeOS, and only when
+    USE=postinst_metrics. There's also an increased risk of losing metrics
+    recorded in postinstall, see:
+    https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/installer/docs/postinst_metrics.md
+  </summary>
+</histogram>
+
+<histogram name="Installer.Postinstall.ManagedEfiBootEntryCount"
+    units="entries" expires_after="2023-10-01">
+  <owner>tbrandston@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Number of EFI Boot* entries seen during postinstall that match our
+    label/description.
+
+    Any values greater than 1 are potentially concerning, as we try to enforce
+    just one.
+
+    This is only reported if all entries load successfully, because otherwise
+    our count may be invalid.
+
+    This is reported during postinstall, only on ChromeOS, and only when
+    USE=postinst_metrics. There's also an increased risk of losing metrics
+    recorded in postinstall, see:
+    https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/installer/docs/postinst_metrics.md
+  </summary>
+</histogram>
+
 <histogram name="Installer.Postinstall.NonChromebookBiosSuccess.{BiosType}"
     enum="BooleanSuccess" expires_after="2023-10-01">
   <owner>tbrandston@google.com</owner>

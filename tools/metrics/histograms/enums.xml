@@ -15721,6 +15721,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Reading"/>
 </enum>
 
+<enum name="ChromeOSEfiManagementEvent">
+  <int value="0" label="RequiredEntryManagementFailed"/>
+  <int value="1" label="OptionalEntryManagementFailed"/>
+</enum>
+
 <enum name="ChromeOSHiddenUserPodsOfflineLogin">
   <summary>Tracks if offline user login is allowed.</summary>
   <int value="0" label="Enabled"/>
