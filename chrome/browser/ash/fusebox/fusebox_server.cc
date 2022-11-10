@@ -39,7 +39,7 @@ namespace {
 Server* g_server_instance = nullptr;
 
 std::pair<std::string, bool> ResolvePrefixMap(
-    fusebox::Server::PrefixMap& prefix_map,
+    const fusebox::Server::PrefixMap& prefix_map,
     const std::string& s) {
   size_t i = s.find('/');
   if (i == std::string::npos) {
@@ -96,9 +96,9 @@ ParseResult::~ParseResult() = default;
 // All of the Server methods' arguments start with a FileSystemURL (as a
 // string). This function parses that first argument as well as finding the
 // FileSystemContext we will need to serve those methods.
-ParseResult ParseFileSystemURL(fusebox::MonikerMap& moniker_map,
-                               fusebox::Server::PrefixMap& prefix_map,
-                               std::string fs_url_as_string) {
+ParseResult ParseFileSystemURL(const fusebox::MonikerMap& moniker_map,
+                               const fusebox::Server::PrefixMap& prefix_map,
+                               const std::string& fs_url_as_string) {
   scoped_refptr<storage::FileSystemContext> fs_context =
       file_manager::util::GetFileManagerFileSystemContext(
           ProfileManager::GetActiveUserProfile());

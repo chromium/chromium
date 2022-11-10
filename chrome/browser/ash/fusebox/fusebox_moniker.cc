@@ -69,7 +69,8 @@ void MonikerMap::DestroyMoniker(const Moniker& moniker) {
   }
 }
 
-MonikerMap::FSURLAndReadOnlyState MonikerMap::Resolve(const Moniker& moniker) {
+MonikerMap::FSURLAndReadOnlyState MonikerMap::Resolve(
+    const Moniker& moniker) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto iter = map_.find(moniker);

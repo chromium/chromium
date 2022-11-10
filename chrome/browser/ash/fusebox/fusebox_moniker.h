@@ -113,7 +113,7 @@ class MonikerMap {
   // is_valid() will be false if there was no such moniker or if it was
   // destroyed. If valid, the bool element is the read_only argument passed to
   // CreateMoniker.
-  FSURLAndReadOnlyState Resolve(const Moniker& moniker);
+  FSURLAndReadOnlyState Resolve(const Moniker& moniker) const;
 
   // Returns human-readable debugging information as a JSON value.
   base::Value GetDebugJSON();
