@@ -67,12 +67,15 @@
     TestRunner.addResult('Refreshing.');
   }
 
-  function databaseLoaded() {
+  async function databaseLoaded() {
     TestRunner.addResult('Refreshed.');
     indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, databaseLoaded);
     ApplicationTestRunner.dumpIndexedDBTree();
     TestRunner.addResult('Navigating to another security origin.');
-    TestRunner.navigate(withoutIndexedDBURL, navigatedAway);
+    const dbRemoval = indexedDBModel.once(Resources.IndexedDBModel.Events.DatabaseRemoved);
+    const navigation = TestRunner.navigatePromise(withoutIndexedDBURL);
+    await Promise.all([dbRemoval, navigation]);
+    navigatedAway();
   }
 
   function navigatedAway() {
