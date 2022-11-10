@@ -68,8 +68,6 @@ class SearchController {
 
   virtual ~SearchController() {}
 
-  virtual void InitializeRankers() {}
-
   virtual void StartSearch(const std::u16string& query) = 0;
   virtual void ClearSearch() = 0;
   virtual void StartZeroState(base::OnceClosure on_done,

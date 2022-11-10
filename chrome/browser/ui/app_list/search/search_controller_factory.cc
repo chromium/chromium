@@ -65,9 +65,6 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller = std::make_unique<SearchControllerImplNew>(
       model_updater, list_controller, notifier, profile);
 
-  // Set up rankers for search results.
-  controller->InitializeRankers();
-
   // Add search providers.
   controller->AddProvider(std::make_unique<AppSearchProvider>(
       controller->GetAppSearchDataSource()));
