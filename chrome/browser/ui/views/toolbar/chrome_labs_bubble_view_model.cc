@@ -94,7 +94,7 @@ ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel() : lab_info_(GetData()) {}
 ChromeLabsBubbleViewModel::~ChromeLabsBubbleViewModel() = default;
 
 const std::vector<LabInfo>& ChromeLabsBubbleViewModel::GetLabInfo() const {
-  return lab_info_;
+  return *lab_info_;
 }
 
 ScopedChromeLabsModelDataForTesting::ScopedChromeLabsModelDataForTesting() =

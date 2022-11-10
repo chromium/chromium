@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_PROFILE_MANAGER_H_
 #define CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_PROFILE_MANAGER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
@@ -66,9 +67,10 @@ class KidsProfileManager {
   Property supervised_user_id_;
   Property child_account_status_known_;
 
-  PrefService& pref_service_;
-  Profile& profile_;  // TODO(b/252793687): Remove once child status can be
-                      // controlled in code and tests via identity manager.
+  const raw_ref<PrefService> pref_service_;
+  const raw_ref<Profile>
+      profile_;  // TODO(b/252793687): Remove once child status can be
+                 // controlled in code and tests via identity manager.
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_PROFILE_MANAGER_H_

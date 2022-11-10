@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ADJUSTMENTS_PREINSTALLED_WEB_APP_DUPLICATION_FIXER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ADJUSTMENTS_PREINSTALLED_WEB_APP_DUPLICATION_FIXER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -50,7 +51,7 @@ class PreinstalledWebAppDuplicationFixer
 
   bool RemoveInstallUrlForPreinstalledApp(GURL url);
 
-  Profile& profile_;
+  const raw_ref<Profile> profile_;
 
   bool web_apps_ready_ = false;
   bool chrome_apps_ready_ = false;

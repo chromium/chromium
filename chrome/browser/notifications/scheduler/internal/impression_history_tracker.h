@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -199,7 +200,7 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   std::unique_ptr<CollectionStore<ClientState>> store_;
 
   // System configuration.
-  const SchedulerConfig& config_;
+  const raw_ref<const SchedulerConfig> config_;
 
   const std::vector<SchedulerClientType> registered_clients_;
 

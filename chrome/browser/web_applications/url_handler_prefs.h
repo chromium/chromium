@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/url_handler_launch_params.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -143,11 +144,11 @@ void ResetSavedChoice(PrefService* local_state,
 // Used to hold the pieces of handler information needed for saving default
 // choices.
 struct HandlerView {
-  const std::string& app_id;
+  const raw_ref<const std::string> app_id;
   base::FilePath profile_path;
   bool has_origin_wildcard;
-  base::Value& include_paths;
-  base::Value& exclude_paths;
+  const raw_ref<base::Value> include_paths;
+  const raw_ref<base::Value> exclude_paths;
 };
 
 absl::optional<const HandlerView> GetConstHandlerView(

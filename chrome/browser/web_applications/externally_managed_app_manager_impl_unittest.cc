@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -205,7 +206,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
   std::unique_ptr<ExternallyManagedAppInstallTask> CreateInstallationTask(
       ExternalInstallOptions install_options) override {
     return std::make_unique<TestExternallyManagedAppInstallTask>(
-        this, profile(), &test_url_loader_, test_install_task_manager_,
+        this, profile(), &test_url_loader_, *test_install_task_manager_,
         std::move(install_options));
   }
 
@@ -265,7 +266,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
     run_loop.Run();
   }
 
-  FakeWebAppProvider& provider() { return provider_; }
+  FakeWebAppProvider& provider() { return *provider_; }
 
  private:
   class TestExternallyManagedAppInstallTask
@@ -331,7 +332,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
           install_options().only_use_app_info_factory
               ? install_options().app_info_factory.Run()->start_url
               : install_options().install_url;
-      test_install_task_manager_.RunOrSaveRequest(base::BindLambdaForTesting(
+      test_install_task_manager_->RunOrSaveRequest(base::BindLambdaForTesting(
           [&, install_url, callback = std::move(callback)]() mutable {
             DoInstall(install_url, std::move(callback));
           }));
@@ -347,7 +348,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
    private:
     raw_ptr<TestExternallyManagedAppManager>
         externally_managed_app_manager_impl_;
-    TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
+    const raw_ref<TestExternallyManagedAppInstallTaskManager>
+        test_install_task_manager_;
     raw_ptr<Profile> profile_;
   };
 
@@ -386,9 +388,10 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
         weak_ptr_factory_{this};
   };
 
-  FakeWebAppProvider& provider_;
+  const raw_ref<FakeWebAppProvider> provider_;
   TestWebAppUrlLoader test_url_loader_;
-  TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
+  const raw_ref<TestExternallyManagedAppInstallTaskManager>
+      test_install_task_manager_;
 
   std::vector<ExternalInstallOptions> install_options_list_;
   GURL last_registered_install_url_;

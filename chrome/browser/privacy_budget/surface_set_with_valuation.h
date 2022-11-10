@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRIVACY_BUDGET_SURFACE_SET_WITH_VALUATION_H_
 
 #include "base/containers/flat_tree.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
 #include "chrome/browser/privacy_budget/surface_set_valuation.h"
@@ -95,11 +96,11 @@ class SurfaceSetWithValuation {
     return surfaces_.find(k) != surfaces_.end();
   }
   bool contains(const blink::IdentifiableSurface surface) const {
-    return contains(valuation_.equivalence().GetRepresentative(surface));
+    return contains(valuation_->equivalence().GetRepresentative(surface));
   }
 
  private:
-  const SurfaceSetValuation& valuation_;
+  const raw_ref<const SurfaceSetValuation> valuation_;
   RepresentativeSurfaceSet surfaces_;
   PrivacyBudgetCost cost_ = 0.0;
 };

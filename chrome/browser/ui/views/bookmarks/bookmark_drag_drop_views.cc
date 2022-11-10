@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 
@@ -97,12 +98,12 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
     gfx::RectF container_rect(0, kCountContainerRadius, kContainerWidth,
                               kContainerHeight);
     paint_flags.setColor(
-        color_provider_.GetColor(kColorBookmarkDragImageBackground));
+        color_provider_->GetColor(kColorBookmarkDragImageBackground));
     canvas->DrawRoundRect(container_rect, kContainerRadius, paint_flags);
 
     // Draw icon container.
     paint_flags.setColor(
-        color_provider_.GetColor(kColorBookmarkDragImageIconBackground));
+        color_provider_->GetColor(kColorBookmarkDragImageIconBackground));
     canvas->DrawCircle(
         gfx::PointF(kContainerRadius, kContainerRadius + kCountContainerRadius),
         kIconContainerRadius, paint_flags);
@@ -122,7 +123,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
         kContainerRadius - kIconContainerRadius));
     canvas->DrawStringRectWithFlags(
         title_, font_list,
-        color_provider_.GetColor(kColorBookmarkDragImageForeground), text_rect,
+        color_provider_->GetColor(kColorBookmarkDragImageForeground), text_rect,
         gfx::Canvas::TEXT_ALIGN_LEFT);
 
     if (count_ <= 1)
@@ -135,7 +136,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
     render_text->SetFontList(font_list);
     render_text->SetCursorEnabled(false);
     render_text->SetColor(
-        color_provider_.GetColor(kColorBookmarkDragImageCountForeground));
+        color_provider_->GetColor(kColorBookmarkDragImageCountForeground));
     render_text->SetText(count);
     render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
@@ -150,7 +151,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
         container_rect.right() - count_container_width, 0,
         count_container_width, kCountContainerRadius * 2);
     paint_flags.setColor(
-        color_provider_.GetColor(kColorBookmarkDragImageCountBackground));
+        color_provider_->GetColor(kColorBookmarkDragImageCountBackground));
     canvas->DrawRoundRect(gfx::RectF(count_container_rect),
                           kCountContainerRadius, paint_flags);
 
@@ -159,7 +160,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
     render_text->Draw(canvas);
   }
 
-  const ui::ColorProvider& color_provider_;
+  const raw_ref<const ui::ColorProvider> color_provider_;
   const std::u16string title_;
   const gfx::ImageSkia icon_;
   const int count_;

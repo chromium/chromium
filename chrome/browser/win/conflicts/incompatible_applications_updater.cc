@@ -355,8 +355,8 @@ void IncompatibleApplicationsUpdater::OnNewModuleFound(
   // Explicitly allowlist modules whose signing cert's Subject field matches the
   // one in the current executable. No attempt is made to check the validity of
   // module signatures or of signing certs.
-  if (exe_certificate_info_.type != CertificateInfo::Type::NO_CERTIFICATE &&
-      exe_certificate_info_.subject ==
+  if (exe_certificate_info_->type != CertificateInfo::Type::NO_CERTIFICATE &&
+      exe_certificate_info_->subject ==
           module_data.inspection_result->certificate_info.subject) {
     warning_decision = ModuleWarningDecision::kAllowedSameCertificate;
     return;
@@ -415,7 +415,7 @@ void IncompatibleApplicationsUpdater::OnNewModuleFound(
   // Then check if it can be tied to an installed application on the user's
   // computer.
   std::vector<InstalledApplications::ApplicationInfo> associated_applications;
-  bool tied_to_app = installed_applications_.GetInstalledApplications(
+  bool tied_to_app = installed_applications_->GetInstalledApplications(
       module_key.module_path, &associated_applications);
   UMA_HISTOGRAM_BOOLEAN("ThirdPartyModules.Uninstallable", tied_to_app);
   if (!tied_to_app) {

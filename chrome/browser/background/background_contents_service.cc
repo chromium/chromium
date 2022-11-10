@@ -616,8 +616,8 @@ BackgroundContents* BackgroundContentsService::CreateBackgroundContents(
 
   // Register the BackgroundContents internally, then send out a notification
   // to external listeners.
-  BackgroundContentsOpenedDetails details = {contents_ptr, frame_name,
-                                             application_id};
+  BackgroundContentsOpenedDetails details = {contents_ptr, raw_ref(frame_name),
+                                             raw_ref(application_id)};
   for (auto& observer : observers_)
     observer.OnBackgroundContentsOpened(details);
 

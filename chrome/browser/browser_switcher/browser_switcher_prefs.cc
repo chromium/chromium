@@ -69,9 +69,9 @@ void SetCachedRules(PrefService* prefs,
 }  // namespace
 
 NoCopyUrl::NoCopyUrl(const GURL& original) : original_(original) {
-  spec_without_port_ = original_.spec();
+  spec_without_port_ = original_->spec();
 
-  int int_port = original_.IntPort();
+  int int_port = original_->IntPort();
   std::string port_suffix;
   if (int_port != url::PORT_UNSPECIFIED) {
     port_suffix = base::StrCat({":", base::NumberToString(int_port)});

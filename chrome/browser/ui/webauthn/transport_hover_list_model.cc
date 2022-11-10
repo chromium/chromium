@@ -32,7 +32,7 @@ std::u16string TransportHoverListModel::GetDescriptionText(int item_tag) const {
 }
 
 ui::ImageModel TransportHoverListModel::GetItemIcon(int item_tag) const {
-  return ui::ImageModel::FromVectorIcon(mechanisms_[item_tag].icon,
+  return ui::ImageModel::FromVectorIcon(*mechanisms_[item_tag].icon,
                                         ui::kColorIcon, 20);
 }
 

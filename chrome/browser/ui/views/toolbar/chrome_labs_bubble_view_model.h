@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include "base/memory/raw_ref.h"
 #include "components/version_info/channel.h"
 
 struct LabInfo {
@@ -39,7 +40,7 @@ class ChromeLabsBubbleViewModel {
   const std::vector<LabInfo>& GetLabInfo() const;
 
  private:
-  const std::vector<LabInfo>& lab_info_;
+  const raw_ref<const std::vector<LabInfo>> lab_info_;
 };
 
 // ScopedChromeLabsModelDataForTesting is intended to be used in test settings

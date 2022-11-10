@@ -48,11 +48,11 @@ void RequestHandlerBase::AppendFinalActionsTo(
 void RequestHandlerBase::PrepareRequest(
     enterprise_connectors::AnalysisConnector connector,
     safe_browsing::BinaryUploadService::Request* request) {
-  if (analysis_settings_.cloud_or_local_settings.is_cloud_analysis()) {
+  if (analysis_settings_->cloud_or_local_settings.is_cloud_analysis()) {
     request->set_device_token(
-        analysis_settings_.cloud_or_local_settings.dm_token());
+        analysis_settings_->cloud_or_local_settings.dm_token());
   }
-  if (analysis_settings_.cloud_or_local_settings.is_local_analysis()) {
+  if (analysis_settings_->cloud_or_local_settings.is_local_analysis()) {
     request->set_user_action_id(user_action_id_);
     request->set_user_action_requests_count(user_action_requests_count_);
   }
@@ -63,11 +63,11 @@ void RequestHandlerBase::PrepareRequest(
   request->set_source(source_);
   request->set_destination(destination_);
   request->set_tab_url(url_);
-  request->set_per_profile_request(analysis_settings_.per_profile);
-  for (const auto& tag : analysis_settings_.tags)
+  request->set_per_profile_request(analysis_settings_->per_profile);
+  for (const auto& tag : analysis_settings_->tags)
     request->add_tag(tag.first);
-  if (analysis_settings_.client_metadata)
-    request->set_client_metadata(*analysis_settings_.client_metadata);
+  if (analysis_settings_->client_metadata)
+    request->set_client_metadata(*analysis_settings_->client_metadata);
 }
 
 safe_browsing::BinaryUploadService*

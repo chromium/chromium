@@ -776,9 +776,9 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
                                bool remove_all,
                                bool force_uninstall,
                                const base::CommandLine& cmd_line) {
-  const InstallationState& original_state = modify_params.installation_state;
-  const InstallerState& installer_state = modify_params.installer_state;
-  const base::FilePath& setup_exe = modify_params.setup_path;
+  const InstallationState& original_state = *modify_params.installation_state;
+  const InstallerState& installer_state = *modify_params.installer_state;
+  const base::FilePath& setup_exe = *modify_params.setup_path;
 
   const ProductState* const product_state =
       original_state.GetProductState(installer_state.system_install());

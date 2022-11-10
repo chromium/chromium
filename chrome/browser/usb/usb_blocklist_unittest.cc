@@ -4,6 +4,7 @@
 
 #include "chrome/browser/usb/usb_blocklist.h"
 
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "components/variations/variations_params_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,7 +13,7 @@ class UsbBlocklistTest : public testing::Test {
  public:
   UsbBlocklistTest() : blocklist_(UsbBlocklist::Get()) {}
 
-  const UsbBlocklist& list() { return blocklist_; }
+  const UsbBlocklist& list() { return *blocklist_; }
 
   void SetDynamicBlocklist(base::StringPiece list) {
     params_manager_.ClearAllVariationParams();
@@ -21,7 +22,7 @@ class UsbBlocklistTest : public testing::Test {
     params["blocklist_additions"] = std::string(list);
     params_manager_.SetVariationParams("WebUSBBlocklist", params);
 
-    blocklist_.ResetToDefaultValuesForTest();
+    blocklist_->ResetToDefaultValuesForTest();
   }
 
  private:
@@ -29,11 +30,11 @@ class UsbBlocklistTest : public testing::Test {
     // Because UsbBlocklist is a singleton it must be cleared after tests run
     // to prevent leakage between tests.
     params_manager_.ClearAllVariationParams();
-    blocklist_.ResetToDefaultValuesForTest();
+    blocklist_->ResetToDefaultValuesForTest();
   }
 
   variations::testing::VariationParamsManager params_manager_;
-  UsbBlocklist& blocklist_;
+  const raw_ref<UsbBlocklist> blocklist_;
 };
 
 TEST_F(UsbBlocklistTest, BasicExclusions) {

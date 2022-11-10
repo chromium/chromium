@@ -272,8 +272,8 @@ void CertificateReportingService::Reset(bool enabled) {
 void CertificateReportingService::OnPreferenceChanged() {
   safe_browsing::SafeBrowsingService* safe_browsing_service_ =
       g_browser_process->safe_browsing_service();
-  const bool enabled = safe_browsing_service_ &&
-                       safe_browsing_service_->enabled_by_prefs() &&
-                       safe_browsing::IsExtendedReportingEnabled(pref_service_);
+  const bool enabled =
+      safe_browsing_service_ && safe_browsing_service_->enabled_by_prefs() &&
+      safe_browsing::IsExtendedReportingEnabled(*pref_service_);
   SetEnabled(enabled);
 }

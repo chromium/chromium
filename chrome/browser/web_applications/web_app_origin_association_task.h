@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 
@@ -45,7 +46,7 @@ class WebAppOriginAssociationManager::Task {
   // Pending url handlers that need to be processed to get associations.
   std::deque<apps::UrlHandlerInfo> pending_url_handlers_;
   // The manager that owns this task.
-  WebAppOriginAssociationManager& owner_;
+  const raw_ref<WebAppOriginAssociationManager> owner_;
   // Callback to send the result back.
   OnDidGetWebAppOriginAssociations callback_;
   apps::UrlHandlers result_;

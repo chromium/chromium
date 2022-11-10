@@ -572,7 +572,7 @@ void LoginHandler::BuildViewAndNotify(
     const std::u16string& explanation,
     LoginHandler::LoginModelData* login_model_data) {
   if (login_model_data)
-    password_form_ = login_model_data->form;
+    password_form_ = *login_model_data->form;
   base::WeakPtr<LoginHandler> guard = weak_factory_.GetWeakPtr();
   BuildViewImpl(authority, explanation, login_model_data);
   // BuildViewImpl may call Cancel, which may delete this object, so check a

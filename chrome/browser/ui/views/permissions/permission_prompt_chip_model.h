@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/check.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,7 +35,7 @@ class PermissionPromptChipModel {
   }
 
   const gfx::VectorIcon& GetIcon() {
-    return should_display_blocked_icon_ ? blocked_icon_ : allowed_icon_;
+    return should_display_blocked_icon_ ? *blocked_icon_ : *allowed_icon_;
   }
 
   std::u16string GetChipText() { return chip_text_; }
@@ -76,8 +77,8 @@ class PermissionPromptChipModel {
   absl::optional<permissions::PermissionPrompt::Delegate*> delegate_;
 
   // Permission icons and text
-  const gfx::VectorIcon& allowed_icon_;
-  const gfx::VectorIcon& blocked_icon_;
+  const raw_ref<const gfx::VectorIcon> allowed_icon_;
+  const raw_ref<const gfx::VectorIcon> blocked_icon_;
 
   std::u16string chip_text_;
   std::u16string accessibility_chip_text_;

@@ -20,6 +20,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -266,7 +267,7 @@ class UpdateCheckResultAwaiter {
   }
 
   void OnResult(const GURL& url, ManifestUpdateResult result) {
-    if (url != url_) {
+    if (url != *url_) {
       SetCallback();
       return;
     }
@@ -276,7 +277,7 @@ class UpdateCheckResultAwaiter {
 
  private:
   raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
-  const GURL& url_;
+  const raw_ref<const GURL> url_;
   base::RunLoop run_loop_;
   absl::optional<ManifestUpdateResult> result_;
 };

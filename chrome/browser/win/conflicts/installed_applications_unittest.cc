@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_reg_util_win.h"
@@ -46,8 +47,8 @@ class MockMsiUtil : public MsiUtil {
       const std::wstring& product_guid,
       const std::wstring& user_sid,
       std::vector<std::wstring>* component_paths) const override {
-    auto iter = component_paths_map_.find(product_guid);
-    if (iter == component_paths_map_.end())
+    auto iter = component_paths_map_->find(product_guid);
+    if (iter == component_paths_map_->end())
       return false;
 
     *component_paths = iter->second;
@@ -55,7 +56,8 @@ class MockMsiUtil : public MsiUtil {
   }
 
  private:
-  const std::map<std::wstring, std::vector<std::wstring>>& component_paths_map_;
+  const raw_ref<const std::map<std::wstring, std::vector<std::wstring>>>
+      component_paths_map_;
 };
 
 class TestInstalledApplications : public InstalledApplications {

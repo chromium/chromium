@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
@@ -39,7 +40,7 @@ class ChromeSpeculationHostDelegate : public content::SpeculationHostDelegate {
  private:
   // content::SpeculationHostImpl, which inherits content::DocumentService,
   // owns `this`, so `this` can access `render_frame_host_` safely.
-  content::RenderFrameHost& render_frame_host_;
+  const raw_ref<content::RenderFrameHost> render_frame_host_;
 
   // All on-going NoStatePrefetches
   std::vector<std::unique_ptr<prerender::NoStatePrefetchHandle>>

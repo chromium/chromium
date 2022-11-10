@@ -5,6 +5,7 @@
 #ifndef CHROME_INSTALLER_SETUP_INSTALL_PARAMS_H_
 #define CHROME_INSTALLER_SETUP_INSTALL_PARAMS_H_
 
+#include "base/memory/raw_ref.h"
 #include "modify_params.h"
 
 namespace base {
@@ -25,13 +26,13 @@ class InstallerState;
 // be a strict subset of the calling stack frame.
 struct InstallParams : public ModifyParams {
   // Path to the archive (chrome.7z)
-  const base::FilePath& archive_path;
+  const raw_ref<const base::FilePath> archive_path;
   // Unpacked Chrome package (inside |temp_path|)
-  const base::FilePath& src_path;
+  const raw_ref<const base::FilePath> src_path;
   // Working directory used during install/update
-  const base::FilePath& temp_path;
+  const raw_ref<const base::FilePath> temp_path;
   // Chrome version to be installed
-  const base::Version& new_version;
+  const raw_ref<const base::Version> new_version;
 
   InstallParams(InstallerState& installer_state,
                 InstallationState& installation_state,

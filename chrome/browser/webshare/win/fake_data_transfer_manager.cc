@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/vector.h"
@@ -130,7 +131,7 @@ class FakeDataPackagePropertySet final
   }
   IFACEMETHODIMP put_Title(HSTRING value) final {
     base::win::ScopedHString wrapped_value(value);
-    data_requested_content_.title = wrapped_value.GetAsUTF8();
+    data_requested_content_->title = wrapped_value.GetAsUTF8();
     return S_OK;
   }
 
@@ -142,7 +143,8 @@ class FakeDataPackagePropertySet final
   IFACEMETHODIMP put_EnterpriseId(HSTRING value) final { return S_OK; }
 
  private:
-  FakeDataTransferManager::DataRequestedContent& data_requested_content_;
+  const raw_ref<FakeDataTransferManager::DataRequestedContent>
+      data_requested_content_;
   ComPtr<base::win::Vector<HSTRING>> file_types_;
 };
 
@@ -184,7 +186,7 @@ class FakeDataPackage final
   }
   IFACEMETHODIMP get_Properties(IDataPackagePropertySet** value) final {
     if (!properties_)
-      properties_ = Make<FakeDataPackagePropertySet>(data_requested_content_);
+      properties_ = Make<FakeDataPackagePropertySet>(*data_requested_content_);
     auto hr = properties_->QueryInterface(IID_PPV_ARGS(value));
     EXPECT_HRESULT_SUCCEEDED(hr);
     return hr;
@@ -223,7 +225,7 @@ class FakeDataPackage final
   IFACEMETHODIMP SetRtf(HSTRING value) final { return S_OK; }
   IFACEMETHODIMP SetText(HSTRING value) final {
     base::win::ScopedHString wrapped_value(value);
-    data_requested_content_.text = wrapped_value.GetAsUTF8();
+    data_requested_content_->text = wrapped_value.GetAsUTF8();
     return S_OK;
   }
   IFACEMETHODIMP SetStorageItems(IIterable<IStorageItem*>* value,
@@ -261,7 +263,7 @@ class FakeDataPackage final
       FakeDataTransferManager::DataRequestedFile file;
       file.name = wrapped_name.GetAsUTF8();
       file.file = storage_file;
-      data_requested_content_.files.push_back(std::move(file));
+      data_requested_content_->files.push_back(std::move(file));
 
       hr = iterator->MoveNext(&has_current);
       if (FAILED(hr))
@@ -279,12 +281,13 @@ class FakeDataPackage final
     HSTRING raw_uri;
     value->get_RawUri(&raw_uri);
     base::win::ScopedHString wrapped_value(raw_uri);
-    data_requested_content_.uri = wrapped_value.GetAsUTF8();
+    data_requested_content_->uri = wrapped_value.GetAsUTF8();
     return S_OK;
   }
 
  private:
-  FakeDataTransferManager::DataRequestedContent& data_requested_content_;
+  const raw_ref<FakeDataTransferManager::DataRequestedContent>
+      data_requested_content_;
   ComPtr<IDataPackagePropertySet> properties_;
 };
 

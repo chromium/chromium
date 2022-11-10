@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_ICON_WAITER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_ICON_WAITER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -19,7 +20,7 @@ class WebAppIconWaiter {
 
  private:
   void OnFaviconRead(const web_app::AppId& app_id);
-  const web_app::AppId& app_id_;
+  const raw_ref<const web_app::AppId> app_id_;
   base::RunLoop run_loop_;
 };
 

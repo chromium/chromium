@@ -78,7 +78,7 @@ void WebAppOriginAssociationManager::Task::FetchAssociationFile(
     return;
   }
 
-  owner_.GetFetcher().FetchWebAppOriginAssociationFile(
+  owner_->GetFetcher().FetchWebAppOriginAssociationFile(
       url_handler, g_browser_process->shared_url_loader_factory(),
       base::BindOnce(
           &WebAppOriginAssociationManager::Task::OnAssociationFileFetched,
@@ -92,7 +92,7 @@ void WebAppOriginAssociationManager::Task::OnAssociationFileFetched(
     return;
   }
 
-  owner_.GetParser()->ParseWebAppOriginAssociation(
+  owner_->GetParser()->ParseWebAppOriginAssociation(
       *file_content,
       base::BindOnce(&WebAppOriginAssociationManager::Task::OnAssociationParsed,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -145,7 +145,7 @@ void WebAppOriginAssociationManager::Task::Finalize() {
   result_.clear();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), std::move(result)));
-  owner_.OnTaskCompleted();
+  owner_->OnTaskCompleted();
 }
 
 }  // namespace web_app

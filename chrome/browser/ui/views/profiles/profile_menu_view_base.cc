@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -217,7 +218,7 @@ class CircularImageButton : public views::ImageButton {
     if (background_profile_color_ != SK_ColorTRANSPARENT)
       icon_color = GetProfileForegroundIconColor(background_profile_color_);
     gfx::ImageSkia image =
-        ImageForMenu(icon_, kShortcutIconToImageRatio, icon_color);
+        ImageForMenu(*icon_, kShortcutIconToImageRatio, icon_color);
     SetImage(views::Button::STATE_NORMAL,
              SizeImage(image, kCircularImageButtonSize));
     views::InkDrop::Get(this)->SetBaseColor(icon_color);
@@ -231,7 +232,7 @@ class CircularImageButton : public views::ImageButton {
   }
 
  private:
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
   const SkColor background_profile_color_;
   bool show_border_;
 };
@@ -251,12 +252,12 @@ class FeatureButtonIconView : public views::ImageView {
     constexpr int kIconSize = 16;
     const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
     gfx::ImageSkia image =
-        ImageForMenu(icon_, icon_to_image_ratio_, icon_color);
+        ImageForMenu(*icon_, icon_to_image_ratio_, icon_color);
     SetImage(SizeImage(ColorImage(image, icon_color), kIconSize));
   }
 
  private:
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
   const float icon_to_image_ratio_;
 };
 
@@ -272,11 +273,11 @@ class ProfileManagementFeatureButton : public HoverButton {
   void OnThemeChanged() override {
     HoverButton::OnThemeChanged();
     SetImage(STATE_NORMAL,
-             ProfileManagementImageFromIcon(icon_, GetColorProvider()));
+             ProfileManagementImageFromIcon(*icon_, GetColorProvider()));
   }
 
  private:
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 };
 BEGIN_METADATA(ProfileManagementFeatureButton, HoverButton)
 END_METADATA
@@ -290,11 +291,11 @@ class ProfileManagementIconView : public views::ImageView {
   // views::ImageView:
   void OnThemeChanged() override {
     views::ImageView::OnThemeChanged();
-    SetImage(ProfileManagementImageFromIcon(icon_, GetColorProvider()));
+    SetImage(ProfileManagementImageFromIcon(*icon_, GetColorProvider()));
   }
 
  private:
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 };
 
 // AvatarImageView is used to ensure avatar adornments are kept in sync with

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/ui/browser.h"
@@ -78,7 +79,7 @@ class LabsComboboxModel : public ui::ComboboxModel {
         size_t variation_index = index - 2;
         return l10n_util::GetStringFUTF16(
             IDS_CHROMELABS_ENABLED_WITH_VARIATION_NAME,
-            lab_.translated_feature_variation_descriptions[variation_index]);
+            lab_->translated_feature_variation_descriptions[variation_index]);
       } else {
         description_translation_id = IDS_CHROMELABS_DISABLED;
       }
@@ -98,7 +99,7 @@ class LabsComboboxModel : public ui::ComboboxModel {
   }
 
  private:
-  const LabInfo& lab_;
+  const raw_ref<const LabInfo> lab_;
   raw_ptr<const flags_ui::FeatureEntry> feature_entry_;
   size_t default_index_;
 };

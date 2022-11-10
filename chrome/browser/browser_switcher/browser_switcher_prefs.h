@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -38,13 +39,13 @@ class NoCopyUrl {
   explicit NoCopyUrl(const GURL& original);
   NoCopyUrl(const NoCopyUrl&) = delete;
 
-  const GURL& original() const { return original_; }
+  const GURL& original() const { return *original_; }
   base::StringPiece host_and_port() const { return host_and_port_; }
-  base::StringPiece spec() const { return original_.spec(); }
+  base::StringPiece spec() const { return original_->spec(); }
   base::StringPiece spec_without_port() const { return spec_without_port_; }
 
  private:
-  const GURL& original_;
+  const raw_ref<const GURL> original_;
   // If there is a port number, then this is "<host>:<port>". Otherwise, this is
   // just the host.
   std::string host_and_port_;

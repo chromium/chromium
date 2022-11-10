@@ -820,12 +820,12 @@ std::string BoxPartFileUploadApiCallFlow::CreateFileDigest(
 net::HttpRequestHeaders BoxPartFileUploadApiCallFlow::CreateApiCallHeaders() {
   net::HttpRequestHeaders headers;
   headers.SetHeader("content-range", content_range_);
-  headers.SetHeader("digest", CreateFileDigest(part_content_));
+  headers.SetHeader("digest", CreateFileDigest(*part_content_));
   return headers;
 }
 
 std::string BoxPartFileUploadApiCallFlow::CreateApiCallBody() {
-  return part_content_;
+  return *part_content_;
 }
 
 std::string BoxPartFileUploadApiCallFlow::CreateApiCallBodyContentType() {

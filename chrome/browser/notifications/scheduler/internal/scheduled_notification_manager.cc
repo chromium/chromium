@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/guid.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_store.h"
@@ -246,7 +247,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
     for (auto it = entries.begin(); it != entries.end(); it++) {
       auto* entry = it->get();
       // Prune expired notifications. Also delete them in db.
-      bool expired = entry->create_time + config_.notification_expiration <=
+      bool expired = entry->create_time + config_->notification_expiration <=
                      base::Time::Now();
       bool valid = ValidateNotificationEntry(*entry);
       bool deprecated_client = !base::Contains(clients_, entry->type);
@@ -414,7 +415,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
         params.schedule_params.deliver_time_start.value() >
             params.schedule_params.deliver_time_end.value() ||
         params.schedule_params.deliver_time_end.value() - base::Time::Now() >=
-            config_.notification_expiration) {
+            config_->notification_expiration) {
       return false;
     }
 
@@ -443,7 +444,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
   std::map<SchedulerClientType,
            std::map<std::string, std::unique_ptr<NotificationEntry>>>
       notifications_;
-  const SchedulerConfig& config_;
+  const raw_ref<const SchedulerConfig> config_;
   base::WeakPtrFactory<ScheduledNotificationManagerImpl> weak_ptr_factory_{
       this};
 };

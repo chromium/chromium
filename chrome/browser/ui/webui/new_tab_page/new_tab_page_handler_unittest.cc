@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -206,7 +207,7 @@ class NewTabPageHandlerTest : public testing::Test {
         .Times(1)
         .WillOnce(
             testing::SaveArg<0>(&ntp_custom_background_service_observer_));
-    EXPECT_CALL(mock_promo_service_, AddObserver)
+    EXPECT_CALL(*mock_promo_service_, AddObserver)
         .Times(1)
         .WillOnce(testing::SaveArg<0>(&promo_service_observer_));
     EXPECT_CALL(mock_page_, SetTheme).Times(1);
@@ -269,7 +270,7 @@ class NewTabPageHandlerTest : public testing::Test {
   MockColorProviderSource mock_color_provider_source_;
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
   testing::NiceMock<MockThemeProvider> mock_theme_provider_;
-  MockPromoService& mock_promo_service_;
+  const raw_ref<MockPromoService> mock_promo_service_;
   content::TestWebContentsFactory factory_;
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   base::HistogramTester histogram_tester_;
@@ -615,9 +616,9 @@ TEST_F(NewTabPageHandlerTest, UpdatePromoData) {
   promo_data.promo_log_url = GURL("https://foo.com");
   promo_data.promo_id = "foo";
   auto promo_data_optional = absl::make_optional(promo_data);
-  ON_CALL(mock_promo_service_, promo_data())
+  ON_CALL(*mock_promo_service_, promo_data())
       .WillByDefault(testing::ReturnRef(promo_data_optional));
-  EXPECT_CALL(mock_promo_service_, Refresh).Times(1);
+  EXPECT_CALL(*mock_promo_service_, Refresh).Times(1);
 
   new_tab_page::mojom::PromoPtr promo;
   EXPECT_CALL(mock_page_, SetPromo)

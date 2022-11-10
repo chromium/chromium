@@ -186,7 +186,7 @@ void StartupBrowserCreatorImpl::Launch(
   // Check the true process command line for --try-chrome-again=N rather than
   // the one parsed for startup URLs and such.
   if (launch_mode_recorder) {
-    if (!command_line_.GetSwitchValueNative(switches::kTryChromeAgain)
+    if (!command_line_->GetSwitchValueNative(switches::kTryChromeAgain)
              .empty()) {
       launch_mode_recorder->SetLaunchMode(OldLaunchMode::kUserExperiment);
     } else {
@@ -197,12 +197,12 @@ void StartupBrowserCreatorImpl::Launch(
     }
   }
 
-  if (command_line_.HasSwitch(switches::kInstallChromeApp)) {
+  if (command_line_->HasSwitch(switches::kInstallChromeApp)) {
     install_chrome_app::InstallChromeApp(
-        command_line_.GetSwitchValueASCII(switches::kInstallChromeApp));
+        command_line_->GetSwitchValueASCII(switches::kInstallChromeApp));
   }
 
-  web_app::MaybeInstallAppFromCommandLine(command_line_, *profile);
+  web_app::MaybeInstallAppFromCommandLine(*command_line_, *profile);
 
 #if BUILDFLAG(IS_MAC)
   if (process_startup == chrome::startup::IsProcessStartup::kYes) {
@@ -258,7 +258,8 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     Browser::CreateParams params = Browser::CreateParams(profile_, false);
     params.creation_source = Browser::CreationSource::kStartupCreator;
 #if BUILDFLAG(IS_LINUX)
-    params.startup_id = command_line_.GetSwitchValueASCII("desktop-startup-id");
+    params.startup_id =
+        command_line_->GetSwitchValueASCII("desktop-startup-id");
 #endif
     browser = Browser::Create(params);
   }
@@ -347,7 +348,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 StartupBrowserCreatorImpl::LaunchResult
 StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     chrome::startup::IsProcessStartup process_startup) {
-  if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(command_line_)) {
+  if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(*command_line_)) {
     // Checking the flags this late in the launch should be redundant.
     // TODO(https://crbug.com/1300109): Remove by M104.
     NOTREACHED();
@@ -426,13 +427,13 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     behavior_options |= PROCESS_STARTUP;
   if (is_post_crash_launch)
     behavior_options |= IS_POST_CRASH_LAUNCH;
-  if (command_line_.HasSwitch(switches::kOpenInNewWindow))
+  if (command_line_->HasSwitch(switches::kOpenInNewWindow))
     behavior_options |= HAS_NEW_WINDOW_SWITCH;
   if (result.launch_result == LaunchResult::kWithGivenUrls)
     behavior_options |= HAS_CMD_LINE_TABS;
 
   BrowserOpenBehavior behavior = DetermineBrowserOpenBehavior(
-      StartupBrowserCreator::GetSessionStartupPref(command_line_, profile_),
+      StartupBrowserCreator::GetSessionStartupPref(*command_line_, profile_),
       behavior_options);
 
   SessionRestore::BehaviorBitmask restore_options =
@@ -454,7 +455,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
       tabs, behavior, restore_options, process_startup, is_post_crash_launch);
 
   // Finally, add info bars.
-  AddInfoBarsIfNecessary(browser, profile_, command_line_, is_first_run_,
+  AddInfoBarsIfNecessary(browser, profile_, *command_line_, is_first_run_,
                          /*is_web_app=*/false);
   return result.launch_result;
 }
@@ -494,7 +495,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   StartupTabs tabs =
-      provider.GetCommandLineTabs(command_line_, cur_dir_, profile_);
+      provider.GetCommandLineTabs(*command_line_, cur_dir_, profile_);
   LaunchResult launch_result =
       tabs.empty() ? LaunchResult::kNormally : LaunchResult::kWithGivenUrls;
 
@@ -576,14 +577,14 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     // If the user has set the preference indicating URLs to show on opening,
     // read and add those.
     StartupTabs prefs_tabs =
-        provider.GetPreferencesTabs(command_line_, profile_);
+        provider.GetPreferencesTabs(*command_line_, profile_);
     AppendTabs(prefs_tabs, &tabs);
 
     // Potentially add the New Tab Page. Onboarding content is designed to
     // replace (and eventually funnel the user to) the NTP. Note
     // URLs from preferences are explicitly meant to override showing the NTP.
     if (onboarding_tabs.empty() && prefs_tabs.empty())
-      AppendTabs(provider.GetNewTabPageTabs(command_line_, profile_), &tabs);
+      AppendTabs(provider.GetNewTabPageTabs(*command_line_, profile_), &tabs);
 
     // Potentially add a tab appropriate to display the Privacy Sandbox
     // confirmaton dialog on top of. Ideally such a tab will already exist
@@ -595,7 +596,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
   }
 
   // Maybe add any tabs which the user has previously pinned.
-  AppendTabs(provider.GetPinnedTabs(command_line_, profile_), &tabs);
+  AppendTabs(provider.GetPinnedTabs(*command_line_, profile_), &tabs);
 
   return {std::move(tabs), launch_result};
 }

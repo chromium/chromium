@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
@@ -109,13 +110,13 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 
   raw_ptr<Profile> profile_;
 
-  Delegate& delegate_;
+  const raw_ref<Delegate> delegate_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AppManagementShelfDelegate shelf_delegate_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  apps::PreferredAppsListHandle& preferred_apps_list_handle_;
+  const raw_ref<apps::PreferredAppsListHandle> preferred_apps_list_handle_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

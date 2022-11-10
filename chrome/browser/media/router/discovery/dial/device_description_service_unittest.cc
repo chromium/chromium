@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -86,7 +87,7 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
     cache_entry.expire_time =
         base::Time::Now() + (expired ? -1 : 1) * base::Hours(12);
     cache_entry.description_data = description_data;
-    description_cache_[device_label] = cache_entry;
+    (*description_cache_)[device_label] = cache_entry;
   }
 
   void OnDeviceDescriptionFetchComplete(int num) {
@@ -119,9 +120,10 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
       mock_error_cb_;
 
   TestDeviceDescriptionService device_description_service_;
-  std::map<std::string, std::unique_ptr<DeviceDescriptionFetcher>>&
+  const raw_ref<
+      std::map<std::string, std::unique_ptr<DeviceDescriptionFetcher>>>
       fetcher_map_;
-  std::map<std::string, DeviceDescriptionService::CacheEntry>&
+  const raw_ref<std::map<std::string, DeviceDescriptionService::CacheEntry>>
       description_cache_;
 };
 
@@ -141,9 +143,9 @@ TEST_F(DeviceDescriptionServiceTest, TestGetDeviceDescriptionFetchURL) {
   std::vector<DialDeviceData> devices = {device_data};
 
   // Create Fetcher
-  EXPECT_TRUE(fetcher_map_.empty());
+  EXPECT_TRUE(fetcher_map_->empty());
   device_description_service()->GetDeviceDescriptions(devices);
-  EXPECT_EQ(size_t(1), fetcher_map_.size());
+  EXPECT_EQ(size_t(1), fetcher_map_->size());
 
   // Remove fetcher.
   EXPECT_CALL(*device_description_service(), ParseDeviceDescription(_, _));
@@ -166,14 +168,14 @@ TEST_F(DeviceDescriptionServiceTest, TestGetDeviceDescriptionFetchURLError) {
   devices.push_back(device_data);
 
   // Create Fetcher
-  EXPECT_TRUE(fetcher_map_.empty());
+  EXPECT_TRUE(fetcher_map_->empty());
   device_description_service()->GetDeviceDescriptions(devices);
-  EXPECT_EQ(size_t(1), fetcher_map_.size());
+  EXPECT_EQ(size_t(1), fetcher_map_->size());
 
   EXPECT_CALL(mock_error_cb_, Run(device_data, ""));
 
   device_description_service()->OnDeviceDescriptionFetchError(device_data, "");
-  EXPECT_TRUE(fetcher_map_.empty());
+  EXPECT_TRUE(fetcher_map_->empty());
 }
 
 TEST_F(DeviceDescriptionServiceTest,
@@ -199,9 +201,9 @@ TEST_F(DeviceDescriptionServiceTest,
   devices.push_back(device_data_3);
   device_description_service()->GetDeviceDescriptions(devices);
 
-  EXPECT_EQ(size_t(3), fetcher_map_.size());
+  EXPECT_EQ(size_t(3), fetcher_map_->size());
 
-  auto* description_fetcher = fetcher_map_[device_data_2.label()].get();
+  auto* description_fetcher = (*fetcher_map_)[device_data_2.label()].get();
   EXPECT_EQ(new_url_2, description_fetcher->device_description_url());
 
   EXPECT_CALL(mock_error_cb_, Run(_, _)).Times(3);
@@ -226,13 +228,13 @@ TEST_F(DeviceDescriptionServiceTest, TestCleanUpCacheEntries) {
              false /* expired */);
 
   device_description_service_.CleanUpCacheEntries();
-  EXPECT_EQ(size_t(1), description_cache_.size());
-  EXPECT_TRUE(base::Contains(description_cache_, device_data_3.label()));
+  EXPECT_EQ(size_t(1), description_cache_->size());
+  EXPECT_TRUE(base::Contains(*description_cache_, device_data_3.label()));
 
   AddToCache(device_data_3.label(), ParsedDialDeviceDescription(),
              true /* expired*/);
   device_description_service_.CleanUpCacheEntries();
-  EXPECT_TRUE(description_cache_.empty());
+  EXPECT_TRUE(description_cache_->empty());
 }
 
 TEST_F(DeviceDescriptionServiceTest, TestOnParsedDeviceDescription) {
@@ -261,7 +263,7 @@ TEST_F(DeviceDescriptionServiceTest, TestOnParsedDeviceDescription) {
   auto description = CreateParsedDialDeviceDescription(1);
   TestOnParsedDeviceDescription(
       description, SafeDialDeviceDescriptionParser::ParsingError::kNone, "");
-  EXPECT_EQ(size_t(1), description_cache_.size());
+  EXPECT_EQ(size_t(1), description_cache_->size());
 
   // Valid device description ptr and skip cache.
   size_t cache_num = 256;
@@ -270,11 +272,11 @@ TEST_F(DeviceDescriptionServiceTest, TestOnParsedDeviceDescription) {
                false /* expired */);
   }
 
-  EXPECT_EQ(size_t(cache_num + 1), description_cache_.size());
+  EXPECT_EQ(size_t(cache_num + 1), description_cache_->size());
   description = CreateParsedDialDeviceDescription(1);
   TestOnParsedDeviceDescription(
       description, SafeDialDeviceDescriptionParser::ParsingError::kNone, "");
-  EXPECT_EQ(size_t(cache_num + 1), description_cache_.size());
+  EXPECT_EQ(size_t(cache_num + 1), description_cache_->size());
 }
 
 }  // namespace media_router

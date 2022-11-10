@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -185,7 +186,7 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
 
   void RemoveObserver(ThemeServiceObserver* observer);
 
-  const ThemeHelper& theme_helper_for_testing() const { return theme_helper_; }
+  const ThemeHelper& theme_helper_for_testing() const { return *theme_helper_; }
 
   // Don't create "Cached Theme.pak" in the extension directory, for testing.
   static void DisableThemePackForTesting();
@@ -246,7 +247,7 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
    private:
     CustomThemeSupplier* GetThemeSupplier() const;
 
-    const ThemeHelper& theme_helper_;
+    const raw_ref<const ThemeHelper> theme_helper_;
     bool incognito_;
     raw_ptr<const BrowserThemeProviderDelegate> delegate_;
   };
@@ -302,7 +303,7 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
 
-  const ThemeHelper& theme_helper_;
+  const raw_ref<const ThemeHelper> theme_helper_;
   scoped_refptr<CustomThemeSupplier> theme_supplier_;
 
   // The id of the theme extension which has just been installed but has not

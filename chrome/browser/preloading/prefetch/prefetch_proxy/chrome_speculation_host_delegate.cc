@@ -34,7 +34,7 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
     base::WeakPtr<content::SpeculationHostDevToolsObserver> devtools_observer) {
   auto* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host_);
+      content::WebContents::FromRenderFrameHost(&*render_frame_host_);
   auto* prefetch_proxy_tab_helper =
       PrefetchProxyTabHelper::FromWebContents(web_contents);
 
@@ -49,7 +49,7 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
   // non-private prefetches with subresources.
   std::vector<GURL> same_origin_prefetches_with_subresources;
 
-  const url::Origin& origin = render_frame_host_.GetLastCommittedOrigin();
+  const url::Origin& origin = render_frame_host_->GetLastCommittedOrigin();
 
   // Returns true if the given entry is processed. Being processed means this
   // delegate has a corresponding strategy to process the candidate, so it
@@ -125,14 +125,14 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
   // TODO(ryansturm): Handle CSP prefetch-src. https://crbug.com/1192857
   if (prefetches.size()) {
     prefetch_proxy_tab_helper->PrefetchSpeculationCandidates(
-        prefetches, render_frame_host_.GetLastCommittedURL(),
+        prefetches, render_frame_host_->GetLastCommittedURL(),
         std::move(devtools_observer));
   }
 
   if (same_origin_prefetches_with_subresources.size() > 0) {
     prerender::NoStatePrefetchManager* no_state_prefetch_manager =
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-            render_frame_host_.GetBrowserContext());
+            render_frame_host_->GetBrowserContext());
     if (!no_state_prefetch_manager) {
       return;
     }

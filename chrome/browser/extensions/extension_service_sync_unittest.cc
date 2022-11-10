@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -1601,7 +1602,8 @@ TEST_F(ExtensionServiceSyncCustomGalleryTest,
 
   struct TestCase {
     const char* name;  // For failure output only.
-    const std::string& sync_version;  // The version coming in from Sync.
+    const raw_ref<const std::string>
+        sync_version;  // The version coming in from Sync.
     // The disable reason(s) coming in from Sync, or -1 for "not set".
     int sync_disable_reasons;
     // The expected set of disable reasons after processing the Sync update. The
@@ -1613,16 +1615,16 @@ TEST_F(ExtensionServiceSyncCustomGalleryTest,
       // Sync tells us to re-enable an older version. No permissions should be
       // granted, since we can't be sure if the user actually approved the right
       // set of permissions.
-      {"OldVersion", v1, 0,
+      {"OldVersion", raw_ref(v1), 0,
        extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE, false},
       // Legacy case: Sync tells us to re-enable the extension, but doesn't
       // specify disable reasons. No permissions should be granted.
-      {"Legacy", v2, -1,
+      {"Legacy", raw_ref(v2), -1,
        extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE, false},
       // Sync tells us to re-enable the extension and explicitly removes the
       // disable reasons. Now the extension should have its permissions granted.
-      {"GrantPermissions", v2, 0, extensions::disable_reason::DISABLE_NONE,
-       true},
+      {"GrantPermissions", raw_ref(v2), 0,
+       extensions::disable_reason::DISABLE_NONE, true},
   };
 
   for (const TestCase& test_case : test_cases) {
@@ -1666,7 +1668,7 @@ TEST_F(ExtensionServiceSyncCustomGalleryTest,
     sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
     ext_specifics->set_id(id);
     ext_specifics->set_enabled(true);
-    ext_specifics->set_version(test_case.sync_version);
+    ext_specifics->set_version(*test_case.sync_version);
     if (test_case.sync_disable_reasons != -1)
       ext_specifics->set_disable_reasons(test_case.sync_disable_reasons);
 

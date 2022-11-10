@@ -14,6 +14,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -158,7 +159,7 @@ class DialRegistry
   std::string NextLabel();
 
   // Unowned reference to the DialRegistry::Client.
-  Client& client_;
+  const raw_ref<Client> client_;
 
   // Task runner for the DialRegistry.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

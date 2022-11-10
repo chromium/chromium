@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -261,14 +262,14 @@ class DownloadQuery::DownloadComparator {
   bool operator()(const DownloadItem* left, const DownloadItem* right);
 
  private:
-  const DownloadQuery::SorterVector& terms_;
+  const raw_ref<const DownloadQuery::SorterVector> terms_;
 
   // std::sort requires this class to be copyable.
 };
 
 bool DownloadQuery::DownloadComparator::operator()(const DownloadItem* left,
                                                    const DownloadItem* right) {
-  for (auto term = terms_.begin(); term != terms_.end(); ++term) {
+  for (auto term = terms_->begin(); term != terms_->end(); ++term) {
     switch (term->sorter.Run(*left, *right)) {
       case LT:
         return term->direction == DownloadQuery::ASCENDING;

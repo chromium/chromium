@@ -181,9 +181,9 @@ void CopyPreferenceFileForFirstRun(const InstallerState& installer_state,
 // and removes the whole directory during rollback.
 InstallStatus InstallNewVersion(const InstallParams& install_params,
                                 bool is_downgrade_allowed) {
-  const InstallerState& installer_state = install_params.installer_state;
-  const base::Version& current_version = install_params.current_version;
-  const base::Version& new_version = install_params.new_version;
+  const InstallerState& installer_state = *install_params.installer_state;
+  const base::Version& current_version = *install_params.current_version;
+  const base::Version& new_version = *install_params.new_version;
 
   installer_state.SetStage(BUILDING);
 
@@ -506,11 +506,11 @@ void RunShortcutCreationInChildProc(
 InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
                                      const base::FilePath& prefs_path,
                                      const InitialPreferences& prefs) {
-  const InstallationState& original_state = install_params.installation_state;
-  const InstallerState& installer_state = install_params.installer_state;
-  const base::FilePath& setup_path = install_params.setup_path;
-  const base::FilePath& src_path = install_params.src_path;
-  const base::Version& new_version = install_params.new_version;
+  const InstallationState& original_state = *install_params.installation_state;
+  const InstallerState& installer_state = *install_params.installer_state;
+  const base::FilePath& setup_path = *install_params.setup_path;
+  const base::FilePath& src_path = *install_params.src_path;
+  const base::Version& new_version = *install_params.new_version;
 
   // TODO(robertshield): Removing the pending on-reboot moves should be done
   // elsewhere.

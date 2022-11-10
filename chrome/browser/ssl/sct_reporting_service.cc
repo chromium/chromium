@@ -215,8 +215,8 @@ network::mojom::SCTAuditingMode SCTReportingService::GetReportingMode() {
       !base::FeatureList::IsEnabled(features::kSCTAuditing)) {
     return network::mojom::SCTAuditingMode::kDisabled;
   }
-  if (safe_browsing::IsSafeBrowsingEnabled(pref_service_)) {
-    if (safe_browsing::IsExtendedReportingEnabled(pref_service_)) {
+  if (safe_browsing::IsSafeBrowsingEnabled(*pref_service_)) {
+    if (safe_browsing::IsExtendedReportingEnabled(*pref_service_)) {
       return network::mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting;
     }
     if (base::FeatureList::IsEnabled(features::kSCTAuditingHashdance)) {

@@ -716,7 +716,7 @@ std::unique_ptr<UiElement> CreateWebVrIndicator(Model* model,
                                           VectorIcon, icon_element.get(),
                                           SetIcon));
   } else {
-    icon_element->SetIcon(spec.icon);
+    icon_element->SetIcon(*spec.icon);
   }
 
   std::unique_ptr<UiElement> description_element;
@@ -1295,7 +1295,7 @@ void UiSceneCreator::CreateSystemIndicators() {
   auto specs = GetIndicatorSpecs();
   for (const auto& spec : specs) {
     auto element = std::make_unique<VectorIconButton>(
-        base::RepeatingCallback<void()>(), spec.icon, audio_delegate_);
+        base::RepeatingCallback<void()>(), *spec.icon, audio_delegate_);
     element->SetName(spec.name);
     element->SetDrawPhase(kPhaseForeground);
     element->SetSize(kIndicatorHeightDMM, kIndicatorHeightDMM);

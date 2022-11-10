@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -245,7 +246,7 @@ class BookmarkButton : public BookmarkButtonBase {
     if (tooltip_text_.empty() || max_tooltip_width != max_tooltip_width_) {
       max_tooltip_width_ = max_tooltip_width;
       tooltip_text_ = BookmarkBarView::CreateToolTipForURLAndTitle(
-          max_tooltip_width_, tooltip_manager->GetFontList(), url_, GetText());
+          max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText());
     }
     return tooltip_text_;
   }
@@ -260,7 +261,7 @@ class BookmarkButton : public BookmarkButtonBase {
   // new tooltip text.
   mutable int max_tooltip_width_ = 0;
   mutable std::u16string tooltip_text_;
-  const GURL& url_;
+  const raw_ref<const GURL> url_;
 };
 
 BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)

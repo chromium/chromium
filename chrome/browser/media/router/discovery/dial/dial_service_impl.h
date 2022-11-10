@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -171,7 +172,7 @@ class DialServiceImpl : public DialService {
   bool HasOpenSockets();
 
   // Unowned reference to the DialService::Client.
-  DialService::Client& client_;
+  const raw_ref<DialService::Client> client_;
 
   // Task runner for the DialServiceImpl.  Currently must be bound to the IO
   // thread because of socket use, but this may change in the future.

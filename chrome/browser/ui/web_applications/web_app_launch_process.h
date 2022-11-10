@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_PROCESS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 
@@ -68,9 +69,9 @@ class WebAppLaunchProcess {
                                    content::WebContents* web_contents,
                                    bool started_new_navigation);
 
-  Profile& profile_;
-  WebAppProvider& provider_;
-  const apps::AppLaunchParams& params_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<WebAppProvider> provider_;
+  const raw_ref<const apps::AppLaunchParams> params_;
   const raw_ptr<const WebApp> web_app_;
 };
 

@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -95,7 +96,7 @@ class ThemePendingInstallChecker : public StatusChangeChecker {
 
  private:
   raw_ptr<Profile> profile_;
-  const std::string& theme_;
+  const raw_ref<const std::string> theme_;
 
   base::WeakPtrFactory<ThemePendingInstallChecker> weak_ptr_factory_{this};
 };

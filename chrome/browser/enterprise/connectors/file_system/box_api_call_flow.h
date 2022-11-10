@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
@@ -334,7 +335,7 @@ class BoxPartFileUploadApiCallFlow : public BoxChunkedUploadBaseApiCallFlow {
  private:
   void OnSuccessJsonParsed(ParseResult result);
   TaskCallback callback_;
-  const std::string& part_content_;
+  const raw_ref<const std::string> part_content_;
   const std::string content_range_;
   base::WeakPtrFactory<BoxPartFileUploadApiCallFlow> weak_factory_{this};
 };

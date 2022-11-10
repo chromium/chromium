@@ -188,23 +188,23 @@ void FilterAndAddMatches(const base::Value& all_handlers,
 
     const std::string& url_path = url.path();
     bool include_paths_exist =
-        !handler_view->include_paths.GetListDeprecated().empty();
+        !handler_view->include_paths->GetListDeprecated().empty();
     UrlHandlerSavedChoice best_choice = UrlHandlerSavedChoice::kNone;
     base::Time latest_timestamp = base::Time::Min();
     if (include_paths_exist && !FindBestMatchingIncludePathChoice(
-                                   url_path, handler_view->include_paths,
+                                   url_path, *handler_view->include_paths,
                                    &best_choice, &latest_timestamp)) {
       continue;
     }
 
     bool exclude_paths_exist =
-        !handler_view->exclude_paths.GetListDeprecated().empty();
+        !handler_view->exclude_paths->GetListDeprecated().empty();
     if (exclude_paths_exist &&
-        ExcludePathMatches(url_path, handler_view->exclude_paths)) {
+        ExcludePathMatches(url_path, *handler_view->exclude_paths)) {
       continue;
     }
 
-    matches.emplace_back(handler_view->profile_path, handler_view->app_id, url,
+    matches.emplace_back(handler_view->profile_path, *handler_view->app_id, url,
                          best_choice, latest_timestamp);
   }
 }
@@ -362,7 +362,7 @@ bool IsHandlerForApp(const AppId& app_id,
   if (handler_view->profile_path != profile_path)
     return false;
 
-  return !match_app_id || handler_view->app_id == app_id;
+  return !match_app_id || *handler_view->app_id == app_id;
 }
 
 // Removes entries that match |profile_path| and |app_id|.
@@ -463,7 +463,7 @@ void SaveChoiceToAllMatchingIncludePaths(const GURL& url,
     if (!handler_view)
       continue;
 
-    UpdateSavedChoice(url, choice, time, handler_view->include_paths);
+    UpdateSavedChoice(url, choice, time, *handler_view->include_paths);
   }
 }
 
@@ -486,13 +486,13 @@ PathSet SaveInAppChoiceToSelectedApp(const AppId* app_id,
   for (auto& handler : handlers) {
     auto handler_view = GetHandlerView(handler);
     if (!handler_view ||
-        !AppIdAndProfileMatch(app_id, profile_path, handler_view->app_id,
+        !AppIdAndProfileMatch(app_id, profile_path, *handler_view->app_id,
                               handler_view->profile_path)) {
       continue;
     }
 
     PathSet updated_paths = UpdateSavedChoice(
-        url, UrlHandlerSavedChoice::kInApp, time, handler_view->include_paths);
+        url, UrlHandlerSavedChoice::kInApp, time, *handler_view->include_paths);
     updated_include_paths.insert(updated_paths.begin(), updated_paths.end());
   }
   return updated_include_paths;
@@ -509,14 +509,14 @@ void ResetSavedChoiceInOtherApps(const AppId* app_id,
   for (auto& handler : handlers) {
     auto handler_view = GetHandlerView(handler);
     if (!handler_view ||
-        AppIdAndProfileMatch(app_id, profile_path, handler_view->app_id,
+        AppIdAndProfileMatch(app_id, profile_path, *handler_view->app_id,
                              handler_view->profile_path)) {
       continue;
     }
 
     UpdateSavedChoiceInIncludePaths(updated_include_paths,
                                     UrlHandlerSavedChoice::kNone, time,
-                                    handler_view->include_paths);
+                                    *handler_view->include_paths);
   }
 }
 
@@ -673,7 +673,7 @@ bool HasExpectedIdenticalFields(const base::Value& handler_lh,
   if (!handler_view_lh || !handler_view_rh)
     return false;
 
-  if (handler_view_lh->app_id != handler_view_rh->app_id)
+  if (*handler_view_lh->app_id != *handler_view_rh->app_id)
     return false;
   if (handler_view_lh->profile_path != handler_view_rh->profile_path)
     return false;
@@ -926,7 +926,7 @@ void ResetSavedChoice(PrefService* local_state,
     if (handler_view->profile_path != profile_path)
       continue;
     // Do not filter by app_id if no value is provided.
-    if (app_id && handler_view->app_id != *app_id)
+    if (app_id && *handler_view->app_id != *app_id)
       continue;
     if (handler_view->has_origin_wildcard != has_origin_wildcard)
       continue;
@@ -935,7 +935,7 @@ void ResetSavedChoice(PrefService* local_state,
     // path member matches |url_path|.
     UpdateSavedChoiceInIncludePaths(PathSet({url_path}),
                                     UrlHandlerSavedChoice::kNone, time,
-                                    handler_view->include_paths);
+                                    *handler_view->include_paths);
   }
 }
 
@@ -969,9 +969,9 @@ absl::optional<const HandlerView> GetConstHandlerView(
     return absl::nullopt;
 
   HandlerView handler_view = {
-      *handler_app_id,      handler_profile_path.value(),
-      *has_origin_wildcard, *include_paths,
-      *exclude_paths,
+      raw_ref(*handler_app_id), handler_profile_path.value(),
+      *has_origin_wildcard,     raw_ref(*include_paths),
+      raw_ref(*exclude_paths),
   };
 
   return handler_view;

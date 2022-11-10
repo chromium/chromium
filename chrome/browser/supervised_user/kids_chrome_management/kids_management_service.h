@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_piece.h"
@@ -104,8 +105,8 @@ class KidsManagementService : public KeyedService,
 #endif
 
   Profile* profile_;  // TODO(b/252793687): remove direct uses of the profile.
-  signin::IdentityManager& identity_manager_;
-  SupervisedUserService& supervised_user_service_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
+  const raw_ref<SupervisedUserService> supervised_user_service_;
   KidsProfileManager profile_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

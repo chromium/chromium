@@ -27,7 +27,7 @@ void WebAppIconWaiter::Wait() {
   run_loop_.Run();
 }
 void WebAppIconWaiter::OnFaviconRead(const web_app::AppId& app_id) {
-  if (app_id == app_id_) {
+  if (app_id == *app_id_) {
     run_loop_.Quit();
   }
 }

@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -83,7 +84,7 @@ class ConnectivityChecker {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   // The URL to connect to.
-  const GURL& url_;
+  const raw_ref<const GURL> url_;
 
   // How long to wait for a response before giving up.
   const base::TimeDelta timeout_;
@@ -131,7 +132,7 @@ ConnectivityChecker::ConnectivityChecker(
 
 void ConnectivityChecker::StartAsyncCheck() {
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url_;
+  request->url = *url_;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   url_loader_ = network::SimpleURLLoader::Create(std::move(request),

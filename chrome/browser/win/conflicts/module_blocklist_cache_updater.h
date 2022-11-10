@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -223,9 +224,9 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
 
   const raw_ptr<ModuleDatabaseEventSource> module_database_event_source_;
 
-  const CertificateInfo& exe_certificate_info_;
+  const raw_ref<const CertificateInfo> exe_certificate_info_;
   scoped_refptr<ModuleListFilter> module_list_filter_;
-  const std::vector<third_party_dlls::PackedListModule>&
+  const raw_ref<const std::vector<third_party_dlls::PackedListModule>>
       initial_blocklisted_modules_;
 
   OnCacheUpdatedCallback on_cache_updated_callback_;

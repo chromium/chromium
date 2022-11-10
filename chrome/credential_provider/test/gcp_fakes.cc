@@ -961,13 +961,13 @@ BOOL FakeEventLoggingApiManager::EvtNext(EVT_HANDLE result_set,
   EXPECT_TRUE(events_size > 0);
   DCHECK(events);
 
-  if (next_event_idx_ >= logs_.size()) {
+  if (next_event_idx_ >= logs_->size()) {
     last_error_ = ERROR_NO_MORE_ITEMS;
     return FALSE;
   }
 
   *num_returned = 0;
-  for (; (next_event_idx_ < logs_.size()) && (*num_returned < events_size);
+  for (; (next_event_idx_ < logs_->size()) && (*num_returned < events_size);
        ++next_event_idx_) {
     event_handles_.push_back(EVT_HANDLE());
     size_t last_idx = event_handles_.size() - 1;
@@ -1040,12 +1040,12 @@ BOOL FakeEventLoggingApiManager::EvtRender(EVT_HANDLE context,
   }
 
   EVT_VARIANT* data = reinterpret_cast<EVT_VARIANT*>(buffer);
-  data[0].UInt64Val = logs_[idx].event_id;
+  data[0].UInt64Val = (*logs_)[idx].event_id;
 
   // Convert to Windows ticks.
   ULONGLONG timestamp_ticks =
-      (logs_[idx].created_ts.seconds + 11644473600LL) * 10000000;
-  timestamp_ticks += (logs_[idx].created_ts.nanos / 100);
+      ((*logs_)[idx].created_ts.seconds + 11644473600LL) * 10000000;
+  timestamp_ticks += ((*logs_)[idx].created_ts.nanos / 100);
 
   data[1].FileTimeVal = timestamp_ticks;
   *property_count = num_properties;
@@ -1074,9 +1074,9 @@ BOOL FakeEventLoggingApiManager::EvtFormatMessage(EVT_HANDLE publisher_metadata,
 
   std::wstring data;
   if (flags == EvtFormatMessageEvent) {
-    data = logs_[idx].data;
+    data = (*logs_)[idx].data;
   } else if (flags == EvtFormatMessageLevel) {
-    switch (logs_[idx].severity_level) {
+    switch ((*logs_)[idx].severity_level) {
       case 1:
         data = L"Critical";
         break;

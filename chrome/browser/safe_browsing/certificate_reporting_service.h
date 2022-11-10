@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -222,7 +223,7 @@ class CertificateReportingService : public KeyedService {
 
   void OnPreferenceChanged();
 
-  const PrefService& pref_service_;
+  const raw_ref<const PrefService> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<Reporter> reporter_;
 

@@ -50,7 +50,7 @@ SurfaceSetValuation::~SurfaceSetValuation() = default;
 const double SurfaceSetValuation::kDefaultCost;
 
 double SurfaceSetValuation::Cost(const IdentifiableSurfaceSet& set) const {
-  return Cost(equivalence_sets_.GetRepresentatives(set));
+  return Cost(equivalence_sets_->GetRepresentatives(set));
 }
 
 double SurfaceSetValuation::Cost(const RepresentativeSurfaceSet& set) const {
@@ -66,7 +66,7 @@ double SurfaceSetValuation::Cost(const RepresentativeSurfaceSet& set) const {
 }
 
 double SurfaceSetValuation::Cost(blink::IdentifiableSurface surface) const {
-  return Cost(equivalence_sets_.GetRepresentative(surface));
+  return Cost(equivalence_sets_->GetRepresentative(surface));
 }
 
 double SurfaceSetValuation::Cost(RepresentativeSurface surface) const {

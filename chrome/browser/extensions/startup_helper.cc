@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -138,15 +139,15 @@ class ValidateCrxHelper : public SandboxedUnpackerClient {
     DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
     auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
         mojom::ManifestLocation::kInternal, 0, /* no special creation flags */
-        temp_dir_, GetExtensionFileTaskRunner().get(), this);
-    unpacker->StartWithCrx(crx_file_);
+        *temp_dir_, GetExtensionFileTaskRunner().get(), this);
+    unpacker->StartWithCrx(*crx_file_);
   }
 
   // The file being validated.
-  const CRXFileInfo& crx_file_;
+  const raw_ref<const CRXFileInfo> crx_file_;
 
   // The temporary directory where the sandboxed unpacker will do work.
-  const base::FilePath& temp_dir_;
+  const raw_ref<const base::FilePath> temp_dir_;
 
   // Closure called upon completion.
   base::OnceClosure quit_closure_;

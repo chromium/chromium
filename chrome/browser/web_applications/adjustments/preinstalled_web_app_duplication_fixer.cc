@@ -53,7 +53,7 @@ PreinstalledWebAppDuplicationFixer::PreinstalledWebAppDuplicationFixer(
     return;
   // WebAppAdjustmentsFactory guarantees that AppServiceProxy exists.
   apps::AppRegistryCache& app_registry_cache =
-      apps::AppServiceProxyFactory::GetForProfile(&profile_)
+      apps::AppServiceProxyFactory::GetForProfile(&*profile_)
           ->AppRegistryCache();
   web_apps_ready_ =
       app_registry_cache.IsAppTypeInitialized(apps::AppType::kWeb);
@@ -99,7 +99,7 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplicationForTesting() {
 void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
   std::vector<std::string> installed_web_apps;
   std::vector<std::string> installed_chrome_apps;
-  apps::AppServiceProxyFactory::GetForProfile(&profile_)
+  apps::AppServiceProxyFactory::GetForProfile(&*profile_)
       ->AppRegistryCache()
       .ForEachApp([&installed_web_apps,
                    &installed_chrome_apps](const apps::AppUpdate& update) {
@@ -121,7 +121,7 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
   int installed_tally[2][2] = {};
 
   for (const PreinstalledWebAppMigration& migration :
-       GetPreinstalledWebAppMigrations(profile_)) {
+       GetPreinstalledWebAppMigrations(*profile_)) {
     bool web_app_installed =
         installed_web_apps_set.contains(migration.expected_web_app_id);
     bool chrome_app_installed =
@@ -132,7 +132,7 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
       // PreinstalledWebAppManager::Synchronize() to reinstall the web
       // app and re-trigger migration.
       if (RemoveInstallUrlForPreinstalledApp(migration.install_url)) {
-        UserUninstalledPreinstalledWebAppPrefs(profile_.GetPrefs())
+        UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
             .RemoveByInstallUrl(migration.expected_web_app_id,
                                 migration.install_url);
         ++fix_count;
@@ -157,11 +157,11 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
 bool PreinstalledWebAppDuplicationFixer::RemoveInstallUrlForPreinstalledApp(
     GURL install_url) {
   bool external_prefs_removed =
-      ExternallyInstalledWebAppPrefs(profile_.GetPrefs()).Remove(install_url);
+      ExternallyInstalledWebAppPrefs(profile_->GetPrefs()).Remove(install_url);
 
   // Get web_app by install_url and then remove the install_url.
   WebAppProvider* provider =
-      WebAppProvider::GetForLocalAppsUnchecked(&profile_);
+      WebAppProvider::GetForLocalAppsUnchecked(&*profile_);
   absl::optional<AppId> preinstalled_app_id =
       provider->registrar().LookupExternalAppId(install_url);
   if (!preinstalled_app_id.has_value())

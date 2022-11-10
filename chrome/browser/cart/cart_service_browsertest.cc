@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/cart/cart_service.h"
@@ -245,11 +246,11 @@ class FakeCartDiscountLinkFetcher : public CartDiscountLinkFetcher {
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       cart_db::ChromeCartContentProto cart_content_proto,
       CartDiscountLinkFetcherCallback callback) override {
-    std::move(callback).Run(discount_url_);
+    std::move(callback).Run(*discount_url_);
   }
 
  private:
-  const GURL& discount_url_;
+  const raw_ref<const GURL> discount_url_;
 };
 
 class CartServiceBrowserDiscountTest : public CartServiceBrowserTest {

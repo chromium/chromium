@@ -536,7 +536,7 @@ void DialServiceImpl::NotifyOnDiscoveryRequest() {
     return;
   }
 
-  client_.OnDiscoveryRequest();
+  client_->OnDiscoveryRequest();
   // If we need to send additional requests, schedule a timer to do so.
   if (num_requests_sent_ < max_requests_ && num_requests_sent_ == 1) {
     // TODO(imcheng): Move this to SendOneRequest() once the implications are
@@ -552,13 +552,13 @@ void DialServiceImpl::NotifyOnDeviceDiscovered(
   if (!discovery_active_) {
     return;
   }
-  client_.OnDeviceDiscovered(device_data);
+  client_->OnDeviceDiscovered(device_data);
 }
 
 void DialServiceImpl::NotifyOnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_.OnError(HasOpenSockets() ? DIAL_SERVICE_SOCKET_ERROR
-                                   : DIAL_SERVICE_NO_INTERFACES);
+  client_->OnError(HasOpenSockets() ? DIAL_SERVICE_SOCKET_ERROR
+                                    : DIAL_SERVICE_NO_INTERFACES);
 }
 
 void DialServiceImpl::FinishDiscovery() {
@@ -570,7 +570,7 @@ void DialServiceImpl::FinishDiscovery() {
   request_timer_.Stop();
   discovery_active_ = false;
   num_requests_sent_ = 0;
-  client_.OnDiscoveryFinished();
+  client_->OnDiscoveryFinished();
 }
 
 bool DialServiceImpl::HasOpenSockets() {

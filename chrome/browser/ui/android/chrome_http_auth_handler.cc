@@ -34,7 +34,7 @@ ChromeHttpAuthHandler::ChromeHttpAuthHandler(
                                      : nullptr) {
   if (login_model_data) {
     auth_manager_->SetObserverAndDeliverCredentials(this,
-                                                    login_model_data->form);
+                                                    *login_model_data->form);
   }
 }
 

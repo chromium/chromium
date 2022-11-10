@@ -158,7 +158,7 @@ bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
 void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
   DCHECK(AppUsesWindowControlsOverlay());
 
-  provider_.sync_bridge().SetAppWindowControlsOverlayEnabled(
+  provider_->sync_bridge().SetAppWindowControlsOverlayEnabled(
       app_id(), !registrar().GetWindowControlsOverlayEnabled(app_id()));
 }
 
@@ -210,11 +210,14 @@ bool WebAppBrowserController::AlwaysShowToolbarInFullscreen() const {
 void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
   // base::Unretained is safe as the command manager won't execute the command
   // if the provider no longer exists.
-  provider_.command_manager().ScheduleCommand(std::make_unique<CallbackCommand>(
-      std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id()}),
-      base::BindOnce(&WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen,
-                     base::Unretained(&provider_.sync_bridge()), app_id(),
-                     !registrar().AlwaysShowToolbarInFullscreen(app_id()))));
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<CallbackCommand>(
+          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+              {app_id()}),
+          base::BindOnce(
+              &WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen,
+              base::Unretained(&provider_->sync_bridge()), app_id(),
+              !registrar().AlwaysShowToolbarInFullscreen(app_id()))));
 }
 #endif
 
@@ -298,9 +301,9 @@ ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
   }
 #endif
 
-  if (provider_.icon_manager().HasSmallestIcon(app_id(), {IconPurpose::ANY},
-                                               kWebAppIconSmall)) {
-    provider_.icon_manager().ReadSmallestIconAny(
+  if (provider_->icon_manager().HasSmallestIcon(app_id(), {IconPurpose::ANY},
+                                                kWebAppIconSmall)) {
+    provider_->icon_manager().ReadSmallestIconAny(
         app_id(), kWebAppIconSmall,
         base::BindOnce(&WebAppBrowserController::OnReadIcon,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -451,7 +454,7 @@ std::u16string WebAppBrowserController::GetTitle() const {
   std::u16string raw_title = AppBrowserController::GetTitle();
 
   std::u16string app_name =
-      base::UTF8ToUTF16(provider_.registrar().GetAppShortName(app_id()));
+      base::UTF8ToUTF16(provider_->registrar().GetAppShortName(app_id()));
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
   }
@@ -472,14 +475,14 @@ std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
 }
 
 bool WebAppBrowserController::CanUserUninstall() const {
-  return WebAppUiManagerImpl::Get(&provider_)
+  return WebAppUiManagerImpl::Get(&*provider_)
       ->dialog_manager()
       .CanUserUninstallWebApp(app_id());
 }
 
 void WebAppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
-  WebAppUiManagerImpl::Get(&provider_)
+  WebAppUiManagerImpl::Get(&*provider_)
       ->dialog_manager()
       .UninstallWebApp(app_id(), webapps::WebappUninstallSource::kAppMenu,
                        browser()->window(), base::DoNothing());
@@ -512,11 +515,11 @@ void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
 }
 
 const WebAppRegistrar& WebAppBrowserController::registrar() const {
-  return provider_.registrar();
+  return provider_->registrar();
 }
 
 const WebAppInstallManager& WebAppBrowserController::install_manager() const {
-  return provider_.install_manager();
+  return provider_->install_manager();
 }
 
 void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {

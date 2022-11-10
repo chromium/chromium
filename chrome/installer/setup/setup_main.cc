@@ -843,8 +843,8 @@ bool CreateEulaSentinel() {
 installer::InstallStatus RegisterDevChrome(
     const installer::ModifyParams& modify_params,
     const base::CommandLine& cmd_line) {
-  const InstallationState& original_state = modify_params.installation_state;
-  const base::FilePath& setup_exe = modify_params.setup_path;
+  const InstallationState& original_state = *modify_params.installation_state;
+  const base::FilePath& setup_exe = *modify_params.setup_path;
 
   // Only proceed with registering a dev chrome if no real Chrome installation
   // of the same install mode is present on this system.
@@ -928,10 +928,11 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
                                     const base::CommandLine& cmd_line,
                                     const InitialPreferences& prefs,
                                     int* exit_code) {
-  installer::InstallerState* installer_state = &(modify_params.installer_state);
+  installer::InstallerState* installer_state =
+      &(*modify_params.installer_state);
   installer::InstallationState* original_state =
-      &(modify_params.installation_state);
-  const base::FilePath& setup_exe = modify_params.setup_path;
+      &(*modify_params.installation_state);
+  const base::FilePath& setup_exe = *modify_params.setup_path;
 
   // TODO(gab): Add a local |status| variable which each block below sets;
   // only determine the |exit_code| from |status| at the end (this will allow

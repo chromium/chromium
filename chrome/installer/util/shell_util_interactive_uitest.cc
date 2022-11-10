@@ -12,6 +12,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
@@ -82,11 +83,11 @@ class ScopedCopyRegKey {
       : to_(to), key_(key), temp_key_name_(temp_key_name) {}
 
   ~ScopedCopyRegKey() {
-    to_.DeleteKey(key_.c_str());
+    to_->DeleteKey(key_.c_str());
 
     if (!temp_key_name_.empty()) {
       LONG result =
-          RegRenameKey(to_.Handle(), temp_key_name_.c_str(), key_.c_str());
+          RegRenameKey(to_->Handle(), temp_key_name_.c_str(), key_.c_str());
       if (result != ERROR_SUCCESS)
         ADD_FAILURE() << "Registry Restore Rename Failed " << result;
     }
@@ -111,7 +112,7 @@ class ScopedCopyRegKey {
   }
 
   // This RegKey must outlive this class.
-  base::win::RegKey& to_;
+  const raw_ref<base::win::RegKey> to_;
   const std::wstring key_;
   const std::wstring temp_key_name_;
 };

@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -187,7 +188,7 @@ class RemoveVisitsTask : public history::HistoryDBTask {
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     // Fetch the visits.
-    backend->RemoveVisits(visits_);
+    backend->RemoveVisits(*visits_);
     wait_event_->Signal();
     return true;
   }
@@ -197,7 +198,7 @@ class RemoveVisitsTask : public history::HistoryDBTask {
  private:
   ~RemoveVisitsTask() override = default;
 
-  const history::VisitVector& visits_;
+  const raw_ref<const history::VisitVector> visits_;
   raw_ptr<base::WaitableEvent> wait_event_;
 };
 

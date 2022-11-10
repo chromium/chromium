@@ -103,10 +103,10 @@ WebAppLaunchQueue::WebAppLaunchQueue(content::WebContents* web_contents,
 WebAppLaunchQueue::~WebAppLaunchQueue() = default;
 
 void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
-  DCHECK(registrar_.IsUrlInAppScope(launch_params.target_url,
-                                    launch_params.app_id));
+  DCHECK(registrar_->IsUrlInAppScope(launch_params.target_url,
+                                     launch_params.app_id));
   DCHECK(launch_params.dir.empty() ||
-         registrar_.IsSystemApp(launch_params.app_id));
+         registrar_->IsSystemApp(launch_params.app_id));
 
   // Drop the existing queue state if a new launch navigation was started.
   if (launch_params.started_new_navigation) {
@@ -143,7 +143,7 @@ void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   if (pending_navigation_) {
     pending_navigation_ = false;
     // The launch navigation may have redirected out of the app scope.
-    if (!registrar_.IsUrlInAppScope(handle->GetURL(), queue_.front().app_id)) {
+    if (!registrar_->IsUrlInAppScope(handle->GetURL(), queue_.front().app_id)) {
       Reset();
       return;
     }
@@ -176,7 +176,7 @@ void WebAppLaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
 
 void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
                                          const GURL& current_url) {
-  DCHECK(registrar_.IsUrlInAppScope(current_url, launch_params.app_id));
+  DCHECK(registrar_->IsUrlInAppScope(current_url, launch_params.app_id));
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()
       ->GetPrimaryMainFrame()

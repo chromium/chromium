@@ -105,8 +105,8 @@ ThemePendingInstallChecker::ThemePendingInstallChecker(Profile* profile,
 ThemePendingInstallChecker::~ThemePendingInstallChecker() = default;
 
 bool ThemePendingInstallChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Waiting for pending theme to be '" << theme_ << "'";
-  return themes_helper::ThemeIsPendingInstall(profile_, theme_);
+  *os << "Waiting for pending theme to be '" << *theme_ << "'";
+  return themes_helper::ThemeIsPendingInstall(profile_, *theme_);
 }
 
 ThemeConditionChecker::ThemeConditionChecker(

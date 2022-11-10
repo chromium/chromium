@@ -89,7 +89,7 @@ LoginView::LoginView(const std::u16string& authority,
 
   if (http_auth_manager_) {
     http_auth_manager_->SetObserverAndDeliverCredentials(
-        this, login_model_data->form);
+        this, *login_model_data->form);
   }
 }
 

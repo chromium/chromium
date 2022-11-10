@@ -241,8 +241,8 @@ void ModuleBlocklistCacheUpdater::OnNewModuleFound(
 
   // Determine if the module was in the initial blocklist cache.
   blocking_state.was_in_blocklist_cache =
-      std::binary_search(std::begin(initial_blocklisted_modules_),
-                         std::end(initial_blocklisted_modules_),
+      std::binary_search(std::begin(*initial_blocklisted_modules_),
+                         std::end(*initial_blocklisted_modules_),
                          packed_list_module, internal::ModuleLess());
 
   // Make note of the fact that the module was blocked. It could be that the
@@ -354,8 +354,8 @@ ModuleBlocklistCacheUpdater::DetermineModuleBlockingDecision(
   // Explicitly allowlist modules whose signing cert's Subject field matches the
   // one in the current executable. No attempt is made to check the validity of
   // module signatures or of signing certs.
-  if (exe_certificate_info_.type != CertificateInfo::Type::NO_CERTIFICATE &&
-      exe_certificate_info_.subject ==
+  if (exe_certificate_info_->type != CertificateInfo::Type::NO_CERTIFICATE &&
+      exe_certificate_info_->subject ==
           module_data.inspection_result->certificate_info.subject) {
     return ModuleBlockingDecision::kAllowedSameCertificate;
   }

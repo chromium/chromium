@@ -186,7 +186,7 @@ safe_browsing::FileAnalysisRequest* FilesRequestHandler::PrepareFileRequest(
   DCHECK_LT(index, paths_.size());
   base::FilePath path = paths_[index];
   auto request = std::make_unique<safe_browsing::FileAnalysisRequest>(
-      analysis_settings_, path, path.BaseName(), /*mime_type*/ "",
+      *analysis_settings_, path, path.BaseName(), /*mime_type*/ "",
       /* delay_opening_file */ true,
       base::BindOnce(&FilesRequestHandler::FileRequestCallback,
                      weak_ptr_factory_.GetWeakPtr(), index),
@@ -213,7 +213,7 @@ void FilesRequestHandler::OnGotFileInfo(
   file_info_[index].size = data.size;
   file_info_[index].mime_type = data.mime_type;
 
-  bool failed = analysis_settings_.cloud_or_local_settings.is_cloud_analysis()
+  bool failed = analysis_settings_->cloud_or_local_settings.is_cloud_analysis()
                     ? CloudResultIsFailure(result)
                     : LocalResultIsFailure(result);
   if (failed) {
@@ -288,12 +288,12 @@ void FilesRequestHandler::FileRequestCallback(
                                    : upload_start_time_;
 
   RecordDeepScanMetrics(
-      analysis_settings_.cloud_or_local_settings.is_cloud_analysis(),
+      analysis_settings_->cloud_or_local_settings.is_cloud_analysis(),
       access_point_, base::TimeTicks::Now() - start_timestamp,
       file_info_[index].size, upload_result, response);
 
   RequestHandlerResult request_handler_result = CalculateRequestHandlerResult(
-      analysis_settings_, upload_result, response);
+      *analysis_settings_, upload_result, response);
   results_[index] = request_handler_result;
   ++file_result_count_;
 
@@ -308,7 +308,7 @@ void FilesRequestHandler::FileRequestCallback(
       file_info_[index].sha256, file_info_[index].mime_type,
       AccessPointToTriggerString(access_point_), access_point_,
       file_info_[index].size, upload_result, response,
-      CalculateEventResult(analysis_settings_, request_handler_result.complies,
+      CalculateEventResult(*analysis_settings_, request_handler_result.complies,
                            result_is_warning));
 
   safe_browsing::DecrementCrashKey(

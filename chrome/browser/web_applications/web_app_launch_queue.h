@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_launch_params.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -63,7 +64,7 @@ class WebAppLaunchQueue : public content::WebContentsObserver {
   void SendLaunchParams(WebAppLaunchParams launch_params,
                         const GURL& current_url);
 
-  const WebAppRegistrar& registrar_;
+  const raw_ref<const WebAppRegistrar> registrar_;
 
   // Launch params queued up to be sent to the WebContents.
   std::vector<WebAppLaunchParams> queue_;

@@ -40,9 +40,9 @@ KidsProfileManager::KidsProfileManager(PrefService& pref_service,
 
 bool KidsProfileManager::IsChildAccount() const {
   return profile_
-      .IsChild();  // TODO(b/252793687): Use AccountInfo.is_child_account ==
-                   // Tribool::kTrue once setting child status is possible in
-                   // test and remove the direct Profile dependency.
+      ->IsChild();  // TODO(b/252793687): Use AccountInfo.is_child_account ==
+                    // Tribool::kTrue once setting child status is possible in
+                    // test and remove the direct Profile dependency.
 }
 
 void KidsProfileManager::UpdateChildAccountStatus(bool is_child_account) {
@@ -103,18 +103,18 @@ KidsProfileManager::Property::Property(KidsProfileManager* manager,
     : manager_(manager), property_path_(property_path) {}
 
 void KidsProfileManager::Property::Clear() {
-  manager_->pref_service_.ClearPref(std::string(property_path_));
+  manager_->pref_service_->ClearPref(std::string(property_path_));
 }
 
 void KidsProfileManager::Property::Set(StringPiece value) {
-  manager_->pref_service_.SetString(std::string(property_path_),
-                                    std::string(value));
+  manager_->pref_service_->SetString(std::string(property_path_),
+                                     std::string(value));
 }
 
 void KidsProfileManager::Property::Set(bool value) {
-  manager_->pref_service_.SetBoolean(std::string(property_path_), value);
+  manager_->pref_service_->SetBoolean(std::string(property_path_), value);
 }
 
 bool KidsProfileManager::Property::GetBool() const {
-  return manager_->pref_service_.GetBoolean(std::string(property_path_));
+  return manager_->pref_service_->GetBoolean(std::string(property_path_));
 }

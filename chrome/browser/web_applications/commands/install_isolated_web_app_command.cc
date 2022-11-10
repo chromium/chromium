@@ -257,7 +257,7 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
   options.isolation_data = isolation_data_;
 
-  install_finalizer_.FinalizeInstall(
+  install_finalizer_->FinalizeInstall(
       info, options,
       base::BindOnce(&InstallIsolatedWebAppCommand::OnFinalizeInstall,
                      weak_factory_.GetWeakPtr()));

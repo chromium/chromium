@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -145,7 +146,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommand {
 
   base::raw_ref<content::BrowserContext> browser_context_;
 
-  WebAppInstallFinalizer& install_finalizer_;
+  const raw_ref<WebAppInstallFinalizer> install_finalizer_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 

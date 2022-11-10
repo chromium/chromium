@@ -19,6 +19,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -813,16 +814,16 @@ class ProbablySameFilterMatcher
 
   bool MatchAndExplain(const base::RepeatingCallback<bool(const GURL&)>& filter,
                        MatchResultListener* listener) const override {
-    if (filter.is_null() && to_match_.is_null())
+    if (filter.is_null() && to_match_->is_null())
       return true;
-    if (filter.is_null() != to_match_.is_null())
+    if (filter.is_null() != to_match_->is_null())
       return false;
 
     const GURL urls_to_test_[] = {
         GURL("http://host1.com:1"), GURL("http://host2.com:1"),
         GURL("http://host3.com:1"), GURL("invalid spec")};
     for (GURL url : urls_to_test_) {
-      if (filter.Run(url) != to_match_.Run(url)) {
+      if (filter.Run(url) != to_match_->Run(url)) {
         if (listener)
           *listener << "The filters differ on the URL " << url;
         return false;
@@ -832,15 +833,15 @@ class ProbablySameFilterMatcher
   }
 
   void DescribeTo(::std::ostream* os) const override {
-    *os << "is probably the same url filter as " << &to_match_;
+    *os << "is probably the same url filter as " << &*to_match_;
   }
 
   void DescribeNegationTo(::std::ostream* os) const override {
-    *os << "is definitely NOT the same url filter as " << &to_match_;
+    *os << "is definitely NOT the same url filter as " << &*to_match_;
   }
 
  private:
-  const base::RepeatingCallback<bool(const GURL&)>& to_match_;
+  const raw_ref<const base::RepeatingCallback<bool(const GURL&)>> to_match_;
 };
 
 inline Matcher<const base::RepeatingCallback<bool(const GURL&)>&>

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -124,10 +125,10 @@ struct BackgroundContentsOpenedDetails {
   raw_ptr<BackgroundContents> contents;
 
   // The name of the parent frame for these contents.
-  const std::string& frame_name;
+  const raw_ref<const std::string> frame_name;
 
   // The ID of the parent application (if any).
-  const std::string& application_id;
+  const raw_ref<const std::string> application_id;
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_CONTENTS_H_

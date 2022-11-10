@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -91,8 +92,8 @@ class SyncChromeExtensionsActivityMonitorTest : public testing::Test {
   scoped_refptr<Extension> extension1_;
   scoped_refptr<Extension> extension2_;
   // IDs of |extension{1,2}_|.
-  const std::string& id1_;
-  const std::string& id2_;
+  const raw_ref<const std::string> id1_;
+  const raw_ref<const std::string> id2_;
 };
 
 // Fire some mutating bookmark API events with extension 1, then fire
@@ -126,10 +127,10 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, Basic) {
   monitor_.GetExtensionsActivity()->GetAndClearRecords(&results);
 
   EXPECT_EQ(2U, results.size());
-  EXPECT_THAT(results, Contains(Key(id1_)));
-  EXPECT_THAT(results, Contains(Key(id2_)));
-  EXPECT_EQ(writes_by_extension1, results[id1_].bookmark_write_count);
-  EXPECT_EQ(writes_by_extension2, results[id2_].bookmark_write_count);
+  EXPECT_THAT(results, Contains(Key(*id1_)));
+  EXPECT_THAT(results, Contains(Key(*id2_)));
+  EXPECT_EQ(writes_by_extension1, results[*id1_].bookmark_write_count);
+  EXPECT_EQ(writes_by_extension2, results[*id2_].bookmark_write_count);
 }
 
 // Fire some mutating bookmark API events with both extensions.  Then
@@ -146,8 +147,8 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, Put) {
   monitor_.GetExtensionsActivity()->GetAndClearRecords(&results);
 
   EXPECT_EQ(2U, results.size());
-  EXPECT_EQ(5U, results[id1_].bookmark_write_count);
-  EXPECT_EQ(8U, results[id2_].bookmark_write_count);
+  EXPECT_EQ(5U, results[*id1_].bookmark_write_count);
+  EXPECT_EQ(8U, results[*id2_].bookmark_write_count);
 
   FireBookmarksApiEvent<extensions::BookmarksGetTreeFunction>(profile_.get(),
                                                               extension2_, 3);
@@ -161,10 +162,10 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, Put) {
   monitor_.GetExtensionsActivity()->GetAndClearRecords(&new_records);
 
   EXPECT_EQ(2U, results.size());
-  EXPECT_EQ(id1_, new_records[id1_].extension_id);
-  EXPECT_EQ(id2_, new_records[id2_].extension_id);
-  EXPECT_EQ(5U, new_records[id1_].bookmark_write_count);
-  EXPECT_EQ(8U + 2U, new_records[id2_].bookmark_write_count);
+  EXPECT_EQ(*id1_, new_records[*id1_].extension_id);
+  EXPECT_EQ(*id2_, new_records[*id2_].extension_id);
+  EXPECT_EQ(5U, new_records[*id1_].bookmark_write_count);
+  EXPECT_EQ(8U + 2U, new_records[*id2_].bookmark_write_count);
 }
 
 // Fire some mutating bookmark API events and get the records multiple
@@ -178,7 +179,7 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, MultiGet) {
   monitor_.GetExtensionsActivity()->GetAndClearRecords(&results);
 
   EXPECT_EQ(1U, results.size());
-  EXPECT_EQ(5U, results[id1_].bookmark_write_count);
+  EXPECT_EQ(5U, results[*id1_].bookmark_write_count);
 
   monitor_.GetExtensionsActivity()->GetAndClearRecords(&results);
   EXPECT_TRUE(results.empty());
@@ -188,7 +189,7 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, MultiGet) {
   monitor_.GetExtensionsActivity()->GetAndClearRecords(&results);
 
   EXPECT_EQ(1U, results.size());
-  EXPECT_EQ(3U, results[id1_].bookmark_write_count);
+  EXPECT_EQ(3U, results[*id1_].bookmark_write_count);
 }
 
 }  // namespace

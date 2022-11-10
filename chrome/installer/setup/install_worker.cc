@@ -83,11 +83,11 @@ void AddInstallerCopyTasks(const InstallParams& install_params,
                            WorkItemList* install_list) {
   DCHECK(install_list);
 
-  const InstallerState& installer_state = install_params.installer_state;
-  const base::FilePath& setup_path = install_params.setup_path;
-  const base::FilePath& archive_path = install_params.archive_path;
-  const base::FilePath& temp_path = install_params.temp_path;
-  const base::Version& new_version = install_params.new_version;
+  const InstallerState& installer_state = *install_params.installer_state;
+  const base::FilePath& setup_path = *install_params.setup_path;
+  const base::FilePath& archive_path = *install_params.archive_path;
+  const base::FilePath& temp_path = *install_params.temp_path;
+  const base::Version& new_version = *install_params.new_version;
 
   base::FilePath installer_dir(
       installer_state.GetInstallerDirectory(new_version));
@@ -221,12 +221,12 @@ void AddDeleteUninstallEntryForMSIWorkItems(
 // Adds Chrome specific install work items to |install_list|.
 void AddChromeWorkItems(const InstallParams& install_params,
                         WorkItemList* install_list) {
-  const InstallerState& installer_state = install_params.installer_state;
-  const base::FilePath& archive_path = install_params.archive_path;
-  const base::FilePath& src_path = install_params.src_path;
-  const base::FilePath& temp_path = install_params.temp_path;
-  const base::Version& current_version = install_params.current_version;
-  const base::Version& new_version = install_params.new_version;
+  const InstallerState& installer_state = *install_params.installer_state;
+  const base::FilePath& archive_path = *install_params.archive_path;
+  const base::FilePath& src_path = *install_params.src_path;
+  const base::FilePath& temp_path = *install_params.temp_path;
+  const base::Version& current_version = *install_params.current_version;
+  const base::Version& new_version = *install_params.new_version;
 
   const base::FilePath& target_path = installer_state.target_path();
 
@@ -437,9 +437,9 @@ void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
 // state key if running under an MSI installer.
 void AddUninstallShortcutWorkItems(const InstallParams& install_params,
                                    WorkItemList* install_list) {
-  const InstallerState& installer_state = install_params.installer_state;
-  const base::FilePath& setup_path = install_params.setup_path;
-  const base::Version& new_version = install_params.new_version;
+  const InstallerState& installer_state = *install_params.installer_state;
+  const base::FilePath& setup_path = *install_params.setup_path;
+  const base::Version& new_version = *install_params.new_version;
 
   HKEY reg_root = installer_state.root_key();
 
@@ -537,7 +537,7 @@ void AddUninstallShortcutWorkItems(const InstallParams& install_params,
 // product version as the last step.
 void AddVersionKeyWorkItems(const InstallParams& install_params,
                             WorkItemList* list) {
-  const InstallerState& installer_state = install_params.installer_state;
+  const InstallerState& installer_state = *install_params.installer_state;
   const HKEY root = installer_state.root_key();
 
   // Only set "lang" for user-level installs since for system-level, the install
@@ -571,7 +571,7 @@ void AddVersionKeyWorkItems(const InstallParams& install_params,
   }
   list->AddSetRegValueWorkItem(
       root, clients_key, KEY_WOW64_32KEY, google_update::kRegVersionField,
-      ASCIIToWide(install_params.new_version.GetString()),
+      ASCIIToWide(install_params.new_version->GetString()),
       true);  // overwrite version
 }
 
@@ -617,12 +617,12 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
                             WorkItemList* post_install_task_list) {
   DCHECK(post_install_task_list);
 
-  const InstallerState& installer_state = install_params.installer_state;
-  const base::FilePath& setup_path = install_params.setup_path;
-  const base::FilePath& src_path = install_params.src_path;
-  const base::FilePath& temp_path = install_params.temp_path;
-  const base::Version& current_version = install_params.current_version;
-  const base::Version& new_version = install_params.new_version;
+  const InstallerState& installer_state = *install_params.installer_state;
+  const base::FilePath& setup_path = *install_params.setup_path;
+  const base::FilePath& src_path = *install_params.src_path;
+  const base::FilePath& temp_path = *install_params.temp_path;
+  const base::Version& current_version = *install_params.current_version;
+  const base::Version& new_version = *install_params.new_version;
 
   HKEY root = installer_state.root_key();
   const base::FilePath& target_path = installer_state.target_path();
@@ -754,11 +754,11 @@ void AddInstallWorkItems(const InstallParams& install_params,
                          WorkItemList* install_list) {
   DCHECK(install_list);
 
-  const InstallerState& installer_state = install_params.installer_state;
-  const base::FilePath& setup_path = install_params.setup_path;
-  const base::FilePath& temp_path = install_params.temp_path;
-  const base::Version& current_version = install_params.current_version;
-  const base::Version& new_version = install_params.new_version;
+  const InstallerState& installer_state = *install_params.installer_state;
+  const base::FilePath& setup_path = *install_params.setup_path;
+  const base::FilePath& temp_path = *install_params.temp_path;
+  const base::Version& current_version = *install_params.current_version;
+  const base::Version& new_version = *install_params.new_version;
 
   const base::FilePath& target_path = installer_state.target_path();
 

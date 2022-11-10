@@ -5,6 +5,8 @@
 #ifndef CHROME_INSTALLER_SETUP_MODIFY_PARAMS_H_
 #define CHROME_INSTALLER_SETUP_MODIFY_PARAMS_H_
 
+#include "base/memory/raw_ref.h"
+
 namespace base {
 class FilePath;
 class Version;
@@ -23,14 +25,14 @@ class InstallerState;
 // with the lifetime of the contained references and pointers to
 // be a strict subset of the calling stack frame.
 struct ModifyParams {
-  InstallerState& installer_state;
-  InstallationState& installation_state;
+  const raw_ref<InstallerState> installer_state;
+  const raw_ref<InstallationState> installation_state;
 
   // Path to the executable (setup.exe)
-  const base::FilePath& setup_path;
+  const raw_ref<const base::FilePath> setup_path;
 
   // Current installed version if valid; otherwise, no version is installed.
-  const base::Version& current_version;
+  const raw_ref<const base::Version> current_version;
 
   ModifyParams(InstallerState& installer_state,
                InstallationState& installation_state,

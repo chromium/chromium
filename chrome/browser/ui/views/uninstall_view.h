@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/metadata/view_factory.h"
@@ -49,7 +50,7 @@ class UninstallView : public views::DialogDelegateView,
   views::Checkbox* change_default_browser_ = nullptr;
   views::Combobox* browsers_combo_ = nullptr;
   std::unique_ptr<BrowsersMap> browsers_;
-  int& user_selection_;
+  const raw_ref<int> user_selection_;
   base::RepeatingClosure quit_closure_;
 };
 

@@ -124,12 +124,12 @@ KidsManagementService::~KidsManagementService() = default;
 
 void KidsManagementService::Init() {
   SupervisedUserServiceFactory::GetForProfile(profile_)->SetDelegate(this);
-  identity_manager_.AddObserver(this);
+  identity_manager_->AddObserver(this);
 
   // If we're already signed in, check the account immediately just to be sure.
   // (We might have missed an update before registering as an observer.)
   // "Unconsented" because this class doesn't care about browser sync consent.
-  AccountInfo primary_account_info = GetPrimaryAccount(identity_manager_);
+  AccountInfo primary_account_info = GetPrimaryAccount(*identity_manager_);
   if (!primary_account_info.IsEmpty()) {
     OnExtendedAccountInfoUpdated(primary_account_info);
   }
@@ -139,7 +139,7 @@ void KidsManagementService::Shutdown() {
   list_family_members_timer_.Stop();
   list_family_members_fetcher_.reset();
 
-  identity_manager_.RemoveObserver(this);
+  identity_manager_->RemoveObserver(this);
   SupervisedUserServiceFactory::GetForProfile(profile_)->SetDelegate(nullptr);
 }
 
@@ -152,7 +152,7 @@ bool KidsManagementService::IsFetchFamilyMembersStarted() const {
 }
 
 CoreAccountId KidsManagementService::GetAuthAccountId() const {
-  return identity_manager_.GetPrimaryAccountId(ConsentLevel::kSignin);
+  return identity_manager_->GetPrimaryAccountId(ConsentLevel::kSignin);
 }
 
 void KidsManagementService::AddChildStatusReceivedCallback(
@@ -200,7 +200,7 @@ void KidsManagementService::SetActive(bool newValue) {
         << "StartFetchFamilyMembers should make the status started";
 
     // Registers a request for permission for the user to access a blocked site.
-    supervised_user_service_.web_approvals_manager()
+    supervised_user_service_->web_approvals_manager()
         .AddRemoteApprovalRequestCreator(
             PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
@@ -218,7 +218,7 @@ void KidsManagementService::OnPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kSet) {
-    AccountInfo account_info = identity_manager_.FindExtendedAccountInfo(
+    AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
         event_details.GetCurrentState().primary_account);
     if (!account_info.IsEmpty()) {
       OnExtendedAccountInfoUpdated(account_info);
@@ -261,7 +261,7 @@ void KidsManagementService::SetIsChildAccount(bool is_child_account) {
 
 void KidsManagementService::StartFetchFamilyMembers() {
   list_family_members_fetcher_ = FetchListFamilyMembers(
-      identity_manager_, url_loader_factory_, GetEndpointUrl(),
+      *identity_manager_, url_loader_factory_, GetEndpointUrl(),
       BindOnce(&KidsManagementService::ConsumeListFamilyMembers,
                Unretained(this)));
 }

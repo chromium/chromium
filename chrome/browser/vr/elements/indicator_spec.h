@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
 #include "chrome/browser/vr/model/capturing_state_model.h"
 #include "chrome/browser/vr/vr_ui_export.h"
@@ -28,7 +29,7 @@ struct VR_UI_EXPORT IndicatorSpec {
 
   UiElementName name;
   UiElementName webvr_name;
-  const gfx::VectorIcon& icon;
+  const raw_ref<const gfx::VectorIcon> icon;
   int resource_string;
   int background_resource_string;
   int potential_resource_string;
