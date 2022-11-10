@@ -12,6 +12,8 @@ export enum Page {
   PASSWORDS = 'passwords',
   CHECKUP = 'checkup',
   SETTINGS = 'settings',
+  // Sub-pages
+  PASSWORD_DETAILS = 'password-details'
 }
 
 export enum UrlParam {
@@ -19,8 +21,31 @@ export enum UrlParam {
 }
 
 export class Route {
+  constructor(page: Page, queryParameters?: URLSearchParams, details?: any) {
+    this.page = page;
+    this.queryParameters = queryParameters || new URLSearchParams();
+    this.details = details;
+  }
+
   page: Page;
   queryParameters: URLSearchParams;
+  details?: any;
+
+  path(): string {
+    switch (this.page) {
+      case Page.PASSWORDS:
+      case Page.CHECKUP:
+      case Page.SETTINGS:
+        return '/' + this.page;
+      case Page.PASSWORD_DETAILS:
+        const group = this.details as chrome.passwordsPrivate.CredentialGroup;
+        // When navigating from the passwords list details will be
+        // |CredentialGroup|. In case of direct navigation details is string.
+        const origin = group.name ? group.name : (this.details as string);
+        assert(origin);
+        return '/' + Page.PASSWORDS + '/' + origin;
+    }
+  }
 }
 
 /**
@@ -33,8 +58,7 @@ export class Router {
     return routerInstance || (routerInstance = new Router());
   }
 
-  private currentRoute_:
-      Route = {page: Page.PASSWORDS, queryParameters: new URLSearchParams()};
+  private currentRoute_: Route = new Route(Page.PASSWORDS);
   private routeObservers_: Set<RouteObserverMixinInterface> = new Set();
 
   constructor() {
@@ -61,17 +85,14 @@ export class Router {
   /**
    * Navigates to a page and pushes a new history entry.
    */
-  navigateTo(page: Page) {
+  navigateTo(page: Page, details?: any) {
     if (page === this.currentRoute_.page) {
       return;
     }
 
     const oldRoute = this.currentRoute_;
-    this.currentRoute_ = {
-      page: page,
-      queryParameters: new URLSearchParams(),
-    };
-    const path = '/' + page;
+    this.currentRoute_ = new Route(page, new URLSearchParams(), details);
+    const path = this.currentRoute_.path();
     const state = {url: path};
     history.pushState(state, '', path);
     this.notifyObservers_(oldRoute);
@@ -92,10 +113,7 @@ export class Router {
     window.history.replaceState(window.history.state, '', url);
 
     const oldRoute = this.currentRoute_;
-    this.currentRoute_ = {
-      page: oldRoute.page,
-      queryParameters: params,
-    };
+    this.currentRoute_ = new Route(oldRoute.page, params);
     this.notifyObservers_(oldRoute);
   }
 
@@ -112,15 +130,18 @@ export class Router {
    */
   private processRoute_() {
     const oldRoute = this.currentRoute_;
-    this.currentRoute_ = {
-      page: oldRoute.page,
-      queryParameters: new URLSearchParams(location.search),
-    };
+    this.currentRoute_ =
+        new Route(oldRoute.page, new URLSearchParams(location.search));
     const section = location.pathname.substring(1).split('/')[0] || '';
-
+    const details = location.pathname.substring(2 + section.length);
     switch (section) {
       case Page.PASSWORDS:
-        this.currentRoute_.page = Page.PASSWORDS;
+        if (details) {
+          this.currentRoute_.page = Page.PASSWORD_DETAILS;
+          this.currentRoute_.details = details;
+        } else {
+          this.currentRoute_.page = Page.PASSWORDS;
+        }
         break;
       case Page.CHECKUP:
         this.currentRoute_.page = Page.CHECKUP;

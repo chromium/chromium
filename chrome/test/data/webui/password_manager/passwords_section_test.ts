@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerImpl, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerImpl, PasswordsSectionElement, Router} from 'chrome://password-manager/password_manager.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -68,5 +68,22 @@ suite('PasswordsSectionTest', function() {
 
     validatePasswordsSubsection(
         section.$.passwordsList, passwordManager.data.groups);
+  });
+
+  test('clicking group navigates to details page', async function() {
+    passwordManager.data.groups = [createCredentialGroup({name: 'test.com'})];
+
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getCredentialGroups');
+    await flushTasks();
+
+    const listEntry =
+        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    assertTrue(!!listEntry);
+    listEntry.click();
+
+    assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
   });
 });

@@ -44,4 +44,11 @@ suite('PasswordManagerSideBarTest', function() {
         assertEquals(page, Router.getInstance().currentRoute.page);
         assertEquals(page, (sidebar.$.menu.selectedItem as HTMLElement).id);
       }));
+
+  test('navigating to password details selects passwords tab', function() {
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, 'google.com');
+    assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+    assertEquals(
+        Page.PASSWORDS, (sidebar.$.menu.selectedItem as HTMLElement).id);
+  });
 });

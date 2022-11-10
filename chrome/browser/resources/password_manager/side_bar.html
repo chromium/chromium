@@ -12,8 +12,8 @@
 <div role="navigation">
   <cr-menu-selector>
     <iron-selector id="menu" selectable=".page-item" attr-for-selected="path"
-        selected-attribute="selected" selected="[[selectedPage_]]"
-        on-iron-activate="onSelectorActivate_" role="presentation">
+        selected-attribute="selected" on-iron-activate="onSelectorActivate_"
+        selected="[[getSelectedPage_(selectedPage_)]]" role="presentation">
       <a id="passwords" role="menuitem" class="page-item cr-nav-menu-item"
           path="passwords" href="/passwords" on-click="onItemClick_">
         <iron-icon icon="passwords-icon:password"></iron-icon>

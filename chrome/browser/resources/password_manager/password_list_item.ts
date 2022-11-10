@@ -10,6 +10,7 @@ import './shared_style.css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_list_item.html.js';
+import {Page, Router} from './router.js';
 
 export interface PasswordListItemElement {
   $: {
@@ -44,6 +45,15 @@ export class PasswordListItemElement extends PolymerElement {
 
   private computeElementClass_(): string {
     return this.first ? 'flex-centered' : 'flex-centered hr';
+  }
+
+  override ready() {
+    super.ready();
+    this.addEventListener('click', this.onRowClick_);
+  }
+
+  private onRowClick_() {
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, this.item);
   }
 }
 
