@@ -642,22 +642,22 @@
     'chromium.perf': {
       'Android Builder Perf': 'official_goma_minimal_symbols_android',
       'Android arm64 Builder Perf': 'official_goma_minimal_symbols_android_arm64',
-      'android-builder-perf': 'official_goma_minimal_symbols_android',
+      'android-builder-perf': 'official_reclient_minimal_symbols_android',
       'android-builder-perf-pgo': 'official_goma_minimal_symbols_android_pgo',
-      'android_arm64-builder-perf': 'official_goma_minimal_symbols_android_arm64',
+      'android_arm64-builder-perf': 'official_reclient_minimal_symbols_android_arm64',
       'android_arm64-builder-perf-pgo': 'official_goma_minimal_symbols_android_arm64_pgo',
       'chromecast-linux-builder-perf': 'cast_binary_size',
       'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official',
       'chromeos-arm-generic-lacros-builder-perf': 'chromeos_arm-generic_lacros_official',
       'chromeos-arm64-generic-lacros-builder-perf': 'chromeos_arm64-generic_lacros_official',
-      'linux-builder-perf': 'official_goma_linux_perf',
+      'linux-builder-perf': 'official_reclient_linux_perf',
       'linux-builder-perf-pgo': 'official_goma_linux_perf_pgo',
       'linux-builder-perf-rel': 'official_goma_linux_perf',
       'mac-arm-builder-perf': 'official_goma_mac_arm_perf',
       'mac-arm-builder-perf-pgo': 'official_goma_mac_arm_perf_pgo',
-      'mac-builder-perf': 'official_goma_mac_perf',
+      'mac-builder-perf': 'official_reclient_mac_perf',
       'mac-builder-perf-pgo': 'official_goma_mac_perf_pgo',
-      'win64-builder-perf': 'official_goma_perf',
+      'win64-builder-perf': 'official_reclient_perf',
       'win64-builder-perf-pgo': 'official_goma_perf_pgo',
     },
 
@@ -667,11 +667,11 @@
     },
 
     'chromium.perf.fyi': {
-      'android-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt',
-      'android_arm64-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt_arm64',
-      'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official',
-      'fuchsia-builder-perf-arm64': 'official_goma_fuchsia_arm64_perf',
-      'fuchsia-builder-perf-x64': 'official_goma_fuchsia_x64_perf',
+      'android-cfi-builder-perf-fyi': 'official_reclient_minimal_symbols_android_thin_lto_opt',
+      'android_arm64-cfi-builder-perf-fyi': 'official_reclient_minimal_symbols_android_thin_lto_opt_arm64',
+      'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official_reclient',
+      'fuchsia-builder-perf-arm64': 'official_reclient_fuchsia_arm64_perf',
+      'fuchsia-builder-perf-x64': 'official_reclient_fuchsia_x64_perf',
     },
 
     'chromium.reclient.fyi': {
@@ -2188,13 +2188,13 @@
       'chromeos_kevin_reclient', 'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_arm',
     ],
 
-    'chromeos_kevin_include_unwind_tables_official': [
-      'chromeos_kevin', 'include_unwind_tables', 'official',
-    ],
-
     'chromeos_kevin_include_unwind_tables_official_dchecks': [
       'chromeos_kevin', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_arm',
+    ],
+
+    'chromeos_kevin_include_unwind_tables_official_reclient': [
+      'chromeos_kevin_reclient', 'include_unwind_tables', 'official',
     ],
 
     'chromeos_msan_release_bot': [
@@ -3287,14 +3287,6 @@
       'official', 'goma', 'minimal_symbols', 'android'
     ],
 
-    'official_goma_minimal_symbols_android_thin_lto_opt': [
-      'official', 'goma', 'minimal_symbols', 'android', 'thin_lto_opt', 'no_default_afdo'
-    ],
-
-    'official_goma_minimal_symbols_android_thin_lto_opt_arm64': [
-      'official', 'goma', 'minimal_symbols', 'android', 'thin_lto_opt', 'arm64', 'no_default_afdo'
-    ],
-
     'official_goma_perf': [
       'official', 'goma', 'minimal_symbols', 'pgo_phase_0',
     ],
@@ -3339,8 +3331,40 @@
        'official', 'reclient',
     ],
 
+    'official_reclient_fuchsia_arm64_perf': [
+      'cast_receiver_size_optimized_internal', 'official', 'reclient', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_cfv2_script'
+    ],
+
+    'official_reclient_fuchsia_x64_perf': [
+      'official', 'reclient', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_cfv2_script'
+    ],
+
+    'official_reclient_linux_perf': [
+      'official', 'reclient', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0',
+    ],
+
     'official_reclient_mac_arm': [
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64',
+    ],
+    'official_reclient_mac_perf': [
+      'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'pgo_phase_0',
+    ],
+
+    'official_reclient_minimal_symbols_android': [
+      'official', 'reclient', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo'
+    ],
+    'official_reclient_minimal_symbols_android_arm64': [
+      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo'
+    ],
+    'official_reclient_minimal_symbols_android_thin_lto_opt': [
+      'official', 'reclient', 'minimal_symbols', 'android', 'thin_lto_opt', 'no_default_afdo'
+    ],
+    'official_reclient_minimal_symbols_android_thin_lto_opt_arm64': [
+      'official', 'reclient', 'minimal_symbols', 'android', 'thin_lto_opt', 'arm64', 'no_default_afdo'
+    ],
+
+    'official_reclient_perf': [
+      'official', 'reclient', 'minimal_symbols', 'pgo_phase_0',
     ],
 
     'perfetto_release_bot_reclient': [
