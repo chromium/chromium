@@ -29,7 +29,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -184,16 +183,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         assert !mPostNativeAndPolicyPagesCreated;
         assert areNativeAndPoliciesInitialized();
 
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.CREATE_SIGNIN_CHECKER_BEFORE_SYNC_CONSENT_FRAGMENT)) {
-            // Initialize SigninChecker, to kick off sign-in for child accounts as early as
-            // possible.
-            //
-            // TODO(b/245912657): explicitly sign in supervised users in {@link
-            // SigninFirstRunMediator#handleContinueWithNative} rather than relying on
-            // SigninChecker.
-            SigninCheckerProvider.get();
-        }
+        // Initialize SigninChecker, to kick off sign-in for child accounts as early as possible.
+        //
+        // TODO(b/245912657): explicitly sign in supervised users in {@link
+        // SigninFirstRunMediator#handleContinueWithNative} rather than relying on SigninChecker.
+        SigninCheckerProvider.get();
 
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
 

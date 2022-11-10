@@ -231,28 +231,8 @@ public class FirstRunActivitySigninAndSyncTest {
     // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
-    @DisableFeatures({ChromeFeatureList.CREATE_SIGNIN_CHECKER_BEFORE_SYNC_CONSENT_FRAGMENT})
-    public void
-    continueButtonClickShowsSyncConsentPageWithChildAccountAndLateSigninCheckerCreation() {
-        mAccountManagerTestRule.addAccount(CHILD_EMAIL);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
-
-        clickButton(R.id.signin_fre_continue_button);
-
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
-    }
-
-    @Test
-    @MediumTest
-    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
-    // adding at least one policy via AppRestrictions prevents that.
-    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
-    @EnableFeatures({ChromeFeatureList.CREATE_SIGNIN_CHECKER_BEFORE_SYNC_CONSENT_FRAGMENT})
     @DisabledTest(message = "https://crbug.com/1382901")
-    public void
-    continueButtonClickShowsSyncConsentPageWithChildAccountAndEarlySigninCheckerCreation() {
+    public void continueButtonClickShowsSyncConsentPageWithChildAccount() {
         mAccountManagerTestRule.addAccount(CHILD_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
