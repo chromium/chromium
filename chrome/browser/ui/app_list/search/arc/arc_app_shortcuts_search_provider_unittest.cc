@@ -125,35 +125,6 @@ TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {
   }
 }
 
-TEST_P(ArcAppShortcutsSearchProviderTest, EmptyQuery) {
-  const bool launchable = GetParam();
-
-  const std::string app_id = AddArcAppAndShortcut(
-      *CreateAppInfo("FakeName", "FakeActivity", kFakeAppPackageName),
-      launchable);
-
-  const size_t kMaxResults = launchable ? 4 : 0;
-  constexpr char16_t kQuery[] = u"";
-
-  TestSearchController search_controller;
-  auto provider = std::make_unique<ArcAppShortcutsSearchProvider>(
-      kMaxResults, profile(), controller_.get());
-  search_controller.AddProvider(std::move(provider));
-  EXPECT_TRUE(search_controller.last_results().empty());
-  arc::IconDecodeRequest::DisableSafeDecodingForTesting();
-
-  search_controller.StartSearch(kQuery);
-  const auto& results = search_controller.last_results();
-  EXPECT_EQ(kMaxResults, results.size());
-  // Verify search results.
-  for (size_t i = 0; i < results.size(); ++i) {
-    EXPECT_EQ(base::StringPrintf("ShortLabel %zu", i),
-              base::UTF16ToUTF8(results[i]->title()));
-    EXPECT_EQ(ash::SearchResultDisplayType::kTile, results[i]->display_type());
-    EXPECT_EQ(results[i]->relevance(), 0.5);
-  }
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          ArcAppShortcutsSearchProviderTest,
                          testing::Bool());

@@ -37,8 +37,6 @@ class ArcAppShortcutsSearchProvider : public SearchProvider {
  private:
   void OnGetAppShortcutGlobalQueryItems(
       std::vector<arc::mojom::AppShortcutItemPtr> shortcut_items);
-  void UpdateRecommendedResults(
-      std::vector<arc::mojom::AppShortcutItemPtr> shortcut_items);
 
   std::u16string last_query_;
   const int max_results_;

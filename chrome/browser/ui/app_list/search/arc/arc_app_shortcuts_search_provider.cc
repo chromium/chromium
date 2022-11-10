@@ -32,6 +32,8 @@ ash::AppListSearchResultType ArcAppShortcutsSearchProvider::ResultType() const {
 }
 
 void ArcAppShortcutsSearchProvider::Start(const std::u16string& query) {
+  DCHECK(!query.empty());
+
   arc::mojom::AppInstance* app_instance =
       arc::ArcServiceManager::Get()
           ? ARC_GET_INSTANCE_FOR_METHOD(
@@ -43,20 +45,13 @@ void ArcAppShortcutsSearchProvider::Start(const std::u16string& query) {
     return;
   last_query_ = query;
 
-  if (query.empty()) {
-    app_instance->GetAppShortcutGlobalQueryItems(
-        base::UTF16ToUTF8(query), max_results_,
-        base::BindOnce(&ArcAppShortcutsSearchProvider::UpdateRecommendedResults,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // Invalidate the weak ptr to prevent previous callback run.
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    app_instance->GetAppShortcutGlobalQueryItems(
-        base::UTF16ToUTF8(query), max_results_,
-        base::BindOnce(
-            &ArcAppShortcutsSearchProvider::OnGetAppShortcutGlobalQueryItems,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Invalidate the weak ptr to prevent previous callback run.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  app_instance->GetAppShortcutGlobalQueryItems(
+      base::UTF16ToUTF8(query), max_results_,
+      base::BindOnce(
+          &ArcAppShortcutsSearchProvider::OnGetAppShortcutGlobalQueryItems,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcAppShortcutsSearchProvider::StopQuery() {
@@ -64,40 +59,6 @@ void ArcAppShortcutsSearchProvider::StopQuery() {
 
   // Invalidate the weak ptr to prevent previous callback run.
   weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void ArcAppShortcutsSearchProvider::UpdateRecommendedResults(
-    std::vector<arc::mojom::AppShortcutItemPtr> shortcut_items) {
-  const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
-  DCHECK(arc_prefs);
-
-  // All ArcAppShortcutSearchResults have display type kList, so they are shown
-  // in the zero-state results list, but not in the suggestion chips.
-  SearchProvider::Results search_results;
-  for (auto& item : shortcut_items) {
-    const std::string app_id =
-        arc_prefs->GetAppIdByPackageName(item->package_name.value());
-    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-        arc_prefs->GetApp(app_id);
-    // Ignore shortcuts for apps that are not present in the launcher.
-    if (!app_info || !app_info->show_in_launcher)
-      continue;
-    auto result = std::make_unique<ArcAppShortcutSearchResult>(
-        std::move(item), profile_, list_controller_, true /*is_recommendation*/,
-        std::u16string() /*query*/, app_info->name);
-
-    if (!app_info->install_time.is_null() ||
-        !app_info->last_launch_time.is_null()) {
-      // Case 1: It it has |install_time| or |last_launch_time|, set the
-      // relevance to 0.5.
-      result->set_relevance(0.5);
-    } else {
-      // Case 2: otherwise set relevance to 0.0.
-      result->set_relevance(0);
-    }
-    search_results.emplace_back(std::move(result));
-  }
-  SwapResults(&search_results);
 }
 
 void ArcAppShortcutsSearchProvider::OnGetAppShortcutGlobalQueryItems(
