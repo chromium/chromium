@@ -102,4 +102,9 @@ std::u16string FakeFileSystemAccessPermissionContext::GetPickerTitle(
   return kPickerTitle;
 }
 
+void FakeFileSystemAccessPermissionContext::NotifyEntryMoved(
+    const url::Origin& origin,
+    const base::FilePath& old_path,
+    const base::FilePath& new_path) {}
+
 }  // namespace content

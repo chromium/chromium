@@ -32,6 +32,7 @@ class FileSystemContext;
 namespace content {
 
 class WebContents;
+class FileSystemAccessSafeMoveHelper;
 
 // Base class for File and Directory handle implementations. Holds data that is
 // common to both and (will) deal with functionality that is common as well,
@@ -148,10 +149,18 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       base::File::Error result);
 
-  bool ShouldTrackUsage() const {
+  void DidMove(
+      storage::FileSystemURL destination_url,
+      std::vector<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
+          write_locks,
+      std::unique_ptr<FileSystemAccessSafeMoveHelper> move_helper,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+      blink::mojom::FileSystemAccessErrorPtr result);
+
+  bool ShouldTrackUsage(const storage::FileSystemURL& url) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return url_.type() != storage::kFileSystemTypeTemporary &&
-           url_.type() != storage::kFileSystemTypeTest;
+    return url.type() != storage::kFileSystemTypeTemporary &&
+           url.type() != storage::kFileSystemTypeTest;
   }
 
   // The FileSystemAccessManagerImpl that owns this instance.

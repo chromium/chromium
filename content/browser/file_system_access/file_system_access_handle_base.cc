@@ -21,6 +21,7 @@
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -66,7 +67,7 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
          url_.type() == storage::kFileSystemTypeTest)
       << url_.type();
 
-  if (ShouldTrackUsage()) {
+  if (ShouldTrackUsage(url_)) {
     DCHECK(url_.mount_type() == storage::kFileSystemTypeLocal ||
            url_.mount_type() == storage::kFileSystemTypeExternal)
         << url_.mount_type();
@@ -93,7 +94,7 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
 FileSystemAccessHandleBase::~FileSystemAccessHandleBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (ShouldTrackUsage() && web_contents_) {
+  if (ShouldTrackUsage(url_) && web_contents_) {
     static_cast<WebContentsImpl*>(web_contents_.get())
         ->DecrementFileSystemAccessHandleCount();
   }
@@ -422,25 +423,40 @@ void FileSystemAccessHandleBase::DidConfirmDestinationDoesNotExist(
   FileSystemAccessSafeMoveHelper* raw_helper =
       file_system_access_safe_move_helper.get();
   raw_helper->Start(base::BindOnce(
-      [](base::WeakPtr<FileSystemAccessHandleBase> handle,
-         storage::FileSystemURL new_url,
-         std::vector<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
-             write_locks,
-         std::unique_ptr<FileSystemAccessSafeMoveHelper> /*move_helper*/,
-         base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
-             callback,
-         blink::mojom::FileSystemAccessErrorPtr result) {
-        if (handle) {
-          DCHECK_CALLED_ON_VALID_SEQUENCE(handle->sequence_checker_);
-          if (result->status == blink::mojom::FileSystemAccessStatus::kOk)
-            handle->url_ = std::move(new_url);
-        }
-        // Destroy locks so they are released by the time the callback runs.
-        write_locks.clear();
-        std::move(callback).Run(std::move(result));
-      },
-      AsWeakPtr(), destination_url, std::move(locks),
-      std::move(file_system_access_safe_move_helper), std::move(callback)));
+      &FileSystemAccessHandleBase::DidMove, AsWeakPtr(), destination_url,
+      std::move(locks), std::move(file_system_access_safe_move_helper),
+      std::move(callback)));
+}
+
+void FileSystemAccessHandleBase::DidMove(
+    storage::FileSystemURL destination_url,
+    std::vector<scoped_refptr<WriteLock>> write_locks,
+    std::unique_ptr<FileSystemAccessSafeMoveHelper> /*move_helper*/,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+    blink::mojom::FileSystemAccessErrorPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (result->status == blink::mojom::FileSystemAccessStatus::kOk) {
+    // TODO(crbug.com/1247850): Update permission grants appropriately when
+    // moving into/out of the OPFS. Current state:
+    // - Moving out of the OPFS: the destination directory is guaranteed to have
+    //   write permission. We _should_ update `handle_state_` to point to this
+    //   directory, but it technically works as-is.
+    // - Moving into the OPFS: we leave a dangling permission grant at the old
+    //   path. We should clean this up, but since it's effectively a remove()
+    //   this isn't the worst behavior for now.
+    if (ShouldTrackUsage(url_) && ShouldTrackUsage(destination_url) &&
+        manager()->permission_context()) {
+      manager()->permission_context()->NotifyEntryMoved(
+          context_.storage_key.origin(), url_.path(), destination_url.path());
+    }
+    url_ = std::move(destination_url);
+  }
+
+  // Destroy locks so they are released by the time the callback runs.
+  write_locks.clear();
+
+  std::move(callback).Run(std::move(result));
 }
 
 void FileSystemAccessHandleBase::DoRemove(

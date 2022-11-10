@@ -1982,4 +1982,124 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 }
 
+TEST_F(ChromeFileSystemAccessPermissionContextTest, NotifyEntryMoved_File) {
+  auto file_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
+
+  const auto new_path = kTestPath.DirName().AppendASCII("new_name.txt");
+  permission_context()->NotifyEntryMoved(kTestOrigin, kTestPath, new_path);
+
+  // Permissions to the old path should have been revoked.
+  auto file_grant_at_old_path = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::ASK, file_grant_at_old_path->GetStatus());
+  EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
+
+  // Permissions to the new path should have been updated.
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
+  EXPECT_EQ(new_path, file_grant->GetPath());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, new_path, HandleType::kFile, GrantType::kWrite));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_ChildFileObtainedLater) {
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+
+  auto parent_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  parent_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                                  future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
+  EXPECT_EQ(PermissionStatus::GRANTED, parent_grant->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
+
+  // The child file should inherit write permission from its parent.
+  const auto old_file_path = kTestPath.AppendASCII("old_name.txt");
+  auto file_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, old_file_path, HandleType::kFile, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, old_file_path, HandleType::kFile, GrantType::kWrite));
+
+  const auto new_path = old_file_path.DirName().AppendASCII("new_name.txt");
+  permission_context()->NotifyEntryMoved(kTestOrigin, old_file_path, new_path);
+
+  // Permissions to the parent should not have been affected.
+  auto parent_grant_copy = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::GRANTED, parent_grant_copy->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
+
+  // Permissions to the old file path should not have been affected.
+  auto file_grant_at_old_path = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, old_file_path, HandleType::kFile, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant_at_old_path->GetStatus());
+  EXPECT_EQ(old_file_path, file_grant_at_old_path->GetPath());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, old_file_path, HandleType::kFile, GrantType::kWrite));
+
+  // Should still have permission at the new path.
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
+  EXPECT_EQ(new_path, file_grant->GetPath());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, new_path, HandleType::kFile, GrantType::kWrite));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_ChildFileObtainedFirst) {
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+
+  // Acquire permission to the child file's path.
+  const auto old_file_path = kTestPath.AppendASCII("old_name.txt");
+  auto file_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, old_file_path, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, old_file_path, HandleType::kFile, GrantType::kWrite));
+
+  // Later, acquire permission to the child parent.
+  auto parent_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  parent_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                                  future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
+  EXPECT_EQ(PermissionStatus::GRANTED, parent_grant->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
+
+  const auto new_path = old_file_path.DirName().AppendASCII("new_name.txt");
+  permission_context()->NotifyEntryMoved(kTestOrigin, old_file_path, new_path);
+
+  // Permissions to the parent should not have been affected.
+  auto parent_grant_copy = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::GRANTED, parent_grant_copy->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
+
+  // Permissions to the old file path should not have been affected.
+  auto file_grant_at_old_path = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, old_file_path, HandleType::kFile, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant_at_old_path->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, old_file_path, HandleType::kFile, GrantType::kWrite));
+
+  // Should still have permission at the new path.
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
+  EXPECT_EQ(new_path, file_grant->GetPath());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, new_path, HandleType::kFile, GrantType::kWrite));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)

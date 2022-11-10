@@ -74,6 +74,11 @@ class FakeFileSystemAccessPermissionContext
   std::u16string GetPickerTitle(
       const blink::mojom::FilePickerOptionsPtr& options) override;
 
+  // No-op. This class does not manage any permission grants.
+  void NotifyEntryMoved(const url::Origin& origin,
+                        const base::FilePath& old_path,
+                        const base::FilePath& new_path) override;
+
  private:
   std::map<std::string, PathInfo> id_pathinfo_map_;
   std::map<blink::mojom::WellKnownDirectory, base::FilePath>

@@ -154,6 +154,12 @@ class FileSystemAccessPermissionContext {
   virtual std::u16string GetPickerTitle(
       const blink::mojom::FilePickerOptionsPtr& options) = 0;
 
+  // Notifies that the underlying file or directory has been moved and updates
+  // permission grants accordingly.
+  virtual void NotifyEntryMoved(const url::Origin& origin,
+                                const base::FilePath& old_path,
+                                const base::FilePath& new_path) = 0;
+
  protected:
   virtual ~FileSystemAccessPermissionContext() = default;
 };

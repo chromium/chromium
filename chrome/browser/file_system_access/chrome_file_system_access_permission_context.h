@@ -105,6 +105,10 @@ class ChromeFileSystemAccessPermissionContext
   std::u16string GetPickerTitle(
       const blink::mojom::FilePickerOptionsPtr& options) override;
 
+  void NotifyEntryMoved(const url::Origin& origin,
+                        const base::FilePath& old_path,
+                        const base::FilePath& new_path) override;
+
   ContentSetting GetReadGuardContentSetting(const url::Origin& origin) const;
   ContentSetting GetWriteGuardContentSetting(const url::Origin& origin) const;
 

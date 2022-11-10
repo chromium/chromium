@@ -456,9 +456,9 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       GrantType type)
       : context_(std::move(context)),
         origin_(origin),
-        path_(path),
         handle_type_(handle_type),
-        type_(type) {}
+        type_(type),
+        path_(path) {}
 
   // FileSystemAccessPermissionGrant:
   PermissionStatus GetStatus() override {
@@ -648,11 +648,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     return handle_type_;
   }
 
-  const base::FilePath& path() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return path_;
-  }
-
   GrantType type() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return type_;
@@ -692,11 +687,39 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       if (entry.second->GetStatus() != PermissionStatus::GRANTED)
         continue;
       if (entry.second->handle_type() == HandleType::kDirectory) {
-        directory_grants->push_back(entry.second->path());
+        directory_grants->push_back(entry.second->GetPath());
       } else {
-        file_grants->push_back(entry.second->path());
+        file_grants->push_back(entry.second->GetPath());
       }
     }
+  }
+
+  static void UpdateGrantPath(
+      std::map<base::FilePath, PermissionGrantImpl*>& grants,
+      const base::FilePath& old_path,
+      const base::FilePath& new_path) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    auto entry_it = base::ranges::find_if(
+        grants,
+        [&old_path](const auto& entry) { return entry.first == old_path; });
+
+    if (entry_it == grants.end()) {
+      // There must be an entry for an ancestor of this entry. Nothing to do
+      // here.
+      //
+      // TODO(https://crbug.com/1381302): Consolidate superfluous child grants
+      // to support directory moves.
+      return;
+    }
+
+    DCHECK_EQ(entry_it->second->GetStatus(), PermissionStatus::GRANTED);
+
+    auto* const grant_impl = entry_it->second;
+    grant_impl->SetPath(new_path);
+
+    // Update the permission grant's key in the map of active permissions.
+    grants.erase(entry_it);
+    grants.emplace(new_path, grant_impl);
   }
 
  protected:
@@ -798,13 +821,28 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     return value;
   }
 
+  void SetPath(const base::FilePath& new_path) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (HasPersistedPermission(MetricsOptions::kDoNotRecord)) {
+      const auto& grant_before = AsValue();
+      path_ = new_path;
+      context_->UpdateObjectPermission(origin_, grant_before, AsValue());
+    } else {
+      path_ = new_path;
+    }
+
+    NotifyPermissionStatusChanged();
+  }
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> const context_;
   const url::Origin origin_;
-  const base::FilePath path_;
   const HandleType handle_type_;
   const GrantType type_;
+  // `path_` can be updated if the entry is moved.
+  base::FilePath path_;
   base::Time last_used_time_;
 
   // This member should only be updated via SetStatus(), to make sure
@@ -1425,6 +1463,28 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetPickerTitle(
   return title;
 }
 
+void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
+    const url::Origin& origin,
+    const base::FilePath& old_path,
+    const base::FilePath& new_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (old_path == new_path)
+    return;
+
+  auto it = origins_.find(origin);
+  if (it == origins_.end())
+    return;
+
+  // TODO(https://crbug.com/1381302): Consolidate superfluous child grants.
+  PermissionGrantImpl::UpdateGrantPath(it->second.write_grants, old_path,
+                                       new_path);
+  PermissionGrantImpl::UpdateGrantPath(it->second.read_grants, old_path,
+                                       new_path);
+
+  ScheduleUsageIconUpdate();
+}
+
 ChromeFileSystemAccessPermissionContext::Grants
 ChromeFileSystemAccessPermissionContext::GetPermissionGrants(
     const url::Origin& origin) {
@@ -1874,7 +1934,7 @@ void ChromeFileSystemAccessPermissionContext::PermissionGrantDestroyed(
 
   auto& grants = grant->type() == GrantType::kRead ? it->second.read_grants
                                                    : it->second.write_grants;
-  auto grant_it = grants.find(grant->path());
+  auto grant_it = grants.find(grant->GetPath());
   // Any non-denied permission grants should have still been in our grants list.
   // If this invariant is voilated we would have permissions that might be
   // granted but won't be visible in any UI because the permission context isn't
