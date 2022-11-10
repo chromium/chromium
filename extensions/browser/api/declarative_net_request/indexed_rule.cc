@@ -427,10 +427,12 @@ ParseResult ValidateHeaders(
     if (!net::HttpUtil::IsValidHeaderName(header_info.header))
       return ParseResult::ERROR_INVALID_HEADER_NAME;
 
-    // Ensure that request headers cannot be appended.
     if (are_request_headers &&
         header_info.operation == dnr_api::HEADER_OPERATION_APPEND) {
-      return ParseResult::ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED;
+      DCHECK(
+          base::ranges::none_of(header_info.header, base::IsAsciiUpper<char>));
+      if (!base::Contains(kDNRRequestHeaderAppendAllowList, header_info.header))
+        return ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER;
     }
 
     if (header_info.value) {

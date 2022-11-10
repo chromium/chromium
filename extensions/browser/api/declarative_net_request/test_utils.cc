@@ -308,8 +308,8 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_HEADER_VALUE_PRESENT:
       output << "ERROR_HEADER_VALUE_PRESENT";
       break;
-    case ParseResult::ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED:
-      output << "ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED";
+    case ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER:
+      output << "ERROR_APPEND_INVALID_REQUEST_HEADER";
       break;
     case ParseResult::ERROR_EMPTY_TAB_IDS_LIST:
       output << "ERROR_EMPTY_TAB_IDS_LIST";

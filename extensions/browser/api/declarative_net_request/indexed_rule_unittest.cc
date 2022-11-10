@@ -888,14 +888,16 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
            {{dnr_api::HEADER_OPERATION_APPEND, "set-cookie", absl::nullopt}}),
        ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED},
 
-      // Raise an error if a rule specifies a request header to be appended.
+      // Raise an error if a rule specifies an invalid request header to be
+      // appended.
       {RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_APPEND, "cookie", "cookie-value"}}),
-       absl::nullopt, ParseResult::ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED},
+           {{dnr_api::HEADER_OPERATION_APPEND, "invalid-header", "value"}}),
+       absl::nullopt, ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER},
 
       {RawHeaderInfoList(
            {{dnr_api::HEADER_OPERATION_REMOVE, "cookie", absl::nullopt},
-            {dnr_api::HEADER_OPERATION_SET, "referer", ""}}),
+            {dnr_api::HEADER_OPERATION_SET, "referer", ""},
+            {dnr_api::HEADER_OPERATION_APPEND, "accept-language", "en-US"}}),
        absl::nullopt, ParseResult::SUCCESS},
 
       {RawHeaderInfoList(

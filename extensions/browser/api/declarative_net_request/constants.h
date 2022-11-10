@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_piece.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 
 namespace extensions {
@@ -68,7 +70,7 @@ enum class ParseResult {
   ERROR_INVALID_HEADER_VALUE,
   ERROR_HEADER_VALUE_NOT_SPECIFIED,
   ERROR_HEADER_VALUE_PRESENT,
-  ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED,
+  ERROR_APPEND_INVALID_REQUEST_HEADER,
 
   ERROR_EMPTY_TAB_IDS_LIST,
   ERROR_TAB_IDS_ON_NON_SESSION_RULE,
@@ -176,7 +178,7 @@ extern const char kErrorInvalidHeaderName[];
 extern const char kErrorInvalidHeaderValue[];
 extern const char kErrorNoHeaderValueSpecified[];
 extern const char kErrorHeaderValuePresent[];
-extern const char kErrorCannotAppendRequestHeader[];
+extern const char kErrorAppendInvalidRequestHeader[];
 extern const char kErrorTabIdsOnNonSessionRule[];
 extern const char kErrorTabIdDuplicated[];
 
@@ -240,6 +242,33 @@ constexpr int kMaxStaticRulesPerProfile = 300000;
 // Identifier for a Flatbuffer containing `flat::EmbedderConditions` as the
 // root.
 extern const char kEmbedderConditionsBufferIdentifier[];
+
+// An allowlist of request headers that can be appended onto, in the form of
+// (header name, header delimiter). Currently, this list contains all standard
+// HTTP request headers that support multiple values in a single entry. This
+// list may be extended in the future to support custom headers.
+constexpr auto kDNRRequestHeaderAppendAllowList =
+    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+        {{"accept", ", "},
+         {"accept-encoding", ", "},
+         {"accept-language", ", "},
+         {"access-control-request-headers", ", "},
+         {"cache-control", ", "},
+         {"connection", ", "},
+         {"content-language", ", "},
+         {"cookie", "; "},
+         {"forwarded", ", "},
+         {"if-match", ", "},
+         {"if-none-match", ", "},
+         {"keep-alive", ", "},
+         {"range", ", "},
+         {"te", ", "},
+         {"trailer", ""},
+         {"transfer-encoding", ", "},
+         {"upgrade", ", "},
+         {"via", ", "},
+         {"want-digest", ", "},
+         {"x-forwarded-for", ", "}});
 
 }  // namespace declarative_net_request
 }  // namespace extensions

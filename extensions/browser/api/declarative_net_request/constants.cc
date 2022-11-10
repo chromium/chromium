@@ -71,8 +71,10 @@ const char kErrorNoHeaderValueSpecified[] =
 const char kErrorHeaderValuePresent[] =
     "Rule with id * must not provide a header value for a header to be "
     "removed.";
-const char kErrorCannotAppendRequestHeader[] =
-    "Rule with id * must not specify a request header to be appended.";
+const char kErrorAppendInvalidRequestHeader[] =
+    "Rule with id * specifies an invalid request header to be appended. Only "
+    "standard HTTP request headers that can specify multiple values for a "
+    "single entry are supported.";
 const char kErrorTabIdsOnNonSessionRule[] =
     "Rule with id * specifies a value for \"*\" or \"*\" key. These are only "
     "supported for session-scoped rules.";
