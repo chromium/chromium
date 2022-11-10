@@ -37,7 +37,8 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
     cast_receiver::ApplicationClient& application_client)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(app_config),
-                             mojom::RendererType::MOJO_RENDERER),
+                             mojom::RendererType::MOJO_RENDERER,
+                             application_client),
       application_client_(application_client) {}
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {

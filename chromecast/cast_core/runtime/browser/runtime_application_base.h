@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
+#include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/content_window_controls.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
@@ -67,9 +68,11 @@ class RuntimeApplicationBase
     CreateWebUIControllerFactory(std::vector<std::string> hosts) = 0;
 
     // Returns the WebContents this application should use.
+    // TODO(crbug.com/1382907): Change to a callback-based API.
     virtual content::WebContents* GetWebContents() = 0;
 
     // Returns the window controls for this instance.
+    // TODO(crbug.com/1382907): Change to a callback-based API.
     virtual cast_receiver::ContentWindowControls*
     GetContentWindowControls() = 0;
   };
@@ -131,10 +134,12 @@ class RuntimeApplicationBase
   bool IsApplicationRunning() const override;
 
  protected:
-  // |web_service| is expected to exist for the lifetime of this instance.
+  // |application_client| is expected to exist for the lifetime of this
+  // instance.
   RuntimeApplicationBase(std::string cast_session_id,
                          cast::common::ApplicationConfig app_config,
-                         mojom::RendererType renderer_type);
+                         mojom::RendererType renderer_type,
+                         cast_receiver::ApplicationClient& application_client);
 
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.
@@ -178,6 +183,12 @@ class RuntimeApplicationBase
   void OnWindowShown() override;
   void OnWindowHidden() override;
 
+  // Returns the ApplicationControls associated with this application, if such
+  // controls exist.
+  // TODO(crbug.com/1382907): Change to a callback-based API.
+  cast_receiver::ApplicationClient::ApplicationControls*
+  GetApplicationControls();
+
   const std::string cast_session_id_;
   const cast::common::ApplicationConfig app_config_;
 
@@ -186,7 +197,10 @@ class RuntimeApplicationBase
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  base::raw_ref<cast_receiver::ApplicationClient> application_client_;
+
   base::raw_ptr<Delegate> delegate_{nullptr};
+
   // Cached mojom rules that are set iff |cast_web_view_| is not created before
   // SetUrlRewriteRules is called.
   url_rewrite::mojom::UrlRequestRewriteRulesPtr cached_mojom_rules_{nullptr};

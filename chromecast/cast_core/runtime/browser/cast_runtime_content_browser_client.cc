@@ -45,18 +45,39 @@ class CoreCastService : public shell::CastServiceSimple {
   base::raw_ref<RuntimeApplicationDispatcher> app_dispatcher_;
 };
 
+// Implementation of cast_receiver::ApplicationClient.
+class CoreApplicationClient : public cast_receiver::ApplicationClient {
+ public:
+  explicit CoreApplicationClient(
+      CastRuntimeContentBrowserClient& browser_client)
+      : browser_client_(browser_client) {}
+
+ private:
+  // cast_receiver::ApplicationClient overrides:
+  NetworkContextGetter GetNetworkContextGetter() override {
+    return browser_client_->GetNetworkContextGetter();
+  }
+
+  base::raw_ref<CastRuntimeContentBrowserClient> browser_client_;
+};
+
 }  // namespace
 
 CastRuntimeContentBrowserClient::CastRuntimeContentBrowserClient(
     CastFeatureListCreator* feature_list_creator)
-    : shell::CastContentBrowserClient(feature_list_creator) {
-  AddStreamingResolutionObserver(&application_client_observers_);
-  AddApplicationStateObserver(&application_client_observers_);
+    : shell::CastContentBrowserClient(feature_list_creator),
+      application_client_(std::make_unique<CoreApplicationClient>(*this)) {
+  application_client_->AddStreamingResolutionObserver(
+      &application_client_observers_);
+  application_client_->AddApplicationStateObserver(
+      &application_client_observers_);
 }
 
 CastRuntimeContentBrowserClient::~CastRuntimeContentBrowserClient() {
-  RemoveStreamingResolutionObserver(&application_client_observers_);
-  RemoveApplicationStateObserver(&application_client_observers_);
+  application_client_->RemoveStreamingResolutionObserver(
+      &application_client_observers_);
+  application_client_->RemoveApplicationStateObserver(
+      &application_client_observers_);
 }
 
 std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
@@ -103,6 +124,11 @@ bool CastRuntimeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
 
 bool CastRuntimeContentBrowserClient::IsBufferingEnabled() {
   return application_client_observers_.IsBufferingEnabled();
+}
+
+void CastRuntimeContentBrowserClient::OnWebContentsCreated(
+    content::WebContents* web_contents) {
+  application_client_->OnWebContentsCreated(web_contents);
 }
 
 CastRuntimeContentBrowserClient::ApplicationClientObservers::
@@ -158,7 +184,7 @@ void CastRuntimeContentBrowserClient::InitializeCoreComponents(
       command_line->GetSwitchValueASCII(cast::core::kRuntimeServicePathSwitch);
 
   app_dispatcher_ = std::make_unique<RuntimeServiceImpl>(
-      *this, *web_service, runtime_id, runtime_service_path);
+      *application_client_, *web_service, runtime_id, runtime_service_path);
 }
 
 }  // namespace chromecast

@@ -28,13 +28,14 @@ namespace chromecast {
 
 class RuntimeApplicationDispatcher;
 
-class CastRuntimeContentBrowserClient
-    : public shell::CastContentBrowserClient,
-      public cast_receiver::ApplicationClient {
+class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
  public:
   explicit CastRuntimeContentBrowserClient(
       CastFeatureListCreator* feature_list_creator);
   ~CastRuntimeContentBrowserClient() override;
+
+  cast_receiver::ApplicationClient::NetworkContextGetter
+  GetNetworkContextGetter();
 
   // CastContentBrowserClient overrides:
   std::unique_ptr<CastService> CreateCastService(
@@ -51,9 +52,7 @@ class CastRuntimeContentBrowserClient
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   bool IsBufferingEnabled() override;
-
-  // cast_receiver::ApplicationClient overrides:
-  NetworkContextGetter GetNetworkContextGetter() override;
+  void OnWebContentsCreated(content::WebContents* web_contents) override;
 
  protected:
   void InitializeCoreComponents(CastWebService* web_service);
@@ -89,6 +88,8 @@ class CastRuntimeContentBrowserClient
 
     std::atomic_bool is_buffering_enabled_{false};
   };
+
+  std::unique_ptr<cast_receiver::ApplicationClient> application_client_;
 
   // Wrapper around the observers used with the cast_receiver component.
   ApplicationClientObservers application_client_observers_;

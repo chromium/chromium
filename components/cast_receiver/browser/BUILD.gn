@@ -8,6 +8,8 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/cast_receiver/common",
+    "//components/media_control/browser",
+    "//content/public/browser",
   ]
   public = [
     "public/application_client.h",

@@ -11,6 +11,7 @@
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/visibility_types.h"
 #include "chromecast/common/feature_constants.h"
+#include "components/media_control/browser/media_blocker.h"
 #include "content/public/browser/web_contents.h"
 
 namespace chromecast {
@@ -35,11 +36,13 @@ RuntimeApplicationBase::Delegate::~Delegate() = default;
 RuntimeApplicationBase::RuntimeApplicationBase(
     std::string cast_session_id,
     cast::common::ApplicationConfig app_config,
-    mojom::RendererType renderer_type)
+    mojom::RendererType renderer_type,
+    cast_receiver::ApplicationClient& application_client)
     : cast_session_id_(std::move(cast_session_id)),
       app_config_(std::move(app_config)),
       renderer_type_(renderer_type),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      application_client_(application_client) {
   DCHECK(task_runner_);
 }
 
@@ -86,6 +89,16 @@ void RuntimeApplicationBase::Stop(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopApplication(cast::common::StopReason::USER_REQUEST, /*net_error_code=*/0);
   std::move(callback).Run(cast_receiver::OkStatus());
+}
+
+cast_receiver::ApplicationClient::ApplicationControls*
+RuntimeApplicationBase::GetApplicationControls() {
+  if (!delegate().GetWebContents()) {
+    return nullptr;
+  }
+
+  return &application_client_->GetApplicationControls(
+      *delegate().GetWebContents());
 }
 
 base::Value RuntimeApplicationBase::GetRendererFeatures() const {
@@ -290,23 +303,24 @@ void RuntimeApplicationBase::SetMediaState(
     return;
   }
 
-  auto* cast_web_contents =
-      CastWebContents::FromWebContents(delegate_->GetWebContents());
-  DCHECK(cast_web_contents);
+  auto* application_controls = GetApplicationControls();
+  DCHECK(application_controls);
+  media_control::MediaBlocker& media_blocker =
+      application_controls->GetMediaBlocker();
   switch (media_state_) {
     case cast::common::MediaState::LOAD_BLOCKED:
-      cast_web_contents->BlockMediaLoading(true);
-      cast_web_contents->BlockMediaStarting(true);
+      media_blocker.BlockMediaLoading(true);
+      // TODO(crbug.com/1359584): Block media starting.
       break;
 
     case cast::common::MediaState::START_BLOCKED:
-      cast_web_contents->BlockMediaLoading(false);
-      cast_web_contents->BlockMediaStarting(true);
+      media_blocker.BlockMediaLoading(false);
+      // TODO(crbug.com/1359584): Block media starting.
       break;
 
     case cast::common::MediaState::UNBLOCKED:
-      cast_web_contents->BlockMediaLoading(false);
-      cast_web_contents->BlockMediaStarting(false);
+      media_blocker.BlockMediaLoading(false);
+      // TODO(crbug.com/1359584): Allow media starting.
       break;
 
     default:

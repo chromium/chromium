@@ -23,7 +23,8 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   WebRuntimeApplication(std::string cast_session_id,
-                        cast::common::ApplicationConfig app_config);
+                        cast::common::ApplicationConfig app_config,
+                        cast_receiver::ApplicationClient& application_client);
   ~WebRuntimeApplication() override;
 
  private:

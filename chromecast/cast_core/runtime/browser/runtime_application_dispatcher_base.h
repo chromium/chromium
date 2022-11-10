@@ -81,8 +81,8 @@ RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::
     app = std::make_unique<StreamingRuntimeApplication>(
         session_id, std::move(app_config), *application_client_);
   } else {
-    app = std::make_unique<WebRuntimeApplication>(session_id,
-                                                  std::move(app_config));
+    app = std::make_unique<WebRuntimeApplication>(
+        session_id, std::move(app_config), *application_client_);
   }
 
   // TODO(b/232140331): Call this only when foreground app changes.

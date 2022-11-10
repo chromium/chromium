@@ -20,10 +20,12 @@ namespace chromecast {
 
 WebRuntimeApplication::WebRuntimeApplication(
     std::string cast_session_id,
-    cast::common::ApplicationConfig config)
+    cast::common::ApplicationConfig config,
+    cast_receiver::ApplicationClient& application_client)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(config),
-                             mojom::RendererType::MOJO_RENDERER),
+                             mojom::RendererType::MOJO_RENDERER,
+                             application_client),
       app_url_(RuntimeApplicationBase::config().cast_web_app_config().url()) {}
 
 WebRuntimeApplication::~WebRuntimeApplication() {

@@ -4,7 +4,10 @@
 
 if (!is_win) {
   source_set("renderer") {
-    deps = [ "//components/on_load_script_injector/renderer" ]
+    deps = [
+      "//components/media_control/renderer",
+      "//components/on_load_script_injector/renderer",
+    ]
     public = [ "public/content_renderer_client_mixins.h" ]
     sources = [ "content_renderer_client_mixins.cc" ]
   }

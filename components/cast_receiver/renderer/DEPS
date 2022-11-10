@@ -1,3 +1,4 @@
 include_rules = [
+  "+components/media_control/renderer",
   "+components/on_load_script_injector/renderer",
 ]

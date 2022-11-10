@@ -14,6 +14,7 @@ include_rules = [
   "+components/cast_streaming/browser",
   "+components/cast_streaming/public",
   "+components/guest_view/browser",
+  "+components/media_control/browser",
   "+components/url_rewrite",
   "+content/public/browser",
   "+content/public/common",
