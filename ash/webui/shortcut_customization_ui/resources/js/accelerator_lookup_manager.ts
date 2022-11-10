@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {mojoString16ToString} from './mojo_utils.js';
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutInfoList, MojoAcceleratorConfig, MojoAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual, getAcceleratorId} from './shortcut_utils.js';
 
 /** The name of an {@link Accelerator}, e.g. "Snap Window Left". */
@@ -149,8 +149,17 @@ export class AcceleratorLookupManager {
     }
   }
 
-  setAcceleratorLayoutLookup(layoutInfoList: LayoutInfoList) {
+  setAcceleratorLayoutLookup(layoutInfoList: MojoLayoutInfo[]) {
     for (const entry of layoutInfoList) {
+      // This check is necessary because the layout info list may contain
+      // references to accelerators that are not always present
+      // (e.g. developer or debug mode accelerators).
+      const acceleratorExists = this.acceleratorLookup_.has(
+          getAcceleratorId(entry.source, entry.action));
+      if (!acceleratorExists) {
+        continue;
+      }
+
       if (!this.acceleratorLayoutLookup_.has(entry.category)) {
         this.acceleratorLayoutLookup_.set(entry.category, new Map());
       }
@@ -160,13 +169,21 @@ export class AcceleratorLookupManager {
         subcatMap!.set(entry.subCategory, []);
       }
 
+      const sanitizedLayoutInfo: LayoutInfo = {
+        source: entry.source,
+        style: entry.style,
+        description: mojoString16ToString(entry.description),
+        category: entry.category,
+        subCategory: entry.subCategory,
+        action: entry.action,
+      };
+
       this.getAcceleratorLayout(entry.category, entry.subCategory)
-          .push(Object.assign({}, entry));
+          .push(sanitizedLayoutInfo);
 
       // Add the entry to the AcceleratorNameLookup.
       const uuid = getAcceleratorId(entry.source, entry.action);
-      // TODO(jimmyxgong): Use real name lookup instead of using fake_data.js.
-      this.acceleratorNameLookup_.set(uuid, entry.description);
+      this.acceleratorNameLookup_.set(uuid, sanitizedLayoutInfo.description);
     }
   }
 

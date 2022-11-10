@@ -113,18 +113,40 @@ suite('acceleratorLookupManagerTest', function() {
     });
   });
 
-  test('GetLayoutInfoDefaultFake', () => {
+  test('GetLayoutInfoDefaultFakeWithAccelerators', async () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
-    getProvider().setFakeLayoutInfo(fakeLayoutInfo);
-    return getProvider().getLayoutInfo().then((result) => {
-      assertDeepEquals(fakeLayoutInfo, result);
 
-      getManager().setAcceleratorLayoutLookup(result);
+    // First, initialize the accelerators into the AcceleratorLookupManager.
+    getProvider().setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    const {config: accelConfig} = await getProvider().getAccelerators();
+    getManager().setAcceleratorLookup(accelConfig);
+
+    // Then, initialize the layout infos into the AcceleratorLookupManager.
+    getProvider().setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
+    return getProvider().getAcceleratorLayoutInfos().then((result) => {
+      assertDeepEquals(fakeLayoutInfo, result.layoutInfos);
+
+      getManager().setAcceleratorLayoutLookup(result.layoutInfos);
 
       // 2 layout infos for ChromeOS (Window Management, Virtual Desks).
       assertEquals(2, getManager().getSubcategories(/*ChromeOS=*/ 0)!.size);
       // 1 layout infos for Browser (Tabs).
       assertEquals(1, getManager().getSubcategories(/*Browser=*/ 1)!.size);
+    });
+  });
+
+  test('GetLayoutInfoDefaultFakeNoAccelerators', () => {
+    // TODO(jimmyxgong): Remove this test once real data is ready.
+    getProvider().setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
+    return getProvider().getAcceleratorLayoutInfos().then((result) => {
+      assertDeepEquals(fakeLayoutInfo, result.layoutInfos);
+
+      getManager().setAcceleratorLayoutLookup(result.layoutInfos);
+
+      // If accelerators have not been initialized into the
+      // AcceleratorLookupManager, we expect the subcategories to be undefined.
+      assertEquals(undefined, getManager().getSubcategories(/*ChromeOS=*/ 0));
+      assertEquals(undefined, getManager().getSubcategories(/*Browser=*/ 1));
     });
   });
 

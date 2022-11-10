@@ -4,9 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {AcceleratorLayoutInfo} from '../mojom-webui/ash/public/mojom/accelerator_info.mojom-webui';
-
-import {AcceleratorConfigResult, AcceleratorSource, LayoutInfoList, MojoAcceleratorConfig, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 
 /**
@@ -22,7 +20,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
     // Setup method resolvers.
     this.methods_.register('getAccelerators');
-    this.methods_.register('getLayoutInfo');
+    this.methods_.register('getAcceleratorLayoutInfos');
     this.methods_.register('isMutable');
     this.methods_.register('addUserAccelerator');
     this.methods_.register('replaceAccelerator');
@@ -30,16 +28,13 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods_.register('restoreAllDefaults');
     this.methods_.register('restoreActionDefaults');
   }
-  getAcceleratorLayoutInfos(): Promise<{layoutInfos: AcceleratorLayoutInfo[]}> {
-    this.methods_.setResult('getAcceleratorLayoutInfos', {layoutInfos: []});
+
+  getAcceleratorLayoutInfos(): Promise<{layoutInfos: MojoLayoutInfo[]}> {
     return this.methods_.resolveMethod('getAcceleratorLayoutInfos');
   }
+
   getAccelerators(): Promise<{config: MojoAcceleratorConfig}> {
     return this.methods_.resolveMethod('getAccelerators');
-  }
-
-  getLayoutInfo(): Promise<LayoutInfoList> {
-    return this.methods_.resolveMethod('getLayoutInfo');
   }
 
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}> {
@@ -96,9 +91,9 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   /**
    * Sets the value that will be returned when calling
-   * getLayoutInfo().
+   * getAcceleratorLayoutInfos().
    */
-  setFakeLayoutInfo(layout: LayoutInfoList) {
-    this.methods_.setResult('getLayoutInfo', layout);
+  setFakeAcceleratorLayoutInfos(layoutInfos: MojoLayoutInfo[]) {
+    this.methods_.setResult('getAcceleratorLayoutInfos', {layoutInfos});
   }
 }

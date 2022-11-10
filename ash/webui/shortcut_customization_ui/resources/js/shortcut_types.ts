@@ -145,8 +145,12 @@ export type LayoutInfo =
     Omit<AcceleratorInfoTypes.AcceleratorLayoutInfo, 'description'|'style'>&
     {description: string, style: LayoutStyle};
 
-/** Type alias for an array of LayoutItem. */
-export type LayoutInfoList = LayoutInfo[];
+/**
+ * Alias for the Mojo version of AcceleratorLayoutInfo so that
+ * it's clearer throughout the app whether we're using the Mojo
+ * version or the app version ({@link LayoutInfo}).
+ */
+export type MojoLayoutInfo = AcceleratorInfoTypes.AcceleratorLayoutInfo;
 
 /**
  * Type alias for the ShortcutProviderInterface.
@@ -155,7 +159,7 @@ export type LayoutInfoList = LayoutInfo[];
 export interface ShortcutProviderInterface extends
     AcceleratorConfigurationProviderInterface {
   getAccelerators(): Promise<{config: MojoAcceleratorConfig}>;
-  getLayoutInfo(): Promise<LayoutInfoList>;
+  getAcceleratorLayoutInfos(): Promise<{layoutInfos: MojoLayoutInfo[]}>;
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}>;
   removeAccelerator(
       source: AcceleratorSource, action: number,

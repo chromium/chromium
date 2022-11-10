@@ -4,12 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AcceleratorLayoutInfo} from '../mojom-webui/ash/public/mojom/accelerator_info.mojom-webui';
 import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, LayoutInfoList, MojoAcceleratorConfig, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 
 
@@ -45,7 +44,7 @@ export function setupFakeShortcutProvider(): ShortcutProviderInterface {
   provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
 
   // Setup accelerator layout info.
-  provider.setFakeLayoutInfo(fakeLayoutInfo);
+  provider.setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
 
   // Set the fake provider.
   setShortcutProviderForTesting(provider);
@@ -67,17 +66,12 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     this.fakeProvider = fakeProvider;
   }
 
-  getAcceleratorLayoutInfos(): Promise<{layoutInfos: AcceleratorLayoutInfo[]}> {
+  getAcceleratorLayoutInfos(): Promise<{layoutInfos: MojoLayoutInfo[]}> {
     return this.remote.getAcceleratorLayoutInfos();
   }
 
   getAccelerators(): Promise<{config: MojoAcceleratorConfig}> {
     return this.remote.getAccelerators();
-  }
-
-  getLayoutInfo(): Promise<LayoutInfoList> {
-    // TODO(cambickel) Replace with real mojo method.
-    return this.fakeProvider.getLayoutInfo();
   }
 
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}> {

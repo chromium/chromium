@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {AcceleratorConfigResult, AcceleratorSource, LayoutInfoList} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorSource, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('fakeShortcutProviderTest', function() {
@@ -41,18 +41,18 @@ suite('fakeShortcutProviderTest', function() {
   });
 
   test('GetLayoutInfoEmpty', () => {
-    const expected: LayoutInfoList = [];
-    getProvider().setFakeLayoutInfo(expected);
-    return getProvider().getLayoutInfo().then((result) => {
-      assertDeepEquals(expected, result);
+    const expected: MojoLayoutInfo[] = [];
+    getProvider().setFakeAcceleratorLayoutInfos(expected);
+    return getProvider().getAcceleratorLayoutInfos().then((result) => {
+      assertDeepEquals(expected, result.layoutInfos);
     });
   });
 
   test('GetLayoutInfoDefaultFake', () => {
     // TODO(zentaro): Remove this test once real data is ready.
-    getProvider().setFakeLayoutInfo(fakeLayoutInfo);
-    return getProvider().getLayoutInfo().then((result) => {
-      assertDeepEquals(fakeLayoutInfo, result);
+    getProvider().setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
+    return getProvider().getAcceleratorLayoutInfos().then((result) => {
+      assertDeepEquals(fakeLayoutInfo, result.layoutInfos);
     });
   });
 

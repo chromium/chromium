@@ -17,7 +17,7 @@ import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/acceler
 import {fakeSubCategories} from 'chrome://shortcut-customization/js/fake_data.js';
 import {setShortcutProviderForTesting, setupFakeShortcutProvider} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import {LayoutInfoList, Modifier, ShortcutProviderInterface} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {LayoutInfo, Modifier, ShortcutProviderInterface} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -111,7 +111,7 @@ suite('shortcutCustomizationAppTest', function() {
         subSections[0]!.title);
     // Asert 2 accelerators are loaded for Window Management.
     assertEquals(
-        (expectedLayouts!.get(windowManagementValue) as LayoutInfoList).length,
+        (expectedLayouts!.get(windowManagementValue) as LayoutInfo[]).length,
         subSections[0]!.acceleratorContainer!.length);
 
     // Assert subsection title (Virtual Desks) matches expected value from
@@ -121,7 +121,7 @@ suite('shortcutCustomizationAppTest', function() {
         fakeSubCategories.get(virtualDesksValue), subSections[1]!.title);
     // Asert 2 accelerators are loaded for Virtual Desks.
     assertEquals(
-        (expectedLayouts!.get(virtualDesksValue) as LayoutInfoList).length,
+        (expectedLayouts!.get(virtualDesksValue) as LayoutInfo[]).length,
         subSections[1]!.acceleratorContainer!.length);
   });
 
@@ -153,7 +153,7 @@ suite('shortcutCustomizationAppTest', function() {
         fakeSubCategories.get(keyIterator.value), subSections[0]!.title);
     // Assert only 1 accelerator is within Tabs.
     assertEquals(
-        (expectedLayouts!.get(keyIterator.value) as LayoutInfoList).length,
+        (expectedLayouts!.get(keyIterator.value) as LayoutInfo[]).length,
         subSections[0]!.acceleratorContainer.length);
   });
 

@@ -5,7 +5,7 @@
 import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {stringToMojoString16} from './mojo_utils.js';
-import {AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfoList, LayoutStyle, Modifier, MojoAcceleratorConfig} from './shortcut_types.js';
+import {AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoLayoutInfo} from './shortcut_types.js';
 
 export const fakeSubCategories: Map<AcceleratorSubcategory, string> = new Map([
   [0, 'Window Management'],
@@ -94,11 +94,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
   },
 };
 
-export const fakeLayoutInfo: LayoutInfoList = [
+export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
     category: 0,     // Chrome OS.
     subCategory: 0,  // Window Management.
-    description: 'Snap Window Left',
+    description: stringToMojoString16('Snap Window Left'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 0,
@@ -106,7 +106,7 @@ export const fakeLayoutInfo: LayoutInfoList = [
   {
     category: 0,     // Chrome OS.
     subCategory: 0,  // Window Management.
-    description: 'Snap Window Right',
+    description: stringToMojoString16('Snap Window Right'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 1,
@@ -114,7 +114,7 @@ export const fakeLayoutInfo: LayoutInfoList = [
   {
     category: 0,     // Chrome OS.
     subCategory: 1,  // Virtual Desks.
-    description: 'Create Desk',
+    description: stringToMojoString16('Create Desk'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 2,
@@ -122,7 +122,7 @@ export const fakeLayoutInfo: LayoutInfoList = [
   {
     category: 0,     // Chrome OS.
     subCategory: 1,  // Virtual Desks.
-    description: 'Remove Desk',
+    description: stringToMojoString16('Remove Desk'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 3,
@@ -130,7 +130,7 @@ export const fakeLayoutInfo: LayoutInfoList = [
   {
     category: 1,     // Browser.
     subCategory: 2,  // Tabs.
-    description: 'New Tab',
+    description: stringToMojoString16('New Tab'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kBrowser,
     action: 1001,
