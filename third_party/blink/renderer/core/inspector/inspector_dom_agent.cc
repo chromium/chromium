@@ -1629,7 +1629,10 @@ Response InspectorDOMAgent::getContainerForNode(
     return response;
 
   PhysicalAxes physical = kPhysicalAxisNone;
-  LogicalAxes logical = kLogicalAxisNone;
+  // TODO(crbug.com/1378237): Need to keep the broken behavior of querying the
+  // inline-axis by default to avoid even worse behavior before devtools-
+  // frontend catches up. Change value here to kLogicalAxisNone.
+  LogicalAxes logical = kLogicalAxisInline;
 
   if (physical_axes.isJust()) {
     if (physical_axes.fromJust() ==

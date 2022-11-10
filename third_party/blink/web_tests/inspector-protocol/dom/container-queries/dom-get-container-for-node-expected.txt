@@ -43,7 +43,7 @@ true
     sessionId : <string>
 }
 Is the returned container the expected style container?
-true
+false
 {
     id : <number>
     result : {
