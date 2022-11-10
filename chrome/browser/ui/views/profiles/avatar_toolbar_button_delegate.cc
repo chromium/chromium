@@ -245,10 +245,6 @@ void AvatarToolbarButtonDelegate::OnBlur() {
   MaybeHideIdentityAnimation();
 }
 
-void AvatarToolbarButtonDelegate::OnHighlightChanged() {
-  MaybeHideIdentityAnimation();
-}
-
 void AvatarToolbarButtonDelegate::OnBrowserAdded(Browser* browser) {
   avatar_toolbar_button_->UpdateIcon();
   avatar_toolbar_button_->UpdateText();

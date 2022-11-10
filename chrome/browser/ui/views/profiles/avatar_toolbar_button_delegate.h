@@ -70,7 +70,6 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void NotifyClick();
   void OnMouseExited();
   void OnBlur();
-  void OnHighlightChanged();
 
  private:
   enum class IdentityAnimationState { kNotShowing, kWaitingForImage, kShowing };

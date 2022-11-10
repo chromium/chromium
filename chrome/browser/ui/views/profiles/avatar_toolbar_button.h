@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 
@@ -21,8 +18,7 @@ class AvatarToolbarButtonDelegate;
 class Browser;
 class BrowserView;
 
-class AvatarToolbarButton : public ToolbarButton,
-                            ToolbarIconContainerView::Observer {
+class AvatarToolbarButton : public ToolbarButton {
  public:
   METADATA_HEADER(AvatarToolbarButton);
 
@@ -44,11 +40,7 @@ class AvatarToolbarButton : public ToolbarButton,
     virtual void OnAvatarHighlightAnimationFinished() = 0;
   };
 
-  // TODO(crbug.com/922525): Remove this constructor when this button always has
-  // ToolbarIconContainerView as a parent.
   explicit AvatarToolbarButton(BrowserView* browser);
-  AvatarToolbarButton(BrowserView* browser_view,
-                      ToolbarIconContainerView* parent);
   AvatarToolbarButton(const AvatarToolbarButton&) = delete;
   AvatarToolbarButton& operator=(const AvatarToolbarButton&) = delete;
   ~AvatarToolbarButton() override;
@@ -71,9 +63,6 @@ class AvatarToolbarButton : public ToolbarButton,
   void UpdateIcon() override;
   void Layout() override;
 
-  // ToolbarIconContainerView::Observer:
-  void OnHighlightChanged() override;
-
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
 
@@ -95,7 +84,6 @@ class AvatarToolbarButton : public ToolbarButton,
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 
   const raw_ptr<Browser> browser_;
-  const raw_ptr<ToolbarIconContainerView> parent_;
 
   // Time when this object was created.
   const base::TimeTicks creation_time_;

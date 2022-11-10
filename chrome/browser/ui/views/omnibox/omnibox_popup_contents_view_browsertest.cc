@@ -31,6 +31,7 @@
 #include "content/public/test/test_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/theme_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/accessibility/ax_event_manager.h"
