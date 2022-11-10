@@ -67,8 +67,8 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
   scoped_refptr<gfx::NativePixmap> pixmap;
   pixmap = ui::OzonePlatform::GetInstance()
                ->GetSurfaceFactoryOzone()
-               ->CreateNativePixmap(gfx::kNullAcceleratedWidget, VK_NULL_HANDLE,
-                                    size, format, usage);
+               ->CreateNativePixmap(gfx::kNullAcceleratedWidget, nullptr, size,
+                                    format, usage);
   if (!pixmap) {
     // TODO(j.isorce): use gbm_bo_create / gbm_bo_get_fd from system libgbm.
     NOTIMPLEMENTED();

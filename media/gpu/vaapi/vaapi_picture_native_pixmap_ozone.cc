@@ -118,7 +118,7 @@ VaapiStatus VaapiPictureNativePixmapOzone::Allocate(gfx::BufferFormat format) {
   buffer_usage = gfx::BufferUsage::GPU_READ;
 #endif
   auto pixmap = factory->CreateNativePixmap(
-      gfx::kNullAcceleratedWidget, VK_NULL_HANDLE, size_, format, buffer_usage,
+      gfx::kNullAcceleratedWidget, nullptr, size_, format, buffer_usage,
       /*framebuffer_size=*/visible_size_);
   if (!pixmap) {
     return VaapiStatus::Codes::kNoPixmap;

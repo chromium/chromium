@@ -23,6 +23,8 @@ class GLImage;
 
 namespace gpu {
 
+class VulkanDeviceQueue;
+
 class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
     : public GpuMemoryBufferFactory,
       public ImageFactory {
@@ -104,7 +106,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
       int client_id,
       scoped_refptr<gfx::NativePixmap> pixmap);
 
-  VkDevice GetVulkanDevice();
+  VulkanDeviceQueue* GetVulkanDeviceQueue();
 
   scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
 

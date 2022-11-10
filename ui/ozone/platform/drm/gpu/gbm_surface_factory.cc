@@ -387,7 +387,7 @@ std::unique_ptr<SurfaceOzoneCanvas> GbmSurfaceFactory::CreateCanvasForWidget(
 
 scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
-    VkDevice vk_device,
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -407,12 +407,13 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmap(
                                          std::move(framebuffer));
 }
 
-void GbmSurfaceFactory::CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
-                                                VkDevice vk_device,
-                                                gfx::Size size,
-                                                gfx::BufferFormat format,
-                                                gfx::BufferUsage usage,
-                                                NativePixmapCallback callback) {
+void GbmSurfaceFactory::CreateNativePixmapAsync(
+    gfx::AcceleratedWidget widget,
+    gpu::VulkanDeviceQueue* device_queue,
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    NativePixmapCallback callback) {
   drm_thread_proxy_->CreateBufferAsync(
       widget, size, format, usage, 0 /* flags */,
       base::BindOnce(OnNativePixmapCreated, std::move(callback),

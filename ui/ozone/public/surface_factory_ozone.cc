@@ -78,7 +78,7 @@ std::unique_ptr<SurfaceOzoneCanvas> SurfaceFactoryOzone::CreateCanvasForWidget(
 
 scoped_refptr<gfx::NativePixmap> SurfaceFactoryOzone::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
-    VkDevice vk_device,
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -95,7 +95,7 @@ bool SurfaceFactoryOzone::CanCreateNativePixmapForFormat(
 
 void SurfaceFactoryOzone::CreateNativePixmapAsync(
     gfx::AcceleratedWidget widget,
-    VkDevice vk_device,
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,

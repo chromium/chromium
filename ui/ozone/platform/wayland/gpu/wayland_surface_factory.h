@@ -42,13 +42,13 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       gfx::AcceleratedWidget widget) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
-      VkDevice vk_device,
+      gpu::VulkanDeviceQueue* device_queue,
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
   void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
-                               VkDevice vk_device,
+                               gpu::VulkanDeviceQueue* device_queue,
                                gfx::Size size,
                                gfx::BufferFormat format,
                                gfx::BufferUsage usage,

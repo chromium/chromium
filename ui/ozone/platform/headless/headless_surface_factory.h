@@ -35,7 +35,7 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
       gfx::AcceleratedWidget widget) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
-      VkDevice vk_device,
+      gpu::VulkanDeviceQueue* device_queue,
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,

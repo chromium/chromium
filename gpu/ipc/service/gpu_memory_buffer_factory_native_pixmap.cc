@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
-#include "gpu/vulkan/vulkan_device_queue.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/client_native_pixmap.h"
@@ -23,6 +22,10 @@
 
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 #include "ui/gl/gl_image_glx_native_pixmap.h"            // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/vulkan/vulkan_device_queue.h"
 #endif
 
 namespace gpu {
@@ -72,8 +75,8 @@ GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBuffer(
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmap(surface_handle, GetVulkanDevice(), size, format,
-                               usage, framebuffer_size);
+          ->CreateNativePixmap(surface_handle, GetVulkanDeviceQueue(), size,
+                               format, usage, framebuffer_size);
   return CreateGpuMemoryBufferFromNativePixmap(id, size, format, usage,
                                                client_id, std::move(pixmap));
 }
@@ -89,7 +92,7 @@ void GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferAsync(
   ui::OzonePlatform::GetInstance()
       ->GetSurfaceFactoryOzone()
       ->CreateNativePixmapAsync(
-          surface_handle, GetVulkanDevice(), size, format, usage,
+          surface_handle, GetVulkanDeviceQueue(), size, format, usage,
           base::BindOnce(
               &GpuMemoryBufferFactoryNativePixmap::OnNativePixmapCreated, id,
               size, format, usage, client_id, std::move(callback),
@@ -196,8 +199,8 @@ GpuMemoryBufferFactoryNativePixmap::CreateAnonymousImage(
   scoped_refptr<gfx::NativePixmap> pixmap;
   pixmap = ui::OzonePlatform::GetInstance()
                ->GetSurfaceFactoryOzone()
-               ->CreateNativePixmap(surface_handle, GetVulkanDevice(), size,
-                                    format, usage);
+               ->CreateNativePixmap(surface_handle, GetVulkanDeviceQueue(),
+                                    size, format, usage);
   if (!pixmap.get()) {
     LOG(ERROR) << "Failed to create pixmap " << size.ToString() << ", "
                << gfx::BufferFormatToString(format) << ", usage "
@@ -219,10 +222,13 @@ unsigned GpuMemoryBufferFactoryNativePixmap::RequiredTextureType() {
   return GL_TEXTURE_2D;
 }
 
-VkDevice GpuMemoryBufferFactoryNativePixmap::GetVulkanDevice() {
-  return vulkan_context_provider_
-             ? vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice()
-             : VK_NULL_HANDLE;
+VulkanDeviceQueue* GpuMemoryBufferFactoryNativePixmap::GetVulkanDeviceQueue() {
+#if BUILDFLAG(ENABLE_VULKAN)
+  if (vulkan_context_provider_)
+    return vulkan_context_provider_->GetDeviceQueue();
+#endif
+
+  return nullptr;
 }
 
 // static

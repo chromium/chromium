@@ -71,20 +71,19 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     SkAlphaType alpha_type,
     uint32_t usage) {
   gfx::BufferFormat buffer_format = viz::BufferFormat(format);
-  VkDevice vk_device = VK_NULL_HANDLE;
+  VulkanDeviceQueue* device_queue = nullptr;
   DCHECK(shared_context_state_);
   if (shared_context_state_->vk_context_provider()) {
-    vk_device = shared_context_state_->vk_context_provider()
-                    ->GetDeviceQueue()
-                    ->GetVulkanDevice();
+    device_queue =
+        shared_context_state_->vk_context_provider()->GetDeviceQueue();
   }
   ui::SurfaceFactoryOzone* surface_factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
-      surface_handle, vk_device, size, buffer_format, GetBufferUsage(usage));
+      surface_handle, device_queue, size, buffer_format, GetBufferUsage(usage));
   // Fallback to GPU_READ if cannot create pixmap with SCANOUT
   if (!pixmap) {
-    pixmap = surface_factory->CreateNativePixmap(surface_handle, vk_device,
+    pixmap = surface_factory->CreateNativePixmap(surface_handle, device_queue,
                                                  size, buffer_format,
                                                  gfx::BufferUsage::GPU_READ);
   }

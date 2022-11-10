@@ -31,6 +31,10 @@ namespace gfx {
 class NativePixmap;
 }
 
+namespace gpu {
+class VulkanDeviceQueue;
+}
+
 namespace ui {
 
 class SurfaceOzoneCanvas;
@@ -140,7 +144,7 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   // This method can be called on any thread.
   virtual scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
-      VkDevice vk_device,
+      gpu::VulkanDeviceQueue* device_queue,
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
@@ -152,7 +156,7 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   using NativePixmapCallback =
       base::OnceCallback<void(scoped_refptr<gfx::NativePixmap>)>;
   virtual void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
-                                       VkDevice vk_device,
+                                       gpu::VulkanDeviceQueue* device_queue,
                                        gfx::Size size,
                                        gfx::BufferFormat format,
                                        gfx::BufferUsage usage,

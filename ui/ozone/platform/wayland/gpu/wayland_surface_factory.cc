@@ -223,7 +223,7 @@ WaylandSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
 
 scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
-    VkDevice vk_device,
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -246,7 +246,7 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
 
 void WaylandSurfaceFactory::CreateNativePixmapAsync(
     gfx::AcceleratedWidget widget,
-    VkDevice vk_device,
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -254,7 +254,7 @@ void WaylandSurfaceFactory::CreateNativePixmapAsync(
   // CreateNativePixmap is non-blocking operation. Thus, it is safe to call it
   // and return the result with the provided callback.
   std::move(callback).Run(
-      CreateNativePixmap(widget, vk_device, size, format, usage));
+      CreateNativePixmap(widget, device_queue, size, format, usage));
 }
 
 scoped_refptr<gfx::NativePixmap>

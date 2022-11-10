@@ -13,6 +13,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/memory/ptr_util.h"
+#include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/angle/src/common/fuchsia_egl/fuchsia_egl.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/native_pixmap.h"
@@ -167,13 +168,14 @@ std::unique_ptr<SurfaceOzoneCanvas> ScenicSurfaceFactory::CreateCanvasForWidget(
 
 scoped_refptr<gfx::NativePixmap> ScenicSurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
-    VkDevice vk_device,
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     absl::optional<gfx::Size> framebuffer_size) {
   DCHECK(!framebuffer_size || framebuffer_size == size);
 
+  VkDevice vk_device = device_queue->GetVulkanDevice();
   if (widget != gfx::kNullAcceleratedWidget &&
       usage == gfx::BufferUsage::SCANOUT) {
     // The usage SCANOUT is for a primary plane buffer.
@@ -188,13 +190,13 @@ scoped_refptr<gfx::NativePixmap> ScenicSurfaceFactory::CreateNativePixmap(
 
 void ScenicSurfaceFactory::CreateNativePixmapAsync(
     gfx::AcceleratedWidget widget,
-    VkDevice vk_device,
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     NativePixmapCallback callback) {
   std::move(callback).Run(
-      CreateNativePixmap(widget, vk_device, size, format, usage));
+      CreateNativePixmap(widget, device_queue, size, format, usage));
 }
 
 scoped_refptr<gfx::NativePixmap>
