@@ -528,8 +528,9 @@ NSInteger kTrailingSymbolSize = 18;
 
   [self showOrHideEmptyView];
 
-  // If we don't have data or settings to show, add an empty state, then stop
-  // so that we don't add anything that overlaps the illustrated background.
+  // If we don't have data or settings to show, add an empty state, then
+  // stop so that we don't add anything that overlaps the illustrated
+  // background.
   if ([self shouldShowEmptyStateView]) {
     return;
   }
@@ -1218,6 +1219,12 @@ NSInteger kTrailingSymbolSize = 18;
 }
 
 - (void)updatePasswordManagerUI {
+  if ([self shouldShowEmptyStateView]) {
+    [self setEditing:NO animated:YES];
+    [self reloadData];
+    return;
+  }
+
   TableViewModel* model = self.tableViewModel;
   NSMutableIndexSet* sectionsToUpdate = [NSMutableIndexSet indexSet];
 
