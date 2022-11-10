@@ -18,6 +18,7 @@ static_library("system_extensions_internals_ui") {
   ]
 
   deps = [
+    "//ash/constants:constants",
     "//ash/webui/resources:system_extensions_internals_resources",
     "//ash/webui/system_extensions_internals_ui/mojom",
     "//content/public/browser",

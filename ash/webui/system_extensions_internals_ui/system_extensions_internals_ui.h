@@ -8,9 +8,25 @@
 #include <memory>
 
 #include "ash/webui/system_extensions_internals_ui/mojom/system_extensions_internals_ui.mojom.h"
+#include "ash/webui/system_extensions_internals_ui/url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
+
+class SystemExtensionsInternalsUI;
+
+// WebUIConfig for chrome://system-extensions-internals
+class SystemExtensionsInternalsUIConfig
+    : public content::DefaultWebUIConfig<SystemExtensionsInternalsUI> {
+ public:
+  SystemExtensionsInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           ash::kChromeUISystemExtensionsInternalsHost) {}
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // WebUIController for chrome://system-extensions-internals/.
 class SystemExtensionsInternalsUI : public ui::MojoWebUIController {

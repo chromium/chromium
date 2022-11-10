@@ -1023,13 +1023,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       ash::personalization_app::kChromeUIPersonalizationAppHost) {
     return &NewWebUI<ash::personalization_app::PersonalizationAppUI>;
   }
-  if (url.host_piece() == ash::kChromeUISystemExtensionsInternalsHost &&
-      base::FeatureList::IsEnabled(ash::features::kSystemExtensions)) {
-    return &NewWebUI<ash::SystemExtensionsInternalsUI>;
-  }
-  if (url.host_piece() == ash::kChromeUIColorInternalsHost) {
-    return &NewWebUI<ash::ColorInternalsUI>;
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (url.host_piece() == chrome::kChromeUIWebUIJsErrorHost)

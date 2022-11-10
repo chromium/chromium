@@ -6,6 +6,9 @@
 #define ASH_WEBUI_COLOR_INTERNALS_COLOR_INTERNALS_UI_H_
 
 #include "ash/webui/color_internals/mojom/color_internals.mojom.h"
+#include "ash/webui/color_internals/url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -14,6 +17,17 @@ namespace ui {
 class ColorChangeHandler;
 }
 namespace ash {
+
+class ColorInternalsUI;
+
+// WebUIConfig for chrome://color-internals
+class ColorInternalsUIConfig
+    : public content::DefaultWebUIConfig<ColorInternalsUI> {
+ public:
+  ColorInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           ash::kChromeUIColorInternalsHost) {}
+};
 
 // WebUIController for chrome://color-internals/.
 class ColorInternalsUI : public ui::MojoWebUIController {

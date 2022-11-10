@@ -10,7 +10,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
+#include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
+#include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
@@ -94,6 +96,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::CertificateManagerDialogUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::cloud_upload::CloudUploadUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::ColorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ConfirmPasswordChangeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniUpgraderUIConfig>());
@@ -130,6 +133,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<ash::smb_dialog::SmbShareDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SysInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<ash::SystemExtensionsInternalsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::UrgentPasswordExpiryNotificationUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::VmUIConfig>());

@@ -4,6 +4,7 @@
 
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_system_extensions_internals_resources.h"
 #include "ash/webui/grit/ash_system_extensions_internals_resources_map.h"
 #include "ash/webui/system_extensions_internals_ui/url_constants.h"
@@ -14,6 +15,11 @@
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
+
+bool SystemExtensionsInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(ash::features::kSystemExtensions);
+}
 
 SystemExtensionsInternalsUI::SystemExtensionsInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
