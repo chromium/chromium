@@ -165,6 +165,8 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   // Verify that the resulting callback was invoked correctly.
   EXPECT_EQ(segment_id, segment_info.segment_id());
   EXPECT_EQ(42u, segment_info.model_metadata().bucket_duration());
+  EXPECT_EQ(proto::ModelSource::SERVER_MODEL_SOURCE,
+            segment_info.model_source());
 
   // Also verify that the database has been updated.
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback;
@@ -207,6 +209,7 @@ TEST_F(ModelExecutionManagerTest,
   // Verify the old metadata and prediction result has been stored correctly.
   EXPECT_EQ(456u, segment_info_from_db_1->model_metadata().bucket_duration());
   EXPECT_EQ(2, segment_info_from_db_1->prediction_result().result());
+  EXPECT_FALSE(segment_info_from_db_1->has_model_source());
   // Verify the metadata features have been stored correctly.
   EXPECT_EQ(proto::SignalType::USER_ACTION,
             segment_info_from_db_1->model_metadata()

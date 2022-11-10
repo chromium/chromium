@@ -85,6 +85,7 @@ void DefaultModelManager::OnFetchDefaultModel(
   info->segment_info.set_segment_id(segment_id);
   info->segment_info.mutable_model_metadata()->CopyFrom(metadata);
   info->segment_info.set_model_version(model_version);
+  info->segment_info.set_model_source(proto::ModelSource::DEFAULT_MODEL_SOURCE);
   result->push_back(std::move(info));
 
   GetNextSegmentInfoFromDefaultModel(

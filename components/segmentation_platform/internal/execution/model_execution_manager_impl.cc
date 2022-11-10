@@ -97,7 +97,7 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
               "ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate");
   proto::SegmentInfo new_segment_info;
   new_segment_info.set_segment_id(segment_id);
-
+  new_segment_info.set_model_source(proto::ModelSource::SERVER_MODEL_SOURCE);
   // If we find an existing SegmentInfo in the database, we can verify that it
   // is valid, and we can copy over the PredictionResult to the new version
   // we are creating.

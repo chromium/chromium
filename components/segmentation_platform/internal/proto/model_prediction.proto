@@ -53,4 +53,7 @@ message SegmentInfo {
   // and the metadta is persisted to this proto, in seconds since windows epoch.
   // Could be empty for data persisted before this field is added in M101.
   optional int64 model_update_time_s = 5;
+
+  // Model source indicating if model is a client model or a server model.
+  optional ModelSource model_source = 6;
 }

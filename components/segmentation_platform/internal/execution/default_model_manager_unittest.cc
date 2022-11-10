@@ -100,12 +100,17 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   EXPECT_EQ(segment_1, get_all_segment_result()[0]->segment_info.segment_id());
   EXPECT_EQ(model_version_db,
             get_all_segment_result()[0]->segment_info.model_version());
+  EXPECT_FALSE(get_all_segment_result()[0]->segment_info.has_model_source());
   EXPECT_EQ(segment_1, get_all_segment_result()[1]->segment_info.segment_id());
   EXPECT_EQ(model_version_default,
             get_all_segment_result()[1]->segment_info.model_version());
+  EXPECT_EQ(proto::ModelSource::DEFAULT_MODEL_SOURCE,
+            get_all_segment_result()[1]->segment_info.model_source());
   EXPECT_EQ(segment_2, get_all_segment_result()[2]->segment_info.segment_id());
   EXPECT_EQ(model_version_default,
             get_all_segment_result()[2]->segment_info.model_version());
+  EXPECT_EQ(proto::ModelSource::DEFAULT_MODEL_SOURCE,
+            get_all_segment_result()[1]->segment_info.model_source());
 
   // Query again, this time with a segment ID that doesn't exist in either
   // sources.
@@ -127,6 +132,8 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, get_all_segment_result().size());
   EXPECT_EQ(segment_2, get_all_segment_result()[0]->segment_info.segment_id());
+  EXPECT_EQ(proto::ModelSource::DEFAULT_MODEL_SOURCE,
+            get_all_segment_result()[0]->segment_info.model_source());
 
   // Query for a model only available in the database.
   default_model_manager_->GetAllSegmentInfoFromBothModels(
@@ -136,6 +143,7 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, get_all_segment_result().size());
   EXPECT_EQ(segment_3, get_all_segment_result()[0]->segment_info.segment_id());
+  EXPECT_FALSE(get_all_segment_result()[0]->segment_info.has_model_source());
 }
 
 }  // namespace segmentation_platform

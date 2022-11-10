@@ -55,6 +55,11 @@ TEST_F(MetadataUtilsTest, SegmentInfoValidation) {
   segment_info.mutable_model_metadata()->set_time_unit(proto::DAY);
   EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
             metadata_utils::ValidateSegmentInfo(segment_info));
+
+  EXPECT_FALSE(segment_info.has_model_source());
+  segment_info.set_model_source(proto::ModelSource::DEFAULT_MODEL_SOURCE);
+  EXPECT_EQ(proto::ModelSource::DEFAULT_MODEL_SOURCE,
+            segment_info.model_source());
 }
 
 TEST_F(MetadataUtilsTest, DefaultMetadataIsInvalid) {

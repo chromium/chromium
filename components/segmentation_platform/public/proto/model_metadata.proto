@@ -49,6 +49,14 @@ enum TimeUnit {
   SECOND = 7;
 }
 
+// Used to identify the source of the model whether it is a client side or
+// server side model.
+enum ModelSource {
+  UNKNOWN_MODEL_SOURCE = 0;
+  SERVER_MODEL_SOURCE = 1;   // Represents server side model.
+  DEFAULT_MODEL_SOURCE = 2;  // Represents client side model.
+}
+
 message UMAFeature {
   // The type of signal this feature refers to.
   // Note: SignalType::UKM_EVENT type is only used for SignalStorageConfig and
