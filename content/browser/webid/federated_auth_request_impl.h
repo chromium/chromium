@@ -222,15 +222,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   bool prefer_auto_sign_in_;
 
-  // Fetched from the IDP FedCM manifest configuration.
-  struct {
-    GURL idp;
-    GURL token;
-    GURL accounts;
-    GURL client_metadata;
-    GURL metrics;
-  } endpoints_;
-
   base::flat_map<GURL, IdentityProviderInfo> idp_info_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>

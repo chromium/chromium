@@ -60,6 +60,7 @@ using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -77,6 +78,7 @@ constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kClientMetadataEndpoint[] =
     "https://idp.example/client_metadata";
+constexpr char kMetricsEndpoint[] = "https://idp.example/metrics";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
@@ -176,6 +178,7 @@ struct MockManifest {
   const char* accounts_endpoint;
   const char* token_endpoint;
   const char* client_metadata_endpoint;
+  const char* metrics_endpoint;
 };
 
 struct MockIdpInfo {
@@ -214,6 +217,7 @@ static const MockIdpInfo kDefaultIdentityProviderInfo{
         kAccountsEndpoint,
         kTokenEndpoint,
         kClientMetadataEndpoint,
+        kMetricsEndpoint,
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -231,6 +235,7 @@ static const MockIdpInfo kProviderTwoInfo{
         "https://idp2.example/accounts",
         "https://idp2.example/token",
         "https://idp2.example/client_metadata",
+        "https://idp2.example/metrics",
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -419,6 +424,25 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                                 std::move(callback));
   }
 
+  void SendSuccessfulTokenRequestMetrics(
+      const GURL& metrics_endpoint_url,
+      base::TimeDelta api_call_to_show_dialog_time,
+      base::TimeDelta show_dialog_to_continue_clicked_time,
+      base::TimeDelta account_selected_to_token_response_time,
+      base::TimeDelta api_call_to_token_response_time) override {
+    delegate_->SendSuccessfulTokenRequestMetrics(
+        metrics_endpoint_url, api_call_to_show_dialog_time,
+        show_dialog_to_continue_clicked_time,
+        account_selected_to_token_response_time,
+        api_call_to_token_response_time);
+  }
+
+  void SendFailedTokenRequestMetrics(
+      const GURL& metrics_endpoint_url,
+      MetricsEndpointErrorCode error_code) override {
+    delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, error_code);
+  }
+
   void SendLogout(const GURL& logout_url, LogoutCallback callback) override {
     delegate_->SendLogout(logout_url, std::move(callback));
   }
@@ -466,6 +490,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         config_.idp_info[provider_key].manifest.accounts_endpoint;
     endpoints.client_metadata =
         config_.idp_info[provider_key].manifest.client_metadata_endpoint;
+    endpoints.metrics =
+        config_.idp_info[provider_key].manifest.metrics_endpoint;
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;
@@ -2547,6 +2573,114 @@ TEST_F(FederatedAuthRequestImplTest, IframeTooManyRequests) {
                   /*selected_idp_config_url=*/absl::nullopt,
                   /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+// TestIdpNetworkRequestManager subclass which records requests to metrics
+// endpoint.
+class IdpNetworkRequestMetricsRecorder : public TestIdpNetworkRequestManager {
+ public:
+  IdpNetworkRequestMetricsRecorder() = default;
+  IdpNetworkRequestMetricsRecorder(const IdpNetworkRequestMetricsRecorder&) =
+      delete;
+  IdpNetworkRequestMetricsRecorder& operator=(
+      const IdpNetworkRequestMetricsRecorder&) = delete;
+
+  void SendSuccessfulTokenRequestMetrics(
+      const GURL& metrics_endpoint_url,
+      base::TimeDelta api_call_to_show_dialog_time,
+      base::TimeDelta show_dialog_to_continue_clicked_time,
+      base::TimeDelta account_selected_to_token_response_time,
+      base::TimeDelta api_call_to_token_response_time) override {
+    metrics_endpoints_notified_success_.push_back(metrics_endpoint_url);
+  }
+
+  void SendFailedTokenRequestMetrics(
+      const GURL& metrics_endpoint_url,
+      MetricsEndpointErrorCode error_code) override {
+    metrics_endpoints_notified_failure_.push_back(metrics_endpoint_url);
+  }
+
+  const std::vector<GURL>& get_metrics_endpoints_notified_success() {
+    return metrics_endpoints_notified_success_;
+  }
+
+  const std::vector<GURL>& get_metrics_endpoints_notified_failure() {
+    return metrics_endpoints_notified_failure_;
+  }
+
+ private:
+  std::vector<GURL> metrics_endpoints_notified_success_;
+  std::vector<GURL> metrics_endpoints_notified_failure_;
+};
+
+// Test that the metrics endpoint is notified as a result of a successful
+// multi-IDP FederatedAuthRequestImpl::RequestToken() call.
+TEST_F(FederatedAuthRequestImplTest, MetricsEndpointMultiIdp) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kFedCmMetricsEndpoint,
+                            features::kFedCmMultipleIdentityProviders},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<IdpNetworkRequestMetricsRecorder> unique_metrics_recorder =
+      std::make_unique<IdpNetworkRequestMetricsRecorder>();
+  IdpNetworkRequestMetricsRecorder* metrics_recorder =
+      unique_metrics_recorder.get();
+  SetNetworkRequestManager(std::move(unique_metrics_recorder));
+
+  RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess,
+              kConfigurationMultiIdpValid);
+  EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_success(),
+              ElementsAre(kMetricsEndpoint));
+  EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_failure(),
+              ElementsAre("https://idp2.example/metrics"));
+}
+
+// Test that the metrics endpoint is notified when
+// FederatedAuthRequestImpl::RequestToken() call fails.
+TEST_F(FederatedAuthRequestImplTest, MetricsEndpointMultiIdpFail) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kFedCmMetricsEndpoint,
+                            features::kFedCmMultipleIdentityProviders},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<IdpNetworkRequestMetricsRecorder> unique_metrics_recorder =
+      std::make_unique<IdpNetworkRequestMetricsRecorder>();
+  IdpNetworkRequestMetricsRecorder* metrics_recorder =
+      unique_metrics_recorder.get();
+  SetNetworkRequestManager(std::move(unique_metrics_recorder));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
+      /* selected_idp_config_url=*/absl::nullopt,
+      FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
+
+  MockConfiguration configuration = kConfigurationMultiIdpValid;
+  configuration.customized_dialog = true;
+
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
+      .WillOnce(Invoke(
+          [&](content::WebContents* rp_web_contents,
+              const std::string& rp_for_display,
+              const std::vector<IdentityProviderData>& identity_provider_data,
+              SignInMode sign_in_mode,
+              IdentityRequestDialogController::AccountSelectionCallback
+                  on_selected,
+              IdentityRequestDialogController::DismissCallback
+                  dismiss_callback) {
+            base::span<const content::IdentityRequestAccount> accounts =
+                identity_provider_data[0].accounts;
+            displayed_accounts_ = AccountList(accounts.begin(), accounts.end());
+            std::move(dismiss_callback).Run(DismissReason::CLOSE_BUTTON);
+          }));
+
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(
+      metrics_recorder->get_metrics_endpoints_notified_success().empty());
+  EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_failure(),
+              ElementsAre(kMetricsEndpoint, "https://idp2.example/metrics"));
 }
 
 }  // namespace content

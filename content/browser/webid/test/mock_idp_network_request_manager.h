@@ -37,6 +37,14 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
                     const std::string&,
                     const std::string&,
                     TokenRequestCallback));
+  MOCK_METHOD5(SendSuccessfulTokenRequestMetrics,
+               void(const GURL&,
+                    base::TimeDelta,
+                    base::TimeDelta,
+                    base::TimeDelta,
+                    base::TimeDelta));
+  MOCK_METHOD2(SendFailedTokenRequestMetrics,
+               void(const GURL&, MetricsEndpointErrorCode code));
   MOCK_METHOD2(SendLogout, void(const GURL& logout_url, LogoutCallback));
 };
 
