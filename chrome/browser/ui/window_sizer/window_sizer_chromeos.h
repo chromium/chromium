@@ -52,6 +52,12 @@ class WindowSizerChromeOS : public WindowSizer {
   // |show_state| will only be changed if it was set to SHOW_STATE_DEFAULT.
   void GetTabbedBrowserBounds(gfx::Rect* bounds,
                               ui::WindowShowState* show_state) const;
+
+  // Determines the position and size for an app browser window as it gets
+  // created, basing its position on existing browser windows for the same app.
+  // Returns false, if no last active app browsers were found.
+  bool GetAppBrowserBoundsFromLastActive(gfx::Rect* bounds,
+                                         ui::WindowShowState* show_state) const;
 };
 
 #endif  // CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_CHROMEOS_H_

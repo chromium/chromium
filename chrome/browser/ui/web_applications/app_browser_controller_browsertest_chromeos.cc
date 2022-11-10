@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -38,9 +39,6 @@
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/browser/extension_registry.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
-#include "ui/display/display_util.h"
-#include "ui/display/screen.h"
-#include "ui/display/screen_info.h"
 #include "ui/display/types/display_constants.h"
 
 namespace {
@@ -294,51 +292,6 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabLoadNoThemeChange) {
   EXPECT_EQ(GetFrameColor(app_browser_), SK_ColorGREEN);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
-                       WindowsOffsetForMultiWindowPWA) {
-  Browser* first_browser = InstallAndLaunchMockApp();
-  // We should have the original browser for this BrowserTest, plus a new one,
-  // offset by a tasteful amount.
-  EXPECT_NE(nullptr, first_browser);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
-
-  // Make the window small so that we don't hit the edge when creating a new
-  // one that is offset.
-  first_browser->window()->SetBounds(gfx::Rect(0, 0, 50, 50));
-
-  Browser* second_browser = InstallAndLaunchMockApp();
-  EXPECT_NE(nullptr, second_browser);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
-
-  auto bounds1 = first_browser->window()->GetRestoredBounds();
-  auto bounds2 = second_browser->window()->GetRestoredBounds();
-  EXPECT_EQ(bounds1.x() + 20, bounds2.x());
-  EXPECT_EQ(bounds1.y() + 20, bounds2.y());
-
-  const gfx::Rect work_area =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(first_browser->window()->GetNativeWindow())
-          .work_area();
-
-  // Resize the second window larger so that subsequent new windows will hit the
-  // edge of the screen when offset.
-  second_browser->window()->SetBounds(work_area);
-
-  // Open a windows until they start stacking.
-  bool hit_the_bottom_right = false;
-  gfx::Rect previous_bounds = bounds2;
-  for (int i = 0; i < 10; i++) {
-    Browser* next_browser = LaunchMockApp();
-    if (previous_bounds == next_browser->window()->GetRestoredBounds()) {
-      hit_the_bottom_right = true;
-      break;
-    }
-    previous_bounds = next_browser->window()->GetRestoredBounds();
-  }
-
-  EXPECT_TRUE(hit_the_bottom_right);
-}
-
 // App Popups are only used on Chrome OS. See https://crbug.com/1060917.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
@@ -383,10 +336,9 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
   auto bounds1 = first_browser->window()->GetRestoredBounds();
   auto bounds2 = second_browser->window()->GetRestoredBounds();
   // We've already hit the bottom bounds, so the y axis didn't move.
-  EXPECT_EQ(bounds1.x() + 20, bounds2.x());
+  EXPECT_EQ(bounds1.x() + WindowSizer::kWindowTilePixels, bounds2.x());
 
-  // Open a ton of windows until they start stacking. Then keep making them to
-  // make sure we don't crash.
+  // Open a ton of windows until they start stacking.
   bool hit_the_bottom_right = false;
   gfx::Rect previous_bounds = bounds2;
   for (int i = 0; i < 10; i++) {

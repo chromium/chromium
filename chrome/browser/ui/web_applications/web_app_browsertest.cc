@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
+#include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -93,6 +94,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -1254,6 +1256,59 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
   ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
 
   EXPECT_EQ(1u, provider().command_manager().GetCommandCountForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WindowsOffsetForMultiWindowPWA) {
+  const GURL app_url(kExampleURL);
+  const AppId app_id = InstallPWA(app_url);
+
+  Browser* first_browser = LaunchWebAppBrowserAndWait(app_id);
+  // We should have the original (tabbed) browser for this BrowserTest, plus a
+  // new one for the PWA.
+  EXPECT_NE(nullptr, first_browser);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+
+  // Make the window small so that we don't hit the edge when creating a new
+  // one that is offset.
+  first_browser->window()->SetBounds(gfx::Rect(0, 0, 50, 50));
+
+  Browser* second_browser = LaunchWebAppBrowserAndWait(app_id);
+  EXPECT_NE(nullptr, second_browser);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
+
+  auto bounds1 = first_browser->window()->GetRestoredBounds();
+  auto bounds2 = second_browser->window()->GetRestoredBounds();
+  EXPECT_EQ(bounds1.x() + WindowSizer::kWindowTilePixels, bounds2.x());
+  EXPECT_EQ(bounds1.y() + WindowSizer::kWindowTilePixels, bounds2.y());
+
+  // On Chrome OS and Mac we aggressively move the entire window on screen if it
+  // would otherwise be partially off-screen. On other platforms we merely make
+  // sure at least some of the window is visible, but don't force the entire
+  // window on screen. As such, only run these checks on Mac and Chrome OS.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()
+          ->GetDisplayMatching(first_browser->window()->GetRestoredBounds())
+          .work_area();
+
+  // Resize the second window larger so that subsequent new windows will hit the
+  // edge of the screen when offset.
+  second_browser->window()->SetBounds(work_area);
+
+  // Open a windows until they start stacking.
+  bool hit_the_bottom_right = false;
+  gfx::Rect previous_bounds = second_browser->window()->GetRestoredBounds();
+  for (int i = 0; i < 10; i++) {
+    Browser* next_browser = LaunchWebAppBrowserAndWait(app_id);
+    if (previous_bounds == next_browser->window()->GetRestoredBounds()) {
+      hit_the_bottom_right = true;
+      break;
+    }
+    previous_bounds = next_browser->window()->GetRestoredBounds();
+  }
+
+  EXPECT_TRUE(hit_the_bottom_right);
+#endif
 }
 
 class WebAppBrowserTest_ExternalPrefMigration

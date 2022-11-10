@@ -95,8 +95,13 @@ bool WindowSizerChromeOS::GetBrowserBounds(
     } else if (browser()->is_trusted_source()) {
       // For trusted popups (v1 apps and system windows), do not use the last
       // active window bounds, only use saved or default bounds.
-      if (!GetSavedWindowBounds(bounds, show_state))
-        *bounds = GetDefaultWindowBounds(GetDisplayForNewWindow());
+      // For PWA app windows (which are also a trusted source) we do want to use
+      // the last active window bounds.
+      if (!browser()->is_type_app() || !browser()->app_controller() ||
+          !GetAppBrowserBoundsFromLastActive(bounds, show_state)) {
+        if (!GetSavedWindowBounds(bounds, show_state))
+          *bounds = GetDefaultWindowBounds(GetDisplayForNewWindow());
+      }
       determined = true;
     } else if (state_provider()) {
       // Finally, prioritize the last saved |show_state|. If you have questions
@@ -174,4 +179,27 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
   }
 
   bounds_in_screen->AdjustToFit(display.work_area());
+}
+
+bool WindowSizerChromeOS::GetAppBrowserBoundsFromLastActive(
+    gfx::Rect* bounds_in_screen,
+    ui::WindowShowState* show_state) const {
+  DCHECK(show_state);
+  DCHECK(bounds_in_screen);
+  DCHECK(browser()->app_controller());
+
+  if (state_provider() && state_provider()->GetLastActiveWindowState(
+                              bounds_in_screen, show_state)) {
+    bounds_in_screen->Offset(kWindowTilePixels, kWindowTilePixels);
+    // Adjusting bounds_in_screen to fit on the display as returned by
+    // GetDisplayForNewWindow here matches behavior for tabbed browsers above.
+    // This would mean that we might take into account the size of the last
+    // active matching window but ignore the position, if it is on a different
+    // display. However the current implementation for GetLastActiveWindowState
+    // only looks for windows on the same display, so in practice there should
+    // never be a mismatch.
+    bounds_in_screen->AdjustToFit(GetDisplayForNewWindow().work_area());
+    return true;
+  }
+  return false;
 }
