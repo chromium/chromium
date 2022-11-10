@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
@@ -89,6 +90,9 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
     int event_flags,
     GhostWindowType window_type,
     const arc::mojom::WindowInfoPtr& window_info) {
+  // ArcGhostWindowHandler maybe null in the test env.
+  if (!ash::full_restore::ArcGhostWindowHandler::Get())
+    return false;
   auto* arc_task_handler =
       ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
   if (!arc_task_handler) {
