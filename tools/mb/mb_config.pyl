@@ -825,8 +825,7 @@
       'linux-finch-smoke-chrome': 'official_reclient',
       'linux-password-manager-captured-sites-rel': 'release_bot_reclient',
       'lorenz-graph-dbg': 'android_debug_static_external_bot_reclient',
-      'mac-arm64-finch-smoke-chrome': 'official_goma_mac_arm',
-      'mac-autofill-captured-sites-rel': 'release_bot',
+      'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
       # b/248132996: for siso experiments.
       'siso-comparison-android': {
         'reclient': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
@@ -840,10 +839,8 @@
         'reclient': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient',
         'siso': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_siso',
       },
-      'win-autofill-captured-sites-rel': 'release_bot',
-      'win-celab-rel': 'official_celab_release_bot',
-      'win-finch-smoke-chrome': 'official_goma',
-      'win-password-manager-captured-sites-rel': 'release_bot',
+      'win-celab-rel': 'official_celab_release_bot_reclient',
+      'win-finch-smoke-chrome': 'official_reclient',
     },
 
     'internal.chromeos.fyi': {
@@ -3194,6 +3191,9 @@
     'official_celab_release_bot': [
       'official', 'release_bot', 'minimal_symbols',
     ],
+    'official_celab_release_bot_reclient': [
+      'official', 'release_bot_reclient', 'minimal_symbols',
+    ],
 
     'official_fuchsia_arm64': [
       'arm64', 'fuchsia', 'official', 'custom_args', 'arm64_host',
@@ -3337,6 +3337,10 @@
 
     'official_reclient': [
        'official', 'reclient',
+    ],
+
+    'official_reclient_mac_arm': [
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64',
     ],
 
     'perfetto_release_bot_reclient': [
