@@ -1,0 +1,51 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(b/225069285): This entire build file should be combined back with the ui/base BUILD file. Currently (Nov 2022), this is not possible due to circular build dependencies.
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/compiler.gni")
+if (is_mac) {
+  import("//build/config/mac/rules.gni")
+}
+component("emoji") {
+  output_name = "ui_base_emoji"
+
+  defines = [ "IS_UI_BASE_EMOJI_IMPL" ]
+  public = [ "emoji_panel_helper.h" ]
+
+  sources = [ "emoji_panel_helper.h" ]
+  if (is_mac) {
+    sources += [ "emoji_panel_helper_mac.mm" ]
+  } else if (is_win) {
+    sources += [ "emoji_panel_helper_win.cc" ]
+  } else if (is_chromeos_ash) {
+    sources += [ "emoji_panel_helper_chromeos.cc" ]
+  } else if (is_chromeos_lacros) {
+    sources += [ "emoji_panel_helper_lacros.cc" ]
+  } else {
+    # Empty implementation for all other platforms.
+    sources += [ "emoji_panel_helper.cc" ]
+  }
+
+  deps = [
+    "//base:base",
+    "//build:chromeos_buildflags",
+  ]
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
+  if (is_win) {
+    deps += [ "//ui/events:events_base" ]
+  }
+  if (is_mac) {
+    frameworks = [
+      "AppKit.framework",
+      "Foundation.framework",
+    ]
+  }
+}

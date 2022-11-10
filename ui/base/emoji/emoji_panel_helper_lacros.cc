@@ -18,4 +18,6 @@ void ShowEmojiPanel() {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service->IsAvailable<crosapi::mojom::EmojiPicker>())
     lacros_service->GetRemote<crosapi::mojom::EmojiPicker>()->ShowEmojiPicker();
+}
+
 }  // namespace ui

@@ -316,6 +316,7 @@ static_library("test_support") {
     "//third_party/leveldatabase",
     "//ui/base",
     "//ui/base:test_support",
+    "//ui/base/emoji",
     "//ui/events:events_base",
     "//ui/gfx:test_support",
     "//ui/gl",

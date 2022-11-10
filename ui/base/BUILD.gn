@@ -419,17 +419,6 @@ component("base") {
   }
 
   if (is_mac) {
-    sources += [ "emoji/emoji_panel_helper_mac.mm" ]
-  } else if (is_win) {
-    sources += [ "emoji/emoji_panel_helper_win.cc" ]
-  } else if (is_chromeos_ash) {
-    sources += [ "emoji/emoji_panel_helper_chromeos.cc" ]
-  } else {
-    # Empty implementation for all other platforms.
-    sources += [ "emoji/emoji_panel_helper.cc" ]
-  }
-
-  if (is_mac) {
     sources += [ "accelerators/media_keys_listener_mac.mm" ]
   } else if (is_win) {
     sources += [

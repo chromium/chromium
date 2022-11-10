@@ -2462,6 +2462,7 @@ static_library("browser") {
     "//ui/base",
     "//ui/base:ui_data_pack",
     "//ui/base/clipboard",
+    "//ui/base/emoji",
     "//ui/base/idle",
     "//ui/base/ime",
     "//ui/color",

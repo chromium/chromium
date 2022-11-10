@@ -72,6 +72,7 @@ component("app_shim") {
     "//ui/accelerated_widget_mac",
     "//ui/base",
     "//ui/base/dragdrop:types",
+    "//ui/base/emoji",
     "//ui/base/ime:ime",
     "//ui/events",
     "//ui/gfx",
