@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emulator/device_emulator_message_handler.h"
@@ -47,6 +48,11 @@ content::WebUIDataSource* CreateDeviceEmulatorUIDataSource() {
 }
 
 }  // namespace
+
+bool DeviceEmulatorUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return !base::SysInfo::IsRunningOnChromeOS();
+}
 
 DeviceEmulatorUI::DeviceEmulatorUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {

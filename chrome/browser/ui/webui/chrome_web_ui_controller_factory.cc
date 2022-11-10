@@ -1030,15 +1030,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == ash::kChromeUIColorInternalsHost) {
     return &NewWebUI<ash::ColorInternalsUI>;
   }
-
-#if !defined(OFFICIAL_BUILD)
-#if !defined(USE_REAL_DBUS_CLIENTS)
-  if (!base::SysInfo::IsRunningOnChromeOS()) {
-    if (url.host_piece() == chrome::kChromeUIDeviceEmulatorHost)
-      return &NewWebUI<ash::DeviceEmulatorUI>;
-  }
-#endif  // !defined(USE_REAL_DBUS_CLIENTS)
-#endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (url.host_piece() == chrome::kChromeUIWebUIJsErrorHost)

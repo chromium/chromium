@@ -5,9 +5,25 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_EMULATOR_DEVICE_EMULATOR_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_EMULATOR_DEVICE_EMULATOR_UI_H_
 
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace ash {
+
+class DeviceEmulatorUI;
+
+// WebUIConfig for chrome://device-emulator
+class DeviceEmulatorUIConfig
+    : public content::DefaultWebUIConfig<DeviceEmulatorUI> {
+ public:
+  DeviceEmulatorUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIDeviceEmulatorHost) {}
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // The WebUI handler for chrome://device-emulator
 class DeviceEmulatorUI : public content::WebUIController {

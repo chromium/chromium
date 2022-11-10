@@ -52,6 +52,9 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
+#if !defined(USE_REAL_DBUS_CLIENTS)
+#include "chrome/browser/ui/webui/ash/emulator/device_emulator_ui.h"
+#endif  // !defined(USE_REAL_DBUS_CLIENTS)
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -132,6 +135,9 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::VmUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
+#if !defined(USE_REAL_DBUS_CLIENTS)
+  map.AddWebUIConfig(std::make_unique<ash::DeviceEmulatorUIConfig>());
+#endif  // !defined(USE_REAL_DBUS_CLIENTS)
 #endif  // !defined(OFFICIAL_BUILD)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
