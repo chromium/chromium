@@ -78,6 +78,8 @@ component("auth") {
     "metrics_recorder.h",
     "mount_performer.cc",
     "mount_performer.h",
+    "password_update_flow.cc",
+    "password_update_flow.h",
     "password_visibility_utils.cc",
     "password_visibility_utils.h",
     "recovery/cryptohome_recovery_performer.cc",

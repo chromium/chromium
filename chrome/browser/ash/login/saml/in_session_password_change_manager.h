@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
-#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/password_update_flow.h"
 
 class Profile;
 
@@ -23,7 +23,7 @@ class User;
 
 namespace ash {
 
-class CryptohomeAuthenticator;
+class AuthenticationError;
 class UserContext;
 
 // There is at most one instance of this task, which is part of the
@@ -64,8 +64,7 @@ class RecheckPasswordExpiryTask {
 // InSessionPasswordChange policy is enabled and the kInSessionPasswordChange
 // feature is enabled).
 class InSessionPasswordChangeManager
-    : public AuthStatusConsumer,
-      public SessionActivationObserver,
+    : public SessionActivationObserver,
       public PasswordSyncTokenFetcher::Consumer {
  public:
   // Events in the in-session SAML password change flow.
@@ -167,11 +166,6 @@ class InSessionPasswordChangeManager
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // AuthStatusConsumer
-  void OnAuthFailure(const AuthFailure& error) override;
-  void OnPasswordChangeDetected(const UserContext& user_context) override;
-  void OnAuthSuccess(const UserContext& user_context) override;
-
   // SessionActivationObserver
   void OnSessionActivated(bool activated) override;
   void OnLockStateChanged(bool locked) override;
@@ -188,15 +182,21 @@ class InSessionPasswordChangeManager
 
   void NotifyObservers(Event event);
 
+  void OnPasswordUpdateFailure(std::unique_ptr<UserContext> user_context,
+                               AuthenticationError error);
+  void OnPasswordUpdateSuccess(std::unique_ptr<UserContext> user_context);
+
   Profile* primary_profile_;
   const user_manager::User* primary_user_;
   base::ObserverList<Observer> observer_list_;
   RecheckPasswordExpiryTask recheck_task_;
-  scoped_refptr<CryptohomeAuthenticator> authenticator_;
+  PasswordUpdateFlow password_update_flow_;
   int urgent_warning_days_;
   bool renotify_on_unlock_ = false;
   PasswordSource password_source_ = PasswordSource::PASSWORDS_SCRAPED;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
+
+  base::WeakPtrFactory<InSessionPasswordChangeManager> weak_ptr_factory_{this};
 
   friend class InSessionPasswordChangeManagerTest;
 };

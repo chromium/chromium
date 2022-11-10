@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -133,12 +134,20 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
   void TearDownOnMainThread() override { network_state_test_helper_.reset(); }
 
-  void Login() { logged_in_user_mixin_.LogInUser(); }
+  void Login() {
+    logged_in_user_mixin_.LogInUser();
+    // Because the `logged_in_user_mixin_` uses a stub authenticator, we need to
+    // also configure the fake UserDataAuth, otherwise lock-screen flow fails.
+    cryptohome_mixin_.MarkUserAsExisting(GetAccountId());
+  }
 
   void LoginWithoutUpdatingPolicies() {
     logged_in_user_mixin_.LogInUser(/*issue_any_scope_token=*/false,
                                     /*wait_for_active_session=*/true,
                                     /*request_policy_update=*/false);
+    // Because the `logged_in_user_mixin_` uses a stub authenticator, we need to
+    // also configure the fake UserDataAuth, otherwise lock-screen flow fails.
+    cryptohome_mixin_.MarkUserAsExisting(GetAccountId());
   }
 
   AccountId GetAccountId() { return logged_in_user_mixin_.GetAccountId(); }
@@ -171,6 +180,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 
  private:
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
       LoggedInUserMixin::LogInType::kRegular,

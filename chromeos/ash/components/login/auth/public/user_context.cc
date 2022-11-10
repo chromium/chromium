@@ -74,6 +74,10 @@ const Key* UserContext::GetReplacementKey() const {
   return &replacement_key_.value();
 }
 
+Key* UserContext::GetReplacementKey() {
+  return &replacement_key_.value();
+}
+
 const Key* UserContext::GetPasswordKey() const {
   return &password_key_;
 }

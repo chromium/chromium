@@ -119,6 +119,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::AddAuthFactorReply> reply);
 
+  void HashContextKeyAndReplace(std::unique_ptr<UserContext> context,
+                                AuthOperationCallback callback,
+                                const std::string& system_salt);
+
   void OnUpdateCredential(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,

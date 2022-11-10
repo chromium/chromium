@@ -7,9 +7,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
+#include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/password_change_success_notification.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
@@ -19,6 +21,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -190,7 +194,6 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
     Profile* primary_profile)
     : primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)),
-      authenticator_(new ChromeCryptohomeAuthenticator(this)),
       urgent_warning_days_(kUrgentWarningDays) {
   DCHECK(primary_user_);
 
@@ -364,9 +367,16 @@ void InSessionPasswordChangeManager::ChangePassword(
 
   password_source_ = password_source;
   NotifyObservers(Event::START_CRYPTOHOME_PASSWORD_CHANGE);
-  UserContext user_context(*primary_user_);
-  user_context.SetKey(Key(new_password));
-  authenticator_->MigrateKey(user_context, old_password);
+  auto user_context = std::make_unique<UserContext>(*primary_user_);
+  // TODO(b/258638651): Consider getting rid of `Key` usage here, and passing
+  // the new password to `password_update_flow_` directly.
+  user_context->SetKey(Key(new_password));
+  password_update_flow_.Start(
+      std::move(user_context), old_password,
+      base::BindOnce(&InSessionPasswordChangeManager::OnPasswordUpdateSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&InSessionPasswordChangeManager::OnPasswordUpdateFailure,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InSessionPasswordChangeManager::AddObserver(Observer* observer) {
@@ -377,27 +387,24 @@ void InSessionPasswordChangeManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void InSessionPasswordChangeManager::OnAuthFailure(const AuthFailure& error) {
-  VLOG(1) << "Failed to change cryptohome password: " << error.GetErrorString();
+void InSessionPasswordChangeManager::OnPasswordUpdateFailure(
+    std::unique_ptr<UserContext> /*user_context*/,
+    AuthenticationError error) {
+  VLOG(1) << "Failed to change cryptohome password: "
+          << error.get_cryptohome_code();
   RecordCryptohomePasswordChangeFailure(password_source_);
   NotifyObservers(Event::CRYPTOHOME_PASSWORD_CHANGE_FAILURE);
 }
 
-void InSessionPasswordChangeManager::OnPasswordChangeDetected(
-    const UserContext& user_context) {
-  VLOG(1) << "Failed to change cryptohome password: PasswordChangeDetected";
-  RecordCryptohomePasswordChangeFailure(password_source_);
-  NotifyObservers(Event::CRYPTOHOME_PASSWORD_CHANGE_FAILURE);
-}
-
-void InSessionPasswordChangeManager::OnAuthSuccess(
-    const UserContext& user_context) {
+void InSessionPasswordChangeManager::OnPasswordUpdateSuccess(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(user_context);
   VLOG(3) << "Cryptohome password is changed.";
   RecordCryptohomePasswordChangeSuccess(password_source_);
   NotifyObservers(Event::CRYPTOHOME_PASSWORD_CHANGED);
 
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
-      user_context.GetAccountId(), false);
+      user_context->GetAccountId(), false);
 
   // Clear expiration time from prefs so that we don't keep nagging the user to
   // change password (until the SAML provider tells us a new expiration time).

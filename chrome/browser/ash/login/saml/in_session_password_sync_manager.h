@@ -14,12 +14,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 class User;
@@ -27,8 +29,10 @@ class User;
 
 namespace ash {
 
-class CryptohomeAuthenticator;
+class AuthSessionAuthenticator;
+class AuthenticationError;
 class ExtendedAuthenticator;
+class PasswordUpdateFlow;
 
 using PasswordChangedCallback = ::base::RepeatingClosure;
 
@@ -147,6 +151,10 @@ class InSessionPasswordSyncManager
   // Notify test that the reauth dialog is closed.
   void OnReauthDialogClosedForTesting();
 
+  void OnPasswordUpdateSuccess(std::unique_ptr<UserContext> user_context);
+  void OnPasswordUpdateFailure(std::unique_ptr<UserContext> user_context,
+                               AuthenticationError error);
+
   Profile* const primary_profile_;
   UserContext user_context_;
   const base::Clock* clock_;
@@ -158,7 +166,8 @@ class InSessionPasswordSyncManager
 
   // Used to authenticate the user.
   scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
-  scoped_refptr<CryptohomeAuthenticator> authenticator_;
+  scoped_refptr<AuthSessionAuthenticator> auth_session_authenticator_;
+  std::unique_ptr<PasswordUpdateFlow> password_update_flow_;
 
   // Used to create dialog to authenticate the user on lockscreen.
   std::unique_ptr<LockScreenStartReauthDialog> lock_screen_start_reauth_dialog_;

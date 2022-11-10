@@ -170,10 +170,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void OnPasswordChangeDetected();
   void OnOldEncryptionDetected(bool has_incomplete_migration);
 
-  // Migrate cryptohome key for |user_context| using |old_password|.
-  void MigrateKey(const UserContext& user_context,
-                  const std::string& old_password);
-
   void AuthenticateToUnlock(std::unique_ptr<UserContext> user_context) override;
 
  protected:

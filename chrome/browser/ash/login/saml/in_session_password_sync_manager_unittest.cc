@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -79,6 +80,8 @@ class InSessionPasswordSyncManagerTest : public testing::Test {
 
 InSessionPasswordSyncManagerTest::InSessionPasswordSyncManagerTest()
     : manager_(nullptr) {
+  UserDataAuthClient::InitializeFake();
+
   std::unique_ptr<FakeChromeUserManager> fake_user_manager =
       std::make_unique<FakeChromeUserManager>();
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -92,6 +95,7 @@ InSessionPasswordSyncManagerTest::InSessionPasswordSyncManagerTest()
 
 InSessionPasswordSyncManagerTest::~InSessionPasswordSyncManagerTest() {
   DestroyInSessionSyncManager();
+  UserDataAuthClient::Shutdown();
 }
 
 void InSessionPasswordSyncManagerTest::SetUp() {

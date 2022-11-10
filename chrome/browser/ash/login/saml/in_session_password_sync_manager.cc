@@ -6,11 +6,14 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
+#include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -21,7 +24,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/password_update_flow.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/prefs/pref_service.h"
@@ -215,19 +221,44 @@ void InSessionPasswordSyncManager::CheckCredentials(
 }
 
 void InSessionPasswordSyncManager::OnCookiesTransfered() {
-  if (!extended_authenticator_) {
-    extended_authenticator_ = ExtendedAuthenticator::Create(this);
+  if (features::IsUseAuthFactorsEnabled()) {
+    if (!auth_session_authenticator_) {
+      auth_session_authenticator_ =
+          base::MakeRefCounted<AuthSessionAuthenticator>(
+              this, std::make_unique<ChromeSafeModeDelegate>(),
+              /*user_recorder=*/base::DoNothing(),
+              user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
+                  primary_user_->GetAccountId()),
+              g_browser_process->local_state());
+    }
+    // Perform a fast ("verify-only") check of the current password. This is an
+    // optimization: if the password wasn't actually changed the check will
+    // finish faster. However, it also implies that if the password was actually
+    // changed, we'll need to start a new cryptohome AuthSession for updating
+    // the password auth factor (in `password_update_flow_`).
+    auth_session_authenticator_->AuthenticateToUnlock(
+        std::make_unique<UserContext>(user_context_));
+  } else {
+    if (!extended_authenticator_) {
+      extended_authenticator_ = ExtendedAuthenticator::Create(this);
+    }
+    extended_authenticator_.get()->AuthenticateToCheck(user_context_,
+                                                       base::OnceClosure());
   }
-  extended_authenticator_.get()->AuthenticateToCheck(user_context_,
-                                                     base::OnceClosure());
 }
 
 void InSessionPasswordSyncManager::UpdateUserPassword(
     const std::string& old_password) {
-  if (!authenticator_) {
-    authenticator_ = new ChromeCryptohomeAuthenticator(this);
-  }
-  authenticator_->MigrateKey(user_context_, old_password);
+  if (!password_update_flow_)
+    password_update_flow_ = std::make_unique<PasswordUpdateFlow>();
+  // TODO(b/258638651): The old password might be checked quicker using a
+  // "verify-only" mode, before we go into the more expensive full update flow.
+  password_update_flow_->Start(
+      std::make_unique<UserContext>(user_context_), old_password,
+      base::BindOnce(&InSessionPasswordSyncManager::OnPasswordUpdateSuccess,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&InSessionPasswordSyncManager::OnPasswordUpdateFailure,
+                     weak_factory_.GetWeakPtr()));
 }
 
 // TODO(crbug.com/1163777): Add UMA histograms for lockscreen online
@@ -331,6 +362,18 @@ void InSessionPasswordSyncManager::OnWebviewLoadAborted() {
     lock_screen_start_reauth_dialog_->UpdateState(
         NetworkError::ERROR_REASON_FRAME_ERROR);
   }
+}
+
+void InSessionPasswordSyncManager::OnPasswordUpdateSuccess(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(user_context);
+  OnAuthSuccess(*user_context);
+}
+
+void InSessionPasswordSyncManager::OnPasswordUpdateFailure(
+    std::unique_ptr<UserContext> /*user_context*/,
+    AuthenticationError /*error*/) {
+  OnAuthFailure(AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
 }
 
 }  // namespace ash

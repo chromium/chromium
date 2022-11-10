@@ -174,6 +174,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void RecordFirstAuthFactorAdded(std::unique_ptr<UserContext> context,
                                   AuthOperationCallback callback);
 
+  void DoMigrateKey(const std::string& old_password,
+                    bool user_exists,
+                    std::unique_ptr<UserContext> context,
+                    absl::optional<AuthenticationError> error);
+
   void PrepareForNewAttempt(const std::string& method_id,
                             const std::string& long_desc);
 

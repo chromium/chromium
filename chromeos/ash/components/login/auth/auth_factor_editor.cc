@@ -242,8 +242,16 @@ void AuthFactorEditor::ReplaceContextKey(std::unique_ptr<UserContext> context,
   DCHECK(!context->GetAuthSessionId().empty());
   DCHECK(context->HasReplacementKey());
   DCHECK(!context->IsUsingPin());
-  DCHECK_NE(context->GetReplacementKey()->GetKeyType(),
-            Key::KEY_TYPE_PASSWORD_PLAIN);
+  DCHECK(!context->GetKey()->GetLabel().empty());
+
+  if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN ||
+      context->GetReplacementKey()->GetKeyType() ==
+          Key::KEY_TYPE_PASSWORD_PLAIN) {
+    SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
+        &AuthFactorEditor::HashContextKeyAndReplace, weak_factory_.GetWeakPtr(),
+        std::move(context), std::move(callback)));
+    return;
+  }
 
   LOGIN_LOG(EVENT) << "Replacing key from context "
                    << context->GetReplacementKey()->GetKeyType();
@@ -288,6 +296,22 @@ void AuthFactorEditor::ReplaceContextKey(std::unique_ptr<UserContext> context,
       request, base::BindOnce(&AuthFactorEditor::OnUpdateCredential,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
+}
+
+void AuthFactorEditor::HashContextKeyAndReplace(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    const std::string& system_salt) {
+  if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
+    context->GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
+                                 system_salt);
+  }
+  if (context->GetReplacementKey()->GetKeyType() ==
+      Key::KEY_TYPE_PASSWORD_PLAIN) {
+    context->GetReplacementKey()->Transform(
+        Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt);
+  }
+  ReplaceContextKey(std::move(context), std::move(callback));
 }
 
 void AuthFactorEditor::AddPinFactor(std::unique_ptr<UserContext> context,

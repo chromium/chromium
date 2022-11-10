@@ -69,6 +69,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   // In password change scenario this is the key that would replace old Key
   // used for authentication.
   const Key* GetReplacementKey() const;
+  Key* GetReplacementKey();
 
   // The plain-text user password. See https://crbug.com/386606.
   const Key* GetPasswordKey() const;
