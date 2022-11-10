@@ -20,16 +20,20 @@ import argparse
 import codecs
 import json
 import os
+import pathlib
 import shutil
 import re
 import subprocess
 import sys
 import tempfile
+from typing import Any, Dict, List, Optional
 
 if sys.version_info.major == 2:
   import cgi as html
 else:
   import html
+
+from spdx_writer import SpdxWriter
 
 # TODO(agrieve): Move build_utils.WriteDepFile into a non-android directory.
 _REPOSITORY_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -625,7 +629,10 @@ def _GnBinary():
   return os.path.join(_REPOSITORY_ROOT, 'buildtools', subdir, exe)
 
 
-def GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os):
+def GetThirdPartyDepsFromGNDepsOutput(
+    gn_deps: str,
+    target_os: str,
+    extra_allowed_dirs: Optional[List[str]] = None):
   """Returns third_party/foo directories given the output of "gn desc deps".
 
     Note that it always returns the direct sub-directory of third_party
@@ -635,12 +642,19 @@ def GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os):
 
     It returns relative paths from _REPOSITORY_ROOT, not absolute paths.
     """
+  allowed_paths_list = ['third_party']
+  if extra_allowed_dirs:
+    allowed_paths_list.extend(extra_allowed_dirs)
+
+  # Use non-capturing group with or's for all possible options.
+  allowed_paths = '|'.join([re.escape(x) for x in allowed_paths_list])
+  path_regex = re.compile(r'^((.+[/\\])?(?:' + allowed_paths +
+                          r')[/\\][^/\\]+[/\\])(.+[/\\])?BUILD\.gn$')
+
   third_party_deps = set()
   for absolute_build_dep in gn_deps.split():
     relative_build_dep = os.path.relpath(absolute_build_dep, _REPOSITORY_ROOT)
-    m = re.search(
-        r'^((.+[/\\])?third_party[/\\][^/\\]+[/\\])(.+[/\\])?BUILD\.gn$',
-        relative_build_dep)
+    m = path_regex.search(relative_build_dep)
     if not m:
       continue
     third_party_path = m.group(1)
@@ -655,10 +669,11 @@ def GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os):
   return third_party_deps
 
 
-def FindThirdPartyDeps(gn_out_dir,
-                       gn_target,
-                       target_os,
-                       extra_third_party_dirs=None):
+def FindThirdPartyDeps(gn_out_dir: str,
+                       gn_target: str,
+                       target_os: str,
+                       extra_third_party_dirs: Optional[List[str]] = None,
+                       extra_allowed_dirs: Optional[List[str]] = None):
   if not gn_out_dir:
     raise RuntimeError("--gn-out-dir is required if --gn-target is used.")
 
@@ -691,7 +706,8 @@ def FindThirdPartyDeps(gn_out_dir,
       subprocess.check_call(['tasklist.exe'])
     raise
 
-  third_party_deps = GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os)
+  third_party_deps = GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os,
+                                                       extra_allowed_dirs)
   if extra_third_party_dirs:
     third_party_deps.update(extra_third_party_dirs)
   return sorted(third_party_deps)
@@ -848,60 +864,111 @@ def GenerateCredits(file_template_file,
   return True
 
 
-def _ReadFile(path):
-  """Reads a file from disk.
-    Args:
-      path: The path of the file to read, relative to the root of the
-      repository.
-    Returns:
-      The contents of the file as a string.
-    """
-  with codecs.open(os.path.join(_REPOSITORY_ROOT, path), 'r', 'utf-8') as f:
-    return f.read()
+def GenerateLicenseFile(args: argparse.Namespace):
+  """Top level function for the license file generation.
+
+  Either saves the text to a file or prints it to stdout depending on if
+    args.output_file is set.
+
+  Args:
+    args: parsed arguments passed from the cli
+  """
+  # Convert the path separators to the OS specific ones
+  extra_third_party_dirs = args.extra_third_party_dirs
+  if extra_third_party_dirs is not None:
+    extra_third_party_dirs = [
+        os.path.normpath(path) for path in extra_third_party_dirs
+    ]
+
+  third_party_dirs = FindThirdPartyDeps(args.gn_out_dir, args.gn_target,
+                                        args.target_os, extra_third_party_dirs,
+                                        args.extra_allowed_dirs)
+
+  metadatas = {
+      d: ParseDir(d, _REPOSITORY_ROOT, require_license_file=True)
+      for d in third_party_dirs
+  }
+
+  if args.format == 'spdx':
+    license_txt = GenerateLicenseFileSpdx(metadatas, args.spdx_link,
+                                          args.spdx_root, args.spdx_doc_name,
+                                          args.spdx_doc_namespace)
+  elif args.format == 'txt':
+    license_txt = GenerateLicenseFilePlainText(metadatas)
+  else:
+    raise ValueError(f'Unknown license format: {args.format}')
+
+  if args.output_file:
+    with open(args.output_file, 'w', encoding='utf-8') as f:
+      f.write(license_txt)
+  else:
+    print(license_txt)
 
 
-def GenerateLicenseFile(output_file,
-                        gn_out_dir,
-                        gn_target,
-                        target_os,
-                        extra_third_party_dirs=None):
+def GenerateLicenseFilePlainText(
+    metadata: Dict[str, Dict[str, Any]],
+    repo_root: str = _REPOSITORY_ROOT,
+    read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')) -> str:
   """Generate a plain-text LICENSE file which can be used when you ship a part
     of Chromium code (specified by gn_target) as a stand-alone library
     (e.g., //ios/web_view).
 
     The LICENSE file contains licenses of both Chromium and third-party
     libraries which gn_target depends on. """
-
-  # Convert the path separators to the OS specific ones
-  if extra_third_party_dirs is not None:
-    extra_third_party_dirs = [
-        os.path.normpath(path) for path in extra_third_party_dirs
-    ]
-
-  third_party_dirs = FindThirdPartyDeps(gn_out_dir, gn_target, target_os,
-                                        extra_third_party_dirs)
-
   # Start with Chromium's LICENSE file.
-  content = [_ReadFile('LICENSE')]
+  content = [read_file(os.path.join(repo_root, 'LICENSE'))]
 
   # Add necessary third_party.
-  for directory in sorted(third_party_dirs):
-    metadata = ParseDir(directory, _REPOSITORY_ROOT, require_license_file=True)
-    license_file = metadata['License File']
+  for directory in sorted(metadata):
+    dir_metadata = metadata[directory]
+    license_file = dir_metadata['License File']
     if license_file and license_file != NOT_SHIPPED:
       content.append('-' * 20)
       content.append(directory.split(os.sep)[-1])
       content.append('-' * 20)
-      content.append(_ReadFile(license_file))
+      content.append(read_file(os.path.join(repo_root, license_file)))
 
-  content_text = '\n'.join(content)
+  return '\n'.join(content)
 
-  if output_file:
-    with codecs.open(output_file, 'w', 'utf-8') as output:
-      output.write(content_text)
-  else:
-    print(content_text)
 
+def GenerateLicenseFileSpdx(
+    metadata: Dict[str, Dict[str, Any]],
+    spdx_link_prefix: str,
+    spdx_root: str,
+    doc_name: Optional[str],
+    doc_namespace: Optional[str],
+    repo_root: str = _REPOSITORY_ROOT,
+    read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')) -> str:
+  """Generates a LICENSE file in SPDX format.
+
+  The SPDX output contains the following elements:
+
+  1. SPDX Document.
+  2. SPDX root Package.
+  3. An SPDX Package for each package that has license files.
+  4. An SPDX License element for each license file.
+
+  The output is based on the following specification:
+  https://spdx.github.io/spdx-spec/v2-draft/
+  """
+  root_license = repo_root + '/LICENSE'
+  spdx_writer = SpdxWriter(spdx_root,
+                           'Chromium',
+                           root_license,
+                           spdx_link_prefix,
+                           doc_name=doc_name,
+                           doc_namespace=doc_namespace,
+                           read_file=read_file)
+
+  # Add all third party libraries
+  for directory in sorted(metadata):
+    dir_metadata = metadata[directory]
+    license_file = dir_metadata['License File']
+    if license_file and license_file != NOT_SHIPPED:
+      license_file = os.path.join(repo_root, license_file)
+      spdx_writer.add_package(dir_metadata['Name'], license_file)
+
+  return spdx_writer.write()
 
 
 def main():
@@ -913,10 +980,33 @@ def main():
   parser.add_argument(
       '--extra-third-party-dirs',
       help='Gn list of additional third_party dirs to look through.')
+  parser.add_argument(
+      '--extra-allowed-dirs',
+      help=('List of extra allowed paths to look for '
+            '(deps that will be picked up automatically) besides third_party'),
+  )
   parser.add_argument('--target-os', help='OS that this build is targeting.')
   parser.add_argument(
       '--gn-out-dir', help='GN output directory for scanning dependencies.')
   parser.add_argument('--gn-target', help='GN target to scan for dependencies.')
+  parser.add_argument('--format',
+                      default='txt',
+                      choices=['txt', 'spdx'],
+                      help='What format to output in')
+  parser.add_argument('--spdx-root',
+                      default=_REPOSITORY_ROOT,
+                      help=('Use a different root for license refs than ' +
+                            _REPOSITORY_ROOT))
+  parser.add_argument(
+      '--spdx-link',
+      default='https://source.chromium.org/chromium/chromium/src/+/main:',
+      help='Link prefix for license cross ref')
+  parser.add_argument('--spdx-doc-name',
+                      help='Specify a document name for the SPDX doc')
+  parser.add_argument(
+      '--spdx-doc-namespace',
+      default='https://chromium.googlesource.com/chromium/src/tools/',
+      help='Specify the document namespace for the SPDX doc')
   parser.add_argument(
       'command', choices=['help', 'scan', 'credits', 'license_file'])
   parser.add_argument('output_file', nargs='?')
@@ -924,6 +1014,7 @@ def main():
   args = parser.parse_args()
   args.extra_third_party_dirs = build_utils.ParseGnList(
       args.extra_third_party_dirs)
+  args.extra_allowed_dirs = build_utils.ParseGnList(args.extra_allowed_dirs)
 
   if args.command == 'scan':
     if not ScanThirdPartyDirs():
@@ -936,8 +1027,7 @@ def main():
       return 1
   elif args.command == 'license_file':
     try:
-      GenerateLicenseFile(args.output_file, args.gn_out_dir, args.gn_target,
-                          args.target_os, args.extra_third_party_dirs)
+      GenerateLicenseFile(args)
     except LicenseError as e:
       print("Failed to parse README.chromium: {}".format(e))
       return 1
