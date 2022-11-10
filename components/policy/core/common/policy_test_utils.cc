@@ -126,9 +126,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
-}  // namespace policy
-
-std::ostream& operator<<(std::ostream& os, const policy::PolicyBundle& bundle) {
+std::ostream& operator<<(std::ostream& os, const PolicyBundle& bundle) {
   os << "{" << std::endl;
   for (const auto& entry : bundle)
     os << "  \"" << entry.first << "\": " << entry.second << "," << std::endl;
@@ -136,41 +134,41 @@ std::ostream& operator<<(std::ostream& os, const policy::PolicyBundle& bundle) {
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os, policy::PolicyScope scope) {
+std::ostream& operator<<(std::ostream& os, PolicyScope scope) {
   switch (scope) {
-    case policy::POLICY_SCOPE_USER:
+    case POLICY_SCOPE_USER:
       return os << "POLICY_SCOPE_USER";
-    case policy::POLICY_SCOPE_MACHINE:
+    case POLICY_SCOPE_MACHINE:
       return os << "POLICY_SCOPE_MACHINE";
   }
   return os << "POLICY_SCOPE_UNKNOWN(" << int(scope) << ")";
 }
 
-std::ostream& operator<<(std::ostream& os, policy::PolicyLevel level) {
+std::ostream& operator<<(std::ostream& os, PolicyLevel level) {
   switch (level) {
-    case policy::POLICY_LEVEL_RECOMMENDED:
+    case POLICY_LEVEL_RECOMMENDED:
       return os << "POLICY_LEVEL_RECOMMENDED";
-    case policy::POLICY_LEVEL_MANDATORY:
+    case POLICY_LEVEL_MANDATORY:
       return os << "POLICY_LEVEL_MANDATORY";
   }
   return os << "POLICY_LEVEL_UNKNOWN(" << int(level) << ")";
 }
 
-std::ostream& operator<<(std::ostream& os, policy::PolicyDomain domain) {
+std::ostream& operator<<(std::ostream& os, PolicyDomain domain) {
   switch (domain) {
-    case policy::POLICY_DOMAIN_CHROME:
+    case POLICY_DOMAIN_CHROME:
       return os << "POLICY_DOMAIN_CHROME";
-    case policy::POLICY_DOMAIN_EXTENSIONS:
+    case POLICY_DOMAIN_EXTENSIONS:
       return os << "POLICY_DOMAIN_EXTENSIONS";
-    case policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS:
+    case POLICY_DOMAIN_SIGNIN_EXTENSIONS:
       return os << "POLICY_DOMAIN_SIGNIN_EXTENSIONS";
-    case policy::POLICY_DOMAIN_SIZE:
+    case POLICY_DOMAIN_SIZE:
       break;
   }
   return os << "POLICY_DOMAIN_UNKNOWN(" << int(domain) << ")";
 }
 
-std::ostream& operator<<(std::ostream& os, const policy::PolicyMap& policies) {
+std::ostream& operator<<(std::ostream& os, const PolicyMap& policies) {
   os << "{" << std::endl;
   for (const auto& iter : policies)
     os << "  \"" << iter.first << "\": " << iter.second << "," << std::endl;
@@ -178,13 +176,15 @@ std::ostream& operator<<(std::ostream& os, const policy::PolicyMap& policies) {
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const policy::PolicyMap::Entry& e) {
+std::ostream& operator<<(std::ostream& os, const PolicyMap::Entry& e) {
   return os << "{" << std::endl
             << "  \"level\": " << e.level << "," << std::endl
             << "  \"scope\": " << e.scope << "," << std::endl
             << "  \"value\": " << *e.value_unsafe() << "}";
 }
 
-std::ostream& operator<<(std::ostream& os, const policy::PolicyNamespace& ns) {
+std::ostream& operator<<(std::ostream& os, const PolicyNamespace& ns) {
   return os << ns.domain << "/" << ns.component_id;
 }
+
+}  // namespace policy
