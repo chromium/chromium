@@ -104,7 +104,7 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
                                         FullscreenRequestType,
                                         const FullscreenOptions*,
                                         ScriptPromiseResolver* resolver,
-                                        bool error);
+                                        const char* error);
 
   static void ContinueExitFullscreen(Document*,
                                      ScriptPromiseResolver* resolver,

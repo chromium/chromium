@@ -379,50 +379,54 @@ bool FullscreenIsSupported(const Document& document) {
 }
 
 // https://fullscreen.spec.whatwg.org/#fullscreen-element-ready-check
-bool FullscreenElementReady(const Element& element,
-                            ReportOptions report_on_failure) {
+// If this function returns a non-nullptr string, the ready check failed, and
+// the string is the error message. If nullptr is returned, the ready check
+// passed.
+const char* FullscreenElementNotReady(const Element& element,
+                                      ReportOptions report_on_failure) {
   // A fullscreen element ready check for an element |element| returns true if
   // all of the following are true, and false otherwise:
 
   // |element| is in a document.
   if (!element.isConnected())
-    return false;
+    return "Element is not connected";
 
   // |element|'s node document is allowed to use the feature indicated by
   // attribute name allowfullscreen.
   if (!AllowedToUseFullscreen(element.GetDocument(), report_on_failure))
-    return false;
+    return "Disallowed by permissions policy";
 
-  return true;
+  return nullptr;
 }
 
-// https://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen step 4:
-bool RequestFullscreenConditionsMet(Element& pending, Document& document) {
-  // |pending|'s namespace is the HTML namespace or |pending| is an SVG svg or
-  // MathML math element. Note: MathML is not supported.
+// https://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen step 5:
+const char* RequestFullscreenConditionsNotMet(Element& pending,
+                                              Document& document) {
+  // This’s namespace is the HTML namespace or this is an SVG svg or MathML math
+  // element.
   if (!pending.IsHTMLElement() && !IsA<SVGSVGElement>(pending))
-    return false;
+    return "Element is not an HTML or SVG element";
 
-  // |pending| is not a dialog or popover element.
-  if (IsA<HTMLDialogElement>(pending) ||
-      (IsA<HTMLElement>(pending) &&
-       To<HTMLElement>(pending).HasPopoverAttribute())) {
-    return false;
+  // This is not a dialog element.
+  if (IsA<HTMLDialogElement>(pending)) {
+    return "Dialog elements are invalid";
   }
 
-  // The fullscreen element ready check for |pending| returns false.
-  if (!FullscreenElementReady(pending, ReportOptions::kReportOnFailure))
-    return false;
+  // The fullscreen element ready check for this returns true.
+  if (auto* not_ready =
+          FullscreenElementNotReady(pending, ReportOptions::kReportOnFailure)) {
+    return not_ready;
+  }
 
   // Fullscreen is supported.
   if (!FullscreenIsSupported(document))
-    return false;
+    return "Fullscreen is not supported";
 
   // This algorithm is allowed to request fullscreen.
   if (!AllowedToRequestFullscreen(document))
-    return false;
+    return "Permissions check failed";
 
-  return true;
+  return nullptr;
 }
 
 // RequestFullscreenScope is allocated at the top of |RequestFullscreen()| and
@@ -691,15 +695,15 @@ ScriptPromise Fullscreen::RequestFullscreen(Element& pending,
   }
 
   // 5. Let |error| be false.
-  bool error = false;
+  const char* error = nullptr;
 
   // 6. If any of the following conditions are false, then set |error| to true:
   //
   // OOPIF: If |RequestFullscreen()| was already called in a descendant frame
   // and passed the checks, do not check again here.
-  if (!for_cross_process_descendant &&
-      !RequestFullscreenConditionsMet(pending, document))
-    error = true;
+  if (!for_cross_process_descendant) {
+    error = RequestFullscreenConditionsNotMet(pending, document);
+  }
 
   // 7. Return |promise|, and run the remaining steps in parallel.
   ScriptPromise promise = resolver ? resolver->Promise() : ScriptPromise();
@@ -732,7 +736,7 @@ ScriptPromise Fullscreen::RequestFullscreen(Element& pending,
     // will only queue a task and return. This is indistinguishable from, e.g.,
     // enqueueing a microtask to continue at step 9.
     ContinueRequestFullscreen(document, pending, request_type, options,
-                              resolver, true /* error */);
+                              resolver, error);
   }
 
   return promise;
@@ -762,7 +766,7 @@ void Fullscreen::DidResolveEnterFullscreenRequest(Document& document,
   for (const Member<PendingRequest>& request : requests) {
     ContinueRequestFullscreen(document, *request->element(), request->type(),
                               request->options(), request->resolver(),
-                              !granted);
+                              granted ? nullptr : "not granted");
   }
 }
 
@@ -771,16 +775,20 @@ void Fullscreen::ContinueRequestFullscreen(Document& document,
                                            FullscreenRequestType request_type,
                                            const FullscreenOptions* options,
                                            ScriptPromiseResolver* resolver,
-                                           bool error) {
+                                           const char* error) {
   DCHECK(document.IsActive());
   DCHECK(document.GetFrame());
 
   // 9. If any of the following conditions are false, then set |error| to true:
   //     * |pending|'s node document is |pendingDoc|.
   //     * The fullscreen element ready check for |pending| returns true.
-  if (pending.GetDocument() != document ||
-      !FullscreenElementReady(pending, ReportOptions::kDoNotReport))
-    error = true;
+  if (!error) {
+    if (pending.GetDocument() != document) {
+      error = "Incorrect document";
+    } else {
+      error = FullscreenElementNotReady(pending, ReportOptions::kDoNotReport);
+    }
+  }
 
   // 10. If |error| is true:
   if (error) {
@@ -793,10 +801,8 @@ void Fullscreen::ContinueRequestFullscreen(Document& document,
     // steps.
     if (resolver && resolver->GetScriptState()->ContextIsValid()) {
       ScriptState::Scope scope(resolver->GetScriptState());
-      // TODO(dtapuska): Change error to be something useful instead of just a
-      // boolean and return this to the user.
       resolver->Reject(V8ThrowException::CreateTypeError(
-          resolver->GetScriptState()->GetIsolate(), "fullscreen error"));
+          resolver->GetScriptState()->GetIsolate(), error));
     }
     return;
   }
