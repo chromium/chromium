@@ -124,9 +124,9 @@ void ReportUnlock(base::TimeTicks start,
                 "Ash.UnlockAnimation.Jank.", "Ash.UnlockAnimation.Duration.");
 }
 
-void OnRestoredWindowPresentationFeedbackReceived(
+void OnRestoredWindowPresentationTimeReceived(
     int restore_window_id,
-    const gfx::PresentationFeedback& feedback) {
+    base::TimeTicks presentation_timestamp) {
   LoginUnlockThroughputRecorder* throughput_recorder =
       Shell::Get()->login_unlock_throughput_recorder();
   throughput_recorder->OnRestoredWindowPresented(restore_window_id);
@@ -243,8 +243,8 @@ void LoginUnlockThroughputRecorder::OnBeforeRestoredWindowShown(
     return;
 
   restore_windows_presentation_time_requested_.insert(restore_window_id);
-  compositor->RequestPresentationTimeForNextFrame(base::BindOnce(
-      &OnRestoredWindowPresentationFeedbackReceived, restore_window_id));
+  compositor->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+      &OnRestoredWindowPresentationTimeReceived, restore_window_id));
 }
 
 void LoginUnlockThroughputRecorder::OnRestoredWindowPresented(
