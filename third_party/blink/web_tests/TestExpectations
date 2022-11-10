@@ -6845,8 +6845,8 @@ crbug.com/1349180 [ Debug Mac12 ] external/wpt/content-security-policy/media-src
 # Disable flakes on mac builders
 crbug.com/1363708 [ Mac12 ] http/tests/media/gc-while-network-loading.html [ Pass Timeout ]
 crbug.com/1363683 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
-crbug.com/1364129 [ Mac10.15 ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
-crbug.com/1364129 [ Mac11 ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
+crbug.com/1364129 [ Mac ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
+crbug.com/1364129 [ Linux ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
 
 # Disable DOM web flake on debug linux and mac
 crbug.com/1353578 [ Debug Linux ] fast/dom/gc-image-element-2.html [ Failure Pass ]
@@ -6961,6 +6961,7 @@ crbug.com/1380069 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/p
 crbug.com/1380078 [ Mac11 ] external/wpt/resource-timing/nested-context-navigations-embed.html [ Failure ]
 crbug.com/1380575 [ Linux ] virtual/scalefactor200/fast/forms/file/file-appearance-no-default-width.html [ Failure ]
 crbug.com/1376986 [ Mac11 ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html [ Timeout ]
+crbug.com/1378078 [ Debug Linux ] media/controls/slow-doubletap.html [ Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
