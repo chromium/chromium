@@ -2369,7 +2369,7 @@ void LocalFrame::NotifyUserActivation(
                                                       notification_type);
   Client()->NotifyUserActivation();
   NotifyUserActivationInFrameTree(notification_type);
-  DomWindow()->closewatcher_stack()->DidReceiveUserActivation();
+  DomWindow()->history_user_activation_state().Activate();
 }
 
 bool LocalFrame::ConsumeTransientUserActivation(
