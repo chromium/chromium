@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#include "url/gurl.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -96,7 +97,9 @@ class WebState;
 // -processPasswordFormFillData.
 - (void)processWithPasswordFormFillData:
             (const autofill::PasswordFormFillData&)formData
-                                inFrame:(web::WebFrame*)frame;
+                                inFrame:(web::WebFrame*)frame
+                            isMainFrame:(BOOL)isMainFrame
+                      forSecurityOrigin:(const GURL&)origin;
 
 // Processes field for which no saved credentials are available.
 // Triggers callback for -checkIfSuggestionsAvailableForForm... if needed.

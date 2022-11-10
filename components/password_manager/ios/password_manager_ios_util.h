@@ -10,7 +10,6 @@
 #include "url/gurl.h"
 
 namespace web {
-class WebFrame;
 class WebState;
 }
 
@@ -30,8 +29,14 @@ bool JsonStringToFormData(NSString* json_string,
                           autofill::FormData* form_data,
                           GURL page_url);
 
+// Whether the |origin| matches the last committed URl in the |web_state|.
+bool OriginMatchesLastCommittedURLOrigin(web::WebState* web_state,
+                                         const GURL& origin);
+
 // Returns whether an iframe is cross-origin.
-bool IsCrossOriginIframe(web::WebState* web_state, web::WebFrame* web_frame);
+bool IsCrossOriginIframe(web::WebState* web_state,
+                         bool frame_is_main_frame,
+                         const GURL& frame_security_origin);
 
 }  // namespace password_manager
 

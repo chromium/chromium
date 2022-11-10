@@ -27,7 +27,9 @@ class GURL;
 // This method calls suggestions helper's processWithPasswordFormFillData.
 - (void)processPasswordFormFillData:
             (const autofill::PasswordFormFillData&)formData
-                            inFrame:(web::WebFrame*)frame;
+                            inFrame:(web::WebFrame*)frame
+                        isMainFrame:(BOOL)isMainFrame
+                  forSecurityOrigin:(const GURL&)origin;
 
 // Informs delegate that there are no saved credentials for the current page.
 - (void)onNoSavedCredentials;
