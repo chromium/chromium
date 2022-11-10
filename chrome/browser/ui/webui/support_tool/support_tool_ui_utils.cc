@@ -146,6 +146,8 @@ std::string GetDataCollectorName(
       return "Chrome OS System State and Logs";
     case support_tool::CHROMEOS_SYSTEM_LOGS:
       return "ChromeOS System Logs";
+    case support_tool::CHROMEOS_CHROME_USER_LOGS:
+      return "Chrome OS Chrome User Logs";
     default:
       return "Error: Undefined";
   }
