@@ -28,6 +28,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -258,7 +259,7 @@ public class LegacyIncognitoDescriptionView
 
         LinearLayout.LayoutParams params = (LayoutParams) mLearnMore.getLayoutParams();
         params.setMargins(0, learnMoreSpacingTop, 0, learnMoreSpacingBottom);
-        mLearnMore.requestLayout();
+        ViewUtils.requestLayout(mLearnMore, "LegacyIncognitoDescriptionView.adjustLayout");
 
         ((LinearLayout.LayoutParams) mHeader.getLayoutParams())
                 .setMargins(0, totalSpaceBetweenViews, 0, 0);

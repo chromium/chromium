@@ -28,6 +28,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.ui.resources.HandleViewResources;
@@ -273,7 +274,10 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
 
         if (mDrawable != null) mDrawable.setAlpha((int) (255 * mAlpha));
 
-        if (!isInLayout()) requestLayout();
+        if (!isInLayout()) {
+            ViewUtils.requestLayout(
+                    this, "PopupTouchHandleDrawable.updateDrawableAndRequestLayout");
+        }
     }
 
     private void updateParentPosition(int parentPositionX, int parentPositionY) {

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
@@ -134,7 +135,7 @@ public class BaseCarouselSuggestionView extends LinearLayout {
      */
     public void setItemSpacingPx(int itemSpacingPx) {
         mItemSpacingPx = itemSpacingPx;
-        mRecyclerView.requestLayout();
+        ViewUtils.requestLayout(mRecyclerView, "BaseCarouselSuggestionView.setItemSpacingPx");
     }
 
     /**

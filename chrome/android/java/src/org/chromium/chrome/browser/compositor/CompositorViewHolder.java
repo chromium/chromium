@@ -79,6 +79,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.ResourceManager;
@@ -1164,7 +1165,8 @@ public class CompositorViewHolder extends FrameLayout
                             || layoutParams.bottomMargin != (int) bottomMargin)) {
                 layoutParams.topMargin = (int) topMargin;
                 layoutParams.bottomMargin = (int) bottomMargin;
-                child.requestLayout();
+                ViewUtils.requestLayout(
+                        child, "CompositorViewHolder.applyMarginToFullscreenChildViews");
                 TraceEvent.instant("FullscreenManager:child.requestLayout()");
             }
         }

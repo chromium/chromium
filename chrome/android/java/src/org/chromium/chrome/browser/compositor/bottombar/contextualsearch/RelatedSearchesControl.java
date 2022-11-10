@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -410,7 +411,7 @@ public class RelatedSearchesControl {
         view.setVisibility(View.VISIBLE);
 
         // NOTE: We need to call requestLayout, otherwise the View will not become visible.
-        view.requestLayout();
+        ViewUtils.requestLayout(view, "RelatedSearchesControl.showView");
 
         mIsShowingView = true;
         mViewY = y;

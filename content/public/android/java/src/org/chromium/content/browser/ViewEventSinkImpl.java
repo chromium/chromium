@@ -13,6 +13,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 
 /**
@@ -103,7 +104,10 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
             // To request layout has side effect, but it seems OK as it only happen in
             // onConfigurationChange and layout has to be changed in most case.
             ViewAndroidDelegate delegate = mWebContents.getViewAndroidDelegate();
-            if (delegate != null) delegate.getContainerView().requestLayout();
+            if (delegate != null) {
+                ViewUtils.requestLayout(
+                        delegate.getContainerView(), "ViewEventSinkImpl.onConfigurationChanged");
+            }
         } finally {
             TraceEvent.end("ViewEventSink.onConfigurationChanged");
         }

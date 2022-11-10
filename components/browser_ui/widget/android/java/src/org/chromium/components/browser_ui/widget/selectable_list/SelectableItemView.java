@@ -24,6 +24,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * Default implementation of SelectableItemViewBase. Contains a start icon, title, description, and
@@ -158,7 +159,8 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
             mCustomContentContainer = findViewById(R.id.custom_content_container);
             mStartIconView.getLayoutParams().width = mStartIconViewSize;
             mStartIconView.getLayoutParams().height = mStartIconViewSize;
-            mStartIconView.requestLayout();
+            ViewUtils.requestLayout(
+                    mStartIconView, "SelectableItemView.inflateAndPopulateViewVariables");
         }
     }
 

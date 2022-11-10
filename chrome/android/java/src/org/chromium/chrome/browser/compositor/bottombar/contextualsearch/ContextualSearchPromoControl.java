@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -400,7 +401,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
 
         // NOTE(pedrosimonetti): We need to call requestLayout, otherwise
         // the Promo View will not become visible.
-        view.requestLayout();
+        ViewUtils.requestLayout(view, "ContextualSearchPromoControl.showPromoView");
 
         mIsShowingView = true;
         mPromoViewY = y;

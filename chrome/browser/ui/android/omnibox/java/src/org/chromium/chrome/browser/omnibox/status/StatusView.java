@@ -33,6 +33,7 @@ import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.Toast;
 
@@ -348,7 +349,8 @@ public class StatusView extends LinearLayout {
         // due to a stale measurement cache. Post a task to request layout to force this visibility
         // change (crbug.com/1345552).
         if (wasLayoutPreviouslyRequested && getHandler() != null) {
-            getHandler().post(() -> requestLayout());
+            getHandler().post(
+                    () -> ViewUtils.requestLayout(this, "StatusView.setStatusIconShown Runnable"));
         }
     }
 

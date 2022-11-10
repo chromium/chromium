@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
+import org.chromium.ui.base.ViewUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -121,7 +122,7 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
             layoutParams.bottomMargin = 0;
         }
 
-        requestLayout();
+        ViewUtils.requestLayout(this, "HistoryClusterView.setHasThickDivider");
     }
 
     void setIconDrawableVisibility(int visibility) {

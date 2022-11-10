@@ -121,6 +121,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.url.GURL;
@@ -710,7 +711,8 @@ public class AwContents implements SmartClipProvider {
     private class AwLayoutSizerDelegate implements AwLayoutSizer.Delegate {
         @Override
         public void requestLayout() {
-            mContainerView.requestLayout();
+            ViewUtils.requestLayout(
+                    mContainerView, "AwContents.AwLayoutSizerDelegate.requestLayout");
         }
 
         @Override
@@ -1331,7 +1333,7 @@ public class AwContents implements SmartClipProvider {
         }
         awViewMethodsImpl.onWindowFocusChanged(mContainerView.hasWindowFocus());
         awViewMethodsImpl.onFocusChanged(mContainerView.hasFocus(), 0, null);
-        mContainerView.requestLayout();
+        ViewUtils.requestLayout(mContainerView, "AwContents.onContainerViewChanged");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
         }

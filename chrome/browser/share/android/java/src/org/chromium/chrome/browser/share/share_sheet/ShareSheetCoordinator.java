@@ -44,6 +44,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -444,8 +445,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             return;
         }
         mBottomSheet.getFirstPartyView().invalidate();
-        mBottomSheet.getFirstPartyView().requestLayout();
+        ViewUtils.requestLayout(mBottomSheet.getFirstPartyView(),
+                "ShareSheetCoordinator.onLayoutChange first party view");
         mBottomSheet.getThirdPartyView().invalidate();
-        mBottomSheet.getThirdPartyView().requestLayout();
+        ViewUtils.requestLayout(mBottomSheet.getThirdPartyView(),
+                "ShareSheetCoordinator.onLayoutChange third party view");
     }
 }

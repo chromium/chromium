@@ -14,6 +14,8 @@ import android.widget.FrameLayout.LayoutParams;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.ui.base.ViewUtils;
+
 /**
  * A horizontal divider view with a fixed height that spans the width of its parent along the
  * bottom. Initially hidden.
@@ -41,6 +43,6 @@ class DividerView extends View {
         } else {
             layoutParams.height = getResources().getDimensionPixelSize(R.dimen.divider_height);
         }
-        requestLayout();
+        ViewUtils.requestLayout(this, "DividerView.setIsThickDivider");
     }
 }

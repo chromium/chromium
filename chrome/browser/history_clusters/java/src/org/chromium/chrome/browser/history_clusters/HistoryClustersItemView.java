@@ -15,6 +15,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
+import org.chromium.ui.base.ViewUtils;
 
 class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
     private DividerView mDividerView;
@@ -80,7 +81,7 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
             layoutParams.bottomMargin = 0;
         }
 
-        requestLayout();
+        ViewUtils.requestLayout(this, "HistoryClustersItemView.setHasThickDivider");
     }
 
     void setEndButtonVisibility(boolean visible) {

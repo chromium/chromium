@@ -36,6 +36,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -168,7 +169,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
         // We scale it by |FULL_HEIGHT_RATIO| to make the size equal to that of
         // ThinWebView and so it can leave a portion of the page below it visible.
         layoutParams.height = (int) (maxViewHeight * FULL_HEIGHT_RATIO) - mToolbarHeightPx;
-        mSheetContentView.requestLayout();
+        ViewUtils.requestLayout(mSheetContentView, "EphemeralTabSheetContent.updateContentHeight");
     }
 
     /** Method to be called to start the favicon anmiation. */

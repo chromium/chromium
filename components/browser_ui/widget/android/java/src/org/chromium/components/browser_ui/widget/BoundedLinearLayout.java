@@ -11,6 +11,8 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.LinearLayout;
 
+import org.chromium.ui.base.ViewUtils;
+
 /**
  * A LinearLayout that can be constrained to a maximum size or percentage of the screen size.
  *
@@ -63,7 +65,7 @@ public class BoundedLinearLayout extends LinearLayout {
             boolean ignoreWidthConstraints, boolean ignoreHeightConstraint) {
         mIgnoreWidthConstraints = ignoreWidthConstraints;
         mIgnoreHeightConstraints = ignoreHeightConstraint;
-        requestLayout();
+        ViewUtils.requestLayout(this, "BoundedLinearLayout.setIgnoreConstraints");
     }
 
     @Override

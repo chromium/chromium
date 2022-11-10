@@ -22,6 +22,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventOffsetHandler;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
@@ -337,7 +338,7 @@ class BrowserControlsContainerView extends FrameLayout {
             reportHeightChange();
             // Request a layout so onLayout can update the saved dimensions now that the
             // layer has finished animating.
-            requestLayout();
+            ViewUtils.requestLayout(this, "BrowserControlsContainerView.onOffestsChanged");
         }
 
         if (mIsFullscreen) return;

@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
@@ -570,7 +571,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                     R.dimen.custom_tabs_shadow_offset);
         }
         setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
-        mToolbarCoordinator.requestLayout();
+        ViewUtils.requestLayout(
+                mToolbarCoordinator, "PartialCustomTabHeightStrategy.updateShadowOffet");
     }
 
     private void setTopMargins(int shadowOffset, int handleOffset) {

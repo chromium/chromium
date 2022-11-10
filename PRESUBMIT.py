@@ -238,6 +238,18 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
        'primitives.',
       ),
     ),
+    BanRule(
+      'requestLayout()',
+      (
+          'Layouts can be expensive. Prefer using ViewUtils.requestLayout(), '
+          'which emits a trace event with additional information to help with '
+          'scroll jank investigations. See http://crbug.com/1354176.',
+      ),
+      False,
+      excluded_paths=(
+          'ui/android/java/src/org/chromium/ui/base/ViewUtils.java',
+      ),
+    ),
 )
 
 _BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (

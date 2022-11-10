@@ -27,6 +27,7 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -214,7 +215,8 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
         layoutParams.height =
                 (int) (maxViewHeight * MerchantTrustBottomSheetContent.FULL_HEIGHT_RATIO)
                 - mToolbarView.getToolbarHeightPx();
-        mThinWebView.getView().requestLayout();
+        ViewUtils.requestLayout(
+                mThinWebView.getView(), "MerchantTrustBottomSheetCoordinator.onLayoutChange");
         mCurrentMaxViewHeight = maxViewHeight;
     }
 

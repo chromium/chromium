@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the touch to fill
@@ -336,7 +337,7 @@ class TouchToFillView implements BottomSheetContent {
         }
         // If the footer would move off-screen, make it sticky and update the layout.
         remeasure(true);
-        mContentView.requestLayout();
+        ViewUtils.requestLayout(mContentView, "TouchToFillView.getMaximumSheetHeight");
         return getHeightWhenFullyExtended();
     }
 
@@ -349,7 +350,7 @@ class TouchToFillView implements BottomSheetContent {
             // This can happen when bottom sheet container layout changes, apparently causing
             // the footer layout to be invalidated. Measure the content view again.
             remeasure(true);
-            footer.requestLayout();
+            ViewUtils.requestLayout(footer, "TouchToFillView.getHeightWhenFullyExtended");
         }
         height += getHeightWithMargins(footer, false);
         return height;

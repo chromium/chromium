@@ -52,6 +52,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -226,7 +227,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             ViewGroup.LayoutParams params = view.getLayoutParams();
             params.height = iconSize;
             params.width = iconSize;
-            view.requestLayout();
+            ViewUtils.requestLayout(view, "ShareSheetBottomSheetContent.bind3PShareItem");
             layout.setPadding(0, paddingTop, 0, 0);
         }
     }

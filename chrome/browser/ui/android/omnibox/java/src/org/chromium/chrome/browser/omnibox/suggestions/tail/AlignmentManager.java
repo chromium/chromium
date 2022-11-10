@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
 import android.view.View;
 
+import org.chromium.ui.base.ViewUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +89,7 @@ class AlignmentManager {
         for (int index = 0; index < count; ++index) {
             final View view = mVisibleTailSuggestions.get(index);
             if (view == excluded) continue;
-            view.requestLayout();
+            ViewUtils.requestLayout(view, "AlignmentManger.relayoutAllViewsExcept");
         }
     }
 }

@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.net.MimeTypeFilter;
 import org.chromium.ui.base.PhotoPickerListener;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -257,7 +258,7 @@ public class PickerCategoryView extends RelativeLayout
         // list becomes ready.
         if (mPickerBitmaps != null) {
             mPickerAdapter.notifyDataSetChanged();
-            mRecyclerView.requestLayout();
+            ViewUtils.requestLayout(mRecyclerView, "PickerCategoryView.onConfigurationChanged");
         }
     }
 
@@ -453,7 +454,7 @@ public class PickerCategoryView extends RelativeLayout
 
         mLayoutManager.setSpanCount(mColumns);
         mPickerAdapter.notifyDataSetChanged();
-        mRecyclerView.requestLayout();
+        ViewUtils.requestLayout(mRecyclerView, "PickerCategoryView.flipZoomMode");
     }
 
     // Simple accessors:

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.vr.VrModeObserver;
 
@@ -148,7 +149,8 @@ public class BrowserControlsManager
                     // may be less expensive. The overlay trimming optimization only works
                     // pre-Android N (see https://crbug.com/725453), so this call should be removed
                     // entirely once it's confirmed to be safe.
-                    mControlContainer.getView().requestLayout();
+                    ViewUtils.requestLayout(mControlContainer.getView(),
+                            "BrowserControlsManager.mUpdateVisibilityRunnable Runnable");
                 }
 
                 for (BrowserControlsStateProvider.Observer observer : mControlsObservers) {

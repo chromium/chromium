@@ -44,6 +44,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
 
@@ -300,7 +301,10 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         mAccessibilityObserver = (talkbackEnabled) -> {
             setViewportMode(talkbackEnabled ? AssistantViewportMode.RESIZE_VISUAL_VIEWPORT
                                             : mTargetViewportMode);
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, mRootViewContainer::requestLayout);
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+                ViewUtils.requestLayout(mRootViewContainer,
+                        "AssistantBottomBarCoordinator.<init>.mAccessibilityObserver Runnable");
+            });
         };
         mAccessibilityUtil.addObserver(mAccessibilityObserver);
     }

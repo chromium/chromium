@@ -68,6 +68,7 @@ import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.DropdownPopupWindow;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -472,7 +473,8 @@ class ManualFillingMediator
             if (compositorViewHolderSupplier.hasValue()) {
                 // The CompositorViewHolder is null when the activity is in the process of being
                 // destroyed which also renders relayouting pointless.
-                compositorViewHolderSupplier.get().requestLayout();
+                ViewUtils.requestLayout(compositorViewHolderSupplier.get(),
+                        "ManualFillingMediator.enforceStateProperties");
             }
         }
         TraceEvent.end("ManualFillingMediator#enforceStateProperties");

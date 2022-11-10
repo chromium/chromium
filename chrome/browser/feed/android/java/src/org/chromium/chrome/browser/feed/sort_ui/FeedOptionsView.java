@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * View class representing an expandable/collapsible view holding option chips for the feed.
@@ -79,7 +80,8 @@ public class FeedOptionsView extends LinearLayout {
                     height = (int) (targetHeight * interpolatedTime);
                 }
                 getLayoutParams().height = height;
-                requestLayout();
+                ViewUtils.requestLayout(FeedOptionsView.this,
+                        "FeedOptionsView.expand.Animation.applyTransformation");
             }
 
             @Override
@@ -104,7 +106,8 @@ public class FeedOptionsView extends LinearLayout {
                 } else {
                     getLayoutParams().height =
                             initialHeight - (int) (initialHeight * interpolatedTime);
-                    requestLayout();
+                    ViewUtils.requestLayout(FeedOptionsView.this,
+                            "FeedOptionsView.collapse.Animation.applyTransformation");
                 }
             }
 

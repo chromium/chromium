@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import org.chromium.base.TraceEvent;
+
 /**
  * A utility class that has helper methods for Android view.
  */
@@ -214,5 +216,31 @@ public final class ViewUtils {
             }
             to = (View) to.getParent();
         }
+    }
+
+    /**
+     * A wrapper that calls android.view.requestLayout() immediately after emitting an instant trace
+     * event with information about the caller. This helps jank investigations, as there are traces
+     * with lots of re-layouts, but we don't know where these layouts are coming from.
+     *
+     * Do not include any identifying information in {@code caller}! Only constant string literals
+     * about code execution should be included.
+     *
+     * Examples of useful {@code caller} values:
+     * "MyClass.myMethod" when requestLayout is called in myMethod in MyClass.
+     * "MyClass.MyInnerClass.myMethod" when requestLayout is called in an inner class.
+     * "MyClass.myMethod.MyInnerClass.innerMethod" when requestLayout is called in an inner class
+     * defined in a method.
+     * "MyClass.myMethod other_helpful_information" when requestLayout is called more than once in
+     * the same method.
+     * "MyClass.myMethod Runnable" when requestLayout is posted somewhere to be executed later.
+     *
+     * @param view The view to call requestLayout on.
+     * @param caller Some queryable information about the caller.
+     */
+    public static void requestLayout(View view, String caller) {
+        assert view != null;
+        TraceEvent.instant("requestLayout", "caller: " + caller);
+        view.requestLayout();
     }
 }

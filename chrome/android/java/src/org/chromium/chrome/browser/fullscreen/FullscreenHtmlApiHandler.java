@@ -52,6 +52,7 @@ import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -202,7 +203,8 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
                         }
                     });
 
-                    contentView.requestLayout();
+                    ViewUtils.requestLayout(contentView,
+                            "FullscreenHtmlApiHandler.FullscreenHandler.handleMessage");
                     break;
                 }
                 case MSG_ID_CLEAR_LAYOUT_FULLSCREEN_FLAG: {
@@ -603,7 +605,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
 
         // Request a layout so the updated system visibility takes affect.
         // The flow will continue in the handler of MSG_ID_SET_FULLSCREEN_SYSTEM_UI_FLAGS message.
-        contentView.requestLayout();
+        ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.enterFullScreen");
 
         mWebContentsInFullscreen = webContents;
         mContentViewInFullscreen = contentView;

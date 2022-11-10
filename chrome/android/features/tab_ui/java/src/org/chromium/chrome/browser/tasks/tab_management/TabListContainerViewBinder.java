@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -55,11 +56,11 @@ class TabListContainerViewBinder {
             if (newTopMargin == params.topMargin) return;
 
             params.topMargin = newTopMargin;
-            view.requestLayout();
+            ViewUtils.requestLayout(view, "TabListContainerViewBinder.bind TOP_MARGIN");
         } else if (BOTTOM_CONTROLS_HEIGHT == propertyKey) {
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
             params.bottomMargin = model.get(BOTTOM_CONTROLS_HEIGHT);
-            view.requestLayout();
+            ViewUtils.requestLayout(view, "TabListContainerViewBinder.bind BOTTOM_CONTROLS_HEIGHT");
         } else if (SHADOW_TOP_OFFSET == propertyKey) {
             view.setShadowTopOffset(model.get(SHADOW_TOP_OFFSET));
         } else if (BOTTOM_PADDING == propertyKey) {

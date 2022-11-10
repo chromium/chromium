@@ -19,6 +19,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
@@ -189,7 +190,9 @@ public class StatusIndicatorCoordinator {
                 new StatusIndicatorViewBinder.ViewHolder(root, mSceneLayer),
                 StatusIndicatorViewBinder::bind);
         mMediator.initialize(model, this::registerResource, this::unregisterResource,
-                invalidateCompositorView, root::requestLayout);
+                invalidateCompositorView, () -> {
+                    ViewUtils.requestLayout(root, "StatusIndicatorCoordinator.initialize Runnable");
+                });
         root.addOnLayoutChangeListener(mMediator);
         mRemoveOnLayoutChangeListener = () -> root.removeOnLayoutChangeListener(mMediator);
 

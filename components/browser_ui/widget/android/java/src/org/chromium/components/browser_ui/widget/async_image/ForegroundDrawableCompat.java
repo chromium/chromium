@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.ui.base.ViewUtils;
+
 /**
  * A helper class to simulate {@link View#getForeground()} on older versions of Android.  This class
  * requires specific setup to work properly.  The following methods must be overridden and forwarded
@@ -125,7 +127,7 @@ public class ForegroundDrawableCompat
             }
             mDrawable.setCallback(mView);
         }
-        mView.requestLayout();
+        ViewUtils.requestLayout(mView, "ForegroundDrawableCompat.setDrawable");
         mView.invalidate();
     }
 

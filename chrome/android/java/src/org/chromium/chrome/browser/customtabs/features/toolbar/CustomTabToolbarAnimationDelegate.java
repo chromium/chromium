@@ -18,6 +18,7 @@ import androidx.annotation.DrawableRes;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.omnibox.SecurityButtonAnimationDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 /**
@@ -99,7 +100,7 @@ class CustomTabToolbarAnimationDelegate {
         final int[] oldLoc = new int[2];
         mUrlBar.getLocationInWindow(oldLoc);
 
-        mUrlBar.requestLayout();
+        ViewUtils.requestLayout(mUrlBar, "CustomTabToolbarAnimationDelegate.startTitleAnimation");
 
         mUrlBar.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override

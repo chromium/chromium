@@ -55,6 +55,7 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -700,7 +701,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         mPaymentContainerLayout.addView(mShippingOptionSection, addressSectionIndex + 2,
                 new LinearLayout.LayoutParams(
                         LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        mPaymentContainerLayout.requestLayout();
+        ViewUtils.requestLayout(
+                mPaymentContainerLayout, "PaymentRequestUI.addShippingOptionSectionIfNecessary");
     }
 
     /**
@@ -760,7 +762,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
             mPaymentContainerLayout.getChildAt(contactSectionIndex - 1).setVisibility(View.GONE);
         }
 
-        mPaymentContainerLayout.requestLayout();
+        ViewUtils.requestLayout(
+                mPaymentContainerLayout, "PaymentRequestUI.selectedPaymentMethodUpdated");
     }
 
     @Override
@@ -979,7 +982,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
             // TODO(dfalcantara): Animate this: https://crbug.com/621955
             ((FrameLayout.LayoutParams) mRequestView.getLayoutParams()).height =
                     LayoutParams.WRAP_CONTENT;
-            mRequestView.requestLayout();
+            ViewUtils.requestLayout(mRequestView, "PaymentRequestUI.changeSpinnerVisibility show");
         } else {
             mPaymentContainer.setVisibility(View.VISIBLE);
             mBottomBar.setVisibility(View.VISIBLE);
@@ -989,7 +992,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
             if (mIsExpandedToFullHeight) {
                 ((FrameLayout.LayoutParams) mRequestView.getLayoutParams()).height =
                         LayoutParams.MATCH_PARENT;
-                mRequestView.requestLayout();
+                ViewUtils.requestLayout(mRequestView,
+                        "PaymentRequestUI.changeSpinnerVisibility expanded to full height");
             }
         }
     }
@@ -1052,7 +1056,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
 
             // Expand all the dividers.
             for (int i = 0; i < mSectionSeparators.size(); i++) mSectionSeparators.get(i).expand();
-            mPaymentContainerLayout.requestLayout();
+            ViewUtils.requestLayout(mPaymentContainerLayout, "PaymentRequestUI.expand");
 
             // Switch the 'edit' button to a 'cancel' button.
             mEditButton.setText(mContext.getString(R.string.cancel));
@@ -1357,7 +1361,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
             // Reset the layout so that everything is in the expected place.
             mRequestView.setTranslationY(0);
             mBottomBar.setTranslationY(0);
-            mRequestView.requestLayout();
+            ViewUtils.requestLayout(
+                    mRequestView, "PaymentRequestUI.SheetEnlargingAnimator.onAnimationEnd");
 
             // Indicate that the dialog is ready to use.
             mSheetAnimator = null;

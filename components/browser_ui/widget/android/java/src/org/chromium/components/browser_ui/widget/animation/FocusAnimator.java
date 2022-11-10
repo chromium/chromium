@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.ui.base.ViewUtils;
+
 import java.util.ArrayList;
 
 /** Animates children of a vertical {@link LinearLayout} expanding/collapsing when focused. */
@@ -146,7 +148,8 @@ public class FocusAnimator {
                 finishAnimation(callback);
 
                 // Request a layout to put everything in the right final place.
-                mLayout.requestLayout();
+                ViewUtils.requestLayout(mLayout,
+                        "FocusAnimator.startAnimator.AnimatorListenerAdapter.onAnimationEnd");
             }
         });
         animator.start();

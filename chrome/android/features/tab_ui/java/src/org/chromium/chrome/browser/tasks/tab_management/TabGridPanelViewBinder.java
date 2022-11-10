@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -77,7 +78,7 @@ class TabGridPanelViewBinder {
         } else if (CONTENT_TOP_MARGIN == propertyKey) {
             ((FrameLayout.LayoutParams) viewHolder.contentView.getLayoutParams()).topMargin =
                     model.get(CONTENT_TOP_MARGIN);
-            viewHolder.contentView.requestLayout();
+            ViewUtils.requestLayout(viewHolder.contentView, "TabGridPanelViewBinder.bind");
         } else if (PRIMARY_COLOR == propertyKey) {
             viewHolder.toolbarView.setPrimaryColor(model.get(PRIMARY_COLOR));
             viewHolder.contentView.setBackgroundColor(model.get(PRIMARY_COLOR));

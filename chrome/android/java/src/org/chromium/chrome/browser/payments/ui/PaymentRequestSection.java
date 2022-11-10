@@ -44,6 +44,7 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.HorizontalListDividerDrawable;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -501,7 +502,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         if (oldMargin != newMargin) {
             ((ViewGroup.MarginLayoutParams) mTitleView.getLayoutParams()).bottomMargin =
                     newMargin;
-            requestLayout();
+            ViewUtils.requestLayout(this, "PaymentRequestSection.UpdateControlLayout");
         }
     }
 
@@ -1267,7 +1268,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 params.height = LayoutParams.WRAP_CONTENT;
                 params.bottomMargin = getContext().getResources().getDimensionPixelSize(
                         R.dimen.payments_section_checking_spacing);
-                mCheckingProgress.requestLayout();
+                ViewUtils.requestLayout(
+                        mCheckingProgress, "PaymentRequestSection.OptionRow.setSpinnerVisibility");
             } else {
                 if (mCheckingProgress.getParent() == null) return;
 

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.io.IOException;
@@ -255,7 +256,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         if (!mIsScrollableMVTEnabled) {
             ((MostVisitedTilesGridLayout) mMvTilesLayout)
                     .setSearchProviderHasLogo(mSearchProviderHasLogo);
-            mMvTilesLayout.requestLayout();
+            ViewUtils.requestLayout(
+                    mMvTilesLayout, "MostVisitedTilesMediator.onSearchEngineHasLogoChanged");
         }
     }
 

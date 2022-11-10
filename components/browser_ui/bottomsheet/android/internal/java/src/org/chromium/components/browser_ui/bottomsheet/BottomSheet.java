@@ -34,6 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.internal.R;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
@@ -430,7 +431,9 @@ class BottomSheet extends FrameLayout
         // Trigger a relayout on window focus to correct any positioning issues when leaving Chrome
         // previously.  This is required as a layout is not triggered when coming back to Chrome
         // with the keyboard previously shown.
-        if (hasWindowFocus) requestLayout();
+        if (hasWindowFocus) {
+            ViewUtils.requestLayout(this, "BottomSheet.onWindowFocusChagned");
+        }
     }
 
     @Override
@@ -1076,7 +1079,7 @@ class BottomSheet extends FrameLayout
         getLayoutParams().width = maxSheetWidth;
         setTranslationX((LocalizationUtils.isLayoutRtl() ? -1 : 1)
                 * (mContainerWidth - maxSheetWidth) / 2f);
-        requestLayout();
+        ViewUtils.requestLayout(this, "BottomSheet.sizeAndPositionSheetInParent");
     }
 
     private void ensureContentDesiredHeightIsComputed() {

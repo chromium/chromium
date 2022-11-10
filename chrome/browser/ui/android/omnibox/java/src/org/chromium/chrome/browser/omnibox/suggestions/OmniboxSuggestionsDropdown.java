@@ -457,7 +457,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 mInitialResizeState = InitialResizeState.IGNORING_SHRINKING;
                 PostTask.postDelayedTask(UiThreadTaskTraits.USER_BLOCKING, () -> {
                     if (mInitialResizeState != InitialResizeState.IGNORING_SHRINKING) return;
-                    requestLayout();
+                    ViewUtils.requestLayout(this, "OmniboxSuggestionsDropdown.onMeasure");
                     mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
                 }, DEFERRED_INITIAL_SHRINKING_LAYOUT_FROM_IME_DURATION_MS);
                 return;
@@ -593,7 +593,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             @Override
             public void onGlobalLayout() {
                 if (offsetInWindowChanged() || insetsHaveChanged()) {
-                    requestLayout();
+                    ViewUtils.requestLayout(OmniboxSuggestionsDropdown.this,
+                            "OmniboxSuggestionsDropdown.setEmbedder.OnGlobalLayoutListener.onGlobalLayout");
                 }
             }
 

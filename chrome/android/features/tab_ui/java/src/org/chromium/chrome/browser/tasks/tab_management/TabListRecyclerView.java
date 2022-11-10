@@ -39,6 +39,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -217,7 +218,8 @@ class TabListRecyclerView
                 }
                 // TODO(crbug.com/972157): remove this band-aid after we know why GTS is invisible.
                 if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
-                    requestLayout();
+                    ViewUtils.requestLayout(TabListRecyclerView.this,
+                            "TabListRecyclerView.startShowing.AnimatorListenerAdapter.onAnimationEnd");
                 }
             }
         });
