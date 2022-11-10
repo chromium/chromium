@@ -30,7 +30,7 @@ class ParameterizedTextOffsetMappingTest
 
   std::string ComputeTextOffset(const std::string& selection_text) {
     const PositionInFlatTree position =
-        ToPositionInFlatTree(SetSelectionTextToBody(selection_text).Base());
+        ToPositionInFlatTree(SetCaretTextToBody(selection_text));
     TextOffsetMapping mapping(GetInlineContents(position));
     const String text = mapping.GetText();
     const int offset = mapping.ComputeTextOffset(position);
@@ -42,8 +42,7 @@ class ParameterizedTextOffsetMappingTest
   }
 
   std::string GetRange(const std::string& selection_text) {
-    return GetRange(
-        ToPositionInFlatTree(SetSelectionTextToBody(selection_text).Base()));
+    return GetRange(ToPositionInFlatTree(SetCaretTextToBody(selection_text)));
   }
 
   std::string GetRange(const PositionInFlatTree& position) {

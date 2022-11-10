@@ -52,14 +52,14 @@ class VisibleUnitsTest : public EditingTestBase {
   std::string TestSnapBackward(
       const std::string& selection_text,
       EditingBoundaryCrossingRule rule = kCannotCrossEditingBoundary) {
-    const Position position = SetSelectionTextToBody(selection_text).Base();
+    const Position position = SetCaretTextToBody(selection_text);
     return GetCaretTextFromBody(MostBackwardCaretPosition(position, rule));
   }
 
   std::string TestSnapForward(
       const std::string& selection_text,
       EditingBoundaryCrossingRule rule = kCannotCrossEditingBoundary) {
-    const Position position = SetSelectionTextToBody(selection_text).Base();
+    const Position position = SetCaretTextToBody(selection_text);
     return GetCaretTextFromBody(MostForwardCaretPosition(position, rule));
   }
 };

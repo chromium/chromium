@@ -35,7 +35,7 @@ class PositionIteratorTest : public EditingTestBase {
  private:
   template <typename Strategy>
   std::vector<std::string> ScanBackwardTemplate(const char* selection_text) {
-    const Position start = SetSelectionTextToBody(selection_text).Base();
+    const Position start = SetCaretTextToBody(selection_text);
     std::vector<std::string> positions;
     for (PositionIteratorAlgorithm<Strategy> it(
              FromPositionInDOMTree<Strategy>(start));
@@ -47,7 +47,7 @@ class PositionIteratorTest : public EditingTestBase {
 
   template <typename Strategy>
   std::vector<std::string> ScanForwardTemplate(const char* selection_text) {
-    const Position start = SetSelectionTextToBody(selection_text).Base();
+    const Position start = SetCaretTextToBody(selection_text);
     std::vector<std::string> positions;
     for (PositionIteratorAlgorithm<Strategy> it(
              FromPositionInDOMTree<Strategy>(start));

@@ -16,19 +16,19 @@ class VisibleUnitsWordTest : public EditingTestBase {
   std::string DoStartOfWord(
       const std::string& selection_text,
       WordSide word_side = WordSide::kNextWordIfOnBoundary) {
-    const Position position = SetSelectionTextToBody(selection_text).Base();
+    const Position position = SetCaretTextToBody(selection_text);
     return GetCaretTextFromBody(StartOfWordPosition(position, word_side));
   }
 
   std::string DoEndOfWord(
       const std::string& selection_text,
       WordSide word_side = WordSide::kNextWordIfOnBoundary) {
-    const Position position = SetSelectionTextToBody(selection_text).Base();
+    const Position position = SetCaretTextToBody(selection_text);
     return GetCaretTextFromBody(EndOfWordPosition(position, word_side));
   }
 
   std::string DoNextWord(const std::string& selection_text) {
-    const Position position = SetSelectionTextToBody(selection_text).Base();
+    const Position position = SetCaretTextToBody(selection_text);
     const PlatformWordBehavior platform_word_behavior =
         PlatformWordBehavior::kWordDontSkipSpaces;
     return GetCaretTextFromBody(
@@ -38,7 +38,7 @@ class VisibleUnitsWordTest : public EditingTestBase {
   }
 
   std::string DoNextWordSkippingSpaces(const std::string& selection_text) {
-    const Position position = SetSelectionTextToBody(selection_text).Base();
+    const Position position = SetCaretTextToBody(selection_text);
     const PlatformWordBehavior platform_word_behavior =
         PlatformWordBehavior::kWordSkipSpaces;
     return GetCaretTextFromBody(
@@ -48,7 +48,7 @@ class VisibleUnitsWordTest : public EditingTestBase {
   }
 
   std::string DoPreviousWord(const std::string& selection_text) {
-    const Position position = SetSelectionTextToBody(selection_text).Base();
+    const Position position = SetCaretTextToBody(selection_text);
     const Position result =
         CreateVisiblePosition(PreviousWordPosition(position)).DeepEquivalent();
     if (result.IsNull())

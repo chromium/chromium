@@ -61,7 +61,7 @@ class VisibleSelectionTest : public EditingTestBase {
 std::string VisibleSelectionTest::GetWordSelectionText(
     const std::string& selection_text) {
   const PositionInFlatTree position =
-      ToPositionInFlatTree(SetSelectionTextToBody(selection_text).Base());
+      ToPositionInFlatTree(SetCaretTextToBody(selection_text));
   return GetSelectionTextInFlatTreeFromBody(ExpandWithGranularity(
       SelectionInFlatTree::Builder().Collapse(position).Build(),
       TextGranularity::kWord));
