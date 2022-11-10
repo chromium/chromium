@@ -505,8 +505,7 @@ public class TabSwitcherCoordinator
                     mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE.getValue()) {
                 mTabSelectionEditorActions.add(TabSelectionEditorShareAction.createAction(mActivity,
-                        ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START,
-                        mShareDelegateSupplier));
+                        ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             }
         }
 

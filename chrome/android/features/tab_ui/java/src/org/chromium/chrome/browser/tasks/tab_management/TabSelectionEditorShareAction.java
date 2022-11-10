@@ -4,25 +4,31 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
-import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
@@ -39,8 +45,8 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     private static final List<String> UNSUPPORTED_SCHEMES =
             new ArrayList<>(Arrays.asList(UrlConstants.CHROME_SCHEME,
                     UrlConstants.CHROME_NATIVE_SCHEME, ContentUrlConstants.ABOUT_SCHEME));
+    private static Callback<Intent> sIntentCallbackForTesting;
     private Context mContext;
-    private Supplier<ShareDelegate> mShareDelegateSupplier;
     private boolean mSkipUrlCheckForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -63,24 +69,20 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
      * @param showMode whether to show an action view.
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
-     * @param shareDelegateSupplier the share delegate supplier for initiating a share action.
      */
     public static TabSelectionEditorAction createAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            @ButtonType int buttonType, @IconPosition int iconPosition) {
         Drawable drawable =
                 AppCompatResources.getDrawable(context, R.drawable.tab_selection_editor_share_icon);
         return new TabSelectionEditorShareAction(
-                context, showMode, buttonType, iconPosition, shareDelegateSupplier, drawable);
+                context, showMode, buttonType, iconPosition, drawable);
     }
 
     private TabSelectionEditorShareAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition,
-            Supplier<ShareDelegate> shareDelegateSupplier, Drawable drawable) {
+            @ButtonType int buttonType, @IconPosition int iconPosition, Drawable drawable) {
         super(R.id.tab_selection_editor_share_menu_item, showMode, buttonType, iconPosition,
                 R.plurals.tab_selection_editor_share_tabs_action_button,
                 R.plurals.accessibility_tab_selection_editor_share_tabs_action_button, drawable);
-        mShareDelegateSupplier = shareDelegateSupplier;
         mContext = context;
     }
 
@@ -138,18 +140,55 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                             public void onCancel() {}
                         })
                         .build();
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder()
-                                                      .setSharingTabGroup(true)
-                                                      .setSaveLastUsed(true)
-                                                      .build();
-        mShareDelegateSupplier.get().share(shareParams, chromeShareExtras, ShareOrigin.TAB_GROUP);
-        logShareActionState(TabSelectionEditorShareActionState.SUCCESS);
+
+        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareParams.getTextAndUrl());
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TITLE,
+                mContext.getResources().getQuantityString(
+                        R.plurals.tab_selection_editor_share_sheet_preview_message,
+                        sortedTabIndexList.size(), sortedTabIndexList.size()));
+        shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        Drawable drawable = new InsetDrawable(
+                AppCompatResources.getDrawable(mContext, R.drawable.chrome_sync_logo),
+                (int) mContext.getResources().getDimension(
+                        R.dimen.tab_selection_editor_share_sheet_preview_thumbnail_padding));
+        createShareableImageAndSendIntent(shareIntent, drawable);
         return true;
     }
 
     @Override
     public boolean shouldHideEditorAfterAction() {
         return true;
+    }
+
+    private void createShareableImageAndSendIntent(Intent shareIntent, Drawable drawable) {
+        PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
+            // Allotted thumbnail size is approx. 72 dp, with the icon left at default size.
+            // The padding is adjusted accordingly, taking into account the scaling factor.
+            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+
+            ShareImageFileUtils.generateTemporaryUriFromBitmap(
+                    mContext.getResources().getString(
+                            R.string.tab_selection_editor_share_sheet_preview_thumbnail),
+                    bitmap, uri -> {
+                        bitmap.recycle();
+                        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                            shareIntent.setClipData(ClipData.newRawUri("", uri));
+                            mContext.startActivity(Intent.createChooser(shareIntent, null));
+                            logShareActionState(TabSelectionEditorShareActionState.SUCCESS);
+                        });
+
+                        if (sIntentCallbackForTesting != null) {
+                            sIntentCallbackForTesting.onResult(shareIntent);
+                        }
+                    });
+        });
     }
 
     // TODO(crbug.com/1373579): Current filtering does not remove duplicates or show a "Toast" if
@@ -209,5 +248,10 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     @VisibleForTesting
     void setSkipUrlCheckForTesting(boolean skip) {
         mSkipUrlCheckForTesting = skip;
+    }
+
+    @VisibleForTesting
+    static void setIntentCallbackForTesting(Callback<Intent> callback) {
+        sIntentCallbackForTesting = callback;
     }
 }

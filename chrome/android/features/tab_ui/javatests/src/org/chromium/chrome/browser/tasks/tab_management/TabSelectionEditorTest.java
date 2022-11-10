@@ -21,9 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
@@ -52,15 +49,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -74,9 +67,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
-import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -94,7 +84,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -143,15 +132,6 @@ public class TabSelectionEditorTest {
                     .setDescription("TabSelectionEditorV2 UI Polish")
                     .build();
 
-    @Captor
-    ArgumentCaptor<ShareParams> mShareParamsCaptor;
-    @Captor
-    ArgumentCaptor<ChromeShareExtras> mChromeShareExtrasCaptor;
-    @Mock
-    private Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock
-    private ShareDelegate mShareDelegate;
-
     private TabSelectionEditorTestingRobot mRobot = new TabSelectionEditorTestingRobot();
 
     private TabModelSelector mTabModelSelector;
@@ -182,7 +162,6 @@ public class TabSelectionEditorTest {
                     mTabSelectionEditorCoordinator.getTabSelectionEditorLayoutForTesting();
             mRef = new WeakReference<>(mTabSelectionEditorLayout);
         });
-        doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
     }
 
     @After
@@ -658,8 +637,7 @@ public class TabSelectionEditorTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
             actions.add(TabSelectionEditorShareAction.createAction(sActivityTestRule.getActivity(),
-                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END,
-                    sActivityTestRule.getActivity().getShareDelegateSupplier()));
+                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END));
 
             mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
             mTabSelectionEditorController.show(tabs);
@@ -694,44 +672,41 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarMenuItem_ShareActionTabsOnly() throws IOException {
         prepareBlankTab(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
+        final String httpsCanonicalUrl =
+                sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
+        sActivityTestRule.loadUrl(httpsCanonicalUrl);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
             actions.add(TabSelectionEditorShareAction.createAction(sActivityTestRule.getActivity(),
-                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END,
-                    mShareDelegateSupplier));
+                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END));
 
             mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
             mTabSelectionEditorController.show(tabs);
         });
 
-        final String httpsCanonicalUrl =
-                sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        sActivityTestRule.loadUrl(httpsCanonicalUrl);
-
         mRobot.actionRobot.clickItemAtAdapterPosition(0).clickItemAtAdapterPosition(2);
+
+        TabSelectionEditorShareAction.setIntentCallbackForTesting((result -> {
+            assertEquals(Intent.ACTION_SEND, result.getAction());
+            assertEquals(httpsCanonicalUrl, result.getStringExtra(Intent.EXTRA_TEXT));
+            assertEquals("text/plain", result.getType());
+            assertEquals("1 link from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
+        }));
 
         final int shareId = R.id.tab_selection_editor_share_menu_item;
         mRobot.actionRobot.clickToolbarActionView(shareId);
-
-        verify(mShareDelegate)
-                .share(mShareParamsCaptor.capture(), mChromeShareExtrasCaptor.capture(),
-                        eq(ShareOrigin.TAB_GROUP));
-        ShareParams shareParamsCaptorValue = mShareParamsCaptor.getValue();
-        ChromeShareExtras chromeShareExtrasCaptorValue = mChromeShareExtrasCaptor.getValue();
-
-        String sharedUrls[] = shareParamsCaptorValue.getTextAndUrl().split("\\r?\\n");
-
-        assertEquals(1, sharedUrls.length);
-        assertEquals(httpsCanonicalUrl, sharedUrls[0]);
     }
 
     @Test
     @MediumTest
+    @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarMenuItem_ShareActionGroupsOnly() throws IOException {
         ArrayList<String> urls = new ArrayList<String>();
@@ -745,11 +720,16 @@ public class TabSelectionEditorTest {
 
         List<Tab> tabs = getTabsInCurrentTabModelFilter();
 
+        // Url string formatting
+        for (int i = 0; i < urls.size(); i++) {
+            urls.set(i, (i + 1) + ". " + urls.get(i));
+        }
+        urls.add("");
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
             actions.add(TabSelectionEditorShareAction.createAction(sActivityTestRule.getActivity(),
-                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END,
-                    mShareDelegateSupplier));
+                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END));
 
             mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
             mTabSelectionEditorController.show(tabs);
@@ -757,26 +737,20 @@ public class TabSelectionEditorTest {
 
         mRobot.actionRobot.clickItemAtAdapterPosition(1).clickItemAtAdapterPosition(2);
 
+        TabSelectionEditorShareAction.setIntentCallbackForTesting((result -> {
+            assertEquals(Intent.ACTION_SEND, result.getAction());
+            assertEquals(String.join("\n", urls), result.getStringExtra(Intent.EXTRA_TEXT));
+            assertEquals("text/plain", result.getType());
+            assertEquals("4 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
+        }));
+
         final int shareId = R.id.tab_selection_editor_share_menu_item;
         mRobot.actionRobot.clickToolbarActionView(shareId);
-
-        verify(mShareDelegate)
-                .share(mShareParamsCaptor.capture(), mChromeShareExtrasCaptor.capture(),
-                        eq(ShareOrigin.TAB_GROUP));
-        ShareParams shareParamsCaptorValue = mShareParamsCaptor.getValue();
-        ChromeShareExtras chromeShareExtrasCaptorValue = mChromeShareExtrasCaptor.getValue();
-
-        String sharedUrls[] = shareParamsCaptorValue.getTextAndUrl().split("\\r?\\n");
-
-        assertEquals(4, sharedUrls.length);
-        assertEquals("1. " + urls.get(0), sharedUrls[0]);
-        assertEquals("2. " + urls.get(1), sharedUrls[1]);
-        assertEquals("3. " + urls.get(2), sharedUrls[2]);
-        assertEquals("4. " + urls.get(3), sharedUrls[3]);
     }
 
     @Test
     @MediumTest
+    @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarMenuItem_ShareActionTabsWithGroups() throws IOException {
         prepareBlankTab(2, false);
@@ -794,11 +768,17 @@ public class TabSelectionEditorTest {
 
         List<Tab> tabs = getTabsInCurrentTabModelFilter();
 
+        // Url string formatting
+        urls.add(0, httpsCanonicalUrl);
+        for (int i = 0; i < urls.size(); i++) {
+            urls.set(i, (i + 1) + ". " + urls.get(i));
+        }
+        urls.add("");
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
             actions.add(TabSelectionEditorShareAction.createAction(sActivityTestRule.getActivity(),
-                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END,
-                    mShareDelegateSupplier));
+                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END));
 
             mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
             mTabSelectionEditorController.show(tabs);
@@ -809,21 +789,15 @@ public class TabSelectionEditorTest {
                 .clickItemAtAdapterPosition(2)
                 .clickItemAtAdapterPosition(3);
 
+        TabSelectionEditorShareAction.setIntentCallbackForTesting((result -> {
+            assertEquals(Intent.ACTION_SEND, result.getAction());
+            assertEquals(String.join("\n", urls), result.getStringExtra(Intent.EXTRA_TEXT));
+            assertEquals("text/plain", result.getType());
+            assertEquals("3 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
+        }));
+
         final int shareId = R.id.tab_selection_editor_share_menu_item;
         mRobot.actionRobot.clickToolbarActionView(shareId);
-
-        verify(mShareDelegate)
-                .share(mShareParamsCaptor.capture(), mChromeShareExtrasCaptor.capture(),
-                        eq(ShareOrigin.TAB_GROUP));
-        ShareParams shareParamsCaptorValue = mShareParamsCaptor.getValue();
-        ChromeShareExtras chromeShareExtrasCaptorValue = mChromeShareExtrasCaptor.getValue();
-
-        String sharedUrls[] = shareParamsCaptorValue.getTextAndUrl().split("\\r?\\n");
-
-        assertEquals(3, sharedUrls.length);
-        assertEquals("1. " + httpsCanonicalUrl, sharedUrls[0]);
-        assertEquals("2. " + urls.get(0), sharedUrls[1]);
-        assertEquals("3. " + urls.get(1), sharedUrls[2]);
     }
 
     @Test
@@ -836,8 +810,7 @@ public class TabSelectionEditorTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
             actions.add(TabSelectionEditorShareAction.createAction(sActivityTestRule.getActivity(),
-                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END,
-                    sActivityTestRule.getActivity().getShareDelegateSupplier()));
+                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END));
 
             mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
             mTabSelectionEditorController.show(tabs);

@@ -5,14 +5,11 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -23,21 +20,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
-import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -78,19 +69,10 @@ public class TabSelectionEditorShareActionUnitTest {
     @Mock
     private ActionDelegate mDelegate;
     @Mock
-    private Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock
-    private ShareDelegate mShareDelegate;
-    @Mock
     private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     private Context mContext;
     private MockTabModel mTabModel;
     private TabSelectionEditorShareAction mAction;
-
-    @Captor
-    ArgumentCaptor<ShareParams> mShareParamsCaptor;
-    @Captor
-    ArgumentCaptor<ChromeShareExtras> mChromeShareExtrasCaptor;
 
     Map<Integer, GURL> mIdUrlMap = new HashMap<Integer, GURL>() {
         {
@@ -107,8 +89,7 @@ public class TabSelectionEditorShareActionUnitTest {
         MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
         mAction = (TabSelectionEditorShareAction) TabSelectionEditorShareAction.createAction(
-                mContext, ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START,
-                mShareDelegateSupplier);
+                mContext, ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START);
         mTabModel = spy(new MockTabModel(false, new MockTabModel.MockTabModelDelegate() {
             @Override
             public Tab createTab(int id, boolean incognito) {
@@ -187,10 +168,6 @@ public class TabSelectionEditorShareActionUnitTest {
                                 tabs.get(0).getUrl().getSpec())
                         .setText("")
                         .build();
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder()
-                                                      .setSharingTabGroup(true)
-                                                      .setSaveLastUsed(true)
-                                                      .build();
 
         final CallbackHelper helper = new CallbackHelper();
         ActionObserver observer = new ActionObserver() {
@@ -201,41 +178,21 @@ public class TabSelectionEditorShareActionUnitTest {
         };
         mAction.addActionObserver(observer);
 
-        when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
+        TabSelectionEditorShareAction.setIntentCallbackForTesting((result -> {
+            Assert.assertEquals(Intent.ACTION_SEND, result.getAction());
+            Assert.assertEquals(
+                    shareParams.getTextAndUrl(), result.getStringExtra(Intent.EXTRA_TEXT));
+            Assert.assertEquals("text/plain", result.getType());
+            Assert.assertEquals("1 link from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
+            Assert.assertNotNull(result.getClipData());
+        }));
+
         Assert.assertTrue(mAction.perform());
-
-        verify(mShareDelegate)
-                .share(mShareParamsCaptor.capture(), mChromeShareExtrasCaptor.capture(),
-                        eq(ShareOrigin.TAB_GROUP));
-        ShareParams shareParamsCaptorValue = mShareParamsCaptor.getValue();
-        ChromeShareExtras chromeShareExtrasCaptorValue = mChromeShareExtrasCaptor.getValue();
-
-        Assert.assertEquals(shareParams.getWindow(), shareParamsCaptorValue.getWindow());
-        Assert.assertEquals(shareParams.getTitle(), shareParamsCaptorValue.getTitle());
-        Assert.assertEquals(shareParams.getUrl(), shareParamsCaptorValue.getUrl());
-        Assert.assertEquals(shareParams.getText(), shareParamsCaptorValue.getText());
-        Assert.assertEquals(chromeShareExtras.sharingTabGroup(),
-                chromeShareExtrasCaptorValue.sharingTabGroup());
-        Assert.assertEquals(
-                chromeShareExtras.saveLastUsed(), chromeShareExtrasCaptorValue.saveLastUsed());
 
         helper.waitForFirst();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
-        verify(mShareDelegate, times(2))
-                .share(mShareParamsCaptor.capture(), mChromeShareExtrasCaptor.capture(),
-                        eq(ShareOrigin.TAB_GROUP));
-        shareParamsCaptorValue = mShareParamsCaptor.getValue();
-        chromeShareExtrasCaptorValue = mChromeShareExtrasCaptor.getValue();
-        Assert.assertEquals(shareParams.getWindow(), shareParamsCaptorValue.getWindow());
-        Assert.assertEquals(shareParams.getTitle(), shareParamsCaptorValue.getTitle());
-        Assert.assertEquals(shareParams.getUrl(), shareParamsCaptorValue.getUrl());
-        Assert.assertEquals(shareParams.getText(), shareParamsCaptorValue.getText());
-        Assert.assertEquals(chromeShareExtras.sharingTabGroup(),
-                chromeShareExtrasCaptorValue.sharingTabGroup());
-        Assert.assertEquals(
-                chromeShareExtras.saveLastUsed(), chromeShareExtrasCaptorValue.saveLastUsed());
         Assert.assertEquals(1, helper.getCallCount());
 
         verifyIfToastShown(false);
@@ -269,10 +226,6 @@ public class TabSelectionEditorShareActionUnitTest {
                         .setText(
                                 "1. https://www.one.com/\n2. https://www.two.com/\n3. https://www.three.com/\n")
                         .build();
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder()
-                                                      .setSharingTabGroup(true)
-                                                      .setSaveLastUsed(true)
-                                                      .build();
 
         final CallbackHelper helper = new CallbackHelper();
         ActionObserver observer = new ActionObserver() {
@@ -283,40 +236,21 @@ public class TabSelectionEditorShareActionUnitTest {
         };
         mAction.addActionObserver(observer);
 
-        when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
-        Assert.assertTrue(mAction.perform());
+        TabSelectionEditorShareAction.setIntentCallbackForTesting((result -> {
+            Assert.assertEquals(Intent.ACTION_SEND, result.getAction());
+            Assert.assertEquals(
+                    shareParams.getTextAndUrl(), result.getStringExtra(Intent.EXTRA_TEXT));
+            Assert.assertEquals("text/plain", result.getType());
+            Assert.assertEquals("3 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
+            Assert.assertNotNull(result.getClipData());
+        }));
 
-        verify(mShareDelegate)
-                .share(mShareParamsCaptor.capture(), mChromeShareExtrasCaptor.capture(),
-                        eq(ShareOrigin.TAB_GROUP));
-        ShareParams shareParamsCaptorValue = mShareParamsCaptor.getValue();
-        ChromeShareExtras chromeShareExtrasCaptorValue = mChromeShareExtrasCaptor.getValue();
-        Assert.assertEquals(shareParams.getWindow(), shareParamsCaptorValue.getWindow());
-        Assert.assertEquals(shareParams.getTitle(), shareParamsCaptorValue.getTitle());
-        Assert.assertEquals(shareParams.getUrl(), shareParamsCaptorValue.getUrl());
-        Assert.assertEquals(shareParams.getText(), shareParamsCaptorValue.getText());
-        Assert.assertEquals(chromeShareExtras.sharingTabGroup(),
-                chromeShareExtrasCaptorValue.sharingTabGroup());
-        Assert.assertEquals(
-                chromeShareExtras.saveLastUsed(), chromeShareExtrasCaptorValue.saveLastUsed());
+        Assert.assertTrue(mAction.perform());
 
         helper.waitForFirst();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
-        verify(mShareDelegate, times(2))
-                .share(mShareParamsCaptor.capture(), mChromeShareExtrasCaptor.capture(),
-                        eq(ShareOrigin.TAB_GROUP));
-        shareParamsCaptorValue = mShareParamsCaptor.getValue();
-        chromeShareExtrasCaptorValue = mChromeShareExtrasCaptor.getValue();
-        Assert.assertEquals(shareParams.getWindow(), shareParamsCaptorValue.getWindow());
-        Assert.assertEquals(shareParams.getTitle(), shareParamsCaptorValue.getTitle());
-        Assert.assertEquals(shareParams.getUrl(), shareParamsCaptorValue.getUrl());
-        Assert.assertEquals(shareParams.getText(), shareParamsCaptorValue.getText());
-        Assert.assertEquals(chromeShareExtras.sharingTabGroup(),
-                chromeShareExtrasCaptorValue.sharingTabGroup());
-        Assert.assertEquals(
-                chromeShareExtras.saveLastUsed(), chromeShareExtrasCaptorValue.saveLastUsed());
         Assert.assertEquals(1, helper.getCallCount());
 
         verifyIfToastShown(false);
@@ -342,9 +276,6 @@ public class TabSelectionEditorShareActionUnitTest {
         Assert.assertEquals(
                 2, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
 
-        verify(mShareDelegate, never())
-                .share(any(ShareParams.class), any(ChromeShareExtras.class),
-                        eq(ShareOrigin.TAB_GROUP));
         verifyIfToastShown(false);
     }
 
