@@ -88,7 +88,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
       }
       break;
     case PRODUCTIVITY_LAUNCHER_RECENT_APP:
-      DCHECK(features::IsProductivityLauncherEnabled());
       if (is_tablet_mode()) {
         UMA_HISTOGRAM_ENUMERATION(
             "Apps.ContextMenuShowSourceV2.ProductivityLauncherRecentApp."
@@ -110,7 +109,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
       }
       break;
     case PRODUCTIVITY_LAUNCHER_APP_GRID:
-      DCHECK(features::IsProductivityLauncherEnabled());
       if (is_tablet_mode()) {
         UMA_HISTOGRAM_ENUMERATION(
             "Apps.ContextMenuShowSourceV2.ProductivityLauncherAppGrid."

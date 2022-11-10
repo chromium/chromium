@@ -326,10 +326,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   title_ = AddChildView(std::move(title));
 
-  if (features::IsProductivityLauncherEnabled()) {
-    new_install_dot_ = AddChildView(std::make_unique<DotView>());
-    new_install_dot_->SetVisible(item_weak_->is_new_install());
-  }
+  new_install_dot_ = AddChildView(std::make_unique<DotView>());
+  new_install_dot_->SetVisible(item_weak_->is_new_install());
 
   SetIcon(item_weak_->GetIcon(app_list_config_->type()));
   SetItemName(base::UTF8ToUTF16(item->GetDisplayName()),
@@ -711,9 +709,7 @@ void AppListItemView::OnContextMenuModelReceived(
   AppLaunchedMetricParams metric_params;
   switch (context_) {
     case Context::kAppsGridView:
-      app_type = features::IsProductivityLauncherEnabled()
-                     ? AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID
-                     : AppListMenuModelAdapter::FULLSCREEN_APP_GRID;
+      app_type = AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID;
       metric_params.launched_from = AppListLaunchedFrom::kLaunchedFromGrid;
       metric_params.launch_type = AppListLaunchType::kApp;
       break;
@@ -787,14 +783,13 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
        waiting_for_context_menu_options_ || IsShowingAppMenu())) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    // Clamshell ProductivityLauncher always has keyboard traversal engaged, so
-    // explicitly check HasFocus() before drawing focus ring. This allows
-    // right-click "selected" apps to avoid drawing the focus ring.
+    // Clamshell Launcher always has keyboard traversal engaged, so explicitly
+    // check HasFocus() before drawing focus ring. This allows right-click
+    // "selected" apps to avoid drawing the focus ring.
     const bool draw_focus_ring =
-        features::IsProductivityLauncherEnabled() &&
-                !view_delegate_->IsInTabletMode()
-            ? HasFocus()
-            : view_delegate_->KeyboardTraversalEngaged();
+        view_delegate_->IsInTabletMode()
+            ? view_delegate_->KeyboardTraversalEngaged()
+            : HasFocus();
     if (draw_focus_ring) {
       flags.setColor(
           AppListColorProvider::Get()->GetFocusRingColor(app_list_widget));

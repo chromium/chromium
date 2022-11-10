@@ -59,6 +59,9 @@ class ASH_EXPORT AppsContainerView
 
   ~AppsContainerView() override;
 
+  // The horizontal margin for content within the apps container.
+  static const int kHorizontalMargin;
+
   // Resets the app list to a state where it shows the main grid view. This is
   // called when the user opens the launcher for the first time or when the user
   // hides and then shows it.
@@ -90,11 +93,10 @@ class ASH_EXPORT AppsContainerView
   // section and recent apps.
   int GetMinTopMarginForAppsGrid(const gfx::Size& search_box_size) const;
 
-  // Returns the ideal margins for content within the apps container. The actual
-  // margins may differ depending on available screen real-estate. For example,
-  // margins may be smaller if the apps grid contents would not fit within the
-  // ideal margins.
-  int GetIdealHorizontalMargin() const;
+  // Returns the ideal vertical margin for content within the apps container.
+  // The actual margin may differ depending on available screen real-estate. For
+  // example, margin may be smaller if the apps grid contents would not fit
+  // within the ideal margin.
   int GetIdealVerticalMargin() const;
 
   // Calculates the apps container margins depending on the available content

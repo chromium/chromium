@@ -141,14 +141,9 @@ void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
     // Show zero state suggestions when search box is activated with an empty
     // query.
     const bool is_query_empty = sender->IsSearchBoxTrimmedQueryEmpty();
-    if (features::IsProductivityLauncherEnabled()) {
-      app_list_view_->SetStateFromSearchBoxView(
-          is_query_empty, true /*triggered_by_contents_change*/);
-      contents_view_->ShowSearchResults(true);
-    } else {
-      if (is_query_empty)
-        search_box_view_->ShowZeroStateSuggestions();
-    }
+    app_list_view_->SetStateFromSearchBoxView(
+        is_query_empty, true /*triggered_by_contents_change*/);
+    contents_view_->ShowSearchResults(true);
   } else {
     // Close the search results page if the search box is inactive.
     contents_view_->ShowSearchResults(false);

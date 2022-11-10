@@ -494,7 +494,7 @@ class AppListViewTest : public views::ViewsTestBase {
 
   TestAppListColorProvider app_list_color_provider_;  // Needed by AppListView.
 
-  // Needed by ProductivityLauncher AppsContainerView::ContinueContainer.
+  // Needed by AppsContainerView::ContinueContainer.
   AshColorProvider ash_color_provider_;
 
   AppListView* view_ = nullptr;  // Owned by native widget.
@@ -852,7 +852,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
  private:
   TestAppListColorProvider app_list_color_provider_;  // Needed by AppListView.
-  AshColorProvider ash_color_provider_;  // Needed by ProductivityLauncher.
+  AshColorProvider ash_color_provider_;
   AppListView* view_ = nullptr;          // Owned by native widget.
 
   std::unique_ptr<AppListTestViewDelegate> delegate_;

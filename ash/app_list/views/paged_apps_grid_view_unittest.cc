@@ -172,7 +172,7 @@ class PagedAppsGridViewTest : public AshTestBase {
   std::unique_ptr<SearchModel> search_model_;
 };
 
-// Tests with ProductivityLauncher and app list nudge enabled.
+// Tests with app list nudge enabled.
 class PagedAppsGridViewWithNudgeTest : public PagedAppsGridViewTest {
  public:
   void SetUp() override {

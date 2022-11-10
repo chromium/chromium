@@ -45,17 +45,8 @@
 namespace ash {
 
 namespace {
-
-// The contents view height threshold under which search box should be shown in
-// dense layout.
-constexpr int kDenseLayoutHeightThreshold = 600;
-
 // The preferred search box height.
 constexpr int kSearchBoxHeight = 48;
-
-// The preferred search box height when the vertical app list contents space
-// is condensed - normally `kSearchBoxHeight` would be used.
-constexpr int kSearchBoxHeightForDenseLayout = 40;
 
 // The top search box margin (measured from the app list view top bound) when
 // app list view is in peeking state on non-apps page.
@@ -244,8 +235,8 @@ int ContentsView::NumLauncherPages() const {
 
 gfx::Size ContentsView::AdjustSearchBoxSizeToFitMargins(
     const gfx::Size& preferred_size) const {
-  const int padded_width = GetContentsBounds().width() -
-                           2 * apps_container_view_->GetIdealHorizontalMargin();
+  const int padded_width =
+      GetContentsBounds().width() - 2 * AppsContainerView::kHorizontalMargin;
   return gfx::Size(
       base::clamp(padded_width, kSearchBarMinWidth, preferred_size.width()),
       preferred_size.height());
@@ -457,15 +448,7 @@ gfx::Size ContentsView::GetSearchBoxSize(AppListState state) const {
 
   gfx::Size preferred_size = GetSearchBoxView()->GetPreferredSize();
 
-  // Reduce the search box size in fullscreen view state when the work area
-  // height is less than 600 dip - the goal is to increase the amount of space
-  // available to the apps grid.
-  if (!features::IsProductivityLauncherEnabled() &&
-      GetContentsBounds().height() < kDenseLayoutHeightThreshold) {
-    preferred_size.set_height(kSearchBoxHeightForDenseLayout);
-  } else {
-    preferred_size.set_height(kSearchBoxHeight);
-  }
+  preferred_size.set_height(kSearchBoxHeight);
 
   return AdjustSearchBoxSizeToFitMargins(preferred_size);
 }
