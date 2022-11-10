@@ -408,5 +408,6 @@ ci.builder(
         "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
         "RBE_deps_cache_mode": "reproxy",
+        "RBE_clang_depscan_archive": "true",
     },
 )
