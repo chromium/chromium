@@ -41,7 +41,6 @@ class LayoutShiftNormalization {
   };
 
   void UpdateWindowCLS(
-      base::TimeTicks current_time,
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator first,
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator
           first_non_stale,
@@ -54,8 +53,7 @@ class LayoutShiftNormalization {
       base::TimeDelta max_duration,
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator begin,
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator end,
-      float& max_score,
-      uint32_t& count);
+      float& max_score);
 
   // CLS normalization
   NormalizedCLSData normalized_cls_data_;

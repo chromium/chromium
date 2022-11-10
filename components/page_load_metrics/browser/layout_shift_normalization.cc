@@ -53,7 +53,7 @@ void LayoutShiftNormalization::AddNewLayoutShifts(
       [](auto time, auto const& shift) { return time < shift.first; });
 
   // Update sliding and session window CLS.
-  UpdateWindowCLS(current_time, recent_layout_shifts_.begin(), first_non_stale,
+  UpdateWindowCLS(recent_layout_shifts_.begin(), first_non_stale,
                   recent_layout_shifts_.end(), cumulative_layout_shift_score);
 
   // Finally, remove the stale shifts at this point.
@@ -72,14 +72,12 @@ void LayoutShiftNormalization::UpdateSessionWindow(
     base::TimeDelta max_duration,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator begin,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator end,
-    float& max_score,
-    uint32_t& count) {
+    float& max_score) {
   for (auto it = begin; it != end; ++it) {
     if ((it->first - session_window->last_time > gap) ||
         (it->first - session_window->start_time > max_duration)) {
       session_window->start_time = it->first;
       session_window->layout_shift_score = 0;
-      ++count;
     }
     session_window->last_time = it->first;
     session_window->layout_shift_score += it->second;
@@ -103,26 +101,21 @@ void LayoutShiftNormalization::UpdateSessionWindow(
 // we received. The second update is for all layout shifts we received so far in
 // case we need to record UKM right away.
 void LayoutShiftNormalization::UpdateWindowCLS(
-    base::TimeTicks current_time,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator first,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator
         first_non_stale,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator last,
     float cumulative_layout_shift_score) {
-  uint32_t dummy_count = 0;
-
   // Update Session Windows.
   UpdateSessionWindow(
       &session_gap1000ms_max5000ms_, base::Milliseconds(1000),
       base::Milliseconds(5000), first, first_non_stale,
-      normalized_cls_data_.session_windows_gap1000ms_max5000ms_max_cls,
-      dummy_count);
+      normalized_cls_data_.session_windows_gap1000ms_max5000ms_max_cls);
   auto tmp_session_gap1000ms_max5000ms = session_gap1000ms_max5000ms_;
 
   UpdateSessionWindow(
       &tmp_session_gap1000ms_max5000ms, base::Milliseconds(1000),
       base::Milliseconds(5000), first_non_stale, last,
-      normalized_cls_data_.session_windows_gap1000ms_max5000ms_max_cls,
-      dummy_count);
+      normalized_cls_data_.session_windows_gap1000ms_max5000ms_max_cls);
 }
 }  // namespace page_load_metrics
