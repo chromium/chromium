@@ -38,6 +38,8 @@ export class ExtensionBridge {
     this.queuedMessages_ = [];
     /** @private {?Port} */
     this.backgroundPort_ = null;
+
+    this.init_();
   }
 
   /**
@@ -47,7 +49,6 @@ export class ExtensionBridge {
    */
   static init() {
     ExtensionBridge.instance = new ExtensionBridge();
-    ExtensionBridge.instance.initBackground_();
   }
 
   /**
@@ -102,7 +103,7 @@ export class ExtensionBridge {
    * a listener for connections from the content script.
    * @private
    */
-  initBackground_() {
+  init_() {
     this.id_ = 0;
     chrome.extension.onConnect.addListener(
         port => this.backgroundOnConnectHandler_(port));
@@ -154,23 +155,6 @@ export class ExtensionBridge {
         break;
       }
     }
-  }
-
-  /**
-   * Initialize the extension bridge in a content script context, listening
-   * for messages from the background page.
-   * @private
-   */
-  initContentScript_() {
-    // Listen to requests from the background that don't come from
-    // our connection port.
-    chrome.extension.onMessage.addListener(
-        (request, sender, respond) =>
-            this.contentOnMessageHandler_(request, sender, respond));
-
-    this.setupBackgroundPort_();
-
-    this.tryToPingBackgroundPage_();
   }
 
   /**
