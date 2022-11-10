@@ -665,13 +665,13 @@ class FormDataImporterTestBase {
       bool payment_methods_autofill_enabled,
       bool should_return_local_card,
       FormDataImporter::ImportFormDataResult* imported_data) {
-    bool has_imported_data = form_data_importer().ImportFormData(
+    *imported_data = form_data_importer().ImportFormData(
         form, profile_autofill_enabled, payment_methods_autofill_enabled,
-        should_return_local_card, imported_data);
+        should_return_local_card);
 
     form_data_importer().ProcessAddressProfileImportCandidates(
         imported_data->address_profile_import_candidates);
-    return has_imported_data;
+    return imported_data->success;
   }
 
   // Convenience wrapper around `ImportFormDataAndProcessAddressCandidates()`.
@@ -706,8 +706,10 @@ class FormDataImporterTestBase {
       const FormStructure& form,
       bool should_return_local_card,
       absl::optional<CreditCard>* credit_card_import_candidate) {
-    return form_data_importer().ImportCreditCard(form, should_return_local_card,
-                                                 credit_card_import_candidate);
+    auto imported_data =
+        form_data_importer().ImportCreditCard(form, should_return_local_card);
+    *credit_card_import_candidate = imported_data.candidate;
+    return imported_data.success;
   }
 
   void SubmitFormAndExpectImportedCardWithData(const FormData& form,

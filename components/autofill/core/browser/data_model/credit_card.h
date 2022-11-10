@@ -185,7 +185,7 @@ class CreditCard : public AutofillDataModel {
   void set_card_issuer(Issuer card_issuer) { card_issuer_ = card_issuer; }
 
   // Return true if card_issuer_ is set to Issuer::GOOGLE.
-  bool IsGoogleIssuedCard() const;
+  [[nodiscard]] bool IsGoogleIssuedCard() const;
 
   // For use in STL containers.
   void operator=(const CreditCard& credit_card);
@@ -204,14 +204,15 @@ class CreditCard : public AutofillDataModel {
   // GUIDs, origins, labels, and unique IDs are not compared, only the values of
   // the cards themselves. A full card is equivalent to its corresponding masked
   // card.
-  int Compare(const CreditCard& credit_card) const;
+  [[nodiscard]] int Compare(const CreditCard& credit_card) const;
 
   // Determines if |this| is a local version of the server card |other|.
-  bool IsLocalDuplicateOfServerCard(const CreditCard& other) const;
+  [[nodiscard]] bool IsLocalDuplicateOfServerCard(
+      const CreditCard& other) const;
 
   // Determines if |this| has the same number as |other|. If either is a masked
   // server card, compares their last four digits and expiration dates.
-  bool HasSameNumberAs(const CreditCard& other) const;
+  [[nodiscard]] bool HasSameNumberAs(const CreditCard& other) const;
 
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.

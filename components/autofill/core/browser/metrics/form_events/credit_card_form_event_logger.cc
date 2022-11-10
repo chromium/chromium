@@ -279,8 +279,8 @@ void CreditCardFormEventLogger::OnSuggestionsShownOnce(
 void CreditCardFormEventLogger::OnSuggestionsShownSubmittedOnce(
     const FormStructure& form) {
   if (!has_logged_suggestion_filled_) {
-    const CreditCard credit_card =
-        client_->GetFormDataImporter()->ExtractCreditCardFromForm(form);
+    const CreditCard& credit_card =
+        client_->GetFormDataImporter()->ExtractCreditCardFromForm(form).card;
     Log(GetCardNumberStatusFormEvent(credit_card), form);
   }
 }
