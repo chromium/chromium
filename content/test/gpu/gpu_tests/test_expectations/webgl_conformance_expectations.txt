@@ -334,19 +334,9 @@ crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/text
 # Flaky tests
 [ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Failure ]
 [ fuchsia fuchsia-board-sherlock ] WebglExtension_EXT_float_blend [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-npot-video.html [ Failure ]
-crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
-crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
-crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
-crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
 
 # GPU process crash
 crbug.com/1356275 [ fuchsia fuchsia-board-astro ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
-crbug.com/1356275 [ fuchsia fuchsia-board-astro ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
-crbug.com/1356275 [ fuchsia fuchsia-board-astro ] conformance/state/gl-enable-enum-test.html [ Failure ]
 
 # Flaky tests
 crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/functions/glsl-function* [ Failure ]
@@ -402,7 +392,6 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
 # Fail when ANGLE GLES3 is requested for OOPR and SkiaRenderer.
-crbug.com/1336736 [ win angle-d3d11 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 ####################
 # Mac failures     #
@@ -433,10 +422,8 @@ crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/mi
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ RetryOnFailure ]
 
 # Mac / Passthrough command decoder / Metal
-crbug.com/angleproject/6489 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
 
 # Mac / M1 / OpenGL
-crbug.com/1130703 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 # No active browser window, but no crash stack.
 crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
@@ -517,10 +504,8 @@ crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conform
 # Pixel 6
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_WEBGL_draw_buffers [ Failure ]
-crbug.com/1286924 [ android android-pixel-6 arm ] conformance/textures/image_bitmap_from_video/* [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm ] conformance/textures/video/* [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1286924 [ android android-pixel-6 passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/more/conformance/quickCheckAPI-A.html [ Failure ]
