@@ -50,6 +50,13 @@ void FedCmAccountSelectionView::Show(
     const std::string& rp_etld_plus_one,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     Account::SignInMode sign_in_mode) {
+  // Either Show or ShowFailureDialog has already been called for other IDPs
+  // from the same token request. This could happen when accounts fetch fails
+  // for some IDPs. We have yet to support the multi IDP case where not all IDPs
+  // are successful. The early return causes follow up Show calls to be ignored.
+  if (bubble_widget_)
+    return;
+
   Browser* browser =
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
   // `browser` is null in unit tests.
@@ -83,6 +90,14 @@ void FedCmAccountSelectionView::Show(
 void FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& rp_etld_plus_one,
     const std::string& idp_etld_plus_one) {
+  // Either Show or ShowFailureDialog has already been called for other IDPs
+  // from the same token request. This could happen when accounts fetch fails
+  // for some IDPs. We have yet to support the multi IDP case where not all IDPs
+  // are successful. The early return causes follow up ShowFailureDialog calls
+  // to be ignored.
+  if (bubble_widget_)
+    return;
+
   Browser* browser =
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
   // `browser` is null in unit tests.

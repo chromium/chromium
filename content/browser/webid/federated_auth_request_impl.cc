@@ -888,6 +888,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog(
       idp_data_for_display.push_back(idp_data_.at(idp));
   }
 
+  // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
+  // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
       rp_web_contents, rp_url_for_display, idp_data_for_display,
       is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
@@ -925,6 +927,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       WebContents::FromRenderFrameHost(&render_frame_host());
   DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
 
+  // TODO(crbug.com/1382495): Handle failure UI in the multi IDP case.
   request_dialog_controller_->ShowFailureDialog(
       rp_web_contents, FormatOriginForDisplay(GetEmbeddingOrigin()),
       FormatOriginForDisplay(idp_origin),
