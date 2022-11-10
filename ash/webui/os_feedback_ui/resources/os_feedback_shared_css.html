@@ -1,7 +1,11 @@
 <template>
   <style include="cr-shared-style md-select">
     :host {
+      --feedback-footer-height: 92px;
       --feedback-google-sans-font-family: "Google Sans", Roboto, sans-serif;
+      --feedback-header-height: 92px;
+      --feedback-padding-inline-end: 40px;
+      --feedback-padding-inline-start: 40px;
       --feedback-regular-font-weight: 400;
       --feedback-roboto-font-family: Roboto, sans-serif;
       --feedback-medium-font-weight: 500;
@@ -27,9 +31,12 @@
     }
 
     #header {
+      box-shadow: var(--cros-elevation-2-shadow);
       display: flex;
       height: 68px;
-      margin: 0 0 24px 0;
+      padding-bottom: 24px;
+      padding-inline-end: var(--feedback-padding-inline-end);
+      padding-inline-start: var(--feedback-padding-inline-start);
     }
 
     #content {
@@ -80,9 +87,13 @@
     }
 
     #navButtons {
-      align-self: flex-end;
+      box-shadow: var(--cros-elevation-2-shadow);
       display: flex;
-      margin: auto 0 40px 0;
+      justify-content: end;
+      padding-bottom: 40px;
+      padding-inline-end: var(--feedback-padding-inline-end);
+      padding-inline-start: var(--feedback-padding-inline-start);
+      padding-top: 20px;
     }
 
     cr-button {
@@ -204,6 +215,14 @@
 
     :host-context(.focus-outline-visible) cr-checkbox:focus {
       --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
+    }
+
+    #content {
+      height: calc(var(--window-height) - var(--feedback-header-height) -
+          var(--feedback-footer-height));
+      overflow: auto;
+      padding-inline-end: var(--feedback-padding-inline-end);
+      padding-inline-start: var(--feedback-padding-inline-start);
     }
   </style>
 </template>

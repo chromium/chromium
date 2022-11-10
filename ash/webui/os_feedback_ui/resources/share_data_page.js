@@ -136,19 +136,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     // ShareDataPageElement's context.
     this.$.userEmailDropDown.addEventListener(
         'change', this.handleUserEmailDropDownChanged_.bind(this));
-
-    // Set up listener that whenever the switching page from Search page to
-    // Share Data page, the shadow shield effect will depend on whether
-    // the container is scrollable.
-    window.addEventListener('continue-click', (event) => {
-      if (event.detail.currentState === 'searchPage') {
-        const container = this.shadowRoot.querySelector('#scrollContainer');
-        const shadowShield = this.shadowRoot.querySelector('#shadowShield');
-        shadowShield.classList.toggle(
-            'scrolling-shield',
-            container.scrollHeight > container.clientHeight);
-      }
-    });
   }
 
   /**
@@ -482,24 +469,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           '#performanceTraceLink',
           `chrome://slow_trace/tracing.zip#${this.feedbackContext.traceId}`);
     }
-  }
-
-  /** @protected */
-  onContainerScroll_() {
-    const shadowShield = this.getElement_('#shadowShield');
-    const shadowElevation = this.getElement_('#shadowElevation');
-    const separator = this.getElement_('#separator');
-    const container = this.getElement_('#scrollContainer');
-    container.classList.toggle('scrolling', container.scrollTop > 0);
-    container.classList.toggle('scrolling-before', container.scrollTop == 0);
-    shadowElevation.classList.toggle(
-        'scrolling-elevation', container.scrollTop > 0);
-    shadowShield.classList.toggle(
-        'scrolling-shield',
-        container.scrollTop + container.clientHeight < container.scrollHeight);
-    separator.classList.toggle(
-        'separator-visible',
-        container.scrollTop + container.clientHeight == container.scrollHeight);
   }
 }
 

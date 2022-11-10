@@ -179,60 +179,6 @@
     white-space: pre-line;
   }
 
-  .scrolling-before {
-    padding: 24px 40px 0 40px;
-    top: 68px;
-  }
-
-  .scrolling {
-    padding: 0 40px;
-    top: 92px;
-  }
-
-  #scrollContainer {
-    height: 424px;
-    left: 0;
-    margin-bottom: 20px;
-    margin-inline-end: 4px;
-    overflow: auto;
-    position: absolute;
-    right: 0;
-  }
-
-  #shadowElevation {
-    height: 2px;
-    left: 0;
-    position: fixed;
-    right: 0;
-    top: 90px;
-  }
-
-  .scrolling-elevation {
-    background-color: var(--cros-bg-color-elevation-1);
-    box-shadow: var(--cros-elevation-2-shadow);
-  }
-
-  .scrolling-shield {
-    background: linear-gradient(to bottom,
-        rgba(var(--cros-bg-color-rgb),0), rgba(var(--cros-bg-color-rgb),1))
-  }
-
-  .separator-visible {
-    border-top: 1px solid var(--cros-separator-color);
-    bottom: 92px;
-    left: 0;
-    position: absolute;
-    right: 0;
-  }
-
-  #shadowShield {
-    bottom: 92px;
-    height: 48px;
-    left: 0;
-    position: absolute;
-    right: 0;
-  }
-
   #content {
     width: 520px;
   }
@@ -246,119 +192,113 @@
   <div id="header">
     <h1 class="page-title">[[i18n('pageTitle')]]</h1>
   </div>
-  <div id="shadowElevation"></div>
   <div id="content">
-    <div id="scrollContainer" class='scrolling-before' on-scroll="onContainerScroll_">
-      <!-- Attach files -->
-      <div id="attachFiles">
-        <div id="attachFilesLabelContainer">
-          <h2 id="attachFilesLabel">[[i18n('attachFilesLabel')]]</h2>
-          <iron-icon icon="os-feedback:info" id="attachFilesIcon"
-              class="focusable" tabindex="0"
-              aria-labelledby="attachFilesTooltipContent">
-          </iron-icon>
-          <paper-tooltip for="attachFilesIcon" position="top" offset="0" fit-to-visible-bounds>
-            <div id="attachFilesTooltipContent">
-              [[i18n('attachFileLabelTooltip')]]
-            </div>
-          </paper-tooltip>
+    <!-- Attach files -->
+    <div id="attachFiles">
+      <div id="attachFilesLabelContainer">
+        <h2 id="attachFilesLabel">[[i18n('attachFilesLabel')]]</h2>
+        <iron-icon icon="os-feedback:info" id="attachFilesIcon"
+            class="focusable" tabindex="0"
+            aria-labelledby="attachFilesTooltipContent">
+        </iron-icon>
+        <paper-tooltip for="attachFilesIcon" position="top" offset="0" fit-to-visible-bounds>
+          <div id="attachFilesTooltipContent">
+            [[i18n('attachFileLabelTooltip')]]
+          </div>
+        </paper-tooltip>
+      </div>
+      <div id="attachFilesContainer">
+        <!-- Attach a screenshot -->
+        <div id="screenshotContainer" class="card-frame">
+          <cr-checkbox id="screenshotCheckbox"
+              disabled="[[!hasScreenshot_(screenshotUrl)]]">
+            <div id="screenshotCheckLabel" class="checkbox-label">[[i18n('attachScreenshotLabel')]]</div>
+          </cr-checkbox>
+          <button id="imageButton" class="focusable" on-click="handleScreenshotClick_">
+            <img id="screenshotImage" src="[[screenshotUrl]]">
+          </button>
         </div>
-        <div id="attachFilesContainer">
-          <!-- Attach a screenshot -->
-          <div id="screenshotContainer" class="card-frame">
-            <cr-checkbox id="screenshotCheckbox"
-                disabled="[[!hasScreenshot_(screenshotUrl)]]">
-              <div id="screenshotCheckLabel" class="checkbox-label">[[i18n('attachScreenshotLabel')]]</div>
-            </cr-checkbox>
-            <button id="imageButton" class="focusable" on-click="handleScreenshotClick_">
-              <img id="screenshotImage" src="[[screenshotUrl]]">
-            </button>
-          </div>
-          <!-- Attach a file -->
-          <div id="addFileContainer" class="card-frame">
-            <file-attachment></file-attachment>
-          </div>
+        <!-- Attach a file -->
+        <div id="addFileContainer" class="card-frame">
+          <file-attachment></file-attachment>
         </div>
       </div>
-      <!-- User e-mail -->
-      <div id="userEmail" class="text-field-container"
-          hidden$="[[!hasEmail_(feedbackContext)]]">
-        <h2 id="userEmailLabel">[[i18n('userEmailLabel')]]</h2>
-        <select id="userEmailDropDown" class="md-select"
-            aria-label="[[i18n('userEmailAriaLabel')]]">
-          <option value$="[[feedbackContext.email]]"
-              aria-label="user email"
-              class="email-dropdown">
-            [[feedbackContext.email]]
-          </option>
-          <option value="" aria-label="anonymous user"
-            id="anonymousUser" class="email-dropdown">
-            [[i18n('anonymousUser')]]
-          </option>
-        </select>
-      </div>
-      <!-- User consent -->
-      <div id="userConsent" class="checkbox-field-container"
-          hidden$="[[!hasEmail_(feedbackContext)]]">
-        <cr-checkbox id="userConsentCheckbox" aria-labelledby="userConsentLabel">
-          <div id="userConsentLabel" class="checkbox-label">[[i18n('userConsentLabel')]]</div>
+    </div>
+    <!-- User e-mail -->
+    <div id="userEmail" class="text-field-container"
+        hidden$="[[!hasEmail_(feedbackContext)]]">
+      <h2 id="userEmailLabel">[[i18n('userEmailLabel')]]</h2>
+      <select id="userEmailDropDown" class="md-select"
+          aria-label="[[i18n('userEmailAriaLabel')]]">
+        <option value$="[[feedbackContext.email]]"
+            aria-label="user email"
+            class="email-dropdown">
+          [[feedbackContext.email]]
+        </option>
+        <option value="" aria-label="anonymous user"
+          id="anonymousUser" class="email-dropdown">
+          [[i18n('anonymousUser')]]
+        </option>
+      </select>
+    </div>
+    <!-- User consent -->
+    <div id="userConsent" class="checkbox-field-container"
+        hidden$="[[!hasEmail_(feedbackContext)]]">
+      <cr-checkbox id="userConsentCheckbox" aria-labelledby="userConsentLabel">
+        <div id="userConsentLabel" class="checkbox-label">[[i18n('userConsentLabel')]]</div>
+      </cr-checkbox>
+    </div>
+    <!-- Diagnostic data -->
+    <div id="shareDiagnosticData">
+      <h2 id="shareDiagnosticDataLabel">[[i18n('shareDiagnosticDataLabel')]]</h2>
+      <!-- URL -->
+      <div id="pageUrl" class="checkbox-field-container" hidden="[[!feedbackContext.pageUrl.url]]">
+        <cr-checkbox id="pageUrlCheckbox" aria-labelledby="pageUrlLabel" checked>
+          <div id="pageUrlLabel" class="checkbox-label">[[i18n('sharePageUrlLabel')]]&nbsp;
+            <a href="[[feedbackContext.pageUrl.url]]" class="overflow-text" id="pageUrlText" target="_blank">
+              [[feedbackContext.pageUrl.url]]
+            </a>
+            <paper-tooltip for="pageUrlText" fitToVisibleBounds>
+              <div id="tooltipContent">[[feedbackContext.pageUrl.url]]</div>
+            </paper-tooltip>
+          </div>
         </cr-checkbox>
       </div>
-      <!-- Diagnostic data -->
-      <div id="shareDiagnosticData">
-        <h2 id="shareDiagnosticDataLabel">[[i18n('shareDiagnosticDataLabel')]]</h2>
-        <!-- URL -->
-        <div id="pageUrl" class="checkbox-field-container" hidden="[[!feedbackContext.pageUrl.url]]">
-          <cr-checkbox id="pageUrlCheckbox" aria-labelledby="pageUrlLabel" checked>
-            <div id="pageUrlLabel" class="checkbox-label">[[i18n('sharePageUrlLabel')]]&nbsp;
-              <a href="[[feedbackContext.pageUrl.url]]" class="overflow-text" id="pageUrlText" target="_blank">
-                [[feedbackContext.pageUrl.url]]
-              </a>
-              <paper-tooltip for="pageUrlText" fitToVisibleBounds>
-                <div id="tooltipContent">[[feedbackContext.pageUrl.url]]</div>
-              </paper-tooltip>
-            </div>
-          </cr-checkbox>
-        </div>
-        <!-- System Information -->
-        <div id="sysInfoContainer" class="checkbox-field-container">
-          <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
-            <div id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"
-                class="checkbox-label"></div>
-          </cr-checkbox>
-        </div>
-        <!-- Assistant Logs (Googler Internal Only) -->
-        <div id="assistantLogsContainer" class="checkbox-field-container"
-            hidden="[[!shouldShowAssistantCheckbox]]">
-          <cr-checkbox id="assiatantLogsCheckbox" aria-labelledby="assistantLogsLabel" checked>
-            <div id="assistantLogsLabel" class="checkbox-label" inner-h-t-m-l="[[assistantLogsCheckboxLabel_]]"></div>
-          </cr-checkbox>
-        </div>
-        <!-- Bluetooth Logs (Googler Internal Only) -->
-        <div id="bluetoothCheckboxContainer" class="checkbox-field-container"
-            hidden="[[!shouldShowBluetoothCheckbox]]">
-          <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="bluetoothInfoLabel" checked>
-            <div id="bluetoothInfoLabel" class="checkbox-label"
-                inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></div>
-          </cr-checkbox>
-        </div>
-        <!-- Performance trace -->
-        <div id="performanceTraceContainer" class="checkbox-field-container"
-            hidden="[[!shouldShowPerformanceTraceCheckbox_(feedbackContext)]]">
-          <cr-checkbox id="performanceTraceCheckbox"
-              aria-labelledby="performanceTraceCheckboxLabel" checked>
-            <div id="performanceTraceCheckboxLabel" class="checkbox-label"
-                inner-h-t-m-l="[[performanceTraceCheckboxLabel_]]">
-            </div>
-          </cr-checkbox>
-        </div>
+      <!-- System Information -->
+      <div id="sysInfoContainer" class="checkbox-field-container">
+        <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
+          <div id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"
+              class="checkbox-label"></div>
+        </cr-checkbox>
       </div>
-      <!-- Privacy note -->
-      <div id="privacyNote" inner-h-t-m-l="[[privacyNote_]]"></div>
+      <!-- Assistant Logs (Googler Internal Only) -->
+      <div id="assistantLogsContainer" class="checkbox-field-container"
+          hidden="[[!shouldShowAssistantCheckbox]]">
+        <cr-checkbox id="assiatantLogsCheckbox" aria-labelledby="assistantLogsLabel" checked>
+          <div id="assistantLogsLabel" class="checkbox-label" inner-h-t-m-l="[[assistantLogsCheckboxLabel_]]"></div>
+        </cr-checkbox>
+      </div>
+      <!-- Bluetooth Logs (Googler Internal Only) -->
+      <div id="bluetoothCheckboxContainer" class="checkbox-field-container"
+          hidden="[[!shouldShowBluetoothCheckbox]]">
+        <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="bluetoothInfoLabel" checked>
+          <div id="bluetoothInfoLabel" class="checkbox-label" 
+              inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></div>
+        </cr-checkbox>
+      </div>
+      <!-- Performance trace -->
+      <div id="performanceTraceContainer" class="checkbox-field-container"
+          hidden="[[!shouldShowPerformanceTraceCheckbox_(feedbackContext)]]">
+        <cr-checkbox id="performanceTraceCheckbox"
+            aria-labelledby="performanceTraceCheckboxLabel" checked>
+          <div id="performanceTraceCheckboxLabel" class="checkbox-label"
+              inner-h-t-m-l="[[performanceTraceCheckboxLabel_]]">
+          </div>
+        </cr-checkbox>
+      </div>
     </div>
-    <!-- Separator -->
-    <div id="separator"></div>
-    <div id="shadowShield"></div>
+    <!-- Privacy note -->
+    <div id="privacyNote" inner-h-t-m-l="[[privacyNote_]]"></div>
   </div>
   <div id="navButtons">
     <cr-button id="buttonBack" class="cancel-button"

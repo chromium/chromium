@@ -307,6 +307,13 @@ export class FeedbackFlowElement extends PolymerElement {
           break;
       }
     });
+
+    this.style.setProperty(
+        '--window-height', window.innerHeight.toString() + 'px');
+    window.addEventListener('resize', (event) => {
+      this.style.setProperty(
+          '--window-height', window.innerHeight.toString() + 'px');
+    });
   }
 
   /**
