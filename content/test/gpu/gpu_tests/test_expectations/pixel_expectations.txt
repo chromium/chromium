@@ -293,7 +293,6 @@ crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation rend
 # always run on Windows RS3 or above.
 
 # Flakes on gpu-fyi-try-chromeos-kevin and fuchsia-x64, produces notably different image.
-crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Failure ]
 
 # Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.
 crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
