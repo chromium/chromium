@@ -1869,6 +1869,8 @@ static_library("browser") {
     "webapps/web_app_offline.h",
     "webauthn/webauthn_metrics_util.cc",
     "webauthn/webauthn_metrics_util.h",
+    "webauthn/webauthn_pref_names.cc",
+    "webauthn/webauthn_pref_names.h",
     "webid/federated_identity_account_keyed_permission_context.cc",
     "webid/federated_identity_account_keyed_permission_context.h",
     "webid/federated_identity_active_session_permission_context.cc",
@@ -4435,8 +4437,6 @@ static_library("browser") {
       "webauthn/local_credential_management.h",
       "webauthn/observable_authenticator_list.cc",
       "webauthn/observable_authenticator_list.h",
-      "webauthn/webauthn_pref_names.cc",
-      "webauthn/webauthn_pref_names.h",
       "webauthn/webauthn_switches.cc",
       "webauthn/webauthn_switches.h",
     ]

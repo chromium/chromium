@@ -33397,6 +33397,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1027" label="LensDesktopNTPSearchEnabled"/>
   <int value="1028"
       label="AccessControlAllowMethodsInCORSPreflightSpecConformant"/>
+  <int value="1029" label="AllowWebAuthnWithBrokenTlsCerts"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

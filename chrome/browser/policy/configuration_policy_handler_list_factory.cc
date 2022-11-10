@@ -267,6 +267,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHistoryClustersVisible,
     history_clusters::prefs::kVisible,
     base::Value::Type::BOOLEAN },
+  { key::kAllowWebAuthnWithBrokenTlsCerts,
+    webauthn::pref_names::kAllowWithBrokenCerts,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

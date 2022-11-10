@@ -336,6 +336,12 @@ bool ChromeWebAuthenticationDelegate::IsSecurityLevelAcceptableForWebAuthn(
   if (!base::FeatureList::IsEnabled(device::kDisableWebAuthnWithBrokenCerts)) {
     return true;
   }
+  const Profile* profile =
+      Profile::FromBrowserContext(rfh->GetBrowserContext());
+  if (profile->GetPrefs()->GetBoolean(
+          webauthn::pref_names::kAllowWithBrokenCerts)) {
+    return true;
+  }
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   SecurityStateTabHelper::CreateForWebContents(web_contents);

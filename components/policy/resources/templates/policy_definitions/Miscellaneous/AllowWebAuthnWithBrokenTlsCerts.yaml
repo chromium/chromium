@@ -1,0 +1,31 @@
+caption: Allow Web Authentication requests on sites with broken TLS certificates.
+default: false
+desc: |-
+  If set to Enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will
+  allow Web Authentication requests on websites that have TLS certificates with
+  errors (i.e. websites considered not secure).
+
+  If the policy is set to Disabled or left unset, the default behavior of
+  blocking such requests will apply.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+- chrome.*
+- chrome_os
+- android
+items:
+- caption: Allow WebAuthn API requests on sites with broken TLS certificates.
+  value: true
+- caption: Do not allow WebAuthn API requests on sites with broken TLS certificates.
+  value: false
+owners:
+- nsatragno@chromium.org
+- file://device/fido/OWNERS
+schema:
+  type: boolean
+tags:
+- system-security
+type: main

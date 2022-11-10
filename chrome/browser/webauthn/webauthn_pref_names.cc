@@ -9,4 +9,6 @@ namespace webauthn::pref_names {
 const char kRemoteProxiedRequestsAllowed[] =
     "webauthn.remote_proxied_requests_allowed";
 
+const char kAllowWithBrokenCerts[] = "webauthn.allow_with_broken_certs";
+
 }  // namespace webauthn::pref_names

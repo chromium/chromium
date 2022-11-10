@@ -1624,6 +1624,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                                 base::i18n::IsRTL() ? false : true);
 #endif
 
+  registry->RegisterBooleanPref(webauthn::pref_names::kAllowWithBrokenCerts,
+                                false);
+
   registry->RegisterBooleanPref(prefs::kPrivacyGuideViewed, false);
 
 #if BUILDFLAG(IS_MAC)

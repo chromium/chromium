@@ -636,6 +636,23 @@ TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelNotAcceptable) {
   EXPECT_FALSE(delegate.IsSecurityLevelAcceptableForWebAuthn(main_rfh()));
 }
 
+TEST_F(DisableWebAuthnWithBrokenCertsTest, EnterpriseOverride) {
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  prefs->SetBoolean(webauthn::pref_names::kAllowWithBrokenCerts, true);
+  GURL url("https://doofenshmirtz.evil");
+  ChromeWebAuthenticationDelegate delegate;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(main_rfh()));
+}
+
 TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelAcceptable) {
   GURL url("https://owca.org");
   ChromeWebAuthenticationDelegate delegate;
