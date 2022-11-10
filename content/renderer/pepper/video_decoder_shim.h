@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/video_decoder_config.h"
+#include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_codecs.h"
 
@@ -33,7 +34,9 @@ class PepperVideoDecoderHost;
 // thread.
 class VideoDecoderShim : public media::VideoDecodeAccelerator {
  public:
-  VideoDecoderShim(PepperVideoDecoderHost* host, uint32_t texture_pool_size);
+  static std::unique_ptr<VideoDecoderShim> Create(PepperVideoDecoderHost* host,
+                                                  uint32_t texture_pool_size,
+                                                  bool use_hw_decoder);
 
   VideoDecoderShim(const VideoDecoderShim&) = delete;
   VideoDecoderShim& operator=(const VideoDecoderShim&) = delete;
@@ -62,6 +65,14 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
   struct PendingFrame;
   class DecoderImpl;
 
+  VideoDecoderShim(PepperVideoDecoderHost* host,
+                   uint32_t texture_pool_size,
+                   bool use_hw_decoder,
+                   scoped_refptr<viz::ContextProviderCommandBuffer>
+                       shared_main_thread_context_provider,
+                   scoped_refptr<viz::ContextProviderCommandBuffer>
+                       pepper_video_decode_context_provider);
+
   void OnInitializeFailed();
   void OnDecodeComplete(int32_t result, uint32_t decode_id);
   void OnOutputComplete(std::unique_ptr<PendingFrame> frame);
@@ -79,7 +90,10 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
 
   PepperVideoDecoderHost* host_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-  scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
+  scoped_refptr<viz::ContextProviderCommandBuffer>
+      shared_main_thread_context_provider_;
+  scoped_refptr<viz::ContextProviderCommandBuffer>
+      pepper_video_decode_context_provider_;
 
   // The current decoded frame size.
   gfx::Size texture_size_;
@@ -104,6 +118,10 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
   uint32_t texture_pool_size_;
 
   uint32_t num_pending_decodes_;
+
+  const bool use_hw_decoder_;
+
+  std::unique_ptr<media::PaintCanvasVideoRenderer> video_renderer_;
 
   base::WeakPtrFactory<VideoDecoderShim> weak_ptr_factory_{this};
 };

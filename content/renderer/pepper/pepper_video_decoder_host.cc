@@ -21,6 +21,7 @@
 #include "content/renderer/pepper/video_decoder_shim.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/gpu/ipc/client/gpu_video_decode_accelerator_host.h"
 #include "media/video/video_decode_accelerator.h"
@@ -159,15 +160,30 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
   min_picture_count_ = min_picture_count;
 
   if (acceleration != PP_HARDWAREACCELERATION_NONE) {
-    // This is not synchronous, but subsequent IPC messages will be buffered, so
-    // it is okay to immediately send IPC messages.
-    if (command_buffer->channel()) {
-      decoder_ = base::WrapUnique<media::VideoDecodeAccelerator>(
-          new media::GpuVideoDecodeAcceleratorHost(command_buffer));
-      media::VideoDecodeAccelerator::Config vda_config(profile_);
-      vda_config.supported_output_formats.assign(
-          {media::PIXEL_FORMAT_XRGB, media::PIXEL_FORMAT_ARGB});
-      if (decoder_->Initialize(vda_config, this)) {
+    if (!base::FeatureList::IsEnabled(media::kUseMojoVideoDecoderForPepper)) {
+      // This is not synchronous, but subsequent IPC messages will be buffered,
+      // so it is okay to immediately send IPC messages.
+      if (command_buffer->channel()) {
+        decoder_ = base::WrapUnique<media::VideoDecodeAccelerator>(
+            new media::GpuVideoDecodeAcceleratorHost(command_buffer));
+        media::VideoDecodeAccelerator::Config vda_config(profile_);
+        vda_config.supported_output_formats.assign(
+            {media::PIXEL_FORMAT_XRGB, media::PIXEL_FORMAT_ARGB});
+        if (decoder_->Initialize(vda_config, this)) {
+          initialized_ = true;
+          return PP_OK;
+        }
+      }
+    } else {
+      uint32_t shim_texture_pool_size = media::limits::kMaxVideoFrames + 1;
+      shim_texture_pool_size =
+          std::max(shim_texture_pool_size, min_picture_count_);
+      auto new_decoder = VideoDecoderShim::Create(this, shim_texture_pool_size,
+                                                  /*use_hw_decoder=*/true);
+      if (new_decoder &&
+          new_decoder->Initialize(
+              media::VideoDecodeAccelerator::Config(profile_), this)) {
+        decoder_.reset(new_decoder.release());
         initialized_ = true;
         return PP_OK;
       }
@@ -507,8 +523,8 @@ bool PepperVideoDecoderHost::TryFallbackToSoftwareDecoder() {
   uint32_t shim_texture_pool_size = media::limits::kMaxVideoFrames + 1;
   shim_texture_pool_size = std::max(shim_texture_pool_size,
                                     min_picture_count_);
-  std::unique_ptr<VideoDecoderShim> new_decoder(
-      new VideoDecoderShim(this, shim_texture_pool_size));
+  std::unique_ptr<VideoDecoderShim> new_decoder(VideoDecoderShim::Create(
+      this, shim_texture_pool_size, /*use_hw_decoder=*/false));
   if (!new_decoder->Initialize(media::VideoDecodeAccelerator::Config(profile_),
                                this)) {
     return false;

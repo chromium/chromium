@@ -28,13 +28,16 @@
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
+#include "media/base/video_decoder_config.h"
 #include "media/filters/ffmpeg_video_decoder.h"
 #include "media/filters/vpx_video_decoder.h"
 #include "media/media_buildflags.h"
 #include "media/renderers/video_frame_yuv_converter.h"
+#include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_errors.h"
@@ -45,7 +48,11 @@ namespace content {
 
 namespace {
 
-bool IsCodecSupported(media::VideoCodec codec) {
+// Size of the timestamp cache. We don't want the cache to grow without bounds.
+// The maximum size is chosen to be the same as in the VaapiVideoDecoder.
+constexpr size_t kTimestampCacheSize = 128;
+
+bool IsSoftwareCodecSupported(media::VideoCodec codec) {
 #if BUILDFLAG(ENABLE_LIBVPX)
   if (codec == media::VideoCodec::kVP9)
     return true;
@@ -110,10 +117,14 @@ VideoDecoderShim::PendingFrame::~PendingFrame() {
 // media thread.
 class VideoDecoderShim::DecoderImpl {
  public:
-  explicit DecoderImpl(const base::WeakPtr<VideoDecoderShim>& proxy);
+  DecoderImpl(const base::WeakPtr<VideoDecoderShim>& proxy,
+              bool use_hw_decoder);
   ~DecoderImpl();
 
-  void Initialize(media::VideoDecoderConfig config);
+  void InitializeSoftwareDecoder(media::VideoDecoderConfig config);
+  void InitializeHardwareDecoder(
+      media::VideoDecoderConfig config,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
   void Decode(uint32_t decode_id, scoped_refptr<media::DecoderBuffer> buffer);
   void Reset();
   void Stop();
@@ -136,25 +147,46 @@ class VideoDecoderShim::DecoderImpl {
   PendingDecodeQueue pending_decodes_;
   bool awaiting_decoder_ = false;
   // VideoDecoder returns pictures without information about the decode buffer
-  // that generated it, but VideoDecoder implementations used in this class
-  // (media::FFmpegVideoDecoder and media::VpxVideoDecoder) always generate
-  // corresponding frames before decode is finished. |decode_id_| is used to
-  // store id of the current buffer while Decode() call is pending.
+  // that generated it. However, when VideoDecoderShim is used for software
+  // decoding, both media::FFmpegVideoDecoder and media::VpxVideoDecoder always
+  // generate corresponding frames before decode is finished. This assumption is
+  // critical so that the Pepper plugin can associate Decode() calls with
+  // decoded frames which is a requirement of the PPB_VideoDecoder API. In that
+  // case |decode_id_| is used to store the id of the current buffer while a
+  // Decode() call is pending.
   uint32_t decode_id_ = 0;
+  // For hardware decoding we can't assume that VideoDecoder always generates
+  // corresponding frames before decode is finished. In that case, the
+  // frame can be output before or after the decode completion callback is
+  // called. In order to allow the Pepper plugin to associate Decode() calls
+  // with decoded frames we use |decode_counter_| and |timestamp_to_id_cache_|
+  // to generate and store fake timestamps. The corresponding timestamp will
+  // be put in the media::DecoderBuffer that's sent to the VideoDecoder. When
+  // VideoDecoder returns a VideoFrame we use its timestamp to look up the
+  // Decode() call id in |timestamp_to_id_cache_|.
+  base::LRUCache<base::TimeDelta, uint32_t> timestamp_to_id_cache_;
+  base::TimeDelta decode_counter_ = base::Microseconds(0u);
+
+  const bool use_hw_decoder_;
 
   base::WeakPtrFactory<DecoderImpl> weak_ptr_factory_{this};
 };
 
 VideoDecoderShim::DecoderImpl::DecoderImpl(
-    const base::WeakPtr<VideoDecoderShim>& proxy)
-    : shim_(proxy), main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    const base::WeakPtr<VideoDecoderShim>& proxy,
+    bool use_hw_decoder)
+    : shim_(proxy),
+      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      timestamp_to_id_cache_(kTimestampCacheSize),
+      use_hw_decoder_(use_hw_decoder) {}
 
 VideoDecoderShim::DecoderImpl::~DecoderImpl() {
   DCHECK(pending_decodes_.empty());
 }
 
-void VideoDecoderShim::DecoderImpl::Initialize(
+void VideoDecoderShim::DecoderImpl::InitializeSoftwareDecoder(
     media::VideoDecoderConfig config) {
+  DCHECK(!use_hw_decoder_);
   DCHECK(!decoder_);
 #if BUILDFLAG(ENABLE_LIBVPX) || BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 #if BUILDFLAG(ENABLE_LIBVPX)
@@ -175,7 +207,7 @@ void VideoDecoderShim::DecoderImpl::Initialize(
   DCHECK_EQ(decoder_->GetMaxDecodeRequests(), 1);
 
   decoder_->Initialize(
-      config, true /* low_delay */, nullptr,
+      config, /*low_delay=*/true, nullptr,
       base::BindOnce(&VideoDecoderShim::DecoderImpl::OnInitDone,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&VideoDecoderShim::DecoderImpl::OnOutputComplete,
@@ -184,6 +216,35 @@ void VideoDecoderShim::DecoderImpl::Initialize(
 #else
   OnInitDone(media::DecoderStatus::Codes::kUnsupportedCodec);
 #endif  // BUILDFLAG(ENABLE_LIBVPX) || BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+}
+
+void VideoDecoderShim::DecoderImpl::InitializeHardwareDecoder(
+    media::VideoDecoderConfig config,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  DCHECK(use_hw_decoder_);
+  CHECK(base::FeatureList::IsEnabled(media::kUseMojoVideoDecoderForPepper));
+
+  DCHECK(gpu_factories->GetTaskRunner()->RunsTasksInCurrentSequence());
+  if (!gpu_factories->IsGpuVideoDecodeAcceleratorEnabled()) {
+    OnInitDone(media::DecoderStatus::Codes::kFailedToCreateDecoder);
+    return;
+  }
+
+  decoder_ = gpu_factories->CreateVideoDecoder(
+      &media_log_, /*request_overlay_info_cb=*/base::DoNothing());
+
+  if (!decoder_) {
+    OnInitDone(media::DecoderStatus::Codes::kFailedToCreateDecoder);
+    return;
+  }
+
+  decoder_->Initialize(
+      config, /*low_delay=*/true, nullptr,
+      base::BindOnce(&VideoDecoderShim::DecoderImpl::OnInitDone,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&VideoDecoderShim::DecoderImpl::OnOutputComplete,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::NullCallback());
 }
 
 void VideoDecoderShim::DecoderImpl::Decode(
@@ -218,11 +279,18 @@ void VideoDecoderShim::DecoderImpl::Reset() {
 }
 
 void VideoDecoderShim::DecoderImpl::Stop() {
-  DCHECK(decoder_);
+  // This DCHECK was not valid even before introducing the
+  // media::kUseMojoVideoDecoderForPepper path. However we keep it here because
+  // we don't want to change anything about the previous codepath as part of
+  // introducing the new flag-guarded codepath.
+  if (!base::FeatureList::IsEnabled(media::kUseMojoVideoDecoderForPepper))
+    DCHECK(decoder_);
+
   // Clear pending decodes now. We don't want OnDecodeComplete to call DoDecode
   // again.
   while (!pending_decodes_.empty())
     pending_decodes_.pop();
+
   decoder_.reset();
   // This instance is deleted once we exit this scope.
 }
@@ -245,7 +313,31 @@ void VideoDecoderShim::DecoderImpl::DoDecode() {
 
   awaiting_decoder_ = true;
   const PendingDecode& decode = pending_decodes_.front();
+  // Note that |decode_id_| is set regardless of whether we're doing hardware or
+  // software decoding. That's because OnDecodeComplete() uses this ID to notify
+  // the shim on both paths.
   decode_id_ = decode.decode_id;
+
+  if (use_hw_decoder_) {
+    const base::TimeDelta new_counter =
+        decode_counter_ + base::Microseconds(1u);
+    if (new_counter == decode_counter_) {
+      // We've reached the maximum base::TimeDelta.
+      main_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&VideoDecoderShim::OnDecodeComplete, shim_,
+                         PP_ERROR_RESOURCE_FAILED, decode.decode_id));
+      awaiting_decoder_ = false;
+      pending_decodes_.pop();
+      return;
+    }
+    decode_counter_ = new_counter;
+    DCHECK(timestamp_to_id_cache_.Peek(decode_counter_) ==
+           timestamp_to_id_cache_.end());
+    timestamp_to_id_cache_.Put(decode_counter_, decode.decode_id);
+    decode.buffer->set_timestamp(decode_counter_);
+  }
+
   decoder_->Decode(
       decode.buffer,
       base::BindOnce(&VideoDecoderShim::DecoderImpl::OnDecodeComplete,
@@ -280,14 +372,27 @@ void VideoDecoderShim::DecoderImpl::OnOutputComplete(
     scoped_refptr<media::VideoFrame> frame) {
   // Software decoders are expected to generated frames only when a Decode()
   // call is pending.
-  DCHECK(awaiting_decoder_);
+  DCHECK(use_hw_decoder_ || awaiting_decoder_);
+
+  uint32_t decode_id;
+  if (!use_hw_decoder_) {
+    decode_id = decode_id_;
+  } else {
+    base::TimeDelta timestamp = frame->timestamp();
+    auto it = timestamp_to_id_cache_.Get(timestamp);
+    if (it != timestamp_to_id_cache_.end()) {
+      decode_id = it->second;
+    } else {
+      NOTREACHED();
+      return;
+    }
+  }
 
   std::unique_ptr<PendingFrame> pending_frame;
   if (!frame->metadata().end_of_stream) {
-    pending_frame =
-        std::make_unique<PendingFrame>(decode_id_, std::move(frame));
+    pending_frame = std::make_unique<PendingFrame>(decode_id, std::move(frame));
   } else {
-    pending_frame = std::make_unique<PendingFrame>(decode_id_);
+    pending_frame = std::make_unique<PendingFrame>(decode_id);
   }
 
   main_task_runner_->PostTask(
@@ -300,20 +405,61 @@ void VideoDecoderShim::DecoderImpl::OnResetComplete() {
       FROM_HERE, base::BindOnce(&VideoDecoderShim::OnResetComplete, shim_));
 }
 
-VideoDecoderShim::VideoDecoderShim(PepperVideoDecoderHost* host,
-                                   uint32_t texture_pool_size)
+// static
+std::unique_ptr<VideoDecoderShim> VideoDecoderShim::Create(
+    PepperVideoDecoderHost* host,
+    uint32_t texture_pool_size,
+    bool use_hw_decoder) {
+  scoped_refptr<viz::ContextProviderCommandBuffer>
+      shared_main_thread_context_provider =
+          RenderThreadImpl::current()->SharedMainThreadContextProvider();
+  if (base::FeatureList::IsEnabled(media::kUseMojoVideoDecoderForPepper) &&
+      !shared_main_thread_context_provider) {
+    return nullptr;
+  }
+
+  scoped_refptr<viz::ContextProviderCommandBuffer>
+      pepper_video_decode_context_provider;
+  if (use_hw_decoder) {
+    pepper_video_decode_context_provider =
+        RenderThreadImpl::current()->PepperVideoDecodeContextProvider();
+    if (!pepper_video_decode_context_provider)
+      return nullptr;
+  }
+
+  return base::WrapUnique(
+      new VideoDecoderShim(host, texture_pool_size, use_hw_decoder,
+                           std::move(shared_main_thread_context_provider),
+                           std::move(pepper_video_decode_context_provider)));
+}
+
+VideoDecoderShim::VideoDecoderShim(
+    PepperVideoDecoderHost* host,
+    uint32_t texture_pool_size,
+    bool use_hw_decoder,
+    scoped_refptr<viz::ContextProviderCommandBuffer>
+        shared_main_thread_context_provider,
+    scoped_refptr<viz::ContextProviderCommandBuffer>
+        pepper_video_decode_context_provider)
     : state_(UNINITIALIZED),
       host_(host),
       media_task_runner_(
           RenderThreadImpl::current()->GetMediaSequencedTaskRunner()),
-      context_provider_(
-          RenderThreadImpl::current()->SharedMainThreadContextProvider()),
+      shared_main_thread_context_provider_(
+          std::move(shared_main_thread_context_provider)),
+      pepper_video_decode_context_provider_(
+          std::move(pepper_video_decode_context_provider)),
       texture_pool_size_(texture_pool_size),
-      num_pending_decodes_(0) {
+      num_pending_decodes_(0),
+      use_hw_decoder_(use_hw_decoder) {
+  CHECK(!use_hw_decoder_ ||
+        base::FeatureList::IsEnabled(media::kUseMojoVideoDecoderForPepper));
   DCHECK(host_);
   DCHECK(media_task_runner_.get());
-  DCHECK(context_provider_.get());
-  decoder_impl_ = std::make_unique<DecoderImpl>(weak_ptr_factory_.GetWeakPtr());
+  DCHECK(shared_main_thread_context_provider_.get());
+  DCHECK(!use_hw_decoder_ || pepper_video_decode_context_provider_.get());
+  decoder_impl_ = std::make_unique<DecoderImpl>(weak_ptr_factory_.GetWeakPtr(),
+                                                use_hw_decoder_);
 }
 
 VideoDecoderShim::~VideoDecoderShim() {
@@ -351,7 +497,9 @@ bool VideoDecoderShim::Initialize(const Config& vda_config, Client* client) {
     codec = media::VideoCodec::kVP9;
   DCHECK_NE(codec, media::VideoCodec::kUnknown);
 
-  if (!IsCodecSupported(codec))
+  // For hardware decoding, an unsupported codec is expected to manifest in an
+  // initialization failure later on.
+  if (!use_hw_decoder_ && !IsSoftwareCodecSupported(codec))
     return false;
 
   media::VideoDecoderConfig video_decoder_config(
@@ -363,10 +511,31 @@ bool VideoDecoderShim::Initialize(const Config& vda_config, Client* client) {
       // TODO(bbudge): Verify extra data isn't needed.
       media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
 
-  media_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoDecoderShim::DecoderImpl::Initialize,
-                                base::Unretained(decoder_impl_.get()),
-                                video_decoder_config));
+  if (!use_hw_decoder_) {
+    media_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &VideoDecoderShim::DecoderImpl::InitializeSoftwareDecoder,
+            base::Unretained(decoder_impl_.get()), video_decoder_config));
+  } else {
+    media::GpuVideoAcceleratorFactories* gpu_factories =
+        RenderThreadImpl::current()->GetGpuFactories();
+    if (!gpu_factories)
+      return false;
+
+    video_renderer_ = std::make_unique<media::PaintCanvasVideoRenderer>();
+
+    // It's safe to pass |gpu_factories| because the underlying instance is
+    // managed by the RenderThreadImpl which doesn't destroy it until its
+    // destructor which stops the media thread before destroying the
+    // GpuVideoAcceleratorFactories.
+    media_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &VideoDecoderShim::DecoderImpl::InitializeHardwareDecoder,
+            base::Unretained(decoder_impl_.get()), video_decoder_config,
+            gpu_factories));
+  }
 
   state_ = DECODING;
 
@@ -506,6 +675,16 @@ void VideoDecoderShim::OnOutputComplete(std::unique_ptr<PendingFrame> frame) {
 void VideoDecoderShim::SendPictures() {
   DCHECK(RenderThreadImpl::current());
   DCHECK(host_);
+
+  gpu::gles2::GLES2Interface* gl = nullptr;
+  if (use_hw_decoder_) {
+    gl = pepper_video_decode_context_provider_->ContextGL();
+    if (!gl) {
+      host_->NotifyError(media::VideoDecodeAccelerator::PLATFORM_FAILURE);
+      return;
+    }
+  }
+
   while (!pending_frames_.empty() && !available_textures_.empty()) {
     const std::unique_ptr<PendingFrame>& frame = pending_frames_.front();
 
@@ -516,8 +695,54 @@ void VideoDecoderShim::SendPictures() {
     gpu::MailboxHolder destination_holder;
     destination_holder.mailbox = texture_mailbox_map_[texture_id];
     destination_holder.texture_target = GL_TEXTURE_2D;
-    media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-        frame->video_frame.get(), context_provider_.get(), destination_holder);
+    if (!use_hw_decoder_) {
+      media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+          frame->video_frame.get(), shared_main_thread_context_provider_.get(),
+          destination_holder);
+    } else {
+      // We don't need to wait on a SyncToken prior to consuming
+      // |destination_holder|.mailbox.name because this mailbox is generated by
+      // VideoDecoderResource::OnPluginMsgRequestTextures() which uses a command
+      // buffer on stream kGpuStreamIdDefault to create the mailbox and then
+      // does a Flush(). |gl| also uses a command buffer on stream
+      // kGpuStreamIdDefault. Therefore, by the time we issue the commands here,
+      // that stream already knows about the command that generated the mailbox.
+      //
+      // TODO(b/230007619): ideally, we shouldn't assume that the two components
+      // use the same stream. We should wire SyncTokens to make this more
+      // general.
+      //
+      // |destination_texture_id| is on the Pepper context provider
+      // (|pepper_video_decode_context_provider_|) while |texture_id| is on the
+      // Pepper client context.
+      const GLuint destination_texture_id =
+          gl->CreateAndConsumeTextureCHROMIUM(destination_holder.mailbox.name);
+      // After the call to `CopyVideoFrameTexturesToGLTexture()` returns true,
+      // the texture referenced by |destination_holder|.mailbox should be ready
+      // to be consumed by any command buffer that works over
+      // kGpuStreamIdDefault (in the current renderer process) without waiting
+      // on a SyncToken. That means that we don't need to plumb a SyncToken to
+      // VideoDecoderResource::OnPluginMsgPictureReady() since that component,
+      // and presumably the plugin, use PPB_Graphics3D_Impl which manages a
+      // command buffer that works over kGpuStreamIdDefault.
+      //
+      // TODO(b/230007619): ideally, we shouldn't assume that these components
+      // use the same stream. We should wire SyncTokens to make this more
+      // general.
+      if (!video_renderer_->CopyVideoFrameTexturesToGLTexture(
+              shared_main_thread_context_provider_.get(), gl,
+              frame->video_frame, destination_holder.texture_target,
+              base::strict_cast<unsigned int>(destination_texture_id), GL_RGBA,
+              GL_RGBA, GL_UNSIGNED_BYTE, 0,
+              /*premultiply_alpha=*/false, /*flip_y=*/false)) {
+        gl->DeleteTextures(1, &destination_texture_id);
+        gl->Flush();
+        available_textures_.insert(texture_id);
+        host_->NotifyError(media::VideoDecodeAccelerator::PLATFORM_FAILURE);
+        return;
+      }
+      gl->DeleteTextures(1, &destination_texture_id);
+    }
     host_->PictureReady(media::Picture(texture_id, frame->decode_id,
                                        frame->video_frame->visible_rect(),
                                        gfx::ColorSpace(), false));
@@ -570,7 +795,13 @@ void VideoDecoderShim::DismissTexture(uint32_t texture_id) {
 }
 
 void VideoDecoderShim::FlushCommandBuffer() {
-  context_provider_->RasterInterface()->Flush();
+  shared_main_thread_context_provider_->RasterInterface()->Flush();
+
+  if (use_hw_decoder_) {
+    if (auto* gl = pepper_video_decode_context_provider_->ContextGL()) {
+      gl->Flush();
+    }
+  }
 }
 
 }  // namespace content
