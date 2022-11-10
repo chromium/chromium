@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -725,6 +725,38 @@ public class OptionalButtonViewTest {
 
         // Now we should begin our transition.
         verify(mMockBeginDelayedTransition).onResult(any());
+    }
+
+    @Test
+    public void testUpdateButton_shouldIgnoreChangesWhileWaitingForLayout() {
+        ButtonDataImpl buttonData = getDataForPriceTrackingActionChip();
+        ViewGroup transitionRoot = mock(ViewGroup.class);
+        ShadowViewGroup shadowOptionalButtonView = Shadows.shadowOf(mOptionalButtonView);
+        // Detach and re-attach to window to reset the isLaidOut() flag.
+        shadowOptionalButtonView.callOnDetachedFromWindow();
+        shadowOptionalButtonView.callOnAttachedToWindow();
+
+        mOptionalButtonView.setTransitionRoot(transitionRoot);
+        // Try to update the button before it's laid out.
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+
+        // Change the attributes of buttonData without calling updateButtonWithAnimation again, this
+        // should have no effect on the button's state after the transition.
+        buttonData.setCanShow(false);
+
+        // Run that listener once the view is laid out.
+        mOptionalButtonView.layout(100, 50, 10, 10);
+        ShadowOneShotPreDrawListener.getRunnable().run();
+
+        // Normally called by TransitionManager.
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Button should be visible, the property change that happened between
+        // updateButtonWithAnimation and layout is ignored.
+        assertEquals(View.VISIBLE, mOptionalButtonView.getVisibility());
+        assertEquals(View.VISIBLE, mInnerButton.getVisibility());
+        assertEquals(View.VISIBLE, mActionChipLabel.getVisibility());
     }
 
     @Implements(OneShotPreDrawListener.class)
