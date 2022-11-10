@@ -1872,6 +1872,22 @@ public class CompositorViewHolder extends FrameLayout
         mCompositorView = compositorView;
     }
 
+    /**
+     * Returns its height, in physical pixels, of the virtual keyboard if shown or 0 if hidden.
+     */
+    public int getVirtualKeyboardHeight() {
+        // TODO(https://crbug.com/1211066): This class shouldn't know so much about bottom insets.
+        // Make this an external value that CompositorViewHolder consumes.
+        int keyboardHeight = KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(
+                this.getRootView());
+        int keyboardAccessoriesHeight = mAutofillUiBottomInsetSupplier != null
+                        && mAutofillUiBottomInsetSupplier.get() != null
+                ? mAutofillUiBottomInsetSupplier.get()
+                : 0;
+
+        return keyboardHeight + keyboardAccessoriesHeight;
+    }
+
     @VirtualKeyboardMode.EnumType
     public int getVirtualKeyboardModeForTesting() {
         return mVirtualKeyboardMode;

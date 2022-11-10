@@ -80,6 +80,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.zoom_level;
   }
 
+  static int virtual_keyboard_resize_height_physical_px(
+      const blink::VisualProperties& r) {
+    return r.virtual_keyboard_resize_height_physical_px;
+  }
+
   static double page_scale_factor(const blink::VisualProperties& r) {
     DCHECK_GT(r.page_scale_factor, 0);
     return r.page_scale_factor;

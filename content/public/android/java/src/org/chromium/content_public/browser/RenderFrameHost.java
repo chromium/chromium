@@ -174,4 +174,13 @@ public interface RenderFrameHost {
      */
     @LifecycleState
     int getLifecycleState();
+
+    /**
+     * Forces a new compositor frame to be drawn and waits for its presentation in the display
+     * compositor.
+     * TODO(bokan): This would be better named requestPresentationTimeForForcedRedraw
+     *
+     * @param callback the callback to be invoked when the display presents the redrawn frame.
+     */
+    void forceRedrawAndWaitForPresentation(Runnable callback);
 }

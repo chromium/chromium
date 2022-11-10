@@ -1096,6 +1096,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
         gfx::Rect(view_->GetCompositorViewportPixelSize());
     visual_properties.window_controls_overlay_rect =
         delegate_->GetWindowsControlsOverlayRect();
+    visual_properties.virtual_keyboard_resize_height_physical_px =
+        delegate_->GetVirtualKeyboardResizeHeight();
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;
@@ -2180,11 +2182,18 @@ void RenderWidgetHostImpl::NotifyScreenInfoChanged() {
 void RenderWidgetHostImpl::GetSnapshotFromBrowser(
     GetSnapshotFromBrowserCallback callback,
     bool from_surface) {
+  if (!blink_widget_)
+    return;
+
   int snapshot_id = next_browser_snapshot_id_++;
+  base::OnceClosure did_present_callback =
+      base::BindOnce(&RenderWidgetHostImpl::SnapshotFramePresented,
+                     base::Unretained(this), snapshot_id);
   if (from_surface) {
     pending_surface_browser_snapshots_.insert(
         std::make_pair(snapshot_id, std::move(callback)));
-    RequestForceRedraw(snapshot_id);
+
+    ForceRedrawAndWaitForPresentation(std::move(did_present_callback));
     return;
   }
 
@@ -2198,7 +2207,7 @@ void RenderWidgetHostImpl::GetSnapshotFromBrowser(
   // TODO(nzolghadr): Remove the duplication here and the if block just above.
   pending_browser_snapshots_.insert(
       std::make_pair(snapshot_id, std::move(callback)));
-  RequestForceRedraw(snapshot_id);
+  ForceRedrawAndWaitForPresentation(std::move(did_present_callback));
 }
 
 void RenderWidgetHostImpl::SelectionChanged(const std::u16string& text,
@@ -3074,13 +3083,14 @@ RenderWidgetHostImpl::GetKeyboardLayoutMap() {
   return view_->GetKeyboardLayoutMap();
 }
 
-void RenderWidgetHostImpl::RequestForceRedraw(int snapshot_id) {
-  if (!blink_widget_)
+void RenderWidgetHostImpl::ForceRedrawAndWaitForPresentation(
+    base::OnceClosure presented_callback) {
+  if (!blink_widget_) {
+    std::move(presented_callback).Run();
     return;
+  }
 
-  blink_widget_->ForceRedraw(
-      base::BindOnce(&RenderWidgetHostImpl::GotResponseToForceRedraw,
-                     base::Unretained(this), snapshot_id));
+  blink_widget_->ForceRedraw(std::move(presented_callback));
 }
 
 bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
@@ -3404,7 +3414,7 @@ void RenderWidgetHostImpl::GotResponseToKeyboardLockRequest(bool allowed) {
     UnlockKeyboard();
 }
 
-void RenderWidgetHostImpl::GotResponseToForceRedraw(int snapshot_id) {
+void RenderWidgetHostImpl::SnapshotFramePresented(int snapshot_id) {
   // Snapshots from surface do not need to wait for the screen update.
   if (!pending_surface_browser_snapshots_.empty()) {
     GetView()->CopyFromSurface(
