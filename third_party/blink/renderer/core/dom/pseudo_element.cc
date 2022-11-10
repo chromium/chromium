@@ -211,7 +211,7 @@ scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
   // anonymous layout objects for generated content during DetachLayoutTree().
   ComputedStyleBuilder builder =
       GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.MutableInternalStyle()->InheritFrom(style);
+  builder.InheritFrom(style);
   builder.SetContent(style.GetContentData());
   builder.SetDisplay(EDisplay::kInline);
   builder.SetStyleType(pseudo_id_);

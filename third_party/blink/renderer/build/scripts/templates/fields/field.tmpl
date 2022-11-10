@@ -151,15 +151,15 @@ const {{field.type_name}}&
 {% for subgroup in group.subgroups %}
   {% set group_expression = group_getter_expression(subgroup) %}
   {% if subgroup.all_fields|rejectattr("custom_copy")|reject("in", fields_to_copy)|list|length == 0 -%}
-    {{group_setter_expression(subgroup)}} = other.{{group_expression}};
+    style_->{{group_setter_expression(subgroup)}} = other.{{group_expression}};
   {% elif subgroup.all_fields|rejectattr("custom_copy")|select("in", fields_to_copy)|list|length > 0 -%}
-if ({{group_expression}}.Get() != other.{{group_expression}}.Get()) {
+if (style_->{{group_expression}}.Get() != other.{{group_expression}}.Get()) {
 {{fieldwise_copy(subgroup, fields_to_copy)|indent(2, true)}}
 }
   {% endif %}
 {% endfor %}
 {% for field in group.fields|rejectattr("custom_copy")|select("in", fields_to_copy) -%}
-  {{setter_expression(field)}} = other.{{getter_expression(field)}};
+  style_->{{setter_expression(field)}} = other.{{getter_expression(field)}};
 {% endfor %}
 {% endmacro %}
 

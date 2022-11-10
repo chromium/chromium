@@ -39,24 +39,6 @@ ComputedStyleBase::ComputedStyleBase() :
   {% endfor %}
 }
 
-void ComputedStyleBase::InheritFrom(const ComputedStyleBase& other,
-                                    IsAtShadowBoundary isAtShadowBoundary) {
-  {{fieldwise_copy(computed_style, computed_style.all_fields
-      |selectattr("is_property")
-      |selectattr("is_inherited")
-      |list
-    )|indent(2)}}
-}
-
-void ComputedStyleBase::CopyNonInheritedFromCached(
-    const ComputedStyleBase& other) {
-  {{fieldwise_copy(computed_style, computed_style.all_fields
-      |rejectattr("has_custom_compare_and_copy")
-      |rejectattr("is_inherited")
-      |list
-    )|indent(2)}}
-}
-
 void ComputedStyleBase::PropagateIndependentInheritedProperties(
     const ComputedStyleBase& parentStyle) {
   {% for field in computed_style.all_fields if field.is_property and field.is_independent %}
@@ -97,5 +79,23 @@ ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
 {{define_field_group_class(group)}}
 
 {% endfor %}
+
+void ComputedStyleBuilderBase::InheritFrom(const ComputedStyleBase& other,
+                                    IsAtShadowBoundary isAtShadowBoundary) {
+  {{fieldwise_copy(computed_style, computed_style.all_fields
+      |selectattr("is_property")
+      |selectattr("is_inherited")
+      |list
+    )|indent(2)}}
+}
+
+void ComputedStyleBuilderBase::CopyNonInheritedFromCached(
+    const ComputedStyleBase& other) {
+  {{fieldwise_copy(computed_style, computed_style.all_fields
+      |rejectattr("has_custom_compare_and_copy")
+      |rejectattr("is_inherited")
+      |list
+    )|indent(2)}}
+}
 
 } // namespace blink

@@ -1026,25 +1026,23 @@ void StyleResolver::ApplyInheritance(Element& element,
     // in html.css. This avoids allocation overhead from copy-on-write when these
     // properties are set only via UA styles. The overhead shows up on motionmark
     // which stress tests this code. See crbub.com/1369454 for details.
-    scoped_refptr<ComputedStyle> style;
-    if (IsA<HTMLImageElement>(element))
-      style = ComputedStyle::Clone(*initial_style_for_img_);
-    else
-      style = CreateComputedStyle();
+    ComputedStyleBuilder builder(IsA<HTMLImageElement>(element)
+                                     ? *initial_style_for_img_
+                                     : *initial_style_);
 
-    style->InheritFrom(
+    builder.InheritFrom(
         *state.ParentStyle(),
         (!style_request.IsPseudoStyleRequest() && IsAtShadowBoundary(&element))
-            ? ComputedStyle::kAtShadowBoundary
-            : ComputedStyle::kNotAtShadowBoundary);
-    state.SetStyle(std::move(style));
+            ? ComputedStyleBuilder::kAtShadowBoundary
+            : ComputedStyleBuilder::kNotAtShadowBoundary);
+    state.SetStyle(builder.TakeStyle());
 
     // contenteditable attribute (implemented by -webkit-user-modify) should
     // be propagated from shadow host to distributed node.
     if (!style_request.IsPseudoStyleRequest() && element.AssignedSlot()) {
       if (Element* parent = element.parentElement()) {
         if (const ComputedStyle* shadow_host_style = parent->GetComputedStyle())
-          state.Style()->SetUserModify(shadow_host_style->UserModify());
+          state.StyleBuilder().SetUserModify(shadow_host_style->UserModify());
       }
     }
   }
@@ -1531,13 +1529,13 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial_style.get()));
 
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
   const ComputedStyle* root_element_style =
       state.RootElementStyle() ? state.RootElementStyle()
                                : GetDocument().GetComputedStyle();
   DCHECK(root_element_style);
-  style->InheritFrom(*root_element_style);
-  state.SetStyle(std::move(style));
+  builder.InheritFrom(*root_element_style);
+  state.SetStyle(builder.TakeStyle());
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
@@ -1601,9 +1599,8 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
       LayoutLocale::Get(GetDocument().ContentLanguage()));
 
   builder.SetFontDescription(document_font_description);
-  builder.MutableInternalStyle()->SetUserModify(GetDocument().InDesignMode()
-                                                    ? EUserModify::kReadWrite
-                                                    : EUserModify::kReadOnly);
+  builder.SetUserModify(GetDocument().InDesignMode() ? EUserModify::kReadWrite
+                                                     : EUserModify::kReadOnly);
   FontBuilder(&GetDocument()).CreateInitialFont(builder);
 
   scoped_refptr<StyleInitialData> initial_data =
@@ -1925,7 +1922,8 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       // If the cache item parent style has identical inherited properties to
       // the current parent style then the resulting style will be identical
       // too. We copy the inherited properties over from the cache and are done.
-      state.Style()->InheritFrom(*cached_matched_properties->computed_style);
+      state.StyleBuilder().InheritFrom(
+          *cached_matched_properties->computed_style);
 
       // Unfortunately the 'link status' is treated like an inherited property.
       // We need to explicitly restore it.
@@ -1938,7 +1936,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
           state.Style()->HasNonUniversalHighlightPseudoStyles();
       bool non_ua_highlights = state.Style()->HasNonUaHighlightPseudoStyles();
 
-      state.Style()->CopyNonInheritedFromCached(
+      state.StyleBuilder().CopyNonInheritedFromCached(
           *cached_matched_properties->computed_style);
 
       // Restore the non-universal highlight pseudo flag that was set while
@@ -2267,7 +2265,7 @@ ComputedStyleBuilder StyleResolver::CreateAnonymousStyleBuilderWithDisplay(
     const ComputedStyle& parent_style,
     EDisplay display) {
   ComputedStyleBuilder builder(*initial_style_);
-  builder.MutableInternalStyle()->InheritFrom(parent_style);
+  builder.InheritFrom(parent_style);
   builder.SetUnicodeBidi(parent_style.GetUnicodeBidi());
   builder.SetDisplay(display);
   return builder;
@@ -2576,7 +2574,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
   if (default_font)
     builder.SetFontDescription(*default_font);
   else  // parent_style
-    style->InheritFrom(*parent_style);
+    builder.InheritFrom(*parent_style);
   builder.SetDisplay(is_text_run ? EDisplay::kInline : EDisplay::kBlock);
 
   // Apply any properties in the `css_property_value_set`.
@@ -2654,7 +2652,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForInitialLetterText(
   DCHECK(!initial_letter_box_style.InitialLetter().IsNormal());
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
   ComputedStyle* initial_letter_text_style = builder.MutableInternalStyle();
-  initial_letter_text_style->InheritFrom(initial_letter_box_style);
+  builder.InheritFrom(initial_letter_box_style);
   builder.SetFont(
       ComputeInitialLetterFont(initial_letter_box_style, paragraph_style));
   builder.SetLineHeight(

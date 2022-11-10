@@ -97,7 +97,7 @@ class TestCascade {
 
   void InheritFrom(scoped_refptr<ComputedStyle> parent) {
     state_.SetParentStyle(parent);
-    state_.StyleRef().InheritFrom(*parent);
+    state_.StyleBuilder().InheritFrom(*parent);
   }
 
   //  Note that because of how MatchResult works, declarations must be added

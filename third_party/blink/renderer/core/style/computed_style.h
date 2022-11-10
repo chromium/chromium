@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
 #include "third_party/blink/renderer/core/css/style_auto_color.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
@@ -419,10 +420,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   CORE_EXPORT StyleDifference
   VisualInvalidationDiff(const Document&, const ComputedStyle&) const;
-
-  CORE_EXPORT void InheritFrom(const ComputedStyle& inherit_parent,
-                               IsAtShadowBoundary = kNotAtShadowBoundary);
-  void CopyNonInheritedFromCached(const ComputedStyle&);
 
   CORE_EXPORT const ComputedStyle* GetCachedPseudoElementStyle(
       PseudoId,
@@ -2709,6 +2706,24 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     return ComputedStyle::Clone(*style_);
   }
 #endif  // DCHECK_IS_ON()
+
+  CORE_EXPORT void InheritFrom(
+      const ComputedStyle& inherit_parent,
+      IsAtShadowBoundary is_at_shadow_boundary = kNotAtShadowBoundary) {
+    EUserModify current_user_modify = UserModifyInternal();
+    ComputedStyleBuilderBase::InheritFrom(inherit_parent,
+                                          is_at_shadow_boundary);
+
+    // Even if surrounding content is user-editable, shadow DOM should act as a
+    // single unit, and not necessarily be editable
+    if (is_at_shadow_boundary == kAtShadowBoundary)
+      SetUserModify(current_user_modify);
+  }
+
+  void CopyNonInheritedFromCached(const ComputedStyle& other) {
+    DCHECK(MatchedPropertiesCache::IsStyleCacheable(other));
+    ComputedStyleBuilderBase::CopyNonInheritedFromCached(other);
+  }
 
   // animations
   const CSSAnimationData* Animations() const {

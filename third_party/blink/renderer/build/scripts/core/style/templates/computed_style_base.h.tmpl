@@ -137,16 +137,6 @@ class ComputedStyleBase {
     );
   }
 
-  enum IsAtShadowBoundary {
-    kAtShadowBoundary,
-    kNotAtShadowBoundary,
-  };
-
-  void InheritFrom(const ComputedStyleBase& other,
-                                      IsAtShadowBoundary isAtShadowBoundary);
-  void CopyNonInheritedFromCached(
-      const ComputedStyleBase& other);
-
   // Copies the values of any independent inherited properties from the parent
   // style that are marked as inherited by this style.
   void PropagateIndependentInheritedProperties(
@@ -218,6 +208,11 @@ class ComputedStyleBuilderBase {
   STACK_ALLOCATED();
  public:
 
+  enum IsAtShadowBoundary {
+    kAtShadowBoundary,
+    kNotAtShadowBoundary,
+  };
+
   {% for field in computed_style_builder.all_fields|sort(attribute='name') %}
   // {{field.property_name}}
   {{field_templates[field.field_template].decl_public_methods(field)|indent(2)}}
@@ -231,6 +226,9 @@ class ComputedStyleBuilderBase {
   void SetStyleBase(ComputedStyleBase& style) {
     style_ = &style;
   }
+
+  CORE_EXPORT void InheritFrom(const ComputedStyleBase& other, IsAtShadowBoundary isAtShadowBoundary);
+  void CopyNonInheritedFromCached(const ComputedStyleBase& other);
 
   {% for field in computed_style_builder.all_fields|sort(attribute='name') %}
   // {{field.property_name}}

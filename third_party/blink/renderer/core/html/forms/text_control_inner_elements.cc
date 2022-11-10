@@ -53,8 +53,7 @@ scoped_refptr<ComputedStyle> EditingViewPortElement::CustomStyleForLayoutObject(
 
   ComputedStyleBuilder style_builder =
       GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  style_builder.MutableInternalStyle()->InheritFrom(
-      OwnerShadowHost()->ComputedStyleRef());
+  style_builder.InheritFrom(OwnerShadowHost()->ComputedStyleRef());
 
   style_builder.SetFlexGrow(1);
   style_builder.SetMinWidth(Length::Fixed(0));
@@ -139,7 +138,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
       GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
   ComputedStyle* text_block_style =
       text_block_style_builder.MutableInternalStyle();
-  text_block_style->InheritFrom(start_style);
+  text_block_style_builder.InheritFrom(start_style);
   // The inner block, if present, always has its direction set to LTR,
   // so we need to inherit the direction and unicode-bidi style from the
   // element.
@@ -149,7 +148,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   text_block_style_builder.SetDirection(start_style.Direction());
   text_block_style_builder.SetUnicodeBidi(start_style.GetUnicodeBidi());
   text_block_style_builder.SetUserSelect(EUserSelect::kText);
-  text_block_style->SetUserModify(
+  text_block_style_builder.SetUserModify(
       To<HTMLFormControlElement>(host)->IsDisabledOrReadOnly()
           ? EUserModify::kReadOnly
           : EUserModify::kReadWritePlaintextOnly);

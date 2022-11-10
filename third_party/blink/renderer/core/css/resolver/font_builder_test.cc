@@ -78,7 +78,7 @@ TEST_P(FontBuilderAdditiveTest, OnlySetValueIsModified) {
   scoped_refptr<const ComputedStyle> parent_style = builder.TakeStyle();
 
   builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.MutableInternalStyle()->InheritFrom(*parent_style);
+  builder.InheritFrom(*parent_style);
 
   FontBuilder font_builder(&GetDocument());
   funcs.set_value(font_builder);
