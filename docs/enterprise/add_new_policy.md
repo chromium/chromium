@@ -201,12 +201,27 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
 5.  If the 'since_version' is set to a earlier milestone, you need to merge
     back all necessary commits.
 
-**Do not use finch to control policy launch process.**
+### Kill switch
 
-Policies are inherently switches that admins will turn on if they need. Getting
-inconsistent behavior based on factors outside of their control only causes
-confusion and is source for support requests. Use the step 3 above if the policy
-needs external testers before being officially announced.
+New browser features guarded by policy should also be behind a Finch based
+kill switch. This is a Finch configuration that allows to quickly disable a
+feature. **Do not use normal Finch experimentation and rollout process to
+control the policy launch process**.
+
+1.  Create a base::Feature flag.
+2.  Add the new feature and new policy handling behind the flag check.
+3.  After the feature launch, remove the flag (after 2-3 releases). In some
+cases, you may want to wait for the next Long Term Stable (LTS) release before
+removing the flag (see [go/chromeos-commercial-lts-chrome](http://go/chromeos-commercial-lts-chrome)).
+
+If you need to launch an emergency kill switch config due to a bug,
+please contact your TPM and the release owner (see
+[https://chromiumdash.appspot.com/schedule](https://chromiumdash.appspot.com/schedule)).
+
+For more information see [go/chrome-flag-guarding](http://go/chrome-flag-guarding)
+(internal doc, Googlers only).
+
+Kill switches are not required for **ChromeOS-specific** features.
 
 ## Deprecating a policy
 
