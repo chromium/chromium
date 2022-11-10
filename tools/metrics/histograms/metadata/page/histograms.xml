@@ -1329,6 +1329,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.Clients.UseCounter.Experimental.MetricsReplayAtActivationDuration"
+    units="ms" expires_after="2023-03-16">
+  <owner>kenoss@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <summary>
+    The duration of
+    UseCounterPageLoadMetricsObserver::DidActivatePrerenderedPage.
+
+    Recorded iff the page is prerendered and activated. When a page is
+    prerendered, metrics &quot;Blink.UseCounter.*&quot; are buffered into
+    memory. When a page is activated then, buffered metrics are flushed and
+    recorded. This metric records the duration of this flush, in case of this
+    cause a performance degradation.
+  </summary>
+</histogram>
+
 <histogram base="true" name="PageLoad.Cpu" units="units"
     expires_after="2022-04-26">
   <owner>johnidel@chromium.org</owner>

@@ -31,9 +31,9 @@ using WebFeature = blink::mojom::WebFeature;
 
 // UKM-based UseCounter features (WebFeature) should be defined in
 // opt_in_features list.
-const UseCounterPageLoadMetricsObserver::UkmFeatureList&
-UseCounterPageLoadMetricsObserver::GetAllowedWebDevMetricsUkmFeatures() {
-  static base::NoDestructor<UseCounterPageLoadMetricsObserver::UkmFeatureList>
+const UseCounterMetricsRecorder::UkmFeatureList&
+UseCounterMetricsRecorder::GetAllowedWebDevMetricsUkmFeatures() {
+  static base::NoDestructor<UseCounterMetricsRecorder::UkmFeatureList>
       // We explicitly use an std::initializer_list below to work around GCC
       // bug 84849, which causes having a base::NoDestructor<T<U>> and passing
       // an initializer list of Us does not work.

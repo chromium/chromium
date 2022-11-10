@@ -64,6 +64,9 @@ BASE_EXPORT void UmaHistogramExactLinear(const char* name,
 //   };
 //   base::UmaHistogramEnumeration("My.Enumeration",
 //                                 NewTabPageAction::kClickTitle);
+//
+// Note that there are code that refer implementation details of this function.
+// Keep them synchronized.
 template <typename T>
 void UmaHistogramEnumeration(const std::string& name, T sample) {
   static_assert(std::is_enum<T>::value, "T is not an enum.");

@@ -2816,6 +2816,8 @@ chromium-metrics-reviews@google.com.
 
     As of M69, Blink.UseCounter.AnimatedCSSProperties is moved from the blink
     side to the browser side.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -2854,6 +2856,8 @@ chromium-metrics-reviews@google.com.
 
     As of M69, Blink.UseCounter.AnimatedCSSProperties is moved from the blink
     side to the browser side.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -2883,6 +2887,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts the use of a specific document policy via the &quot;policy&quot;
     attribute. Each policy is counted only once per page load.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -2981,6 +2987,8 @@ chromium-metrics-reviews@google.com.
     Feature used in pages with other URL schemes might be counted in other
     histograms: &quot;extension://&quot; : Blink.UseCounter.Extensions.Features
     &quot;file://&quot; : Blink.UseCounter.File.Features
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -2998,6 +3006,8 @@ chromium-metrics-reviews@google.com.
     This histogram counts CSS properties only when they are animated by a CSS
     Animation. Refer to Blink.UseCounter.FencedFrames.CSSProperties for more
     details.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3027,6 +3037,8 @@ chromium-metrics-reviews@google.com.
     pages.
 
     Note that CSS properties used inside of SVG images are not tracked.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3043,6 +3055,8 @@ chromium-metrics-reviews@google.com.
 
     Note that this histogram only counts FencedFrames page with HTTP/HTTPS URL
     scheme. Feature used in pages with other URL schemes are not counted.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3060,6 +3074,8 @@ chromium-metrics-reviews@google.com.
 
     This histogram counts usage of web features in FencedFrames' main frame
     only. Refer to Blink.UseCounter.FencedFrames.Features for more details.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3073,6 +3089,8 @@ chromium-metrics-reviews@google.com.
     a specific permissions policy feature via the &quot;allow&quot; attribute on
     iframes under FencedFrames root. Each policy is counted only once per page
     load. But the page is limited only to FencedFrames pages.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3087,6 +3105,8 @@ chromium-metrics-reviews@google.com.
     and &quot;Permissions-Policy&quot; HTTP response header. Each policy is
     counted only once per page load. But the page is limited only to
     FencedFrames pages.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3102,6 +3122,8 @@ chromium-metrics-reviews@google.com.
     when ExecutionContext::IsFeatureEnabled with ReportOptions::ReportOnFailure
     as param returns false, at most once per page visit. But the page is limited
     only to FencedFrames pages.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3119,6 +3141,8 @@ chromium-metrics-reviews@google.com.
     fetch request is prepared or when navigator.userAgent is accessed, if the UA
     string has been overridden. But the page is limited only to FencedFrames
     pages.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3151,6 +3175,8 @@ chromium-metrics-reviews@google.com.
 
     This histogram counts usage of web features in main frame only. Refer to
     Blink.UseCounter.Features for more details.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3163,6 +3189,8 @@ chromium-metrics-reviews@google.com.
     &quot;allow&quot; attribute on iframes. Each policy is counted only once per
     page load. Version 2 fixes the mismatched histogram name with data
     collected.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3175,6 +3203,8 @@ chromium-metrics-reviews@google.com.
     &quot;Feature-Policy&quot; and &quot;Permissions-Policy&quot; HTTP response
     header. Each policy is counted only once per page load. Version 2 fixes the
     mismatched histogram name with data collected.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3187,6 +3217,8 @@ chromium-metrics-reviews@google.com.
     triggered when ExecutionContext::IsFeatureEnabled with
     ReportOptions::ReportOnFailure as param returns false, at most once per page
     visit.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
@@ -3201,6 +3233,8 @@ chromium-metrics-reviews@google.com.
     end. Measured once per navigation request and at most once per page load,
     either when a resource fetch request is prepared or when navigator.userAgent
     is accessed, if the UA string has been overridden.
+
+    Not recorded if the page is prerendered and cancelled.
   </summary>
 </histogram>
 
