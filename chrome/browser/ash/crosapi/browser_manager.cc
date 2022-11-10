@@ -1595,4 +1595,10 @@ void BrowserManager::DisableForTesting() {
   g_disabled_for_testing = true;
 }
 
+// static
+void BrowserManager::EnableForTesting() {
+  CHECK_IS_TEST();
+  g_disabled_for_testing = false;
+}
+
 }  // namespace crosapi

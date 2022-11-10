@@ -92,6 +92,10 @@ class BrowserLoader {
   void OnLoadComplete(LoadCompletionCallback callback,
                       component_updater::CrOSComponentManager::Error error,
                       const base::FilePath& path);
+  void FinishOnLoadComplete(LoadCompletionCallback callback,
+                            const base::FilePath& path,
+                            LacrosSelection selection,
+                            bool lacros_binary_exists);
 
   // Unloading hops threads. This is called after we check whether Lacros was
   // installed and maybe clean up the user directory.

@@ -444,11 +444,15 @@ class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
 
  protected:
   AutotestPrivateLacrosTest() {
-    feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    crosapi::BrowserManager::DisableForTesting();
+  }
+  ~AutotestPrivateLacrosTest() override {
+    crosapi::BrowserManager::EnableForTesting();
   }
 
  private:
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateLacrosTest, Lacros) {

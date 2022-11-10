@@ -418,12 +418,35 @@ void BrowserLoader::OnLoadComplete(
     return;
   }
 
+  // Fail early if the chrome binary still doesn't exist, such that
+  // (1) we end up with an error message in Ash's log, and
+  // (2) BrowserManager doesn't endlessly try to spawn Lacros.
+  // For example, in the past there have been issues with mounting rootfs Lacros
+  // that resulted in /run/lacros being empty at this point.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&base::PathExists, path.Append(kLacrosChromeBinary)),
+      base::BindOnce(&BrowserLoader::FinishOnLoadComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback), path,
+                     selection));
+}
+
+void BrowserLoader::FinishOnLoadComplete(LoadCompletionCallback callback,
+                                         const base::FilePath& path,
+                                         LacrosSelection selection,
+                                         bool lacros_binary_exists) {
+  if (!lacros_binary_exists) {
+    LOG(ERROR) << "Failed to find chrome binary at " << path;
+    std::move(callback).Run(base::FilePath(), selection);
+    return;
+  }
+
   base::UmaHistogramMediumTimes(
       "ChromeOS.Lacros.LoadTime",
       base::TimeTicks::Now() - lacros_start_load_time_);
 
   // Log the path on success.
-  LOG(WARNING) << "Loaded lacros image at " << path.MaybeAsASCII();
+  LOG(WARNING) << "Loaded lacros image at " << path;
   std::move(callback).Run(path, selection);
 }
 

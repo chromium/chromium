@@ -309,8 +309,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   };
 
   // Disable most of BrowserManager's functionality such that it never tries to
-  // launch Lacros. This is used by test_ash_chrome.
+  // launch Lacros. This is used e.g. by test_ash_chrome.
   static void DisableForTesting();
+  static void EnableForTesting();
 
  protected:
   // The actual Lacros launch mode.

@@ -1563,9 +1563,9 @@ var systemWebAppsTests = [
       function checkLacrosInfoFieldValue() {
         chrome.autotestPrivate.getLacrosInfo(
             chrome.test.callbackPass(function(lacrosInfo) {
-              chrome.test.assertEq('Stopped', lacrosInfo['state']);
+              chrome.test.assertEq('Unavailable', lacrosInfo['state']);
               chrome.test.assertTrue(!lacrosInfo['isKeepAlive']);
-              chrome.test.assertEq('/run/lacros', lacrosInfo['lacrosPath']);
+              chrome.test.assertEq('', lacrosInfo['lacrosPath']);
               chrome.test.assertEq('SideBySide', lacrosInfo['mode']);
             }));
       },

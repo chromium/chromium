@@ -132,7 +132,6 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionStatefulIsUnavailable) {
   browser_loader_->OnLoadVersionSelection(
       /*is_stateful_lacros_available=*/false,
       base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
-        EXPECT_FALSE(path.empty());
         EXPECT_EQ(LacrosSelection::kRootfs, selection);
       }),
       /*rootfs_lacros_version=*/base::Version("2.0.0"));
@@ -162,7 +161,6 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsUnavailable) {
   browser_loader_->OnLoadVersionSelection(
       /*is_stateful_lacros_available=*/true,
       base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
-        EXPECT_FALSE(path.empty());
         EXPECT_EQ(LacrosSelection::kStateful, selection);
       }),
       /*rootfs_lacros_version=*/base::Version());
@@ -191,7 +189,6 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsNewer) {
   browser_loader_->OnLoadVersionSelection(
       /*is_stateful_lacros_available=*/true,
       base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
-        EXPECT_FALSE(path.empty());
         EXPECT_EQ(LacrosSelection::kRootfs, selection);
       }),
       /*rootfs_lacros_version=*/base::Version("2.0.0"));
@@ -221,7 +218,6 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsOlder) {
   browser_loader_->OnLoadVersionSelection(
       /*is_stateful_lacros_available=*/true,
       base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
-        EXPECT_FALSE(path.empty());
         EXPECT_EQ(LacrosSelection::kStateful, selection);
       }),
       /*rootfs_lacros_version=*/base::Version("2.0.0"));
