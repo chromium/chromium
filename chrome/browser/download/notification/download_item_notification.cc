@@ -388,6 +388,11 @@ void DownloadItemNotification::Click(
 
     DownloadCommands(item_->GetWeakPtr()).ExecuteCommand(command);
 
+    // After DISCARD, `this` has been destroyed.
+    if (command == DownloadCommands::DISCARD) {
+      return;
+    }
+
     // ExecuteCommand() might cause |item_| to be destroyed.
     if (item_ && command != DownloadCommands::PAUSE &&
         command != DownloadCommands::RESUME &&
@@ -737,10 +742,18 @@ DownloadItemNotification::GetExtraActions() const {
   }
 
   if (item_->IsDangerous()) {
-    if (item_->MightBeMalicious() &&
-        item_->GetDangerType() !=
-            download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+    if (item_->GetDangerType() ==
+        download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
       actions->push_back(DownloadCommands::LEARN_MORE_SCANNING);
+    } else if (item_->GetDangerType() ==
+                   download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT ||
+               item_->GetDangerType() ==
+                   download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE) {
+      actions->push_back(DownloadCommands::DISCARD);
+      actions->push_back(DownloadCommands::KEEP);
+    } else if (item_->GetDangerType() !=
+               download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+      actions->push_back(DownloadCommands::DISCARD);
     } else {
       actions->push_back(DownloadCommands::DISCARD);
 
