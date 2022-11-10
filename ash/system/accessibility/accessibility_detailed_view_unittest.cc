@@ -557,7 +557,8 @@ class AccessibilityDetailedViewQsRevampTest
     : public AccessibilityDetailedViewTest {
  public:
   AccessibilityDetailedViewQsRevampTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
+    feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kQsRevampWip}, {});
   }
 
  private:

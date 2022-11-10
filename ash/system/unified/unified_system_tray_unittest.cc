@@ -55,7 +55,8 @@ class UnifiedSystemTrayTest : public AshTestBase,
 
   void SetUp() override {
     if (IsQsRevampEnabled())
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
+      feature_list_.InitWithFeatures(
+          {features::kQsRevamp, features::kQsRevampWip}, {});
     AshTestBase::SetUp();
   }
 

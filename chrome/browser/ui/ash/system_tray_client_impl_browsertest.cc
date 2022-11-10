@@ -78,7 +78,10 @@ class SystemTrayClientEnterpriseTest
       public testing::WithParamInterface<bool> {
  public:
   SystemTrayClientEnterpriseTest() {
-    feature_list_.InitWithFeatureState(ash::features::kQsRevamp, GetParam());
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {ash::features::kQsRevamp, ash::features::kQsRevampWip}, {});
+    }
   }
 
   base::test::ScopedFeatureList feature_list_;

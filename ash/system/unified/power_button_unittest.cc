@@ -33,7 +33,8 @@ class PowerButtonTest : public NoSessionAshTestBase {
   ~PowerButtonTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
+    feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kQsRevampWip}, {});
     NoSessionAshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);

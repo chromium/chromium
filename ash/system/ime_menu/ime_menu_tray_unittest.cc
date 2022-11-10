@@ -75,10 +75,13 @@ class ImeMenuTrayTest : public AshTestBase,
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kImeTrayHideVoiceButton};
     std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam())
+    if (GetParam()) {
       enabled_features.push_back(features::kQsRevamp);
-    else
+      enabled_features.push_back(features::kQsRevampWip);
+    } else {
       disabled_features.push_back(features::kQsRevamp);
+      disabled_features.push_back(features::kQsRevampWip);
+    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     AshTestBase::SetUp();
   }
