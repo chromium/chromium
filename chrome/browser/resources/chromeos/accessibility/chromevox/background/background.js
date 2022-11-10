@@ -223,7 +223,7 @@ export class Background extends ChromeVoxState {
     position.y = loc.top + loc.height / 2;
     let url = root.docUrl;
     url = url.substring(0, url.indexOf('#')) || url;
-    ChromeVox.position[url] = position;
+    ChromeVoxState.position[url] = position;
   }
 
   /** @override */

@@ -54,7 +54,3 @@ ChromeVox.isStickyPrefOn = localStorage['sticky'] === String(true);
  * @type {?boolean}
  */
 ChromeVox.stickyOverride = null;
-/**
- * @type {Object<string, constants.Point>}
- */
-ChromeVox.position = {};

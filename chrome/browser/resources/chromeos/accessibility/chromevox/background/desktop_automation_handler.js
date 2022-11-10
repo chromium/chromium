@@ -876,7 +876,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // Restore to previous position.
     let url = focusedRoot.docUrl;
     url = url.substring(0, url.indexOf('#')) || url;
-    const pos = ChromeVox.position[url];
+    const pos = ChromeVoxState.position[url];
 
     // Deny recovery for chrome urls.
     if (pos && url.indexOf('chrome://') !== 0) {

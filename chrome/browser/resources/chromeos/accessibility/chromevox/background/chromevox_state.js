@@ -7,6 +7,7 @@
  *     ChromeVox state, to avoid direct dependencies on the Background
  *     object and to facilitate mocking for tests.
  */
+import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
@@ -141,6 +142,9 @@ ChromeVoxState.instance;
 
 /** @type {!Array<ChromeVoxStateObserver>} */
 ChromeVoxState.observers = [];
+
+/** @type {!Object<string, constants.Point>} */
+ChromeVoxState.position = {};
 
 /** @protected {function()} */
 ChromeVoxState.resolveReadyPromise_;
