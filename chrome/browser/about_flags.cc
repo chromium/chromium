@@ -5115,6 +5115,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kDiacriticsOnPhysicalKeyboardLongpress)},
+    {"enable-cros-first-party-vietnamese-input",
+     flag_descriptions::kFirstPartyVietnameseInputName,
+     flag_descriptions::kFirstPartyVietnameseInputDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kFirstPartyVietnameseInput)},
     {"enable-cros-hindi-inscript-layout",
      flag_descriptions::kHindiInscriptLayoutName,
      flag_descriptions::kHindiInscriptLayoutDescription, kOsCrOS,

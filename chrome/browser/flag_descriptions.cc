@@ -5510,6 +5510,11 @@ const char kFiltersInRecentsV2Name[] = "Filters in Recents enhancement";
 const char kFiltersInRecentsV2Description[] =
     "More enhancements for the filters in Recents.";
 
+const char kFirstPartyVietnameseInputName[] =
+    "First party Vietnamese Input Method";
+const char kFirstPartyVietnameseInputDescription[] =
+    "Use first party input method for Vietnamese VNI and Telex";
+
 const char kFocusFollowsCursorName[] = "Focus follows cursor";
 const char kFocusFollowsCursorDescription[] =
     "Enable window focusing by moving the cursor.";

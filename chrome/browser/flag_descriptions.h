@@ -3151,6 +3151,9 @@ extern const char kFilesTrashDescription[];
 extern const char kFiltersInRecentsV2Name[];
 extern const char kFiltersInRecentsV2Description[];
 
+extern const char kFirstPartyVietnameseInputName[];
+extern const char kFirstPartyVietnameseInputDescription[];
+
 extern const char kFloatWindow[];
 extern const char kFloatWindowDescription[];
 

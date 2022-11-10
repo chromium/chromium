@@ -963,6 +963,11 @@ BASE_FEATURE(kFirmwareUpdaterApp,
              "FirmwareUpdaterApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables first party Vietnamese input method.
+BASE_FEATURE(kFirstPartyVietnameseInput,
+             "FirstPartyVietnameseInput",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Floating Workspace feature on ChromeOS
 BASE_FEATURE(kFloatingWorkspace,
              "FloatingWorkspace",

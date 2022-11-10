@@ -1928,6 +1928,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "enable-cros-first-party-vietnamese-input",
+    "owners": ["jhtin", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "enable-cros-hindi-inscript-layout",
     "owners": [ "jshin", "essential-inputs-team@google.com" ],
     "expiry_milestone": 117
