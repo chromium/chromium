@@ -32,11 +32,20 @@ bool WebFramesManagerImpl::AddFrame(std::unique_ptr<WebFrame> frame) {
   }
   DCHECK(web_frames_.count(frame->GetFrameId()) == 0);
   std::string frame_id = frame->GetFrameId();
+  WebFrame* added_frame = frame.get();
   web_frames_[frame_id] = std::move(frame);
+
+  for (auto& observer : observers_) {
+    observer.WebFrameDidBecomeAvailable(this, added_frame);
+  }
   return true;
 }
 
 void WebFramesManagerImpl::RemoveFrameWithId(const std::string& frame_id) {
+  for (auto& observer : observers_) {
+    observer.WebFrameWillBecomeUnavailable(this, frame_id);
+  }
+
   DCHECK(!frame_id.empty());
   // If the removed frame is a main frame, it should be the current one.
   DCHECK(web_frames_.count(frame_id) == 0 ||
@@ -58,6 +67,14 @@ void WebFramesManagerImpl::RemoveFrameWithId(const std::string& frame_id) {
 }
 
 #pragma mark - WebFramesManager
+
+void WebFramesManagerImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebFramesManagerImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 std::set<WebFrame*> WebFramesManagerImpl::GetAllWebFrames() {
   std::set<WebFrame*> frames;

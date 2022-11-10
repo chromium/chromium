@@ -7,7 +7,9 @@
 
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 
-#include <map>
+#import <map>
+
+#import "base/observer_list.h"
 
 namespace web {
 class WebFrame;
@@ -26,6 +28,9 @@ class FakeWebFramesManager : public WebFramesManager {
   FakeWebFramesManager();
   ~FakeWebFramesManager() override;
 
+  // Adds and removes observers of WebFrame availability.
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   std::set<WebFrame*> GetAllWebFrames() override;
   WebFrame* GetMainWebFrame() override;
   WebFrame* GetFrameWithId(const std::string& frame_id) override;
@@ -38,6 +43,7 @@ class FakeWebFramesManager : public WebFramesManager {
   std::map<std::string, std::unique_ptr<WebFrame>> web_frames_;
   // Reference to the current main web frame.
   WebFrame* main_web_frame_ = nullptr;
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };
 
 }  // namespace web
