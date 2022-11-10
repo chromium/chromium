@@ -123,6 +123,10 @@ const std::u16string GetDialogButtonOkLabelForFiles(
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_MOVE_WARN_CONTINUE_BUTTON);
     case DlpFilesController::FileAction::kTransfer:
+    case DlpFilesController::FileAction::kOpen:
+    // TODO(crbug.com/1382063): Add the correct string.
+    case DlpFilesController::FileAction::kShare:
+    // TODO(crbug.com/1382063): Add the correct string.
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
                                                     // action is unknown
@@ -150,6 +154,10 @@ const std::u16string GetTitleForFiles(
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_MOVE_WARN_TITLE, files_number);
     case DlpFilesController::FileAction::kTransfer:
+    case DlpFilesController::FileAction::kOpen:
+    // TODO(crbug.com/1382063): Add the correct string.
+    case DlpFilesController::FileAction::kShare:
+    // TODO(crbug.com/1382063): Add the correct string.
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
                                                     // action is unknown
@@ -199,6 +207,10 @@ const std::u16string GetMessageForFiles(
               options.destination_component.value()),
           /*offset=*/nullptr);
     case DlpFilesController::FileAction::kTransfer:
+    case DlpFilesController::FileAction::kOpen:
+    // TODO(crbug.com/1382063): Add the correct string.
+    case DlpFilesController::FileAction::kShare:
+    // TODO(crbug.com/1382063): Add the correct string.
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
                                                     // action is unknown

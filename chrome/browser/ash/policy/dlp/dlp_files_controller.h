@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
@@ -50,7 +51,9 @@ class DlpFilesController {
     kUpload = 3,
     kCopy = 4,
     kMove = 5,
-    kMaxValue = kMove
+    kOpen = 6,
+    kShare = 7,
+    kMaxValue = kShare
   };
 
   // DlpFileMetadata keeps metadata about a file, such as whether it's managed
@@ -189,8 +192,8 @@ class DlpFilesController {
                               const base::FilePath& file_path,
                               CheckIfDownloadAllowedCallback result_callback);
 
-  // Checks whether launching `app_id` with `intent` is allowed.
-  void CheckIfLaunchAllowed(const std::string& app_id,
+  // Checks whether launching `app_update` with `intent` is allowed.
+  void CheckIfLaunchAllowed(const apps::AppUpdate& app_update,
                             apps::IntentPtr intent,
                             CheckIfLaunchAllowedCallback result_callback);
 
@@ -255,6 +258,9 @@ class DlpFilesController {
   void ReturnDlpMetadata(std::vector<absl::optional<ino64_t>> inodes,
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);
+
+  void LaunchIfAllowed(CheckIfLaunchAllowedCallback result_callback,
+                       ::dlp::CheckFilesTransferResponse response);
 
   // Reports an event if a `DlpReportingManager` instance exists. When
   // `dst_pattern` is missing, we report `dst.component.value()` instead. When

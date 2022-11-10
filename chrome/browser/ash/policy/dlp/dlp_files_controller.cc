@@ -23,7 +23,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -43,9 +45,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/constants.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"
@@ -578,11 +582,58 @@ void DlpFilesController::CheckIfDownloadAllowed(
 }
 
 void DlpFilesController::CheckIfLaunchAllowed(
-    const std::string& app_id,
+    const apps::AppUpdate& app_update,
     apps::IntentPtr intent,
     CheckIfLaunchAllowedCallback result_callback) {
-  // TODO(crbug.com/1362527): Add implementation details.
-  std::move(result_callback).Run(true);
+  if (intent->files.empty()) {
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
+  ::dlp::CheckFilesTransferRequest request;
+  for (const auto& file : intent->files) {
+    auto file_url = apps::GetFileSystemURL(profile, file->url);
+    request.add_files_paths(file_url.path().value());
+  }
+
+  request.set_file_action(intent->IsShareIntent() ? ::dlp::FileAction::SHARE
+                                                  : ::dlp::FileAction::OPEN);
+
+  switch (app_update.AppType()) {
+    case apps::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
+    case apps::AppType::kChromeApp:
+      request.set_destination_url(base::StrCat(
+          {extensions::kExtensionScheme, "://", app_update.AppId()}));
+      break;
+
+    case apps::AppType::kArc:
+      request.set_destination_component(::dlp::DlpComponent::ARC);
+      break;
+    case apps::AppType::kCrostini:
+      request.set_destination_component(::dlp::DlpComponent::CROSTINI);
+      break;
+    case apps::AppType::kPluginVm:
+      request.set_destination_component(::dlp::DlpComponent::PLUGIN_VM);
+      break;
+    case apps::AppType::kWeb:
+      request.set_destination_url(app_update.PublisherId());
+      break;
+    case apps::AppType::kUnknown:
+    case apps::AppType::kBuiltIn:
+    case apps::AppType::kMacOs:
+    case apps::AppType::kStandaloneBrowser:
+    case apps::AppType::kRemote:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kSystemWeb:
+      break;
+  }
+  chromeos::DlpClient::Get()->CheckFilesTransfer(
+      request, base::BindOnce(&DlpFilesController::LaunchIfAllowed,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              std::move(result_callback)));
 }
 
 void DlpFilesController::IsFilesTransferRestricted(
@@ -889,6 +940,24 @@ void DlpFilesController::ReturnDlpMetadata(
   }
 
   std::move(result_callback).Run(std::move(result));
+}
+
+void DlpFilesController::LaunchIfAllowed(
+    CheckIfLaunchAllowedCallback result_callback,
+    ::dlp::CheckFilesTransferResponse response) {
+  if (response.has_error_message()) {
+    LOG(ERROR) << "Failed to get check files transfer, error: "
+               << response.error_message();
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+
+  if (!response.files_paths().empty()) {
+    // TODO(crbug.com/1382065): Show block notification.
+    std::move(result_callback).Run(/*is_allowed=*/false);
+    return;
+  }
+  std::move(result_callback).Run(/*is_allowed=*/true);
 }
 
 void DlpFilesController::MaybeReportEvent(

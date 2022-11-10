@@ -74,6 +74,7 @@ void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
 void FakeDlpClient::CheckFilesTransfer(
     const dlp::CheckFilesTransferRequest request,
     CheckFilesTransferCallback callback) {
+  last_check_files_transfer_request_ = request;
   dlp::CheckFilesTransferResponse response;
   if (check_files_transfer_response_.has_value())
     response = check_files_transfer_response_.value();
@@ -122,6 +123,11 @@ void FakeDlpClient::SetAddFileMock(AddFileCall mock) {
 }
 void FakeDlpClient::SetGetFilesSourceMock(GetFilesSourceCall mock) {
   get_files_source_mock_ = mock;
+}
+
+dlp::CheckFilesTransferRequest FakeDlpClient::GetLastCheckFilesTransferRequest()
+    const {
+  return last_check_files_transfer_request_;
 }
 
 }  // namespace chromeos

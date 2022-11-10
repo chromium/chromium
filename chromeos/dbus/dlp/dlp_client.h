@@ -68,6 +68,11 @@ class COMPONENT_EXPORT(DLP) DlpClient {
     // use |mock| for GetFilesSource calls;
     virtual void SetGetFilesSourceMock(GetFilesSourceCall mock) = 0;
 
+    // Returns the last CheckFilesTransferRequest. If it wasn't called, it'll
+    // return an empty proto.
+    virtual dlp::CheckFilesTransferRequest GetLastCheckFilesTransferRequest()
+        const = 0;
+
    protected:
     virtual ~TestInterface() = default;
   };

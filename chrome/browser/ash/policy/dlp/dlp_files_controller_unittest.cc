@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,9 +27,13 @@
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -53,8 +58,10 @@
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/drive/drive_pref_names.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/constants.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -104,8 +111,22 @@ constexpr char kFilePath5[] = "test5.txt";
 constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
 constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
 
+constexpr char kChromeAppId[] = "chromeApp";
+constexpr char kArcAppId[] = "arcApp";
+constexpr char kCrostiniAppId[] = "crostiniApp";
+constexpr char kPluginVmAppId[] = "pluginVmApp";
+constexpr char kWebAppId[] = "webApp";
+
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+}
+
+// For a given |root| converts the given virtual |path| to a GURL.
+GURL ToGURL(const base::FilePath& root, const std::string& path) {
+  const std::string abs_path = root.Append(path).value();
+  return GURL(base::StrCat({url::kFileSystemScheme, ":",
+                            file_manager::util::GetFilesAppOrigin().Serialize(),
+                            abs_path}));
 }
 
 struct FilesTransferInfo {
@@ -1781,6 +1802,227 @@ TEST_P(DlpFilesWarningDialogContentTest,
       transfer_info.files_action, cb.Get());
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+}
+
+class DlpFilesAppServiceTest : public DlpFilesControllerTest {
+ public:
+  DlpFilesAppServiceTest(const DlpFilesAppServiceTest&) = delete;
+  DlpFilesAppServiceTest& operator=(const DlpFilesAppServiceTest&) = delete;
+
+ protected:
+  DlpFilesAppServiceTest() = default;
+
+  ~DlpFilesAppServiceTest() override = default;
+
+  void SetUp() override {
+    DlpFilesControllerTest::SetUp();
+    app_service_test_.SetUp(profile_.get());
+    app_service_proxy_ =
+        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
+    ASSERT_TRUE(app_service_proxy_);
+  }
+
+  void CreateAndStoreFakeApp(
+      std::string fake_id,
+      apps::AppType app_type,
+      absl::optional<std::string> publisher_id = absl::nullopt) {
+    std::vector<apps::AppPtr> fake_apps;
+    apps::AppPtr fake_app = std::make_unique<apps::App>(app_type, fake_id);
+    fake_app->name = "xyz";
+    fake_app->show_in_management = true;
+    fake_app->readiness = apps::Readiness::kReady;
+    if (publisher_id.has_value())
+      fake_app->publisher_id = publisher_id.value();
+
+    std::vector<apps::PermissionPtr> fake_permissions;
+    fake_app->permissions = std::move(fake_permissions);
+
+    fake_apps.push_back(std::move(fake_app));
+
+    UpdateAppRegistryCache(std::move(fake_apps), app_type);
+  }
+
+  void UpdateAppRegistryCache(std::vector<apps::AppPtr> fake_apps,
+                              apps::AppType app_type) {
+    app_service_proxy_->AppRegistryCache().OnApps(
+        std::move(fake_apps), app_type, /*should_notify_initialized=*/false);
+  }
+
+  apps::AppServiceProxy* app_service_proxy_ = nullptr;
+  apps::AppServiceTest app_service_test_;
+};
+
+TEST_F(DlpFilesAppServiceTest, CheckIfLaunchAllowed_ErrorResponse) {
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.set_error_message("Did not receive a reply.");
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  CreateAndStoreFakeApp("arcApp", apps::AppType::kArc);
+
+  auto app_service_intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+  app_service_intent->mime_type = "*/*";
+  const std::string path = "Documents/foo.txt";
+  const std::string mime_type = "text/plain";
+  auto url = ToGURL(base::FilePath(storage::kTestDir), path);
+  EXPECT_TRUE(url.SchemeIsFileSystem());
+  app_service_intent->files = std::vector<apps::IntentFilePtr>{};
+  auto file = std::make_unique<apps::IntentFile>(url);
+  file->mime_type = mime_type;
+  app_service_intent->files.push_back(std::move(file));
+  EXPECT_FALSE(app_service_intent->IsShareIntent());
+
+  base::test::TestFuture<bool> launch_cb;
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      kArcAppId,
+      [this, &app_service_intent, &launch_cb](const apps::AppUpdate& update) {
+        files_controller_->CheckIfLaunchAllowed(
+            update, std::move(app_service_intent), launch_cb.GetCallback());
+      }));
+  EXPECT_EQ(launch_cb.Get(), true);
+
+  auto last_check_files_transfer_request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  EXPECT_TRUE(last_check_files_transfer_request.has_file_action());
+  EXPECT_EQ(last_check_files_transfer_request.file_action(),
+            ::dlp::FileAction::OPEN);
+}
+
+TEST_F(DlpFilesAppServiceTest, CheckIfLaunchAllowed_EmptyIntent) {
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.set_error_message("Did not receive a reply.");
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  CreateAndStoreFakeApp("arcApp", apps::AppType::kArc);
+
+  auto app_service_intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+
+  base::test::TestFuture<bool> launch_cb;
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      kArcAppId,
+      [this, &app_service_intent, &launch_cb](const apps::AppUpdate& update) {
+        files_controller_->CheckIfLaunchAllowed(
+            update, std::move(app_service_intent), launch_cb.GetCallback());
+      }));
+  EXPECT_EQ(launch_cb.Get(), true);
+}
+
+class DlpFilesAppLaunchTest : public DlpFilesAppServiceTest,
+                              public ::testing::WithParamInterface<
+                                  std::tuple<apps::AppType, std::string>> {
+ public:
+  DlpFilesAppLaunchTest(const DlpFilesAppServiceTest&) = delete;
+  DlpFilesAppLaunchTest& operator=(const DlpFilesAppServiceTest&) = delete;
+
+ protected:
+  DlpFilesAppLaunchTest() = default;
+
+  ~DlpFilesAppLaunchTest() override = default;
+
+  void SetUp() override {
+    DlpFilesAppServiceTest::SetUp();
+
+    CreateAndStoreFakeApp(kChromeAppId, apps::AppType::kChromeApp,
+                          kExampleUrl1);
+    CreateAndStoreFakeApp(kArcAppId, apps::AppType::kArc, kExampleUrl2);
+    CreateAndStoreFakeApp(kCrostiniAppId, apps::AppType::kCrostini,
+                          kExampleUrl3);
+    CreateAndStoreFakeApp(kPluginVmAppId, apps::AppType::kPluginVm,
+                          kExampleUrl4);
+    CreateAndStoreFakeApp(kWebAppId, apps::AppType::kWeb, kExampleUrl5);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    DlpFiles,
+    DlpFilesAppLaunchTest,
+    ::testing::Values(std::make_tuple(apps::AppType::kChromeApp, kChromeAppId),
+                      std::make_tuple(apps::AppType::kArc, kArcAppId),
+                      std::make_tuple(apps::AppType::kCrostini, kCrostiniAppId),
+                      std::make_tuple(apps::AppType::kPluginVm, kPluginVmAppId),
+                      std::make_tuple(apps::AppType::kWeb, kWebAppId)));
+
+TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
+  auto [app_type, app_id] = GetParam();
+
+  const std::string path1 = "Documents/foo1.txt";
+  const std::string path2 = "Documents/foo2.txt";
+
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(path1);
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  auto app_service_intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+  app_service_intent->mime_type = "*/*";
+  app_service_intent->files = std::vector<apps::IntentFilePtr>{};
+  auto url1 = ToGURL(base::FilePath(storage::kTestDir), path1);
+  EXPECT_TRUE(url1.SchemeIsFileSystem());
+  auto file1 = std::make_unique<apps::IntentFile>(url1);
+  file1->mime_type = "text/plain";
+  app_service_intent->files.push_back(std::move(file1));
+  auto url2 = ToGURL(base::FilePath(storage::kTestDir), path2);
+  EXPECT_TRUE(url2.SchemeIsFileSystem());
+  auto file2 = std::make_unique<apps::IntentFile>(url2);
+  file2->mime_type = "text/plain";
+  app_service_intent->files.push_back(std::move(file2));
+
+  EXPECT_TRUE(app_service_intent->IsShareIntent());
+
+  base::test::TestFuture<bool> launch_cb;
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id,
+      [this, &app_service_intent, &launch_cb](const apps::AppUpdate& update) {
+        files_controller_->CheckIfLaunchAllowed(
+            update, std::move(app_service_intent), launch_cb.GetCallback());
+      }));
+  EXPECT_EQ(launch_cb.Get(), false);
+
+  auto last_check_files_transfer_request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+
+  if (app_type == apps::AppType::kChromeApp) {
+    EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
+    EXPECT_EQ(last_check_files_transfer_request.destination_url(),
+              std::string(extensions::kExtensionScheme) + "://" + app_id);
+  } else if (app_type == apps::AppType::kArc) {
+    EXPECT_TRUE(last_check_files_transfer_request.has_destination_component());
+    EXPECT_EQ(last_check_files_transfer_request.destination_component(),
+              ::dlp::DlpComponent::ARC);
+
+  } else if (app_type == apps::AppType::kCrostini) {
+    EXPECT_TRUE(last_check_files_transfer_request.has_destination_component());
+    EXPECT_EQ(last_check_files_transfer_request.destination_component(),
+              ::dlp::DlpComponent::CROSTINI);
+
+  } else if (app_type == apps::AppType::kPluginVm) {
+    EXPECT_TRUE(last_check_files_transfer_request.has_destination_component());
+    EXPECT_EQ(last_check_files_transfer_request.destination_component(),
+              ::dlp::DlpComponent::PLUGIN_VM);
+
+  } else if (app_type == apps::AppType::kWeb) {
+    EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
+    EXPECT_EQ(last_check_files_transfer_request.destination_url(),
+              kExampleUrl5);
+  }
+
+  EXPECT_TRUE(last_check_files_transfer_request.has_file_action());
+  EXPECT_EQ(last_check_files_transfer_request.file_action(),
+            ::dlp::FileAction::SHARE);
 }
 
 }  // namespace policy

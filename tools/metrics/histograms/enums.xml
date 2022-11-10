@@ -31997,6 +31997,11 @@ Called by update_document_policy_enum.py.-->
   <int value="0" label="kUnknown"/>
   <int value="1" label="kDownload"/>
   <int value="2" label="kTransfer"/>
+  <int value="3" label="kUpload"/>
+  <int value="4" label="kCopy"/>
+  <int value="5" label="kMove"/>
+  <int value="6" label="kOpen"/>
+  <int value="7" label="kShare"/>
 </enum>
 
 <enum name="EnterpriseDlpPolicyRestriction">

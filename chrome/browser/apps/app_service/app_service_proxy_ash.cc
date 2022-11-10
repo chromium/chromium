@@ -321,8 +321,14 @@ void AppServiceProxyAsh::LaunchAppWithIntent(const std::string& app_id,
 
   policy::DlpFilesController* files_controller = GetDlpFilesController();
   if (files_controller) {
-    files_controller->CheckIfLaunchAllowed(app_id, std::move(intent_copy),
-                                           std::move(launch_callback));
+    auto app_found = app_registry_cache_.ForOneApp(
+        app_id, [&files_controller, &intent_copy,
+                 &launch_callback](const apps::AppUpdate& update) {
+          files_controller->CheckIfLaunchAllowed(update, std::move(intent_copy),
+                                                 std::move(launch_callback));
+        });
+    if (!app_found)
+      std::move(launch_callback).Run(/*is_allowed=*/true);
   } else {
     std::move(launch_callback).Run(/*is_allowed=*/true);
   }
