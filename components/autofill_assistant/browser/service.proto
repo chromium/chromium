@@ -1197,6 +1197,7 @@ message ActionProto {
     ReportProgressProto report_progress = 99;
     ParseSingleTagXmlProto parse_single_tag_xml = 100;
     RegisterSelfContainedInterruptScripts register_interrupt_scripts = 101;
+    RegisterJsInterruptForParentJsFlow register_js_interrupt_for_flow = 102;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -3755,4 +3756,24 @@ message RegisterSelfContainedInterruptScripts {
   // Must only contain interrupt scripts!
   optional GetNoRoundTripScriptsByHashPrefixResponseProto.MatchInfo match_info =
       1;
+}
+
+// Exclusively for use in JS flows. This gives JS flows a convenient way to
+// register an interrupt. It relies on the parent action's JS blob, which it
+// will invoke with the specified startup parameter. The parent JS blob, as the
+// creator and caller of this action, will then choose based on the presence and
+// value of the startup parameter which interrupt script to run.
+message RegisterJsInterruptForParentJsFlow {
+  // Somewhat arbitrary script identifier, but must be globally unique.
+  optional string path = 1;
+  // The script precondition (intentionally not a full ScriptPrecondition to
+  // streamline the specification from within JS flows).
+  optional ElementConditionProto precondition = 2;
+
+  // The JS variable name that should contain the startup variable.
+  optional string js_startup_variable_name = 3;
+  // The value of the startup variable. Typically, this will be used by the
+  // parent's JS flow to disambiguate between the main script and the various
+  // available interrupt scripts.
+  optional string js_startup_variable_value = 4;
 }

@@ -31,6 +31,7 @@
 #include "components/autofill_assistant/browser/actions/presave_generated_password_action.h"
 #include "components/autofill_assistant/browser/actions/prompt_action.h"
 #include "components/autofill_assistant/browser/actions/prompt_qr_code_scan_action.h"
+#include "components/autofill_assistant/browser/actions/register_js_interrupt_for_parent_js_flow_action.h"
 #include "components/autofill_assistant/browser/actions/register_password_reset_request_action.h"
 #include "components/autofill_assistant/browser/actions/register_self_contained_interrupt_scripts_action.h"
 #include "components/autofill_assistant/browser/actions/release_elements_action.h"
@@ -545,6 +546,9 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
     case ActionProto::ActionInfoCase::kRegisterInterruptScripts:
       return std::make_unique<RegisterSelfContainedInterruptScriptsAction>(
           delegate, action);
+    case ActionProto::ActionInfoCase::kRegisterJsInterruptForFlow:
+      return std::make_unique<RegisterJsInterruptForParentJsFlowAction>(
+          delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
@@ -834,6 +838,11 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
       success =
           ParseActionFromString(action_id, bytes, error_message,
                                 proto.mutable_register_interrupt_scripts());
+      break;
+    case ActionProto::ActionInfoCase::kRegisterJsInterruptForFlow:
+      success =
+          ParseActionFromString(action_id, bytes, error_message,
+                                proto.mutable_register_js_interrupt_for_flow());
       break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       // This is an "unknown action", handled as such in CreateAction.
