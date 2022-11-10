@@ -1710,7 +1710,7 @@ QuotaManagerImpl::~QuotaManagerImpl() {
   proxy_->InvalidateQuotaManagerImpl(base::PassKey<QuotaManagerImpl>());
 
   if (database_)
-    db_runner_->DeleteSoon(FROM_HERE, database_.ExtractAsDangling().get());
+    db_runner_->DeleteSoon(FROM_HERE, std::move(database_));
 }
 
 QuotaManagerImpl::EvictionContext::EvictionContext() = default;
@@ -1725,8 +1725,8 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
   }
 
   // Use an empty path to open an in-memory only database for incognito.
-  database_ =
-      new QuotaDatabase(is_incognito_ ? base::FilePath() : profile_path_);
+  database_ = std::make_unique<QuotaDatabase>(is_incognito_ ? base::FilePath()
+                                                            : profile_path_);
 
   temporary_usage_tracker_ = std::make_unique<UsageTracker>(
       this, client_types_[StorageType::kTemporary], StorageType::kTemporary,

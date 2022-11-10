@@ -752,7 +752,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // QuotaManagerImpl creates `database_` and later schedules it for deletion on
   // `db_runner_`. Thus, `database_` may outlive `this`.
-  raw_ptr<QuotaDatabase> database_ = nullptr;
+  std::unique_ptr<QuotaDatabase> database_;
 
   bool is_bootstrapping_database_ = false;
   // Queued callbacks to QuotaDatabase that will run after database bootstrap is
