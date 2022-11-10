@@ -2309,6 +2309,8 @@ component("ash") {
     "wm/workspace/workspace_window_resizer.h",
     "wm/workspace_controller.cc",
     "wm/workspace_controller.h",
+    "wm_mode/pie_menu_view.cc",
+    "wm_mode/pie_menu_view.h",
     "wm_mode/wm_mode_button_tray.cc",
     "wm_mode/wm_mode_button_tray.h",
     "wm_mode/wm_mode_controller.cc",
