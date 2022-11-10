@@ -137,9 +137,7 @@ static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
   CSSPrimitiveValue::UnitType unit = CSSPrimitiveValue::UnitType::kNumber;
 
   const bool parsed_simple_length =
-      WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-        return ParseSimpleLength(chars, length, unit, number);
-      });
+      ParseSimpleLength(string.Characters8(), string.length(), unit, number);
   if (!parsed_simple_length)
     return nullptr;
 
@@ -646,20 +644,6 @@ static inline bool MatchesCaseInsensitiveLiteral2(const LChar* a,
   return (av | mask) == bv;
 }
 
-static inline bool MatchesCaseInsensitiveLiteral4(const UChar* a,
-                                                  const char (&b)[5]) {
-  return IsASCIIAlphaCaselessEqual(a[0], b[0]) &&
-         IsASCIIAlphaCaselessEqual(a[1], b[1]) &&
-         IsASCIIAlphaCaselessEqual(a[2], b[2]) &&
-         IsASCIIAlphaCaselessEqual(a[3], b[3]);
-}
-
-static inline bool MatchesCaseInsensitiveLiteral2(const UChar* a,
-                                                  const char (&b)[3]) {
-  return IsASCIIAlphaCaselessEqual(a[0], b[0]) &&
-         IsASCIIAlphaCaselessEqual(a[1], b[1]);
-}
-
 template <typename CharacterType>
 static inline bool MightBeRGBOrRGBA(const CharacterType* characters,
                                     unsigned length) {
@@ -876,6 +860,8 @@ static CSSValue* ParseColor(CSSPropertyID property_id,
                      ColorPropertyAllowsQuirkyColor(property_id);
 
   // Fast path for hex colors and rgb()/rgba()/hsl()/hsla() colors.
+  // Note that ParseColor may be called from external contexts,
+  // i.e., when parsing style sheets, so we need the Unicode path here.
   bool parse_result =
       WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
         return FastParseColorInternal(color, chars, length, quirks_mode);
@@ -1492,9 +1478,7 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
   DCHECK(!string.empty());
 
   CSSValue* css_wide_keyword =
-      string.Is8Bit()
-          ? ParseCSSWideKeywordValue(string.Characters8(), string.length())
-          : ParseCSSWideKeywordValue(string.Characters16(), string.length());
+      ParseCSSWideKeywordValue(string.Characters8(), string.length());
 
   if (!CSSParserFastPaths::IsHandledByKeywordFastPath(property_id)) {
     // This isn't a property we have a fast path for, but even
@@ -1769,31 +1753,37 @@ static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
   if (property_id != CSSPropertyID::kTransform)
     return nullptr;
 
-  return WTF::VisitCharacters(
-      string, [&](const auto* pos, unsigned length) -> CSSValueList* {
-        if (!TransformCanLikelyUseFastPath(pos, length))
-          return nullptr;
-        const auto* end = pos + length;
-        CSSValueList* transform_list = nullptr;
-        while (pos < end) {
-          while (pos < end && *pos == ' ')
-            ++pos;
-          if (pos >= end)
-            break;
-          auto* transform_value = ParseSimpleTransformValue(pos, end);
-          if (!transform_value)
-            return nullptr;
-          if (!transform_list)
-            transform_list = CSSValueList::CreateSpaceSeparated();
-          transform_list->Append(*transform_value);
-        }
-        return transform_list;
-      });
+  const LChar* pos = string.Characters8();
+  unsigned length = string.length();
+  if (!TransformCanLikelyUseFastPath(pos, length))
+    return nullptr;
+  const auto* end = pos + length;
+  CSSValueList* transform_list = nullptr;
+  while (pos < end) {
+    while (pos < end && *pos == ' ')
+      ++pos;
+    if (pos >= end)
+      break;
+    auto* transform_value = ParseSimpleTransformValue(pos, end);
+    if (!transform_value)
+      return nullptr;
+    if (!transform_list)
+      transform_list = CSSValueList::CreateSpaceSeparated();
+    transform_list->Append(*transform_value);
+  }
+  return transform_list;
 }
 
 CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
                                               const String& string,
                                               CSSParserMode parser_mode) {
+  if (!string.Is8Bit()) {
+    // If we have non-ASCII characters, we can never match any of the
+    // fast paths that we support, so we can just as well return early.
+    // (We could be UChar due to unrelated comments, but we don't
+    // support comments in these paths anyway.)
+    return nullptr;
+  }
   if (CSSValue* length =
           ParseSimpleLengthValue(property_id, string, parser_mode))
     return length;
