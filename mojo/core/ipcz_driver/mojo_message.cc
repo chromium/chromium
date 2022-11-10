@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"
+#include "mojo/core/scoped_ipcz_handle.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -86,7 +87,7 @@ bool MojoMessage::SetContents(std::vector<uint8_t> data,
       return false;
     }
 
-    data_pipes[i]->AdoptPortal(handle);
+    data_pipes[i]->AdoptPortal(ScopedIpczHandle(handle));
   }
   handles.resize(first_data_pipe_portal);
   handles_ = std::move(handles);
@@ -166,7 +167,7 @@ void MojoMessage::AttachDataPipePortals() {
   const size_t base_num_handles = handles_.size();
   for (size_t i = 0; i < base_num_handles; ++i) {
     if (auto* data_pipe = ipcz_driver::DataPipe::FromBox(handles_[i])) {
-      handles_.push_back(data_pipe->TakePortal());
+      handles_.push_back(data_pipe->TakePortal().release());
     }
   }
 }

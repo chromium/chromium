@@ -257,8 +257,14 @@ bool Router::AcceptInboundParcel(const OperationContext& context,
       // If this is a terminal router, we may have trap events to fire.
       status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
       status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
-      traps_.UpdatePortalStatus(
-          context, status_, TrapSet::UpdateReason::kNewLocalParcel, dispatcher);
+      if (sequence_number < inbound_parcels_.GetCurrentSequenceLength()) {
+        // Only notify traps if the new parcel is actually available for
+        // reading, which may not be the case if some preceding parcels have yet
+        // to be received.
+        traps_.UpdatePortalStatus(context, status_,
+                                  TrapSet::UpdateReason::kNewLocalParcel,
+                                  dispatcher);
+      }
     }
   }
 

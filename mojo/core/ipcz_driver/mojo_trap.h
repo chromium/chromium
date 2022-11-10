@@ -61,10 +61,10 @@ class MojoTrap : public Object<MojoTrap> {
   void HandleEvent(const IpczTrapEvent& event);
   void HandleTrapRemoved(const IpczTrapEvent& event);
 
-  // Attempts to arm a single trigger by creating an ipcz trap for it.
-  IpczResult ArmTrigger(Trigger& trigger,
-                        IpczTrapConditionFlags* satisfied_flags,
-                        IpczPortalStatus* status);
+  // Attempts to arm a single trigger by creating an ipcz trap for it. If this
+  // fails because trapped conditions are already met, a corresponding event
+  // is stored in `event`.
+  IpczResult ArmTrigger(Trigger& trigger, MojoTrapEvent& event);
 
   void MaybeEnqueueTriggerRemoval(Trigger& trigger)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
