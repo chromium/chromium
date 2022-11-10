@@ -384,8 +384,6 @@ def CheckMissingPlaceholders(input_api, output_api):
   items = new_policies + list(messages.values())
   for item in items:
     for key in ['desc', 'text']:
-      if item is None:
-        continue
       if not key in item:
         continue
       try:

@@ -33,7 +33,7 @@ class SendMouseEventsDisabledFormControlsPolicyTest
       return;
     PolicyMap policies;
     SetPolicy(
-        &policies, policy::key::kSendMouseEventsDisabledFormControlsEnabled,
+        &policies, policy::key::kSendMouseEventsDsbldFormControlsEnabled,
         base::Value(GetParam() ==
                     SendMouseEventsDisabledFormControlsPolicyValue::kEnabled));
     provider_.UpdateChromePolicy(policies);

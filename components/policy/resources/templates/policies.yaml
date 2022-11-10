@@ -1028,7 +1028,7 @@ policies:
   1027: LensDesktopNTPSearchEnabled
   1028: AccessControlAllowMethodsInCORSPreflightSpecConformant
   1029: OffsetParentNewSpecBehaviorEnabled
-  1030: SendMouseEventsDisabledFormControlsEnabled
+  1030: SendMouseEventsDsbldFormControlsEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

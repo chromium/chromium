@@ -19738,7 +19738,7 @@
       }
     ]
   },
-  "SendMouseEventsDisabledFormControlsEnabled": {
+  "SendMouseEventsDsbldFormControlsEnabled": {
     "os": [
       "win",
       "linux",
@@ -19751,7 +19751,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "SendMouseEventsDisabledFormControlsEnabled": true
+          "SendMouseEventsDsbldFormControlsEnabled": true
         },
         "prefs": {
           "policy.send_mouse_events_disabled_form_controls_enabled": {
@@ -19761,7 +19761,7 @@
       },
       {
         "policies": {
-          "SendMouseEventsDisabledFormControlsEnabled": false
+          "SendMouseEventsDsbldFormControlsEnabled": false
         },
         "prefs": {
           "policy.send_mouse_events_disabled_form_controls_enabled": {
