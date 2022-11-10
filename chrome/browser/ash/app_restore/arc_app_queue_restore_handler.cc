@@ -188,7 +188,7 @@ void ArcAppQueueRestoreHandler::OnAppConnectionReady() {
 
   // Receive the system CPU usage rate.
   if (!probe_service_ || !probe_service_.is_connected()) {
-    cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
+    cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
         probe_service_.BindNewPipeAndPassReceiver());
     probe_service_.set_disconnect_handler(
         base::BindOnce(&ArcAppQueueRestoreHandler::OnProbeServiceDisconnect,

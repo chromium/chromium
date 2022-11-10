@@ -37,6 +37,9 @@ class ServiceConnection {
       base::RepeatingCallback<mojo::PendingRemote<
           chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
 
+  // TODO(b/256946276): remove these wrapper functions for
+  // |CrosHealthdProbeService|, |CrosHealthdDiagnosticsService| and
+  // |CrosHealthdEventService|.
   // Retrieve a list of available diagnostic routines. See
   // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
@@ -353,18 +356,30 @@ class ServiceConnection {
       mojom::CrosHealthdProbeService::ProbeMultipleProcessInfoCallback
           callback) = 0;
 
-  // Binds |service| to an implementation of CrosHealthdDiagnosticsService. In
-  // production, this implementation is provided by cros_healthd. See
+  // Gets the interface for the bound diagnostics service. In production, this
+  // implementation is provided by cros_healthd. To customize mojo disconnect
+  // handler, use |BindDiagnosticsService| instead. See
+  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.`
+  virtual mojom::CrosHealthdDiagnosticsService* GetDiagnosticsService() = 0;
+
+  // Gets the interface for the bound probe service. In production, this
+  // implementation is provided by cros_healthd. To customize mojo disconnect
+  // handler, use |BindProbeService| instead. See
   // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
-  virtual void GetDiagnosticsService(
+  virtual mojom::CrosHealthdProbeService* GetProbeService() = 0;
+
+  // Binds |service| to an implementation of CrosHealthdDiagnosticsService. This
+  // function is only used to customize mojo disconnect handler, otherwise use
+  // |GetDiagnosticsService| directly.
+  virtual void BindDiagnosticsService(
       mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) = 0;
 
-  // Binds |service| to an implementation of CrosHealthdProbeService. In
-  // production, this implementation is provided by cros_healthd. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void GetProbeService(
+  // Binds |service| to an implementation of CrosHealthdProbeService. This
+  // function is only used to customize mojo disconnect handler, otherwise use
+  // |GetProbeService| directly.
+  virtual void BindProbeService(
       mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) = 0;
 
   // Sets a callback to request binding a PendingRemote to the

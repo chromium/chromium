@@ -274,7 +274,7 @@ std::string FetchTouchpadLibraryName() {
 }  // namespace
 
 RevenLogSource::RevenLogSource() : SystemLogsSource("Reven") {
-  ash::cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
+  ash::cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
       probe_service_.BindNewPipeAndPassReceiver());
 }
 

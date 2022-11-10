@@ -1037,5 +1037,35 @@ TEST_F(CrosHealthdServiceConnectionTest, ProbeProcessInfo) {
   run_loop.Run();
 }
 
+// Test that we can get diagnostics service.
+TEST_F(CrosHealthdServiceConnectionTest, GetDiagnosticsService) {
+  auto* service = ServiceConnection::GetInstance()->GetDiagnosticsService();
+  EXPECT_TRUE(service);
+}
+
+// Test that we can get probe service.
+TEST_F(CrosHealthdServiceConnectionTest, GetProbeService) {
+  auto* service = ServiceConnection::GetInstance()->GetProbeService();
+  EXPECT_TRUE(service);
+}
+
+// Test that we can bind diagnostics service.
+TEST_F(CrosHealthdServiceConnectionTest, BindDiagnosticsService) {
+  mojo::Remote<mojom::CrosHealthdDiagnosticsService> remote;
+  ServiceConnection::GetInstance()->BindDiagnosticsService(
+      remote.BindNewPipeAndPassReceiver());
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+}
+
+// Test that we can bind probe service.
+TEST_F(CrosHealthdServiceConnectionTest, BindProbeService) {
+  mojo::Remote<mojom::CrosHealthdProbeService> remote;
+  ServiceConnection::GetInstance()->BindProbeService(
+      remote.BindNewPipeAndPassReceiver());
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+}
+
 }  // namespace
 }  // namespace ash::cros_healthd

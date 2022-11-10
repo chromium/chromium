@@ -161,7 +161,7 @@ void CrosHealthdMetricsProvider::OnProbeDone(
 ash::cros_healthd::mojom::CrosHealthdProbeService*
 CrosHealthdMetricsProvider::GetService() {
   if (!service_ || !service_.is_connected()) {
-    ash::cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
+    ash::cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
         service_.BindNewPipeAndPassReceiver());
     service_.set_disconnect_handler(
         base::BindOnce(&CrosHealthdMetricsProvider::OnDisconnect,

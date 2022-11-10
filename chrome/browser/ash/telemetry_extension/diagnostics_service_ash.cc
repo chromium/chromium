@@ -57,7 +57,7 @@ void DiagnosticsServiceAsh::BindReceiver(
 cros_healthd::mojom::CrosHealthdDiagnosticsService*
 DiagnosticsServiceAsh::GetService() {
   if (!service_ || !service_.is_connected()) {
-    cros_healthd::ServiceConnection::GetInstance()->GetDiagnosticsService(
+    cros_healthd::ServiceConnection::GetInstance()->BindDiagnosticsService(
         service_.BindNewPipeAndPassReceiver());
     service_.set_disconnect_handler(base::BindOnce(
         &DiagnosticsServiceAsh::OnDisconnect, base::Unretained(this)));

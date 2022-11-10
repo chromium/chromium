@@ -88,7 +88,7 @@ void ProbeServiceAsh::GetOemData(GetOemDataCallback callback) {
 
 cros_healthd::mojom::CrosHealthdProbeService* ProbeServiceAsh::GetService() {
   if (!service_ || !service_.is_connected()) {
-    cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
+    cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
         service_.BindNewPipeAndPassReceiver());
     service_.set_disconnect_handler(
         base::BindOnce(&ProbeServiceAsh::OnDisconnect, base::Unretained(this)));

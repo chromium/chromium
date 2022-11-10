@@ -191,10 +191,12 @@ class ServiceConnectionImpl : public ServiceConnection {
       mojom::CrosHealthdProbeService::ProbeMultipleProcessInfoCallback callback)
       override;
 
-  void GetDiagnosticsService(
+  mojom::CrosHealthdDiagnosticsService* GetDiagnosticsService() override;
+  mojom::CrosHealthdProbeService* GetProbeService() override;
+  void BindDiagnosticsService(
       mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service)
       override;
-  void GetProbeService(
+  void BindProbeService(
       mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) override;
   void SetBindNetworkHealthServiceCallback(
       BindNetworkHealthServiceCallback callback) override;
@@ -670,7 +672,20 @@ void ServiceConnectionImpl::ProbeMultipleProcessInfo(
       process_ids, ignore_single_process_info, std::move(callback));
 }
 
-void ServiceConnectionImpl::GetDiagnosticsService(
+mojom::CrosHealthdDiagnosticsService*
+ServiceConnectionImpl::GetDiagnosticsService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdDiagnosticsServiceIfNeeded();
+  return cros_healthd_diagnostics_service_.get();
+}
+
+mojom::CrosHealthdProbeService* ServiceConnectionImpl::GetProbeService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdProbeServiceIfNeeded();
+  return cros_healthd_probe_service_.get();
+}
+
+void ServiceConnectionImpl::BindDiagnosticsService(
     mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (use_service_manager_) {
@@ -680,6 +695,19 @@ void ServiceConnectionImpl::GetDiagnosticsService(
   } else {
     EnsureCrosHealthdServiceFactoryIsBound();
     cros_healthd_service_factory_->GetDiagnosticsService(std::move(service));
+  }
+}
+
+void ServiceConnectionImpl::BindProbeService(
+    mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (use_service_manager_) {
+    mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosHealthdProbe, absl::nullopt,
+        std::move(service).PassPipe());
+  } else {
+    EnsureCrosHealthdServiceFactoryIsBound();
+    cros_healthd_service_factory_->GetProbeService(std::move(service));
   }
 }
 
@@ -782,19 +810,6 @@ void ServiceConnectionImpl::BindAndSendNetworkDiagnosticsRoutines() {
       std::move(remote));
 }
 
-void ServiceConnectionImpl::GetProbeService(
-    mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (use_service_manager_) {
-    mojo_service_manager::GetServiceManagerProxy()->Request(
-        chromeos::mojo_services::kCrosHealthdProbe, absl::nullopt,
-        std::move(service).PassPipe());
-  } else {
-    EnsureCrosHealthdServiceFactoryIsBound();
-    cros_healthd_service_factory_->GetProbeService(std::move(service));
-  }
-}
-
 void ServiceConnectionImpl::EnsureCrosHealthdServiceFactoryIsBound() {
   DCHECK(!use_service_manager_)
       << "ServiceFactory is not available in service manager.";
@@ -819,7 +834,7 @@ void ServiceConnectionImpl::BindCrosHealthdDiagnosticsServiceIfNeeded() {
   if (cros_healthd_diagnostics_service_.is_bound())
     return;
 
-  GetDiagnosticsService(
+  BindDiagnosticsService(
       cros_healthd_diagnostics_service_.BindNewPipeAndPassReceiver());
   cros_healthd_diagnostics_service_.set_disconnect_handler(base::BindOnce(
       &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
@@ -848,7 +863,7 @@ void ServiceConnectionImpl::BindCrosHealthdProbeServiceIfNeeded() {
   if (cros_healthd_probe_service_.is_bound())
     return;
 
-  GetProbeService(cros_healthd_probe_service_.BindNewPipeAndPassReceiver());
+  BindProbeService(cros_healthd_probe_service_.BindNewPipeAndPassReceiver());
   cros_healthd_probe_service_.set_disconnect_handler(base::BindOnce(
       &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
 }

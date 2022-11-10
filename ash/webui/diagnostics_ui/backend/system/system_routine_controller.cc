@@ -676,7 +676,7 @@ void SystemRoutineController::SendRoutineResult(
 
 void SystemRoutineController::BindCrosHealthdDiagnosticsServiceIfNeccessary() {
   if (!diagnostics_service_ || !diagnostics_service_.is_connected()) {
-    cros_healthd::ServiceConnection::GetInstance()->GetDiagnosticsService(
+    cros_healthd::ServiceConnection::GetInstance()->BindDiagnosticsService(
         diagnostics_service_.BindNewPipeAndPassReceiver());
     diagnostics_service_.set_disconnect_handler(base::BindOnce(
         &SystemRoutineController::OnDiagnosticsServiceDisconnected,
