@@ -60,6 +60,12 @@ public class MessageQueueManagerTest {
 
         @Override
         public void onFinishHiding() {}
+
+        @Override
+        public void onAnimationStart() {}
+
+        @Override
+        public void onAnimationEnd() {}
     };
 
     private class EmptyMessageStateHandler implements MessageStateHandler {

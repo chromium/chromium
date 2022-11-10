@@ -229,6 +229,10 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         mMessages.clear();
     }
 
+    MessageAnimationCoordinator getAnimationCoordinator() {
+        return mAnimationCoordinator;
+    }
+
     void setScopeChangeControllerForTesting(ScopeChangeController controllerForTesting) {
         mScopeChangeController = controllerForTesting;
     }

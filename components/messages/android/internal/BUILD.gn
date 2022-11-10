@@ -21,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/components/messages/ScopeChangeController.java",
     "java/src/org/chromium/components/messages/ScopeKey.java",
     "java/src/org/chromium/components/messages/SingleActionMessage.java",
+    "java/src/org/chromium/components/messages/SwipeAnimationHandler.java",
   ]
 
   resources_package = "org.chromium.components.messages"

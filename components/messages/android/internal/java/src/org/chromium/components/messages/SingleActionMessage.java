@@ -39,7 +39,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private final DismissCallback mDismissHandler;
     private final Supplier<Long> mAutodismissDurationMs;
     private final Supplier<Integer> mMaxTranslationSupplier;
-    private final Callback<Animator> mAnimatorStartCallback;
+    private final SwipeAnimationHandler mSwipeAnimationHandler;
     private boolean mMessageDismissed;
 
     // The timestamp when the message was shown. Used for reproting visible duration.
@@ -54,18 +54,18 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
      *         autodismiss duration for message banner. The actual duration can be extended by
      *         clients.
      * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
-     * @param animatorStartCallback The {@link Callback} that will be used by the message banner to
-     *         delegate starting the animations to the {@link WindowAndroid}.
+     * @param swipeAnimationHandler The Handler that will be used by the message banner to
+     *         delegate starting custom swiping animations to the {@link WindowAndroid}.
      */
     public SingleActionMessage(MessageContainer container, PropertyModel model,
             DismissCallback dismissHandler, Supplier<Integer> maxTranslationSupplier,
             MessageAutodismissDurationProvider autodismissDurationProvider,
-            Callback<Animator> animatorStartCallback) {
+            SwipeAnimationHandler swipeAnimationHandler) {
         mModel = model;
         mContainer = container;
         mDismissHandler = dismissHandler;
         mMaxTranslationSupplier = maxTranslationSupplier;
-        mAnimatorStartCallback = animatorStartCallback;
+        mSwipeAnimationHandler = swipeAnimationHandler;
 
         long dismissalDuration =
                 mModel.getAllSetProperties().contains(MessageBannerProperties.DISMISSAL_DURATION)
@@ -98,7 +98,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                     // clang-format off
                     () -> { mDismissHandler.invoke(mModel, DismissReason.GESTURE); },
                     // clang-format on
-                    mAnimatorStartCallback, mAutodismissDurationMs,
+                    mSwipeAnimationHandler, mAutodismissDurationMs,
                     () -> { mDismissHandler.invoke(mModel, DismissReason.TIMER); });
         }
 

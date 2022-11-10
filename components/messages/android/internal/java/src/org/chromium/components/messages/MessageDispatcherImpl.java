@@ -23,7 +23,7 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     private final MessageContainer mMessageContainer;
     private final Supplier<Integer> mMessageMaxTranslationSupplier;
     private final MessageAutodismissDurationProvider mAutodismissDurationProvider;
-    private final Callback<Animator> mAnimatorStartCallback;
+    private final SwipeAnimationHandler mSwipeAnimationHandler;
     private final WindowAndroid mWindowAndroid;
 
     /**
@@ -41,8 +41,7 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
             Supplier<Integer> messageMaxTranslation,
             MessageAutodismissDurationProvider autodismissDurationProvider,
             Callback<Animator> animatorStartCallback, WindowAndroid windowAndroid) {
-        this(messageContainer, messageMaxTranslation, autodismissDurationProvider,
-                animatorStartCallback, windowAndroid,
+        this(messageContainer, messageMaxTranslation, autodismissDurationProvider, windowAndroid,
                 new MessageQueueManager(
                         new MessageAnimationCoordinator(messageContainer, animatorStartCallback)));
     }
@@ -51,14 +50,13 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     MessageDispatcherImpl(MessageContainer messageContainer,
             Supplier<Integer> messageMaxTranslation,
             MessageAutodismissDurationProvider autodismissDurationProvider,
-            Callback<Animator> animatorStartCallback, WindowAndroid windowAndroid,
-            MessageQueueManager messageQueueManager) {
+            WindowAndroid windowAndroid, MessageQueueManager messageQueueManager) {
         mMessageContainer = messageContainer;
         mMessageMaxTranslationSupplier = messageMaxTranslation;
-        mAnimatorStartCallback = animatorStartCallback;
         mAutodismissDurationProvider = autodismissDurationProvider;
         mWindowAndroid = windowAndroid;
         mMessageQueueManager = messageQueueManager;
+        mSwipeAnimationHandler = messageQueueManager.getAnimationCoordinator();
     }
 
     /**
@@ -73,7 +71,7 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
             @MessageScopeType int scopeType, boolean highPriority) {
         MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
                 messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier,
-                mAutodismissDurationProvider, mAnimatorStartCallback);
+                mAutodismissDurationProvider, mSwipeAnimationHandler);
         ScopeKey scopeKey;
         assert scopeType
                 != MessageScopeType.WINDOW
@@ -87,7 +85,7 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     public void enqueueWindowScopedMessage(PropertyModel messageProperties, boolean highPriority) {
         MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
                 messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier,
-                mAutodismissDurationProvider, mAnimatorStartCallback);
+                mAutodismissDurationProvider, mSwipeAnimationHandler);
         ScopeKey scopeKey = new ScopeKey(mWindowAndroid);
         mMessageQueueManager.enqueueMessage(
                 messageStateHandler, messageProperties, scopeKey, highPriority);

@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.ObserverList;
@@ -15,12 +16,14 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.components.messages.MessageContainer;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * Coordinator of {@link MessageContainer}, which can adjust margins of the message container
  * and control the visibility of browser control when message is being shown.
  */
 public class MessageContainerCoordinator implements BrowserControlsStateProvider.Observer {
+    @Nullable
     private MessageContainer mContainer;
     private BrowserControlsManager mControlsManager;
 
@@ -39,6 +42,16 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         mContainer = null;
         mControlsManager = null;
         mObservers.clear();
+    }
+
+    public void onAnimationStart() {
+        if (mContainer == null) return;
+        ViewUtils.setAncestorsShouldClipChildren(mContainer, false);
+    }
+
+    public void onAnimationEnd() {
+        if (mContainer == null) return;
+        ViewUtils.setAncestorsShouldClipChildren(mContainer, true);
     }
 
     private void updateMargins() {

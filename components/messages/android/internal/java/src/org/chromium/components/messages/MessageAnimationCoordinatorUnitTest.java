@@ -4,13 +4,18 @@
 
 package org.chromium.components.messages;
 
+import static android.os.Looper.getMainLooper;
+
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
+import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 
 import android.animation.Animator;
 
@@ -21,14 +26,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageStateHandler.Position;
@@ -39,8 +47,9 @@ import java.util.Arrays;
  * Unit tests for {@link MessageAnimationCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(PAUSED)
 public class MessageAnimationCoordinatorUnitTest {
-    private MessageQueueDelegate mQueueDelegate = new MessageQueueDelegate() {
+    private MessageQueueDelegate mQueueDelegate = Mockito.spy(new MessageQueueDelegate() {
         @Override
         public void onStartShowing(Runnable callback) {
             callback.run();
@@ -48,7 +57,13 @@ public class MessageAnimationCoordinatorUnitTest {
 
         @Override
         public void onFinishHiding() {}
-    };
+
+        @Override
+        public void onAnimationStart() {}
+
+        @Override
+        public void onAnimationEnd() {}
+    });
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -63,7 +78,7 @@ public class MessageAnimationCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, mAnimatorStartCallback);
+        mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, Animator::start);
         doNothing().when(mAnimatorStartCallback).onResult(any());
         mAnimationCoordinator.setMessageQueueDelegate(mQueueDelegate);
     }
@@ -124,14 +139,28 @@ public class MessageAnimationCoordinatorUnitTest {
     // [m1, m2] -> [m1, m2]
     @Test
     @SmallTest
-    public void testDoNothing() {
+    public void testDoNothing() throws java.util.concurrent.TimeoutException {
         MessageState m1 = buildMessageState();
         MessageState m2 = buildMessageState();
         // Initial setup
-        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mAnimationCoordinator.updateWithStacking(
+                Arrays.asList(m1, m2), false, callbackHelper::notifyCalled);
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mContainer).runAfterInitialMessageLayout(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        verify(mQueueDelegate).onAnimationStart();
+        shadowOf(getMainLooper()).idle();
+        callbackHelper.waitForFirst();
+        verify(mQueueDelegate).onAnimationEnd();
 
         // Again with same candidates.
-        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {
+            verify(mQueueDelegate, times(1).description("Should not be called again"))
+                    .onAnimationEnd();
+        });
+        verify(mQueueDelegate, times(1).description("Should not be called again"))
+                .onAnimationStart();
 
         verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
         verify(m2.handler, never()).hide(anyInt(), anyInt(), anyBoolean());

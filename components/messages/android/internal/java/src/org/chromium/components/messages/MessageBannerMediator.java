@@ -20,7 +20,6 @@ import android.view.MotionEvent;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -72,7 +71,7 @@ class MessageBannerMediator implements SwipeHandler {
     private final float mHorizontalHideThresholdPx;
     private final Supplier<Float> mMaxHorizontalTranslationPx;
     private final Runnable mMessageDismissed;
-    private final Callback<Animator> mAnimatorStartCallback;
+    private final SwipeAnimationHandler mSwipeAnimationHandler;
     private final int mPeekingMarginTop;
     private final int mDefaultMarginTop;
 
@@ -89,7 +88,7 @@ class MessageBannerMediator implements SwipeHandler {
      */
     MessageBannerMediator(PropertyModel model, Supplier<Integer> maxTranslationSupplier,
             Resources resources, Runnable messageDismissed,
-            Callback<Animator> animatorStartCallback) {
+            SwipeAnimationHandler swipeAnimationHandler) {
         mModel = model;
         mMaxTranslationYSupplier = maxTranslationSupplier;
         mVerticalHideThresholdPx =
@@ -103,7 +102,7 @@ class MessageBannerMediator implements SwipeHandler {
                     screenWidth / 2);
         };
         mMessageDismissed = messageDismissed;
-        mAnimatorStartCallback = animatorStartCallback;
+        mSwipeAnimationHandler = swipeAnimationHandler;
         mDefaultMarginTop = resources.getDimensionPixelSize(R.dimen.message_shadow_top_margin);
         mPeekingMarginTop = resources.getDimensionPixelSize(R.dimen.message_peeking_layer_height)
                 + mDefaultMarginTop;
@@ -177,6 +176,7 @@ class MessageBannerMediator implements SwipeHandler {
         mSwipeStartTranslation =
                 isVertical(mSwipeDirection) ? mModel.get(TRANSLATION_Y) : mModel.get(TRANSLATION_X);
         mDidFling = false;
+        mSwipeAnimationHandler.onSwipeStart();
     }
 
     @Override
@@ -206,6 +206,7 @@ class MessageBannerMediator implements SwipeHandler {
         // No need to animate if the message banner is in resting position.
         if (isResting()) {
             mCurrentState = State.IDLE;
+            mSwipeAnimationHandler.onSwipeEnd(null);
             return;
         }
 
@@ -227,7 +228,7 @@ class MessageBannerMediator implements SwipeHandler {
                     : MathUtils.flipSignIf(mMaxHorizontalTranslationPx.get(), translationX < 0);
         }
         boolean isShow = translateTo == 0;
-        mAnimatorStartCallback.onResult(startAnimation(isVertical, isShow, translateTo, false,
+        mSwipeAnimationHandler.onSwipeEnd(startAnimation(isVertical, isShow, translateTo, false,
                 mDefaultMarginTop, isShow ? () -> {} : mMessageDismissed));
     }
 
@@ -257,7 +258,7 @@ class MessageBannerMediator implements SwipeHandler {
         // TODO(crbug.com/1157213): See if we can use velocity to change the animation
         // speed/duration.
         boolean isShow = translateTo == 0;
-        mAnimatorStartCallback.onResult(
+        mSwipeAnimationHandler.onSwipeEnd(
                 startAnimation(isVertical(mSwipeDirection), isShow, translateTo, velocity != 0,
                         mDefaultMarginTop, isShow ? () -> {} : mMessageDismissed));
     }

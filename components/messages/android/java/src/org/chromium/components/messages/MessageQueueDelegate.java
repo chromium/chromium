@@ -19,4 +19,14 @@ public interface MessageQueueDelegate {
      * Called after a message is finished hiding.
      */
     void onFinishHiding();
+
+    /**
+     * Called when a message animation is about to start.
+     */
+    void onAnimationStart();
+
+    /**
+     * Called after a message animation has ended.
+     */
+    void onAnimationEnd();
 }

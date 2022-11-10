@@ -192,6 +192,16 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(null);
     }
 
+    @Override
+    public void onAnimationStart() {
+        mContainerCoordinator.onAnimationStart();
+    }
+
+    @Override
+    public void onAnimationEnd() {
+        mContainerCoordinator.onAnimationEnd();
+    }
+
     /**
      * Suspend queue so that the queue will not show a new message until it is resumed.
      * @return A token of {@link TokenHolder} required when resuming the queue.

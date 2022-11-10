@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 
@@ -34,11 +35,14 @@ public class MessageDispatcherUnitTest {
 
     @Mock
     private MessageQueueManager mQueueManager;
+    @Mock
+    private MessageAnimationCoordinator mAnimationCoordinator;
 
     @Test
     public void testEnqueueWindowScopedMessage() {
-        MessageDispatcherImpl dispatcher = new MessageDispatcherImpl(
-                null, () -> 1, (x, v) -> 1L, (v) -> {}, null, mQueueManager);
+        doReturn(mAnimationCoordinator).when(mQueueManager).getAnimationCoordinator();
+        MessageDispatcherImpl dispatcher =
+                new MessageDispatcherImpl(null, () -> 1, (x, v) -> 1L, null, mQueueManager);
         dispatcher.enqueueWindowScopedMessage(getModel(), false);
         ArgumentCaptor<ScopeKey> captor = ArgumentCaptor.forClass(ScopeKey.class);
         verify(mQueueManager).enqueueMessage(any(), any(), captor.capture(), anyBoolean());

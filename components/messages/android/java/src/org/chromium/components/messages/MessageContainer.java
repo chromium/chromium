@@ -17,7 +17,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.ui.base.ViewUtils;
 
 /**
  * Container holding messages.
@@ -82,7 +81,6 @@ public class MessageContainer extends FrameLayout {
 
         // TODO(crbug.com/1178965): clipChildren should be set to false only when the message is in
         // motion.
-        ViewUtils.setAncestorsShouldClipChildren(this, false);
     }
 
     /**
@@ -96,7 +94,6 @@ public class MessageContainer extends FrameLayout {
         super.removeView(view);
         if (getChildCount() == 0) {
             mA11yDelegate = null;
-            ViewUtils.setAncestorsShouldClipChildren(this, true);
         }
     }
 

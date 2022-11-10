@@ -11,7 +11,6 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MockedInTests;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
@@ -41,7 +40,7 @@ class MessageBannerCoordinator {
      * @param resources The {@link Resources}.
      * @param messageDismissed The {@link Runnable} that will run if and when the user dismisses the
      *         message.
-     * @param animatorStartCallback The {@link Callback} that will be used to delegate starting the
+     * @param swipeAnimationHandler The handler that will be used to delegate starting the
      *         animations to {@link WindowAndroid} so the message is not clipped as a result of some
      *         Android SurfaceView optimization.
      * @param autodismissDurationMs A {@link Supplier} providing autodismiss duration for message
@@ -50,13 +49,13 @@ class MessageBannerCoordinator {
      */
     MessageBannerCoordinator(MessageBannerView view, PropertyModel model,
             Supplier<Integer> maxTranslationSupplier, Resources resources,
-            Runnable messageDismissed, Callback<Animator> animatorStartCallback,
+            Runnable messageDismissed, SwipeAnimationHandler swipeAnimationHandler,
             Supplier<Long> autodismissDurationMs, Runnable onTimeUp) {
         mView = view;
         mModel = model;
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         mMediator = new MessageBannerMediator(
-                model, maxTranslationSupplier, resources, messageDismissed, animatorStartCallback);
+                model, maxTranslationSupplier, resources, messageDismissed, swipeAnimationHandler);
         mAutodismissDurationMs = autodismissDurationMs;
         mTimer = new MessageAutoDismissTimer();
         mOnTimeUp = onTimeUp;

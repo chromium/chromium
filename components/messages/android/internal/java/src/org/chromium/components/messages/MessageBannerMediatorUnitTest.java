@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -64,7 +63,7 @@ public class MessageBannerMediatorUnitTest {
     @Mock
     private Runnable mHiddenRunnable;
     @Mock
-    private Callback<Animator> mAnimatorStartCallback;
+    private SwipeAnimationHandler mSwipeAnimationHandler;
 
     private MessageBannerMediator mMediator;
     private PropertyModel mModel;
@@ -93,10 +92,10 @@ public class MessageBannerMediatorUnitTest {
             ((Animator) invocation.getArguments()[0]).start();
             return null;
         })
-                .when(mAnimatorStartCallback)
-                .onResult(any(Animator.class));
+                .when(mSwipeAnimationHandler)
+                .onSwipeEnd(any(Animator.class));
         mMediator = new MessageBannerMediator(mModel, mMaxTranslationSupplier, mResources,
-                mDismissedRunnable, mAnimatorStartCallback);
+                mDismissedRunnable, mSwipeAnimationHandler);
         when(mMaxTranslationSupplier.get()).thenReturn(100);
     }
 
