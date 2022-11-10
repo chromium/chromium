@@ -1165,18 +1165,20 @@ LogicalSize ComputeReplacedSize(
   }
 
   const LayoutSVGRoot* svg_root = To<LayoutSVGRoot>(node.GetLayoutBox());
-  bool is_horizontal = node.Style().IsHorizontalWritingMode();
-  LayoutSize container_size = svg_root->GetContainerSize();
+  PhysicalSize container_size(svg_root->GetContainerSize());
   if (!container_size.IsEmpty()) {
-    if (is_horizontal)
-      return {container_size.Width(), container_size.Height()};
-    return {container_size.Height(), container_size.Width()};
+    LogicalSize size =
+        container_size.ConvertToLogical(node.Style().GetWritingMode());
+    size.inline_size += border_padding.InlineSum();
+    size.block_size += border_padding.BlockSum();
+    return size;
   }
 
   if (svg_root->IsEmbeddedThroughFrameContainingSVGDocument()) {
     LogicalSize size = space.AvailableSize();
-    size.block_size = is_horizontal ? node.InitialContainingBlockSize().height
-                                    : node.InitialContainingBlockSize().width;
+    size.block_size = node.Style().IsHorizontalWritingMode()
+                          ? node.InitialContainingBlockSize().height
+                          : node.InitialContainingBlockSize().width;
     return size;
   }
 
