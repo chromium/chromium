@@ -828,7 +828,7 @@ BASE_FEATURE(kExoHapticFeedbackSupport,
 // WSI, which otherwise falls back to software rendering.
 BASE_FEATURE(kExoLinuxDmabufV3,
              "ExoLinuxDmabufV3",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables version 4 of the zwp_linux_dmabuf_v1 Wayland protocol.
 // This version adds support for dynamic feedback, allowing the compositor to
