@@ -52,3 +52,7 @@ WebAppsCrosapiBrowserTest*
 -DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
 # TODO(crbug.com/1356103) Disabled when switch to LacrosOnly.
 -SwitchAccessPointScanManagerTest.PointScanRightClick
+# TODO(crbug.com/1383146) Flaky
+-ChromeVoxBackgroundTest.CrossWindowNextPreviousFocus
+-ChromeVoxBackgroundTest.MultipleListBoxes
+-ChromeVoxBackgroundTest.SelectOptionSelected
