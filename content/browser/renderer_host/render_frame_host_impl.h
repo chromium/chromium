@@ -171,10 +171,6 @@
 #include "media/mojo/mojom/remoting.mojom-forward.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/common/pepper_plugin.mojom.h"
-#endif
-
 namespace blink {
 class AssociatedInterfaceRegistry;
 class DocumentPolicy;
@@ -246,7 +242,6 @@ class NavigationEarlyHintsManager;
 class NavigationRequest;
 class PeakGpuMemoryTracker;
 class PeerConnectionTrackerHost;
-class PepperPluginInstanceHost;
 class Portal;
 class PrefetchedSignedExchangeCache;
 class PresentationServiceImpl;
@@ -254,6 +249,7 @@ class PushMessagingManager;
 class RenderAccessibilityHost;
 class RenderFrameHostDelegate;
 class RenderFrameHostImpl;
+class RenderFrameHostImplPpapiSupport;
 class RenderFrameHostManager;
 class RenderFrameHostOrProxy;
 class RenderFrameHostOwner;
@@ -293,10 +289,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public blink::mojom::LocalFrameHost,
       public blink::mojom::LocalMainFrameHost,
       public ui::AXActionHandlerBase,
-#if BUILDFLAG(ENABLE_PPAPI)
-      public mojom::PepperHost,
-      public mojom::PepperHungDetectorHost,
-#endif  //  BUILDFLAG(ENABLE_PPAPI)
       public network::mojom::CookieAccessObserver,
       public BucketContext {
  public:
@@ -2503,11 +2495,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<network::mojom::MdnsResponder> receiver);
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
-#if BUILDFLAG(ENABLE_PPAPI)
-  void PepperInstanceClosed(int32_t instance_id);
-  void PepperSetVolume(int32_t instance_id, double volume);
-#endif
-
   const network::mojom::URLResponseHeadPtr& last_response_head() const {
     return last_response_head_;
   }
@@ -2686,6 +2673,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SnapshotDocumentForViewTransition(
       blink::mojom::LocalFrame::SnapshotDocumentForViewTransitionCallback
           callback);
+
+#if BUILDFLAG(ENABLE_PPAPI)
+  RenderFrameHostImplPpapiSupport& GetPpapiSupport();
+#endif
 
  protected:
   friend class RenderFrameHostFactory;
@@ -2994,47 +2985,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // network::mojom::CookieAccessObserver
   void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
                  observer) override;
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  // mojom::PepperHost overrides:
-  void InstanceCreated(
-      int32_t instance_id,
-      mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
-      mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host)
-      override;
-  void BindHungDetectorHost(
-      mojo::PendingReceiver<mojom::PepperHungDetectorHost> hung_host,
-      int32_t plugin_child_id,
-      const base::FilePath& path) override;
-  void GetPluginInfo(const GURL& url,
-                     const std::string& mime_type,
-                     GetPluginInfoCallback callback) override;
-  void DidCreateInProcessInstance(int32_t instance,
-                                  int32_t render_frame_id,
-                                  const GURL& document_url,
-                                  const GURL& plugin_url) override;
-  void DidDeleteInProcessInstance(int32_t instance) override;
-  void DidCreateOutOfProcessPepperInstance(
-      int32_t plugin_child_id,
-      int32_t pp_instance,
-      bool is_external,
-      int32_t render_frame_id,
-      const GURL& document_url,
-      const GURL& plugin_url,
-      bool is_priviledged_context,
-      DidCreateOutOfProcessPepperInstanceCallback callback) override;
-  void DidDeleteOutOfProcessPepperInstance(int32_t plugin_child_id,
-                                           int32_t pp_instance,
-                                           bool is_external) override;
-  void OpenChannelToPepperPlugin(
-      const url::Origin& embedder_origin,
-      const base::FilePath& path,
-      const absl::optional<url::Origin>& origin_lock,
-      OpenChannelToPepperPluginCallback callback) override;
-
-  // mojom::PepperHungDetectorHost overrides:
-  void PluginHung(bool is_hung) override;
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   // Resets any waiting state of this RenderFrameHost that is no longer
   // relevant.
@@ -4146,15 +4096,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       dom_automation_controller_receiver_{this};
 
 #if BUILDFLAG(ENABLE_PPAPI)
-  mojo::AssociatedReceiver<mojom::PepperHost> pepper_host_receiver_{this};
-  std::map<int32_t, std::unique_ptr<PepperPluginInstanceHost>>
-      pepper_instance_map_;
-  struct HungDetectorContext {
-    int32_t plugin_child_id;
-    const base::FilePath plugin_path;
-  };
-  mojo::ReceiverSet<mojom::PepperHungDetectorHost, HungDetectorContext>
-      pepper_hung_detectors_;
+  std::unique_ptr<RenderFrameHostImplPpapiSupport> ppapi_support_;
 #endif
 
   KeepAliveHandleFactory keep_alive_handle_factory_;

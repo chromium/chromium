@@ -2771,6 +2771,8 @@ source_set("browser") {
       "renderer_host/pepper/pepper_udp_socket_message_filter.h",
       "renderer_host/pepper/quota_reservation.cc",
       "renderer_host/pepper/quota_reservation.h",
+      "renderer_host/render_frame_host_impl_ppapi_support.cc",
+      "renderer_host/render_frame_host_impl_ppapi_support.h",
     ]
     deps += [
       "//ppapi/host",

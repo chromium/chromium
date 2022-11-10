@@ -208,6 +208,7 @@
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/net_buildflags.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -285,8 +286,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PPAPI)
-#include "content/browser/plugin_service_impl.h"
-#include "content/browser/renderer_host/pepper/pepper_renderer_connection.h"
+#include "content/browser/renderer_host/render_frame_host_impl_ppapi_support.h"
+#include "content/common/pepper_plugin.mojom.h"
 #endif
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
@@ -1427,50 +1428,6 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy_;
   ukm::SourceIdObj ukm_source_id_;
 };
-
-#if BUILDFLAG(ENABLE_PPAPI)
-class PepperPluginInstanceHost : public mojom::PepperPluginInstanceHost {
- public:
-  PepperPluginInstanceHost(
-      int32_t instance_id,
-      RenderFrameHostImpl* frame_host,
-      mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
-      mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host)
-      : instance_id_(instance_id),
-        frame_host_(frame_host),
-        receiver_(this, std::move(host)),
-        remote_(std::move(instance)) {
-    frame_host_->delegate()->OnPepperInstanceCreated(frame_host_, instance_id);
-    remote_.set_disconnect_handler(
-        base::BindOnce(&RenderFrameHostImpl::PepperInstanceClosed,
-                       base::Unretained(frame_host), instance_id_));
-  }
-  ~PepperPluginInstanceHost() override = default;
-
-  // mojom::PepperPluginInstanceHost overrides.
-  void StartsPlayback() override {
-    frame_host_->delegate()->OnPepperStartsPlayback(frame_host_, instance_id_);
-  }
-
-  void StopsPlayback() override {
-    frame_host_->delegate()->OnPepperStopsPlayback(frame_host_, instance_id_);
-  }
-
-  void InstanceCrashed(const base::FilePath& plugin_path,
-                       base::ProcessId plugin_pid) override {
-    frame_host_->delegate()->OnPepperPluginCrashed(frame_host_, plugin_path,
-                                                   plugin_pid);
-  }
-
-  void SetVolume(double volume) { remote_->SetVolume(volume); }
-
- private:
-  int32_t const instance_id_;
-  const raw_ptr<RenderFrameHostImpl> frame_host_;
-  mojo::AssociatedReceiver<mojom::PepperPluginInstanceHost> receiver_;
-  mojo::AssociatedRemote<mojom::PepperPluginInstance> remote_;
-};
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 struct PendingNavigation {
   blink::mojom::CommonNavigationParamsPtr common_params;
@@ -9563,10 +9520,7 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
   associated_registry_->AddInterface<mojom::PepperHost>(base::BindRepeating(
       [](RenderFrameHostImpl* impl,
          mojo::PendingAssociatedReceiver<mojom::PepperHost> receiver) {
-        impl->pepper_host_receiver_.Bind(std::move(receiver));
-        impl->pepper_host_receiver_.SetFilter(
-            impl->CreateMessageFilterForAssociatedReceiver(
-                mojom::PepperHost::Name_));
+        impl->GetPpapiSupport().Bind(std::move(receiver));
       },
       base::Unretained(this)));
 #endif
@@ -9669,10 +9623,8 @@ void RenderFrameHostImpl::TearDownMojoConnection() {
   dom_automation_controller_receiver_.reset();
 
 #if BUILDFLAG(ENABLE_PPAPI)
-  pepper_host_receiver_.reset();
-  pepper_instance_map_.clear();
-  pepper_hung_detectors_.Clear();
-#endif  // BUILDFLAG(ENABLE_PPAPI)
+  ppapi_support_.reset();
+#endif
 
   // Audio stream factories are tied to a live RenderFrame: see
   // //content/browser/media/forwarding_audio_stream_factory.h.
@@ -9892,6 +9844,15 @@ void RenderFrameHostImpl::SnapshotDocumentForViewTransition(
   GetAssociatedLocalFrame()->SnapshotDocumentForViewTransition(
       std::move(callback));
 }
+
+#if BUILDFLAG(ENABLE_PPAPI)
+RenderFrameHostImplPpapiSupport& RenderFrameHostImpl::GetPpapiSupport() {
+  if (!ppapi_support_) {
+    ppapi_support_ = std::make_unique<RenderFrameHostImplPpapiSupport>(*this);
+  }
+  return *ppapi_support_;
+}
+#endif
 
 void RenderFrameHostImpl::RequestAXTreeSnapshot(
     AXTreeSnapshotCallback callback,
@@ -14295,109 +14256,6 @@ void RenderFrameHostImpl::Clone(
     mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
   cookie_observers_.Add(this, std::move(observer));
 }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-void RenderFrameHostImpl::InstanceCreated(
-    int32_t instance_id,
-    mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
-    mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host) {
-  pepper_instance_map_.emplace(
-      instance_id,
-      std::make_unique<PepperPluginInstanceHost>(
-          instance_id, this, std::move(instance), std::move(host)));
-}
-
-void RenderFrameHostImpl::BindHungDetectorHost(
-    mojo::PendingReceiver<mojom::PepperHungDetectorHost> hung_host,
-    int32_t plugin_child_id,
-    const base::FilePath& path) {
-  pepper_hung_detectors_.Add(this, std::move(hung_host),
-                             {plugin_child_id, path});
-}
-
-void RenderFrameHostImpl::GetPluginInfo(const GURL& url,
-                                        const std::string& mime_type,
-                                        GetPluginInfoCallback callback) {
-  bool allow_wildcard = true;
-  WebPluginInfo info;
-  std::string actual_mime_type;
-  bool found = PluginServiceImpl::GetInstance()->GetPluginInfo(
-      GetBrowserContext(), url, mime_type, allow_wildcard, nullptr, &info,
-      &actual_mime_type);
-  std::move(callback).Run(found, info, actual_mime_type);
-}
-
-void RenderFrameHostImpl::DidCreateInProcessInstance(int32_t instance,
-                                                     int32_t render_frame_id,
-                                                     const GURL& document_url,
-                                                     const GURL& plugin_url) {
-  RenderProcessHostImpl* process =
-      static_cast<RenderProcessHostImpl*>(GetProcess());
-  process->pepper_renderer_connection()->DidCreateInProcessInstance(
-      instance, render_frame_id, document_url, plugin_url);
-}
-
-void RenderFrameHostImpl::DidDeleteInProcessInstance(int32_t instance) {
-  RenderProcessHostImpl* process =
-      static_cast<RenderProcessHostImpl*>(GetProcess());
-  process->pepper_renderer_connection()->DidDeleteInProcessInstance(instance);
-}
-
-void RenderFrameHostImpl::DidCreateOutOfProcessPepperInstance(
-    int32_t plugin_child_id,
-    int32_t pp_instance,
-    bool is_external,
-    int32_t render_frame_id,
-    const GURL& document_url,
-    const GURL& plugin_url,
-    bool is_privileged_context,
-    DidCreateOutOfProcessPepperInstanceCallback callback) {
-  RenderProcessHostImpl* process =
-      static_cast<RenderProcessHostImpl*>(GetProcess());
-  process->pepper_renderer_connection()->DidCreateOutOfProcessPepperInstance(
-      plugin_child_id, pp_instance, is_external, render_frame_id, document_url,
-      plugin_url, is_privileged_context, std::move(callback));
-}
-
-void RenderFrameHostImpl::DidDeleteOutOfProcessPepperInstance(
-    int32_t plugin_child_id,
-    int32_t pp_instance,
-    bool is_external) {
-  RenderProcessHostImpl* process =
-      static_cast<RenderProcessHostImpl*>(GetProcess());
-  process->pepper_renderer_connection()->DidDeleteOutOfProcessPepperInstance(
-      plugin_child_id, pp_instance, is_external);
-}
-
-void RenderFrameHostImpl::OpenChannelToPepperPlugin(
-    const url::Origin& embedder_origin,
-    const base::FilePath& path,
-    const absl::optional<url::Origin>& origin_lock,
-    OpenChannelToPepperPluginCallback callback) {
-  RenderProcessHostImpl* process =
-      static_cast<RenderProcessHostImpl*>(GetProcess());
-  process->pepper_renderer_connection()->OpenChannelToPepperPlugin(
-      embedder_origin, path, origin_lock, std::move(callback));
-}
-
-void RenderFrameHostImpl::PluginHung(bool is_hung) {
-  const HungDetectorContext& context = pepper_hung_detectors_.current_context();
-  delegate()->OnPepperPluginHung(this, context.plugin_child_id,
-                                 context.plugin_path, is_hung);
-}
-
-void RenderFrameHostImpl::PepperInstanceClosed(int32_t instance_id) {
-  delegate()->OnPepperInstanceDeleted(this, instance_id);
-  pepper_instance_map_.erase(instance_id);
-}
-
-void RenderFrameHostImpl::PepperSetVolume(int32_t instance_id, double volume) {
-  auto plugin_instance_host = pepper_instance_map_.find(instance_id);
-  DCHECK(plugin_instance_host != pepper_instance_map_.end());
-  plugin_instance_host->second->SetVolume(volume);
-}
-
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 void RenderFrameHostImpl::OnCookiesAccessed(
     network::mojom::CookieAccessDetailsPtr details) {
