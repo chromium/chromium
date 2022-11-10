@@ -58,35 +58,6 @@ function RunRequestStorageAccessViaDomParser() {
   return doc.requestStorageAccess();
 }
 
-async function RunCallbackWithGesture(buttonId, callback) {
-  // Append some formatting and information so non WebDriver instances can complete this test too.
-  const info = document.createElement('p');
-  info.innerText = "This test case requires user-interaction and TestDriver. If you're running it manually please click the 'Request Access' button below exactly once.";
-  document.body.appendChild(info);
-
-  const button = document.createElement('button');
-  button.innerText = "Request Access";
-  button.id = buttonId;
-  button.style = "background-color:#FF0000;"
-
-  // Insert the button and use test driver to click the button with a gesture.
-  document.body.appendChild(button);
-
-  const promise = new Promise((resolve, reject) => {
-    const wrappedCallback = () => {
-      callback().then(resolve, reject);
-    };
-
-    // In automated tests, we call the callback via test_driver.
-    test_driver.bless('run callback with user interaction', wrappedCallback);
-
-    // But we still allow the button to trigger the callback, for use on
-    // https://wpt.live.
-    button.addEventListener('click', e => {
-      wrappedCallback();
-      button.style = "background-color:#00FF00;"
-    }, {once: true});
-  });
-
-  return {promise};
+function RunCallbackWithGesture(callback) {
+  return test_driver.bless('run callback with user gesture', callback);
 }

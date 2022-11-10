@@ -91,32 +91,26 @@ if (topLevelDocument) {
 
   promise_test(
       async t => {
-        const {promise} = await RunCallbackWithGesture(
-          'b1',
+        await RunCallbackWithGesture(
           () => document.requestStorageAccessForOrigin(document.location.origin));
-        return promise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be resolved when called properly with a user gesture and the same site');
 
   promise_test(
       async t => {
-        const {promise} = await RunCallbackWithGesture(
-          'b2',
+        await RunCallbackWithGesture(
           () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin('bogus-url'),
             'document.requestStorageAccessForOrigin() call with bogus URL'));
-        return promise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called with an invalid site');
 
   promise_test(
       async t => {
-        const {promise} = await RunCallbackWithGesture(
-          'b3',
+        await RunCallbackWithGesture(
           () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin('data:,Hello%2C%20World%21'),
             'document.requestStorageAccessForOrigin() call with data URL'));
-        return promise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called with an opaque origin');
@@ -124,11 +118,9 @@ if (topLevelDocument) {
 } else {
   promise_test(
       async t => {
-        const {promise} = await RunCallbackWithGesture(
-          'b4',
+        await RunCallbackWithGesture(
           () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin(document.location.origin),
             'document.requestStorageAccessForOrigin() call in a non-top-level context'));
-        return promise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called in an iframe');
