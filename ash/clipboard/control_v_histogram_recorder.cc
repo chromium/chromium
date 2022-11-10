@@ -7,38 +7,79 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/shell.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "ui/events/event.h"
 
 namespace ash {
 
+namespace {
+
+// Returns whether Ctrl and V are currently pressed, with no additional keys.
+bool IsControlVPressed() {
+  const auto& currently_pressed_keys = Shell::Get()
+                                           ->accelerator_controller()
+                                           ->GetAcceleratorHistory()
+                                           ->currently_pressed_keys();
+  return base::Contains(currently_pressed_keys, ui::VKEY_CONTROL) &&
+         base::Contains(currently_pressed_keys, ui::VKEY_V) &&
+         currently_pressed_keys.size() == 2;
+}
+
+}  // namespace
+
 void ControlVHistogramRecorder::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() != ui::ET_KEY_PRESSED)
+  if (event->type() == ui::ET_KEY_PRESSED) {
+    switch (event->key_code()) {
+      case ui::VKEY_CONTROL:
+        ctrl_pressed_time_ = base::TimeTicks::Now();
+        return;
+      case ui::VKEY_V:
+        if (IsControlVPressed()) {
+          // When Ctrl+V is held and keyboard auto-repeat is enabled, the OS
+          // will synthesize more key pressed events to trigger further pasting.
+          // Record the initial V press to measure how long Ctrl+V is held.
+          if (ctrl_v_pressed_time_.is_null())
+            ctrl_v_pressed_time_ = base::TimeTicks::Now();
+
+          // The V key can be pressed to issue multiple pastes without ever
+          // releasing Ctrl. Measure only the time between a Ctrl press and the
+          // first V press in the user's accelerator sequence.
+          if (!ctrl_pressed_time_.is_null()) {
+            base::UmaHistogramTimes("Ash.ClipboardHistory.ControlToVDelay",
+                                    ctrl_v_pressed_time_ - ctrl_pressed_time_);
+            ctrl_pressed_time_ = base::TimeTicks();
+          }
+        }
+        return;
+      default:
+        // Pressing an unrelated key ends a Ctrl+V paste sequence.
+        MaybeRecordControlVHeldTime();
+        return;
+    }
+  }
+
+  if (event->type() == ui::ET_KEY_RELEASED) {
+    switch (event->key_code()) {
+      case ui::VKEY_CONTROL:
+      case ui::VKEY_V:
+        // Releasing either key ends a Ctrl+V paste sequence.
+        MaybeRecordControlVHeldTime();
+        return;
+      default:
+        return;
+    }
+  }
+}
+
+void ControlVHistogramRecorder::MaybeRecordControlVHeldTime() {
+  if (ctrl_v_pressed_time_.is_null())
     return;
 
-  switch (event->key_code()) {
-    case ui::VKEY_CONTROL:
-      ctrl_pressed_time_ = base::TimeTicks::Now();
-      break;
-    case ui::VKEY_V: {
-      auto& currently_pressed_keys = Shell::Get()
-                                         ->accelerator_controller()
-                                         ->GetAcceleratorHistory()
-                                         ->currently_pressed_keys();
-      if (currently_pressed_keys.find(ui::VKEY_CONTROL) !=
-              currently_pressed_keys.end() &&
-          currently_pressed_keys.find(ui::VKEY_V) !=
-              currently_pressed_keys.end() &&
-          currently_pressed_keys.size() == 2 && !ctrl_pressed_time_.is_null()) {
-        base::UmaHistogramTimes("Ash.ClipboardHistory.ControlToVDelay",
-                                base::TimeTicks::Now() - ctrl_pressed_time_);
-        // Prevent a second V from recording a second metric.
-        ctrl_pressed_time_ = base::TimeTicks();
-      }
-    } break;
-    default:
-      break;
-  }
+  base::UmaHistogramTimes("Ash.ClipboardHistory.ControlVHeldTime",
+                          base::TimeTicks::Now() - ctrl_v_pressed_time_);
+  ctrl_v_pressed_time_ = base::TimeTicks();
 }
 
 }  // namespace ash

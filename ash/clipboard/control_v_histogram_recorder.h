@@ -5,7 +5,6 @@
 #ifndef ASH_CLIPBOARD_CONTROL_V_HISTOGRAM_RECORDER_H_
 #define ASH_CLIPBOARD_CONTROL_V_HISTOGRAM_RECORDER_H_
 
-#include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "ui/events/event_handler.h"
 
@@ -17,8 +16,8 @@ class KeyEvent;
 
 namespace ash {
 
-// An EventHandler added as a pretarget handler to Shell to record the time
-// delay between ui::VKEY_CONTROL and ui::VKEY_V when a user is pasting.
+// A `Shell` pretarget `EventHandler` to record timings for users'
+// accelerator-initiated pastes.
 class ControlVHistogramRecorder : public ui::EventHandler {
  public:
   ControlVHistogramRecorder() = default;
@@ -31,9 +30,19 @@ class ControlVHistogramRecorder : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* event) override;
 
  private:
-  // The last time a user pressed ui::VKEY_CONTROL. Used to establish a time
-  // range for user patterns while pressing ui::VKEY_CONTROL + ui::VKEY_V.
+  // If a Ctrl+V paste sequence was in progress, records an entry for the
+  // Ash.ClipboardHistory.ControlVHeldTime histogram and resets state so that
+  // new entries can be recorded. Otherwise, does nothing.
+  void MaybeRecordControlVHeldTime();
+
+  // The last time a user pressed Ctrl. Reset to null when V is pressed and an
+  // entry is recorded for the Ash.ClipboardHistory.ControlToVDelay histogram.
   base::TimeTicks ctrl_pressed_time_;
+
+  // The last time a user pressed V with Ctrl held. Reset to null when the paste
+  // sequence ends and an entry is recorded for the
+  // Ash.ClipboardHistory.ControlVHeldTime histogram.
+  base::TimeTicks ctrl_v_pressed_time_;
 };
 
 }  // namespace ash
