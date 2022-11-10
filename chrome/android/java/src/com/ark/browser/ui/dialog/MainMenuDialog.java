@@ -46,9 +46,15 @@ public class MainMenuDialog {
             dialog.dismiss();
         });
 
-        TextView test = view.findViewById(R.id.btn_refresh2);
-        test.setOnClickListener(v -> {
-            Toast.makeText(activity.getApplicationContext(), "TODO", Toast.LENGTH_SHORT).show();
+        TextView historyButton = view.findViewById(R.id.btn_history);
+        historyButton.setOnClickListener(v -> {
+            HistoryManagerDialog.show(activity);
+            dialog.dismiss();
+        });
+
+        TextView bookmarkButton = view.findViewById(R.id.btn_bookmark);
+        bookmarkButton.setOnClickListener(v -> {
+            BookmarkManagerDialog.show(activity);
             dialog.dismiss();
         });
 

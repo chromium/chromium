@@ -66,17 +66,17 @@
             />
 
         <com.ark.browser.ui.widget.DrawableTintTextView
-            android:id="@+id/btn_refresh2"
+            android:id="@+id/btn_history"
             style="@style/menu_item"
-            android:drawableTop="@drawable/ic_refresh"
-            android:text="刷新"
+            android:drawableTop="@drawable/ic_history"
+            android:text="历史"
             />
 
         <com.ark.browser.ui.widget.DrawableTintTextView
-            android:id="@+id/btn_refresh3"
+            android:id="@+id/btn_bookmark"
             style="@style/menu_item"
             android:drawableTop="@drawable/ic_refresh"
-            android:text="刷新"
+            android:text="书签"
             />
 
 

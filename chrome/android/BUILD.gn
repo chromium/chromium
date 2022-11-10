@@ -198,6 +198,7 @@ android_resources("chrome_app_java_resources") {
 
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_action_full_screen.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_action_keyboard.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_history.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_menu.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_mouse.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_refresh.png",
@@ -2328,10 +2329,10 @@ if (android_64bit_target_cpu) {
 generate_jni("chrome_jni_headers") {
   sources = [
     "java/src/com/ark/browser/core/BadFlagsSnackbarManager.java",
-    "java/src/com/ark/browser/core/BookmarkBridge.java",
     "java/src/com/ark/browser/core/ChromeInterfaceRegistrar.java",
     "java/src/com/ark/browser/core/CookieControlsServiceBridge.java",
     "java/src/com/ark/browser/core/SigninBridge.java",
+    "java/src/com/ark/browser/core/bookmark/BookmarkBridge.java",
     "java/src/com/ark/browser/core/net/NetworkQualityProvider.java",
     "java/src/com/ark/browser/core/utils/ChromeHttpAuthHandler.java",
     "java/src/com/ark/browser/core/utils/ContentUtils.java",

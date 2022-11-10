@@ -14,11 +14,12 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ArkWindowAndroid.java",
 
   "java/src/com/ark/browser/core/BadFlagsSnackbarManager.java",
-  "java/src/com/ark/browser/core/BookmarkBridge.java",
   "java/src/com/ark/browser/core/ChromeInterfaceRegistrar.java",
   "java/src/com/ark/browser/core/CookieControlsServiceBridge.java",
   "java/src/com/ark/browser/core/SigninBridge.java",
   "java/src/com/ark/browser/core/UserAgentManager.java",
+  "java/src/com/ark/browser/core/bookmark/BookmarkBridge.java",
+  "java/src/com/ark/browser/core/bookmark/BookmarkModel.java",
   "java/src/com/ark/browser/core/net/NetworkQualityObserver.java",
   "java/src/com/ark/browser/core/net/NetworkQualityProvider.java",
   "java/src/com/ark/browser/core/utils/ChromeHttpAuthHandler.java",
@@ -70,7 +71,9 @@ chrome_java_sources = [
   "java/src/com/ark/browser/translate/TranslateIntentHandler.java",
   "java/src/com/ark/browser/translate/TranslateUtils.java",
 
+  "java/src/com/ark/browser/ui/dialog/BookmarkManagerDialog.java",
   "java/src/com/ark/browser/ui/dialog/DownloadManagerDialog.java",
+  "java/src/com/ark/browser/ui/dialog/HistoryManagerDialog.java",
   "java/src/com/ark/browser/ui/dialog/MainMenuDialog.java",
   "java/src/com/ark/browser/ui/dialog/SmartSearchDialog.java",
   "java/src/com/ark/browser/ui/dialog/SmartSearchPopupWindow.java",
