@@ -59,22 +59,9 @@ if (enable_rust) {
     visibility = [ ":*" ]
   }
 
-  static_library("test_support_cpp") {
-    testonly = true
-    sources = [
-      "test/test_subclass.cc",
-      "test/test_subclass.h",
-    ]
-    public_deps = [
-      ":rust_gtest_interop",
-      "//testing/gtest",
-    ]
-  }
-
   test("rust_gtest_interop_unittests") {
     sources = [ "rust_gtest_interop_unittest_main.cc" ]
     deps = [
-      ":test_support_cpp",
       "//base",
       "//base/test:test_support",
       "//testing/gtest",
