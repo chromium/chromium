@@ -42,6 +42,7 @@ using ::reporting::MetricData;
 using ::reporting::Priority;
 using ::reporting::Record;
 using ::testing::Eq;
+using ::testing::StrEq;
 
 // Is the given record about info metric? If yes, return the underlying
 // MetricData object.
@@ -253,5 +254,72 @@ INSTANTIATE_TEST_SUITE_P(
     }),
     [](const testing::TestParamInfo<MemoryInfoSamplerBrowserTest::ParamType>&
            info) { return info.param.test_name; });
+
+// ---- Input ----
+
+class InputInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
+ public:
+  InputInfoSamplerBrowserTest(const InputInfoSamplerBrowserTest&) = delete;
+  InputInfoSamplerBrowserTest& operator=(const InputInfoSamplerBrowserTest&) =
+      delete;
+
+ protected:
+  InputInfoSamplerBrowserTest() = default;
+  ~InputInfoSamplerBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        kReportDeviceGraphicsStatus, true);
+  }
+
+  // Is the given record about CPU info metric?
+  static bool IsRecordTouchScreenInfo(const Record& record) {
+    auto record_data = IsRecordInfo(record);
+    return record_data.has_value() &&
+           record_data.value().info_data().has_touch_screen_info();
+  }
+
+ private:
+  CrosHealthdInfoMetricsHelper cros_healthd_info_metrics_helper_;
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+};
+
+IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest, TouchScreenSingleInternal) {
+  static constexpr char kSampleLibrary[] = "SampleLibrary";
+  static constexpr char kSampleDevice[] = "SampleDevice";
+  static constexpr int kTouchPoints = 10;
+
+  auto input_device = cros_healthd::TouchscreenDevice::New(
+      cros_healthd::InputDevice::New(
+          kSampleDevice, cros_healthd::InputDevice_ConnectionType::kInternal,
+          /*physical_location*/ "", /*is_enabled*/ true),
+      kTouchPoints, /*has_stylus*/ true,
+      /*has_stylus_garage_switch*/ false);
+  std::vector<cros_healthd::TouchscreenDevicePtr> touchscreen_devices;
+  touchscreen_devices.push_back(std::move(input_device));
+
+  auto input_result = ::reporting::test::CreateInputResult(
+      kSampleLibrary, std::move(touchscreen_devices));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(input_result);
+  MissiveClientTestObserver observer(
+      base::BindRepeating(&IsRecordTouchScreenInfo));
+  auto [priority, record] = observer.GetNextEnqueuedRecord();
+  auto info_data = AssertInfo(priority, record).info_data();
+  ASSERT_TRUE(info_data.has_touch_screen_info());
+  ASSERT_TRUE(info_data.touch_screen_info().has_library_name());
+  EXPECT_THAT(info_data.touch_screen_info().library_name(),
+              StrEq(kSampleLibrary));
+  ASSERT_EQ(info_data.touch_screen_info().touch_screen_devices().size(), 1);
+  EXPECT_THAT(
+      info_data.touch_screen_info().touch_screen_devices(0).display_name(),
+      StrEq(kSampleDevice));
+  EXPECT_THAT(
+      info_data.touch_screen_info().touch_screen_devices(0).touch_points(),
+      Eq(kTouchPoints));
+  EXPECT_TRUE(
+      info_data.touch_screen_info().touch_screen_devices(0).has_stylus());
+}
 
 }  // namespace ash::reporting

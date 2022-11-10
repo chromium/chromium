@@ -75,17 +75,6 @@ cros_healthd::TelemetryInfoPtr CreateBootPerformanceResult(
   return telemetry_info;
 }
 
-cros_healthd::TelemetryInfoPtr CreateInputInfo(
-    std::string library_name,
-    std::vector<cros_healthd::TouchscreenDevicePtr> touchscreen_devices) {
-  auto telemetry_info = cros_healthd::TelemetryInfo::New();
-  telemetry_info->input_result =
-      cros_healthd::InputResult::NewInputInfo(cros_healthd::InputInfo::New(
-          library_name, std::move(touchscreen_devices)));
-
-  return telemetry_info;
-}
-
 cros_healthd::EmbeddedDisplayInfoPtr CreateEmbeddedDisplay(
     bool privacy_screen_supported,
     int display_width,
@@ -588,9 +577,9 @@ TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceShutdownReasonNA) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestTouchScreenInfoInternalSingle) {
-  constexpr char kSampleLibrary[] = "SampleLibrary";
-  constexpr char kSampleDevice[] = "SampleDevice";
-  constexpr int kTouchPoints = 10;
+  static constexpr char kSampleLibrary[] = "SampleLibrary";
+  static constexpr char kSampleDevice[] = "SampleDevice";
+  static constexpr int kTouchPoints = 10;
 
   auto input_device = cros_healthd::TouchscreenDevice::New(
       cros_healthd::InputDevice::New(
@@ -603,7 +592,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestTouchScreenInfoInternalSingle) {
   touchscreen_devices.push_back(std::move(input_device));
 
   const absl::optional<MetricData> optional_result = CollectData(
-      CreateInputInfo(kSampleLibrary, std::move(touchscreen_devices)),
+      CreateInputResult(kSampleLibrary, std::move(touchscreen_devices)),
       cros_healthd::ProbeCategoryEnum::kInput,
       CrosHealthdMetricSampler::MetricType::kInfo);
 
@@ -634,11 +623,11 @@ TEST_F(CrosHealthdMetricSamplerTest, TestTouchScreenInfoInternalSingle) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestTouchScreenInfoInternalMultiple) {
-  constexpr char kSampleLibrary[] = "SampleLibrary";
-  constexpr char kSampleDevice[] = "SampleDevice";
-  constexpr char kSampleDevice2[] = "SampleDevice2";
-  constexpr int kTouchPoints = 10;
-  constexpr int kTouchPoints2 = 5;
+  static constexpr char kSampleLibrary[] = "SampleLibrary";
+  static constexpr char kSampleDevice[] = "SampleDevice";
+  static constexpr char kSampleDevice2[] = "SampleDevice2";
+  static constexpr int kTouchPoints = 10;
+  static constexpr int kTouchPoints2 = 5;
 
   auto input_device_first = cros_healthd::TouchscreenDevice::New(
       cros_healthd::InputDevice::New(
@@ -659,7 +648,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestTouchScreenInfoInternalMultiple) {
   touchscreen_devices.push_back(std::move(input_device_second));
 
   const absl::optional<MetricData> optional_result = CollectData(
-      CreateInputInfo(kSampleLibrary, std::move(touchscreen_devices)),
+      CreateInputResult(kSampleLibrary, std::move(touchscreen_devices)),
       cros_healthd::ProbeCategoryEnum::kInput,
       CrosHealthdMetricSampler::MetricType::kInfo);
 
@@ -716,7 +705,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestTouchScreenInfoExternal) {
   touchscreen_devices.push_back(std::move(input_device));
 
   const absl::optional<MetricData> optional_result = CollectData(
-      CreateInputInfo("SampleLibrary", std::move(touchscreen_devices)),
+      CreateInputResult("SampleLibrary", std::move(touchscreen_devices)),
       cros_healthd::ProbeCategoryEnum::kInput,
       CrosHealthdMetricSampler::MetricType::kInfo);
 
@@ -735,7 +724,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestTouchScreenInfoDisabled) {
   touchscreen_devices.push_back(std::move(input_device));
 
   const absl::optional<MetricData> optional_result = CollectData(
-      CreateInputInfo("SampleLibrary", std::move(touchscreen_devices)),
+      CreateInputResult("SampleLibrary", std::move(touchscreen_devices)),
       cros_healthd::ProbeCategoryEnum::kInput,
       CrosHealthdMetricSampler::MetricType::kInfo);
 

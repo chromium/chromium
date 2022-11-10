@@ -96,4 +96,17 @@ void AssertMemoryInfo(const MetricData& result,
   EXPECT_EQ(tme_info.key_length(), test_case.key_length);
 }
 
+// ------- input --------
+
+cros_healthd::TelemetryInfoPtr CreateInputResult(
+    std::string library_name,
+    std::vector<cros_healthd::TouchscreenDevicePtr> touchscreen_devices) {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->input_result =
+      cros_healthd::InputResult::NewInputInfo(cros_healthd::InputInfo::New(
+          library_name, std::move(touchscreen_devices)));
+
+  return telemetry_info;
+}
+
 }  // namespace reporting::test

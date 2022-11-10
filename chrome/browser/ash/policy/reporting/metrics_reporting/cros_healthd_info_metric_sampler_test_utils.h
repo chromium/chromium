@@ -53,6 +53,13 @@ cros_healthd::TelemetryInfoPtr CreateMemoryResult(
 
 void AssertMemoryInfo(const MetricData& result,
                       const MemoryInfoTestCase& test_case);
+
+// -------- input ---------
+
+// Create a touch screen info for input tests.
+cros_healthd::TelemetryInfoPtr CreateInputResult(
+    std::string library_name,
+    std::vector<cros_healthd::TouchscreenDevicePtr> touchscreen_devices);
 }  // namespace reporting::test
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_INFO_METRIC_SAMPLER_TEST_UTILS_H_
