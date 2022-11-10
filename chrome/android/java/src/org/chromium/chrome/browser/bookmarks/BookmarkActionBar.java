@@ -280,7 +280,8 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
                         .setVisible(typeSwappingEnabled && !hasPartnerBoomarkSelected);
                 getMenu()
                         .findItem(R.id.selection_mode_edit_menu_id)
-                        .setVisible(typeSwappingEnabled && !hasPartnerBoomarkSelected);
+                        .setVisible(selectedBookmarks.size() == 1 && typeSwappingEnabled
+                                && !hasPartnerBoomarkSelected);
 
                 // Check the reading list flag before "open in" items.
                 boolean shouldUseRegularTab = !ReadingListFeatures.shouldUseCustomTab();
