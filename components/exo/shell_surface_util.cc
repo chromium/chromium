@@ -282,14 +282,14 @@ void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout) {
   // owns the Permission object.
   window->SetProperty(
       kPermissionKey,
-      new Permission(Permission::Capability::kActivate, timeout));
+      std::make_unique<Permission>(Permission::Capability::kActivate, timeout));
 }
 
 void GrantPermissionToActivateIndefinitely(aura::Window* window) {
   // Activation is the only permission, so just set the property. The window
   // owns the Permission object.
-  window->SetProperty(kPermissionKey,
-                      new Permission(Permission::Capability::kActivate));
+  window->SetProperty(kPermissionKey, std::make_unique<Permission>(
+                                          Permission::Capability::kActivate));
 }
 
 void RevokePermissionToActivate(aura::Window* window) {
