@@ -3617,8 +3617,17 @@ TEST_P(ArcDefaultAppTest, DefaultAppsNotAvailable) {
   // Timer was set to detect not available default apps.
   ValidateHaveApps(expected_apps);
 
+  // Active installation blocks default app not available detection.
+  app_instance()->SendInstallationStarted("some_package");
   SimulateDefaultAppAvailabilityTimeoutForTesting(prefs);
+  ValidateHaveApps(expected_apps);
 
+  // Finishing last installation triggers default app not available detection
+  // but not immideately.
+  app_instance()->SendInstallationFinished("some_package", true);
+  ValidateHaveApps(expected_apps);
+
+  SimulateDefaultAppAvailabilityTimeoutForTesting(prefs);
   // No default app installation and already installed packages.
   ValidateHaveApps(only_play_store);
 }

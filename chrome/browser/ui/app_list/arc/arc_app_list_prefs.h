@@ -609,6 +609,8 @@ class ArcAppListPrefs : public KeyedService,
   // Sets timeout to wait for default app installed or installation started if
   // some default app is not available yet.
   void MaybeSetDefaultAppLoadingTimeout();
+  // Cancels timeout to wait for default app installed or installation started.
+  void CancelDefaultAppLoadingTimeout();
 
   bool IsIconRequestRecorded(const std::string& app_id,
                              const ArcAppIconDescriptor& descriptor) const;

@@ -1386,7 +1386,7 @@ void ArcAppListPrefs::OnConnectionClosed() {
   DisableAllApps();
   installing_packages_count_ = 0;
   apps_installations_.clear();
-  detect_default_app_availability_timeout_.Stop();
+  CancelDefaultAppLoadingTimeout();
   ClearIconRequestRecord();
 
   if (sync_service_) {
@@ -1789,6 +1789,10 @@ void ArcAppListPrefs::DetectDefaultAppAvailability() {
 }
 
 void ArcAppListPrefs::MaybeSetDefaultAppLoadingTimeout() {
+  // Don't check if anything is installing or scheduled right now.
+  if (installing_packages_count_)
+    return;
+
   // Find at least one not installed default app package.
   for (const auto& package : default_apps_->GetActivePackages()) {
     if (!GetPackage(package)) {
@@ -1798,6 +1802,10 @@ void ArcAppListPrefs::MaybeSetDefaultAppLoadingTimeout() {
       break;
     }
   }
+}
+
+void ArcAppListPrefs::CancelDefaultAppLoadingTimeout() {
+  detect_default_app_availability_timeout_.Stop();
 }
 
 void ArcAppListPrefs::AddApp(const arc::mojom::AppInfo& app_info) {
@@ -2272,6 +2280,7 @@ void ArcAppListPrefs::OnIconInstalled(const std::string& app_id,
 void ArcAppListPrefs::OnInstallationStarted(
     const absl::optional<std::string>& package_name) {
   ++installing_packages_count_;
+  CancelDefaultAppLoadingTimeout();
 
   if (!package_name.has_value())
     return;
@@ -2312,6 +2321,7 @@ void ArcAppListPrefs::OnInstallationFinished(
     return;
   }
   --installing_packages_count_;
+  MaybeSetDefaultAppLoadingTimeout();
 }
 
 void ArcAppListPrefs::NotifyAppStatesChanged(const std::string& app_id) {
