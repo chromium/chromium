@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "components/find_in_page/find_result_observer.h"
@@ -418,5 +419,22 @@ class TabImpl : public Tab,
 };
 
 }  // namespace weblayer
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<weblayer::TabImpl,
+                               weblayer::TabImpl::DataObserver> {
+  static void AddObserver(weblayer::TabImpl* source,
+                          weblayer::TabImpl::DataObserver* observer) {
+    source->AddDataObserver(observer);
+  }
+  static void RemoveObserver(weblayer::TabImpl* source,
+                             weblayer::TabImpl::DataObserver* observer) {
+    source->RemoveDataObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // WEBLAYER_BROWSER_TAB_IMPL_H_

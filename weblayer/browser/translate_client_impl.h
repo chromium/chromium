@@ -89,11 +89,8 @@ class TranslateClientImpl
   // Whether to show translation UI when ready.
   bool show_translate_ui_on_ready_ = false;
 
-  base::ScopedObservation<
-      translate::TranslateDriver,
-      translate::TranslateDriver::LanguageDetectionObserver,
-      &translate::TranslateDriver::AddLanguageDetectionObserver,
-      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
+  base::ScopedObservation<translate::TranslateDriver,
+                          translate::TranslateDriver::LanguageDetectionObserver>
       observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

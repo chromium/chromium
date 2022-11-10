@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/common/extension_id.h"
@@ -86,5 +87,24 @@ T* CreateAndUseTestEventRouter(content::BrowserContext* context) {
 }
 
 }  // namespace extensions
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<extensions::TestEventRouter,
+                               extensions::TestEventRouter::EventObserver> {
+  static void AddObserver(
+      extensions::TestEventRouter* source,
+      extensions::TestEventRouter::EventObserver* observer) {
+    source->AddEventObserver(observer);
+  }
+  static void RemoveObserver(
+      extensions::TestEventRouter* source,
+      extensions::TestEventRouter::EventObserver* observer) {
+    source->RemoveEventObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // EXTENSIONS_BROWSER_TEST_EVENT_ROUTER_H_

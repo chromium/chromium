@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -368,5 +369,25 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
 namespace chromeos {
 using ::ash::UserDataAuthClient;
 }
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    ash::UserDataAuthClient,
+    ash::UserDataAuthClient::FingerprintAuthObserver> {
+  static void AddObserver(
+      ash::UserDataAuthClient* source,
+      ash::UserDataAuthClient::FingerprintAuthObserver* observer) {
+    source->AddFingerprintAuthObserver(observer);
+  }
+  static void RemoveObserver(
+      ash::UserDataAuthClient* source,
+      ash::UserDataAuthClient::FingerprintAuthObserver* observer) {
+    source->RemoveFingerprintAuthObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_USERDATAAUTH_CLIENT_H_
