@@ -95,6 +95,12 @@ pub fn download(
 
 /// Generate the contents of the README.chromium file.
 fn gen_readme_chromium_text(manifest: &CargoManifest, license: &str, security: bool) -> String {
+    let security = if security {
+        "yes"
+    } else {
+        "no"
+    };
+
     format!(
         "Name: {crate_name}\n\
          URL: {url}\n\
