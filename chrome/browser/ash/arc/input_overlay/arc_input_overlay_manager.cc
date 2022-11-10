@@ -16,6 +16,9 @@
 #include "base/memory/singleton.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "components/app_restore/window_properties.h"
+#include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/text_input_client.h"
@@ -42,6 +45,19 @@ class ArcInputOverlayManagerFactory
   ArcInputOverlayManagerFactory() = default;
   ~ArcInputOverlayManagerFactory() override = default;
 };
+
+// Check if the window is still loading as a ghost window.
+bool IsGhostWindowLoading(aura::Window* window) {
+  DCHECK(window);
+  if (!window->GetProperty(app_restore::kRealArcTaskWindow))
+    return true;
+  // TODO(b/258308970): This is a workaround.
+  // |GetProperty(app_restore::kRealArcTaskWindow)| doesn't give an expected
+  // value. So check if the window is still loading as a ghost window by
+  // checking if there is an overlay.
+  auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
+  return shell_surface_base && shell_surface_base->HasOverlay();
+}
 
 }  // namespace
 
@@ -326,17 +342,30 @@ void ArcInputOverlayManager::OnWindowInitialized(aura::Window* new_window) {
 void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
                                                      const void* key,
                                                      intptr_t old) {
-  if (!window || key != ash::kArcPackageNameKey)
+  // There are two cases when launching an app.
+  // 1) Launch from Launcher: Receive {ash::kArcPackageNameKey, package_name}.
+  // 2) Restore the app: Receive {ash::kArcPackageNameKey, package_name} and
+  // {app_restore::kRealArcTaskWindow, true}. When |ash::kArcPackageNameKey| is
+  // changed, the ghost window overlay is not destroyed. The ghost window
+  // overlay is destroyed right before property
+  // {app_restore::kRealArcTaskWindow} is set.
+  if (!window || (key != ash::kArcPackageNameKey &&
+                  key != app_restore::kRealArcTaskWindow)) {
     return;
+  }
 
   auto* top_level_window = window->GetToplevelWindow();
-  if (top_level_window &&
-      !input_overlay_enabled_windows_.contains(top_level_window)) {
-    auto* package_name = window->GetProperty(ash::kArcPackageNameKey);
-    if (!package_name || package_name->empty())
-      return;
-    ReadData(*package_name, top_level_window);
+  if (!top_level_window ||
+      input_overlay_enabled_windows_.contains(top_level_window) ||
+      IsGhostWindowLoading(top_level_window) ||
+      loading_data_windows_.contains(top_level_window)) {
+    return;
   }
+  std::string* package_name =
+      top_level_window->GetProperty(ash::kArcPackageNameKey);
+  if (!package_name || package_name->empty())
+    return;
+  ReadData(*package_name, top_level_window);
 }
 
 void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {
