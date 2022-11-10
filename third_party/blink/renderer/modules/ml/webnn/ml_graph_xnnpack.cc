@@ -207,4 +207,14 @@ void MLGraphXnnpack::OnBuildFinished(
   resolver->Resolve(this);
 }
 
+void MLGraphXnnpack::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+                                      const MLNamedArrayBufferViews& outputs,
+                                      ScriptPromiseResolver* resolver) {
+  // TODO(ningxin.hu@intel.com): Implement this method by posting the inputs and
+  // outputs to a background thread and invoking XNNPACK Runtime object in the
+  // background thread.
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Not implemented."));
+}
+
 }  // namespace blink

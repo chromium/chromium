@@ -51,6 +51,11 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
                        xnn_status status,
                        String error_message = String());
 
+  // Post the XNNPACK Runtime invocation to a background thread.
+  void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+                        const MLNamedArrayBufferViews& outputs,
+                        ScriptPromiseResolver* resolver) override;
+
   // The SharedXnnpackContext is shared and reference-counted by all instances
   // of MLGraphXnnpack. It initializes (and also deinitializes) the XNNPACK
   // library for graph building and execution.

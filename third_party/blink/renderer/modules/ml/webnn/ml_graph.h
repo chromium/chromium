@@ -5,10 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -17,6 +19,17 @@ namespace blink {
 
 class MLContext;
 class ScriptPromiseResolver;
+
+// Implement the MLNamedArrayBufferViews type definition of WebNN spec:
+// https://www.w3.org/TR/webnn/#typedefdef-mlnamedarraybufferviews
+
+// TODO(crbug.com/1382288): There is a build error for the C++ type
+// HeapVector<std::pair<String, NotShared<DOMArrayBufferView>>> generated for
+// IDL type record<DOMString, ArrayBufferView>. Use
+// V8UnionArrayBufferOrArrayBufferView as a workaround.
+typedef HeapVector<
+    std::pair<String, Member<V8UnionArrayBufferOrArrayBufferView>>>
+    MLNamedArrayBufferViews;
 
 class MODULES_EXPORT MLGraph : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -31,7 +44,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   // The members of ResourceInfo are used to validate the inputs and outputs of
   // an MLGraph execution. The validation steps are described by WebNN spec of
-  // MLContext.computeAsync() and MLContext.compute() methods:
+  // MLContext.compute() and MLContext.computeSync() methods:
   // https://www.w3.org/TR/webnn/#api-mlcontext-async-execution
   // https://www.w3.org/TR/webnn/#api-mlcontext-sync-execution
   // The plain struct ResourceInfo is introduced instead of using
@@ -43,6 +56,15 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   };
   const HashMap<String, ResourceInfo>& GetInputResourcesInfo() const;
   const HashMap<String, ResourceInfo>& GetOutputResourcesInfo() const;
+
+  // This method validates the input and output MLNamedArrayBufferViews against
+  // the graph's input and output resources info. If there are no errors, it
+  // calls ComputeAsyncImpl() implemented by an MLGraph backend that binds the
+  // array buffer views and executes the compiled platform graph. This method is
+  // called by MLContext to implement MLContext.compute() method.
+  void ComputeAsync(const MLNamedArrayBufferViews& inputs,
+                    const MLNamedArrayBufferViews& outputs,
+                    ScriptPromiseResolver* resolver);
 
  protected:
   explicit MLGraph(MLContext* context);
@@ -64,6 +86,16 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // rejected with a DOMException accordingly.
   virtual void BuildAsyncImpl(const MLNamedOperands& outputs,
                               ScriptPromiseResolver* resolver) = 0;
+
+  // An MLGraph backend should implement this method to execute the compiled
+  // platform graph asynchronously. The actual graph execution work
+  // should be handled by a worker thread without blocking the main thread. Once
+  // the execution of the platform graph is completed, the results should be
+  // produeced into the output buffers and the resolver should be resolved.
+  // Otherwise, the resolver should be rejected with a DOMException accordingly.
+  virtual void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+                                const MLNamedArrayBufferViews& outputs,
+                                ScriptPromiseResolver* resolver) = 0;
 
   Member<MLContext> ml_context_;
   bool resources_info_initialized_{false};

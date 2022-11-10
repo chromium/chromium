@@ -11,26 +11,6 @@ namespace blink {
 
 namespace {
 
-DOMArrayBufferView::ViewType GetArrayBufferViewType(
-    V8MLOperandType::Enum operand_type) {
-  switch (operand_type) {
-    case V8MLOperandType::Enum::kFloat32:
-      return DOMArrayBufferView::ViewType::kTypeFloat32;
-    case V8MLOperandType::Enum::kFloat16:
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
-      return DOMArrayBufferView::ViewType::kTypeUint16;
-    case V8MLOperandType::Enum::kInt32:
-      return DOMArrayBufferView::ViewType::kTypeInt32;
-    case V8MLOperandType::Enum::kUint32:
-      return DOMArrayBufferView::ViewType::kTypeUint32;
-    case V8MLOperandType::Enum::kInt8:
-      return DOMArrayBufferView::ViewType::kTypeInt8;
-    case V8MLOperandType::Enum::kUint8:
-      return DOMArrayBufferView::ViewType::kTypeUint8;
-  }
-}
-
 size_t GetBytesPerElement(V8MLOperandType::Enum operand_type) {
   switch (operand_type) {
     case V8MLOperandType::Enum::kFloat32:
@@ -92,6 +72,26 @@ absl::optional<size_t> ValidateAndCalculateByteLength(
 }
 
 }  // namespace
+
+DOMArrayBufferView::ViewType GetArrayBufferViewType(
+    V8MLOperandType::Enum operand_type) {
+  switch (operand_type) {
+    case V8MLOperandType::Enum::kFloat32:
+      return DOMArrayBufferView::ViewType::kTypeFloat32;
+    case V8MLOperandType::Enum::kFloat16:
+      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
+      // https://github.com/webmachinelearning/webnn/issues/127
+      return DOMArrayBufferView::ViewType::kTypeUint16;
+    case V8MLOperandType::Enum::kInt32:
+      return DOMArrayBufferView::ViewType::kTypeInt32;
+    case V8MLOperandType::Enum::kUint32:
+      return DOMArrayBufferView::ViewType::kTypeUint32;
+    case V8MLOperandType::Enum::kInt8:
+      return DOMArrayBufferView::ViewType::kTypeInt8;
+    case V8MLOperandType::Enum::kUint8:
+      return DOMArrayBufferView::ViewType::kTypeUint8;
+  }
+}
 
 // static
 MLOperand* MLOperand::ValidateAndCreateInput(MLGraphBuilder* builder,

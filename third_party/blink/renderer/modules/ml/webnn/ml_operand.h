@@ -19,6 +19,9 @@ namespace blink {
 class MLGraphBuilder;
 class MLOperator;
 
+DOMArrayBufferView::ViewType GetArrayBufferViewType(
+    V8MLOperandType::Enum operand_type);
+
 class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

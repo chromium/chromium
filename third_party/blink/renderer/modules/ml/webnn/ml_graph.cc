@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 
+#include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
@@ -13,6 +14,59 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
+
+namespace {
+
+bool ValidateNamedArrayBufferViews(
+    const MLNamedArrayBufferViews& named_array_buffer_views,
+    const HashMap<String, MLGraph::ResourceInfo>& resources_info,
+    String& error_message) {
+  if (named_array_buffer_views.size() !=
+      base::checked_cast<wtf_size_t>(resources_info.size())) {
+    error_message = String::Format(
+        "The number (%u) of the array buffer views doesn't match the "
+        "expectation (%u).",
+        named_array_buffer_views.size(),
+        base::checked_cast<wtf_size_t>(resources_info.size()));
+    return false;
+  }
+  for (const auto& named_array_buffer_view : named_array_buffer_views) {
+    const auto& [name, array_buffer_or_view] = named_array_buffer_view;
+    if (!resources_info.Contains(name)) {
+      error_message = String::Format("The name \"%s\" isn't part of the graph.",
+                                     name.Utf8().c_str());
+      return false;
+    }
+    const auto& info = resources_info.at(name);
+    if (!array_buffer_or_view->IsArrayBufferView()) {
+      error_message = String::Format(
+          "The object with name \"%s\" is not an ArrayBufferView.",
+          name.Utf8().c_str());
+      return false;
+    }
+    auto* array_buffer_view =
+        array_buffer_or_view->GetAsArrayBufferView().Get();
+    if (array_buffer_view->GetType() != GetArrayBufferViewType(info.type)) {
+      error_message = String::Format(
+          "The type (%s) of the array buffer view with name \"%s\" doesn't "
+          "match the expected operand type (%s).",
+          array_buffer_view->TypeName(), name.Utf8().c_str(),
+          V8MLOperandType(info.type).AsCStr());
+      return false;
+    }
+    if (array_buffer_view->byteLength() != info.byte_length) {
+      error_message = String::Format(
+          "The byte length (%zu) of the array buffer view with name \"%s\" "
+          "doesn't match the expected byte length (%zu).",
+          array_buffer_view->byteLength(), name.Utf8().c_str(),
+          info.byte_length);
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 MLGraph::MLGraph(MLContext* context) : ml_context_(context) {}
 
@@ -33,6 +87,31 @@ const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetOutputResourcesInfo()
     const {
   DCHECK(resources_info_initialized_);
   return output_resources_info_;
+}
+
+void MLGraph::ComputeAsync(const MLNamedArrayBufferViews& inputs,
+                           const MLNamedArrayBufferViews& outputs,
+                           ScriptPromiseResolver* resolver) {
+  // The MLGraph object should be initialized before computing.
+  DCHECK(resources_info_initialized_);
+
+  // Validate the input and output MLNamedArrayBufferViews.
+  String error_message;
+  if (!ValidateNamedArrayBufferViews(inputs, input_resources_info_,
+                                     error_message)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, "Invalid inputs: " + error_message));
+    return;
+  }
+  if (!ValidateNamedArrayBufferViews(outputs, output_resources_info_,
+                                     error_message)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, "Invalid outputs: " + error_message));
+    return;
+  }
+
+  // Call ComputeAsyncImpl() implemented by an MLGraph backend.
+  ComputeAsyncImpl(inputs, outputs, resolver);
 }
 
 void MLGraph::BuildAsync(const MLNamedOperands& named_outputs,
@@ -94,7 +173,8 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
         case MLOperand::OperandKind::kOutput:
           DCHECK(operand->Operator());
           // If the operand is an output operand and its dependent operator is
-          // not visited, mark the dependent operator is visited and enqueue it.
+          // not visited, mark the dependent operator is visited and enqueue
+          // it.
           if (!visited_operators.Contains(operand->Operator())) {
             visited_operators.insert(operand->Operator());
             operators_queue.push_back(operand->Operator());
