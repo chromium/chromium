@@ -193,10 +193,11 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
 
 void WaylandTest::SendConfigureEvent(uint32_t surface_id,
                                      const gfx::Size& size,
-                                     uint32_t serial,
-                                     const wl::ScopedWlArray& states) {
-  PostToServerAndWait([size, surface_id,
-                       states](wl::TestWaylandServerThread* server) {
+                                     const wl::ScopedWlArray& states,
+                                     absl::optional<uint32_t> serial) {
+  ASSERT_EQ(server_mode_, TestServerMode::kAsync);
+  PostToServerAndWait([size, surface_id, states,
+                       serial](wl::TestWaylandServerThread* server) {
     auto* surface = server->GetObject<wl::MockSurface>(surface_id);
     ASSERT_TRUE(surface);
     auto* xdg_surface = surface->xdg_surface();
@@ -218,8 +219,9 @@ void WaylandTest::SendConfigureEvent(uint32_t surface_id,
         zxdg_popup_v6_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
                                      width, height);
       }
-      zxdg_surface_v6_send_configure(xdg_surface->resource(),
-                                     server->GetNextSerial());
+      zxdg_surface_v6_send_configure(
+          xdg_surface->resource(),
+          serial.has_value() ? serial.value() : server->GetNextSerial());
     } else {
       if (xdg_surface->xdg_toplevel()) {
         xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
@@ -229,8 +231,9 @@ void WaylandTest::SendConfigureEvent(uint32_t surface_id,
         xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
                                  width, height);
       }
-      xdg_surface_send_configure(xdg_surface->resource(),
-                                 server->GetNextSerial());
+      xdg_surface_send_configure(
+          xdg_surface->resource(),
+          serial.has_value() ? serial.value() : server->GetNextSerial());
     }
   });
 }
@@ -241,8 +244,14 @@ void WaylandTest::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
 }
 
 void WaylandTest::InitializeSurfaceAugmenter() {
-  server_.EnsureSurfaceAugmenter();
-  Sync();
+  if (server_mode_ == TestServerMode::kAsync) {
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      server->EnsureSurfaceAugmenter();
+    });
+  } else {
+    server_.EnsureSurfaceAugmenter();
+    Sync();
+  }
 }
 
 void WaylandTest::SyncDisplay() {

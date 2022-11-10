@@ -95,8 +95,8 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   // must be an id of the wl_surface that has xdg_surface role.
   void SendConfigureEvent(uint32_t surface_id,
                           const gfx::Size& size,
-                          uint32_t serial,
-                          const wl::ScopedWlArray& states);
+                          const wl::ScopedWlArray& states,
+                          absl::optional<uint32_t> serial = absl::nullopt);
 
   // Sends XDG_TOPLEVEL_STATE_ACTIVATED to the |xdg_surface| with width and
   // height set to 0, which results in asking the client to set the width and

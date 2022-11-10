@@ -123,6 +123,13 @@ class TestWaylandServerThread : public base::Thread,
 
   template <typename T>
   T* GetObject(uint32_t id) {
+    // When the server is running in asynchronous mode, all the protocol calls
+    // must be made on the correct thread.
+    // TODO(crbug.com/1365887): this must always do thread check once all the
+    // tests are refactored.
+    if (is_async_) {
+      DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    }
     wl_resource* resource = wl_client_get_object(client_, id);
     return resource ? T::FromResource(resource) : nullptr;
   }

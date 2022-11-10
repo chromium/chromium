@@ -849,7 +849,7 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   window_->Maximize();
   states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
   SendConfigureEvent(window_->root_surface()->get_surface_id(),
-                     kMaximizedBounds.size(), 1, states);
+                     kMaximizedBounds.size(), states);
 
   EXPECT_EQ(kMaximizedBounds, window_->GetBoundsInDIP());
 
