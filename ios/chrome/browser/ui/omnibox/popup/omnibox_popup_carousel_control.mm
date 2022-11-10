@@ -240,12 +240,16 @@ const CGFloat kOmniboxPopupCarouselControlWidth =
                                       parameters:previewParameters];
 }
 
-#pragma mark - UIAccessibilityFocus
+#pragma mark - UIAccessibility
 
 - (void)accessibilityElementDidBecomeFocused {
   // Element is focused by VoiceOver, informs its delegate so it can make it
   // visible, in case it's hidden in the scroll view.
   [self.delegate carouselControlDidBecomeFocused:self];
+}
+
+- (UIAccessibilityTraits)accessibilityTraits {
+  return UIAccessibilityTraitButton | [super accessibilityTraits];
 }
 
 @end
