@@ -8,6 +8,11 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -30,6 +35,31 @@ std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
   for (const auto& id : ids)
     components.push_back(GetComponent(registered_components, id));
   return components;
+}
+
+void DeleteFilesAndParentDirectory(const base::FilePath& file_path) {
+  const base::FilePath base_dir = file_path.DirName();
+  base::FileEnumerator file_enumerator(base_dir, false,
+                                       base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
+       path = file_enumerator.Next()) {
+    base::Version version(path.BaseName().MaybeAsASCII());
+
+    // Ignore folders that don't have valid version names. These folders are
+    // not managed by the component installer, so don't try to remove them.
+    if (!version.IsValid())
+      continue;
+
+    if (!base::DeletePathRecursively(path)) {
+      DLOG(ERROR) << "Couldn't delete " << path.value();
+    }
+  }
+
+  if (base::IsDirectoryEmpty(base_dir)) {
+    if (!base::DeleteFile(base_dir)) {
+      DLOG(ERROR) << "Couldn't delete " << base_dir.value();
+    }
+  }
 }
 
 }  // namespace component_updater

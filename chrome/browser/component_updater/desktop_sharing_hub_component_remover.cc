@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/component_updater/component_updater_utils.h"
+#include "components/component_updater/component_updater_utils.h"
 
 namespace component_updater {
 

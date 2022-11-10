@@ -37,7 +37,7 @@
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
-#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
+#include "components/component_updater/url_param_filter_remover.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -149,6 +149,8 @@ void RegisterComponentsForUpdate() {
 
     component_updater::DeleteAutofillRegex(path);
 
+    component_updater::DeleteUrlParamFilter(path);
+
 #if BUILDFLAG(IS_ANDROID)
     // Clean up any desktop sharing hubs that were installed on Android.
     component_updater::DeleteDesktopSharingHub(path);
@@ -221,7 +223,6 @@ void RegisterComponentsForUpdate() {
   RegisterScreenAIComponent(cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-  RegisterUrlParamClassificationComponent(cus);
   RegisterCommerceHeuristicsComponent(cus);
 }
 

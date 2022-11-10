@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_COMPONENT_UPDATER_UTILS_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_COMPONENT_UPDATER_UTILS_H_
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace component_updater {
 
 // Returns true if Chrome is installed for the current user, or false
@@ -16,9 +12,6 @@ namespace component_updater {
 // don't support this type of install. In this case, assume it is a user
 // install and return true.
 bool IsPerUserInstall();
-
-// A helper function to delete the path and directory for removed compoennts.
-void DeleteFilesAndParentDirectory(const base::FilePath& file_path);
 
 }  // namespace component_updater
 

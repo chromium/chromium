@@ -2323,7 +2323,6 @@ if (!is_android) {
       "../browser/ui/zoom/zoom_controller_browsertest.cc",
       "../browser/ukm_worker_browsertest.cc",
       "../browser/unload_browsertest.cc",
-      "../browser/url_param_filter/url_param_classifications_loader_browsertest.cc",
       "../browser/usb/chrome_usb_browsertest.cc",
       "../browser/user_agent/user_agent_browsertest.cc",
       "../browser/wake_lock/wake_lock_browsertest.cc",

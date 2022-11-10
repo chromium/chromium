@@ -7,7 +7,6 @@ include_rules = [
   "+components/feed",
   "+components/live_caption",
   "+components/soda",
-  "+components/url_param_filter/core",
   "+media/cdm",
   "+ppapi/thunk",
   "+third_party/widevine",

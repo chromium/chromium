@@ -25,7 +25,7 @@
 #import "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
-#import "components/component_updater/installer_policies/url_param_classification_component_installer.h"
+#import "components/component_updater/url_param_filter_remover.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -219,6 +219,7 @@ void RegisterComponentsForUpdate() {
   // Clean up any legacy CRLSet on the local disk - CRLSet used to be shipped
   // as a component on iOS but is not anymore.
   component_updater::DeleteLegacyCRLSet(path);
+  component_updater::DeleteUrlParamFilter(path);
 
   RegisterOnDeviceHeadSuggestComponent(
       cus, GetApplicationContext()->GetApplicationLocale());
@@ -226,7 +227,6 @@ void RegisterComponentsForUpdate() {
   RegisterAutofillStatesComponent(cus,
                                   GetApplicationContext()->GetLocalState());
   RegisterOptimizationHintsComponent(cus);
-  RegisterUrlParamClassificationComponent(cus);
 }
 
 // The delay, in seconds, for cleaning external files.
