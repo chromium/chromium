@@ -909,6 +909,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(profile_info.mode, StartupProfileMode::kError);
   TRACE_EVENT0("startup", "StartupBrowserCreator::ProcessCmdLineImpl");
+  ComputeAndRecordLaunchMode(command_line);
+
   if (process_startup == chrome::startup::IsProcessStartup::kYes &&
       command_line.HasSwitch(switches::kDisablePromptOnRepost)) {
     content::NavigationController::DisablePromptOnRepost();

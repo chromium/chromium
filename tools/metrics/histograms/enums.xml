@@ -56108,82 +56108,93 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
 </enum>
 
 <enum name="LaunchMode">
-  <int value="1" label="(DEPRECATED) LM_AS_WEBAPP_WINDOW">
-    Launched as an installed web application in a standalone window
+  <int value="0" label="kNone">Unknown</int>
+  <int value="1" label="kOther">Catch-all launch for Windows</int>
+  <int value="2" label="kUserExperiment">
+    Launched after acceptance of a user experiment
   </int>
-  <int value="2" label="LM_WITH_URLS">Launched with urls in the cmd line</int>
-  <int value="3" label="LM_OTHER">
-    Fallback value when no other LM_ condition is satisfied
+  <int value="3" label="kOtherOS">
+    Result bucket for OSes with no specific launch modes
   </int>
-  <int value="4" label="LM_SHORTCUT_NONAME">
-    Launched from shortcut but the path to the shortcut cannot be determined
+  <int value="4" label="kProtocolHandler">
+    Chrome launched as registered protocol handler
   </int>
-  <int value="5" label="LM_SHORTCUT_UNKNOWN">
+  <int value="5" label="kFileTypeHandler">
+    Chrome launched as registered file handler
+  </int>
+  <int value="6" label="kWithUrl">
+    Chrome launched with url(s) in the command line, but not from a shell
+    registration or a shortcut. Only the first arg is considered.
+  </int>
+  <int value="7" label="kWithFile">
+    Chrome launched with file(s) in the command line, but not from a shell
+    registration or a shortcut. Only first arg is considered.
+  </int>
+  <int value="8" label="kShortcutNoName">
+    Launched from shortcut but no name available, Chrome, or Web App.
+  </int>
+<!--Following are shortcuts to Chrome, w/o a Web App. -->
+
+  <int value="9" label="kShortcutUnknown">
     Launched from user-defined shortcut
   </int>
-  <int value="6" label="LM_SHORTCUT_QUICKLAUNCH">
-    Launched from the quick launch bar (pre-Win7; obsolete)
-  </int>
-  <int value="7" label="LM_SHORTCUT_DESKTOP">
+  <int value="10" label="kShortcutDesktop">
     Launched from a desktop shortcut
   </int>
-  <int value="8" label="LM_SHORTCUT_TASKBAR">
-    Launched from the taskbar (Win7 and higher)
+  <int value="11" label="kShortcutTaskbar">
+    Launched from the Windows taskbar
   </int>
-  <int value="9" label="LM_USER_EXPERIMENT">
-    Launched from the installer as part of a retention experiment
+  <int value="12" label="kShortcutStartMenu">
+    Launched from a Windows Start Menu shortcut
   </int>
-  <int value="10" label="LM_OTHER_OS">
-    Launch mode result bucket for OSes with no coverage
+  <int value="13" label="kWinPlatformNotification">
+    Launched from toast notification activation on Windows
   </int>
-  <int value="11" label="LM_MAC_UNDOCKED_DISK_LAUNCH">
+  <int value="14" label="kCredentialProviderSignIn">
+    Launched as a logon stub for the Google Credential Provider for Windows
+  </int>
+  <int value="15" label="kMacUndockedDiskLaunch">
     Mac - undocked launch from disk
   </int>
-  <int value="12" label="LM_MAC_DOCKED_DISK_LAUNCH">
+  <int value="16" label="kMacDockedDiskLaunch">
     Mac - docked launch from disk
   </int>
-  <int value="13" label="LM_MAC_UNDOCKED_DMG_LAUNCH">
+  <int value="17" label="kMacUndockedDMGLaunch">
     Mac - undocked launch from a disk image
   </int>
-  <int value="14" label="LM_MAC_DOCKED_DMG_LAUNCH">
+  <int value="18" label="kMacDockedDMGLaunch">
     Mac - docked launch from a disk image
   </int>
-  <int value="15" label="LM_MAC_DOCK_STATUS_ERROR">
+  <int value="19" label="kMacDockStatusError">
     Mac - error determining Chrome's Dock status
   </int>
-  <int value="16" label="LM_MAC_DMG_STATUS_ERROR">
+  <int value="20" label="kMacDMGStatusError">
     Mac - error determining Chrome's disk image status
   </int>
-  <int value="17" label="LM_MAC_DOCK_DMG_STATUS_ERROR">
+  <int value="21" label="kMacDockDMGStatusError">
     Mac - error determining Chrome's Dock and disk image statuses
   </int>
-  <int value="18" label="LM_WIN_PLATFORM_NOTIFICATION">
-    Launched from toast notification activation (Win10-RS1 and higher)
+  <int value="22" label="kWebAppOther">
+    Web App on command line, but not from a shortcut, or a file type/protocol
+    handler.
   </int>
-  <int value="19" label="LM_SHORTCUT_START_MENU">
-    Launched from a Start Menu shortcut (Windows).
+  <int value="23" label="kWebAppShortcutUnknown">
+    Web App launched from a user-defined shortcut
   </int>
-  <int value="20" label="LM_GCPW_LOGON">
-    Launched as a logon stub for the Google Credential Provider for Windows
-    (Windows).
+  <int value="24" label="kWebAppShortcutDesktop">
+    Web App launched from a desktop shortcut
   </int>
-  <int value="21" label="LM_AS_WEBAPP_TAB">
-    Launched as an installed web application in a browser tab
+  <int value="25" label="kWebAppShortcutStartMenu">
+    Web App launched from a start menu shortcut
   </int>
-  <int value="22" label="LM_UNKNOWN_WEBAPP">
-    The requested web application was not installed
+  <int value="26" label="kWebAppShortcutTaskbar">
+    Web App launched from taskbar shortcut
   </int>
-  <int value="23" label="LM_AS_WEBAPP_WINDOW_BY_URL">
-    Launched installed web app in standalone window from command line, using
-    --app flag.
+  <int value="27" label="kWebAppFileTypeHandler">
+    Web App launched as a registered file type handler
   </int>
-  <int value="24" label="LM_AS_WEBAPP_WINDOW_BY_APP_ID">
-    Launched installed web app in standalone window from command line, using
-    --app-id flag.
-  </int>
-  <int value="25" label="LM_AS_WEBAPP_WINDOW_OTHER">
-    Launched installed web app in standalone window by any method other than
-    command line or a platform shortcut.
+  <int value="28" label="kWebAppProtocolHandler">
+    Web App launched as a registered protocol handler
   </int>
 </enum>
 
@@ -74817,6 +74828,86 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="GPUCanvasSoftwareCompositing"/>
   <int value="2" label="SoftwareCanvasGPUCompositing"/>
   <int value="3" label="SoftwareCanvasSoftwareCompositing"/>
+</enum>
+
+<enum name="OldLaunchMode">
+  <int value="1" label="(DEPRECATED) LM_AS_WEBAPP_WINDOW">
+    Launched as an installed web application in a standalone window
+  </int>
+  <int value="2" label="LM_WITH_URLS">Launched with urls in the cmd line</int>
+  <int value="3" label="LM_OTHER">
+    Fallback value when no other LM_ condition is satisfied
+  </int>
+  <int value="4" label="LM_SHORTCUT_NONAME">
+    Launched from shortcut but the path to the shortcut cannot be determined
+  </int>
+  <int value="5" label="LM_SHORTCUT_UNKNOWN">
+    Launched from user-defined shortcut
+  </int>
+  <int value="6" label="LM_SHORTCUT_QUICKLAUNCH">
+    Launched from the quick launch bar (pre-Win7; obsolete)
+  </int>
+  <int value="7" label="LM_SHORTCUT_DESKTOP">
+    Launched from a desktop shortcut
+  </int>
+  <int value="8" label="LM_SHORTCUT_TASKBAR">
+    Launched from the taskbar (Win7 and higher)
+  </int>
+  <int value="9" label="LM_USER_EXPERIMENT">
+    Launched from the installer as part of a retention experiment
+  </int>
+  <int value="10" label="LM_OTHER_OS">
+    Launch mode result bucket for OSes with no coverage
+  </int>
+  <int value="11" label="LM_MAC_UNDOCKED_DISK_LAUNCH">
+    Mac - undocked launch from disk
+  </int>
+  <int value="12" label="LM_MAC_DOCKED_DISK_LAUNCH">
+    Mac - docked launch from disk
+  </int>
+  <int value="13" label="LM_MAC_UNDOCKED_DMG_LAUNCH">
+    Mac - undocked launch from a disk image
+  </int>
+  <int value="14" label="LM_MAC_DOCKED_DMG_LAUNCH">
+    Mac - docked launch from a disk image
+  </int>
+  <int value="15" label="LM_MAC_DOCK_STATUS_ERROR">
+    Mac - error determining Chrome's Dock status
+  </int>
+  <int value="16" label="LM_MAC_DMG_STATUS_ERROR">
+    Mac - error determining Chrome's disk image status
+  </int>
+  <int value="17" label="LM_MAC_DOCK_DMG_STATUS_ERROR">
+    Mac - error determining Chrome's Dock and disk image statuses
+  </int>
+  <int value="18" label="LM_WIN_PLATFORM_NOTIFICATION">
+    Launched from toast notification activation (Win10-RS1 and higher)
+  </int>
+  <int value="19" label="LM_SHORTCUT_START_MENU">
+    Launched from a Start Menu shortcut (Windows).
+  </int>
+  <int value="20" label="LM_GCPW_LOGON">
+    Launched as a logon stub for the Google Credential Provider for Windows
+    (Windows).
+  </int>
+  <int value="21" label="LM_AS_WEBAPP_TAB">
+    Launched as an installed web application in a browser tab
+  </int>
+  <int value="22" label="LM_UNKNOWN_WEBAPP">
+    The requested web application was not installed
+  </int>
+  <int value="23" label="LM_AS_WEBAPP_WINDOW_BY_URL">
+    Launched installed web app in standalone window from command line, using
+    --app flag.
+  </int>
+  <int value="24" label="LM_AS_WEBAPP_WINDOW_BY_APP_ID">
+    Launched installed web app in standalone window from command line, using
+    --app-id flag.
+  </int>
+  <int value="25" label="LM_AS_WEBAPP_WINDOW_OTHER">
+    Launched installed web app in standalone window by any method other than
+    command line or a platform shortcut.
+  </int>
 </enum>
 
 <enum name="OmniboxAggressiveHistoryURLProviderFieldTrialBeacon">

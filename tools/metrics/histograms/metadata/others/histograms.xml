@@ -7868,7 +7868,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Launch.Modes" enum="LaunchMode" expires_after="never">
+<histogram name="Launch.Mode2" enum="LaunchMode" expires_after="never">
+<!-- expires-never: used from time to time on Windows to measure the value of the various Chrome shortcuts (davidbienvenu@) -->
+
+  <owner>calamity@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    The different ways Chrome is launched. This replaces Launch.Modes. Emitted
+    once at startup, when the user launches Chrome to browse the web or launch a
+    Web App. It is not recorded if Chrome is launched in other ways: by the
+    installer, after an update, after a flag change, after an OS update, to
+    install/uninstall/list apps, or in background mode.
+  </summary>
+</histogram>
+
+<histogram name="Launch.Modes" enum="OldLaunchMode" expires_after="never">
 <!-- expires-never: used from time to time on Windows to measure the value of the various Chrome shortcuts (grt@) -->
 
   <owner>calamity@chromium.org</owner>
