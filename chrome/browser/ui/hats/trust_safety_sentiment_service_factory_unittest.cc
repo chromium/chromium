@@ -61,3 +61,10 @@ TEST_F(TrustSafetySentimentServiceFactoryTest, NoServiceFeatureDisabled) {
   feature_list()->InitAndDisableFeature(features::kTrustSafetySentimentSurvey);
   EXPECT_FALSE(TrustSafetySentimentServiceFactory::GetForProfile(profile()));
 }
+
+TEST_F(TrustSafetySentimentServiceFactoryTest, VersionTwoEnabled) {
+  feature_list()->Reset();
+  feature_list()->InitWithFeatures({features::kTrustSafetySentimentSurveyV2},
+                                   {features::kTrustSafetySentimentSurvey});
+  EXPECT_FALSE(TrustSafetySentimentServiceFactory::GetForProfile(profile()));
+}

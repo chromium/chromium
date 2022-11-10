@@ -58338,6 +58338,7 @@ from previous Chrome versions.
   <int value="-1746767834" label="ssl-interstitial-v2-gray"/>
   <int value="-1746708491" label="RemoteCopyPersistentNotification:disabled"/>
   <int value="-1746255521" label="NewOverviewUi:enabled"/>
+  <int value="-1743214399" label="TrustSafetySentimentSurveyV2:disabled"/>
   <int value="-1743079191" label="SyncPseudoUSSPriorityPreferences:enabled"/>
   <int value="-1742376665" label="SyncPseudoUSSPasswords:disabled"/>
   <int value="-1740519217" label="disable-software-rasterizer"/>
@@ -63915,6 +63916,7 @@ from previous Chrome versions.
   <int value="1582400283" label="VideoTutorials:enabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>
   <int value="1584039096" label="highlight-all-webviews"/>
+  <int value="1584112058" label="TrustSafetySentimentSurveyV2:enabled"/>
   <int value="1584425198" label="NtpModules:enabled"/>
   <int value="1584536816" label="LimitAltTabToActiveDesk:enabled"/>
   <int value="1585990408" label="AImageReader:disabled"/>

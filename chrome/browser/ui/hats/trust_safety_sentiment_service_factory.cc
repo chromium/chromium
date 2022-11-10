@@ -29,7 +29,9 @@ TrustSafetySentimentService* TrustSafetySentimentServiceFactory::GetForProfile(
 KeyedService* TrustSafetySentimentServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord() ||
-      !base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey)) {
+      (!base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) &&
+       !base::FeatureList::IsEnabled(
+           features::kTrustSafetySentimentSurveyV2))) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
