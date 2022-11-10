@@ -16,7 +16,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js';
+import {fakeMetricsPrivate, MetricsTracker} from '../../../metrics_test_support.js';
 import {TestBookmarksApiProxy} from '../test_bookmarks_api_proxy.js';
 
 import {TestShoppingListApiProxy} from './test_shopping_list_api_proxy.js';

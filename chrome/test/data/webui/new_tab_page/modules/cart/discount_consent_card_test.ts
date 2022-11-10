@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {fakeMetricsPrivate} from '../../metrics_test_support.js';
+import {fakeMetricsPrivate} from '../../../metrics_test_support.js';
 import {assertStyle} from '../../test_support.js';
 
 suite('NewTabPageDiscountConsentCartTest', () => {

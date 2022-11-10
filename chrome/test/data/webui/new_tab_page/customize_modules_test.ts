@@ -14,7 +14,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {fakeMetricsPrivate, MetricsTracker} from './metrics_test_support.js';
+import {fakeMetricsPrivate, MetricsTracker} from './../metrics_test_support.js';
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 
 suite('NewTabPageCustomizeModulesTest', () => {

@@ -11,7 +11,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {fakeMetricsPrivate, MetricsTracker} from './metrics_test_support.js';
+import {fakeMetricsPrivate, MetricsTracker} from './../metrics_test_support.js';
 import {installMock} from './test_support.js';
 
 suite('LensUploadDialogTest', () => {

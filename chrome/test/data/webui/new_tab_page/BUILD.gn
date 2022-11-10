@@ -21,7 +21,6 @@ non_preprocessed_files = [
                            "lens_form_test.ts",
                            "lens_upload_dialog_test.ts",
                            "logo_test.ts",
-                           "metrics_test_support.ts",
                            "metrics_utils_test.ts",
                            "middle_slot_promo_test.ts",
                            "test_support.ts",

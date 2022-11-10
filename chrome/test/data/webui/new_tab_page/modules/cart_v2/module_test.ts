@@ -13,7 +13,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js';
+import {fakeMetricsPrivate, MetricsTracker} from '../../../metrics_test_support.js';
 import {assertNotStyle, installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {

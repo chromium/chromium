@@ -30,7 +30,6 @@ ts_library("build_ts") {
     "reading_list/test_reading_list_api_proxy.ts",
     "read_anything/read_anything_app_test.ts",
     "side_panel_app_test.ts",
-    "metrics_test_support.ts",
   ]
   definitions = [
     "//chrome/browser/resources/side_panel/read_anything/read_anything.d.ts",

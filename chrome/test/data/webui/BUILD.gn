@@ -425,6 +425,7 @@ ts_library("build_ts") {
     "color_provider_css_colors_test_chromeos.ts",
     "cr_focus_row_mixin_test.ts",
     "fake_chrome_event.ts",
+    "metrics_test_support.ts",
     "mock_controller.ts",
     "mock_timer.ts",
     "mock_timer_test.ts",
@@ -446,6 +447,7 @@ ts_library("build_ts") {
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 }
 
