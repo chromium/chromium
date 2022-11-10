@@ -1303,8 +1303,6 @@ void FederatedAuthRequestImpl::CompleteRequest(
   if (!auth_request_callback_)
     return;
 
-  GetWebContentsData(&render_frame_host())
-      ->SetHasPendingWebIdentityRequest(false);
   if (token_status)
     fedcm_metrics_->RecordRequestTokenStatus(*token_status);
 
@@ -1338,6 +1336,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
   CleanUp();
 
   if (!should_delay_callback || ShouldCompleteRequestImmediately()) {
+    GetWebContentsData(&render_frame_host())
+        ->SetHasPendingWebIdentityRequest(false);
     errors_logged_to_console_ = false;
 
     RequestTokenStatus status =
