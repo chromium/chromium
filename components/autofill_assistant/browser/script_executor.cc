@@ -1270,4 +1270,8 @@ void ScriptExecutor::AddInterruptScript(
       std::make_pair(std::move(interrupt_script), std::move(optional_service)));
 }
 
+const Action* ScriptExecutor::GetCurrentRootAction() const {
+  return current_action_;
+}
+
 }  // namespace autofill_assistant

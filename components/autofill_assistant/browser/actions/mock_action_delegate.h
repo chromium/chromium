@@ -269,6 +269,7 @@ class MockActionDelegate : public ActionDelegate {
               (std::unique_ptr<Script> interrupt_script,
                std::unique_ptr<Service> optional_service),
               (override));
+  MOCK_METHOD(Action*, GetCurrentRootAction, (), (const override));
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

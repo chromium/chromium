@@ -2579,5 +2579,24 @@ TEST_F(ScriptExecutorTest, ReportProgressApplied) {
   executor_->Run(&user_data_, executor_callback_.Get());
 }
 
+TEST_F(ScriptExecutorTest, GetCurrentRootAction) {
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()
+      ->mutable_prompt()
+      ->add_choices()
+      ->mutable_chip()
+      ->set_text("done");
+  EXPECT_CALL(mock_service_, GetActions)
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response),
+                                   ServiceRequestSender::ResponseInfo{}));
+  // Simple check that during an action, GetCurrentRootAction() will point to
+  // that same action.
+  EXPECT_EQ(executor_->GetCurrentRootAction(), nullptr);
+  executor_->Run(&user_data_, executor_callback_.Get());
+  ASSERT_NE(executor_->GetCurrentRootAction(), nullptr);
+  EXPECT_EQ(executor_->GetCurrentRootAction()->proto(),
+            actions_response.actions(0));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

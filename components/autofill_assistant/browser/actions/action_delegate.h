@@ -48,6 +48,7 @@ class UkmRecorder;
 }
 
 namespace autofill_assistant {
+class Action;
 class BatchElementChecker;
 class ClientSettingsProto;
 class ClientStatus;
@@ -566,6 +567,11 @@ class ActionDelegate {
   virtual void AddInterruptScript(
       std::unique_ptr<Script> interrupt_script,
       std::unique_ptr<Service> optional_service = nullptr) = 0;
+
+  // Returns a pointer to the currently running action, or nullptr if there is
+  // none. This is a way for nested actions to access their parent action.
+  // Pointers should not be retained in any fashion.
+  virtual const Action* GetCurrentRootAction() const = 0;
 
  protected:
   ActionDelegate() = default;
