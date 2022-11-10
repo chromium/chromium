@@ -52,7 +52,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
     private FrameLayout mCarouselTabSwitcherContainer;
     private AppBarLayout mHeaderView;
     private ViewGroup mMvTilesContainerLayout;
-    private ViewGroup mBodyViewContainer;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private IncognitoDescriptionView mIncognitoDescriptionView;
     private View.OnClickListener mIncognitoDescriptionLearnMoreListener;
@@ -62,7 +61,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
             CookieControlsEnforcement.NO_ENFORCEMENT;
     private View.OnClickListener mIncognitoCookieControlsIconClickListener;
     private UiConfig mUiConfig;
-    private int mContentHeight;
+    private boolean mIsIncognito;
 
     /** Default constructor needed to inflate via XML. */
     public TasksView(Context context, AttributeSet attrs) {
@@ -88,7 +87,8 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
 
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
-        mBodyViewContainer = findViewById(R.id.tasks_surface_body);
+
+        forceHeaderScrollable();
 
         mUiConfig = new UiConfig(this);
         setHeaderPadding();
@@ -120,7 +120,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
     }
 
     ViewGroup getBodyViewContainer() {
-        return mBodyViewContainer;
+        return findViewById(R.id.tasks_surface_body);
     }
 
     /**
@@ -128,7 +128,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * @param isVisible Whether it's visible.
      */
     void setSurfaceBodyVisibility(boolean isVisible) {
-        mBodyViewContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        getBodyViewContainer().setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -206,6 +206,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
         int hintTextColor = mContext.getColor(isIncognito ? R.color.locationbar_light_hint_text
                                                           : R.color.locationbar_dark_hint_text);
         mSearchBoxCoordinator.setSearchBoxHintColor(hintTextColor);
+        mIsIncognito = isIncognito;
     }
 
     /**
@@ -319,7 +320,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * @param topMargin The top margin to set.
      */
     void setTasksSurfaceBodyTopMargin(int topMargin) {
-        MarginLayoutParams params = (MarginLayoutParams) mBodyViewContainer.getLayoutParams();
+        MarginLayoutParams params = (MarginLayoutParams) getBodyViewContainer().getLayoutParams();
         params.topMargin = topMargin;
     }
 
@@ -425,25 +426,15 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mSearchBoxCoordinator.setLensButtonLeftMargin(lensButtonLeftMargin);
     }
 
-    void initHeaderDragListener() {
-        int screenHeightPixels = mContext.getResources().getDisplayMetrics().heightPixels;
-        mHeaderView.addOnLayoutChangeListener((view, i, i1, i2, i3, i4, i5, i6, i7) -> {
-            mContentHeight =
-                    mHeaderView.getMeasuredHeight() + mBodyViewContainer.getMeasuredHeight();
-        });
-
+    private void forceHeaderScrollable() {
+        // TODO(https://crbug.com/1251632): Find out why scrolling was broken after
+        // crrev.com/c/3025127. Force the header view to be draggable as a workaround.
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) mHeaderView.getLayoutParams();
         AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
         behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
             @Override
             public boolean canDrag(AppBarLayout appBarLayout) {
-                if (mContentHeight <= screenHeightPixels) {
-                    // Needs to reset the offset of the Start surface to prevent it stay in the
-                    // middle of the screen but can't scroll any more.
-                    resetScrollPosition();
-                    return false;
-                }
                 return true;
             }
         });

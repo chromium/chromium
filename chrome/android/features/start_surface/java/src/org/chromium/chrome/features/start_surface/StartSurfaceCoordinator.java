@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 import android.app.Activity;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -281,7 +278,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
         boolean excludeQueryTiles = !mIsStartSurfaceEnabled
                 || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
-        boolean hasPrimaryTasksSurfaceCreated = false;
         if (!mIsStartSurfaceEnabled) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
@@ -296,38 +292,24 @@ public class StartSurfaceCoordinator implements StartSurface {
             // createSwipeRefreshLayout has to be called before creating any surface.
             createSwipeRefreshLayout();
             createAndSetStartSurface(excludeQueryTiles);
-            hasPrimaryTasksSurfaceCreated = true;
         }
 
         TabSwitcher.Controller controller =
                 mTabSwitcher != null ? mTabSwitcher.getController() : mTasksSurface.getController();
         Runnable initializeMVTilesRunnable =
-                hasPrimaryTasksSurfaceCreated ? mTasksSurface::initializeMVTiles : null;
-        View logoContainerView = hasPrimaryTasksSurfaceCreated
-                ? mTasksSurface.getView().findViewById(R.id.logo_container)
-                : null;
+                mTasksSurface == null ? null : mTasksSurface::initializeMVTiles;
+        View logoContainerView = mTasksSurface == null
+                ? null
+                : mTasksSurface.getView().findViewById(R.id.logo_container);
         ViewGroup feedPlaceholderParentView =
-                hasPrimaryTasksSurfaceCreated ? mTasksSurface.getBodyViewContainer() : null;
+                mTasksSurface == null ? null : mTasksSurface.getBodyViewContainer();
         mStartSurfaceMediator = new StartSurfaceMediator(controller, containerView,
                 mTabModelSelector, mPropertyModel,
-                hasPrimaryTasksSurfaceCreated ? this::initializeSecondaryTasksSurface : null,
+                mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
                 mParentTabSupplier, logoContainerView, backPressManager, feedPlaceholderParentView);
-
-        // Set the height of Start surface homepage's tasks_surface_body as wrap_content. We only
-        // update the tasks_surface_body in mTasksSurface since it's Start surface homepage while we
-        // don't change mSecondaryTasksSurface (grid tab switcher).
-        // If Feed placeholder is shown and we set body's height wrap_content, feed articles aren't
-        // rendered on emulator. Thus we need to add the check of whether the place holder is
-        // showing. See https://crbug.com/1208486.
-        if (hasPrimaryTasksSurfaceCreated && !mStartSurfaceMediator.hasFeedPlaceholderShown()) {
-            FrameLayout layout = (FrameLayout) mTasksSurface.getBodyViewContainer();
-            LayoutParams params = layout.getLayoutParams();
-            params.height = WRAP_CONTENT;
-            layout.setLayoutParams(params);
-        }
 
         startSurfaceOneshotSupplier.set(this);
     }
@@ -723,7 +705,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
         initializeOffsetChangedListener();
         addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
-        mTasksSurface.initHeaderDragListener();
 
         mTasksSurfacePropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mPropertyModel,

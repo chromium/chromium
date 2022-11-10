@@ -11,11 +11,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -34,18 +32,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.uiautomator.UiDevice;
 
-import com.google.android.material.appbar.AppBarLayout;
-
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.CommandLine;
@@ -103,7 +96,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * Utility methods and classes for testing Start Surface.
  */
 public class StartSurfaceTestUtils {
-    private static final int ARTICLE_SECTION_HEADER_POSITION = 0;
     public static final String INSTANT_START_TEST_BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:"
             + ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0";
@@ -315,8 +307,7 @@ public class StartSurfaceTestUtils {
     }
 
     /**
-     * Try to scroll the start surface to make toolbar scrolled off. Notice that if Start surface is
-     * not scrollable, nothing will happen.
+     * Scroll the start surface to make toolbar scrolled off.
      * @param cta The ChromeTabbedActivity under test.
      */
     public static void scrollToolbar(ChromeTabbedActivity cta) {
@@ -330,28 +321,15 @@ public class StartSurfaceTestUtils {
 
         // Drag the Feed header title to scroll the toolbar to the top.
         int toY = -cta.getResources().getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow);
-        onViewWaiting(allOf(withId(R.id.header_title), isDisplayed()));
         TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
-                cta.findViewById(R.id.header_title), 0, 0, 0, toY, 10);
-    }
+                cta.findViewById(R.id.header_title), 0, 0, 0, toY, 1);
 
-    /**
-     * Scroll the start surface to make toolbar scrolled off and verify the corresponding UI
-     * changes.
-     * @param cta The ChromeTabbedActivity under test.
-     */
-    public static void scrollToolbarAndVerify(ChromeTabbedActivity cta) {
-        scrollToolbar(cta);
-
-        int toY = -cta.getResources().getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow);
-        AppBarLayout taskSurfaceHeader = cta.findViewById(R.id.task_surface_header);
-
-        // The start surface toolbar and tasks surface header should be scrolled up.
+        // The start surface toolbar should be scrolled up and not be displayed.
         CriteriaHelper.pollInstrumentationThread(
                 ()
-                        -> taskSurfaceHeader.getBottom() != taskSurfaceHeader.getHeight()
-                        && cta.findViewById(R.id.tab_switcher_toolbar).getTranslationY()
-                                <= (float) toY);
+                        -> cta.findViewById(R.id.tab_switcher_toolbar).getTranslationY()
+                        <= (float) -cta.getResources().getDimensionPixelOffset(
+                                R.dimen.toolbar_height_no_shadow));
 
         // Toolbar layout view should show.
         onViewWaiting(withId(R.id.toolbar));
@@ -521,26 +499,6 @@ public class StartSurfaceTestUtils {
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.pressHome();
         ChromeApplicationTestUtils.waitUntilChromeInBackground();
-    }
-
-    /**
-     * Toggles the Feed header and checks whether the header has the right status.
-     * @param expanded Whether the header should be expanded.
-     */
-    public static void toggleFeedHeader(boolean expanded) {
-        onView(Matchers.allOf(
-                       instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
-                .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
-        onView(withId(R.id.header_menu)).perform(click());
-
-        onView(withText(expanded ? R.string.ntp_turn_on_feed : R.string.ntp_turn_off_feed))
-                .perform(click());
-
-        // There must be one and only one view with "Discover on/off" text being displayed.
-        onView(Matchers.allOf(
-                       withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off),
-                       withEffectiveVisibility(Visibility.VISIBLE)))
-                .check(matches(isDisplayed()));
     }
 
     /**

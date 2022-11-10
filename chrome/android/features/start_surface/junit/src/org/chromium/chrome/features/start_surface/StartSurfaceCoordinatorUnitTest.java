@@ -4,12 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 
@@ -31,7 +26,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Tests for {@link StartSurfaceCoordinator}. */
@@ -306,33 +300,6 @@ public class StartSurfaceCoordinatorUnitTest {
         mCoordinator.onHide();
         Assert.assertEquals(
                 View.GONE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.INSTANT_START)
-    public void testSurfaceBodyHeightWhenPlaceholderIsNotShown() {
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mCoordinator.showOverview(false);
-
-        Assert.assertFalse(mCoordinator.getMediatorForTesting().hasFeedPlaceholderShown());
-
-        FrameLayout layout =
-                (FrameLayout) mCoordinator.getPrimaryTasksSurface().getBodyViewContainer();
-        LayoutParams params = layout.getLayoutParams();
-        Assert.assertEquals(WRAP_CONTENT, params.height);
-    }
-
-    @Test
-    public void testSurfaceBodyHeightWhenPlaceholderIsShown() {
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mCoordinator.showOverview(false);
-
-        Assert.assertTrue(mCoordinator.getMediatorForTesting().hasFeedPlaceholderShown());
-
-        FrameLayout layout =
-                (FrameLayout) mCoordinator.getPrimaryTasksSurface().getBodyViewContainer();
-        LayoutParams params = layout.getLayoutParams();
-        Assert.assertEquals(MATCH_PARENT, params.height);
     }
 
     /**

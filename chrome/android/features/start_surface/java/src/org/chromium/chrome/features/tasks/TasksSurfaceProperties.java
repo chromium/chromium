@@ -87,7 +87,7 @@ public class TasksSurfaceProperties {
     public static final PropertyModel.WritableIntPropertyKey TOP_TOOLBAR_PLACEHOLDER_HEIGHT =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel
-            .WritableObjectPropertyKey<Boolean> RESET_TASK_SURFACE_HEADER_SCROLL_POSITION =
+            .WritableObjectPropertyKey RESET_TASK_SURFACE_HEADER_SCROLL_POSITION =
             new PropertyModel.WritableObjectPropertyKey<>(true /* skipEquality */);
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_FAKE_SEARCH_BOX_VISIBLE,
             IS_INCOGNITO, IS_INCOGNITO_DESCRIPTION_INITIALIZED, IS_INCOGNITO_DESCRIPTION_VISIBLE,

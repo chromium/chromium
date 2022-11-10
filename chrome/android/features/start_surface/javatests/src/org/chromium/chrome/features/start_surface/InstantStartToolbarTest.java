@@ -140,7 +140,7 @@ public class InstantStartToolbarTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
 
-        StartSurfaceTestUtils.scrollToolbarAndVerify(cta);
+        StartSurfaceTestUtils.scrollToolbar(cta);
 
         View surface = cta.findViewById(org.chromium.chrome.test.R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
