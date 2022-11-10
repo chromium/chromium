@@ -62,6 +62,11 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   void OnKeyLoaded(bool create_on_fail,
                    std::unique_ptr<SigningKeyPair> loaded_key_pair);
 
+  // Invoked when synchronization of the loaded key has been done with the
+  // server. `response_code` will hold the HTTP response code of the key upload
+  // response. It will be absl::nullopt if the sync request could not be issued.
+  void OnSynchronizationFinished(absl::optional<int> response_code);
+
   // Starts a background task to try and rotate the key. Forwards `nonce` to
   // the process in charge of handling the key rotation and upload. An empty
   // nonce can be used to represent a key creation task, which means no key
@@ -109,6 +114,10 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   // Currently loaded device-trust key pair. If nullptr, it effectively means
   // that a key hasn't been loaded into memory yet.
   std::unique_ptr<SigningKeyPair> key_pair_;
+
+  // When set, represents the response code for the synchronization request
+  // of `key_pair_`.
+  absl::optional<int> sync_key_response_code_;
 
   // List of pending client requests.
   base::OnceClosureList pending_client_requests_;

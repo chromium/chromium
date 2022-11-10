@@ -132,7 +132,8 @@ DeviceTrustKeyManagerImpl::GetLoadedKeyMetadata() const {
   const auto& spki_bytes = key_pair_->key()->GetSubjectPublicKeyInfo();
   return DeviceTrustKeyManagerImpl::KeyMetadata{
       key_pair_->trust_level(), key_pair_->key()->Algorithm(),
-      std::string(spki_bytes.begin(), spki_bytes.end())};
+      std::string(spki_bytes.begin(), spki_bytes.end()),
+      sync_key_response_code_};
 }
 
 void DeviceTrustKeyManagerImpl::AddPendingRequest(
@@ -164,8 +165,15 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
 
   if (loaded_key_pair && !loaded_key_pair->is_empty()) {
     key_pair_ = std::move(loaded_key_pair);
+
+    // Kick off key synchronization in the background as non-blocking.
+    key_rotation_launcher_->SynchronizePublicKey(
+        *key_pair_,
+        base::BindOnce(&DeviceTrustKeyManagerImpl::OnSynchronizationFinished,
+                       weak_factory_.GetWeakPtr()));
   } else {
     key_pair_.reset();
+    sync_key_response_code_ = absl::nullopt;
   }
 
   state_ = InitializationState::kDefault;
@@ -194,6 +202,11 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
   // successfully answered to. If a key was not loaded, then might as well
   // respond with a failure instead of keeping them waiting even longer.
   ResumePendingCallbacks();
+}
+
+void DeviceTrustKeyManagerImpl::OnSynchronizationFinished(
+    absl::optional<int> response_code) {
+  sync_key_response_code_ = response_code;
 }
 
 void DeviceTrustKeyManagerImpl::StartKeyRotationInner(

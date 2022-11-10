@@ -9,8 +9,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -118,19 +116,47 @@ class DesktopAttestationServiceTest : public testing::Test {
 
     fake_dm_token_storage_.SetDMToken(kDmToken);
     fake_dm_token_storage_.SetClientId(kFakeDeviceId);
+    auto* factory = KeyPersistenceDelegateFactory::GetInstance();
+    DCHECK(factory);
+    test_key_pair_ = factory->CreateKeyPersistenceDelegate()->LoadKeyPair();
 
-    // Create the key manager and initialize it, which will make it use the
-    // scoped persistence factory's default TPM-backed mock. In other words,
-    // it will initialize itself with a valid key.
-    key_manager_ = std::make_unique<DeviceTrustKeyManagerImpl>(
-        std::make_unique<StrictMock<test::MockKeyRotationLauncher>>());
     mock_key_manager_ = std::make_unique<test::MockDeviceTrustKeyManager>();
 
     attestation_service_ = std::make_unique<DesktopAttestationService>(
-        &fake_dm_token_storage_, key_manager_.get());
-    attestation_service_with_mocked_key_ =
-        std::make_unique<DesktopAttestationService>(&fake_dm_token_storage_,
-                                                    mock_key_manager_.get());
+        &fake_dm_token_storage_, mock_key_manager_.get());
+  }
+
+  void SetupPubkeyExport(bool can_export_pubkey = true) {
+    EXPECT_CALL(*mock_key_manager_, ExportPublicKeyAsync(_))
+        .WillOnce(
+            Invoke([&, can_export_pubkey](
+                       base::OnceCallback<void(absl::optional<std::string>)>
+                           callback) {
+              if (can_export_pubkey) {
+                auto public_key_info =
+                    test_key_pair_->key()->GetSubjectPublicKeyInfo();
+                std::string public_key(public_key_info.begin(),
+                                       public_key_info.end());
+                std::move(callback).Run(public_key);
+              } else {
+                std::move(callback).Run(absl::nullopt);
+              }
+            }));
+  }
+
+  void SetupSignature(bool can_sign = true) {
+    EXPECT_CALL(*mock_key_manager_, SignStringAsync(_, _))
+        .WillOnce(Invoke(
+            [&, can_sign](const std::string& str,
+                          base::OnceCallback<void(
+                              absl::optional<std::vector<uint8_t>>)> callback) {
+              if (can_sign) {
+                std::move(callback).Run(test_key_pair_->key()->SignSlowly(
+                    base::as_bytes(base::make_span(str))));
+              } else {
+                std::move(callback).Run(absl::nullopt);
+              }
+            }));
   }
 
   base::Value::Dict CreateSignals() {
@@ -140,11 +166,9 @@ class DesktopAttestationServiceTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<SigningKeyPair> test_key_pair_;
   std::unique_ptr<DesktopAttestationService> attestation_service_;
-  std::unique_ptr<DesktopAttestationService>
-      attestation_service_with_mocked_key_;
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
-  std::unique_ptr<DeviceTrustKeyManagerImpl> key_manager_;
   std::unique_ptr<test::MockDeviceTrustKeyManager> mock_key_manager_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
 };
@@ -152,6 +176,9 @@ class DesktopAttestationServiceTest : public testing::Test {
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kUseVaDevKeys, "");
+
+  SetupPubkeyExport();
+  SetupSignature();
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
@@ -169,6 +196,9 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseProd_Success) {
+  SetupPubkeyExport();
+  SetupSignature();
+
   // TODO(crbug.com/1208881): Add signals and validate they effectively get
   // added to the signed data.
   base::test::TestFuture<const AttestationResponse&> future;
@@ -189,6 +219,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseProd_Success) {
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_InvalidDmToken) {
   fake_dm_token_storage_.SetDMToken(kInvalidDmToken);
 
+  SetupPubkeyExport();
+
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(), CreateSignals(), future.GetCallback());
@@ -203,6 +235,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_InvalidDmToken) {
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyDmToken) {
   fake_dm_token_storage_.SetDMToken(std::string());
 
+  SetupPubkeyExport();
+
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(), CreateSignals(), future.GetCallback());
@@ -216,28 +250,21 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyDmToken) {
 
 TEST_F(DesktopAttestationServiceTest,
        BuildChallengeResponse_MissingSigningKey) {
-  base::RunLoop run_loop;
-  auto callback = base::BindLambdaForTesting(
-      [&](const AttestationResponse& attestation_response) {
-        ASSERT_TRUE(attestation_response.challenge_response.empty());
-        EXPECT_EQ(attestation_response.result_code,
-                  DTAttestationResult::kMissingSigningKey);
-        run_loop.Quit();
-      });
+  SetupPubkeyExport(/*can_export_pubkey=*/false);
 
-  EXPECT_CALL(*mock_key_manager_, ExportPublicKeyAsync(_))
-      .WillOnce(Invoke(
-          [](base::OnceCallback<void(absl::optional<std::string>)> callback) {
-            std::move(callback).Run(absl::nullopt);
-          }));
-
-  attestation_service_with_mocked_key_->BuildChallengeResponseForVAChallenge(
+  base::test::TestFuture<const AttestationResponse&> future;
+  attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
-      std::move(callback));
-  run_loop.Run();
+      future.GetCallback());
+
+  const auto& response = future.Get();
+  ASSERT_TRUE(response.challenge_response.empty());
+  EXPECT_EQ(response.result_code, DTAttestationResult::kMissingSigningKey);
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyChallenge) {
+  SetupPubkeyExport();
+
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       "", CreateSignals(), future.GetCallback());
@@ -250,8 +277,11 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyChallenge) {
 
 TEST_F(DesktopAttestationServiceTest,
        BuildChallengeResponse_BadChallengeSource) {
+  SetupPubkeyExport();
+
   std::string challenge_not_from_va;
   base::Base64Decode(kEncodedChallengeNotFromVA, &challenge_not_from_va);
+
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       challenge_not_from_va, CreateSignals(), future.GetCallback());
@@ -264,35 +294,17 @@ TEST_F(DesktopAttestationServiceTest,
 
 TEST_F(DesktopAttestationServiceTest,
        BuildChallengeResponse_EmptyEncryptedResponse) {
-  base::RunLoop run_loop;
-  auto callback = base::BindLambdaForTesting(
-      [&](const AttestationResponse& attestation_response) {
-        ASSERT_TRUE(attestation_response.challenge_response.empty());
-        EXPECT_EQ(attestation_response.result_code,
-                  DTAttestationResult::kFailedToSignResponse);
-        run_loop.Quit();
-      });
-  EXPECT_CALL(*mock_key_manager_, ExportPublicKeyAsync(_))
-      .WillOnce(Invoke(
-          [](base::OnceCallback<void(absl::optional<std::string>)> callback) {
-            auto* factory = KeyPersistenceDelegateFactory::GetInstance();
-            DCHECK(factory);
-            std::unique_ptr<SigningKeyPair> key_pair =
-                factory->CreateKeyPersistenceDelegate()->LoadKeyPair();
-            auto public_key_info = key_pair->key()->GetSubjectPublicKeyInfo();
-            std::string public_key(public_key_info.begin(),
-                                   public_key_info.end());
-            std::move(callback).Run(public_key);
-          }));
-  EXPECT_CALL(*mock_key_manager_, SignStringAsync(_, _))
-      .WillOnce(Invoke(
-          [](const std::string& str,
-             base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
-                 callback) { std::move(callback).Run(absl::nullopt); }));
-  attestation_service_with_mocked_key_->BuildChallengeResponseForVAChallenge(
+  SetupPubkeyExport();
+  SetupSignature(/*can_sign=*/false);
+
+  base::test::TestFuture<const AttestationResponse&> future;
+  attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
-      std::move(callback));
-  run_loop.Run();
+      future.GetCallback());
+
+  const auto& response = future.Get();
+  ASSERT_TRUE(response.challenge_response.empty());
+  EXPECT_EQ(response.result_code, DTAttestationResult::kFailedToSignResponse);
 }
 
 // TODO(crbug.com/1208881): Add signals and validate they effectively get

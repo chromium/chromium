@@ -26,6 +26,7 @@ class DeviceTrustKeyManager {
         trust_level{};
     crypto::SignatureVerifier::SignatureAlgorithm algorithm{};
     std::string spki_bytes{};
+    absl::optional<int> synchronization_response_code = absl::nullopt;
   };
 
   enum class KeyRotationResult {

@@ -36,6 +36,8 @@ using KeyRotationResult = DeviceTrustKeyManager::KeyRotationResult;
 
 namespace {
 
+constexpr int kSuccessUploadCode = 200;
+
 constexpr char kFakeNonce[] = "fake nonce";
 constexpr char kOtherFakeNonce[] = "other fake nonce";
 constexpr char kFakeData[] = "some fake string";
@@ -71,6 +73,8 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
 
     persistence_delegate_factory_.set_next_instance(
         std::move(mock_persistence_delegate));
+
+    ExpectKeySynchronization();
   }
 
   void SetUpNoKey() {
@@ -132,6 +136,16 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
     run_loop.Run();
   }
 
+  void ExpectKeySynchronization(
+      absl::optional<int> response = kSuccessUploadCode) {
+    EXPECT_CALL(*mock_launcher_, SynchronizePublicKey(_, _))
+        .WillOnce(Invoke(
+            [response](const SigningKeyPair& key_pair,
+                       KeyRotationLauncher::SynchronizationCallback callback) {
+              std::move(callback).Run(response);
+            }));
+  }
+
   DeviceTrustKeyManagerImpl* key_manager() { return key_manager_.get(); }
   StrictMock<MockKeyRotationLauncher>* mock_launcher() {
     return mock_launcher_;
@@ -153,6 +167,12 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
 // if key loading was successful.
 TEST_F(DeviceTrustKeyManagerImplTest, Initialization_WithPersistedKey) {
   InitializeWithKey();
+
+  auto key_metadata = key_manager()->GetLoadedKeyMetadata();
+  ASSERT_TRUE(key_metadata);
+  ASSERT_TRUE(key_metadata->synchronization_response_code);
+  EXPECT_EQ(key_metadata->synchronization_response_code.value(),
+            kSuccessUploadCode);
 }
 
 // Tests that:
@@ -928,6 +948,8 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
   persistence_delegate_factory_.set_next_instance(
       std::move(mock_persistence_delegate));
 
+  ExpectKeySynchronization();
+
   // Starting initialization will start loading the key.
   key_manager()->StartInitialization();
 
@@ -985,6 +1007,8 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
 
   persistence_delegate_factory_.set_next_instance(
       std::move(mock_persistence_delegate));
+
+  ExpectKeySynchronization();
 
   // Starting initialization will start loading the key.
   key_manager()->StartInitialization();
