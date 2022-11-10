@@ -6739,26 +6739,6 @@
             ]
         }
     ],
-    "MediaAppPhotosIntegration": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221027",
-                    "params": {
-                        "minPhotosVersionForImage": "6.12",
-                        "minPhotosVersionForVideo": "6.12"
-                    },
-                    "enable_features": [
-                        "MediaAppPhotosIntegrationImage",
-                        "MediaAppPhotosIntegrationVideo"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaFoundationAV1Encoding": [
         {
             "platforms": [

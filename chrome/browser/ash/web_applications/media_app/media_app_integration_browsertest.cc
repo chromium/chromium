@@ -43,7 +43,6 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -119,18 +118,6 @@ constexpr char kDomExceptionScript[] =
     "window.dispatchEvent("
     "new "
     "CustomEvent('simulate-unhandled-rejection-with-dom-exception-for-test'));";
-
-// Runs the provided `script` in a non-isolated JS world that can access
-// variables defined in global scope (otherwise only DOM queries are allowed).
-// The script must call `domAutomationController.send(result)` to return, where
-// `result` is a boolean.
-bool ExtractBoolInGlobalScope(content::WebContents* web_ui,
-                              const std::string& script) {
-  bool result;
-  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(app, script, &result));
-  return result;
-}
 
 class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
@@ -233,171 +220,6 @@ class MediaAppIntegrationDarkLightModeDisabledTest
  public:
   MediaAppIntegrationDarkLightModeDisabledTest() {
     feature_list_.InitAndDisableFeature(chromeos::features::kDarkLightMode);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPhotosIntegrationTest
-    : public MediaAppIntegrationTest {
- public:
-  void TestPhotosIntegrationForVideo(bool expect_flag_enabled) {
-    TestPhotosIntegration(expect_flag_enabled,
-                          /* flag= */ "photosAvailableForVideo");
-  }
-
-  void TestPhotosIntegrationForImage(bool expect_flag_enabled) {
-    TestPhotosIntegration(expect_flag_enabled,
-                          /* flag= */ "photosAvailableForImage");
-  }
-
- private:
-  void TestPhotosIntegration(bool expect_flag_enabled, const char* flag) {
-    InstallPhotosApp(profile());
-    content::WebContents* web_ui = LaunchWithNoFiles();
-
-    EXPECT_EQ(expect_flag_enabled, GetFlagInApp(web_ui, flag));
-  }
-
-  apps::AppPtr MakePhotosApp() {
-    auto app = std::make_unique<apps::App>(apps::AppType::kChromeApp,
-                                           arc::kGooglePhotosAppId);
-    // TODO(b/239776967): expand testing to adjust app readiness.
-    app->readiness = apps::Readiness::kReady;
-    // Set arbitrary version-- it only matters when compared relative to our
-    // `minPhotosVersionForX` parameters.
-    app->version = "5.9";
-    return app;
-  }
-
-  void InstallPhotosApp(Profile* profile) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    std::vector<apps::AppPtr> registry_deltas;
-    registry_deltas.push_back(MakePhotosApp());
-    proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
-                                     apps::AppType::kUnknown,
-                                     /*should_notify_initialized=*/false);
-  }
-
-  bool GetFlagInApp(content::WebContents* web_ui, const char* flag) {
-    constexpr char kGetLoadTimeData[] =
-        R"(domAutomationController.send(!!loadTimeData?.data_['$1']))";
-
-    return ExtractBoolInGlobalScope(
-        web_ui,
-        base::ReplaceStringPlaceholders(kGetLoadTimeData, {flag}, nullptr));
-  }
-};
-
-class MediaAppIntegrationPhotosIntegrationImageEnabledWithParametersTest
-    : public MediaAppIntegrationPhotosIntegrationTest {
- public:
-  MediaAppIntegrationPhotosIntegrationImageEnabledWithParametersTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::features::kMediaAppPhotosIntegrationImage,
-        // 4.3.2.1 is less than the test default Google Photos version of 5.9--
-        // so we expect the Photos integration feature to be enabled.
-        {{"minPhotosVersionForImage", "4.3.2.1"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPhotosIntegrationImageVersionTooOldTest
-    : public MediaAppIntegrationPhotosIntegrationTest {
- public:
-  MediaAppIntegrationPhotosIntegrationImageVersionTooOldTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::features::kMediaAppPhotosIntegrationImage,
-        // 6.5.4.3 is greater than the test default Google Photos version
-        // of 5.9-- so we expect the Photos integration feature to be disabled.
-        {{"minPhotosVersionForImage", "6.5.4.3"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPhotosIntegrationImageDisabledWithParametersTest
-    : public MediaAppIntegrationPhotosIntegrationTest {
- public:
-  MediaAppIntegrationPhotosIntegrationImageDisabledWithParametersTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::features::kMediaAppPhotosIntegrationImage,
-        // Empty string is an invalid version, we expect the Photos integration
-        // feature to be disabled.
-        {{"minPhotosVersionForImage", ""}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPhotosIntegrationImageDisabledTest
-    : public MediaAppIntegrationPhotosIntegrationTest {
- public:
-  MediaAppIntegrationPhotosIntegrationImageDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        chromeos::features::kMediaAppPhotosIntegrationImage);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPhotosIntegrationVideoEnabledWithParametersTest
-    : public MediaAppIntegrationPhotosIntegrationTest {
- public:
-  MediaAppIntegrationPhotosIntegrationVideoEnabledWithParametersTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::features::kMediaAppPhotosIntegrationVideo,
-        // 4.3.2.1 is less than the test default Google Photos version of 5.9--
-        // so we expect the Photos integration feature to be enabled.
-        {{"minPhotosVersionForVideo", "4.3.2.1"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPhotosIntegrationVideoVersionTooOldTest
-    : public MediaAppIntegrationPhotosIntegrationTest {
- public:
-  MediaAppIntegrationPhotosIntegrationVideoVersionTooOldTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::features::kMediaAppPhotosIntegrationVideo,
-        // 6.5.4.3 is greater than the test default Google Photos version
-        // of 5.9-- so we expect the Photos integration feature to be disabled.
-        {{"minPhotosVersionForVideo", "6.5.4.3"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPhotosIntegrationVideoDisabledWithParametersTest
-    : public MediaAppIntegrationPhotosIntegrationTest {
- public:
-  MediaAppIntegrationPhotosIntegrationVideoDisabledWithParametersTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::features::kMediaAppPhotosIntegrationVideo,
-        // Empty string is an invalid version, we expect the Photos integration
-        // feature to be disabled.
-        {{"minPhotosVersionForVideo", ""}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPhotosIntegrationVideoDisabledTest
-    : public MediaAppIntegrationPhotosIntegrationTest {
- public:
-  MediaAppIntegrationPhotosIntegrationVideoDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        chromeos::features::kMediaAppPhotosIntegrationVideo);
   }
 
  private:
@@ -1311,52 +1133,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   histograms.ExpectBucketCount("Apps.MediaApp.Load.OtherOpenWindowCount", 0, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(
-    MediaAppIntegrationPhotosIntegrationImageEnabledWithParametersTest,
-    PhotosIntegrationEnabledViaParameters) {
-  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ true);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    MediaAppIntegrationPhotosIntegrationImageDisabledWithParametersTest,
-    PhotosIntegrationDisabledViaParameters) {
-  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ false);
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationImageDisabledTest,
-                       PhotosIntegrationDisabledViaFlag) {
-  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ false);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    MediaAppIntegrationPhotosIntegrationImageVersionTooOldTest,
-    PhotosVersionTooOldForImageIntegration) {
-  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ false);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    MediaAppIntegrationPhotosIntegrationVideoEnabledWithParametersTest,
-    PhotosIntegrationEnabledViaParameters) {
-  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ true);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    MediaAppIntegrationPhotosIntegrationVideoDisabledWithParametersTest,
-    PhotosIntegrationDisabledViaParameters) {
-  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ false);
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationVideoDisabledTest,
-                       PhotosIntegrationDisabledViaFlag) {
-  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ false);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    MediaAppIntegrationPhotosIntegrationVideoVersionTooOldTest,
-    PhotosVersionTooOldForVideoIntegration) {
-  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ false);
-}
-
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeEnabledTest,
                        HasCorrectThemeAndBackgroundColor) {
   web_app::AppId app_id = MediaAppAppId();
@@ -1914,30 +1690,6 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationDarkLightModeDisabledTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPhotosIntegrationImageEnabledWithParametersTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPhotosIntegrationImageVersionTooOldTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPhotosIntegrationImageDisabledTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPhotosIntegrationImageDisabledWithParametersTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPhotosIntegrationVideoEnabledWithParametersTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPhotosIntegrationVideoVersionTooOldTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPhotosIntegrationVideoDisabledTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPhotosIntegrationVideoDisabledWithParametersTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationTest);

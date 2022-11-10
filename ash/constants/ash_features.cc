@@ -1374,13 +1374,13 @@ BASE_FEATURE(kMediaAppCustomColors,
 // in Photos.
 BASE_FEATURE(kMediaAppPhotosIntegrationImage,
              "MediaAppPhotosIntegrationImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Within the ChromeOS media app, reveals the button to edit the current video
 // in Photos.
 BASE_FEATURE(kMediaAppPhotosIntegrationVideo,
              "MediaAppPhotosIntegrationVideo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature to continuously log PSI memory pressure data to UMA.
 BASE_FEATURE(kMemoryPressureMetricsDetail,
