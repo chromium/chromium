@@ -25,6 +25,7 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "build/build_config.h"
 #include "components/autofill_assistant/browser/base_browsertest.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/selector.h"
@@ -385,8 +386,15 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest, SelectorObserver) {
   ASSERT_TRUE(expected_updates.empty());
 }
 
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#define MAYBE_SelectorObserverRedirectIframe \
+  DISABLED_SelectorObserverRedirectIframe
+#else
+#define MAYBE_SelectorObserverRedirectIframe SelectorObserverRedirectIframe
+#endif
+
 IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
-                       SelectorObserverRedirectIframe) {
+                       MAYBE_SelectorObserverRedirectIframe) {
   base::RunLoop run_loop;
   bool received_no_match_update = false;
   const SelectorObserver::SelectorId button_id(15);
