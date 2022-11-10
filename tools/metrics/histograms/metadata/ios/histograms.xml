@@ -52,6 +52,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AppStoreRating.UserIsEligible" enum="Boolean"
+    expires_after="2023-11-01">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logged once per app foreground. Logs whether the user has met the trigger
+    requirements for the App Store Rating promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.BackgroundTimeBeforeColdStart" units="minutes"
     expires_after="2023-04-27">
   <owner>thegreenfrog@chromium.org</owner>

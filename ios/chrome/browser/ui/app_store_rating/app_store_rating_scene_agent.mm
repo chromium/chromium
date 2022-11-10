@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
@@ -74,7 +75,10 @@
       break;
     case SceneActivationLevelForegroundActive:
       [self updateUserDefaults];
-      if ([self isUserEngaged]) {
+      BOOL isUserEngaged = [self isUserEngaged];
+      base::UmaHistogramBoolean("IOS.AppStoreRating.UserIsEligible",
+                                isUserEngaged);
+      if (isUserEngaged) {
         [self requestPromoDisplay];
       }
       break;
