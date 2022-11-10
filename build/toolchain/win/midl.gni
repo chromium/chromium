@@ -64,11 +64,12 @@ template("midl") {
   }
 
   if (defined(invoker.generated_dir)) {
-    generated_dir = rebase_path(invoker.generated_dir)
+    generated_dir = rebase_path(invoker.generated_dir, root_build_dir)
   } else {
     # midl.py expects 'gen' to be replaced with 'midl'.
-    generated_dir = rebase_path("//third_party/win_build_output") + "/midl/" +
-                    rebase_path(out_dir, root_gen_dir)
+    generated_dir =
+        rebase_path("//third_party/win_build_output", root_build_dir) +
+        "/midl/" + rebase_path(out_dir, root_gen_dir)
   }
 
   if (defined(invoker.dynamic_guids)) {
