@@ -9796,6 +9796,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -9804,12 +9805,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SendMouseEventsDisabledFormControls"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
                         "SendMouseEventsDisabledFormControls"
                     ]
                 }

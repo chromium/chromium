@@ -47,8 +47,6 @@ POLICY_EXPORT extern const char kLastPolicyCheckTime[];
 POLICY_EXPORT extern const char kUserPolicyNotificationWasShown[];
 #endif
 POLICY_EXPORT extern const char kEventPathEnabled[];
-POLICY_EXPORT extern const char kOffsetParentNewSpecBehaviorEnabled[];
-POLICY_EXPORT extern const char kSendMouseEventsDisabledFormControlsEnabled[];
 }  // namespace policy_prefs
 }  // namespace policy
 

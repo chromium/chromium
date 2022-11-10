@@ -1884,7 +1884,6 @@
       name: "OffsetParentNewSpecBehavior",
       status: "stable",
       base_feature: "OffsetParentNewSpecBehavior",
-      public: true,
     },
     {
       name: "OnDeviceChange",
@@ -2455,7 +2454,6 @@
       name: "SendMouseEventsDisabledFormControls",
       base_feature: "SendMouseEventsDisabledFormControls",
       status: "experimental",
-      public: true,
     },
     {
       name: "SensorExtraClasses",

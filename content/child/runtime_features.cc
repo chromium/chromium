@@ -437,34 +437,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
     if (value == blink::switches::kEventPathPolicy_ForceDisable)
       WebRuntimeFeatures::EnableEventPath(false);
   }
-
-  // Enable or disable OffsetParentNewSpecBehavior for Enterprise Policy. This
-  // overrides any existing settings via base::Feature.
-  if (command_line.HasSwitch(
-          blink::switches::kOffsetParentNewSpecBehaviorPolicy)) {
-    const std::string value = command_line.GetSwitchValueASCII(
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy);
-    if (value ==
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy_ForceEnable)
-      WebRuntimeFeatures::EnableOffsetParentNewSpecBehavior(true);
-    if (value ==
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy_ForceDisable)
-      WebRuntimeFeatures::EnableOffsetParentNewSpecBehavior(false);
-  }
-
-  // Enable or disable SendMouseEventsDisabledFormControls for Enterprise
-  // Policy. This overrides any existing settings via base::Feature.
-  if (command_line.HasSwitch(
-          blink::switches::kSendMouseEventsDisabledFormControlsPolicy)) {
-    const std::string value = command_line.GetSwitchValueASCII(
-        blink::switches::kSendMouseEventsDisabledFormControlsPolicy);
-    if (value ==
-        blink::switches::kSendMouseEventsDisabledFormControlsPolicy_ForceEnable)
-      WebRuntimeFeatures::EnableSendMouseEventsDisabledFormControls(true);
-    if (value == blink::switches::
-                     kSendMouseEventsDisabledFormControlsPolicy_ForceDisable)
-      WebRuntimeFeatures::EnableSendMouseEventsDisabledFormControls(false);
-  }
 }
 
 // Sets blink runtime features that depend on a combination
