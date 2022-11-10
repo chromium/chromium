@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/client/shared_bitmap_reporter.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -59,13 +60,16 @@ class UploadCounterGLES2Interface : public viz::TestGLES2Interface {
                      GLenum type,
                      const void* pixels) override {
     ++upload_count_;
+    last_upload_ = reinterpret_cast<const uint8_t*>(pixels);
   }
 
   int UploadCount() { return upload_count_; }
   void ResetUploadCount() { upload_count_ = 0; }
+  const uint8_t* last_upload() const { return last_upload_; }
 
  private:
   int upload_count_;
+  const uint8_t* last_upload_ = nullptr;
 };
 
 class VideoResourceUpdaterTest : public testing::Test {
@@ -165,6 +169,32 @@ class VideoResourceUpdaterTest : public testing::Test {
         kSize,                                 // coded_size
         gfx::Rect(kSize),                      // visible_rect
         kSize,                                 // natural_size
+        reinterpret_cast<uint8_t*>(rgb_data),  // data,
+        sizeof(rgb_data),                      // data_size
+        base::TimeDelta());                    // timestamp
+    EXPECT_TRUE(video_frame);
+    return video_frame;
+  }
+
+  scoped_refptr<VideoFrame> CreateTestRGBVideoFrameWithVisibleRect(
+      VideoPixelFormat format) {
+    constexpr int kMaxDimension = 5;
+    constexpr gfx::Size kSize = gfx::Size(kMaxDimension, kMaxDimension);
+    constexpr gfx::Rect kVisibleRect = gfx::Rect(2, 1, 3, 3);
+    constexpr uint32_t kPix = 0xFFFFFFFF;
+    static uint32_t rgb_data[kMaxDimension * kMaxDimension] = {
+        0x00, 0x00, 0x00, 0x00, 0x00,  //
+        0x00, 0x00, kPix, kPix, kPix,  //
+        0x00, 0x00, kPix, kPix, kPix,  //
+        0x00, 0x00, kPix, kPix, kPix,  //
+        0x00, 0x00, 0x00, 0x00, 0x00,  //
+    };
+
+    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
+        format,                                // format
+        kSize,                                 // coded_size
+        kVisibleRect,                          // visible_rect
+        kVisibleRect.size(),                   // natural_size
         reinterpret_cast<uint8_t*>(rgb_data),  // data,
         sizeof(rgb_data),                      // data_size
         base::TimeDelta());                    // timestamp
@@ -321,6 +351,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameP016_NoR16Support) {
   EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
 }
 
+// Ensure we end up with the right SharedImageFormat for each resource.
 TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   for (const auto& fmt : {PIXEL_FORMAT_XBGR, PIXEL_FORMAT_XRGB,
@@ -329,6 +360,58 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
     VideoFrameExternalResources resources =
         updater->CreateExternalResourcesFromVideoFrame(video_frame);
     EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
+#if BUILDFLAG(IS_MAC)
+    EXPECT_EQ(resources.resources[0].format,
+              viz::SharedImageFormat::SinglePlane(viz::BGRA_8888));
+#else
+    EXPECT_EQ(resources.resources[0].size, video_frame->coded_size());
+
+    if (fmt == PIXEL_FORMAT_XBGR) {
+      EXPECT_EQ(resources.resources[0].format,
+                viz::SharedImageFormat::SinglePlane(viz::RGBX_8888));
+    } else if (fmt == PIXEL_FORMAT_XRGB) {
+      EXPECT_EQ(resources.resources[0].format,
+                viz::SharedImageFormat::SinglePlane(viz::BGRX_8888));
+
+    } else if (fmt == PIXEL_FORMAT_ABGR) {
+      EXPECT_EQ(resources.resources[0].format,
+                viz::SharedImageFormat::SinglePlane(viz::RGBA_8888));
+
+    } else if (fmt == PIXEL_FORMAT_ARGB) {
+      EXPECT_EQ(resources.resources[0].format,
+                viz::SharedImageFormat::SinglePlane(viz::BGRA_8888));
+    }
+#endif
+  }
+}
+
+// Ensure the visible data is where it's supposed to be.
+TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBNonOrigin) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+  for (const auto& fmt : {PIXEL_FORMAT_XBGR, PIXEL_FORMAT_XRGB,
+                          PIXEL_FORMAT_ABGR, PIXEL_FORMAT_ARGB}) {
+    auto video_frame = CreateTestRGBVideoFrameWithVisibleRect(fmt);
+    VideoFrameExternalResources resources =
+        updater->CreateExternalResourcesFromVideoFrame(video_frame);
+    EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
+    EXPECT_EQ(resources.resources[0].size, video_frame->coded_size());
+
+    auto rect = video_frame->visible_rect();
+
+    const auto bytes_per_row = video_frame->row_bytes(VideoFrame::kARGBPlane);
+    const auto bytes_per_element =
+        VideoFrame::BytesPerElement(fmt, VideoFrame::kARGBPlane);
+    auto* dest_pixels = gl_->last_upload() + rect.y() * bytes_per_row +
+                        rect.x() * bytes_per_element;
+    auto* src_pixels = video_frame->visible_data(VideoFrame::kARGBPlane);
+
+    // Pixels are 0xFFFFFFFF, so channel reordering doesn't matter.
+    for (int y = 0; y < rect.height(); ++y) {
+      for (int x = 0; x < rect.width() * bytes_per_element; ++x) {
+        const auto pos = y * bytes_per_row + x;
+        ASSERT_EQ(src_pixels[pos], dest_pixels[pos]);
+      }
+    }
   }
 }
 
@@ -553,6 +636,8 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBSoftwareCompositor) {
     VideoFrameExternalResources resources =
         updater->CreateExternalResourcesFromVideoFrame(video_frame);
     EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resources.type);
+    EXPECT_EQ(resources.resources[0].format,
+              viz::SharedImageFormat::SinglePlane(viz::RGBA_8888));
   }
 }
 

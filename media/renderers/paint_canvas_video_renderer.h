@@ -15,6 +15,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
+#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/media_export.h"
 #include "media/base/timestamp_constants.h"
@@ -102,6 +103,9 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                                            size_t row_bytes,
                                            bool premultiply_alpha = true,
                                            FilterMode filter = kFilterNone);
+
+  // The output format that ConvertVideoFrameToRGBPixels will write.
+  static viz::ResourceFormat GetRGBPixelsOutputFormat();
 
   // Copy the contents of |video_frame| to |texture| of |destination_gl|.
   //

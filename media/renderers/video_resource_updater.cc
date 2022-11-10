@@ -288,6 +288,42 @@ gfx::Size SoftwarePlaneDimension(VideoFrame* input_frame,
   return gfx::Size(plane_width, plane_height);
 }
 
+viz::ResourceFormat GetRGBResourceFormat(VideoPixelFormat format) {
+#if BUILDFLAG(IS_MAC)
+  // macOS IOSurfaces are always BGRA_8888.
+  return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
+#else
+  switch (format) {
+    case PIXEL_FORMAT_XBGR:
+      return viz::RGBX_8888;
+    case PIXEL_FORMAT_ABGR:
+      return viz::RGBA_8888;
+    case PIXEL_FORMAT_XRGB:
+      return viz::BGRX_8888;
+    case PIXEL_FORMAT_ARGB:
+      return viz::BGRA_8888;
+    default:
+      NOTREACHED();
+      return viz::RGBA_8888;
+  }
+#endif
+}
+
+// Returns true if the input VideoFrame format can be stored directly in the
+// provided output resource format.
+bool HasCompatibleFormat(VideoPixelFormat input_format,
+                         viz::ResourceFormat output_format) {
+  if (input_format == PIXEL_FORMAT_XBGR)
+    return output_format == viz::RGBA_8888 || output_format == viz::RGBX_8888;
+  if (input_format == PIXEL_FORMAT_ABGR)
+    return output_format == viz::RGBA_8888;
+  if (input_format == PIXEL_FORMAT_XRGB)
+    return output_format == viz::BGRA_8888 || output_format == viz::BGRX_8888;
+  if (input_format == PIXEL_FORMAT_ARGB)
+    return output_format == viz::BGRA_8888;
+  return false;
+}
+
 }  // namespace
 
 VideoFrameExternalResources::VideoFrameExternalResources() = default;
@@ -759,7 +795,7 @@ viz::ResourceFormat VideoResourceUpdater::YuvResourceFormat(
                          ? raster_context_provider_->ContextCapabilities()
                          : context_provider_->ContextCapabilities();
   if (caps.disable_one_component_textures)
-    return viz::RGBA_8888;
+    return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   if (bits_per_channel <= 8)
     return caps.texture_rg ? viz::RED_8 : viz::LUMINANCE_8;
   if (use_r16_texture_ && caps.texture_norm16)
@@ -990,24 +1026,24 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   viz::ResourceFormat output_resource_format;
   absl::optional<viz::ResourceFormat> subplane_resource_format;
   gfx::ColorSpace output_color_space = video_frame->ColorSpace();
-  if (input_frame_format == PIXEL_FORMAT_XBGR) {
-    output_resource_format = viz::RGBX_8888;
-  } else if (input_frame_format == PIXEL_FORMAT_XRGB) {
-    output_resource_format = viz::BGRX_8888;
-  } else if (input_frame_format == PIXEL_FORMAT_ABGR) {
-    output_resource_format = viz::RGBA_8888;
-  } else if (input_frame_format == PIXEL_FORMAT_XBGR) {
-    output_resource_format = viz::RGBX_8888;
-  } else if (input_frame_format == PIXEL_FORMAT_ARGB) {
-    output_resource_format = viz::BGRA_8888;
+  bool texture_needs_rgb_conversion = false;
+  if (is_rgb) {
+    output_resource_format = GetRGBResourceFormat(input_frame_format);
   } else if (input_frame_format == PIXEL_FORMAT_Y16) {
-    // Unable to display directly as yuv planes so convert it to RGBA for
-    // compositing.
-    output_resource_format = viz::RGBA_8888;
-    output_color_space = output_color_space.GetAsFullRangeRGB();
+    // Unable to display directly as yuv planes so convert it to RGB.
+    texture_needs_rgb_conversion = true;
   } else if (!software_compositor()) {
     // Can be composited directly from yuv planes.
     output_resource_format = YuvResourceFormat(bits_per_channel);
+
+    // If GPU compositing is enabled, but the output resource format returned by
+    // the resource provider is viz::RGBA_8888, then a GPU driver bug
+    // workaround requires that YUV frames must be converted to RGB before
+    // texture upload.
+    if (output_resource_format == viz::ResourceFormat::RGBA_8888 ||
+        output_resource_format == viz::ResourceFormat::BGRA_8888) {
+      texture_needs_rgb_conversion = true;
+    }
 
     // Some YUV resources have different sized planes. If we lack the proper
     // ResourceFormat just convert to RGB. We could do something better like
@@ -1017,26 +1053,17 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
       if (output_resource_format == viz::RED_8)
         subplane_resource_format = viz::RG_88;
       else
-        output_resource_format = viz::RGBA_8888;
+        texture_needs_rgb_conversion = true;
     } else if (input_frame_format == PIXEL_FORMAT_P016LE) {
       if (output_resource_format == viz::R16_EXT)
         subplane_resource_format = viz::RG16_EXT;
       else
-        output_resource_format = viz::RGBA_8888;
+        texture_needs_rgb_conversion = true;
     } else {
       DCHECK_EQ(VideoFrame::BytesPerElement(input_frame_format, 0),
                 VideoFrame::BytesPerElement(input_frame_format, 1));
     }
   }
-
-  // If GPU compositing is enabled, but the output resource format
-  // returned by the resource provider is viz::RGBA_8888, then a GPU driver
-  // bug workaround requires that YUV frames must be converted to RGB
-  // before texture upload.
-  const bool texture_needs_rgb_conversion =
-      input_frame_format == PIXEL_FORMAT_Y16 ||
-      (!software_compositor() && IsYuvPlanar(input_frame_format) &&
-       output_resource_format == viz::ResourceFormat::RGBA_8888);
 
   size_t output_plane_count = VideoFrame::NumPlanes(input_frame_format);
 
@@ -1045,7 +1072,10 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   // Obviously, this is suboptimal and should be addressed once ubercompositor
   // starts shaping up.
   if (software_compositor() || texture_needs_rgb_conversion) {
-    output_resource_format = viz::RGBA_8888;
+    output_resource_format =
+        software_compositor()
+            ? viz::RGBA_8888
+            : PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
     output_plane_count = 1;
     bits_per_channel = 8;
 
@@ -1144,29 +1174,55 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
         HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
         size_t bytes_per_row = viz::ResourceSizes::CheckedWidthInBytes<size_t>(
             video_frame->coded_size().width(), output_resource_format);
-        size_t needed_size = bytes_per_row * video_frame->coded_size().height();
-        if (upload_pixels_size_ < needed_size) {
-          // Free the existing data first so that the memory can be reused,
-          // if possible. Note that the new array is purposely not initialized.
-          upload_pixels_.reset();
-          upload_pixels_.reset(new uint8_t[needed_size]);
-          upload_pixels_size_ = needed_size;
-        }
+        const gfx::Size& plane_size = hardware_resource->resource_size();
 
-        PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-            video_frame.get(), upload_pixels_.get(), bytes_per_row);
+        // Note: Strides may be negative in case of bottom-up layouts.
+        const int stride = video_frame->stride(VideoFrame::kARGBPlane);
+        const bool has_compatible_stride =
+            stride > 0 && static_cast<size_t>(stride) == bytes_per_row;
+
+        const uint8_t* source_pixels = nullptr;
+        if (HasCompatibleFormat(input_frame_format, output_resource_format) &&
+            has_compatible_stride) {
+          // We can passthrough when the texture format matches. Since we
+          // always copy the entire coded area we don't have to worry about
+          // origin.
+          source_pixels = video_frame->data(VideoFrame::kARGBPlane);
+        } else {
+          size_t needed_size =
+              bytes_per_row * video_frame->coded_size().height();
+          if (upload_pixels_size_ < needed_size) {
+            // Free the existing data first so that the memory can be reused,
+            // if possible. Note that the new array is purposely not
+            // initialized.
+            upload_pixels_.reset();
+            upload_pixels_.reset(new uint8_t[needed_size]);
+            upload_pixels_size_ = needed_size;
+          }
+
+          // PCVR writes to origin, so offset upload pixels by start since
+          // we upload frames in coded size and pass on the visible rect to
+          // the compositor. Note: It'd save a few bytes not to do this...
+          auto* dest_ptr = upload_pixels_.get() +
+                           video_frame->visible_rect().y() * bytes_per_row +
+                           video_frame->visible_rect().x() *
+                               VideoFrame::BytesPerElement(
+                                   input_frame_format, VideoFrame::kARGBPlane);
+          PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
+              video_frame.get(), dest_ptr, bytes_per_row);
+          source_pixels = upload_pixels_.get();
+        }
 
         // Copy pixels into texture.
         auto* gl = ContextGL();
-        const gfx::Size& plane_size = hardware_resource->resource_size();
         {
           HardwarePlaneResource::ScopedTexture scope(gl, hardware_resource);
           gl->BindTexture(hardware_resource->texture_target(),
                           scope.texture_id());
-          gl->TexSubImage2D(
-              hardware_resource->texture_target(), 0, 0, 0, plane_size.width(),
-              plane_size.height(), GLDataFormat(output_resource_format),
-              GLDataType(output_resource_format), upload_pixels_.get());
+          gl->TexSubImage2D(hardware_resource->texture_target(), 0, 0, 0,
+                            plane_size.width(), plane_size.height(),
+                            GLDataFormat(output_resource_format),
+                            GLDataType(output_resource_format), source_pixels);
         }
       }
       plane_resource->SetUniqueId(video_frame->unique_id(), 0);

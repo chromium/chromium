@@ -1402,6 +1402,11 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
   }
 }
 
+// static
+viz::ResourceFormat PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat() {
+  return RESOURCE_FORMAT;
+}
+
 bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
