@@ -625,6 +625,8 @@ def _set_builder_config_property(ctx):
     bc_state = _bc_state()
 
     for bucket in cfg.buckets:
+        if not proto.has(bucket, "swarming"):
+            continue
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
