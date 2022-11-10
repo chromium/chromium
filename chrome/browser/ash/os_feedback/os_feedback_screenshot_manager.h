@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_OS_FEEDBACK_OS_FEEDBACK_SCREENSHOT_MANAGER_H_
 #define CHROME_BROWSER_ASH_OS_FEEDBACK_OS_FEEDBACK_SCREENSHOT_MANAGER_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
@@ -62,8 +64,9 @@ class OsFeedbackScreenshotManager {
   ~OsFeedbackScreenshotManager();
   friend struct base::DefaultSingletonTraits<OsFeedbackScreenshotManager>;
 
-  void OnScreenshotTaken(ScreenshotCallback callback,
-                         scoped_refptr<base::RefCountedMemory> data);
+  void OnAllScreenshotsTaken(
+      ScreenshotCallback callback,
+      std::vector<scoped_refptr<base::RefCountedMemory>> all_data);
 
   scoped_refptr<base::RefCountedMemory> screenshot_png_data_;
   base::WeakPtrFactory<OsFeedbackScreenshotManager> weak_ptr_factory_{this};
