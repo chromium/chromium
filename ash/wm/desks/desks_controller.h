@@ -460,7 +460,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
       DesksCreationRemovalSource source,
       int windows_closed) const;
 
-  void MaybeReportCustomDeskNames() const;
+  // Reports custom desk name metrics for the number of desks with custom names
+  // and the percentage of the user's desks with custom names.
+  void ReportCustomDeskNames() const;
 
   std::vector<std::unique_ptr<Desk>> desks_;
 

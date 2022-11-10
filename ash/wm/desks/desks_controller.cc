@@ -933,7 +933,13 @@ void DesksController::NotifyAllDesksForContentChanged() {
 
 void DesksController::NotifyDeskNameChanged(const Desk* desk,
                                             const std::u16string& new_name) {
-  MaybeReportCustomDeskNames();
+  // We only want metrics for users with two or more desks.
+  if (desks_.size() > 1) {
+    ReportCustomDeskNames();
+    base::UmaHistogramBoolean(kCustomNameCreatedHistogramName,
+                              desk->is_name_set_by_user());
+  }
+
   for (auto& observer : observers_)
     observer.OnDeskNameChanged(desk, new_name);
 }
@@ -1686,7 +1692,6 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskHistogramName, source);
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskTypeHistogramName, close_type);
-  MaybeReportCustomDeskNames();
 
   // We should only announce desks are being merged if we are combining desks.
   if (close_type == DeskCloseType::kCombineDesks) {
@@ -1770,6 +1775,9 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
       removed_desk_data->desk_removal_source(), removed_desk->windows().size());
   ReportDesksCountHistogram();
   ReportNumberOfWindowsPerDeskHistogram();
+
+  // Record the number and percentage of desks with custom names.
+  ReportCustomDeskNames();
 
   // We need to ensure there are no app windows in the desk before destruction.
   // During a combine desks operation, the windows would have already been
@@ -2025,11 +2033,7 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
     base::UmaHistogramCounts100(desk_removal_source_histogram, windows_closed);
 }
 
-void DesksController::MaybeReportCustomDeskNames() const {
-  // We only want metrics for users with two or more desks.
-  if (desks_.size() < 2)
-    return;
-
+void DesksController::ReportCustomDeskNames() const {
   int custom_names_count =
       base::ranges::count(desks_, true, &Desk::is_name_set_by_user);
 

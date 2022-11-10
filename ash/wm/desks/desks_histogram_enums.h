@@ -61,6 +61,8 @@ constexpr char kNumberOfCustomNamesHistogramName[] =
     "Ash.Desks.CustomNameCount";
 constexpr char kPercentageOfCustomNamesHistogramName[] =
     "Ash.Desks.CustomNamePercentage";
+constexpr char kCustomNameCreatedHistogramName[] =
+    "Ash.Desks.CustomNameCreated";
 
 }  // namespace ash
 

@@ -6405,10 +6405,12 @@ TEST_P(DesksTest, TestCustomDeskNameMetricsRecording) {
     const UpdateSource update_source;
     const int expected_number_of_custom_desks;
     const int expected_percentage_of_custom_desks;
+    const int expected_custom_name_change_true_hits;
+    const int expected_custom_name_change_false_hits;
   } kTestCases[] = {
-      {"Rename a desk", UpdateSource::kDeskRenamed, 1, 50},
-      {"Add a desk", UpdateSource::kDeskAdded, 1, 33},
-      {"Remove a desk", UpdateSource::kDeskRemoved, 1, 50},
+      {"Rename a desk", UpdateSource::kDeskRenamed, 1, 50, 1, 1},
+      {"Add a desk", UpdateSource::kDeskAdded, 1, 33, 1, 2},
+      {"Remove a desk", UpdateSource::kDeskRemoved, 1, 50, 1, 2},
   };
 
   base::HistogramTester histogram_tester;
@@ -6422,6 +6424,8 @@ TEST_P(DesksTest, TestCustomDeskNameMetricsRecording) {
                                     number_of_updates);
   histogram_tester.ExpectTotalCount(kPercentageOfCustomNamesHistogramName,
                                     number_of_updates);
+  histogram_tester.ExpectTotalCount(kCustomNameCreatedHistogramName,
+                                    number_of_updates);
   const auto& desks = DesksController::Get()->desks();
 
   for (const auto& test_case : kTestCases) {
@@ -6429,7 +6433,7 @@ TEST_P(DesksTest, TestCustomDeskNameMetricsRecording) {
 
     switch (test_case.update_source) {
       case UpdateSource::kDeskRenamed:
-        desks[0]->SetName(u"Hello", true);
+        desks[0]->SetName(u"Hello", /*set_by_user=*/true);
         break;
       case UpdateSource::kDeskAdded:
         NewDesk();
@@ -6453,6 +6457,12 @@ TEST_P(DesksTest, TestCustomDeskNameMetricsRecording) {
     EXPECT_NE(0, histogram_tester.GetBucketCount(
                      kPercentageOfCustomNamesHistogramName,
                      test_case.expected_percentage_of_custom_desks));
+    EXPECT_EQ(
+        test_case.expected_custom_name_change_true_hits,
+        histogram_tester.GetBucketCount(kCustomNameCreatedHistogramName, true));
+    EXPECT_EQ(test_case.expected_custom_name_change_false_hits,
+              histogram_tester.GetBucketCount(kCustomNameCreatedHistogramName,
+                                              false));
   }
 }
 
