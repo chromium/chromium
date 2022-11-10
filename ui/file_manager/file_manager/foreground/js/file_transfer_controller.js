@@ -448,7 +448,8 @@ export class FileTransferController {
    * user.
    *
    * @param {!FileTransferController.PastePlan} pastePlan
-   * @return {!Promise<string>} Either "copy" or "move".
+   * @return {!Promise<string>} Either "copy", "move", "user-cancelled" or
+   *     "dlp-aborted".
    * @private
    */
   async executePasteIfAllowed_(pastePlan) {
@@ -492,7 +493,7 @@ export class FileTransferController {
                   'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
             },
           });
-      throw new Error('ABORT');
+      return 'dlp-blocked';
     }
     if (sourceEntries.length == 0) {
       // This can happen when copied files were deleted before pasting
@@ -509,7 +510,7 @@ export class FileTransferController {
     const userApproved =
         await this.confirmationCallback_(pastePlan.isMove, messages);
     if (!userApproved) {
-      throw new Error('ABORT');
+      return 'user-cancelled';
     }
     return this.executePaste(pastePlan);
   }
