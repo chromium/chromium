@@ -61,14 +61,6 @@ CacheTransparencySettings::CreateMap() {
     // The code below safely produces an empty map in this case.
     DLOG(WARNING) << "Pervasive payload list is empty.";
   } else {
-    const auto version_string = split[0];
-    int version_number = 0;
-    if (StringToInt(version_string, &version_number)) {
-      base::UmaHistogramExactLinear("Network.CacheTransparency.ListVersion",
-                                    version_number, 101);
-    } else {
-      LOG(WARNING) << "Could not parse pervasive payload version number";
-    }
     // The number of items cannot be large, so this O(N) algorithm is
     // acceptable.
     split.erase(split.begin());

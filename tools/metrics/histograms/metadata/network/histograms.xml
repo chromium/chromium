@@ -264,6 +264,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.CacheTransparency.ListVersion" units="version"
     expires_after="2023-11-01">
+  <obsolete>
+    Removed as of 11/2022, as the CacheTransparency experiment has ended and
+    this is unmonitored now.
+  </obsolete>
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
