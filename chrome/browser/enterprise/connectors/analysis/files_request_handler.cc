@@ -93,6 +93,7 @@ FilesRequestHandler::FilesRequestHandler(
       callback_(std::move(callback)) {
   results_.resize(paths_.size());
   file_info_.resize(paths_.size());
+  start_times_.resize(paths_.size(), base::TimeTicks::Min());
 }
 
 // static
@@ -188,6 +189,8 @@ safe_browsing::FileAnalysisRequest* FilesRequestHandler::PrepareFileRequest(
       analysis_settings_, path, path.BaseName(), /*mime_type*/ "",
       /* delay_opening_file */ true,
       base::BindOnce(&FilesRequestHandler::FileRequestCallback,
+                     weak_ptr_factory_.GetWeakPtr(), index),
+      base::BindOnce(&FilesRequestHandler::FileRequestStartCallback,
                      weak_ptr_factory_.GetWeakPtr(), index));
   safe_browsing::FileAnalysisRequest* request_raw = request.get();
   PrepareRequest(AccessPointToEnterpriseConnector(access_point_), request_raw);
@@ -254,6 +257,12 @@ void FilesRequestHandler::UploadFileForDeepScanning(
     upload_service->MaybeUploadForDeepScanning(std::move(request));
 }
 
+void FilesRequestHandler::FileRequestStartCallback(
+    size_t index,
+    const safe_browsing::BinaryUploadService::Request& request) {
+  start_times_[index] = base::TimeTicks::Now();
+}
+
 void FilesRequestHandler::FileRequestCallback(
     size_t index,
     safe_browsing::BinaryUploadService::Result upload_result,
@@ -274,9 +283,13 @@ void FilesRequestHandler::FileRequestCallback(
   DCHECK_LT(index, paths_.size());
   const base::FilePath& path = paths_[index];
 
+  const auto start_timestamp = (start_times_[index] != base::TimeTicks::Min())
+                                   ? start_times_[index]
+                                   : upload_start_time_;
+
   RecordDeepScanMetrics(
       analysis_settings_.cloud_or_local_settings.is_cloud_analysis(),
-      access_point_, base::TimeTicks::Now() - upload_start_time_,
+      access_point_, base::TimeTicks::Now() - start_timestamp,
       file_info_[index].size, upload_result, response);
 
   RequestHandlerResult request_handler_result = CalculateRequestHandlerResult(

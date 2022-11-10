@@ -143,6 +143,10 @@ class FilesRequestHandler : public RequestHandlerBase {
       safe_browsing::BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
 
+  void FileRequestStartCallback(
+      size_t index,
+      const safe_browsing::BinaryUploadService::Request& request);
+
   void MaybeCompleteScanRequest();
 
   // Owner of the FileOpeningJob responsible for opening files on parallel
@@ -168,6 +172,8 @@ class FilesRequestHandler : public RequestHandlerBase {
   bool throttled_ = false;
 
   CompletionCallback callback_;
+
+  std::vector<base::TimeTicks> start_times_;
 
   base::WeakPtrFactory<FilesRequestHandler> weak_ptr_factory_{this};
 };

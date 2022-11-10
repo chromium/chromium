@@ -145,8 +145,11 @@ FileAnalysisRequest::FileAnalysisRequest(
     base::FilePath file_name,
     std::string mime_type,
     bool delay_opening_file,
-    BinaryUploadService::ContentAnalysisCallback callback)
-    : Request(std::move(callback), analysis_settings.cloud_or_local_settings),
+    BinaryUploadService::ContentAnalysisCallback callback,
+    BinaryUploadService::Request::RequestStartCallback start_callback)
+    : Request(std::move(callback),
+              analysis_settings.cloud_or_local_settings,
+              std::move(start_callback)),
       has_cached_result_(false),
       tag_settings_(analysis_settings.tags),
       path_(std::move(path)),

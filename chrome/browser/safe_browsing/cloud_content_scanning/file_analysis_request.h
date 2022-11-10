@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_H_
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -24,7 +25,9 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
       base::FilePath file_name,
       std::string mime_type,
       bool delay_opening_file,
-      BinaryUploadService::ContentAnalysisCallback callback);
+      BinaryUploadService::ContentAnalysisCallback callback,
+      BinaryUploadService::Request::RequestStartCallback start_callback =
+          base::DoNothing());
   FileAnalysisRequest(const FileAnalysisRequest&) = delete;
   FileAnalysisRequest& operator=(const FileAnalysisRequest&) = delete;
   ~FileAnalysisRequest() override;
