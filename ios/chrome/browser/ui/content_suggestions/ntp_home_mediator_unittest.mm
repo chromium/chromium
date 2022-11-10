@@ -157,19 +157,3 @@ TEST_F(NTPHomeMediatorTest, TestConsumerNotificationUnfocus) {
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
-
-// Tests that the voice search button is disabled when VoiceOver is turned on
-// and off.
-TEST_F(NTPHomeMediatorTest, DisableVoiceSearch) {
-  [mediator_ setUp];
-
-  // Enable VoiceOver and verify that voice search is disabled for the consumer.
-  OCMExpect([consumer_ setVoiceSearchIsEnabled:NO]);
-  voice_availability_.SetVoiceOverEnabled(true);
-
-  // Disable VoiceOVer and verify that voice search is enabled again.
-  OCMExpect([consumer_ setVoiceSearchIsEnabled:YES]);
-  voice_availability_.SetVoiceOverEnabled(false);
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}

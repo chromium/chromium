@@ -32,28 +32,6 @@ class VoiceSearchAvailabilityTest : public PlatformTest {
   id<VoiceSearchAvailabilityObserver> mock_observer_ = nil;
 };
 
-// Tests that the voice search availability properly checks the voice over
-// status and executes observer callbacks.
-TEST_F(VoiceSearchAvailabilityTest, UnavailableDuringVoiceOver) {
-  availability_.SetVoiceProviderEnabled(true);
-  availability_.SetVoiceOverEnabled(false);
-  ASSERT_TRUE(availability_.IsVoiceSearchAvailable());
-
-  // Enable voice search in the fake checker, verifying that the value is
-  // updated and that the observer is notified.
-  OCMExpect([mock_observer_ voiceSearchAvailability:&availability_
-                                updatedAvailability:false]);
-  availability_.SetVoiceOverEnabled(true);
-  EXPECT_FALSE(availability_.IsVoiceSearchAvailable());
-
-  // Disable voice search in the fake checker, verifying that the value is
-  // updated and that the observer is notified.
-  OCMExpect([mock_observer_ voiceSearchAvailability:&availability_
-                                updatedAvailability:true]);
-  availability_.SetVoiceOverEnabled(false);
-  EXPECT_TRUE(availability_.IsVoiceSearchAvailable());
-}
-
 // Tests that the voice search availability properly checks the voice provider
 // status.
 TEST_F(VoiceSearchAvailabilityTest, UnavailableForDisabledProvider) {

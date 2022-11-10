@@ -53,20 +53,3 @@ source_set("keyboard_assist") {
       [ "//ios/chrome/browser/ui/omnibox:omnibox_internal" ]
   frameworks = [ "UIKit.framework" ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "voice_search_keyboard_accessory_button_unittest.mm",
-    "voice_search_keyboard_bar_button_item_unittest.mm",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  deps = [
-    ":keyboard_assist",
-    "//ios/chrome/browser/voice",
-    "//ios/chrome/browser/voice:test_support",
-    "//testing/gtest",
-  ]
-}

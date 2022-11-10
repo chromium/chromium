@@ -41,7 +41,7 @@ void VoiceSearchAvailability::RemoveObserver(
 }
 
 bool VoiceSearchAvailability::IsVoiceSearchAvailable() const {
-  return !voice_over_enabled_ && ios::provider::IsVoiceSearchEnabled();
+  return ios::provider::IsVoiceSearchEnabled();
 }
 
 bool VoiceSearchAvailability::IsVoiceOverEnabled() const {
