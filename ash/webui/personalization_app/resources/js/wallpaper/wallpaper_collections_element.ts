@@ -154,16 +154,7 @@ function getLocalTile(
     };
   }
 
-  const isMoreToLoad = localImages.some(
-      image => !localImageData.hasOwnProperty(getPathOrSymbol(image)));
-
   const imagesToDisplay = getImages(localImages, localImageData);
-
-  if (imagesToDisplay.length < kMaximumLocalImagePreviews && isMoreToLoad) {
-    // If there are more images to attempt loading thumbnails for, wait until
-    // those are done.
-    return {type: TileType.LOADING};
-  }
 
   // Count all images that failed to load and subtract them from "My Images"
   // count.

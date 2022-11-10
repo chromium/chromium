@@ -277,13 +277,14 @@ async function getMissingLocalImageThumbnails(
 
   // There may be multiple async tasks triggered that pull off this queue.
   while (imageThumbnailsToFetch.size) {
-    const path = imageThumbnailsToFetch.values().next().value;
-    imageThumbnailsToFetch.delete(path);
-    const {data} = await provider.getLocalImageThumbnail({path});
-    if (!data) {
-      console.warn('Failed to fetch local image data', path);
-    }
-    store.dispatch(action.setLocalImageDataAction({path}, data));
+    await Promise.all(Array.from(imageThumbnailsToFetch).map(async path => {
+      imageThumbnailsToFetch.delete(path);
+      const {data} = await provider.getLocalImageThumbnail({path});
+      if (!data) {
+        console.warn('Failed to fetch local image data', path);
+      }
+      store.dispatch(action.setLocalImageDataAction({path}, data));
+    }));
   }
 }
 
