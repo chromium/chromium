@@ -237,7 +237,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     return apps.length > 0 && !waitingForAndroid;
   }
 
-  private nFindAppsTap_() {
+  private onFindAppsTap_() {
     this.browserProxy_.showPlayStore(FIND_MORE_APPS_URL);
   }
 }
