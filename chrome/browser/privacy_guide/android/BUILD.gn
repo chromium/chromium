@@ -31,6 +31,7 @@ android_library("java") {
     "//components/prefs/android:java",
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
@@ -96,12 +97,15 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/active_tab_circle.xml",
+    "java/res/drawable/inactive_tab_circle.xml",
     "java/res/drawable/privacy_guide_cookies_image.xml",
     "java/res/drawable/privacy_guide_done_image.xml",
     "java/res/drawable/privacy_guide_illustration.xml",
     "java/res/drawable/privacy_guide_msbb_image.xml",
     "java/res/drawable/privacy_guide_sb_image.xml",
     "java/res/drawable/privacy_guide_sync_image.xml",
+    "java/res/drawable/tab_selector.xml",
     "java/res/layout/privacy_guide_cookies_step.xml",
     "java/res/layout/privacy_guide_done.xml",
     "java/res/layout/privacy_guide_explanation_heading.xml",

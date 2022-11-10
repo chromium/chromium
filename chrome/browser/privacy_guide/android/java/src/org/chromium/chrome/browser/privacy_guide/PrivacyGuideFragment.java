@@ -19,6 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -76,6 +79,11 @@ public class PrivacyGuideFragment extends Fragment {
         mPagerAdapter = new PrivacyGuidePagerAdapter(this, new StepDisplayHandlerImpl());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setUserInputEnabled(false);
+
+        TabLayout tabLayout = mView.findViewById(R.id.tab_layout);
+        new TabLayoutMediator(tabLayout, mViewPager, (tab, position) -> {
+            tab.view.setClickable(false);
+        }).attach();
 
         mNextButton = (ButtonCompat) mView.findViewById(R.id.next_button);
         mNextButton.setOnClickListener((View v) -> nextStep());

@@ -31,30 +31,37 @@ found in the LICENSE file.
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginVertical="8dp">
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/back_button"
             android:focusable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
             android:text="@string/back"
             android:visibility="invisible"
             style="@style/TextButton" />
 
-        <View
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:visibility="invisible" />
+            app:tabBackground="@drawable/tab_selector"
+            app:tabGravity="center"
+            app:tabIndicatorHeight="0dp"
+            app:tabMinWidth="0dp"
+            app:tabPaddingStart="8dp"
+            app:tabPaddingEnd="8dp" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/next_button"
             android:focusable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginEnd="16dp"
             android:text="@string/next"
             style="@style/FilledButton.Flat" />
 
@@ -63,7 +70,7 @@ found in the LICENSE file.
             android:focusable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginEnd="16dp"
             android:visibility="gone"
             android:text="@string/privacy_guide_finish_button"
             style="@style/FilledButton.Flat" />
