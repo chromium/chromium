@@ -58,9 +58,11 @@ AURA_EXPORT extern const WindowProperty<bool>* const kAnimationsDisabledKey;
 // This is not transported to the window service.
 AURA_EXPORT extern const WindowProperty<gfx::ImageSkia*>* const kAppIconKey;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A property key to store the type of window that will be used to record
 // pointer metrics. See AppType in ash/public/cpp/app_types.h for more details.
 AURA_EXPORT extern const WindowProperty<int>* const kAppType;
+#endif
 
 // A property key to store the aspect ratio of the window.
 AURA_EXPORT extern const WindowProperty<gfx::SizeF*>* const kAspectRatio;

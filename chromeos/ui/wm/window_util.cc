@@ -97,11 +97,14 @@ gfx::Size GetPreferredFloatedWindowTabletSize(const gfx::Rect& work_area,
 }
 
 bool CanFloatWindow(aura::Window* window) {
-  // Only app window can be floated.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Only app window can be floated. All windows on lacros side are expected to
+  // be lacros, so this check is not needed.
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::NON_APP)) {
     return false;
   }
+#endif
   return TabletState::Get()->InTabletMode() ? CanFloatWindowInTablet(window)
                                             : CanFloatWindowInClamshell(window);
 }
