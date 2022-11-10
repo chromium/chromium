@@ -58338,6 +58338,7 @@ from previous Chrome versions.
   <int value="-1746767834" label="ssl-interstitial-v2-gray"/>
   <int value="-1746708491" label="RemoteCopyPersistentNotification:disabled"/>
   <int value="-1746255521" label="NewOverviewUi:enabled"/>
+  <int value="-1745909884" label="LibAssistantV2:disabled"/>
   <int value="-1743214399" label="TrustSafetySentimentSurveyV2:disabled"/>
   <int value="-1743079191" label="SyncPseudoUSSPriorityPreferences:enabled"/>
   <int value="-1742376665" label="SyncPseudoUSSPasswords:disabled"/>
@@ -64797,6 +64798,7 @@ from previous Chrome versions.
   <int value="2098907258" label="UseSurfaceLayerForVideo:disabled"/>
   <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
+  <int value="2100128918" label="LibAssistantV2:enabled"/>
   <int value="2100547979" label="AdaptiveCharging:enabled"/>
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>
   <int value="2101151142" label="disable-direct-write"/>

@@ -3543,6 +3543,9 @@ extern const char kMacAddressRandomizationDescription[];
 extern const char kOobeMaterialNextName[];
 extern const char kOobeMaterialNextDescription[];
 
+extern const char kLibAssistantV2MigrationName[];
+extern const char kLibAssistantV2MigrationDescription[];
+
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)

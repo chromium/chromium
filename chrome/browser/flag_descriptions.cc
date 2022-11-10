@@ -6161,6 +6161,10 @@ const char kOobeMaterialNextName[] = "Material Next design for OOBE";
 const char kOobeMaterialNextDescription[] =
     "Feature to enable the Material Next design in out of box experience.";
 
+const char kLibAssistantV2MigrationName[] = "LibAssistant V2 migration";
+const char kLibAssistantV2MigrationDescription[] =
+    "Enables loading LibAssistant V2 for Assistant on ChromeOS.";
+
 // Prefer keeping this section sorted to adding new definitions down here.
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

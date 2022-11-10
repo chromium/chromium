@@ -2937,6 +2937,8 @@ constexpr char kWallpaperFullScreenPreviewInternalName[] =
 constexpr char kWallpaperGooglePhotosIntegrationInternalName[] =
     "wallpaper-google-photos-integration";
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
+constexpr char kLibAssistantV2MigrationInternalName[] =
+    "cros-libassistant-v2-migration";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -9914,6 +9916,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(enterprise_auth::kCloudApAuth)},
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kLibAssistantV2MigrationInternalName,
+     flag_descriptions::kLibAssistantV2MigrationName,
+     flag_descriptions::kLibAssistantV2MigrationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::assistant::features::kEnableLibAssistantV2)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
@@ -10059,6 +10068,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // Skip glanceables flag on stable channel.
   if (!strcmp(kWelcomeScreenInternalName, entry.internal_name)) {
     return channel == version_info::Channel::STABLE;
+  }
+
+  // Only show LibAssistant V2 migration flag if channel is one of
+  // Dev/Canary/Unknown.
+  if (!strcmp(kLibAssistantV2MigrationInternalName, entry.internal_name)) {
+    return (channel != version_info::Channel::DEV &&
+            channel != version_info::Channel::CANARY &&
+            channel != version_info::Channel::UNKNOWN);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

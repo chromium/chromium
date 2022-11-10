@@ -1175,6 +1175,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cros-libassistant-v2-migration",
+    "owners": ["wutao@chromium.com", "assistive-eng@google.com"],
+    "expiry_milestone": 112
+  },
+  {
     "name": "cros-privacy-hub-v0",
     "owners": [ "chromeos-privacyhub@google.com" ],
     "expiry_milestone": 120
