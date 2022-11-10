@@ -614,6 +614,7 @@ namespace autotestPrivate {
     long activeDeskIndex;
     long numDesks;
     boolean isAnimating;
+    DOMString[] deskContainers;
   };
 
   callback GetShelfItemsCallback = void (ShelfItem[] items);

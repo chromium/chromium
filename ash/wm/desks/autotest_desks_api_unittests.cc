@@ -10,11 +10,14 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
 namespace {
+
+using ::testing::ElementsAre;
 
 class TestDesksActivationObserver : public DesksController::Observer {
  public:
@@ -110,6 +113,7 @@ TEST_F(AutotestDesksApiTest, GetDesksInfo) {
   EXPECT_EQ(0, desks_info.active_desk_index);
   EXPECT_EQ(1, desks_info.num_desks);
   EXPECT_FALSE(desks_info.is_animating);
+  EXPECT_THAT(desks_info.desk_containers, ElementsAre("Desk_Container_A"));
 
   // Add two desks and activate the second one. It is not animating because with
   // non-zero duration the animation is instant.
@@ -122,6 +126,9 @@ TEST_F(AutotestDesksApiTest, GetDesksInfo) {
   EXPECT_EQ(1, desks_info.active_desk_index);
   EXPECT_EQ(3, desks_info.num_desks);
   EXPECT_FALSE(desks_info.is_animating);
+  EXPECT_THAT(
+      desks_info.desk_containers,
+      ElementsAre("Desk_Container_A", "Desk_Container_B", "Desk_Container_C"));
 
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);

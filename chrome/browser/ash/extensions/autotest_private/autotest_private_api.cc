@@ -5083,6 +5083,12 @@ ExtensionFunction::ResponseAction AutotestPrivateGetDesksInfoFunction::Run() {
   result.Set("activeDeskIndex", desks_info.active_desk_index);
   result.Set("numDesks", desks_info.num_desks);
   result.Set("isAnimating", desks_info.is_animating);
+
+  base::Value::List desk_containers;
+  for (std::string& desk_container : desks_info.desk_containers)
+    desk_containers.Append(std::move(desk_container));
+  result.Set("deskContainers", std::move(desk_containers));
+
   return RespondNow(WithArguments(std::move(result)));
 }
 
