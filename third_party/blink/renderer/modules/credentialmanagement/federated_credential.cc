@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/web/modules/credentialmanagement/throttle_helper.h"
+#include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_init.h"
@@ -73,6 +76,16 @@ FederatedCredential::FederatedCredential(
 
 bool FederatedCredential::IsFederatedCredential() const {
   return true;
+}
+
+void SetIdpSigninStatus(WebLocalFrame* frame,
+                        const url::Origin& origin,
+                        mojom::blink::IdpSigninStatus status) {
+  LocalFrame* local_frame = To<LocalFrame>(WebFrame::ToCoreFrame(*frame));
+  auto* auth_request = CredentialManagerProxy::From(local_frame->DomWindow())
+                           ->FederatedAuthRequest();
+  auth_request->SetIdpSigninStatus(SecurityOrigin::CreateFromUrlOrigin(origin),
+                                   status);
 }
 
 }  // namespace blink

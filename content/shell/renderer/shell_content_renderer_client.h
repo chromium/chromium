@@ -13,6 +13,11 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "media/mojo/buildflags.h"
 
+namespace blink {
+class URLLoaderThrottleProvider;
+enum class URLLoaderThrottleProviderType;
+}  // namespace blink
+
 namespace web_cache {
 class WebCacheImpl;
 }
@@ -45,6 +50,10 @@ class ShellContentRendererClient : public ContentRendererClient {
 
   void DidInitializeWorkerContextOnWorkerThread(
       v8::Local<v8::Context> context) override;
+
+  std::unique_ptr<blink::URLLoaderThrottleProvider>
+  CreateURLLoaderThrottleProvider(
+      blink::URLLoaderThrottleProviderType provider_type) override;
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;

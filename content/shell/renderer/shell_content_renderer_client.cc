@@ -14,6 +14,9 @@
 #include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
+#include "content/public/common/web_identity.h"
+#include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
 #include "content/public/test/test_service.mojom.h"
 #include "content/shell/common/main_frame_counter_test_impl.h"
 #include "content/shell/common/power_monitor_test_impl.h"
@@ -26,7 +29,10 @@
 #include "net/base/net_errors.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/web/modules/credentialmanagement/throttle_helper.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "v8/include/v8.h"
@@ -125,6 +131,37 @@ class TestRendererServiceImpl : public mojom::TestService {
   mojo::Receiver<mojom::TestService> receiver_;
 };
 
+class ShellContentRendererUrlLoaderThrottleProvider
+    : public blink::URLLoaderThrottleProvider {
+ public:
+  std::unique_ptr<URLLoaderThrottleProvider> Clone() override {
+    return std::make_unique<ShellContentRendererUrlLoaderThrottleProvider>();
+  }
+
+  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
+      int render_frame_id,
+      const blink::WebURLRequest& request) override {
+    blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+    // Workers can call us on a background thread. We don't care about such
+    // requests because we purposefully only look at resources from frames
+    // that the user can interact with.`
+    content::RenderFrame* frame =
+        RenderThread::IsMainThread()
+            ? content::RenderFrame::FromRoutingID(render_frame_id)
+            : nullptr;
+    if (frame) {
+      auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
+          base::BindRepeating(blink::SetIdpSigninStatus, frame->GetWebFrame()));
+      if (throttle)
+        throttles.push_back(std::move(throttle));
+    }
+
+    return throttles;
+  }
+
+  void SetOnline(bool is_online) override {}
+};
+
 void CreateRendererTestService(
     mojo::PendingReceiver<mojom::TestService> receiver) {
   // Owns itself.
@@ -205,6 +242,12 @@ void ShellContentRendererClient::DidInitializeWorkerContextOnWorkerThread(
           switches::kExposeInternalsForTesting)) {
     blink::WebTestingSupport::InjectInternalsObject(context);
   }
+}
+
+std::unique_ptr<blink::URLLoaderThrottleProvider>
+ShellContentRendererClient::CreateURLLoaderThrottleProvider(
+    blink::URLLoaderThrottleProviderType provider_type) {
+  return std::make_unique<ShellContentRendererUrlLoaderThrottleProvider>();
 }
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)

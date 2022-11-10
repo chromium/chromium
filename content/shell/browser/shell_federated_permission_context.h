@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/functional/callback.h"
 #include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
@@ -62,6 +63,10 @@ class ShellFederatedPermissionContext
 
   bool ShouldCompleteRequestImmediately() const override;
 
+  void SetIdpStatusClosureForTesting(base::RepeatingClosure closure) {
+    idp_signin_status_closure_ = std::move(closure);
+  }
+
  private:
   // Pairs of <RP embedder, IDP>
   std::set<std::pair<std::string, std::string>> request_permissions_;
@@ -72,6 +77,8 @@ class ShellFederatedPermissionContext
   std::set<std::tuple<std::string, std::string, std::string>> active_sessions_;
   // Map of <IDP, IDPSigninStatus>
   std::map<std::string, absl::optional<bool>> idp_signin_status_;
+
+  base::RepeatingClosure idp_signin_status_closure_;
 };
 
 }  // namespace content

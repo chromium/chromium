@@ -119,11 +119,15 @@ CredentialManagerProxy* CredentialManagerProxy::From(
     ScriptState* script_state) {
   DCHECK(script_state->ContextIsValid());
   LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
+  return From(&window);
+}
+
+CredentialManagerProxy* CredentialManagerProxy::From(LocalDOMWindow* window) {
   auto* supplement =
-      Supplement<LocalDOMWindow>::From<CredentialManagerProxy>(window);
+      Supplement<LocalDOMWindow>::From<CredentialManagerProxy>(*window);
   if (!supplement) {
-    supplement = MakeGarbageCollected<CredentialManagerProxy>(window);
-    ProvideTo(window, supplement);
+    supplement = MakeGarbageCollected<CredentialManagerProxy>(*window);
+    ProvideTo(*window, supplement);
   }
   return supplement;
 }

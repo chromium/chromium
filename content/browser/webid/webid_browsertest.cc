@@ -28,6 +28,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_federated_permission_context.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
@@ -288,9 +289,10 @@ class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  FederatedIdentitySharingPermissionContextDelegate* sharing_context() {
+  ShellFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return context->GetFederatedIdentitySharingPermissionContext();
+    return static_cast<ShellFederatedPermissionContext*>(
+        context->GetFederatedIdentitySharingPermissionContext());
   }
 };
 
@@ -363,6 +365,40 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSignoutToplevel) {
                    .has_value());
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url));
   auto value = sharing_context()->GetIdpSigninStatus(url::Origin::Create(url));
+  ASSERT_TRUE(value.has_value());
+  EXPECT_FALSE(*value);
+}
+
+// Verify that IDP sign-in/out headers work in subresources.
+IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
+                       IdpSigninAndOutSubresource) {
+  static constexpr char script[] = R"(
+    (async () => {
+      var resp = await fetch('/header/gsign%s');
+      return resp.status;
+    }) ();
+  )";
+
+  GURL url_for_origin = https_server().GetURL(kRpHostName, "/header/");
+  url::Origin origin = url::Origin::Create(url_for_origin);
+  EXPECT_FALSE(sharing_context()->GetIdpSigninStatus(origin).has_value());
+  {
+    base::RunLoop run_loop;
+    sharing_context()->SetIdpStatusClosureForTesting(run_loop.QuitClosure());
+    EXPECT_EQ(200, EvalJs(shell(), base::StringPrintf(script, "in")));
+    run_loop.Run();
+  }
+  auto value = sharing_context()->GetIdpSigninStatus(origin);
+  ASSERT_TRUE(value.has_value());
+  EXPECT_TRUE(*value);
+
+  {
+    base::RunLoop run_loop;
+    sharing_context()->SetIdpStatusClosureForTesting(run_loop.QuitClosure());
+    EXPECT_EQ(200, EvalJs(shell(), base::StringPrintf(script, "out")));
+    run_loop.Run();
+  }
+  value = sharing_context()->GetIdpSigninStatus(origin);
   ASSERT_TRUE(value.has_value());
   EXPECT_FALSE(*value);
 }

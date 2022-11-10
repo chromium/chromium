@@ -60,6 +60,8 @@ class MODULES_EXPORT CredentialManagerProxy
   // context corresponding to an attached window.
   static CredentialManagerProxy* From(ScriptState*);
 
+  static CredentialManagerProxy* From(LocalDOMWindow*);
+
  private:
   template <typename Interface>
   void BindRemoteForFedCm(HeapMojoRemote<Interface>& remote,

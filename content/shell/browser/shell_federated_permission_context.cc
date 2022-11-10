@@ -41,8 +41,11 @@ absl::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
 void ShellFederatedPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     bool idp_signin_status) {
-  idp_signin_status_.insert(
-      std::pair(idp_origin.Serialize(), idp_signin_status));
+  idp_signin_status_[idp_origin.Serialize()] = idp_signin_status;
+  // TODO(crbug.com/1382989): Find a better way to do this than adding
+  // explicit helper code to signal completion.
+  if (idp_signin_status_closure_)
+    idp_signin_status_closure_.Run();
 }
 
 bool ShellFederatedPermissionContext::HasSharingPermission(
