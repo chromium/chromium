@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS setSinkId() with a valid device identifier should succeeded.
-PASS setSinkId() with the same sink ID should resolve immediately.
-PASS setSinkId() with the same AudioSinkOptions.type value should resolve immediately.
-PASS setSinkId() should fail with TypeError on an invalid AudioSinkOptions.type value.
-PASS setSinkId() should fail with NotFoundError on an invalid device identifier.
-Harness: the test ran to completion.
-
