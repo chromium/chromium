@@ -986,7 +986,7 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     if (pending_clip.type & CcEffectType::kSyntheticForNonTrivialClip) {
       if (clip_id == cc::kInvalidPropertyNodeId) {
         const auto* clip = pending_clip.clip;
-        // Some virtual/view-transition/wpt_internal/view-transition/*
+        // Some virtual/view-transition/external/wpt/css/css-view-transitions/*
         // tests will fail without the following condition.
         // TODO(crbug.com/1345805): Investigate the reason and remove the
         // condition if possible.

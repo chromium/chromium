@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
-<title>Shared transitions: root element with clip</title>
+<title>Shared transitions: element with clip</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
-<link rel="match" href="content-with-clip-root-ref.html">
+<link rel="match" href="content-with-clip-ref.html">
 
 <script src="/common/reftest-wait.js"></script>
 <style>
@@ -29,28 +29,24 @@
   view-transition-name: hidden;
 }
 
+/* Makes sure the viewport height is consistent for scrollbars to align */
 body {
-  margin: 0px;
+  height: 150vh;
 }
 
 html::view-transition-group(hidden) { animation-duration: 300s; }
 html::view-transition-image-pair(hidden) { animation: unset; opacity: 0; }
 
-html::view-transition-group(target2) {
-  opacity: 0;
-}
-
-html::view-transition-group(root) {
+html::view-transition-group(target1), html::view-transition-group(target2) {
+  position: absolute;
   top: -50vh;
-  bottom: 50vh;
 }
-
-html::view-transition-old(root) { animation: unset; opacity: 0; height: 100%; }
-html::view-transition-new(root) { animation: unset; opacity: 1; height: 100%; }
+html::view-transition-old(target1) { animation: unset; opacity: 1; }
+html::view-transition-new(target2) { animation: unset; opacity: 1; }
 
 </style>
 
-<div id="target1" class="target">
+<div id="target1" class="target" style="view-transition-name: target1">
   <div class="embedded" style="background: green;"></div>
   <div class="embedded" style="background: blue"></div>
 </div>
@@ -63,11 +59,9 @@ html::view-transition-new(root) { animation: unset; opacity: 1; height: 100%; }
 <script>
 async function runTest() {
   document.startViewTransition(() => {
-    // Add a shared element to ensure its bounds don't expand the root snapshot
-    // size.
+    target1.style = "";
     target2.style = "view-transition-name: target2";
-
-    requestAnimationFrame(() => requestAnimationFrame(() => 
+    requestAnimationFrame(() => requestAnimationFrame(() =>
       requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
     ));
   });

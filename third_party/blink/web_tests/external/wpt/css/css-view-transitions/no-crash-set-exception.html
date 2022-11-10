@@ -29,7 +29,6 @@ html::view-transition-new(shared) {
 
 <script>
 function validate_background(pseudoString) {
-  console.log(window.getComputedStyle(document.documentElement, pseudoString));
   return window.getComputedStyle(document.documentElement, pseudoString).style.background != 'blue';
 }
 

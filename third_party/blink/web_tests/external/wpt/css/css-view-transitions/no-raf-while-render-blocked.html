@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta name="timeout" content="long">
 <html class=reftest-wait>
-<title>Shared transitions: CSS Animations are paused while render-blocked</title>
+<title>Shared transitions: rAF is not issued while render-blocked</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 
@@ -9,22 +9,12 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-}
-
 div {
   width: 100px;
   height: 100px;
   background: blue;
   contain: paint;
   view-transition-name: target;
-}
-
-.animated {
-  animation: fade 0.5s;
 }
 </style>
 
@@ -38,21 +28,20 @@ promise_test(() => {
     requestAnimationFrame(() => {
       document.startViewTransition(() => {
         return new Promise(async (inner_resolve) => {
-          setTimeout(() => {
+          step_timeout(() => {
             renderBlocked = false;
             inner_resolve();
           }, 1000);
         });
       });
 
-      target.classList.toggle("animated");
-      target.onanimationend = () => {
+      requestAnimationFrame(() => {
         if (renderBlocked)
           reject();
         else
           resolve();
-      };
+      });
     });
   });
-}, "CSS animation is blocked until prepare callback");
+}, "rAF is blocked until prepare callback");
 </script>

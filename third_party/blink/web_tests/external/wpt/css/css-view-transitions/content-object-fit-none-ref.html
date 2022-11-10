@@ -2,7 +2,6 @@
 <title>Shared transitions: display content in a pseudo with object-fit: none (ref)</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:vmpstr@chromium.org">
-<script src="/common/reftest-wait.js"></script>
 <style>
 #container {
   width: 50px;
@@ -10,24 +9,14 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  overflow: hidden;
 }
 #content {
   background: lightblue;
   width: 100px;
   height: 100px;
-  transform-origin: top left;
-  transform: scale(0.5);
-}
-#inner {
-  width: 10px;
-  height: 10px;
-  background: green;
-  top: 5px;
-  left: 10px;
 }
 
 html { background: lightpink; }
 </style>
 
-<div id=container><div id=content><div id=inner></div></div></div>
+<div id=container><div id=content>This is text</div></div>
