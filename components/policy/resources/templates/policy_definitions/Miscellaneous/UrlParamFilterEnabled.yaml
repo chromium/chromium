@@ -1,5 +1,6 @@
 caption: Control the URL parameter filter feature
 default: true
+deprecated: true
 desc: |-
   When enabled or not set, the URL parameter filter may remove some parameters when a user selects "Open Link in Incognito Window" from the context menu.
         When disabled, no filtering is performed.
@@ -22,8 +23,8 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:102-
-- chrome.*:102-
-- android:102-
+- chrome_os:102-108
+- chrome.*:102-108
+- android:102-108
 tags: []
 type: main
