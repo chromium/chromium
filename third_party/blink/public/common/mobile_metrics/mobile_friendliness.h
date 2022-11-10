@@ -43,13 +43,6 @@ struct BLINK_COMMON_EXPORT MobileFriendliness {
   // relative to the frame width.
   // Default -1 means "Unknown" and should not be sent as UKM.
   int text_content_outside_viewport_percentage = -1;
-
-  // Percentage of tap targets whose center position is within another tap
-  // target (expanded by a margin).  The detail of the algorithm is
-  // go/bad-tap-target-ukm
-  // Default -1 means "Unknown" and should not be sent as UKM.
-  // If evaluation time budget exceeded, this will be -2.
-  int bad_tap_targets_ratio = -1;
 };
 
 }  // namespace blink

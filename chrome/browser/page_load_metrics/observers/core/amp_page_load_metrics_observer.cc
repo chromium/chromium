@@ -755,7 +755,7 @@ void AMPPageLoadMetricsObserver::RecordMobileFriendliness(
   const blink::MobileFriendliness& mf = subframe_info.mobile_friendliness;
 
   // Make sure at least one MF evaluation happen.
-  if (mf.small_text_ratio == -1 && mf.bad_tap_targets_ratio == -1)
+  if (mf.small_text_ratio == -1)
     return;
 
   builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(
@@ -768,6 +768,4 @@ void AMPPageLoadMetricsObserver::RecordMobileFriendliness(
       page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
   builder.SetSubFrame_MobileFriendliness_TextContentOutsideViewportPercentage(
       mf.text_content_outside_viewport_percentage);
-  builder.SetSubFrame_MobileFriendliness_BadTapTargetsRatio(
-      mf.bad_tap_targets_ratio);
 }

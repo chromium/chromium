@@ -34,9 +34,6 @@ class StructTraits<blink::mojom::MobileFriendlinessDataView,
       const blink::MobileFriendliness& mf) {
     return mf.text_content_outside_viewport_percentage;
   }
-  static int bad_tap_targets_ratio(const blink::MobileFriendliness& mf) {
-    return mf.bad_tap_targets_ratio;
-  }
   static bool Read(blink::mojom::MobileFriendlinessDataView data,
                    blink::MobileFriendliness* mf);
 };

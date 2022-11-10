@@ -18,7 +18,6 @@ bool StructTraits<blink::mojom::MobileFriendlinessDataView,
   mf->small_text_ratio = data.small_text_ratio();
   mf->text_content_outside_viewport_percentage =
       data.text_content_outside_viewport_percentage();
-  mf->bad_tap_targets_ratio = data.bad_tap_targets_ratio();
   return true;
 }
 

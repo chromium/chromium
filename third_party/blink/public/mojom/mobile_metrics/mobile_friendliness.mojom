@@ -31,10 +31,5 @@ struct MobileFriendliness {
 
   // Percentage of pixels of text and images horizontally outside the viewport,
   // relative to the frame width.
-  int32 text_content_outside_viewport_percentage = 0;
-
-  // Percentage of bad tap targets of all tap targets.
-  // Default value is -1 as an invalid data.
-  // If evaluation time budget exceeded, this will be -2.
-  int32 bad_tap_targets_ratio;
+  int32 text_content_outside_viewport_percentage;
 };

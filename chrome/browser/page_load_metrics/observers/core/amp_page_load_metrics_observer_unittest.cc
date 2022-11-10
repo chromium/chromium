@@ -832,7 +832,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFrameDeleted) {
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
   blink::MobileFriendliness mf;
-  mf.bad_tap_targets_ratio = 42;
   tester()->SimulateMobileFriendlinessUpdate(mf, subframe);
 
   tester()->histogram_tester().ExpectTotalCount(
@@ -855,12 +854,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFrameDeleted) {
           entry.get(), "SubFrame.MainFrameToSubFrameNavigationDelta");
   EXPECT_NE(nullptr, nav_delta_metric);
   EXPECT_GE(*nav_delta_metric, 0ll);
-
-  const int64_t* bad_tap_targets_ratio_metric =
-      tester()->test_ukm_recorder().GetEntryMetric(
-          entry.get(), "SubFrame.MobileFriendliness.BadTapTargetsRatio");
-  EXPECT_NE(nullptr, bad_tap_targets_ratio_metric);
-  EXPECT_GE(*bad_tap_targets_ratio_metric, 0ll);
 }
 
 TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMultipleFrames) {
