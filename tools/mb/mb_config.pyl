@@ -58,7 +58,7 @@
       'android-archive-rel': 'android_without_codecs_release_bot_minimal_symbols_reclient',
       'android-arm64-archive-rel': 'android_without_codecs_release_bot_minimal_symbols_reclient_arm64',
       'android-official': 'android_official_optimize_reclient',
-      'fuchsia-official': 'fuchsia_official_optimize_goma',
+      'fuchsia-official': 'fuchsia_official_optimize_reclient',
       'lacros-arm-archive-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'lacros-arm64-archive-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
       'lacros64-archive-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
@@ -72,10 +72,10 @@
       'mac-official': 'official_optimize_reclient',
       'win-archive-dbg': 'debug_bot_reclient',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
-      'win-official': 'official_optimize_minimal_symbols_goma',
+      'win-official': 'official_optimize_minimal_symbols_reclient',
       'win32-archive-dbg': 'debug_bot_x86_reclient',
       'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression_reclient',
-      'win32-official': 'x86_official_optimize_goma',
+      'win32-official': 'x86_official_optimize_reclient',
     },
 
     'chromium.accessibility': {
@@ -2516,12 +2516,12 @@
       'fuchsia', 'release', 'clang_tot', 'static',
     ],
 
-    'fuchsia_official_optimize_goma': [
-      'official_optimize_goma', 'fuchsia',
-    ],
-
     'fuchsia_official_optimize_goma_trybot': [
       'official_optimize_goma_trybot', 'fuchsia',
+    ],
+
+    'fuchsia_official_optimize_reclient': [
+      'official_optimize_reclient', 'fuchsia',
     ],
 
     'gn_linux_upload': [
@@ -3315,8 +3315,8 @@
       'official_optimize_goma_trybot',
     ],
 
-    'official_optimize_minimal_symbols_goma': [
-      'official_optimize_goma', 'minimal_symbols',
+    'official_optimize_minimal_symbols_reclient': [
+      'official_optimize_reclient', 'minimal_symbols',
     ],
 
     'official_optimize_reclient': [
@@ -3710,12 +3710,12 @@
       'arm64', 'disable_nacl', 'minimal_symbols', 'release_bot_reclient',
     ],
 
-    'x86_official_optimize_goma': [
-      'official_optimize_goma', 'x86',
-    ],
-
     'x86_official_optimize_goma_trybot': [
       'official_optimize_goma_trybot', 'x86',
+    ],
+
+    'x86_official_optimize_reclient': [
+      'official_optimize_reclient', 'x86',
     ],
   },
 

@@ -5,7 +5,7 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -229,11 +229,10 @@ ci.builder(
         ),
     ],
     cores = 32,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
     # TODO: Change this back down to something reasonable once these builders
     # have populated their cached by getting through the compile step
     execution_timeout = 10 * time.hour,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     sheriff_rotations = args.ignore_default(None),
 )
 
@@ -688,11 +687,10 @@ ci.builder(
         short_name = "64",
     ),
     cores = 32,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     os = os.WINDOWS_DEFAULT,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -763,8 +761,6 @@ ci.builder(
         short_name = "32",
     ),
     cores = 32,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     os = os.WINDOWS_DEFAULT,
@@ -783,4 +779,5 @@ ci.builder(
             target_bits = 32,
         ),
     ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
