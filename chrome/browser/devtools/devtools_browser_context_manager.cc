@@ -18,6 +18,13 @@ namespace {
 
 const int64_t kDestroyProfileTimeoutSeconds = 60;
 
+void DestroyOTRProfileWhenAppropriate(base::WeakPtr<Profile> weak_profile) {
+  if (Profile* profile = weak_profile.get()) {
+    ProfileDestroyer::DestroyOTRProfileWhenAppropriateWithTimeout(
+        profile, base::Seconds(kDestroyProfileTimeoutSeconds));
+  }
+}
+
 }  // namespace
 
 DevToolsBrowserContextManager::DevToolsBrowserContextManager() {}
@@ -95,8 +102,7 @@ void DevToolsBrowserContextManager::DisposeBrowserContext(
   // If no browsers are opened - dispose right away.
   if (!has_opened_browser) {
     StopObservingProfileIfAny(profile);
-    ProfileDestroyer::DestroyOTRProfileWhenAppropriateWithTimeout(
-        profile, base::Seconds(kDestroyProfileTimeoutSeconds));
+    DestroyOTRProfileWhenAppropriate(profile->GetWeakPtr());
     std::move(callback).Run(true, "");
     return;
   }
@@ -139,11 +145,8 @@ void DevToolsBrowserContextManager::OnBrowserRemoved(Browser* browser) {
   // We cannot delete immediately here: the profile might still be referenced
   // during the browser tear-down process.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &ProfileDestroyer::DestroyOTRProfileWhenAppropriateWithTimeout,
-          base::Unretained(browser->profile()),
-          base::Seconds(kDestroyProfileTimeoutSeconds)));
+      FROM_HERE, base::BindOnce(&DestroyOTRProfileWhenAppropriate,
+                                browser->profile()->GetWeakPtr()));
 
   std::move(pending_disposal->second).Run(true, "");
   pending_context_disposals_.erase(pending_disposal);
