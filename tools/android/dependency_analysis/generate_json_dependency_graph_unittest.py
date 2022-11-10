@@ -31,25 +31,34 @@ class TestHelperFunctions(unittest.TestCase):
         """Tests that the helper identifies a valid Chromium class name."""
         self.assertTrue(
             generate_json_dependency_graph.class_is_interesting(
-                'org.chromium.chrome.browser.Foo'))
+                'org.chromium.chrome.browser.Foo',
+                prefixes=('org.chromium.', )))
 
     def test_class_is_interesting_longer(self):
         """Tests that the helper identifies a valid Chromium class name."""
         self.assertTrue(
             generate_json_dependency_graph.class_is_interesting(
-                'org.chromium.chrome.browser.foo.Bar'))
+                'org.chromium.chrome.browser.foo.Bar',
+                prefixes=('org.chromium.', )))
 
     def test_class_is_interesting_negative(self):
         """Tests that the helper ignores a non-Chromium class name."""
         self.assertFalse(
             generate_json_dependency_graph.class_is_interesting(
-                'org.notchromium.chrome.browser.Foo'))
+                'org.notchromium.chrome.browser.Foo',
+                prefixes=('org.chromium.', )))
 
     def test_class_is_interesting_not_interesting(self):
         """Tests that the helper ignores a builtin class name."""
         self.assertFalse(
             generate_json_dependency_graph.class_is_interesting(
-                'java.lang.Object'))
+                'java.lang.Object', prefixes=('org.chromium.', )))
+
+    def test_class_is_interesting_everything_interesting(self):
+        """Tests that the helper allows anything when no prefixes are passed."""
+        self.assertTrue(
+            generate_json_dependency_graph.class_is_interesting(
+                'java.lang.Object', prefixes=tuple()))
 
     def test_list_original_targets_and_jars_legacy(self):
         result = generate_json_dependency_graph.list_original_targets_and_jars(

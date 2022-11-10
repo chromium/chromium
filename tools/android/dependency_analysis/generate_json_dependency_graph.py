@@ -6,33 +6,50 @@
 
 import argparse
 import functools
+import logging
 import math
 import multiprocessing
 import pathlib
 import os
+import subprocess
+import sys
 
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import class_dependency
 import git_utils
 import package_dependency
 import serialization
 import subprocess_utils
+import target_dependency
 
-DEFAULT_ROOT_TARGET = 'chrome/android:monochrome_public_bundle'
+_SRC_PATH = pathlib.Path(__file__).parents[3].resolve()
+sys.path.append(str(_SRC_PATH / 'build' / 'android'))
+from pylib import constants
+
+_DEFAULT_ROOT_TARGET = 'chrome/android:monochrome_public_bundle'
+_DEFAULT_PREFIX = 'org.chromium.'
+_TARGETS_WITH_NO_SOURCE_FILES = set([
+    '//components/module_installer/android:module_interface_java',
+    '//base:jni_java'
+])
 
 
-def class_is_interesting(name: str):
+def _relsrc(path: Union[str, pathlib.Path]):
+    return pathlib.Path(path).relative_to(_SRC_PATH)
+
+
+def class_is_interesting(name: str, prefixes: Tuple[str]):
     """Checks if a jdeps class is a class we are actually interested in."""
-    if name.startswith('org.chromium.'):
+    if not prefixes or name.startswith(prefixes):
         return True
     return False
 
 
-# pylint: disable=useless-object-inheritance
-class JavaClassJdepsParser(object):
+class JavaClassJdepsParser:
     """A parser for jdeps class-level dependency output."""
-    def __init__(self):  # pylint: disable=missing-function-docstring
+
+    def __init__(self):
         self._graph = class_dependency.JavaClassDependencyGraph()
 
     @property
@@ -43,12 +60,16 @@ class JavaClassJdepsParser(object):
         """
         return self._graph
 
-    def parse_raw_jdeps_output(self, build_target: str, jdeps_output: str):
+    def parse_raw_jdeps_output(self, build_target: str, jdeps_output: str,
+                               prefixes: Tuple[str]):
         """Parses the entirety of the jdeps output."""
         for line in jdeps_output.split('\n'):
-            self.parse_line(build_target, line)
+            self.parse_line(build_target, line, prefixes)
 
-    def parse_line(self, build_target: str, line: str):
+    def parse_line(self,
+                   build_target: str,
+                   line: str,
+                   prefixes: Tuple[str] = (_DEFAULT_PREFIX, )):
         """Parses a line of jdeps output.
 
         The assumed format of the line starts with 'name_1 -> name_2'.
@@ -63,7 +84,7 @@ class JavaClassJdepsParser(object):
 
         dep_from = parsed[0]
         dep_to = parsed[2]
-        if not class_is_interesting(dep_from):
+        if not class_is_interesting(dep_from, prefixes):
             return
 
         key_from, nested_from = class_dependency.split_nested_class_from_key(
@@ -72,7 +93,7 @@ class JavaClassJdepsParser(object):
             key_from)
         from_node.add_build_target(build_target)
 
-        if not class_is_interesting(dep_to):
+        if not class_is_interesting(dep_to, prefixes):
             return
 
         key_to, nested_to = class_dependency.split_nested_class_from_key(
@@ -87,11 +108,36 @@ class JavaClassJdepsParser(object):
             from_node.add_nested_class(nested_to)
 
 
-def _run_jdeps(jdeps_path: str, filepath: pathlib.Path) -> str:
-    """Runs jdeps on the given filepath and returns the output."""
-    print(f'Running jdeps and parsing output for {filepath}')
-    return subprocess_utils.run_command(
-        [jdeps_path, '-R', '-verbose:class', filepath])
+def _run_jdeps(jdeps_path: pathlib.Path, filepath: pathlib.Path) -> str:
+    """Runs jdeps on the given filepath and returns the output.
+
+    Uses a simple file cache for the output of jdeps. If the jar file's mtime is
+    older than the jdeps cache then just use the cached content instead.
+    Otherwise jdeps is run again and the output used to update the file cache.
+
+    Tested Nov 2nd, 2022:
+    - With all cache hits, script takes 13 seconds.
+    - Without the cache, script takes 1 minute 14 seconds.
+    """
+    assert filepath.exists(), (
+        f'Jar file missing for jdeps {filepath}, perhaps some targets need to '
+        'be added to _TARGETS_WITH_NO_SOURCE_FILES?')
+
+    cache_path = filepath.with_suffix('.jdeps_cache')
+    if (cache_path.exists()
+            and cache_path.stat().st_mtime > filepath.stat().st_mtime):
+        logging.debug(f'Found valid jdeps cache at {_relsrc(cache_path)}')
+        with cache_path.open() as f:
+            return f.read()
+
+    # Cache either doesn't exist or is older than the jar file.
+    logging.debug(f'Running jdeps and parsing output for {_relsrc(filepath)}')
+    output = subprocess_utils.run_command(
+        [str(jdeps_path), '-R', '-verbose:class',
+         str(filepath)])
+    with cache_path.open('w') as f:
+        f.write(output)
+    return output
 
 
 def _run_gn_desc_list_dependencies(build_output_dir: str, target: str,
@@ -124,19 +170,25 @@ def list_original_targets_and_jars(gn_desc_output: str, build_output_dir: str,
         original_build_target = build_target.replace('__compile_java', '')
         jar_path = _get_jar_path_for_target(build_output_dir, build_target,
                                             cr_position)
+        # Bundle module targets have no javac jars.
+        if (original_build_target.endswith('_bundle_module')
+                or original_build_target in _TARGETS_WITH_NO_SOURCE_FILES):
+            assert not jar_path.exists(), (
+                f'Perhaps a source file was added to {original_build_target}?')
+            continue
         jar_tuples.append((original_build_target, jar_path))
     return jar_tuples
 
 
 def _get_jar_path_for_target(build_output_dir: str, build_target: str,
-                             cr_position: int) -> str:
+                             cr_position: int) -> pathlib.Path:
+    """Calculates the output location of a jar for a java build target."""
     if cr_position == 0:  # Not running on main branch, use current convention.
         subdirectory = 'obj'
     elif cr_position < 761560:  # crrev.com/c/2161205
         subdirectory = 'gen'
     else:
         subdirectory = 'obj'
-    """Calculates the output location of a jar for a java build target."""
     target_path, target_name = build_target.split(':')
     assert target_path.startswith('//'), \
         f'Build target should start with "//" but is: "{build_target}"'
@@ -153,22 +205,30 @@ def main():
         description='Runs jdeps (dependency analysis tool) on all JARs a root '
         'build target depends on and writes the resulting dependency graph '
         'into a JSON file. The default root build target is '
-        'chrome/android:monochrome_public_bundle.')
+        'chrome/android:monochrome_public_bundle and the default prefix is '
+        '"org.chromium.".')
     required_arg_group = arg_parser.add_argument_group('required arguments')
-    required_arg_group.add_argument('-C',
-                                    '--build_output_dir',
-                                    required=True,
-                                    help='Build output directory.')
     required_arg_group.add_argument(
         '-o',
         '--output',
         required=True,
         help='Path to the file to write JSON output to. Will be created '
-        'if it does not yet exist and overwrite existing '
-        'content if it does.')
+        'if it does not yet exist and overwrite existing content if it does.')
+    arg_parser.add_argument(
+        '-C',
+        '--build_output_dir',
+        help='Build output directory, will guess if not provided.')
+    arg_parser.add_argument(
+        '-p',
+        '--prefixes',
+        default=_DEFAULT_PREFIX,
+        help='A comma-separated list of prefixes to filter '
+        'classes. Class paths that do not match any of the '
+        'prefixes are ignored in the graph. Pass in an '
+        'empty string to turn off filtering.')
     arg_parser.add_argument('-t',
                             '--target',
-                            default=DEFAULT_ROOT_TARGET,
+                            default=_DEFAULT_ROOT_TARGET,
                             help='Root build target.')
     arg_parser.add_argument('-d',
                             '--checkout-dir',
@@ -180,7 +240,18 @@ def main():
                             '--gn-path',
                             default='gn',
                             help='Path to the gn executable.')
+    arg_parser.add_argument('-v',
+                            '--verbose',
+                            action='store_true',
+                            help='Used to display detailed logging.')
     arguments = arg_parser.parse_args()
+
+    if arguments.verbose:
+        level = logging.DEBUG
+    else:
+        level = logging.INFO
+    logging.basicConfig(
+        level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
     if arguments.checkout_dir:
         src_path = pathlib.Path(arguments.checkout_dir)
@@ -198,14 +269,32 @@ def main():
     cr_position_str = git_utils.get_last_commit_cr_position()
     cr_position = int(cr_position_str) if cr_position_str else 0
 
-    print('Getting list of dependency jars...')
+    if arguments.build_output_dir:
+        constants.SetOutputDirectory(arguments.build_output_dir)
+    constants.CheckOutputDirectory()
+    arguments.build_output_dir = constants.GetOutDirectory()
+    logging.info(f'Using output dir: {_relsrc(arguments.build_output_dir)}')
+
+    logging.info('Getting list of dependency jars...')
     gn_desc_output = _run_gn_desc_list_dependencies(arguments.build_output_dir,
                                                     arguments.target,
                                                     arguments.gn_path)
     target_jars: JarTargetList = list_original_targets_and_jars(
         gn_desc_output, arguments.build_output_dir, cr_position)
 
-    print('Running jdeps...')
+    # Need to trim off leading // to convert gn target to ninja target.
+    missing_targets = [
+        target_name[2:] for target_name, path in target_jars
+        if not path.exists()
+    ]
+    if missing_targets:
+        logging.warning(
+            f'Missing {len(missing_targets)} jars, re-building the targets.')
+        subprocess.run(['autoninja', '-C', arguments.build_output_dir] +
+                       missing_targets,
+                       check=True)
+
+    logging.info('Running jdeps...')
     # jdeps already has some parallelism
     jdeps_process_number = math.ceil(multiprocessing.cpu_count() / 2)
     with multiprocessing.Pool(jdeps_process_number) as pool:
@@ -213,24 +302,34 @@ def main():
         jdeps_outputs = pool.map(functools.partial(_run_jdeps, jdeps_path),
                                  jar_paths)
 
-    print('Parsing jdeps output...')
+    logging.info('Parsing jdeps output...')
+    prefixes = tuple(arguments.prefixes.split(','))
     jdeps_parser = JavaClassJdepsParser()
     for raw_jdeps_output, (build_target, _) in zip(jdeps_outputs, target_jars):
-        jdeps_parser.parse_raw_jdeps_output(build_target, raw_jdeps_output)
+        logging.debug(f'Parsing jdeps for {build_target}')
+        jdeps_parser.parse_raw_jdeps_output(build_target,
+                                            raw_jdeps_output,
+                                            prefixes=prefixes)
 
     class_graph = jdeps_parser.graph
-    print(f'Parsed class-level dependency graph, '
-          f'got {class_graph.num_nodes} nodes '
-          f'and {class_graph.num_edges} edges.')
+    logging.info(f'Parsed class-level dependency graph, '
+                 f'got {class_graph.num_nodes} nodes '
+                 f'and {class_graph.num_edges} edges.')
 
     package_graph = package_dependency.JavaPackageDependencyGraph(class_graph)
-    print(f'Created package-level dependency graph, '
-          f'got {package_graph.num_nodes} nodes '
-          f'and {package_graph.num_edges} edges.')
+    logging.info(f'Created package-level dependency graph, '
+                 f'got {package_graph.num_nodes} nodes '
+                 f'and {package_graph.num_edges} edges.')
 
-    print(f'Dumping JSON representation to {arguments.output}.')
-    serialization.dump_class_and_package_graphs_to_file(
-        class_graph, package_graph, arguments.output)
+    target_graph = target_dependency.JavaTargetDependencyGraph(class_graph)
+    logging.info(f'Created target-level dependency graph, '
+                 f'got {target_graph.num_nodes} nodes '
+                 f'and {target_graph.num_edges} edges.')
+
+    logging.info(f'Dumping JSON representation to {arguments.output}.')
+    serialization.dump_class_and_package_and_target_graphs_to_file(
+        class_graph, package_graph, target_graph, arguments.output)
+    logging.info('Done')
 
 
 if __name__ == '__main__':

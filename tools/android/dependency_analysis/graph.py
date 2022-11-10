@@ -4,7 +4,7 @@
 """Utility classes (and functions, in the future) for graph operations."""
 
 import functools
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Generic, List, Optional, Tuple, TypeVar
 
 
 def sorted_nodes_by_name(nodes):
@@ -18,10 +18,10 @@ def sorted_edges_by_name(edges):
     Prioritizes sorting by the first node in an edge."""
     return sorted(edges, key=lambda edge: (edge[0].name, edge[1].name))
 
-
 @functools.total_ordering
-class Node(object):  # pylint: disable=useless-object-inheritance
+class Node:
     """A node/vertex in a directed graph."""
+
     def __init__(self, unique_key: str):
         """Initializes a new node with the given key.
 
@@ -32,13 +32,13 @@ class Node(object):  # pylint: disable=useless-object-inheritance
         self._outbound = set()
         self._inbound = set()
 
-    def __eq__(self, other: 'Node'):  # pylint: disable=missing-function-docstring
+    def __eq__(self, other: 'Node'):
         return self._unique_key == other._unique_key
 
-    def __lt__(self, other: 'Node'):  # pylint: disable=missing-function-docstring
+    def __lt__(self, other: 'Node'):
         return self._unique_key < other._unique_key
 
-    def __hash__(self):  # pylint: disable=missing-function-docstring
+    def __hash__(self):
         return hash(self._unique_key)
 
     def __str__(self) -> str:
@@ -74,13 +74,18 @@ class Node(object):  # pylint: disable=useless-object-inheritance
         return None
 
 
-class Graph(object):  # pylint: disable=useless-object-inheritance
+T = TypeVar('T', bound=Node)
+
+
+class Graph(Generic[T]):
     """A directed graph data structure.
 
-    Maintains an internal Dict[str, Node] _key_to_node
-    mapping the unique key of nodes to their Node objects.
+    Maintains an internal Dict[str, T] _key_to_node mapping the unique key of
+    nodes to their Node objects. Allows subclasses to specify their own Node
+    subclasses via Generic typing.
     """
-    def __init__(self):  # pylint: disable=missing-function-docstring
+
+    def __init__(self):
         self._key_to_node = {}
         self._edges = []
 
@@ -95,26 +100,27 @@ class Graph(object):  # pylint: disable=useless-object-inheritance
         return len(self.edges)
 
     @property
-    def nodes(self) -> List[Node]:
+    def nodes(self) -> List[T]:
         """A list of Nodes in the graph."""
         return list(self._key_to_node.values())
 
     @property
-    def edges(self) -> List[Tuple[Node, Node]]:
+    def edges(self) -> List[Tuple[T, T]]:
         """A list of tuples (begin, end) representing directed edges."""
         return self._edges
 
-    def get_node_by_key(self, key: str):  # pylint: disable=missing-function-docstring
+    def get_node_by_key(self, key: str) -> Optional[T]:
+        """Returns a node by that key or None if no such node exists."""
         return self._key_to_node.get(key)
 
-    def create_node_from_key(self, key: str):
+    def create_node_from_key(self, key: str) -> T:
         """Given a unique key, creates and returns a Node object.
 
         Should be overridden by child classes.
         """
-        return Node(key)
+        return Node(key)  # type: ignore
 
-    def add_node_if_new(self, key: str) -> Node:
+    def add_node_if_new(self, key: str) -> T:
         """Adds a Node to the graph.
 
         A new Node object is constructed from the given key and added.
@@ -126,11 +132,12 @@ class Graph(object):  # pylint: disable=useless-object-inheritance
         Returns:
             The Node with the given key in the graph.
         """
-        node = self._key_to_node.get(key)
-        if node is None:
+        try:
+            return self._key_to_node[key]
+        except KeyError:
             node = self.create_node_from_key(key)
             self._key_to_node[key] = node
-        return node
+            return node
 
     def add_edge_if_new(self, src: str, dest: str) -> bool:
         """Adds a directed edge to the graph.

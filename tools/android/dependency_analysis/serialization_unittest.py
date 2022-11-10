@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Unit tests for dependency_analysis.serialization."""
 
+import unittest
 import unittest.mock
 
 import class_dependency
@@ -11,7 +12,7 @@ import class_json_consts
 import graph
 import json_consts
 import package_dependency
-import package_json_consts
+import group_json_consts
 import serialization
 
 
@@ -85,13 +86,13 @@ class TestSerialization(unittest.TestCase):
             {
                 json_consts.NAME: 'p1',
                 json_consts.META: {
-                    package_json_consts.CLASSES: [CLASS_1, CLASS_2],
+                    group_json_consts.CLASSES: [CLASS_1, CLASS_2],
                 },
             },
             {
                 json_consts.NAME: 'p2',
                 json_consts.META: {
-                    package_json_consts.CLASSES: [CLASS_3],
+                    group_json_consts.CLASSES: [CLASS_3],
                 },
             },
         ],
@@ -100,7 +101,7 @@ class TestSerialization(unittest.TestCase):
                 json_consts.BEGIN: 'p1',
                 json_consts.END: 'p1',
                 json_consts.META: {
-                    package_json_consts.CLASS_EDGES: [
+                    group_json_consts.CLASS_EDGES: [
                         [CLASS_1, CLASS_2],
                     ],
                 },
@@ -109,7 +110,7 @@ class TestSerialization(unittest.TestCase):
                 json_consts.BEGIN: 'p1',
                 json_consts.END: 'p2',
                 json_consts.META: {
-                    package_json_consts.CLASS_EDGES: [
+                    group_json_consts.CLASS_EDGES: [
                         [CLASS_1, CLASS_3],
                         [CLASS_2, CLASS_3],
                     ],

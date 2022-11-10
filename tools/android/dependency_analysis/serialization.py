@@ -4,7 +4,7 @@
 """Helper module for the de/serialization of graphs to/from files."""
 
 import json
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 
 import class_dependency
 import class_json_consts
@@ -12,6 +12,7 @@ import git_utils
 import graph
 import json_consts
 import package_dependency
+import target_dependency
 
 
 def create_json_obj_from_node(node: graph.Node) -> Dict:
@@ -23,7 +24,7 @@ def create_json_obj_from_node(node: graph.Node) -> Dict:
         'meta': { see Node.get_node_metadata },
     }
     """
-    json_obj = {
+    json_obj: Dict[str, Union[str, dict]] = {
         json_consts.NAME: node.name,
     }
     node_meta = node.get_node_metadata()
@@ -104,13 +105,14 @@ def create_build_metadata() -> Dict:
     }
 
 
-def dump_class_and_package_graphs_to_file(
+def dump_class_and_package_and_target_graphs_to_file(
         class_graph: class_dependency.JavaClassDependencyGraph,
         package_graph: package_dependency.JavaPackageDependencyGraph,
+        target_graph: target_dependency.JavaTargetDependencyGraph,
         filename: str):
-    """Dumps a JSON representation of the class + package graph to a file.
+    """Dumps a JSON representation of the class/package/target graph to a file.
 
-    We dump both graphs together because the package graph in-memory holds
+    We dump the graphs together because the package graph in-memory holds
     references to class nodes (for storing class edges comprising
     a package edge), and hence the class graph is needed to recreate the
     package graph. Since our use cases always want the package graph over the
@@ -120,11 +122,13 @@ def dump_class_and_package_graphs_to_file(
     {
         'class_graph': { see JavaClassDependencyGraph.to_json },
         'package_graph': { see JavaPackageDependencyGraph.to_json },
+        'target_graph': { see JavaTargetDependencyGraph.to_json },
     }
     """
     json_obj = {
         json_consts.CLASS_GRAPH: create_json_obj_from_graph(class_graph),
         json_consts.PACKAGE_GRAPH: create_json_obj_from_graph(package_graph),
+        json_consts.TARGET_GRAPH: create_json_obj_from_graph(target_graph),
         json_consts.BUILD_METADATA: create_build_metadata(),
     }
     with open(filename, 'w') as json_file:

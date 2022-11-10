@@ -18,6 +18,7 @@ COMMIT_CR_POSITION = 'commit_cr_position'
 COMMIT_TIME = 'commit_time'
 
 # Miscellaneous attributes.
+TARGET_GRAPH = 'target_graph'
 PACKAGE_GRAPH = 'package_graph'
 CLASS_GRAPH = 'class_graph'
 BUILD_METADATA = 'build_metadata'
