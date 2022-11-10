@@ -36,6 +36,7 @@
 namespace blink {
 
 class ComputedStyle;
+class ComputedStyleBuilder;
 class FontSelector;
 class TreeScope;
 
@@ -46,8 +47,6 @@ class CORE_EXPORT FontBuilder {
   explicit FontBuilder(Document*);
   FontBuilder(const FontBuilder&) = delete;
   FontBuilder& operator=(const FontBuilder&) = delete;
-
-  void SetInitial(float effective_zoom);
 
   void DidChangeEffectiveZoom();
   void DidChangeTextOrientation();
@@ -88,8 +87,8 @@ class CORE_EXPORT FontBuilder {
   // FIXME: These need to just vend a Font object eventually.
   void UpdateFontDescription(FontDescription&,
                              FontOrientation = FontOrientation::kHorizontal);
-  void CreateFont(ComputedStyle&, const ComputedStyle* parent_style);
-  void CreateInitialFont(ComputedStyle&);
+  void CreateFont(ComputedStyleBuilder&, const ComputedStyle* parent_style);
+  void CreateInitialFont(ComputedStyleBuilder&);
 
   bool FontDirty() const { return flags_; }
 
@@ -152,9 +151,7 @@ class CORE_EXPORT FontBuilder {
                            const ComputedStyle&,
                            const ComputedStyle* parent_style);
   void UpdateComputedSize(FontDescription&, const ComputedStyle&);
-  void UpdateAdjustedSize(FontDescription&,
-                          const ComputedStyle&,
-                          FontSelector*);
+  void UpdateAdjustedSize(FontDescription&, FontSelector*);
 
   float GetComputedSizeFromSpecifiedSize(FontDescription&,
                                          float effective_zoom,

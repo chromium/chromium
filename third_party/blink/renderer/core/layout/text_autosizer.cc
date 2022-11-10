@@ -1235,8 +1235,9 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
   if (current_style.TextAutosizingMultiplier() == multiplier)
     return;
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Clone(current_style);
-  style->SetTextAutosizingMultiplier(multiplier);
+  ComputedStyleBuilder builder(current_style);
+  builder.SetTextAutosizingMultiplier(multiplier);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
 
   if (multiplier > 1 && !did_check_cross_site_use_count_) {
     ReportIfCrossSiteFrame();

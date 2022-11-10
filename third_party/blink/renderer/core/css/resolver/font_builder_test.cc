@@ -46,14 +46,16 @@ class FontBuilderAdditiveTest : public FontBuilderTest,
                                 public testing::TestWithParam<FunctionPair> {};
 
 TEST_F(FontBuilderInitTest, InitialFontSizeNotScaled) {
-  scoped_refptr<ComputedStyle> initial =
+  scoped_refptr<const ComputedStyle> parent_style =
       GetDocument().GetStyleResolver().CreateComputedStyle();
+  ComputedStyleBuilder style_builder =
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
 
-  FontBuilder builder(&GetDocument());
-  builder.SetInitial(1.0f);  // FIXME: Remove unused param.
-  builder.CreateFont(*initial, initial.get());
+  FontBuilder font_builder(&GetDocument());
+  font_builder.SetSize(FontBuilder::InitialSize());
+  font_builder.CreateFont(style_builder, parent_style.get());
 
-  EXPECT_EQ(16.0f, initial->GetFontDescription().ComputedSize());
+  EXPECT_EQ(16.0f, style_builder.GetFontDescription().ComputedSize());
 }
 
 TEST_F(FontBuilderInitTest, NotDirty) {
@@ -70,18 +72,19 @@ TEST_P(FontBuilderAdditiveTest, OnlySetValueIsModified) {
   FontDescription parent_description;
   funcs.set_base_value(parent_description);
 
-  scoped_refptr<ComputedStyle> parent_style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
-  parent_style->SetFontDescription(parent_description);
+  ComputedStyleBuilder builder =
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+  builder.SetFontDescription(parent_description);
+  scoped_refptr<const ComputedStyle> parent_style = builder.TakeStyle();
 
-  scoped_refptr<ComputedStyle> style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
-  style->InheritFrom(*parent_style);
+  builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+  builder.MutableInternalStyle()->InheritFrom(*parent_style);
 
   FontBuilder font_builder(&GetDocument());
   funcs.set_value(font_builder);
-  font_builder.CreateFont(*style, parent_style.get());
+  font_builder.CreateFont(builder, parent_style.get());
 
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   FontDescription output_description = style->GetFontDescription();
 
   // FontBuilder should have overwritten our base value set in the parent,

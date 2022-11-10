@@ -464,7 +464,7 @@ void LayoutTableCell::UpdateStyleWritingModeFromRow(const LayoutObject* row) {
   DCHECK_NE(StyleRef().GetWritingMode(), row->StyleRef().GetWritingMode());
   ComputedStyleBuilder new_style_builder(StyleRef());
   new_style_builder.SetWritingMode(row->StyleRef().GetWritingMode());
-  new_style_builder.MutableInternalStyle()->UpdateFontOrientation();
+  new_style_builder.UpdateFontOrientation();
   SetStyle(new_style_builder.TakeStyle(), LayoutObject::ApplyStyleChanges::kNo);
   SetHorizontalWritingMode(StyleRef().IsHorizontalWritingMode());
   UnmarkOrthogonalWritingModeRoot();

@@ -78,7 +78,7 @@ scoped_refptr<const ComputedStyle> CreateLayoutStyle(
   ComputedStyleBuilder builder(style);
   builder.SetDirection(propagated_style.Direction());
   builder.SetWritingMode(propagated_style.GetWritingMode());
-  builder.MutableInternalStyle()->UpdateFontOrientation();
+  builder.UpdateFontOrientation();
   return builder.TakeStyle();
 }
 

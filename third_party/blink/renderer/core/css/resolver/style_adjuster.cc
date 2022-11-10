@@ -345,20 +345,20 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
 }
 
 void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
-  ComputedStyle& style = *builder.MutableInternalStyle();
   builder.ResetTextCombine();
-  style.SetLetterSpacing(0.0f);
+  builder.SetLetterSpacing(0.0f);
   builder.SetTextAlign(ETextAlign::kCenter);
   builder.SetTextDecorationLine(TextDecorationLine::kNone);
   builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
   builder.SetVerticalAlign(EVerticalAlign::kMiddle);
   builder.SetWordBreak(EWordBreak::kKeepAll);
-  style.SetWordSpacing(0.0f);
+  builder.SetWordSpacing(0.0f);
   builder.SetWritingMode(WritingMode::kHorizontalTb);
 
+  ComputedStyle& style = *builder.MutableInternalStyle();
   style.ClearAppliedTextDecorations();
   builder.ResetTextIndent();
-  style.UpdateFontOrientation();
+  builder.UpdateFontOrientation();
 
   DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
@@ -644,7 +644,7 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
       style.Display() == EDisplay::kTableRowGroup) {
     builder.SetWritingMode(layout_parent_style.GetWritingMode());
     builder.SetTextOrientation(layout_parent_style.GetTextOrientation());
-    style.UpdateFontOrientation();
+    builder.UpdateFontOrientation();
   }
 }
 
@@ -1038,7 +1038,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       // TODO(rbuis): this will not work with logical CSS properties.
       // Disable vertical writing-mode for now.
       builder.SetWritingMode(WritingMode::kHorizontalTb);
-      style.UpdateFontOrientation();
+      builder.UpdateFontOrientation();
     }
   }
 

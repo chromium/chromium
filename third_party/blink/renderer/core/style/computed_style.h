@@ -284,8 +284,6 @@ class ComputedStyle : public ComputedStyleBase,
   friend class ColorPropertyFunctions;
   // Edits the background for media controls and accesses UserModify().
   friend class StyleAdjuster;
-  // Access to private SetFontInternal().
-  friend class FontBuilder;
   // Access to GetCurrentColor(). (drop-shadow() does not resolve 'currentcolor'
   // at use-time.)
   friend class FilterOperationResolver;
@@ -806,12 +804,9 @@ class ComputedStyle : public ComputedStyleBase,
   LineLogicalSide GetTextEmphasisLineLogicalSide() const;
 
   // Font properties.
-  CORE_EXPORT const Font& GetFont() const { return FontInternal(); }
-  CORE_EXPORT void SetFont(const Font& font) { SetFontInternal(font); }
   CORE_EXPORT const FontDescription& GetFontDescription() const {
-    return FontInternal().GetFontDescription();
+    return GetFont().GetFontDescription();
   }
-  CORE_EXPORT bool SetFontDescription(const FontDescription&);
   bool HasIdenticalAscentDescentAndLineGap(const ComputedStyle& other) const;
   bool HasFontRelativeUnits() const {
     return HasEmUnits() || HasRemUnits() || HasGlyphRelativeUnits();
@@ -864,30 +859,17 @@ class ComputedStyle : public ComputedStyleBase,
     return GetFontHeight(GetFontBaseline());
   }
 
-  // Compute FontOrientation from this style. It is derived from WritingMode and
-  // TextOrientation.
-  FontOrientation ComputeFontOrientation() const;
-
-  // Update FontOrientation in FontDescription if it is different. FontBuilder
-  // takes care of updating it, but if WritingMode or TextOrientation were
-  // changed after the style was constructed, this function synchronizes
-  // FontOrientation to match to this style.
-  void UpdateFontOrientation();
-
   // -webkit-locale
   const AtomicString& Locale() const {
     return LayoutLocale::LocaleString(GetFontDescription().Locale());
   }
   AtomicString LocaleForLineBreakIterator() const;
 
-  // FIXME: Remove letter-spacing/word-spacing and replace them with respective
-  // FontBuilder calls.  letter-spacing
+  // letter-spacing
   float LetterSpacing() const { return GetFontDescription().LetterSpacing(); }
-  void SetLetterSpacing(float);
 
   // word-spacing
   float WordSpacing() const { return GetFontDescription().WordSpacing(); }
-  void SetWordSpacing(float);
 
   // fill helpers
   bool HasFill() const { return !FillPaint().IsNone(); }
@@ -994,9 +976,6 @@ class ComputedStyle : public ComputedStyleBase,
   const CSSTransitionData* Transitions() const {
     return TransitionsInternal().get();
   }
-
-  // Non-property flags.
-  CORE_EXPORT void SetTextAutosizingMultiplier(float);
 
   // Column utility functions.
   bool SpecifiesColumns() const {
@@ -2884,6 +2863,24 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
       MutableFilterInternal()->operations_ = v;
   }
 
+  // font
+  void SetFontDescription(const FontDescription& v) {
+    if (GetFont().GetFontDescription() != v)
+      SetFont(Font(v, GetFont().GetFontSelector()));
+  }
+  const FontDescription& GetFontDescription() const {
+    return GetFont().GetFontDescription();
+  }
+  FontOrientation ComputeFontOrientation() const;
+  void UpdateFontOrientation();
+
+  // letter-spacing
+  void SetLetterSpacing(float letter_spacing) {
+    FontDescription description(GetFontDescription());
+    description.SetLetterSpacing(letter_spacing);
+    SetFontDescription(description);
+  }
+
   // margin-*
   void SetMarginTop(const Length& v) {
     if (MarginTop() != v) {
@@ -3060,6 +3057,13 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // widows
   void SetWidows(int16_t w) { SetWidowsInternal(ClampTo<int16_t>(w, 1)); }
 
+  // word-spacing
+  void SetWordSpacing(float word_spacing) {
+    FontDescription description(GetFontDescription());
+    description.SetWordSpacing(word_spacing);
+    SetFontDescription(description);
+  }
+
   // z-index
   void SetZIndex(int v) {
     SetHasAutoZIndexInternal(false);
@@ -3092,6 +3096,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
       SetPaintImagesInternal(std::make_unique<PaintImages>());
     MutablePaintImagesInternal()->push_back(image);
   }
+
+  // TextAutosizingMultiplier
+  CORE_EXPORT void SetTextAutosizingMultiplier(float);
 
   // ColorScheme and ForcedColors
   bool ShouldPreserveParentColor() const {

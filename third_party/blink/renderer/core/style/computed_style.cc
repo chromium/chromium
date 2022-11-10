@@ -1819,32 +1819,6 @@ FontHeight ComputedStyle::GetFontHeight(FontBaseline baseline) const {
   return FontHeight();
 }
 
-FontOrientation ComputedStyle::ComputeFontOrientation() const {
-  if (IsHorizontalWritingMode())
-    return FontOrientation::kHorizontal;
-
-  switch (GetTextOrientation()) {
-    case ETextOrientation::kMixed:
-      return FontOrientation::kVerticalMixed;
-    case ETextOrientation::kUpright:
-      return FontOrientation::kVerticalUpright;
-    case ETextOrientation::kSideways:
-      return FontOrientation::kVerticalRotated;
-    default:
-      NOTREACHED();
-      return FontOrientation::kVerticalMixed;
-  }
-}
-
-void ComputedStyle::UpdateFontOrientation() {
-  FontOrientation orientation = ComputeFontOrientation();
-  if (GetFontDescription().Orientation() == orientation)
-    return;
-  FontDescription font_description = GetFontDescription();
-  font_description.SetOrientation(orientation);
-  SetFontDescription(font_description);
-}
-
 bool ComputedStyle::TextDecorationVisualOverflowEqual(
     const ComputedStyle& o) const {
   const Vector<AppliedTextDecoration>& applied_with_this =
@@ -2097,14 +2071,6 @@ const CSSValue* ComputedStyle::GetVariableValue(
   return GetInitialVariableValue(name, InitialData().get());
 }
 
-bool ComputedStyle::SetFontDescription(const FontDescription& v) {
-  if (FontInternal().GetFontDescription() != v) {
-    SetFontInternal(Font(v, FontInternal().GetFontSelector()));
-    return true;
-  }
-  return false;
-}
-
 bool ComputedStyle::HasIdenticalAscentDescentAndLineGap(
     const ComputedStyle& other) const {
   const SimpleFontData* font_data = GetFont().PrimaryFont();
@@ -2159,44 +2125,6 @@ LayoutUnit ComputedStyle::ComputedLineHeightAsFixed(const Font& font) const {
 
 LayoutUnit ComputedStyle::ComputedLineHeightAsFixed() const {
   return ComputedLineHeightAsFixed(GetFont());
-}
-
-void ComputedStyle::SetWordSpacing(float word_spacing) {
-  FontDescription desc(GetFontDescription());
-  desc.SetWordSpacing(word_spacing);
-  SetFontDescription(desc);
-}
-
-void ComputedStyle::SetLetterSpacing(float letter_spacing) {
-  FontDescription desc(GetFontDescription());
-  desc.SetLetterSpacing(letter_spacing);
-  SetFontDescription(desc);
-}
-
-void ComputedStyle::SetTextAutosizingMultiplier(float multiplier) {
-  if (TextAutosizingMultiplier() == multiplier)
-    return;
-
-  SetTextAutosizingMultiplierInternal(multiplier);
-
-  float size = SpecifiedFontSize();
-
-  DCHECK(std::isfinite(size));
-  if (!std::isfinite(size) || size < 0)
-    size = 0;
-  else
-    size = std::min(kMaximumAllowedFontSize, size);
-
-  FontDescription desc(GetFontDescription());
-  desc.SetSpecifiedSize(size);
-
-  float computed_size = size * EffectiveZoom();
-
-  float autosized_font_size = TextAutosizer::ComputeAutosizedFontSize(
-      computed_size, multiplier, EffectiveZoom());
-  desc.SetComputedSize(std::min(kMaximumAllowedFontSize, autosized_font_size));
-
-  SetFontDescription(desc);
 }
 
 void ComputedStyle::AddAppliedTextDecoration(
@@ -2628,6 +2556,63 @@ bool ComputedStyleBuilder::SetEffectiveZoom(float f) {
       "Blink.EffectiveZoom",
       base::clamp<float>(clamped_effective_zoom * 100, 0, 400));
   return true;
+}
+
+// Compute the FontOrientation from this style. It's derived from WritingMode
+// and TextOrientation.
+FontOrientation ComputedStyleBuilder::ComputeFontOrientation() const {
+  if (blink::IsHorizontalWritingMode(GetWritingMode()))
+    return FontOrientation::kHorizontal;
+  switch (GetTextOrientation()) {
+    case ETextOrientation::kMixed:
+      return FontOrientation::kVerticalMixed;
+    case ETextOrientation::kUpright:
+      return FontOrientation::kVerticalUpright;
+    case ETextOrientation::kSideways:
+      return FontOrientation::kVerticalRotated;
+    default:
+      NOTREACHED();
+      return FontOrientation::kVerticalMixed;
+  }
+}
+
+// Update FontOrientation in FontDescription if it is different. FontBuilder
+// takes care of updating it, but if WritingMode or TextOrientation were
+// changed after the style was constructed, this function synchronizes
+// FontOrientation to match to this style.
+void ComputedStyleBuilder::UpdateFontOrientation() {
+  FontOrientation orientation = ComputeFontOrientation();
+  if (GetFontDescription().Orientation() == orientation)
+    return;
+  FontDescription font_description = GetFontDescription();
+  font_description.SetOrientation(orientation);
+  SetFontDescription(font_description);
+}
+
+void ComputedStyleBuilder::SetTextAutosizingMultiplier(float multiplier) {
+  if (TextAutosizingMultiplier() == multiplier)
+    return;
+
+  SetTextAutosizingMultiplierInternal(multiplier);
+
+  float size = GetFontDescription().SpecifiedSize();
+
+  DCHECK(std::isfinite(size));
+  if (!std::isfinite(size) || size < 0)
+    size = 0;
+  else
+    size = std::min(kMaximumAllowedFontSize, size);
+
+  FontDescription desc(GetFontDescription());
+  desc.SetSpecifiedSize(size);
+
+  float computed_size = size * EffectiveZoom();
+
+  float autosized_font_size = TextAutosizer::ComputeAutosizedFontSize(
+      computed_size, multiplier, EffectiveZoom());
+  desc.SetComputedSize(std::min(kMaximumAllowedFontSize, autosized_font_size));
+
+  SetFontDescription(desc);
 }
 
 void ComputedStyleBuilder::SetUsedColorScheme(

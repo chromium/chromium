@@ -41,17 +41,6 @@ FontBuilder::FontBuilder(Document* document) : document_(document) {
   DCHECK(!document || document->GetFrame());
 }
 
-void FontBuilder::SetInitial(float effective_zoom) {
-  DCHECK(document_->GetSettings());
-  if (!document_->GetSettings())
-    return;
-
-  SetFamilyDescription(font_description_,
-                       FontBuilder::InitialFamilyDescription());
-  SetFamilyTreeScope(nullptr);
-  SetSize(font_description_, FontBuilder::InitialSize());
-}
-
 void FontBuilder::DidChangeEffectiveZoom() {
   Set(PropertySetFlag::kEffectiveZoom);
 }
@@ -349,7 +338,6 @@ void FontBuilder::UpdateSpecifiedSize(FontDescription& font_description,
 }
 
 void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
-                                     const ComputedStyle& style,
                                      FontSelector* font_selector) {
   // Note: the computed_size has scale/zooming applied as well as text auto-
   // sizing and Android font scaling. That means we operate on the used value
@@ -479,30 +467,32 @@ FontSelector* FontBuilder::ComputeFontSelector(const ComputedStyle& style) {
     return style.GetFont().GetFontSelector();
 }
 
-void FontBuilder::CreateFont(ComputedStyle& style,
+void FontBuilder::CreateFont(ComputedStyleBuilder& builder,
                              const ComputedStyle* parent_style) {
+  const ComputedStyle& style = *builder.InternalStyle();
   DCHECK(document_);
 
   if (!flags_)
     return;
 
-  FontDescription description = style.GetFontDescription();
+  FontDescription description = builder.GetFontDescription();
 
-  UpdateFontDescription(description, style.ComputeFontOrientation());
+  UpdateFontDescription(description, builder.ComputeFontOrientation());
   UpdateSpecifiedSize(description, style, parent_style);
   UpdateComputedSize(description, style);
 
   FontSelector* font_selector = ComputeFontSelector(style);
-  UpdateAdjustedSize(description, style, font_selector);
+  UpdateAdjustedSize(description, font_selector);
 
-  style.SetFontInternal(Font(description, font_selector));
+  builder.SetFont(Font(description, font_selector));
   flags_ = 0;
 }
 
-void FontBuilder::CreateInitialFont(ComputedStyle& style) {
+void FontBuilder::CreateInitialFont(ComputedStyleBuilder& builder) {
   DCHECK(document_);
+  const ComputedStyle& style = *builder.InternalStyle();
   FontDescription font_description = FontDescription();
-  font_description.SetLocale(style.GetFontDescription().Locale());
+  font_description.SetLocale(builder.GetFontDescription().Locale());
 
   SetFamilyDescription(font_description,
                        FontBuilder::InitialFamilyDescription());
@@ -512,10 +502,10 @@ void FontBuilder::CreateInitialFont(ComputedStyle& style) {
   UpdateSpecifiedSize(font_description, style, &style);
   UpdateComputedSize(font_description, style);
 
-  font_description.SetOrientation(style.ComputeFontOrientation());
+  font_description.SetOrientation(builder.ComputeFontOrientation());
 
   FontSelector* font_selector = document_->GetStyleEngine().GetFontSelector();
-  style.SetFontInternal(Font(font_description, font_selector));
+  builder.SetFont(Font(font_description, font_selector));
 }
 
 }  // namespace blink

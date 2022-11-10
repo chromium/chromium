@@ -2989,7 +2989,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      writable: true,
     },
     {
       name: "lighting-color",
@@ -5782,7 +5781,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      writable: true,
     },
     {
       name: "z-index",

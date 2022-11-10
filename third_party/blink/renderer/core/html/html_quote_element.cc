@@ -37,13 +37,13 @@ HTMLQuoteElement::HTMLQuoteElement(const QualifiedName& tag_name,
 }
 
 void HTMLQuoteElement::AdjustPseudoStyleLocale(
-    scoped_refptr<ComputedStyle> pseudo_style) {
+    ComputedStyleBuilder& pseudo_style_builder) {
   // For quote, pseudo elements should use parent locale. We need to change the
   // pseudo_style before QuoteContentData::CreateLayoutObject, where the
   // computed style is a const. Having the change here ensures correct pseudo
   // locale is rendered after style changes.
   // https://github.com/w3c/csswg-drafts/issues/5478
-  FontDescription font_description = pseudo_style->GetFontDescription();
+  FontDescription font_description = pseudo_style_builder.GetFontDescription();
   Element* parent = this->ParentOrShadowHostElement();
   if (parent) {
     font_description.SetLocale(
@@ -51,7 +51,7 @@ void HTMLQuoteElement::AdjustPseudoStyleLocale(
   } else {
     font_description.SetLocale(&LayoutLocale::GetDefault());
   }
-  pseudo_style->SetFontDescription(font_description);
+  pseudo_style_builder.SetFontDescription(font_description);
 }
 
 bool HTMLQuoteElement::IsURLAttribute(const Attribute& attribute) const {

@@ -6493,7 +6493,9 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
             this, style_recalc_context, before_after_request);
     if (result) {
       if (auto* quote = DynamicTo<HTMLQuoteElement>(this)) {
-        quote->AdjustPseudoStyleLocale(result);
+        ComputedStyleBuilder builder(*result);
+        quote->AdjustPseudoStyleLocale(builder);
+        result = builder.TakeStyle();
       }
     }
     return result;

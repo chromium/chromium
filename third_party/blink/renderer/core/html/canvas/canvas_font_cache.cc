@@ -37,11 +37,12 @@ CanvasFontCache::CanvasFontCache(Document& document)
   default_font_description.SetFamily(font_family);
   default_font_description.SetSpecifiedSize(defaultFontSize);
   default_font_description.SetComputedSize(defaultFontSize);
-  if (document.IsActive())
-    default_font_style_ = document.GetStyleResolver().CreateComputedStyle();
-  else
-    default_font_style_ = ComputedStyle::CreateInitialStyleSingleton();
-  default_font_style_->SetFontDescription(default_font_description);
+  ComputedStyleBuilder builder =
+      document.IsActive()
+          ? document.GetStyleResolver().CreateComputedStyleBuilder()
+          : ComputedStyleBuilder(*ComputedStyle::CreateInitialStyleSingleton());
+  builder.SetFontDescription(default_font_description);
+  default_font_style_ = builder.TakeStyle();
 }
 
 CanvasFontCache::~CanvasFontCache() {

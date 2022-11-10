@@ -163,28 +163,28 @@ void LayoutTextCombine::UpdateIsCombined() {
 void LayoutTextCombine::UpdateFontStyleForCombinedText() {
   NOT_DESTROYED();
   DCHECK(is_combined_);
-
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Clone(StyleRef());
-  SetStyleInternal(style);
+  const ComputedStyle& original_style = StyleRef();
 
   unsigned offset = 0;
-  TextRun run = ConstructTextRun(style->GetFont(), this, offset, TextLength(),
-                                 *style, style->Direction());
-  FontDescription description = style->GetFont().GetFontDescription();
+  TextRun run =
+      ConstructTextRun(original_style.GetFont(), this, offset, TextLength(),
+                       original_style, original_style.Direction());
+  FontDescription description = original_style.GetFont().GetFontDescription();
   float em_width = description.ComputedSize();
   if (!EnumHasFlags(
-          style->TextDecorationsInEffect(),
+          original_style.TextDecorationsInEffect(),
           TextDecorationLine::kUnderline | TextDecorationLine::kOverline))
     em_width *= kTextCombineMargin;
 
   // We are going to draw combined text horizontally.
   description.SetOrientation(FontOrientation::kHorizontal);
-  combined_text_width_ = style->GetFont().Width(run);
+  combined_text_width_ = original_style.GetFont().Width(run);
 
-  FontSelector* font_selector = style->GetFont().GetFontSelector();
+  FontSelector* font_selector = original_style.GetFont().GetFontSelector();
 
   // Need to change font orientation to horizontal.
-  style->SetFontDescription(description);
+  ComputedStyleBuilder builder(original_style);
+  builder.SetFontDescription(description);
 
   if (combined_text_width_ <= em_width) {
     scale_x_ = 1.0f;
@@ -200,7 +200,7 @@ void LayoutTextCombine::UpdateFontStyleForCombinedText() {
         combined_text_width_ = run_width;
 
         // Replace my font with the new one.
-        style->SetFontDescription(description);
+        builder.SetFontDescription(description);
         break;
       }
     }
@@ -215,6 +215,8 @@ void LayoutTextCombine::UpdateFontStyleForCombinedText() {
       scale_x_ = 1.0f;
     }
   }
+
+  SetStyleInternal(builder.TakeStyle());
 }
 
 }  // namespace blink

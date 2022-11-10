@@ -379,8 +379,6 @@
       field_group: "inherited->font",
       inherited: true,
       default_value: "Font()",
-      computed_style_custom_functions: ["getter", "setter"],
-      writable: true,
     },
     {
       name: "TextAutosizingMultiplier",
@@ -390,7 +388,6 @@
       field_group: "inherited",
       default_value: "1.0",
       computed_style_custom_functions: ["setter"],
-      writable: true,
     },
     {
       name: "CursorData",

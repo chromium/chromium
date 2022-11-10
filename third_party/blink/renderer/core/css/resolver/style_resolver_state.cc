@@ -244,7 +244,7 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
 }
 
 void StyleResolverState::UpdateFont() {
-  GetFontBuilder().CreateFont(StyleRef(), ParentStyle());
+  GetFontBuilder().CreateFont(StyleBuilder(), ParentStyle());
   SetConversionFontSizes(
       CSSToLengthConversionData::FontSizes(Style(), RootElementStyle()));
   SetConversionZoom(Style()->EffectiveZoom());
