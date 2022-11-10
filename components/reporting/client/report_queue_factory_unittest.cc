@@ -98,12 +98,54 @@ TEST_F(ReportQueueFactoryTest, CreateQueueWithInvalidConfig) {
   EXPECT_FALSE(consumer_->GetReportQueue());
 }
 
+TEST_F(ReportQueueFactoryTest, CreateAndGetQueueWithValidReservedSpace) {
+  EXPECT_FALSE(consumer_->GetReportQueue());
+  {
+    test::TestCallbackAutoWaiter set_waiter;
+    ReportQueueFactory::Create(EventType::kDevice, destination_,
+                               consumer_->GetReportQueueSetter(&set_waiter),
+                               /*reserved_space=*/12345L);
+    EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
+    provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
+  }
+  // We expect the report queue to be existing in the consumer.
+  EXPECT_TRUE(consumer_->GetReportQueue());
+}
+
+TEST_F(ReportQueueFactoryTest, CreateQueueWithInvalidReservedSpace) {
+  // Initially the queue must be an uninitialized unique_ptr
+  EXPECT_FALSE(consumer_->GetReportQueue());
+  ReportQueueFactory::Create(EventType::kDevice, destination_,
+                             consumer_->GetReportQueueSetter(nullptr),
+                             /*reserved_space=*/-1L);
+  // Expect failure before it gets to the report queue provider
+  EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(0);
+  // We do not expect the report queue to be existing in the consumer.
+  EXPECT_FALSE(consumer_->GetReportQueue());
+}
+
 TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueue) {
   // Mock internal implementation to use a MockReportQueue
   provider_->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
   const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
       EventType::kDevice, destination_);
   EXPECT_THAT(report_queue, NotNull());
+}
+
+TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithValidReservedSpace) {
+  // Mock internal implementation to use a MockReportQueue
+  provider_->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
+  const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
+      EventType::kDevice, destination_,
+      /*reserved_space=*/12345L);
+  EXPECT_THAT(report_queue, NotNull());
+}
+
+TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithInvalidReservedSpace) {
+  const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
+      EventType::kDevice, destination_,
+      /*reserved_space=*/-1L);
+  EXPECT_THAT(report_queue, IsNull());
 }
 
 TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithInvalidConfig) {

@@ -1942,7 +1942,7 @@ TEST_P(StorageQueueTest, CreateStorageQueueInvalidOptionsPath) {
 }
 
 TEST_P(StorageQueueTest, WriteRecordWithInsufficientDiskSpace) {
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
 
   // Update total disk space and reset after running the write operation so it
   // does not affect other tests
@@ -1955,7 +1955,7 @@ TEST_P(StorageQueueTest, WriteRecordWithInsufficientDiskSpace) {
 }
 
 TEST_P(StorageQueueTest, WriteRecordWithInsufficientMemory) {
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
 
   // Update total memory and reset after running the write operation so it does
   // not affect other tests
@@ -1963,6 +1963,27 @@ TEST_P(StorageQueueTest, WriteRecordWithInsufficientMemory) {
   options_.memory_resource()->Test_SetTotal(0);
   Status write_result = WriteString(kData[0]);
   options_.memory_resource()->Test_SetTotal(original_total_memory);
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
+}
+
+TEST_P(StorageQueueTest, WriteRecordWithReservedSpace) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+
+  const auto tatal_disk_space = options_.disk_space_resource()->GetTotal();
+  Record record;
+  record.set_data(kData[0]);
+  record.set_destination(UPLOAD_EVENTS);
+  if (!dm_token_.empty()) {
+    record.set_dm_token(dm_token_);
+  }
+  // Large reservation, but still available.
+  record.set_reserved_space(tatal_disk_space / 2);
+  Status write_result = WriteRecord(record);
+  EXPECT_OK(write_result) << write_result;
+  // Even larger reservation, not available.
+  record.set_reserved_space(tatal_disk_space);
+  write_result = WriteRecord(record);
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
 }

@@ -45,32 +45,43 @@ class ReportQueueConfiguration {
   //
   // Factory for generating a ReportQueueConfiguration.
   // If any of the parameters are invalid, will return error::INVALID_ARGUMENT.
-  // |dm_token| is valid when dm_token.is_valid() is true.
-  // |destination| is valid when it is any value other than
+  // `dm_token` is valid when dm_token.is_valid() is true.
+  // `destination` is valid when it is any value other than
   // Destination::UNDEFINED_DESTINATION.
+  // If `reserved_space` > 0, underlying Storage would only accept enqueue
+  // request if after it remaining amount of disk space will not drop below
+  // `reserved_space`. Intended for use by opportunistic queue.
   static StatusOr<std::unique_ptr<ReportQueueConfiguration>> Create(
       base::StringPiece dm_token,
       Destination destination,
-      PolicyCheckCallback policy_check_callback);
+      PolicyCheckCallback policy_check_callback,
+      int64_t reserved_space = 0L);
 
   // Factory for generating a ReportQueueConfiguration.
-  // |event_type| is the type of event being reported, and is indirectly used to
+  // `event_type` is the type of event being reported, and is indirectly used to
   // retrieve DM tokens for downstream processing when building the report
-  // queue. Using |EventType::kDevice| will skip DM token retrieval, so please
-  // use |EventType::kUser| for events that need to be associated with the
+  // queue. Using `EventType::kDevice` will skip DM token retrieval, so please
+  // use `EventType::kUser` for events that need to be associated with the
   // current user. If any of the parameters are invalid, will return
-  // error::INVALID_ARGUMENT. |destination| is valid when it is any value other
+  // error::INVALID_ARGUMENT. `destination` is valid when it is any value other
   // than Destination::UNDEFINED_DESTINATION.
+  // `reserved_space` is optional. If it is > 0, respective ReportQueue will be
+  // "opportunistic" - underlying Storage would only accept an enqueue request
+  // if after adding the new record remaining amount of disk space will not drop
+  // below `reserved_space`.
   static StatusOr<std::unique_ptr<ReportQueueConfiguration>> Create(
       EventType event_type,
       Destination destination,
-      PolicyCheckCallback policy_check_callback);
+      PolicyCheckCallback policy_check_callback,
+      int64_t reserved_space = 0L);
 
   Destination destination() const { return destination_; }
 
   std::string dm_token() { return dm_token_; }
 
   EventType event_type() const { return event_type_; }
+
+  int64_t reserved_space() const { return reserved_space_; }
 
   Status SetDMToken(base::StringPiece dm_token);
 
@@ -82,12 +93,15 @@ class ReportQueueConfiguration {
   Status SetEventType(EventType event_type);
   Status SetDestination(Destination destination);
   Status SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
+  Status SetReservedSpace(int64_t reserved_space);
 
   std::string dm_token_;
   EventType event_type_;
   Destination destination_;
 
   PolicyCheckCallback policy_check_callback_;
+
+  int64_t reserved_space_ = 0L;  // By default queues are not opportunistic.
 };
 
 }  // namespace reporting

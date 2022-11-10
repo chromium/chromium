@@ -1471,6 +1471,33 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       return;
     }
 
+    // If `record_` requires to uphold reserved space, check whether disk space
+    // is sufficient. Note that this is only an approximate check, since other
+    // writes that have no reservation specified will not observe it anyway.
+    // As such, it relies on the Record's ByteSizeLong(), not accounting for
+    // compression and overhead.
+    if (record_.reserved_space() > 0u) {
+      const uint64_t space_used =
+          storage_queue_->options().disk_space_resource()->GetUsed();
+      const uint64_t space_total =
+          storage_queue_->options().disk_space_resource()->GetTotal();
+      if (space_used + record_.ByteSizeLong() + record_.reserved_space() >
+          space_total) {
+        // Do not apply degradation, if insufficient - just reject with error.
+        Response(Status(
+            error::RESOURCE_EXHAUSTED,
+            base::StrCat({"Write would not leave enough reserved space=",
+                          base::NumberToString(record_.reserved_space()),
+                          ", available=",
+                          base::NumberToString(space_total - space_used)})));
+        return;
+      }
+
+      // Remove `reserved_space` field from the `record_` itself - no longer
+      // needed.
+      record_.clear_reserved_space();
+    }
+
     // Wrap the record.
     WrappedRecord wrapped_record;
     *wrapped_record.mutable_record() = std::move(record_);
@@ -1607,7 +1634,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Release encrypted record memory, so scoped reservation may act.
     encrypted_record_result.ValueOrDie().Clear();
 
-    // Write into storage on sequntial task runner.
+    // Write into storage on sequential task runner.
     Schedule(&WriteContext::WriteRecord, base::Unretained(this),
              std::move(buffer));
   }

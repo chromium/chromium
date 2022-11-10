@@ -22,13 +22,15 @@ ReportQueueConfiguration::~ReportQueueConfiguration() = default;
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>
 ReportQueueConfiguration::Create(EventType event_type,
                                  Destination destination,
-                                 PolicyCheckCallback policy_check_callback) {
+                                 PolicyCheckCallback policy_check_callback,
+                                 int64_t reserved_space) {
   auto config = base::WrapUnique<ReportQueueConfiguration>(
       new ReportQueueConfiguration());
 
   RETURN_IF_ERROR(config->SetEventType(event_type));
   RETURN_IF_ERROR(config->SetDestination(destination));
   RETURN_IF_ERROR(config->SetPolicyCheckCallback(policy_check_callback));
+  RETURN_IF_ERROR(config->SetReservedSpace(reserved_space));
 
   return config;
 }
@@ -36,9 +38,10 @@ ReportQueueConfiguration::Create(EventType event_type,
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>
 ReportQueueConfiguration::Create(base::StringPiece dm_token,
                                  Destination destination,
-                                 PolicyCheckCallback policy_check_callback) {
+                                 PolicyCheckCallback policy_check_callback,
+                                 int64_t reserved_space) {
   auto config_result = Create(/*event_type=*/EventType::kDevice, destination,
-                              policy_check_callback);
+                              policy_check_callback, reserved_space);
   if (!config_result.ok()) {
     return config_result;
   }
@@ -82,4 +85,12 @@ Status ReportQueueConfiguration::SetDestination(Destination destination) {
   return Status::StatusOK();
 }
 
+Status ReportQueueConfiguration::SetReservedSpace(int64_t reserved_space) {
+  if (reserved_space < 0L) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Must reserve non-zero amount of space");
+  }
+  reserved_space_ = reserved_space;
+  return Status::StatusOK();
+}
 }  // namespace reporting

@@ -13,7 +13,7 @@ import "components/reporting/proto/synced/record_constants.proto";
 
 // Record represents the data sent from the Reporting Client.
 message Record {
-  // Record data as enqueued with an ReportingQueue::Enqueue call (required).
+  // Record data as enqueued with an ReportQueue::Enqueue call (required).
   // Data structure requirements are set by the destination. For destinations
   // expecting a proto - the proto will be MessageLite::SerializeToString(), and
   // will be DeserializedFromString() in the destination handler, prior to being
@@ -24,17 +24,20 @@ message Record {
   optional bytes data = 1;
 
   // The destination associated with this request as set with the
-  // ReportingQueueConfiguration (required).
+  // ReportQueueConfiguration (required).
   optional Destination destination = 2;
 
   // The DMToken associated with this request as set with the
-  // ReportingQueueConfiuguration (required).
+  // ReportQueueConfiuguration (required).
   optional string dm_token = 3;
 
-  // When the record was submitted to ReportingQueue::Enqueue.
+  // When the record was submitted to ReportQueue::Enqueue.
   // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds,
   // to match Spanner timestamp format.
   optional int64 timestamp_us = 4;
+
+  // Reserved space specified by ReportQueueConfiguration (unless it is 0).
+  optional int64 reserved_space = 5;
 }
 
 // A Record with it's digest and the digest of the previous record.

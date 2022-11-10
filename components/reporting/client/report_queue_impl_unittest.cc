@@ -94,7 +94,6 @@ class ReportQueueImplTest : public testing::Test {
   std::unique_ptr<ReportQueue> report_queue_;
   base::OnceCallback<void(Status)> callback_;
 
- private:
   const std::string dm_token_;
   const Destination destination_;
   scoped_refptr<StorageModuleInterface> storage_module_;
@@ -145,6 +144,40 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+
+  test::TestMessage result_message;
+  ASSERT_TRUE(
+      result_message.ParseFromString(test_storage_module()->record().data()));
+  ASSERT_EQ(result_message.test(), test_message.test());
+}
+
+TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
+  static constexpr int64_t kReservedSpace = 12345L;
+  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+      ReportQueueConfiguration::Create(dm_token_, destination_,
+                                       policy_check_callback_, kReservedSpace);
+
+  ASSERT_OK(config_result) << config_result.status();
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
+  auto report_queue_result = report_queue_event.result();
+  ASSERT_OK(report_queue_result) << report_queue_result.status();
+
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
+
+  test::TestMessage test_message;
+  test_message.set_test(kTestMessage);
+  test::TestEvent<Status> a;
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
+  const auto a_result = a.result();
+  EXPECT_OK(a_result) << a_result;
+
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().reserved_space(),
+              Eq(kReservedSpace));
 
   test::TestMessage result_message;
   ASSERT_TRUE(
@@ -265,6 +298,43 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
   EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestString));
+}
+
+TEST_F(ReportQueueImplTest,
+       SuccessfulSpeculativeStringRecordWithReservedSpace) {
+  static constexpr int64_t kReservedSpace = 12345L;
+  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+      ReportQueueConfiguration::Create(dm_token_, destination_,
+                                       policy_check_callback_, kReservedSpace);
+
+  ASSERT_OK(config_result) << config_result.status();
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
+  auto report_queue_result = report_queue_event.result();
+  ASSERT_OK(report_queue_result) << report_queue_result.status();
+
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
+
+  static constexpr char kTestString[] = "El-Chupacabra";
+  test::TestEvent<Status> a;
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  speculative_report_queue->Enqueue(std::string(kTestString), priority_,
+                                    a.cb());
+
+  // Enqueue would not end until actual queue is attached.
+  speculative_report_queue->AttachActualQueue(std::move(report_queue_));
+  const auto a_result = a.result();
+  EXPECT_OK(a_result) << a_result;
+
+  // Let everything ongoing to finish.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestString));
+  EXPECT_THAT(test_storage_module()->record().reserved_space(),
+              Eq(kReservedSpace));
 }
 
 TEST_F(ReportQueueImplTest, SpeculativeQueueMultipleRecordsAfterCreation) {

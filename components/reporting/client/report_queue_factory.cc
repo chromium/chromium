@@ -25,12 +25,13 @@ namespace reporting {
 // static
 void ReportQueueFactory::Create(EventType event_type,
                                 Destination destination,
-                                SuccessCallback success_cb) {
+                                SuccessCallback success_cb,
+                                int64_t reserved_space) {
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
 
   auto config_result = ReportQueueConfiguration::Create(
       event_type, destination,
-      base::BindRepeating([]() { return Status::StatusOK(); }));
+      base::BindRepeating([]() { return Status::StatusOK(); }), reserved_space);
   if (!config_result.ok()) {
     LOG_WITH_STATUS(1, "ReportQueueConfiguration is invalid.", config_result);
     return;
@@ -48,13 +49,13 @@ void ReportQueueFactory::Create(EventType event_type,
 // static
 std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
 ReportQueueFactory::CreateSpeculativeReportQueue(EventType event_type,
-                                                 Destination destination) {
+                                                 Destination destination,
+                                                 int64_t reserved_space) {
   DCHECK(base::SequencedTaskRunnerHandle::IsSet());
 
   auto config_result = ReportQueueConfiguration::Create(
       event_type, destination,
-      base::BindRepeating([]() { return Status::StatusOK(); }));
-
+      base::BindRepeating([]() { return Status::StatusOK(); }), reserved_space);
   if (!config_result.ok()) {
     DVLOG(1)
         << "Cannot initialize report queue. Invalid ReportQueueConfiguration: "

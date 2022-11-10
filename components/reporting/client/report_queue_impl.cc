@@ -37,6 +37,7 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
                         Priority priority,
                         std::string dm_token,
                         Destination destination,
+                        int64_t reserved_space,
                         ReportQueue::RecordProducer record_producer,
                         StorageModuleInterface::EnqueueCallback callback) {
   // Generate record data.
@@ -50,6 +51,9 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
   Record record;
   *record.mutable_data() = std::move(record_result.ValueOrDie());
   record.set_destination(destination);
+  if (reserved_space > 0L) {
+    record.set_reserved_space(reserved_space);
+  }
 
   // |record| with no DM token is assumed to be associated with device DM token
   if (!dm_token.empty()) {
@@ -106,7 +110,8 @@ void ReportQueueImpl::AddProducedRecord(RecordProducer record_producer,
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&AddRecordToStorage, storage_, priority,
                      config_->dm_token(), config_->destination(),
-                     std::move(record_producer), std::move(callback)));
+                     config_->reserved_space(), std::move(record_producer),
+                     std::move(callback)));
 }
 
 void ReportQueueImpl::Flush(Priority priority, FlushCallback callback) {
