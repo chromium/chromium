@@ -382,16 +382,6 @@ void StyleEngine::AdoptedStyleSheetRemoved(TreeScope& tree_scope,
   SetNeedsActiveStyleUpdate(tree_scope);
 }
 
-void StyleEngine::AddedCustomElementDefaultStyles(
-    const HeapVector<Member<CSSStyleSheet>>& default_styles) {
-  if (!RuntimeEnabledFeatures::CustomElementDefaultStyleEnabled() ||
-      GetDocument().IsDetached())
-    return;
-  for (CSSStyleSheet* sheet : default_styles)
-    custom_element_default_style_sheets_.insert(sheet);
-  global_rule_set_->MarkDirty();
-}
-
 void StyleEngine::MediaQueryAffectingValueChanged(TreeScope& tree_scope,
                                                   MediaValueChange change) {
   auto* collection = StyleSheetCollectionFor(tree_scope);
@@ -1954,12 +1944,6 @@ void StyleEngine::SetHttpDefaultStyle(const String& content) {
 void StyleEngine::CollectFeaturesTo(RuleFeatureSet& features) {
   CollectUserStyleFeaturesTo(features);
   CollectScopedStyleFeaturesTo(features);
-  for (CSSStyleSheet* sheet : custom_element_default_style_sheets_) {
-    if (!sheet)
-      continue;
-    if (RuleSet* rule_set = RuleSetForSheet(*sheet))
-      features.Merge(rule_set->Features());
-  }
 }
 
 void StyleEngine::EnsureUAStyleForXrOverlay() {
@@ -3484,7 +3468,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(injected_user_style_sheets_);
   visitor->Trace(injected_author_style_sheets_);
   visitor->Trace(active_user_style_sheets_);
-  visitor->Trace(custom_element_default_style_sheets_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(font_palette_values_rule_map_);
   visitor->Trace(user_counter_style_map_);

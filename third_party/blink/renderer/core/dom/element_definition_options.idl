@@ -4,5 +4,4 @@
 // Spec: https://html.spec.whatwg.org/C/#elementdefinitionoptions
 dictionary ElementDefinitionOptions {
     DOMString? extends = null;
-    sequence<CSSStyleSheet> styles;
 };

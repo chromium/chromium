@@ -952,10 +952,6 @@
       status: "test",
     },
     {
-      name: "CustomElementDefaultStyle",
-      status: "experimental",
-    },
-    {
       name: "Database",
       public: true,
       status: "stable",

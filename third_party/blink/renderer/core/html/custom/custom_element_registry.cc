@@ -199,9 +199,6 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
   CustomElementDefinition* definition = builder.Build(descriptor);
   CHECK(!exception_state.HadException());
   CHECK(definition->Descriptor() == descriptor);
-  if (RuntimeEnabledFeatures::CustomElementDefaultStyleEnabled() &&
-      options->hasStyles())
-    definition->SetDefaultStyleSheets(options->styles());
 
   auto name_add_result = name_map_.insert(descriptor.GetName(), definition);
   // This CHECK follows from the NameIsDefined call above.

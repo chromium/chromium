@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
-#include "third_party/blink/renderer/core/css/css_import_rule.h"
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
@@ -42,7 +38,6 @@ CustomElementDefinition::~CustomElementDefinition() = default;
 
 void CustomElementDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(construction_stack_);
-  visitor->Trace(default_style_sheets_);
 }
 
 static String ErrorMessageForConstructorResult(Element& element,
@@ -249,33 +244,6 @@ void CustomElementDefinition::Upgrade(Element& element) {
 
   if (IsFormAssociated())
     To<HTMLElement>(element).EnsureElementInternals().DidUpgrade();
-  AddDefaultStylesTo(element);
-}
-
-void CustomElementDefinition::AddDefaultStylesTo(Element& element) {
-  if (!RuntimeEnabledFeatures::CustomElementDefaultStyleEnabled() ||
-      !HasDefaultStyleSheets())
-    return;
-  const auto& default_styles = DefaultStyleSheets();
-  for (CSSStyleSheet* style : default_styles) {
-    Document* document = style->ConstructorDocument();
-    if (document && document != &element.GetDocument()) {
-      // No spec yet, but for now we forbid usage of other document's
-      // constructed stylesheet.
-      return;
-    }
-  }
-  if (!added_default_style_sheet_) {
-    element.GetDocument().GetStyleEngine().AddedCustomElementDefaultStyles(
-        default_styles);
-    added_default_style_sheet_ = true;
-    const AtomicString& local_tag_name = element.LocalNameForSelectorMatching();
-    for (CSSStyleSheet* sheet : default_styles)
-      sheet->AddToCustomElementTagNames(local_tag_name);
-  }
-  element.SetNeedsStyleRecalc(
-      kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                             style_change_reason::kActiveStylesheetsUpdate));
 }
 
 bool CustomElementDefinition::HasAttributeChangedCallback(

@@ -1240,12 +1240,6 @@
              "--force-renderer-accessibility"]
   },
   {
-    "prefix": "disable-custom-element-default-style",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/css/css-cascade/presentational-hints-cascade.html"],
-    "args": ["--disable-blink-features=CustomElementDefaultStyle"]
-  },
-  {
     "prefix": "cors-non-wildcard-request-headers",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/api/cors/cors-preflight.any.js"],

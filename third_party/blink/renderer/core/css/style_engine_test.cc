@@ -5712,8 +5712,6 @@ TEST_F(StyleEngineTest, RemovedBodyToHTMLPropagation) {
 }
 
 TEST_F(StyleEngineTest, RevertWithPresentationalHints) {
-  ScopedCustomElementDefaultStyleForTest disabled_scope(false);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       img {
@@ -5733,8 +5731,6 @@ TEST_F(StyleEngineTest, RevertWithPresentationalHints) {
 }
 
 TEST_F(StyleEngineTest, RevertLayerWithPresentationalHints) {
-  ScopedCustomElementDefaultStyleForTest disabled_scope(false);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       img {
