@@ -89,7 +89,20 @@ class WebMStreamParserTest : public testing::Test {
 
   bool NewConfigCB(std::unique_ptr<MediaTracks> tracks,
                    const StreamParser::TextTrackConfigMap& text_track_map) {
+    size_t audio_config_count = 0;
+    size_t video_config_count = 0;
     DCHECK(tracks.get());
+    for (const auto& track : tracks->tracks()) {
+      if (track->type() == MediaTrack::Audio) {
+        audio_config_count++;
+        continue;
+      }
+      if (track->type() == MediaTrack::Video) {
+        video_config_count++;
+      }
+    }
+    EXPECT_EQ(tracks->GetAudioConfigs().size(), audio_config_count);
+    EXPECT_EQ(tracks->GetVideoConfigs().size(), video_config_count);
     media_tracks_ = std::move(tracks);
     return true;
   }

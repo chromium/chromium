@@ -257,18 +257,18 @@ class Mp2tStreamParserTest : public testing::Test {
   bool OnNewConfig(std::unique_ptr<MediaTracks> tracks,
                    const StreamParser::TextTrackConfigMap& tc) {
     DVLOG(1) << "OnNewConfig: got " << tracks->tracks().size() << " tracks";
-    bool found_audio_track = false;
-    bool found_video_track = false;
+    size_t audio_track_count = 0;
+    size_t video_track_count = 0;
     for (const auto& track : tracks->tracks()) {
       const auto& track_id = track->bytestream_track_id();
       if (track->type() == MediaTrack::Audio) {
         audio_track_id_ = track_id;
-        found_audio_track = true;
+        audio_track_count++;
         EXPECT_TRUE(tracks->getAudioConfig(track_id).IsValidConfig());
         current_audio_config_ = tracks->getAudioConfig(track_id);
       } else if (track->type() == MediaTrack::Video) {
         video_track_id_ = track_id;
-        found_video_track = true;
+        video_track_count++;
         EXPECT_TRUE(tracks->getVideoConfig(track_id).IsValidConfig());
         current_video_config_ = tracks->getVideoConfig(track_id);
       } else {
@@ -277,8 +277,10 @@ class Mp2tStreamParserTest : public testing::Test {
         EXPECT_TRUE(false);
       }
     }
-    EXPECT_EQ(has_audio_, found_audio_track);
-    EXPECT_EQ(has_video_, found_video_track);
+    EXPECT_EQ(has_audio_, audio_track_count > 0);
+    EXPECT_EQ(has_video_, video_track_count > 0);
+    EXPECT_EQ(tracks->GetAudioConfigs().size(), audio_track_count);
+    EXPECT_EQ(tracks->GetVideoConfigs().size(), video_track_count);
     config_count_++;
     return true;
   }

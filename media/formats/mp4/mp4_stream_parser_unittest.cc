@@ -145,6 +145,8 @@ class MP4StreamParserTest : public testing::Test {
 
   bool NewConfigF(std::unique_ptr<MediaTracks> tracks,
                   const StreamParser::TextTrackConfigMap& tc) {
+    size_t audio_config_count = 0;
+    size_t video_config_count = 0;
     configs_received_ = true;
     CHECK(tracks.get());
     DVLOG(1) << "NewConfigF: got " << tracks->tracks().size() << " tracks";
@@ -157,6 +159,7 @@ class MP4StreamParserTest : public testing::Test {
                  << (audio_decoder_config_.IsValidConfig()
                          ? audio_decoder_config_.AsHumanReadableString()
                          : "INVALID");
+        audio_config_count++;
       } else if (track->type() == MediaTrack::Video) {
         video_track_id_ = track_id;
         video_decoder_config_ = tracks->getVideoConfig(track_id);
@@ -164,8 +167,11 @@ class MP4StreamParserTest : public testing::Test {
                  << (video_decoder_config_.IsValidConfig()
                          ? video_decoder_config_.AsHumanReadableString()
                          : "INVALID");
+        video_config_count++;
       }
     }
+    EXPECT_EQ(tracks->GetAudioConfigs().size(), audio_config_count);
+    EXPECT_EQ(tracks->GetVideoConfigs().size(), video_config_count);
     media_tracks_ = std::move(tracks);
     return true;
   }
