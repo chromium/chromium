@@ -8,9 +8,6 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/location.h"
 #include "base/task/task_traits.h"
@@ -20,12 +17,9 @@
 #include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "chromeos/ash/services/recording/video_capture_params.h"
 #include "media/audio/audio_device_description.h"
-#include "media/base/audio_codecs.h"
-#include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
-#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "services/audio/public/cpp/device_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -44,6 +38,16 @@ constexpr uint32_t kMinBitrateInBitsPerSecond = 256 * 1000;
 // extracted from the first valid video frame. The value was chosen to be
 // suitable with the image container in the notification UI.
 constexpr gfx::Size kThumbnailSize{328, 184};
+
+// Video frames are generated when the recorded surface has damage. If the
+// contents of the surface is static, no new video frames will be generated, and
+// as a result, seeking through the output video may produce garbage play-back
+// video frames (see http://b/238505291).
+// To avoid this issue, we use the below duration as the maximum time to wait
+// since the last received video frames before we request a new refresh frame.
+// This value was chosen by trial and error, and it also matches the one used by
+// Chromecast.
+constexpr base::TimeDelta kVideoFramesRefreshInterval = base::Milliseconds(250);
 
 // Calculates the bitrate (in bits/seconds) used to initialize the video encoder
 // based on the given |capture_size|.
@@ -225,6 +229,7 @@ void RecordingService::RecordRegion(
 
 void RecordingService::StopRecording() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  refresh_timer_.Stop();
   video_capturer_remote_->Stop();
   if (audio_capturer_)
     audio_capturer_->Stop();
@@ -299,6 +304,11 @@ void RecordingService::OnFrameCaptured(
         callbacks) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(encoder_muxer_);
+
+  // Once a frame is received, we reset the timer back to the full
+  // `kVideoFramesRefreshInterval` so that it fires only if we don't get any
+  // new video frames during that interval.
+  refresh_timer_.Reset();
 
   CHECK(data->is_read_only_shmem_region());
   base::ReadOnlySharedMemoryRegion& shmem_region =
@@ -473,6 +483,7 @@ void RecordingService::TerminateRecording(mojom::RecordingStatus status) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(encoder_muxer_);
 
+  refresh_timer_.Stop();
   current_video_capture_params_.reset();
   video_capturer_remote_.reset();
   consumer_receiver_.reset();
@@ -497,6 +508,13 @@ void RecordingService::ConnectAndStartVideoCapturer(
       video_capturer_remote_);
   video_capturer_remote_->Start(consumer_receiver_.BindNewPipeAndPassRemote(),
                                 viz::mojom::BufferFormatPreference::kDefault);
+
+  // Always request the very first frame, and don't rely on damage to produce
+  // it.
+  video_capturer_remote_->RequestRefreshFrame();
+
+  refresh_timer_.Start(FROM_HERE, kVideoFramesRefreshInterval, this,
+                       &RecordingService::OnRefreshTimerFired);
 }
 
 void RecordingService::OnVideoCapturerDisconnected() {
@@ -552,6 +570,13 @@ void RecordingService::SignalRecordingEndedToClient(
 
   encoder_muxer_.Reset();
   client_remote_->OnRecordingEnded(status, video_thumbnail_);
+}
+
+void RecordingService::OnRefreshTimerFired() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (video_capturer_remote_)
+    video_capturer_remote_->RequestRefreshFrame();
 }
 
 }  // namespace recording

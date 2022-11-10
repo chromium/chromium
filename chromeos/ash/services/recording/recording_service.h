@@ -19,6 +19,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/ash/services/recording/recording_encoder_muxer.h"
 #include "chromeos/ash/services/recording/video_capture_params.h"
@@ -170,6 +171,11 @@ class RecordingService : public mojom::RecordingService,
   // thumbnail of the video (if available).
   void SignalRecordingEndedToClient(mojom::RecordingStatus status);
 
+  // Called when `refresh_timer_` fires, which means it has been more than
+  // `kVideoFramesRefreshInterval` since the last video frame was delivered, at
+  // which point we request a new refresh video frame.
+  void OnRefreshTimerFired();
+
   // By default, the |encoder_muxer_| will invoke any callback we provide it
   // with to notify us of certain events (such as failure errors, or flush done)
   // on the |encoding_task_runner_|'s sequence. But since these callbacks are
@@ -222,6 +228,11 @@ class RecordingService : public mojom::RecordingService,
                               const gfx::Rect& content_rect)>;
   OnVideoFrameDeliveredCallback on_video_frame_delivered_callback_for_testing_
       GUARDED_BY_CONTEXT(main_thread_checker_);
+
+  // A timer used to request refresh video frames if none was delivered within
+  // a certain time interval (which can happen when the contents of the surface
+  // being recorded is static, resulting in no damage).
+  base::RepeatingTimer refresh_timer_ GUARDED_BY_CONTEXT(main_thread_checker_);
 
   // A cached scaled down rgb image of the first valid video frame which will be
   // used to provide the client with an image thumbnail representing the
