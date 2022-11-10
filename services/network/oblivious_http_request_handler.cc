@@ -313,8 +313,7 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
   resource_request->redirect_mode = mojom::RedirectMode::kError;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags |= net::LOAD_DISABLE_CACHE;
-  // TODO(behamilton): Pass netlog source to resource request to link the outer
-  // request to this request.
+  resource_request->net_log_create_info = state->net_log.source();
 
   state->loader = SimpleURLLoader::Create(
       std::move(resource_request),

@@ -429,10 +429,12 @@ struct URLRequest {
   array<SourceType>? devtools_accepted_stream_types;
 
   // This field is filled and used when network service creates a new request
-  // for preflights (which happens in CorsURLLoader). So this field is set
-  // within the network service, more concretely by CorsURLLoader, and solely
-  // used there unless the loader factory is overridden. Setting this field by
-  // the process outside the network service is currently not expected and is
+  // for preflights (which happens in CorsURLLoader) and OHTTP requests (which
+  // happens in ObliviousHttpRequestHandler). This field should only be set
+  // within the network service and requires either
+  // `URLLoaderFactoryParams.is_trusted` or
+  // `URLLoaderFactoryParams.disable_web_security`. Setting this field by the
+  // process outside the network service is currently not expected and is
   // invalid.
   // If set, it contains NetLog related parameters to construct a NetLogSource
   // for the request. If not set, URLRequest constructs a NetLogSource with

@@ -599,7 +599,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   if (!disable_web_security_) {
     // `net_log_create_info` field is expected to be used within network
     // service.
-    if (request.net_log_create_info) {
+    if (request.net_log_create_info && !is_trusted_) {
       mojo::ReportBadMessage(
           "CorsURLLoaderFactory: net_log_create_info field is not expected.");
       return false;
