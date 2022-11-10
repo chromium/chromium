@@ -290,8 +290,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       auto imported_data = form_data_importer_->ImportFormData(
           form_structure,
           /*profile_autofill_enabled=*/true,
-          /*payment_methods_autofill_enabled=*/true,
-          /*should_return_local_card=*/false);
+          /*payment_methods_autofill_enabled=*/true);
       form_data_importer_->ProcessAddressProfileImportCandidates(
           imported_data.address_profile_import_candidates,
           /*allow_prompt=*/true);

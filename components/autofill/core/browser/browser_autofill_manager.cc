@@ -815,9 +815,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   if (submitted_form->IsAutofillable() ||
       ContainsAutofillableValue(*submitted_form)) {
     FormDataImporter* form_data_importer = client()->GetFormDataImporter();
-    form_data_importer->ImportFormData(*submitted_form,
-                                       IsAutofillProfileEnabled(),
-                                       IsAutofillCreditCardEnabled());
+    form_data_importer->ImportAndProcessFormData(*submitted_form,
+                                                 IsAutofillProfileEnabled(),
+                                                 IsAutofillCreditCardEnabled());
     // Associate the form signatures of recently submitted address/credit card
     // forms to `submitted_form`, if it is an address/credit card form itself.
     // This information is attached to the vote.

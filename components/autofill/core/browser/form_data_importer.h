@@ -66,9 +66,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // `personal_data_manager_`. If a new credit card was detected and
   // `payment_methods_autofill_enabled` is set to `true`, also begins the
   // process to offer local or upload credit card save.
-  void ImportFormData(const FormStructure& submitted_form,
-                      bool profile_autofill_enabled,
-                      bool payment_methods_autofill_enabled);
+  void ImportAndProcessFormData(const FormStructure& submitted_form,
+                                bool profile_autofill_enabled,
+                                bool payment_methods_autofill_enabled);
 
   struct ExtractCreditCardFromFormResult {
     // The extracted credit card, which may be a candidate for import.
@@ -174,7 +174,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
         const ImportFormDataResult& imported_form_data);
     ~ImportFormDataResult();
 
-    bool success = false;
     // Credit card extracted from the form, which is a candidate for importing.
     // This credit card will be present after extraction if the form contained a
     // valid credit card, and the preconditions for extracting the credit card
@@ -192,17 +191,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
     absl::optional<std::string> imported_upi_id;
   };
 
-  // This function scans the given `form` for importable Autofill data.
-  // Succeeds if one of the conditions meet:
-  // 1) The form includes sufficient address data for a new profile.
-  // 2) ImportCreditCard() returns true.
-  // 3) ImportIBAN() returns true.
-  // 4) The form contains UPI data and `payment_methods_autofill_enabled` is
-  //    true.
+  // Scans the given `form` for importable Autofill data.
   ImportFormDataResult ImportFormData(const FormStructure& form,
                                       bool profile_autofill_enabled,
-                                      bool payment_methods_autofill_enabled,
-                                      bool should_return_local_card);
+                                      bool payment_methods_autofill_enabled);
 
   // Attempts to construct AddressProfileImportCandidates by extracting values
   // from the fields in the |form|'s sections. Extraction can fail if the
@@ -224,27 +216,16 @@ class FormDataImporter : public PersonalDataManagerObserver {
           address_profile_import_candidates,
       LogBuffer* import_log_buffer);
 
-  struct ImportCreditCardResult {
-    ImportCreditCardResult();
-    ImportCreditCardResult(CreditCard candidate, bool success);
-    ~ImportCreditCardResult();
-    absl::optional<CreditCard> candidate;
-    bool success = false;
-  };
-
   // Returns the extracted card if one was found in the form.
   //
-  // The returned card is, unless an error condition applies,
+  // The returned card is, unless nullopt,
   // - a matching server card, if any match is found, or
   // - the candidate input card, augmented with a matching local card's nickname
   //   if such any match is found.
-  // The error conditions are:
-  // - The card number is invalid.
-  // - The card is a known virtual card.
-  // - A server card matches but the extracted card has no expiration date.
-  // The returned boolean is true iff
-  // - no server card matches or
-  // - a server card and a local card matches and `!should_return_local_card`.
+  // It is nullopt under the following conditions:
+  // - if the card number is invalid;
+  // - if the card is a known virtual card;
+  // - if a card matches but the extracted card has no expiration date.
   //
   // The function has two side-effects:
   // - all matching local cards are updated to include the information from the
@@ -253,8 +234,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   //   - SERVER_CARD if a server card matches;
   //   - LOCAL_CARD if a local and no server card matches;
   //   - NEW_CARD otherwise.
-  ImportCreditCardResult ImportCreditCard(const FormStructure& form,
-                                          bool should_return_local_card);
+  absl::optional<CreditCard> ImportCreditCard(const FormStructure& form);
 
   // Returns the extracted IBAN from the `form` if applicable.
   // This is the case if it is a new IBAN or a local IBAN.
