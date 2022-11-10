@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_LINUX_H_
 #define CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_LINUX_H_
 
+#include <memory>
+
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -17,6 +19,10 @@ class FilePath;
 class Version;
 }  // namespace base
 
+namespace mojo {
+class IsolatedConnection;
+}
+
 namespace updater {
 
 class UpdateServiceProxyImpl;
@@ -26,8 +32,9 @@ struct RegistrationRequest;
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
  public:
-  explicit UpdateServiceProxy(UpdaterScope scope,
-                              mojo::Remote<mojom::UpdateService> remote);
+  UpdateServiceProxy(UpdaterScope scope,
+                     std::unique_ptr<mojo::IsolatedConnection> connection,
+                     mojo::Remote<mojom::UpdateService> remote);
 
   // Overrides for updater::UpdateService
   void GetVersion(
@@ -70,6 +77,7 @@ class UpdateServiceProxy : public UpdateService {
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope scope,
+    std::unique_ptr<mojo::IsolatedConnection> connection,
     mojo::Remote<mojom::UpdateService> remote);
 
 }  // namespace updater

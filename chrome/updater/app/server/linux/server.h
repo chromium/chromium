@@ -39,7 +39,7 @@ class AppServerLinux : public AppServer {
           register_callback) override;
   void UninstallSelf() override;
 
-  std::unique_ptr<UpdateServiceStub> service_wrapper_;
+  std::unique_ptr<UpdateServiceStub> active_duty_stub_;
 };
 
 scoped_refptr<App> MakeAppServer();

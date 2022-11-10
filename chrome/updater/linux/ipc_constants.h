@@ -5,15 +5,21 @@
 #ifndef CHROME_UPDATER_LINUX_IPC_CONSTANTS_H_
 #define CHROME_UPDATER_LINUX_IPC_CONSTANTS_H_
 
+#include "chrome/updater/updater_scope.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class FilePath;
+class Version;
+}  // namespace base
+
 namespace updater {
 
-// The name of the platform channel used to broker a Mojo connection between the
-// client and server.
-extern const char kUpdateServerChannelName[];
+absl::optional<base::FilePath> GetActiveDutySocketPath(UpdaterScope scope);
 
-// The name of the the pipe attached to the Mojo invitation for transmitting an
-// UpdateService or UpdateServiceInternal PendingReceiver.
-extern const char kUpdateServerChannelPipeName[];
+absl::optional<base::FilePath> GetActiveDutyInternalSocketPath(
+    UpdaterScope scope,
+    const base::Version& version);
 
 }  // namespace updater
 

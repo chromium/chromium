@@ -9,16 +9,22 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/update_service.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace updater {
 
 // Receives RPC calls from the client and delegates them to an UpdateService.
+// The stub creates and manages a `NamedMojoIpcServer` to listen for and broker
+// new Mojo connections with clients.
 class UpdateServiceStub : public mojom::UpdateService {
  public:
-  UpdateServiceStub(mojo::PendingReceiver<mojom::UpdateService> receiver,
-                    scoped_refptr<updater::UpdateService> impl);
+  // Creates an `UpdateServiceStub` which forwards calls to `impl`. Opens a
+  // `NamedMojoIpcServer` which listens on a socket whose name is decided by
+  // `scope`.
+  UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
+                    UpdaterScope scope);
   UpdateServiceStub(const UpdateServiceStub&) = delete;
   UpdateServiceStub& operator=(const UpdateServiceStub&) = delete;
   ~UpdateServiceStub() override;
@@ -50,7 +56,9 @@ class UpdateServiceStub : public mojom::UpdateService {
                     RunInstallerCallback callback) override;
 
  private:
-  mojo::Receiver<updater::mojom::UpdateService> receiver_;
+  void OnClientDisconnected();
+
+  named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateService> server_;
   scoped_refptr<updater::UpdateService> impl_;
 };
 

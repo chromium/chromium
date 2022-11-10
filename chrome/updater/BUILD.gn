@@ -342,6 +342,7 @@ if (is_win || is_mac || is_linux) {
 
       deps += [
         "//chrome/updater/app/server/linux/mojom",
+        "//components/named_mojo_ipc_server",
         "//mojo/core/embedder",
       ]
     }

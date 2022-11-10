@@ -12,8 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/process_handle.h"
 #include "base/version.h"
 #include "chrome/updater/app/server/linux/mojom/updater_service.mojom-forward.h"
+#include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/registration_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -91,14 +93,29 @@ MakeStateChangeObserverCallbacks(
       base::BindOnce(&StateChangeObserverWrapper::OnComplete, wrapper)};
 }
 
+// TODO(crbug.com/1378742): Implement some form of validation.
+static bool IsTrustedIPCEndpoint(base::ProcessId /*caller_pid*/) {
+  return true;
+}
+
 }  // namespace
 
-UpdateServiceStub::UpdateServiceStub(
-    mojo::PendingReceiver<mojom::UpdateService> receiver,
-    scoped_refptr<updater::UpdateService> impl)
-    : receiver_(this, std::move(receiver)), impl_(impl) {}
+UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
+                                     UpdaterScope scope)
+    : server_(GetActiveDutySocketPath(scope)->MaybeAsASCII(),
+              this,
+              base::BindRepeating(&IsTrustedIPCEndpoint)),
+      impl_(impl) {
+  server_.set_disconnect_handler(base::BindRepeating(
+      &UpdateServiceStub::OnClientDisconnected, base::Unretained(this)));
+  server_.StartServer();
+}
 
 UpdateServiceStub::~UpdateServiceStub() = default;
+
+void UpdateServiceStub::OnClientDisconnected() {
+  VLOG(1) << "Receiver disconnected: " << server_.current_receiver();
+}
 
 void UpdateServiceStub::GetVersion(GetVersionCallback callback) {
   impl_->GetVersion(base::BindOnce(

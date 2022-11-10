@@ -5,6 +5,7 @@
 #include "chrome/updater/app/server/linux/server.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -23,22 +24,9 @@ namespace updater {
 AppServerLinux::AppServerLinux() = default;
 AppServerLinux::~AppServerLinux() = default;
 
-mojo::ScopedMessagePipeHandle AppServerLinux::ConnectToClient() {
-  mojo::PlatformChannelEndpoint endpoint =
-      mojo::NamedPlatformChannel::ConnectToServer(
-          mojo::NamedPlatformChannel::ServerNameFromUTF8(
-              kUpdateServerChannelName));
-
-  mojo::IncomingInvitation invitation =
-      mojo::IncomingInvitation::Accept(std::move(endpoint));
-
-  return invitation.ExtractMessagePipe(kUpdateServerChannelPipeName);
-}
-
 void AppServerLinux::ActiveDuty(scoped_refptr<UpdateService> update_service) {
-  service_wrapper_ = std::make_unique<UpdateServiceStub>(
-      mojo::PendingReceiver<mojom::UpdateService>(ConnectToClient()),
-      std::move(update_service));
+  active_duty_stub_ = std::make_unique<UpdateServiceStub>(
+      std::move(update_service), updater_scope());
 }
 
 // TODO(crbug.com/1276117) - implement.

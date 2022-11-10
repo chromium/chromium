@@ -14,13 +14,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
 #include "chrome/updater/app/server/linux/update_service_stub.h"
 #include "chrome/updater/ipc/update_service_proxy_linux.h"
+#include "chrome/updater/linux/ipc_support.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,8 +142,6 @@ class FakeUpdateService : public UpdateService {
 
 class UpdaterIPCTestCase : public testing::Test {
  public:
-  static void SetUpTestSuite() { mojo::core::Init(); }
-
   static void ExpectUpdateStatesEqual(const UpdateService::UpdateState& lhs,
                                       const UpdateService::UpdateState& rhs) {
     EXPECT_EQ(lhs.app_id, rhs.app_id);
@@ -160,11 +162,10 @@ class UpdaterIPCTestCase : public testing::Test {
   void SetUp() override {
     scoped_refptr<UpdateService> service =
         base::MakeRefCounted<FakeUpdateService>();
-    mojo::Remote<mojom::UpdateService> remote;
-    service_stub_ = std::make_unique<UpdateServiceStub>(
-        remote.BindNewPipeAndPassReceiver(), std::move(service));
+    service_stub_ = std::make_unique<UpdateServiceStub>(std::move(service),
+                                                        UpdaterScope::kUser);
     client_proxy_ =
-        CreateUpdateServiceProxy(UpdaterScope::kUser, std::move(remote));
+        CreateUpdateServiceProxy(UpdaterScope::kUser, base::Seconds(3));
   }
 
   UpdateService::StateChangeCallback ExpectUpdateStatesCallback() {
@@ -208,6 +209,8 @@ class UpdaterIPCTestCase : public testing::Test {
   }
 
  protected:
+  ScopedIPCSupportWrapper ipc_support_;
+
   base::test::TaskEnvironment environment_;
   base::RunLoop run_loop_;
 
@@ -299,8 +302,8 @@ class UpdaterIPCErrorTestCase : public UpdaterIPCTestCase {
     // This will cause RPC calls to eventually be dropped.
     mojo::Remote<mojom::UpdateService> remote;
     std::ignore = remote.BindNewPipeAndPassReceiver();
-    client_proxy_ =
-        CreateUpdateServiceProxy(UpdaterScope::kUser, std::move(remote));
+    client_proxy_ = CreateUpdateServiceProxy(UpdaterScope::kUser, nullptr,
+                                             std::move(remote));
   }
 };
 

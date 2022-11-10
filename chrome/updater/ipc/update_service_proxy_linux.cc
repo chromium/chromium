@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/ipc/update_service_proxy_linux.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/updater/service_proxy_factory.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -16,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
 #include "chrome/updater/constants.h"
@@ -32,7 +35,9 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -139,9 +144,11 @@ MakeStateChangeObserver(
 class UpdateServiceProxyImpl
     : public base::RefCountedThreadSafe<UpdateServiceProxyImpl> {
  public:
-  explicit UpdateServiceProxyImpl(UpdaterScope /*scope*/,
-                                  mojo::Remote<mojom::UpdateService> remote)
-      : remote_(std::move(remote)) {}
+  explicit UpdateServiceProxyImpl(
+      UpdaterScope /*scope*/,
+      std::unique_ptr<mojo::IsolatedConnection> connection,
+      mojo::Remote<mojom::UpdateService> remote)
+      : connection_(std::move(connection)), remote_(std::move(remote)) {}
 
   void GetVersion(base::OnceCallback<void(const base::Version&)> callback) {
     remote_->GetVersion(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -238,13 +245,16 @@ class UpdateServiceProxyImpl
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImpl>;
   virtual ~UpdateServiceProxyImpl() = default;
 
+  std::unique_ptr<mojo::IsolatedConnection> connection_;
   mojo::Remote<mojom::UpdateService> remote_;
 };
 
 UpdateServiceProxy::UpdateServiceProxy(
     UpdaterScope updater_scope,
+    std::unique_ptr<mojo::IsolatedConnection> connection,
     mojo::Remote<mojom::UpdateService> remote)
     : impl_(base::MakeRefCounted<UpdateServiceProxyImpl>(updater_scope,
+                                                         std::move(connection),
                                                          std::move(remote))) {}
 
 void UpdateServiceProxy::GetVersion(
@@ -346,32 +356,46 @@ UpdateServiceProxy::~UpdateServiceProxy() {
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope scope,
-    const base::TimeDelta& /*get_version_timeout*/) {
-  // TODO(crbug.com/1375890): This code assumes that the out-of-process service
-  // is running. The creation and lifetime management of the server needs to be
-  // handled.
-  mojo::NamedPlatformChannel::Options options;
-  options.server_name = kUpdateServerChannelName;
-  mojo::NamedPlatformChannel named_channel(options);
+    const base::TimeDelta& timeout) {
+  absl::optional<base::FilePath> socket_path = GetActiveDutySocketPath(scope);
+  if (!socket_path)
+    return nullptr;
 
-  mojo::OutgoingInvitation invitation;
-  mojo::ScopedMessagePipeHandle pipe =
-      invitation.AttachMessagePipe(kUpdateServerChannelPipeName);
+  mojo::PlatformChannelEndpoint endpoint;
 
-  mojo::OutgoingInvitation::Send(std::move(invitation),
-                                 base::kNullProcessHandle,
-                                 named_channel.TakeServerEndpoint());
-  mojo::Remote<mojom::UpdateService> remote({std::move(pipe), 0});
+  // TODO(1382127): Avoid blocking the calling thread.
+  base::Time deadline = base::Time::NowFromSystemTime() + timeout;
+  do {
+    endpoint = mojo::NamedPlatformChannel::ConnectToServer(
+        socket_path->MaybeAsASCII());
+    base::PlatformThread::Sleep(base::Milliseconds(100));
+  } while (!endpoint.is_valid() && base::Time::NowFromSystemTime() < deadline);
+
+  if (!endpoint.is_valid()) {
+    LOG(ERROR) << "Failed to connect to UpdateService remote. Connection timed "
+                  "out.";
+    return nullptr;
+  }
+
+  auto connection = std::make_unique<mojo::IsolatedConnection>();
+
+  mojo::Remote<mojom::UpdateService> remote(
+      mojo::PendingRemote<mojom::UpdateService>(
+          connection->Connect(std::move(endpoint)), 0));
   remote.set_disconnect_handler(base::BindOnce([]() {
     LOG(ERROR) << "UpdateService remote has unexpectedly disconnected.";
   }));
-  return CreateUpdateServiceProxy(scope, std::move(remote));
+
+  return CreateUpdateServiceProxy(scope, std::move(connection),
+                                  std::move(remote));
 }
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope scope,
+    std::unique_ptr<mojo::IsolatedConnection> connection,
     mojo::Remote<mojom::UpdateService> remote) {
-  return base::MakeRefCounted<UpdateServiceProxy>(scope, std::move(remote));
+  return base::MakeRefCounted<UpdateServiceProxy>(scope, std::move(connection),
+                                                  std::move(remote));
 }
 
 }  // namespace updater

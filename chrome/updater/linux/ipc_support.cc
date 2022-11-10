@@ -8,13 +8,16 @@
 
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
+#include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 
 namespace updater {
 
 ScopedIPCSupportWrapper::ScopedIPCSupportWrapper() {
-  mojo::core::Init();
+  mojo::core::Configuration config;
+  config.is_broker_process = true;
+  mojo::core::Init(config);
   ipc_thread_.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
