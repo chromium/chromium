@@ -149,4 +149,8 @@ bool RenderWidgetHostDelegate::IsPortal() {
   return false;
 }
 
+int RenderWidgetHostDelegate::GetVirtualKeyboardResizeHeight() {
+  return 0;
+}
+
 }  // namespace content

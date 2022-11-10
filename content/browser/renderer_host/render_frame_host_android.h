@@ -100,6 +100,10 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   jint GetLifecycleState(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>&) const;
 
+  void ForceRedrawAndWaitForPresentation(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcallback);
+
   RenderFrameHostImpl* render_frame_host() const { return render_frame_host_; }
 
  private:

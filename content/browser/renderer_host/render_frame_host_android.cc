@@ -240,4 +240,23 @@ jint RenderFrameHostAndroid::GetLifecycleState(
   return static_cast<jint>(render_frame_host_->GetLifecycleState());
 }
 
+namespace {
+
+void DidPresentFrame(
+    const base::android::ScopedJavaGlobalRef<jobject>& j_callback) {
+  base::android::RunRunnableAndroid(j_callback);
+}
+
+}  // namespace
+
+void RenderFrameHostAndroid::ForceRedrawAndWaitForPresentation(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& callback) {
+  base::android::ScopedJavaGlobalRef<jobject> j_callback;
+  j_callback.Reset(env, callback);
+
+  render_frame_host()->GetRenderWidgetHost()->ForceRedrawAndWaitForPresentation(
+      base::BindOnce(&DidPresentFrame, j_callback));
+}
+
 }  // namespace content

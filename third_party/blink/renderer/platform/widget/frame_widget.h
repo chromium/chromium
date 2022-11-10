@@ -283,6 +283,12 @@ class PLATFORM_EXPORT FrameWidget {
   // CompositorFrames.  See https://crbug.com/1232173 for more details.
   virtual void SetMayThrottleIfUndrawnFrames(
       bool may_throttle_if_undrawn_frames) = 0;
+
+  // Returns, in physical pixels, the amount that the widget has been resized
+  // by the virtual keyboard. The virtual keyboard always insets a widget from
+  // the bottom so only the height can be affected. Only the outermost main
+  // frame's widget returns a non-zero value.
+  virtual int GetVirtualKeyboardResizeHeight() const = 0;
 };
 
 }  // namespace blink

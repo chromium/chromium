@@ -98,4 +98,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
     public int getLifecycleState() {
         return LifecycleState.ACTIVE;
     }
+
+    @Override
+    public void forceRedrawAndWaitForPresentation(Runnable callback) {}
 }

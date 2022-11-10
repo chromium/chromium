@@ -88,6 +88,11 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // controls shrink blink size etc.
   cc::BrowserControlsParams browser_controls_params;
 
+  // If shown and resizing the renderer, returns the height of the virtual
+  // keyboard in physical pixels. Otherwise, returns 0. Always 0 in a
+  // non-outermost main frame.
+  int virtual_keyboard_resize_height_physical_px = 0;
+
   // Whether or not the focused node should be scrolled into view after the
   // resize.
   bool scroll_focused_node_into_view = false;

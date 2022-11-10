@@ -1287,6 +1287,14 @@ bool Browser::DoBrowserControlsShrinkRendererSize(
   return window_->DoBrowserControlsShrinkRendererSize(contents);
 }
 
+int Browser::GetVirtualKeyboardHeight(content::WebContents* contents) {
+  // This API is currently only used by View Transitions when the virtual
+  // keyboard resizes content.  On desktop platforms, the virtual keyboard can
+  // only inset the visual viewport so it shouldn't ever be called.
+  NOTIMPLEMENTED();
+  return 0;
+}
+
 void Browser::SetTopControlsGestureScrollInProgress(bool in_progress) {
   window_->SetTopControlsGestureScrollInProgress(in_progress);
 }
