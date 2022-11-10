@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -13,6 +14,11 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
+
+bool ManageMirrorSyncUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return ash::features::IsDriveFsMirroringEnabled();
+}
 
 ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {

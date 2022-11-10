@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/ash/network_ui.h"
@@ -91,8 +93,10 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::HumanPresenceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetConfigDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetDetailDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::LauncherInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::LockScreenNetworkUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::LockScreenStartReauthUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::ManageMirrorSyncUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::MultideviceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<
                      ash::multidevice_setup::MultiDeviceSetupDialogUIConfig>());

@@ -971,14 +971,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::GuestOSInstallerUI>;
   if (url.host_piece() == ash::kChromeUIFilesInternalsHost)
     return &NewWebUI<ash::FilesInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUILauncherInternalsHost)
-    return &NewWebUI<ash::LauncherInternalsUI>;
   if (url.host_piece() == ash::kChromeUIHelpAppHost)
     return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
-  if (url.host_piece() == chrome::kChromeUIManageMirrorSyncHost &&
-      ash::features::IsDriveFsMirroringEnabled()) {
-    return &NewWebUI<ash::ManageMirrorSyncUI>;
-  }
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
   if (url.host_piece() == chrome::kChromeUIOobeHost) {
