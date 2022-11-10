@@ -1660,8 +1660,11 @@ absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto delay = delegate_->GetOfflineReportDelayConfig();
+
+  // If no delay is being applied (i.e. debug mode is active), return the
+  // earliest report time nonetheless so that it is scheduled properly.
   if (!delay.has_value())
-    return absl::nullopt;
+    return GetNextReportTime(base::Time::Min());
 
   DCHECK_GE(delay->min, base::TimeDelta());
   DCHECK_GE(delay->max, base::TimeDelta());

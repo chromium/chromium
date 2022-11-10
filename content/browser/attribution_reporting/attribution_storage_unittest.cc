@@ -2153,6 +2153,24 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
                     InitialReportTimeIs(original_report_time)))));
 }
 
+TEST_F(AttributionStorageTest,
+       AdjustOfflineReportTimes_ReturnsMinReportTimeWithoutDelay) {
+  delegate()->set_offline_report_delay_config(absl::nullopt);
+
+  ASSERT_EQ(storage()->AdjustOfflineReportTimes(), absl::nullopt);
+
+  storage()->StoreSource(SourceBuilder().Build());
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  std::vector<AttributionReport> reports =
+      storage()->GetAttributionReports(base::Time::Max());
+  ASSERT_THAT(reports, SizeIs(1));
+
+  ASSERT_EQ(storage()->AdjustOfflineReportTimes(),
+            reports.front().report_time());
+}
+
 TEST_F(AttributionStorageTest, GetNextEventReportTime) {
   const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
   const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
