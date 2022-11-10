@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
@@ -15,6 +16,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace ash::cloud_upload {
+
+bool CloudUploadUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return ash::features::IsUploadOfficeToCloudEnabled();
+}
 
 CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {

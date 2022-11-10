@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/audio_resources.h"
@@ -17,6 +18,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace ash {
+
+bool AudioUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(chromeos::features::kAudioUrl);
+}
 
 AudioUI::AudioUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://audio source.

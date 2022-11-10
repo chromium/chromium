@@ -955,16 +955,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewComponentUI<ash::file_manager::FileManagerUI,
                            ChromeFileManagerUIDelegate>;
   }
-  if (url.host_piece() == chrome::kChromeUICloudUploadHost) {
-    if (!ash::features::IsUploadOfficeToCloudEnabled()) {
-      return nullptr;
-    }
-    return &NewWebUI<ash::cloud_upload::CloudUploadUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIAudioHost &&
-      base::FeatureList::IsEnabled(chromeos::features::kAudioUrl)) {
-    return &NewWebUI<ash::AudioUI>;
-  }
   if (url.host_piece() == ash::kChromeUIConnectivityDiagnosticsHost)
     return &NewWebUI<ash::ConnectivityDiagnosticsUI>;
   if (url.host_piece() == ash::kChromeUIGuestOSInstallerHost)
