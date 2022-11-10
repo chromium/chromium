@@ -9,51 +9,52 @@ function processQueryParams() {
   };
 }
 
-function RunTestsInIFrame(sourceURL) {
-  let frame = document.createElement('iframe');
-  frame.src = sourceURL;
-  let result = new Promise((resolve, reject) => {
+function CreateFrameAndRunTests(setUpFrame) {
+  const frame = document.createElement('iframe');
+  const promise = new Promise((resolve, reject) => {
     frame.onload = resolve;
     frame.onerror = reject;
   });
-  document.body.appendChild(frame);
+
+  setUpFrame(frame);
+
   fetch_tests_from_window(frame.contentWindow);
-  return result;
+  return promise;
+}
+
+function RunTestsInIFrame(sourceURL) {
+  return CreateFrameAndRunTests((frame) => {
+    frame.src = sourceURL;
+    document.body.appendChild(frame);
+  });
 }
 
 function RunTestsInNestedIFrame(sourceURL) {
-  let nestedFrame = document.createElement('iframe');
-  document.body.appendChild(nestedFrame);
-  let result = new Promise((resolve, reject) => {
-    nestedFrame.onload = resolve;
-    nestedFrame.onerror = reject;
+  return CreateFrameAndRunTests((frame) => {
+    document.body.appendChild(frame);
+    frame.contentDocument.write(`
+      <script src="/resources/testharness.js"></script>
+      <script src="helpers.js"></script>
+      <body>
+      <script>
+        RunTestsInIFrame("${sourceURL}");
+      </script>
+    `);
+    frame.contentDocument.close();
   });
-  let content = `
-    <script src="/resources/testharness.js"></script>
-    <script src="helpers.js"></script>
-    <body>
-    <script>
-      RunTestsInIFrame("${sourceURL}");
-    </sc` + `ript>
-  `;
-
-    nestedFrame.contentDocument.write(content);
-    nestedFrame.contentDocument.close();
-    fetch_tests_from_window(nestedFrame.contentWindow);
-    return result;
 }
 
 function RunRequestStorageAccessInDetachedFrame() {
-  let nestedFrame = document.createElement('iframe');
-  document.body.append(nestedFrame);
-  const inner_doc = nestedFrame.contentDocument;
-  nestedFrame.remove();
+  const frame = document.createElement('iframe');
+  document.body.append(frame);
+  const inner_doc = frame.contentDocument;
+  frame.remove();
   return inner_doc.requestStorageAccess();
 }
 
 function RunRequestStorageAccessViaDomParser() {
-  let parser = new DOMParser();
-  let doc = parser.parseFromString('<html></html>', 'text/html');
+  const parser = new DOMParser();
+  const doc = parser.parseFromString('<html></html>', 'text/html');
   return doc.requestStorageAccess();
 }
 
