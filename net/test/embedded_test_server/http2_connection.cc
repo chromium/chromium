@@ -15,7 +15,6 @@
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"

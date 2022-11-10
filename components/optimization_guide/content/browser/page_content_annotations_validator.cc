@@ -12,7 +12,6 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"

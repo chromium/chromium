@@ -4,7 +4,6 @@
 
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 
-#include "base/strings/stringprintf.h"
 #include "components/plugins/renderer/plugin_placeholder.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/web_test/common/web_test_string_util.h"

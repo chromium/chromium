@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 
 #include "base/base64.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "components/os_crypt/os_crypt.h"

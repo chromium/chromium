@@ -5,7 +5,6 @@
 #import <string>
 
 #import "base/bind.h"
-#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/omnibox/common/omnibox_features.h"

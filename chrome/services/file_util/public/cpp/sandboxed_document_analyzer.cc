@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/safe_browsing/document_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/safe_document_analyzer.mojom.h"

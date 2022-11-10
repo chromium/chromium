@@ -8,7 +8,6 @@
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 

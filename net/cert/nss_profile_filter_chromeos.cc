@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "net/cert/x509_certificate.h"
 
 namespace net {

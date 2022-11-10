@@ -14,7 +14,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"

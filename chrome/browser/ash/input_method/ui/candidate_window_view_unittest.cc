@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/candidate_view.h"
 #include "testing/gtest/include/gtest/gtest.h"

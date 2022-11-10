@@ -9,7 +9,6 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 
 #import "base/memory/ptr_util.h"
-#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"

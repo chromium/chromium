@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"

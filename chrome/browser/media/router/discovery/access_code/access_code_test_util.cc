@@ -8,7 +8,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"

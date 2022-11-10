@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/cast_core/runtime/browser/message_port_handler.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"

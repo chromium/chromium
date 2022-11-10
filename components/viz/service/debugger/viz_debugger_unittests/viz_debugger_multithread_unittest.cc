@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/debugger/viz_debugger_unittests/viz_debugger_internal.h"

@@ -9,7 +9,6 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 

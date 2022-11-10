@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"

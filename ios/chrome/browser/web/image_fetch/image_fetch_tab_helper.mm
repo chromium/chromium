@@ -8,7 +8,6 @@
 #import "base/bind.h"
 #import "base/json/string_escape.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"

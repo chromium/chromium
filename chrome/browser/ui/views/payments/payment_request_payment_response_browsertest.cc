@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_commands.h"

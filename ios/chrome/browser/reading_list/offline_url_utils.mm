@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "base/strings/string_util.h"
-#import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/reading_list/core/offline_url_utils.h"
 #import "components/reading_list/core/reading_list_entry.h"

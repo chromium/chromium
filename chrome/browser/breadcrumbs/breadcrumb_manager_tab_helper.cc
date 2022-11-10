@@ -4,7 +4,6 @@
 
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"

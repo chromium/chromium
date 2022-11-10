@@ -23,7 +23,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"

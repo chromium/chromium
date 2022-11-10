@@ -6,7 +6,6 @@
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/strings/stringprintf.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/types.h"

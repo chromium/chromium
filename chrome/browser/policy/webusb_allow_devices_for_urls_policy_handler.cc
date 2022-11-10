@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"

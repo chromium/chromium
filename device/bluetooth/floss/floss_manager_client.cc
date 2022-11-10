@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"

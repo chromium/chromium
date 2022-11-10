@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"

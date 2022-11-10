@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/environment.h"
-#include "base/strings/stringprintf.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/strings/stringprintf.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"

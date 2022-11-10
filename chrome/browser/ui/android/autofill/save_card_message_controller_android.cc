@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/android/autofill/save_card_message_controller_android.h"
 
-#include "base/strings/stringprintf.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"

@@ -15,7 +15,6 @@
 #include "base/debug/proc_maps_linux.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
-#include "base/strings/stringprintf.h"
 
 namespace partition_alloc::tools {
 
