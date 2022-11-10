@@ -96,5 +96,5 @@ export class ConsoleTts {
   resetTextToSpeechSettings() {}
 }
 
-/** @private {!ConsoleTts} */
+/** @private {ConsoleTts} */
 ConsoleTts.instance_;
