@@ -6,7 +6,9 @@
 namespace offscreen {
   enum Reason {
     // A reason used for testing purposes only.
-    TESTING
+    TESTING,
+    // The offscreen document is responsible for playing audio.
+    AUDIO_PLAYBACK
   };
 
   dictionary CreateParameters {

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "extensions/browser/api/offscreen/audio_lifetime_enforcer.h"
 #include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"
 #include "extensions/common/api/offscreen.h"
 
@@ -45,6 +46,16 @@ std::unique_ptr<OffscreenDocumentLifetimeEnforcer> CreateEmptyEnforcer(
     OffscreenDocumentLifetimeEnforcer::NotifyInactiveCallback
         notify_inactive_callback) {
   return std::make_unique<EmptyLifetimeEnforcer>(
+      offscreen_document, std::move(termination_callback),
+      std::move(notify_inactive_callback));
+}
+
+std::unique_ptr<OffscreenDocumentLifetimeEnforcer> CreateAudioLifetimeEnforcer(
+    OffscreenDocumentHost* offscreen_document,
+    OffscreenDocumentLifetimeEnforcer::TerminationCallback termination_callback,
+    OffscreenDocumentLifetimeEnforcer::NotifyInactiveCallback
+        notify_inactive_callback) {
+  return std::make_unique<AudioLifetimeEnforcer>(
       offscreen_document, std::move(termination_callback),
       std::move(notify_inactive_callback));
 }
@@ -101,6 +112,8 @@ LifetimeEnforcerFactories::TestingOverride::~TestingOverride() {
 void LifetimeEnforcerFactories::InitializeFactories() {
   map_.emplace(api::offscreen::REASON_TESTING,
                base::BindRepeating(CreateEmptyEnforcer));
+  map_.emplace(api::offscreen::REASON_AUDIO_PLAYBACK,
+               base::BindRepeating(CreateAudioLifetimeEnforcer));
 }
 
 }  // namespace extensions

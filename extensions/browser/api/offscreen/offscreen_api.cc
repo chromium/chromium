@@ -81,6 +81,10 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
       params->parameters.reasons;
   std::set<api::offscreen::Reason> deduped_reasons(reasons.begin(),
                                                    reasons.end());
+  if (deduped_reasons.size() > 1) {
+    return RespondNow(Error("Only a single `reason` is currently supported."));
+  }
+
   // We currently only have a single reason (testing).
   DCHECK_EQ(1u, deduped_reasons.size());
 

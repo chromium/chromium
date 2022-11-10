@@ -2968,6 +2968,7 @@ if (!is_android) {
         "../browser/extensions/api/messaging/service_worker_messaging_apitest.cc",
         "../browser/extensions/api/metrics_private/metrics_apitest.cc",
         "../browser/extensions/api/module/module_apitest.cc",
+        "../browser/extensions/api/offscreen/audio_lifetime_enforcer_browsertest.cc",
         "../browser/extensions/api/offscreen/offscreen_apitest.cc",
         "../browser/extensions/api/offscreen/offscreen_document_manager_browsertest.cc",
         "../browser/extensions/api/page_capture/page_capture_apitest.cc",
