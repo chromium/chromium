@@ -9,10 +9,12 @@
 
 #include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -63,6 +65,21 @@ class FakeAcceleratorsUpdatedObserver
       config_;
   int num_times_notified_ = 0;
 };
+
+void SetTopRowKeysAsFunctionKeysEnabled(bool enabled) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  prefs->SetBoolean(prefs::kSendFunctionKeys, enabled);
+  prefs->CommitPendingWrite();
+}
+
+bool TopRowKeysAreFunctionKeys() {
+  const PrefService* pref_service =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (!pref_service)
+    return false;
+  return pref_service->GetBoolean(prefs::kSendFunctionKeys);
+}
 
 bool CompareAccelerators(const ash::AcceleratorData& expected_data,
                          const mojom::AcceleratorInfoPtr& actual_info) {
@@ -155,6 +172,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     AshTestBase::SetUp();
 
     provider_ = std::make_unique<AcceleratorConfigurationProvider>();
+    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override { AshTestBase::TearDown(); }
@@ -248,8 +266,6 @@ TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
   FakeAcceleratorsUpdatedObserver observer;
   SetUpObserver(&observer);
 
-  const std::vector<ui::InputDevice>& devices = GetConnectedKeyboards();
-  EXPECT_TRUE(devices.empty());
   EXPECT_EQ(0, observer.num_times_notified());
 
   ui::InputDevice expected_test_keyboard(
@@ -296,6 +312,81 @@ TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
         ValidateAcceleratorLayouts(actual_layout_infos,
                                    mojom::AcceleratorSource::kAsh);
       }));
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
+  FakeAcceleratorsUpdatedObserver observer;
+  SetUpObserver(&observer);
+  EXPECT_EQ(0, observer.num_times_notified());
+
+  // Top row keys are not function keys by default.
+  EXPECT_FALSE(TopRowKeysAreFunctionKeys());
+
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
+       SHOW_TASK_MANAGER},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
+       TOGGLE_FULLSCREEN},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_NONE,
+       TOGGLE_FULLSCREEN},
+      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP, ui::EF_NONE,
+       BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP, ui::EF_ALT_DOWN,
+       KEYBOARD_BRIGHTNESS_UP},
+  };
+
+  Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Notified once after instantiating the accelerators.
+  EXPECT_EQ(1, observer.num_times_notified());
+  // Verify observer received the correct accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                               observer.config());
+
+  // Enable TopRowKeysAsFunctionKeys
+  SetTopRowKeysAsFunctionKeysEnabled(true);
+  EXPECT_TRUE(TopRowKeysAreFunctionKeys());
+
+  // Initialize the same test_data again, but with
+  // TopRowKeysAsFunctionKeysEnabled.
+  Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // When TopRowKeysAsFunctionKeys enabled, top row shortcut will become [Fkey]
+  // + [search] + [modifier].
+  const AcceleratorData expected_test_data[] = {
+      // alt + tab = alt + tab
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      // alt + shift + tab = alt + shift + tab
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+      // search + esc = search + esc
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
+       SHOW_TASK_MANAGER},
+      // shift + zoom = shift + search + F4
+      {/*trigger_on_press=*/true, ui::VKEY_F4,
+       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, TOGGLE_FULLSCREEN},
+      // zoom = search + F4
+      {/*trigger_on_press=*/true, ui::VKEY_F4, ui::EF_COMMAND_DOWN,
+       TOGGLE_FULLSCREEN},
+      // brightness_up = search + F7
+      {/*trigger_on_press=*/true, ui::VKEY_F7, ui::EF_COMMAND_DOWN,
+       BRIGHTNESS_UP},
+      // alt + brightness_up = alt + search + F7
+      {/*trigger_on_press=*/true, ui::VKEY_F7,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
+  };
+
+  EXPECT_EQ(2, observer.num_times_notified());
+  // Verify observer received the top-row-remapped accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
+                               expected_test_data, observer.config());
 }
 
 }  // namespace shortcut_ui
