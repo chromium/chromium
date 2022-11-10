@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -685,6 +686,20 @@ class InactiveRenderFrameHostDeletionObserver : public WebContentsObserver {
 
   std::unique_ptr<base::RunLoop> loop_;
   std::set<RenderFrameHost*> inactive_rfhs_;
+};
+
+class TestNavigationObserverInternal : public TestNavigationObserver {
+ public:
+  using TestNavigationObserver::TestNavigationObserver;
+  ~TestNavigationObserverInternal() override = default;
+
+  // TestNavigationObserver:
+  void OnDidFinishNavigation(NavigationHandle* navigation_handle) override;
+  // Return the NavigationType of the last navigation.
+  NavigationType last_navigation_type() const { return last_navigation_type_; }
+
+ private:
+  NavigationType last_navigation_type_ = NAVIGATION_TYPE_UNKNOWN;
 };
 
 }  // namespace content

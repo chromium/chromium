@@ -171,7 +171,6 @@ TestNavigationObserver::TestNavigationObserver(
       ignore_uncommitted_navigations_(ignore_uncommitted_navigations),
       last_navigation_succeeded_(false),
       last_net_error_code_(net::OK),
-      last_navigation_type_(NAVIGATION_TYPE_UNKNOWN),
       message_loop_runner_(new MessageLoopRunner(quit_mode)) {
   if (web_contents)
     RegisterAsObserver(web_contents);
@@ -276,9 +275,6 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_navigation_succeeded_ =
       navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
   last_net_error_code_ = navigation_handle->GetNetErrorCode();
-  last_navigation_type_ = navigation_handle->HasCommitted()
-                              ? request->navigation_type()
-                              : NAVIGATION_TYPE_UNKNOWN;
   last_nav_entry_id_ =
       NavigationRequest::From(navigation_handle)->nav_entry_id();
   last_source_site_instance_ = navigation_handle->GetSourceSiteInstance();

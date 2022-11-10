@@ -4769,7 +4769,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
   std::unique_ptr<URLLoaderInterceptor> url_interceptor =
       SetupRequestFailForURL(error_url);
   {
-    TestNavigationObserver reload_observer(shell()->web_contents());
+    TestNavigationObserverInternal reload_observer(shell()->web_contents());
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
@@ -4789,7 +4789,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
 
   // Reload while it will still fail to ensure it stays in the same process.
   {
-    TestNavigationObserver reload_observer(shell()->web_contents());
+    TestNavigationObserverInternal reload_observer(shell()->web_contents());
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
@@ -4806,7 +4806,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
   // session history and forward history is not pruned.
   url_interceptor.reset();
   {
-    TestNavigationObserver reload_observer(shell()->web_contents());
+    TestNavigationObserverInternal reload_observer(shell()->web_contents());
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
@@ -4830,7 +4830,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
   // renderer process.
   url_interceptor = SetupRequestFailForURL(error_url);
   {
-    TestNavigationObserver reload_observer(shell()->web_contents());
+    TestNavigationObserverInternal reload_observer(shell()->web_contents());
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
@@ -4850,7 +4850,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
 
   url_interceptor.reset();
   {
-    TestNavigationObserver reload_observer(shell()->web_contents());
+    TestNavigationObserverInternal reload_observer(shell()->web_contents());
     EXPECT_TRUE(ExecuteScript(shell(), "location.reload();"));
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
@@ -5140,7 +5140,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // committed).
   {
     // Navigate...
-    TestNavigationObserver reload_observer(shell()->web_contents());
+    TestNavigationObserverInternal reload_observer(shell()->web_contents());
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     response2->WaitForRequest();
     response2->Send("HTTP/1.1 302 Moved Temporarily\n");

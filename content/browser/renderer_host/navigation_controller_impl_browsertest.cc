@@ -15690,7 +15690,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   {
     // Go to a non-existent page resulting in a 404 with an empty body.
-    TestNavigationObserver observer(contents());
+    TestNavigationObserverInternal observer(contents());
     shell()->LoadURL(url);
     observer.Wait();
 
@@ -15710,7 +15710,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   {
     // Reloads will still result in an error page.
-    TestNavigationObserver reload_observer(contents());
+    TestNavigationObserverInternal reload_observer(contents());
     shell()->Reload();
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
@@ -15724,7 +15724,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   {
     // Same-URL navigation will still result in an error page.
-    TestNavigationObserver same_url_observer(contents());
+    TestNavigationObserverInternal same_url_observer(contents());
     controller.LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED,
                        std::string() /* extra_headers */);
     same_url_observer.Wait();

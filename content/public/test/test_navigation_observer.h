@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "content/public/browser/navigation_type.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
@@ -123,10 +122,6 @@ class TestNavigationObserver {
   // Returns the net::Error origin of the last finished navigation (that matched
   // URL / net error filters, if set).
   net::Error last_net_error_code() const { return last_net_error_code_; }
-
-  // Returns the NavigationType  of the last finished navigation (that matched
-  // URL / net error filters, if set).
-  NavigationType last_navigation_type() const { return last_navigation_type_; }
 
   // Returns the navigation entry ID of the last finished navigation (that
   // matched URL if set).
@@ -265,9 +260,6 @@ class TestNavigationObserver {
 
   // The net error code of the last navigation.
   net::Error last_net_error_code_;
-
-  // The NavigationType of the last navigation.
-  NavigationType last_navigation_type_;
 
   // The navigation entry ID of the last navigation.
   int last_nav_entry_id_ = 0;

@@ -935,4 +935,14 @@ void InactiveRenderFrameHostDeletionObserver::CheckCondition() {
     loop_->Quit();
 }
 
+void TestNavigationObserverInternal::OnDidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  last_navigation_type_ =
+      navigation_handle->HasCommitted()
+          ? static_cast<NavigationRequest*>(navigation_handle)
+                ->navigation_type()
+          : NAVIGATION_TYPE_UNKNOWN;
+  TestNavigationObserver::OnDidFinishNavigation(navigation_handle);
+}
+
 }  // namespace content
