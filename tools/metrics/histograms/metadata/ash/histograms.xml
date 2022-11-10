@@ -4003,6 +4003,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.ServerBasedSpeechRecognition.AudioLengthLeftWhenAudioCaptureEnd"
+    units="ms" expires_after="2023-11-08">
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Records the length of remaining un-transcribed audio when the audio capture
+    stops.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.ServerBasedSpeechRecognition.EndOfRecognitionSignalLatency"
+    units="ms" expires_after="2023-11-08">
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Records the time user needs to wait to get the final speech recognition
+    result after audio capture stops.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ServerBasedSpeechRecognition.ErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-08">
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Records the network error or HTTP response code of server based speech
+    recognition request when an an error occurred.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
     expires_after="2023-04-09">
   <owner>anasalazar@chromium.org</owner>
