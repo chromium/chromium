@@ -1,9 +1,34 @@
-Combined dialog placeholder
-<template is="dom-if"
-          if="[[isCurrentStep_(stepEnum_.CONSENT, step_)]]">
-  Consent step
-</template>
-<template is="dom-if"
-          if="[[isCurrentStep_(stepEnum_.NOTICE, step_)]]">
-  Notice step
-</template>
+<style include="cr-shared-style">
+  cr-view-manager {
+    display: block;
+  }
+
+  .saving-step.active {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  paper-spinner-lite {
+    height: var(--cr-icon-size);
+    margin-inline-end: 16px;
+    width: var(--cr-icon-size);
+  }
+</style>
+
+<cr-view-manager id="viewManager">
+  <div id="[[stepEnum_.CONSENT]]" slot="view">
+    Consent step
+    <button on-click="onConsentStepResolved_">Next</button>
+  </div>
+
+  <div id="[[stepEnum_.SAVING]]" class="saving-step" slot="view">
+    <paper-spinner-lite active></paper-spinner-lite>
+    Saving...
+  </div>
+
+  <div id="[[stepEnum_.NOTICE]]" slot="view">
+    Notice step
+    <button>Ok</button>
+  </div>
+</cr-view-manager>
