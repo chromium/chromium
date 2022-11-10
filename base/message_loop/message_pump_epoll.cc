@@ -13,7 +13,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
@@ -97,7 +96,7 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
     }
 
     // Process any immediately ready IO event, but don't wait for more yet.
-    const bool processed_events = WaitForEpollEvents(TimeDelta());
+    const bool processed_events = WaitForEpollEvent(TimeDelta());
     if (run_state.should_quit) {
       break;
     }
@@ -120,7 +119,7 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
       timeout = next_work_info.remaining_delay();
     }
     delegate->BeforeWait();
-    WaitForEpollEvents(timeout);
+    WaitForEpollEvent(timeout);
     if (run_state.should_quit) {
       break;
     }
@@ -196,32 +195,25 @@ void MessagePumpEpoll::UnregisterInterest(
   }
 }
 
-bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
+bool MessagePumpEpoll::WaitForEpollEvent(TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // `timeout` has microsecond resolution, but timeouts accepted by epoll_wait()
-  // are integral milliseconds. Round up to the next millisecond.
-  // TODO(https://crbug.com/1382894): Consider higher-resolution timeouts.
-  const int64_t timeout_ms = timeout.InMillisecondsRoundedUp();
   const int epoll_timeout =
-      timeout.is_max() ? -1 : saturated_cast<int>(timeout_ms);
-  epoll_event events[32];
+      timeout.is_max() ? -1 : saturated_cast<int>(timeout.InMilliseconds());
+  epoll_event event;
   const int epoll_result =
-      epoll_wait(epoll_.get(), events, std::size(events), epoll_timeout);
+      epoll_wait(epoll_.get(), &event, /*maxevents=*/1, epoll_timeout);
   if (epoll_result < 0) {
     DPCHECK(errno == EINTR);
     return false;
   }
 
-  const auto ready_events =
-      base::make_span(events).first(static_cast<size_t>(epoll_result));
-  for (const epoll_event& event : ready_events) {
-    OnEpollEvent(event);
-    if (run_state_->should_quit) {
-      break;
-    }
+  if (epoll_result == 0) {
+    return false;
   }
-  return !ready_events.empty();
+
+  DPCHECK(epoll_result == 1);
+  OnEpollEvent(event);
+  return true;
 }
 
 void MessagePumpEpoll::OnEpollEvent(const epoll_event& e) {
