@@ -273,6 +273,7 @@ src/webgpu/api/validation/shader_module/entry_point.spec.ts
 src/webgpu/api/validation/shader_module/overrides.spec.ts
 src/webgpu/api/validation/state/device_lost/destroy.spec.ts
 src/webgpu/api/validation/texture/destroy.spec.ts
+src/webgpu/api/validation/texture/rg11b10ufloat_renderable.spec.ts
 src/webgpu/idl/exposed.html.ts
 src/webgpu/idl/idl_test.ts
 src/webgpu/idl/constants/flags.spec.ts
