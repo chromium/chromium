@@ -14,13 +14,32 @@
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/features.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/window/caption_button_layout_constants.h"
 
 namespace {
 bool IsAppReadyForLaunch(Profile* profile, const std::string& app_id) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
   return prefs && prefs->IsAbleToBeLaunched(app_id);
 }
+
+float GetDisplayScaleFactor(int64_t display_id) {
+  auto* screen = display::Screen::GetScreen();
+  float scale_factor = 1;
+  if (screen) {
+    scale_factor =
+        display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+    for (auto disp : display::Screen::GetScreen()->GetAllDisplays()) {
+      if (disp.id() == display_id)
+        scale_factor = disp.device_scale_factor();
+    }
+  }
+  return scale_factor;
+}
+
 }  // namespace
 namespace ash::app_restore {
 
@@ -71,6 +90,16 @@ void ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp(
   ::app_restore::AppRestoreData restore_data;
   restore_data.current_bounds = restore_data.bounds_in_root =
       window_info->bounds;
+
+  // TODO: Remove this workaround.
+  // Currently `ArcGhostWindowHandler::LaunchArcGhostWindow` assume all launch
+  // bounds is from "recording data" in ash wm side, so it will reduce the top
+  // caption bar size when launch ghost window. However, if here use the bounds
+  // from Android side, the bounds should be added a "caption" size.
+  restore_data.bounds_in_root->Inset(gfx::Insets().set_top(
+      -views::GetCaptionButtonLayoutSize(
+           views::CaptionButtonLayoutSize::kNonBrowserCaption)
+           .height()));
   restore_data.window_state_type =
       static_cast<chromeos::WindowStateType>(window_info->state);
   restore_data.event_flag = event_flags;
@@ -86,7 +115,13 @@ void ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp(
   // Save the launch parameters for send launch request when app ready.
   window_info_ = std::make_unique<apps::WindowInfo>();
   window_info_->window_id = window_info->window_id;
-  window_info_->bounds = window_info->bounds;
+
+  // Scale window bounds to ARC display unit.
+  if (window_info->bounds.has_value()) {
+    window_info_->bounds =
+        gfx::ScaleToRoundedRect(window_info->bounds.value(),
+                                GetDisplayScaleFactor(window_info->display_id));
+  }
   window_info_->display_id = window_info->display_id;
   window_info_->state = window_info->state;
 
