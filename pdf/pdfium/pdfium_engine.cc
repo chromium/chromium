@@ -306,6 +306,10 @@ bool IsLinkArea(PDFiumPage::Area area) {
   return area == PDFiumPage::WEBLINK_AREA || area == PDFiumPage::DOCLINK_AREA;
 }
 
+bool IsSelectableArea(PDFiumPage::Area area) {
+  return area == PDFiumPage::TEXT_AREA || IsLinkArea(area);
+}
+
 // Normalize a blink::WebMouseEvent. For macOS, normalization means transforming
 // the ctrl + left button down events into a right button down event.
 blink::WebMouseEvent NormalizeMouseEvent(const blink::WebMouseEvent& event) {
@@ -1529,7 +1533,12 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
 
   // We're selecting but right now we're not over text, so don't change the
   // current selection.
-  if (area != PDFiumPage::TEXT_AREA && !IsLinkArea(area))
+  if (page_index < 0 || char_index < 0)
+    return false;
+
+  // Similarly, do not select if `area` is not a selectable type. This can occur
+  // even if there is text in the area. e.g. When print previewing.
+  if (!IsSelectableArea(area))
     return false;
 
   SelectionChangeInvalidator selection_invalidator(this);
@@ -1592,6 +1601,9 @@ void PDFiumEngine::OnMouseEnter(const blink::WebMouseEvent& event) {
 }
 
 bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
+  DCHECK_GE(page_index, 0);
+  DCHECK_GE(char_index, 0);
+
   // Check if the user has decreased their selection area and we need to remove
   // pages from `selection_`.
   for (size_t i = 0; i < selection_.size(); ++i) {

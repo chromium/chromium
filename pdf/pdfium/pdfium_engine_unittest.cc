@@ -766,6 +766,41 @@ TEST_F(PDFiumEngineTest, SelectTextWithTripleClick) {
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
 }
 
+TEST_F(PDFiumEngineTest, SelectLinkAreaWithNoText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kStartPosition(90, 120);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
+
+  constexpr gfx::PointF kMiddlePosition(100, 230);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kMiddlePosition)));
+
+#if BUILDFLAG(IS_WIN)
+  constexpr char kExpectedText[] = "Link Annotations - Page 1\r\nL";
+#else
+  constexpr char kExpectedText[] = "Link Annotations - Page 1\nL";
+#endif
+  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+
+  constexpr gfx::PointF kEndPosition(430, 230);
+  EXPECT_FALSE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+
+  // This is still `kExpectedText` because of the unit test's uncanny ability to
+  // move the mouse to `kEndPosition` in one move.
+  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+}
+
 using PDFiumEngineDeathTest = PDFiumEngineTest;
 
 TEST_F(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
