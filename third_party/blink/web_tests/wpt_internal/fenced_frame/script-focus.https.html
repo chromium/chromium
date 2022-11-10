@@ -60,11 +60,11 @@ promise_test(async () => {
   const button = document.createElement("button");
   document.body.append(button);
   button.focus();
-  assert_false(document.activeElement == button,
-      "The button should not have focus");
+  assert_true(document.activeElement == button,
+      "The button should have focus");
   assert_false(navigator.userActivation.isActive,
       "Window should not have user activation");
-}, "An embedder cannot pull focus out of a fenced frame");
+}, "An embedder can focus out of a fenced frame");
 
 promise_test(async () => {
   const [actions, frame, fencedframe_element] = await SetupTest();

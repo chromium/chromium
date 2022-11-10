@@ -8964,9 +8964,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Notice_ShadowDOM_20220505_Android",
+                    "name": "Enabled_Notice_MPArch_20220505_Android",
                     "params": {
-                        "implementation_type": "shadow_dom"
+                        "implementation_type": "mparch"
                     },
                     "enable_features": [
                         "BrowsingTopics",

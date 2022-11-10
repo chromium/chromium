@@ -713,11 +713,7 @@ bool Frame::AllowFocusWithoutUserActivation() {
 
   switch (ff_impl.value()) {
     case blink::features::FencedFramesImplementationType::kMPArch:
-      // For a newly-loaded page, no page will have focus. We allow a non-fenced
-      // frame to get the first focus before enforcing if a page already has
-      // focus.
-      return (!GetPage()->GetFocusController().IsActive() &&
-              !IsInFencedFrameTree()) ||
+      return !IsInFencedFrameTree() ||
              GetPage()->GetFocusController().IsFocused();
     case blink::features::FencedFramesImplementationType::kShadowDOM:
       return !FocusCrossesFencedBoundary();
