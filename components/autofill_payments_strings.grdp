@@ -93,21 +93,6 @@
     <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CONFIRM" desc="Text to show for the Autofill upload save credit card prompt accept button when more information (e.g., CVC) was needed in order to save the card and was entered." formatter_data="android_java">
       Confirm
     </message>
-    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE" desc="This message appears as the title of a confirmation dialog in which the user can view/edit the information that will be saved to Google Payments, and only appears after the user has expressed interest in uploading the card.">
-      Save to Google Account
-    </message>
-    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE_V2" desc="This message appears as the title of a confirmation dialog in which the user can view/edit the information that will be saved to Google Payments, and only appears after the user has expressed interest in uploading the card. This version of the title emphasizes on the advantage of the subsequent action.">
-      Pay faster next time
-    </message>
-    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_PROMPT_SAVE_FOLLOW_UP" desc="Button label for a prompt to ask if user agrees to save the card to the server. This prompt will be followed by confirmation dialogs to confirm the card details, such as card label.">
-      Save…
-    </message>
-    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_EXPLANATION" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments." formatter_data="android_java">
-      Save your card and billing info to your Google Account for secure and faster checkouts
-    </message>
-    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_EXPLANATION_WITH_ACCOUNT_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments. Includes Google account reference." formatter_data="android_java">
-      Save your card and billing info to your Google Account <ph name="USER_EMAIL">^1<ex>user@gmail.com</ex></ph> for secure and faster checkouts
-    </message>
   </if>
   <if expr="is_ios">
     <then>

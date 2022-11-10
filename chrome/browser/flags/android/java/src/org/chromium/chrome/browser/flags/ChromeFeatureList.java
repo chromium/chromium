@@ -378,7 +378,6 @@ public abstract class ChromeFeatureList {
     public static final String MESSAGES_FOR_ANDROID_PERMISSION_UPDATE =
             "MessagesForAndroidPermissionUpdate";
     public static final String MESSAGES_FOR_ANDROID_READER_MODE = "MessagesForAndroidReaderMode";
-    public static final String MESSAGES_FOR_ANDROID_SAVE_CARD = "MessagesForAndroidSaveCard";
     public static final String MESSAGES_FOR_ANDROID_STACKING_ANIMATION =
             "MessagesForAndroidStackingAnimation";
     public static final String MESSAGES_FOR_ANDROID_SYNC_ERROR = "MessagesForAndroidSyncError";

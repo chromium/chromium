@@ -3998,7 +3998,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/app/video_tutorials/VideoTutorialsServiceUtils.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillLogger.java",
-    "java/src/org/chromium/chrome/browser/autofill/AutofillMessageConfirmFlowBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillPopupBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillSnackbarController.java",

@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
@@ -22,8 +20,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -33,8 +29,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Base class for creating autofill save card prompts that support displaying legal message line.
  */
 public abstract class AutofillSaveCardPromptBase implements ModalDialogProperties.Controller {
-    private static final String DIALOG_V2_ENABLED_PARAM_NAME = "save_card_dialog_v2_enabled";
-
     private final AutofillSaveCardPromptBaseDelegate mBaseDelegate;
 
     protected PropertyModel mDialogModel;
@@ -67,14 +61,13 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
      * @param contentLayoutId The content of the prompt dialog. Set 0 to make content empty.
      * @param title Title of the prompt dialog.
      * @param titleIcon Icon near the title. Set 0 to ignore this icon.
-     * @param cardholderAccount The Google account where a card will be saved.
      * @param confirmButtonLabel The text of confirm button.
      * @param filledConfirmButton Whether to use a button of filled style.
      */
     protected AutofillSaveCardPromptBase(Context context,
             AutofillSaveCardPromptBaseDelegate delegate, @LayoutRes int contentLayoutId,
-            String title, @DrawableRes int titleIcon, String cardholderAccount,
-            String confirmButtonLabel, boolean filledConfirmButton) {
+            String title, @DrawableRes int titleIcon, String confirmButtonLabel,
+            boolean filledConfirmButton) {
         mBaseDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(context);
         mDialogView = inflater.inflate(R.layout.autofill_save_card_base_layout, null);
@@ -82,31 +75,6 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
             ViewStub stub = mDialogView.findViewById(R.id.autofill_save_card_content_stub);
             stub.setLayoutResource(contentLayoutId);
             stub.inflate();
-        }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD)
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD,
-                        DIALOG_V2_ENABLED_PARAM_NAME, false)) {
-            TextView description = mDialogView.findViewById(R.id.description);
-            description.setVisibility(View.VISIBLE);
-            if (!TextUtils.isEmpty(cardholderAccount)) {
-                SpannableString formattedCardholderAccount = new SpannableString(cardholderAccount);
-                formattedCardholderAccount.setSpan(new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        mBaseDelegate.onLinkClicked(UrlConstants.GOOGLE_ACCOUNT_HOME_URL);
-                    }
-                }, 0, cardholderAccount.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                description.setText(TextUtils.expandTemplate(
-                        context.getString(
-                                R.string.autofill_mobile_save_card_to_cloud_confirmation_dialog_explanation_with_account_name),
-                        formattedCardholderAccount));
-                description.setMovementMethod(LinkMovementMethod.getInstance());
-            } else {
-                description.setText(
-                        R.string.autofill_mobile_save_card_to_cloud_confirmation_dialog_explanation);
-            }
         }
 
         PropertyModel.Builder builder =
@@ -143,17 +111,10 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
         if (activity == null || modalDialogManager == null) return;
 
         if (mSpannableStringBuilder != null) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD)
-                    && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD,
-                            DIALOG_V2_ENABLED_PARAM_NAME, false)) {
-                mDialogModel.set(ModalDialogProperties.FOOTER_MESSAGE, mSpannableStringBuilder);
-            } else {
-                TextView legalMessage = mDialogView.findViewById(R.id.legal_message);
-                legalMessage.setText(mSpannableStringBuilder);
-                legalMessage.setVisibility(View.VISIBLE);
-                legalMessage.setMovementMethod(LinkMovementMethod.getInstance());
-            }
+            TextView legalMessage = mDialogView.findViewById(R.id.legal_message);
+            legalMessage.setText(mSpannableStringBuilder);
+            legalMessage.setVisibility(View.VISIBLE);
+            legalMessage.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
         mContext = activity;

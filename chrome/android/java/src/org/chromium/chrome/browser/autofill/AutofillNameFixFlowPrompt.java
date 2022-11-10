@@ -57,27 +57,8 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
     public static AutofillNameFixFlowPrompt createAsInfobarFixFlowPrompt(Context context,
             AutofillNameFixFlowPromptDelegate delegate, String inferredName, String title,
             int drawableId, String confirmButtonLabel) {
-        return new AutofillNameFixFlowPrompt(context, delegate, inferredName, title, drawableId,
-                null, confirmButtonLabel, false);
-    }
-
-    /**
-     * Create a dialog prompt for the use of message. This prompt should include legal lines.
-     *
-     * @param context The current context.
-     * @param delegate A {@link AutofillNameFixFlowPromptDelegate} to handle events.
-     * @param inferredName Name inferred from the account. Empty string for user to fill in.
-     * @param title Title of the prompt.
-     * @param cardLabel Label representing a card which will be saved.
-     * @param cardholderAccount The Google account where a card will be saved.
-     * @param confirmButtonLabel Label for the confirm button.
-     * @return A {@link AutofillNameFixFlowPrompt} to confirm name.
-     */
-    public static AutofillNameFixFlowPrompt createAsMessageFixFlowPrompt(Context context,
-            AutofillNameFixFlowPromptDelegate delegate, String inferredName, String title,
-            String cardLabel, String cardholderAccount, String confirmButtonLabel) {
-        return new AutofillNameFixFlowPrompt(context, delegate, inferredName, title, cardLabel,
-                cardholderAccount, confirmButtonLabel);
+        return new AutofillNameFixFlowPrompt(
+                context, delegate, inferredName, title, drawableId, confirmButtonLabel, false);
     }
 
     private final AutofillNameFixFlowPromptDelegate mDelegate;
@@ -90,10 +71,10 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
      * Fix flow prompt to confirm user name before saving the card to Google.
      */
     private AutofillNameFixFlowPrompt(Context context, AutofillNameFixFlowPromptDelegate delegate,
-            String inferredName, String title, int drawableId, String cardholderAccount,
-            String confirmButtonLabel, boolean filledConfirmButton) {
+            String inferredName, String title, int drawableId, String confirmButtonLabel,
+            boolean filledConfirmButton) {
         super(context, delegate, R.layout.autofill_name_fixflow, title, drawableId,
-                cardholderAccount, confirmButtonLabel, filledConfirmButton);
+                confirmButtonLabel, filledConfirmButton);
         mDelegate = delegate;
         // Dialog of infobar doesn't show any details of the cc.
         mDialogView.findViewById(R.id.cc_details).setVisibility(View.GONE);
@@ -121,17 +102,6 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
             return false;
         });
         mUserNameInput.addTextChangedListener(this);
-    }
-
-    private AutofillNameFixFlowPrompt(Context context, AutofillNameFixFlowPromptDelegate delegate,
-            String inferredName, String title, String cardLabel, String cardholderAccount,
-            String confirmButtonLabel) {
-        this(context, delegate, inferredName, title, /*drawableId=*/0, cardholderAccount,
-                confirmButtonLabel, true);
-        // Unlike infobar, dialog of Message UI should show all cc details.
-        mDialogView.findViewById(R.id.cc_details).setVisibility(View.VISIBLE);
-        TextView detailsMasked = mDialogView.findViewById(R.id.cc_details_masked);
-        detailsMasked.setText(cardLabel);
     }
 
     @Override
