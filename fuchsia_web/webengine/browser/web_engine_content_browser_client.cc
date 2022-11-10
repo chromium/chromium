@@ -164,7 +164,8 @@ blink::UserAgentMetadata WebEngineContentBrowserClient::GetUserAgentMetadata() {
 void WebEngineContentBrowserClient::OverrideWebkitPrefs(
     content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
-  // Disable WebSQL support since it's being removed from the web platform.
+  // Disable WebSQL support since it is being removed from the web platform
+  // and does not work. See crbug.com/1317431.
   web_prefs->databases_enabled = false;
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)

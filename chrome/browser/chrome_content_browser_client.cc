@@ -4069,6 +4069,12 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       prefs->GetBoolean(prefs::kWebXRImmersiveArEnabled);
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // Disable WebSQL support since it is being removed from the web platform
+  // and does not work. See crbug.com/1317431.
+  web_prefs->databases_enabled = false;
+#endif
+
   for (ChromeContentBrowserClientParts* parts : extra_parts_)
     parts->OverrideWebkitPrefs(web_contents, web_prefs);
 }
