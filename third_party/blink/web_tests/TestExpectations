@@ -7608,3 +7608,9 @@ crbug.com/1376679 virtual/threaded/external/wpt/scroll-animations/css/scroll-tim
 
 # Investigate the flake.
 crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.html [ Failure Pass ]
+
+# Test is flaky because of test_driver.bless, see crbug.com/1066891
+crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
+crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
+crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
+crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
