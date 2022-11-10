@@ -323,7 +323,8 @@ class AttributionSimulatorInputParser {
                 std::move(filters), std::move(not_filters), debug_key,
                 aggregatable_dedup_key, std::move(event_triggers),
                 std::move(aggregatable_trigger_data),
-                std::move(aggregatable_values)),
+                std::move(aggregatable_values),
+                /*is_within_fenced_frame=*/false, /*debug_reporting=*/false),
             .time = trigger_time,
         },
         std::move(trigger));

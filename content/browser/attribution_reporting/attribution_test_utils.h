@@ -553,6 +553,10 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregatableDedupKey(
       absl::optional<uint64_t> aggregatable_dedup_key);
 
+  TriggerBuilder& SetIsWithinFencedFrame(bool is_within_fenced_frame);
+
+  TriggerBuilder& SetDebugReporting(bool debug_reporting);
+
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
@@ -567,6 +571,8 @@ class TriggerBuilder {
       aggregatable_trigger_data_;
   attribution_reporting::AggregatableValues aggregatable_values_;
   absl::optional<uint64_t> aggregatable_dedup_key_;
+  bool is_within_fenced_frame_ = false;
+  bool debug_reporting_ = false;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -917,6 +923,8 @@ struct AttributionTriggerMatcherConfig {
       event_triggers = ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
       ::testing::_;
+  ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_;
+  ::testing::Matcher<bool> debug_reporting = ::testing::_;
 
   AttributionTriggerMatcherConfig() = delete;
   AttributionTriggerMatcherConfig(
@@ -928,7 +936,9 @@ struct AttributionTriggerMatcherConfig {
       ::testing::Matcher<const std::vector<
           AttributionTrigger::EventTriggerData>&> event_triggers = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
-          ::testing::_);
+          ::testing::_,
+      ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_,
+      ::testing::Matcher<bool> debug_reporting = ::testing::_);
   ~AttributionTriggerMatcherConfig();
 };
 

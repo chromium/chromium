@@ -521,7 +521,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                       EventTriggerDataMatches(EventTriggerDataMatcherConfig(
                           4, 5, Eq(absl::nullopt), AttributionFilters(),
                           AttributionFilters()))),
-          Optional(123)))));
+          Optional(123), /*is_within_fenced_frame=*/false))));
 
   {
     RemoteDataHost data_host_remote{.task_environment =
@@ -2134,10 +2134,9 @@ TEST_F(AttributionDataHostManagerImplTest,
           DestinationOriginIs(destination_origin),
           ImpressionOriginIs(page_origin), SourceIsWithinFencedFrameIs(true))));
 
-  RemoteDataHost data_host_remote{.task_environment =
-                                      raw_ref(task_environment_)};
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
-      data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
+      data_host_remote.BindNewPipeAndPassReceiver(), page_origin,
       /*is_within_fenced_frame=*/true);
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -2149,8 +2148,33 @@ TEST_F(AttributionDataHostManagerImplTest,
   source_data->filter_data = blink::mojom::AttributionFilterData::New();
   source_data->aggregation_keys =
       blink::mojom::AttributionAggregationKeys::New();
-  data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
-  data_host_remote.data_host.FlushForTesting();
+  data_host_remote->SourceDataAvailable(std::move(source_data));
+  data_host_remote.FlushForTesting();
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHostWithinFencedFrame_TriggerRegistered) {
+  auto destination_origin =
+      url::Origin::Create(GURL("https://trigger.example"));
+  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleTrigger(AttributionTriggerMatches(AttributionTriggerMatcherConfig(
+          destination_origin, reporting_origin, _, _, _, _,
+          /*is_within_fenced_frame=*/true))));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), destination_origin,
+      /*is_within_fenced_frame=*/true);
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin = reporting_origin;
+  trigger_data->filters = blink::mojom::AttributionFilters::New();
+  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
+
+  data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  data_host_remote.FlushForTesting();
 }
 
 }  // namespace

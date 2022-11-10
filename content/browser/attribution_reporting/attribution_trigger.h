@@ -115,7 +115,9 @@ class CONTENT_EXPORT AttributionTrigger {
       std::vector<EventTriggerData> event_triggers,
       std::vector<attribution_reporting::AggregatableTriggerData>
           aggregatable_trigger_data,
-      attribution_reporting::AggregatableValues aggregatable_values);
+      attribution_reporting::AggregatableValues aggregatable_values,
+      bool is_within_fenced_frame,
+      bool debug_reporting);
 
   AttributionTrigger(const AttributionTrigger&);
   AttributionTrigger& operator=(const AttributionTrigger&);
@@ -154,6 +156,10 @@ class CONTENT_EXPORT AttributionTrigger {
     return aggregatable_values_;
   }
 
+  bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
+
+  bool debug_reporting() const { return debug_reporting_; }
+
  private:
   // Origin that this conversion event occurred on.
   url::Origin destination_origin_;
@@ -177,6 +183,12 @@ class CONTENT_EXPORT AttributionTrigger {
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data_;
   attribution_reporting::AggregatableValues aggregatable_values_;
+
+  // Whether the trigger is registered within a fenced frame tree.
+  bool is_within_fenced_frame_;
+
+  // Whether debug reporting is enabled.
+  bool debug_reporting_;
 };
 
 }  // namespace content

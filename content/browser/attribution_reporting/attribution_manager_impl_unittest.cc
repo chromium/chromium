@@ -2047,6 +2047,46 @@ TEST_F(AttributionManagerImplTest, TooManyEventsInQueue) {
   }
 }
 
+TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
+  url::Origin reporting_origin = url::Origin::Create(GURL("https://r1.test"));
+  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
+
+  // Failed without debug reporting.
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(reporting_origin).Build());
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  // Trigger registered within a fenced frame failed with debug reporting, but
+  // no debug report is sent.
+  attribution_manager_->HandleTrigger(TriggerBuilder()
+                                          .SetReportingOrigin(reporting_origin)
+                                          .SetDebugReporting(true)
+                                          .SetIsWithinFencedFrame(true)
+                                          .Build());
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  // Trigger registered outside a fenced frame tree failed with debug reporting
+  // but no debug cookie is set, therefore no debug report is sent.
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder()
+          .SetReportingOrigin(url::Origin::Create(GURL("https://r2.test")))
+          .SetDebugReporting(true)
+          .Build());
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  // Trigger registered outside a fenced frame tree failed with debug reporting
+  // and debug cookie is set.
+  attribution_manager_->HandleTrigger(TriggerBuilder()
+                                          .SetReportingOrigin(reporting_origin)
+                                          .SetDebugReporting(true)
+                                          .Build());
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
+}
+
 class AttributionManagerImplDebugReportTest
     : public AttributionManagerImplTest {
  protected:

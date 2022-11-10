@@ -553,12 +553,14 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   context.num_data_registered++;
 
+  // TODO(linnan): Parse debug reporting from response header.
   AttributionTrigger trigger(
       /*destination_origin=*/context.context_origin,
       std::move(data->reporting_origin), std::move(*filters),
       std::move(*not_filters), data->debug_key, data->aggregatable_dedup_key,
       std::move(event_triggers), std::move(*aggregatable_trigger_data),
-      std::move(*aggregatable_values));
+      std::move(*aggregatable_values), context.is_within_fenced_frame,
+      /*debug_reporting=*/false);
 
   // Handle the trigger immediately if we're not waiting for any sources to be
   // registered.

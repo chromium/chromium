@@ -2543,7 +2543,8 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               /*not_filters=*/AttributionFilters())},
           /*aggregatable_trigger_data=*/{},
           /*aggregatable_values=*/
-          attribution_reporting::AggregatableValues())));
+          attribution_reporting::AggregatableValues(),
+          /*is_within_fenced_frame=*/false, /*debug_reporting=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
@@ -2627,7 +2628,8 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
                 /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
                 /*aggregatable_trigger_data=*/{},
                 /*aggregatable_values=*/
-                attribution_reporting::AggregatableValues())));
+                attribution_reporting::AggregatableValues(),
+                /*is_within_fenced_frame=*/false, /*debug_reporting=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(EventLevelDataIs(
@@ -2669,7 +2671,9 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                               /*debug_key=*/absl::nullopt,
                               /*aggregatable_dedup_key=*/absl::nullopt,
                               /*event_triggers=*/{}, aggregatable_trigger_data,
-                              aggregatable_values);
+                              aggregatable_values,
+                              /*is_within_fenced_frame=*/false,
+                              /*debug_reporting=*/false);
 
   AttributionTrigger trigger2(origin, origin,
                               /*filters=*/
@@ -2680,7 +2684,9 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                               /*debug_key=*/absl::nullopt,
                               /*aggregatable_dedup_key=*/absl::nullopt,
                               /*event_triggers=*/{}, aggregatable_trigger_data,
-                              aggregatable_values);
+                              aggregatable_values,
+                              /*is_within_fenced_frame=*/false,
+                              /*debug_reporting=*/false);
 
   AttributionTrigger trigger3(
       origin, origin,
@@ -2689,7 +2695,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       AttributionFiltersForSourceType(AttributionSourceType::kNavigation),
       /*debug_key=*/absl::nullopt,
       /*aggregatable_dedup_key=*/absl::nullopt,
-      /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values);
+      /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values,
+      /*is_within_fenced_frame=*/false, /*debug_reporting=*/false);
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger1),
               AllOf(CreateReportEventLevelStatusIs(

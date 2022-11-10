@@ -1048,7 +1048,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
            *AttributionFilters::Create({{"e", {"f"}}}))},
       /*aggregatable_values=*/
       *attribution_reporting::AggregatableValues::Create(
-          {{"a", 123}, {"b", 456}}));
+          {{"a", 123}, {"b", 456}}),
+      /*is_within_fenced_frame=*/false, /*debug_reporting=*/false);
 
   static constexpr char kWantEventTriggerJSON[] =
       R"json([ {  "data": "2",  "priority": "3",  "filters": {   "c": [    "d"   ]  } }, {  "data": "4",  "priority": "5",  "deduplication_key": "6",  "not_filters": {   "e": [    "f"   ]  } }])json";

@@ -408,7 +408,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       },
                       /*aggregatable_trigger_data=*/{},
                       /*aggregatable_values=*/
-                      attribution_reporting::AggregatableValues()),
+                      attribution_reporting::AggregatableValues(),
+                      /*is_within_fenced_frame=*/false,
+                      /*debug_reporting=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235576123),
               },
               _),
@@ -426,7 +428,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       /*event_triggers=*/{},
                       /*aggregatable_trigger_data=*/{},
                       /*aggregatable_values=*/
-                      attribution_reporting::AggregatableValues()),
+                      attribution_reporting::AggregatableValues(),
+                      /*is_within_fenced_frame=*/false,
+                      /*debug_reporting=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235575123),
               },
               _),
@@ -449,7 +453,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           /*not_filters=*/AttributionFilters())},
                       /*aggregatable_values=*/
                       *attribution_reporting::AggregatableValues::Create(
-                          {{"a", 1}})),
+                          {{"a", 1}}),
+                      /*is_within_fenced_frame=*/false,
+                      /*debug_reporting=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235574123),
               },
               _))));

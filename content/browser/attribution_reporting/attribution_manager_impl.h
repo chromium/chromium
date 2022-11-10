@@ -189,7 +189,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                    absl::optional<uint64_t> cleared_debug_key,
                    bool is_debug_cookie_set);
   void StoreTrigger(AttributionTrigger trigger,
-                    absl::optional<uint64_t> cleared_debug_key);
+                    absl::optional<uint64_t> cleared_debug_key,
+                    bool is_debug_cookie_set);
 
   void GetReportsToSend();
   void OnGetReportsToSend(std::vector<AttributionReport> reports);
@@ -224,6 +225,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                       AttributionStorage::StoreSourceResult result);
   void OnReportStored(AttributionTrigger trigger,
                       absl::optional<uint64_t> cleared_debug_key,
+                      bool is_debug_cookie_set,
                       CreateReportResult result);
 
   void MaybeSendDebugReport(AttributionReport&&);
@@ -238,6 +240,10 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       const StorableSource& source,
       bool is_debug_cookie_set,
       const AttributionStorage::StoreSourceResult& result);
+
+  void MaybeSendVerboseDebugReport(const AttributionTrigger& trigger,
+                                   bool is_debug_cookie_set,
+                                   const CreateReportResult& result);
 
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;

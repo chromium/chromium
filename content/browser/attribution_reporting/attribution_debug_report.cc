@@ -8,8 +8,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
@@ -22,6 +25,10 @@ namespace content {
 namespace {
 
 using DebugDataType = ::content::AttributionDebugReport::DataType;
+using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
+using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
+
+constexpr char kAttributionDestination[] = "attribution_destination";
 
 absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
                                                   bool is_debug_cookie_set) {
@@ -49,6 +56,50 @@ absl::optional<DebugDataType> GetReportDataType(StorableSource::Result result,
   }
 }
 
+absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
+                                                bool is_debug_cookie_set) {
+  switch (result) {
+    case EventLevelResult::kSuccess:
+    case EventLevelResult::kSuccessDroppedLowerPriority:
+    case EventLevelResult::kInternalError:
+    case EventLevelResult::kNoCapacityForConversionDestination:
+    case EventLevelResult::kDeduplicated:
+    case EventLevelResult::kExcessiveAttributions:
+    case EventLevelResult::kPriorityTooLow:
+    case EventLevelResult::kDroppedForNoise:
+    case EventLevelResult::kExcessiveReportingOrigins:
+    case EventLevelResult::kNoMatchingSourceFilterData:
+    case EventLevelResult::kProhibitedByBrowserPolicy:
+    case EventLevelResult::kNoMatchingConfigurations:
+    case EventLevelResult::kExcessiveReports:
+      return absl::nullopt;
+    case EventLevelResult::kNoMatchingImpressions:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
+                                 is_debug_cookie_set);
+  }
+}
+
+absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
+                                                bool is_debug_cookie_set) {
+  switch (result) {
+    case AggregatableResult::kSuccess:
+    case AggregatableResult::kInternalError:
+    case AggregatableResult::kNoCapacityForConversionDestination:
+    case AggregatableResult::kExcessiveAttributions:
+    case AggregatableResult::kExcessiveReportingOrigins:
+    case AggregatableResult::kNoHistograms:
+    case AggregatableResult::kInsufficientBudget:
+    case AggregatableResult::kNoMatchingSourceFilterData:
+    case AggregatableResult::kNotRegistered:
+    case AggregatableResult::kProhibitedByBrowserPolicy:
+    case AggregatableResult::kDeduplicated:
+      return absl::nullopt;
+    case AggregatableResult::kNoMatchingImpressions:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
+                                 is_debug_cookie_set);
+  }
+}
+
 std::string SerializeReportDataType(DebugDataType data_type) {
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
@@ -59,6 +110,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "source-storage-limit";
     case DebugDataType::kSourceUnknownError:
       return "source-unknown-error";
+    case DebugDataType::kTriggerNoMatchingSource:
+      return "trigger-no-matching-source";
   }
 }
 
@@ -70,7 +123,7 @@ base::Value::Dict GetReportDataBody(
 
   const CommonSourceInfo& common_info = source.common_info();
   base::Value::Dict data_body;
-  data_body.Set("attribution_destination",
+  data_body.Set(kAttributionDestination,
                 common_info.DestinationSite().Serialize());
   data_body.Set("source_event_id",
                 base::NumberToString(common_info.source_event_id()));
@@ -91,9 +144,31 @@ base::Value::Dict GetReportDataBody(
     case DebugDataType::kSourceNoised:
     case DebugDataType::kSourceUnknownError:
       break;
+    case DebugDataType::kTriggerNoMatchingSource:
+      NOTREACHED();
+      return base::Value::Dict();
   }
 
   return data_body;
+}
+
+base::Value::Dict GetReportDataBody(DebugDataType data_type,
+                                    const AttributionTrigger& trigger) {
+  switch (data_type) {
+    case DebugDataType::kTriggerNoMatchingSource: {
+      base::Value::Dict data_body;
+      data_body.Set(
+          kAttributionDestination,
+          net::SchemefulSite(trigger.destination_origin()).Serialize());
+      return data_body;
+    }
+    case DebugDataType::kSourceDestinationLimit:
+    case DebugDataType::kSourceNoised:
+    case DebugDataType::kSourceStorageLimit:
+    case DebugDataType::kSourceUnknownError:
+      NOTREACHED();
+      return base::Value::Dict();
+  }
 }
 
 }  // namespace
@@ -152,6 +227,40 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
                            GetReportDataBody(*data_type, source, result));
   return AttributionDebugReport(std::move(report_data),
                                 source.common_info().reporting_origin());
+}
+
+// static
+absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
+    const AttributionTrigger& trigger,
+    bool is_debug_cookie_set,
+    const CreateReportResult& result) {
+  if (!trigger.debug_reporting() || trigger.is_within_fenced_frame())
+    return absl::nullopt;
+
+  std::vector<ReportData> report_data;
+
+  absl::optional<DataType> event_level_data_type =
+      GetReportDataType(result.event_level_status(), is_debug_cookie_set);
+  if (event_level_data_type) {
+    report_data.emplace_back(
+        *event_level_data_type,
+        GetReportDataBody(*event_level_data_type, trigger));
+  }
+
+  if (absl::optional<DataType> aggregatable_data_type =
+          GetReportDataType(result.aggregatable_status(), is_debug_cookie_set);
+      aggregatable_data_type &&
+      aggregatable_data_type != event_level_data_type) {
+    report_data.emplace_back(
+        *aggregatable_data_type,
+        GetReportDataBody(*aggregatable_data_type, trigger));
+  }
+
+  if (report_data.empty())
+    return absl::nullopt;
+
+  return AttributionDebugReport(std::move(report_data),
+                                trigger.reporting_origin());
 }
 
 AttributionDebugReport::AttributionDebugReport(
