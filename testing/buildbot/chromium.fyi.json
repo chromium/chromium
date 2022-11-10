@@ -78514,33 +78514,6 @@
         },
         "variant_id": "eve"
       }
-    ],
-    "skylab_tests": [
-      {
-        "args": [],
-        "bucket": "chromiumos-image-archive",
-        "cros_board": "eve",
-        "cros_img": "eve-public/R109-15222.0.0",
-        "name": "lacros_fyi_tast_tests EVE_PUBLIC_LKGM",
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_fyi_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "EVE_PUBLIC_LKGM"
-      },
-      {
-        "args": [],
-        "bucket": "chromiumos-image-archive",
-        "cros_board": "eve",
-        "cros_img": "eve-public/R109-15222.0.0",
-        "name": "ozone_unittests EVE_PUBLIC_LKGM",
-        "swarming": {},
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "EVE_PUBLIC_LKGM"
-      }
     ]
   },
   "lacros-amd64-generic-rel-skylab-fyi": {
