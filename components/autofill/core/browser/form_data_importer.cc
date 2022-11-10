@@ -609,11 +609,9 @@ bool FormDataImporter::ImportAddressProfileForSection(
                                                import_metadata);
     // If `candidate_profile` was merged with a profile containing
     // (non-complemented) country information, the country might have changed.
-    if (!complement_country_early) {
-      predicted_country_code =
-          GetPredictedCountryCode(candidate_profile, variation_country_code,
-                                  app_locale_, /*import_log_buffer=*/nullptr);
-    }
+    predicted_country_code =
+        GetPredictedCountryCode(candidate_profile, variation_country_code,
+                                app_locale_, /*import_log_buffer=*/nullptr);
   }
 
   if (!complement_country_early) {
