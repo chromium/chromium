@@ -274,7 +274,8 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
   DCHECK_EQ(Step::kProfilePicker, current_step());
 
   profile_color_ = profile_color;
-  if (!IsStepInitialized(Step::kAccountSelection)) {
+  bool step_needs_registration = !IsStepInitialized(Step::kAccountSelection);
+  if (step_needs_registration) {
     RegisterStep(
         Step::kAccountSelection,
         ProfileManagementStepController::CreateForDiceSignIn(
@@ -291,7 +292,7 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
       /*reset_state=*/false, /*pop_step_callback=*/base::OnceClosure(),
       /*step_switch_finished_callback=*/base::OnceCallback<void(bool)>());
   SwitchToStep(Step::kAccountSelection,
-               /*reset_state=*/false, std::move(pop_closure),
+               /*reset_state=*/step_needs_registration, std::move(pop_closure),
                std::move(switch_finished_callback));
 }
 #endif
@@ -340,7 +341,7 @@ void ProfilePickerFlowController::SwitchToPostSignIn(
                      host(), std::move(signed_in_flow)));
   }
 
-  SwitchToStep(step);
+  SwitchToStep(step, /*reset_state=*/true);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // If we need to go back, we should go all the way to the beginning of the

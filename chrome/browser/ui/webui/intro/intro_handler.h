@@ -9,12 +9,12 @@
 
 class IntroHandler : public content::WebUIMessageHandler {
  public:
-  IntroHandler() = default;
+  explicit IntroHandler(base::RepeatingCallback<void(bool sign_in)> callback);
 
   IntroHandler(const IntroHandler&) = delete;
   IntroHandler& operator=(const IntroHandler&) = delete;
 
-  ~IntroHandler() override = default;
+  ~IntroHandler() override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -22,6 +22,8 @@ class IntroHandler : public content::WebUIMessageHandler {
  private:
   void HandleContinueWithAccount(const base::Value::List& args);
   void HandleContinueWithoutAccount(const base::Value::List& args);
+
+  const base::RepeatingCallback<void(bool sign_in)> callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTRO_INTRO_HANDLER_H_

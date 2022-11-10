@@ -26,7 +26,7 @@ ProfileManagementFlowController::~ProfileManagementFlowController() = default;
 void ProfileManagementFlowController::Init(
     base::OnceCallback<void(bool)> initial_step_switch_finished_callback) {
   DCHECK(clear_host_callback_.value());
-  SwitchToStep(initial_step(), /*reset_state=*/false,
+  SwitchToStep(initial_step(), /*reset_state=*/true,
                /*pop_step_callback=*/base::OnceClosure(),
                std::move(initial_step_switch_finished_callback));
 }

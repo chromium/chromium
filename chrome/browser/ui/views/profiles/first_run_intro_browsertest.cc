@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -86,7 +87,8 @@ class FirstRunIntroPixelTest : public UiBrowserTest,
     profile_picker_view_ = ProfileManagementStepTestView::CreateForStep(
         browser()->profile(), ProfileManagementFlowController::Step::kIntro,
         base::BindRepeating([](ProfilePickerWebContentsHost* host) {
-          return CreateIntroStep(host, /*enable_animations=*/false);
+          return CreateIntroStep(host, base::DoNothing(),
+                                 /*enable_animations=*/false);
         }));
     profile_picker_view_->ShowAndWait(
         GetParam().use_fixed_size

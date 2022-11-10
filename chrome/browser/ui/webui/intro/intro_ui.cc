@@ -46,7 +46,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
 
 IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   DCHECK(base::FeatureList::IsEnabled(kForYouFre));
-  web_ui->AddMessageHandler(std::make_unique<IntroHandler>());
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -59,8 +58,27 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   AddStrings(source);
 
   source->AddResourcePath("product-logo.png", IDR_PRODUCT_LOGO_128);
+
+  // Unretained ok: `this` owns the handler.
+  web_ui->AddMessageHandler(std::make_unique<IntroHandler>(base::BindRepeating(
+      &IntroUI::HandleSigninChoice, base::Unretained(this))));
 }
 
 IntroUI::~IntroUI() = default;
+
+void IntroUI::SetSigninChoiceCallback(IntroSigninChoiceCallback callback) {
+  DCHECK(!callback->is_null());
+  signin_choice_callback_ = std::move(callback);
+}
+
+void IntroUI::HandleSigninChoice(bool sign_in) {
+  if (signin_choice_callback_->is_null()) {
+    LOG(WARNING) << "Unexpected signin choice event";
+  } else {
+    // TODO(crbug.com/1347507): Reflect in the UI that the actions are not
+    // available, with a spinner and/or disabled buttons.
+    std::move(signin_choice_callback_.value()).Run(sign_in);
+  }
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(IntroUI)

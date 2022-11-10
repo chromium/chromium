@@ -65,13 +65,14 @@ class ProfileManagementStepController {
   // Attempts to show the current step in the `host_`.
   // `step_shown_callback` will be executed when the attempt is completed, with
   // `true` if it succeeded.
-  // `reset_state` indicates that the step should reset its internal state
-  // before showing itself.
+  // `reset_state` indicates that the step should reset its internal state and
+  // appear as freshly created. Callers should pass `true` for newly created
+  // steps.
   virtual void Show(base::OnceCallback<void(bool success)> step_shown_callback,
                     bool reset_state = false) = 0;
 
   // Frees up unneeded resources. `Show()` will be called if it's needed again.
-  virtual void OnHidden() = 0;
+  virtual void OnHidden() {}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Method to be called if the user is attempting to reload this step.

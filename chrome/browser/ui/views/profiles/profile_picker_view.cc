@@ -652,7 +652,7 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     return std::make_unique<FirstRunFlowControllerDice>(
-        /*host=*/this, std::move(clear_host_callback));
+        /*host=*/this, std::move(clear_host_callback), picker_profile);
 #endif
   }
 

@@ -30,30 +30,38 @@ class ProfilePickerAppStepController : public ProfileManagementStepController {
 
   void Show(base::OnceCallback<void(bool)> step_shown_callback,
             bool reset_state) override {
-    if (was_shown_) {
-      if (reset_state) {
-        // back to the beginning of the history:
-        host()->GetPickerContents()->GetController().GoToIndex(0);
-      }
-      host()->ShowScreenInPickerContents(GURL());
-    } else {
-      host()->ShowScreenInPickerContents(initial_url_);
-      was_shown_ = true;
+    if (!loaded_ui_in_picker_contents_) {
+      loaded_ui_in_picker_contents_ = true;
+      host()->ShowScreenInPickerContents(
+          initial_url_,
+          step_shown_callback
+              ? base::BindOnce(std::move(step_shown_callback), true)
+              : base::OnceClosure());
+      return;
     }
+
+    if (reset_state) {
+      // Don't do a full reset, just go back to the beginning of the history:
+      host()->GetPickerContents()->GetController().GoToIndex(0);
+    }
+    host()->ShowScreenInPickerContents(GURL());
     if (step_shown_callback) {
       std::move(step_shown_callback).Run(true);
     }
   }
-
-  void OnHidden() override {}
 
   void OnNavigateBackRequested() override {
     NavigateBackInternal(host()->GetPickerContents());
   }
 
  private:
-  bool was_shown_ = false;
-  GURL initial_url_;
+  // We want to load the WebUI page exactly once, and do more lightweight
+  // transitions if we need to switch back to this step later. So we track
+  // whether the UI has been loaded or not.
+  // Note that this relies on other steps not clearing the picker contents and
+  // using their own instead.
+  bool loaded_ui_in_picker_contents_ = false;
+  const GURL initial_url_;
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -74,7 +82,6 @@ class DiceSignInStepController : public ProfileManagementStepController {
   void Show(base::OnceCallback<void(bool)> step_shown_callback,
             bool reset_state) override {
     DCHECK(step_shown_callback);
-    DCHECK(!reset_state);  // Not supported.
     DCHECK(signed_in_callback_) << "Attempting to show Dice step again while "
                                    "it was previously completed";
     // Unretained ok because the provider is owned by `this`.
@@ -160,8 +167,6 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnHidden() override {}
-
   void OnNavigateBackRequested() override {
     // Not supported here
   }
@@ -216,7 +221,6 @@ class PostSignInStepController : public ProfileManagementStepController {
 
   void Show(base::OnceCallback<void(bool)> step_shown_callback,
             bool reset_state) override {
-    DCHECK(!reset_state);  // Not supported.
     signed_in_flow_->Init();
     if (step_shown_callback) {
       std::move(step_shown_callback).Run(true);
@@ -283,8 +287,6 @@ ProfileManagementStepController::ProfileManagementStepController(
     : host_(host) {}
 
 ProfileManagementStepController::~ProfileManagementStepController() = default;
-
-void ProfileManagementStepController::OnHidden() {}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementStepController::OnReloadRequested() {}

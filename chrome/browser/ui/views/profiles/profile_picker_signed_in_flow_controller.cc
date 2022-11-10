@@ -46,6 +46,8 @@ ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
 }
 
 void ProfilePickerSignedInFlowController::Init() {
+  DCHECK(!IsInitialized());
+
   contents()->SetDelegate(this);
 
   const CoreAccountInfo& account_info =

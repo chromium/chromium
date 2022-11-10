@@ -68,12 +68,14 @@ class ProfileManagementFlowController {
       base::OnceCallback<void(bool)> initial_step_switch_finished_callback =
           base::OnceCallback<void(bool success)>());
 
+  // Instructs a step registered as `step` to be shown.
   // If `step_switch_finished_callback` is provided, it will be called
   // with `true` when the navigation to `step` succeeded, or with
   // `false` otherwise.
+  // Also see `ProfileManagementStepController::Show()`.
   void SwitchToStep(
       Step step,
-      bool reset_state = false,
+      bool reset_state,
       base::OnceClosure pop_step_callback = base::OnceClosure(),
       base::OnceCallback<void(bool)> step_switch_finished_callback =
           base::OnceCallback<void(bool success)>());
