@@ -89,7 +89,6 @@ import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -106,8 +105,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY,
         ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
 public class ManualFillingControllerTest {
-    private static final int sFakeKeyboardInsetPx = 200;
-
     @Mock
     private ChromeWindow mMockWindow;
     @Mock
@@ -146,10 +143,6 @@ public class ManualFillingControllerTest {
     private final ManualFillingStateCache mCache = mMediator.getStateCacheForTesting();
     private final PropertyModel mModel = mMediator.getModelForTesting();
     private final UserDataHost mUserDataHost = new UserDataHost();
-    private final ApplicationViewportInsetSupplier mInsetSupplier =
-            ApplicationViewportInsetSupplier.createForTests();
-    private final ObservableSupplierImpl<Integer> mKeyboardInsetSupplier =
-            new ObservableSupplierImpl<>();
 
     private static class MockActivityTabProvider extends ActivityTabProvider {
         public Tab mTab;
@@ -305,8 +298,6 @@ public class ManualFillingControllerTest {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
-        mInsetSupplier.addStackingSupplier(mKeyboardInsetSupplier);
-        when(mMockWindow.getApplicationBottomInsetProvider()).thenReturn(mInsetSupplier);
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
         when(mMockActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
@@ -809,12 +800,10 @@ public class ManualFillingControllerTest {
         when(mMockAccessorySheet.isShown()).thenReturn(true);
         when(mMockAccessorySheet.getHeight()).thenReturn(200); // Return height of a large keyboard.
 
-        // Set layout as if it was rotated: 200x300@2f.
-        mKeyboardInsetSupplier.set(sFakeKeyboardInsetPx); // Mediator has to check the density!
-        setContentAreaDimensions(2.f, 300, 200);
+        // Set layout as if it was rotated: 200x300@2f minus the 100dp+48dp high filling ui.
+        setContentAreaDimensions(2.f, 300, 52);
         mMediator.onLayoutChange(mMockContentView, 0, 0, 600, 104, 0, 0, 400, 600);
         verify(mMockAccessorySheet).setHeight(144); // == 2f * (200dp - 128dp)
-        mKeyboardInsetSupplier.set(0);
     }
 
     @Test
