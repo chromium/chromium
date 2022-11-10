@@ -1534,6 +1534,16 @@ void NGBlockNode::PlaceChildrenInFlowThread(
               placeholder->PreviousSiblingMultiColumnBox()))
         previous_column_set->FinishLayoutFromNG();
 
+      // The legacy tree builder (the flow thread code) sometimes incorrectly
+      // keeps column sets that shouldn't be there anymore. If we have two
+      // column spanners, that are in fact adjacent, even though there's a
+      // spurious column set between them, the column set hasn't been
+      // initialized correctly (since we still have a pending_column_set at this
+      // point). We *could* actually set it up when we end up in a situation
+      // like this, but it's probably not worth the bother. Instead just make
+      // sure that NG ignores it completely.
+      bool missed_pending_column_set = pending_column_set;
+
       LayoutBox* next_box = placeholder->NextSiblingMultiColumnBox();
       pending_column_set = DynamicTo<LayoutMultiColumnSet>(next_box);
 
@@ -1551,7 +1561,8 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       // and NG engines disagree on whether there's column content in-between
       // (NG will create column content if the parent block of a spanner has
       // trailing margin / border / padding, while legacy does not).
-      should_expand_last_set = !next_box && flow_thread->LastMultiColumnSet();
+      should_expand_last_set = !next_box && flow_thread->LastMultiColumnSet() &&
+                               !missed_pending_column_set;
       continue;
     }
 
