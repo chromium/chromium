@@ -49,6 +49,11 @@ BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Enables the new Kids Management Api.
+BASE_FEATURE(kEnableKidsManagementService,
+             "EnableKidsManagementService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsWebFilterInterstitialRefreshEnabled() {
   DCHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||
          !base::FeatureList::IsEnabled(kLocalWebApprovals));
@@ -67,6 +72,10 @@ bool IsLocalWebApprovalThePreferredButton() {
   DCHECK((preferred_button == kLocalWebApprovalsPreferredButtonLocal) ||
          (preferred_button == kLocalWebApprovalsPreferredButtonRemote));
   return (preferred_button == kLocalWebApprovalsPreferredButtonLocal);
+}
+
+bool IsKidsManagementServiceEnabled() {
+  return base::FeatureList::IsEnabled(kEnableKidsManagementService);
 }
 
 }  // namespace supervised_users

@@ -32,6 +32,9 @@ bool IsLocalWebApprovalsEnabled();
 // This should only be called if IsLocalWebApprovalsEnabled() returns true.
 bool IsLocalWebApprovalThePreferredButton();
 
+// Returns whether to use the new Api for fetching.
+bool IsKidsManagementServiceEnabled();
+
 }  // namespace supervised_users
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_FEATURES_SUPERVISED_USER_FEATURES_H_

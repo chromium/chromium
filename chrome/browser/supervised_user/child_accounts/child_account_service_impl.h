@@ -16,6 +16,9 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_profile_manager.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -95,12 +98,21 @@ class ChildAccountServiceImpl : public ChildAccountService,
   void ClearFirstCustodianPrefs();
   void ClearSecondCustodianPrefs();
 
+  void ConsumeListFamilyMembers(
+      KidsExternalFetcherStatus status,
+      std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+          response);
+
   // Owns us via the KeyedService mechanism.
   raw_ptr<Profile> profile_;
 
   bool active_{false};
 
   std::unique_ptr<FamilyInfoFetcher> family_fetcher_;
+  std::unique_ptr<
+      KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
+                          kids_chrome_management::ListFamilyMembersResponse>>
+      list_family_members_fetcher_;
   // If fetching the family info fails, retry with exponential backoff.
   base::OneShotTimer family_fetch_timer_;
   net::BackoffEntry family_fetch_backoff_;

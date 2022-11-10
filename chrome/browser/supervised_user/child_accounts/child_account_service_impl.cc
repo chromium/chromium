@@ -18,7 +18,13 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/families_common.pb.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_management_service.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_profile_manager.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
@@ -73,6 +79,51 @@ const net::BackoffEntry::Policy kFamilyFetchBackoffPolicy = {
     false,
 };
 
+// A set for temporary converters from proto-world objects to the current
+// interface.
+namespace {
+FamilyInfoFetcher::FamilyMemberRole ConvertProtoRole(
+    const kids_chrome_management::FamilyRole& role) {
+  switch (role) {
+    case kids_chrome_management::FamilyRole::HEAD_OF_HOUSEHOLD:
+      return FamilyInfoFetcher::FamilyMemberRole::HEAD_OF_HOUSEHOLD;
+    case kids_chrome_management::FamilyRole::PARENT:
+      return FamilyInfoFetcher::FamilyMemberRole::PARENT;
+    case kids_chrome_management::FamilyRole::CHILD:
+      return FamilyInfoFetcher::FamilyMemberRole::CHILD;
+    case kids_chrome_management::FamilyRole::MEMBER:
+      return FamilyInfoFetcher::FamilyMemberRole::MEMBER;
+    default:
+      return FamilyInfoFetcher::FamilyMemberRole::MEMBER;
+  }
+}
+
+FamilyInfoFetcher::FamilyMember ConvertProtoFamilyMember(
+    const kids_chrome_management::FamilyMember& member) {
+  FamilyInfoFetcher::FamilyMember converted;
+  converted.display_name = member.profile().display_name();
+  converted.profile_image_url = member.profile().default_profile_image_url();
+  converted.profile_url = member.profile().profile_image_url();
+  converted.email = member.profile().email();
+  converted.obfuscated_gaia_id = member.profile().obfuscated_user_id();
+  converted.role = ConvertProtoRole(member.role());
+  return converted;
+}
+
+FamilyInfoFetcher::ErrorCode ConvertStatus(KidsExternalFetcherStatus status) {
+  switch (status.state()) {
+    case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+      return FamilyInfoFetcher::ErrorCode::kTokenError;
+    case KidsExternalFetcherStatus::HTTP_ERROR:
+      return FamilyInfoFetcher::ErrorCode::kNetworkError;
+    case KidsExternalFetcherStatus::INVALID_RESPONSE:
+      return FamilyInfoFetcher::ErrorCode::kServiceError;
+    default:
+      return FamilyInfoFetcher::ErrorCode::kSuccess;
+  }
+}
+}  // namespace
+
 ChildAccountServiceImpl::ChildAccountServiceImpl(Profile* profile)
     : profile_(profile),
       active_(false),
@@ -103,6 +154,8 @@ bool ChildAccountServiceImpl::IsChildAccountStatusKnown() {
 
 void ChildAccountServiceImpl::Shutdown() {
   family_fetcher_.reset();
+  list_family_members_fetcher_.reset();
+
   identity_manager_->RemoveObserver(this);
   SupervisedUserServiceFactory::GetForProfile(profile_)->SetDelegate(nullptr);
   DCHECK(!active_);
@@ -260,6 +313,7 @@ void ChildAccountServiceImpl::OnGetFamilyMembersSuccess(
     ClearSecondCustodianPrefs();
   }
   family_fetcher_.reset();
+  list_family_members_fetcher_.reset();
 
   family_fetch_backoff_.InformOfRequest(true);
 
@@ -280,15 +334,42 @@ void ChildAccountServiceImpl::OnAccountsInCookieUpdated(
 }
 
 void ChildAccountServiceImpl::StartFetchingFamilyInfo() {
-  family_fetcher_ = std::make_unique<FamilyInfoFetcher>(
-      this, identity_manager_,
-      profile_->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
-  family_fetcher_->StartGetFamilyMembers();
+  if (supervised_users::IsKidsManagementServiceEnabled()) {
+    list_family_members_fetcher_ = FetchListFamilyMembers(
+        *identity_manager_, profile_->GetURLLoaderFactory(),
+        KidsManagementService::GetEndpointUrl(),
+        BindOnce(&ChildAccountServiceImpl::ConsumeListFamilyMembers,
+                 base::Unretained(this)));
+  } else {
+    family_fetcher_ = std::make_unique<FamilyInfoFetcher>(
+        this, identity_manager_,
+        profile_->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess());
+    family_fetcher_->StartGetFamilyMembers();
+  }
+}
+
+void ChildAccountServiceImpl::ConsumeListFamilyMembers(
+    KidsExternalFetcherStatus status,
+    std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+        response) {
+  if (!status.IsOk()) {
+    OnFailure(ConvertStatus(status));
+    return;
+  }
+
+  std::vector<FamilyInfoFetcher::FamilyMember> members;
+  for (const kids_chrome_management::FamilyMember& member :
+       response->members()) {
+    members.push_back(ConvertProtoFamilyMember(member));
+  }
+  OnGetFamilyMembersSuccess(members);
 }
 
 void ChildAccountServiceImpl::CancelFetchingFamilyInfo() {
+  list_family_members_fetcher_.reset();
   family_fetcher_.reset();
+
   family_fetch_timer_.Stop();
 }
 
