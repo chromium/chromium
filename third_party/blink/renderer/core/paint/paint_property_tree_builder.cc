@@ -1450,15 +1450,25 @@ bool FragmentPaintPropertyTreeBuilder::EffectCanUseCurrentClipAsOutputClip()
 
   const auto* layer = To<LayoutBoxModelObject>(object_).Layer();
   // Out-of-flow descendants not contained by this object may escape clips.
-  if (layer->HasNonContainedAbsolutePositionDescendant() &&
-      &object_.ContainerForAbsolutePosition()->FirstFragment().ContentsClip() !=
-          context_.current.clip)
-    return false;
+  if (layer->HasNonContainedAbsolutePositionDescendant()) {
+    const auto* container = full_context_.container_for_absolute_position;
+    // Check HasLocalBorderBoxProperties() because |container| may not have
+    // updated paint properties if it appears in a later box fragment than
+    // |object|. TODO(crbug.com/1371426): fix tree walk order in the case.
+    if (!container->FirstFragment().HasLocalBorderBoxProperties() ||
+        &container->FirstFragment().ContentsClip() != context_.current.clip) {
+      return false;
+    }
+  }
   if (layer->HasFixedPositionDescendant() &&
-      !object_.CanContainFixedPositionObjects() &&
-      &object_.ContainerForFixedPosition()->FirstFragment().ContentsClip() !=
-          context_.current.clip)
-    return false;
+      !object_.CanContainFixedPositionObjects()) {
+    const auto* container = full_context_.container_for_fixed_position;
+    // Same as the absolute-position case.
+    if (!container->FirstFragment().HasLocalBorderBoxProperties() ||
+        &container->FirstFragment().ContentsClip() != context_.current.clip) {
+      return false;
+    }
+  }
 
   // Some descendants under a pagination container (e.g. composited objects
   // in SPv1 and column spanners) may escape fragment clips.

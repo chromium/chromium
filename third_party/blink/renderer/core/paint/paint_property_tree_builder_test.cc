@@ -7343,4 +7343,23 @@ TEST_P(PaintPropertyTreeBuilderTest, EffectCanUseCurrentClipAsOutputClipCrash) {
                   .HasLocalBorderBoxProperties());
 }
 
+// Test case for crbug.com/1381173.
+TEST_P(PaintPropertyTreeBuilderTest, EffectOutputClipOfMissedOutOfFlow) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="columns:2; column-fill:auto; height:100px;">
+      <div style="height:150px;"></div>
+      <div style="will-change:transform; width:50px; height:50px;">
+        <div id="oof" style="position:absolute; top:-100px; opacity:0;">
+          <div style="position:fixed;"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("oof");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_FALSE(properties->Effect()->OutputClip());
+}
+
 }  // namespace blink
