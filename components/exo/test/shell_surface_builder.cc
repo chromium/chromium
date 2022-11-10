@@ -280,11 +280,12 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
   DCHECK(!built_);
   DCHECK(isConfigurationValidForShellSurface());
   built_ = true;
-  Holder* holder = new Holder();
+  auto holder = std::make_unique<Holder>();
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
   auto shell_surface = std::make_unique<ShellSurface>(
       holder->root_surface, origin_, can_minimize_, GetContainer());
-  shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey, holder);
+  shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey,
+                                            std::move(holder));
 
   // Set the properties specific to ShellSurface.
   if (parent_shell_surface_)
@@ -305,13 +306,14 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
   DCHECK(!built_);
   DCHECK(isConfigurationValidForClientControlledShellSurface());
   built_ = true;
-  Holder* holder = new Holder();
+  auto holder = std::make_unique<Holder>();
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
   auto shell_surface = Display().CreateOrGetClientControlledShellSurface(
       holder->root_surface, GetContainer(),
       WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
       default_scale_cancellation_);
-  shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey, holder);
+  shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey,
+                                            std::move(holder));
 
   // Set the properties specific to ClientControlledShellSurface.
   shell_surface->SetApplicationId(!application_id_.empty()
