@@ -494,6 +494,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   BrowserAccessibility* ApproximateHitTest(
       const gfx::Point& blink_screen_point) const;
 
+  // Detaches this instance from its parent manager. Useful during
+  // deconstruction.
+  void DetachFromParentManager();
+
   // Wrapper for converting the AXNode* returned by RetargetForEvents
   // to a BrowserAccessibility*. This is often needed.
   BrowserAccessibility* RetargetBrowserAccessibilityForEvents(

@@ -9460,6 +9460,14 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
     // in the renderer.
     render_accessibility_.reset();
   }
+
+  if (!ax_mode.has_mode(ui::kAXModeBasic.mode()) &&
+      browser_accessibility_manager_) {
+    // Missing either kWebContents and kNativeAPIs, so
+    // BrowserAccessibilityManager is no longer necessary.
+    browser_accessibility_manager_->DetachFromParentManager();
+    browser_accessibility_manager_.reset();
+  }
 }
 
 void RenderFrameHostImpl::RequestAXTreeSnapshot(
