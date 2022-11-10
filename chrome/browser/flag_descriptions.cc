@@ -6389,6 +6389,12 @@ const char kZeroCopyVideoCaptureDescription[] =
 
 #if defined(TOOLKIT_VIEWS)
 
+const char kRevampedPasswordManagementBubbleName[] =
+    "Revamped Password Managment Bubble (Desktop)";
+const char kRevampedPasswordManagementBubbleDescription[] =
+    "Enable the new password managment bubble triggered by clicking the key "
+    "icon in the omnibox.";
+
 const char kSideSearchName[] = "Side search";
 const char kSideSearchDescription[] =
     "Enables an easily accessible way to access your most recent Google search "

@@ -3674,6 +3674,9 @@ extern const char kZeroCopyVideoCaptureDescription[];
 // All views-based platforms --------------------------------------------------
 
 #if defined(TOOLKIT_VIEWS)
+extern const char kRevampedPasswordManagementBubbleName[];
+extern const char kRevampedPasswordManagementBubbleDescription[];
+
 extern const char kSideSearchName[];
 extern const char kSideSearchDescription[];
 

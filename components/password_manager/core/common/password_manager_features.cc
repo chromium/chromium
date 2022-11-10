@@ -217,6 +217,14 @@ BASE_FEATURE(kRecoverFromNeverSaveAndroid,
              "RecoverFromNeverSaveAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Enables a revamped version of the password management bubble triggered by
+// manually clicking on the key icon in the omnibox.
+BASE_FEATURE(kRevampedPasswordManagementBubble,
+             "RevampedPasswordManagementBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables the password strength indicator.
 BASE_FEATURE(kPasswordStrengthIndicator,
              "PasswordStrengthIndicator",
