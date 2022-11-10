@@ -230,6 +230,14 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     PaintPropertyChangeType ComputeChange(
         const State& other,
         const AnimationState& animation_state) const;
+
+    bool UsesCompositedScrolling() const {
+      return direct_compositing_reasons & CompositingReason::kOverflowScrolling;
+    }
+    bool RequiresCullRectExpansion() const {
+      return direct_compositing_reasons &
+             CompositingReason::kRequiresCullRectExpansion;
+    }
   };
 
   // This node is really a sentinel, and does not represent a real transform
@@ -430,8 +438,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   // Cull rect expansion is required if the compositing reasons hint requirement
   // of high-performance movement, to avoid frequent change of cull rect.
   bool RequiresCullRectExpansion() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kRequiresCullRectExpansion;
+    return state_.RequiresCullRectExpansion();
   }
 
   const CompositorElementId& GetCompositorElementId() const {
