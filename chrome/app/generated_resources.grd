@@ -8060,6 +8060,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM" desc="Mobile: Label for 'Save Password' prompt cogwheel menu button via which users can tell the password manager to never offer to save passwords for the current site[CHAR_LIMIT=32]">
           Never for this site
         </message>
+        <message name="IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM_DESC" desc="Mobile: The description to be announced by TalkBack for the 'Never save' button via which the users can tell the password manager to never ask to save passwords for this site again. This button is displayed as a secondary action in the 'Save password' prompt.">
+          Never save passwords for this site
+        </message>
         <message name="IDS_PASSWORD_MESSAGE_EDIT_PASSWORD_MENU_ITEM" desc="Mobile: Label for 'Save Password' prompt cogwheel menu button via which users can tell the password manager to show the password edit dialog.">
           Edit password
         </message>

@@ -20,6 +20,9 @@ public class ListMenuItemProperties {
     // TITLE_ID.
     public static final WritableIntPropertyKey TITLE_ID = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    // A11y content description of menu item
+    public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey START_ICON_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey END_ICON_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
@@ -29,6 +32,7 @@ public class ListMenuItemProperties {
     public static final ReadableBooleanPropertyKey IS_TEXT_ELLIPSIZED_AT_END =
             new ReadableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {TITLE_ID, TITLE, START_ICON_ID, END_ICON_ID,
-            MENU_ITEM_ID, ENABLED, TINT_COLOR_ID, TEXT_APPEARANCE_ID, IS_TEXT_ELLIPSIZED_AT_END};
+    public static final PropertyKey[] ALL_KEYS = {TITLE_ID, TITLE, CONTENT_DESCRIPTION,
+            START_ICON_ID, END_ICON_ID, MENU_ITEM_ID, ENABLED, TINT_COLOR_ID, TEXT_APPEARANCE_ID,
+            IS_TEXT_ELLIPSIZED_AT_END};
 }

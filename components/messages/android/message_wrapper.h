@@ -62,6 +62,10 @@ class MessageWrapper {
   void AddSecondaryMenuItem(int item_id,
                             int resource_id,
                             const std::u16string& item_text);
+  void AddSecondaryMenuItem(int item_id,
+                            int resource_id,
+                            const std::u16string& item_text,
+                            const std::u16string& item_description);
   void ClearSecondaryMenuItems();
   void AddSecondaryMenuItemDivider();
 

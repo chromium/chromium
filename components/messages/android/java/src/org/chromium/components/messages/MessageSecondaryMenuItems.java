@@ -38,7 +38,6 @@ public class MessageSecondaryMenuItems {
      * @param itemId The list menu item ID.
      * @param resourceId The start icon resource ID of the list menu item.
      * @param itemText The title of the list menu item.
-     *
      */
     PropertyModel addMenuItem(int itemId, int resourceId, String itemText) {
         PropertyModel item = new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -47,6 +46,27 @@ public class MessageSecondaryMenuItems {
                                      .with(ListMenuItemProperties.TITLE, itemText)
                                      .with(ListMenuItemProperties.ENABLED, true)
                                      .build();
+        mMenuItems.add(new ListItem(ListMenuItemType.MENU_ITEM, item));
+        return item;
+    }
+
+    /**
+     * Add an item to the list menu.
+     * @param itemId The list menu item ID.
+     * @param resourceId The start icon resource ID of the list menu item.
+     * @param itemText The title of the list menu item.
+     * @param itemDescription The a11y content description of menu item.
+     * Set empty string/NULL to unset content description.
+     */
+    PropertyModel addMenuItem(int itemId, int resourceId, String itemText, String itemDescription) {
+        PropertyModel item =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.MENU_ITEM_ID, itemId)
+                        .with(ListMenuItemProperties.START_ICON_ID, resourceId)
+                        .with(ListMenuItemProperties.TITLE, itemText)
+                        .with(ListMenuItemProperties.CONTENT_DESCRIPTION, itemDescription)
+                        .with(ListMenuItemProperties.ENABLED, true)
+                        .build();
         mMenuItems.add(new ListItem(ListMenuItemType.MENU_ITEM, item));
         return item;
     }

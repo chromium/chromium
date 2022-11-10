@@ -121,10 +121,17 @@ public final class MessageWrapper implements ListMenu.Delegate {
 
     @CalledByNative
     PropertyModel addSecondaryMenuItem(int itemId, int resourceId, String itemText) {
+        return addSecondaryMenuItem(itemId, resourceId, itemText, itemText);
+    }
+
+    @CalledByNative
+    PropertyModel addSecondaryMenuItem(
+            int itemId, int resourceId, String itemText, String itemDescription) {
         if (mMessageSecondaryMenuItems == null) {
             mMessageSecondaryMenuItems = new MessageSecondaryMenuItems();
         }
-        return mMessageSecondaryMenuItems.addMenuItem(itemId, resourceId, itemText);
+        return mMessageSecondaryMenuItems.addMenuItem(
+                itemId, resourceId, itemText, itemDescription);
     }
 
     @VisibleForTesting

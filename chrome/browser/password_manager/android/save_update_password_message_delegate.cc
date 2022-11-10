@@ -249,7 +249,9 @@ void SaveUpdatePasswordMessageDelegate::SetupCogMenuForDialogWithDetails(
     message_->AddSecondaryMenuItem(
         static_cast<int>(SavePasswordDialogMenuItem::kNeverSave),
         /*resource_id=*/0,
-        l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM));
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM),
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM_DESC));
     message_->AddSecondaryMenuItem(
         static_cast<int>(SavePasswordDialogMenuItem::kEditPassword),
         /*resource_id=*/0,

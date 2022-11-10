@@ -30,6 +30,8 @@ public class ListMenuItemViewBinder {
             textView.setText(model.get(ListMenuItemProperties.TITLE_ID));
         } else if (propertyKey == ListMenuItemProperties.TITLE) {
             textView.setText(model.get(ListMenuItemProperties.TITLE));
+        } else if (propertyKey == ListMenuItemProperties.CONTENT_DESCRIPTION) {
+            textView.setContentDescription(model.get(ListMenuItemProperties.CONTENT_DESCRIPTION));
         } else if (propertyKey == ListMenuItemProperties.START_ICON_ID
                 || propertyKey == ListMenuItemProperties.END_ICON_ID) {
             int id = model.get((ReadableIntPropertyKey) propertyKey);
