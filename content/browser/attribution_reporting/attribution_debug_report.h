@@ -33,6 +33,11 @@ class CONTENT_EXPORT AttributionDebugReport {
     kTriggerNoMatchingSource,
     kTriggerAttributionsPerSourceDestinationLimit,
     kTriggerNoMatchingFilterData,
+    kTriggerEventDeduplicated,
+    kTriggerEventNoMatchingConfigurations,
+    kTriggerEventNoise,
+    kTriggerEventLowPriority,
+    kTriggerEventExcessiveReports,
   };
 
   static absl::optional<AttributionDebugReport> Create(

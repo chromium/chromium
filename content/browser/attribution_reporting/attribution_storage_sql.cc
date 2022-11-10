@@ -843,6 +843,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   absl::optional<AttributionReport> new_aggregatable_report;
 
   absl::optional<AttributionReport> replaced_event_level_report;
+  absl::optional<AttributionReport> dropped_event_level_report;
 
   absl::optional<AttributionInfo> attribution_info;
 
@@ -877,7 +878,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
             attribution_info
                 ? absl::make_optional(std::move(attribution_info->source))
                 : absl::nullopt,
-            rate_limits_max_attributions);
+            rate_limits_max_attributions,
+            std::move(dropped_event_level_report));
       };
 
   if (trigger.aggregatable_trigger_data().empty() &&
@@ -990,7 +992,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     DCHECK(new_event_level_report.has_value());
     store_event_level_status = MaybeStoreEventLevelReport(
         *new_event_level_report, dedup_key,
-        source_to_attribute->num_conversions, replaced_event_level_report);
+        source_to_attribute->num_conversions, replaced_event_level_report,
+        dropped_event_level_report);
   }
 
   absl::optional<AggregatableResult> store_aggregatable_status;
@@ -1126,9 +1129,11 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     const bool top_level_filters_match,
     absl::optional<AttributionReport>& report,
     absl::optional<uint64_t>& dedup_key) {
-  if (attribution_info.source.active_state() ==
-      StoredSource::ActiveState::kReachedEventLevelAttributionLimit) {
-    return EventLevelResult::kExcessiveReports;
+  if (attribution_info.source.attribution_logic() ==
+      StoredSource::AttributionLogic::kFalsely) {
+    DCHECK_EQ(attribution_info.source.active_state(),
+              StoredSource::ActiveState::kReachedEventLevelAttributionLimit);
+    return EventLevelResult::kFalselyAttributedSource;
   }
 
   if (!top_level_filters_match)
@@ -1205,7 +1210,14 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     AttributionReport& report,
     absl::optional<uint64_t> dedup_key,
     int num_conversions,
-    absl::optional<AttributionReport>& replaced_report) {
+    absl::optional<AttributionReport>& replaced_report,
+    absl::optional<AttributionReport>& dropped_report) {
+  if (report.attribution_info().source.active_state() ==
+      StoredSource::ActiveState::kReachedEventLevelAttributionLimit) {
+    dropped_report = std::move(report);
+    return EventLevelResult::kExcessiveReports;
+  }
+
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return EventLevelResult::kInternalError;
@@ -1228,6 +1240,8 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
               kDropNewReportSourceDeactivated) {
     if (!transaction.Commit())
       return EventLevelResult::kInternalError;
+
+    dropped_report = std::move(report);
 
     return maybe_replace_lower_priority_report_result ==
                    MaybeReplaceLowerPriorityEventLevelReportResult::

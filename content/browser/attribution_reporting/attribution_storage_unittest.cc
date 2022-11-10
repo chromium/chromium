@@ -290,10 +290,13 @@ TEST_F(AttributionStorageTest,
   }
 
   // No additional conversion reports should be created.
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  TriggerBuilder().SetTriggerData(20).Build()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kPriorityTooLow),
-                    ReplacedEventLevelReportIs(absl::nullopt)));
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    DroppedEventLevelReportIs(
+                        Optional(EventLevelDataIs(TriggerDataIs(20u))))));
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -634,7 +637,8 @@ TEST_F(AttributionStorageTest, MaxEventLevelReportsPerDestination) {
                             kNoCapacityForConversionDestination),
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess),
-                    ReplacedEventLevelReportIs(absl::nullopt)));
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    DroppedEventLevelReportIs(absl::nullopt)));
 }
 
 TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
@@ -660,7 +664,8 @@ TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::
                             kNoCapacityForConversionDestination),
-                    ReplacedEventLevelReportIs(absl::nullopt)));
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    DroppedEventLevelReportIs(absl::nullopt)));
 }
 
 TEST_F(AttributionStorageTest, ClearDataWithNoMatch_NoDelete) {
@@ -904,7 +909,8 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kExcessiveAttributions),
             ReplacedEventLevelReportIs(absl::nullopt),
-            CreateReportMaxAttributionsLimitIs(2)));
+            CreateReportMaxAttributionsLimitIs(2),
+            DroppedEventLevelReportIs(absl::nullopt)));
 
   const auto source =
       source_builder.SetAggregatableBudgetConsumed(5).BuildStored();
@@ -1370,7 +1376,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
       storage()->MaybeCreateAndStoreReport(
           DefaultAggregatableTriggerBuilder().Build()),
       AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kExcessiveReports),
+                AttributionTrigger::EventLevelResult::kFalselyAttributedSource),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess)));
 
@@ -1446,7 +1452,8 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
                     ReplacedEventLevelReportIs(absl::nullopt),
-                    CreateReportSourceIs(Optional(SourceEventIdIs(5u)))));
+                    CreateReportSourceIs(Optional(SourceEventIdIs(5u))),
+                    DroppedEventLevelReportIs(absl::nullopt)));
 
   // This conversion should replace the one above because it has a higher
   // priority.
@@ -1457,7 +1464,8 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                             kSuccessDroppedLowerPriority),
                     ReplacedEventLevelReportIs(
                         Optional(EventLevelDataIs(TriggerDataIs(20u)))),
-                    CreateReportSourceIs(Optional(SourceEventIdIs(5u)))));
+                    CreateReportSourceIs(Optional(SourceEventIdIs(5u))),
+                    DroppedEventLevelReportIs(absl::nullopt)));
 
   storage()->StoreSource(
       SourceBuilder().SetSourceEventId(7).SetPriority(2).Build());
@@ -1472,7 +1480,9 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kPriorityTooLow),
                     ReplacedEventLevelReportIs(absl::nullopt),
-                    CreateReportSourceIs(Optional(SourceEventIdIs(7u)))));
+                    CreateReportSourceIs(Optional(SourceEventIdIs(7u))),
+                    DroppedEventLevelReportIs(
+                        Optional(EventLevelDataIs(TriggerDataIs(23u))))));
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -1562,9 +1572,13 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
 
   // This conversion should not be stored because all reports for the attributed
   // impression were in an earlier window.
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kExcessiveReports,
-            MaybeCreateAndStoreEventLevelReport(
-                TriggerBuilder().SetPriority(2).Build()));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          TriggerBuilder().SetPriority(2).Build()),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kExcessiveReports),
+            DroppedEventLevelReportIs(
+                Optional(EventLevelDataIs(TriggerPriorityIs(2))))));
 
   // As a result, the impression with data 5 should have reached event-level
   // attribution limit.
@@ -1991,10 +2005,13 @@ TEST_F(AttributionStorageTest,
   // limit; the report itself shouldn't be stored as we've already reached the
   // maximum number of event-level reports per source.
   EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+      storage()->MaybeCreateAndStoreReport(
+          TriggerBuilder().SetTriggerData(20).Build()),
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kExcessiveReports),
-            ReplacedEventLevelReportIs(absl::nullopt)));
+            ReplacedEventLevelReportIs(absl::nullopt),
+            DroppedEventLevelReportIs(
+                Optional(EventLevelDataIs(TriggerDataIs(20u))))));
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(
@@ -2835,7 +2852,9 @@ TEST_F(
             NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
                 AggregatableHistogramContributionsAre(
                     DefaultAggregatableHistogramContributions(
-                        /*histogram_values=*/{5})))))));
+                        /*histogram_values=*/{5}))))),
+            DroppedEventLevelReportIs(
+                Optional(EventLevelDataIs(TriggerDataIs(5u))))));
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(

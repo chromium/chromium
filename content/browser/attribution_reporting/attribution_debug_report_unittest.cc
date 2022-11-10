@@ -219,11 +219,13 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
     EventLevelResult event_level_result;
     AggregatableResult aggregatable_result;
     absl::optional<StoredSource> source;
+    absl::optional<int> rate_limits_max_attributions;
     const char* expected_report_body;
   } kTestCases[] = {
       {EventLevelResult::kNoMatchingImpressions,
        AggregatableResult::kNoMatchingImpressions,
        /*source=*/absl::nullopt,
+       /*rate_limits_max_attributions=*/absl::nullopt,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test"
@@ -233,7 +235,31 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
       {EventLevelResult::kProhibitedByBrowserPolicy,
        AggregatableResult::kProhibitedByBrowserPolicy,
        /*source=*/absl::nullopt,
+       /*rate_limits_max_attributions=*/absl::nullopt,
        /*expected_report_body=*/nullptr},
+      {EventLevelResult::kNoMatchingConfigurations,
+       AggregatableResult::kExcessiveAttributions,
+       /*source=*/SourceBuilder().BuildStored(),
+       /*rate_limits_max_attributions=*/10,
+       R"json([
+         {
+           "body": {
+             "attribution_destination": "https://conversion.test",
+             "source_event_id": "123",
+             "source_site": "https://impression.test"
+           },
+           "type": "trigger-event-no-matching-configurations"
+         },
+         {
+           "body": {
+             "attribution_destination": "https://conversion.test",
+             "limit": "10",
+             "source_event_id": "123",
+             "source_site": "https://impression.test"
+           },
+           "type": "trigger-attributions-per-source-destination-limit"
+         }
+       ])json"},
   };
 
   for (bool is_debug_cookie_set : {false, true}) {
@@ -247,7 +273,8 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
                   test_case.event_level_result, test_case.aggregatable_result,
                   /*replaced_event_level_report=*/absl::nullopt,
                   /*new_event_level_report=*/absl::nullopt,
-                  /*new_aggregatable_report=*/absl::nullopt, test_case.source));
+                  /*new_aggregatable_report=*/absl::nullopt, test_case.source,
+                  test_case.rate_limits_max_attributions));
       if (is_debug_cookie_set) {
         EXPECT_EQ(report.has_value(), test_case.expected_report_body != nullptr)
             << test_case.event_level_result << ", "
@@ -274,6 +301,7 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
     absl::optional<AttributionReport> new_event_level_report;
     absl::optional<StoredSource> source;
     absl::optional<int64_t> rate_limits_max_attributions;
+    absl::optional<AttributionReport> dropped_event_level_report;
     const char* expected_report_body;
   } kTestCases[] = {
       {EventLevelResult::kSuccess,
@@ -281,30 +309,35 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
        /*new_event_level_report=*/DefaultEventLevelReport(),
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
        /*expected_report_body=*/nullptr},
       {EventLevelResult::kSuccessDroppedLowerPriority,
        /*replaced_event_level_report=*/DefaultEventLevelReport(),
        /*new_event_level_report=*/DefaultEventLevelReport(),
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
        /*expected_report_body=*/nullptr},
       {EventLevelResult::kInternalError,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/absl::nullopt,
        /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
        /*expected_report_body=*/nullptr},
       {EventLevelResult::kNoCapacityForConversionDestination,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
        /*expected_report_body=*/nullptr},
       {EventLevelResult::kNoMatchingImpressions,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/absl::nullopt,
        /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test"
@@ -316,12 +349,21 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
-       /*expected_report_body=*/nullptr},
+       /*dropped_event_level_report=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-event-deduplicated"
+       }])json"},
       {EventLevelResult::kExcessiveAttributions,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/10,
+       /*dropped_event_level_report=*/absl::nullopt,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -336,24 +378,45 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
-       /*expected_report_body=*/nullptr},
+       /*dropped_event_level_report=*/DefaultEventLevelReport(),
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "randomized_trigger_rate": 0.0,
+           "report_id": "21abd97f-73e8-4b88-9389-a9fee6abda5e",
+           "source_event_id": "123",
+           "source_type": "navigation",
+           "trigger_data": "0"
+         },
+         "type": "trigger-event-low-prioirty"
+       }])json"},
       {EventLevelResult::kDroppedForNoise,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
-       /*expected_report_body=*/nullptr},
+       /*dropped_event_level_report=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-event-noise"
+       }])json"},
       {EventLevelResult::kExcessiveReportingOrigins,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
        /*expected_report_body=*/nullptr},
       {EventLevelResult::kNoMatchingSourceFilterData,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -367,19 +430,53 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/absl::nullopt,
        /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
        /*expected_report_body=*/nullptr},
       {EventLevelResult::kNoMatchingConfigurations,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
-       /*expected_report_body=*/nullptr},
+       /*dropped_event_level_report=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-event-no-matching-configurations"
+       }])json"},
       {EventLevelResult::kExcessiveReports,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/SourceBuilder().BuildStored(),
        /*rate_limits_max_attributions=*/absl::nullopt,
-       /*expected_report_body=*/nullptr},
+       /*dropped_event_level_report=*/DefaultEventLevelReport(),
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "randomized_trigger_rate": 0.0,
+           "report_id": "21abd97f-73e8-4b88-9389-a9fee6abda5e",
+           "source_event_id": "123",
+           "source_type": "navigation",
+           "trigger_data": "0"
+         },
+         "type": "trigger-event-excessive-reports"
+       }])json"},
+      {EventLevelResult::kFalselyAttributedSource,
+       /*replaced_event_level_report=*/absl::nullopt,
+       /*new_event_level_report=*/absl::nullopt,
+       /*source=*/SourceBuilder().BuildStored(),
+       /*rate_limits_max_attributions=*/absl::nullopt,
+       /*dropped_event_level_report=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-event-noise"
+       }])json"},
   };
 
   for (bool is_debug_cookie_set : {false, true}) {
@@ -394,7 +491,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
                   test_case.replaced_event_level_report,
                   test_case.new_event_level_report,
                   /*new_aggregatable_report=*/absl::nullopt, test_case.source,
-                  test_case.rate_limits_max_attributions));
+                  test_case.rate_limits_max_attributions,
+                  test_case.dropped_event_level_report));
       if (is_debug_cookie_set) {
         EXPECT_EQ(report.has_value(), test_case.expected_report_body != nullptr)
             << test_case.result << ", " << is_debug_cookie_set;

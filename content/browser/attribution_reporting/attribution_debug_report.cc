@@ -60,16 +60,11 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
                                                 bool is_debug_cookie_set) {
   switch (result) {
     case EventLevelResult::kSuccess:
-    case EventLevelResult::kSuccessDroppedLowerPriority:
     case EventLevelResult::kInternalError:
     case EventLevelResult::kNoCapacityForConversionDestination:
-    case EventLevelResult::kDeduplicated:
-    case EventLevelResult::kPriorityTooLow:
-    case EventLevelResult::kDroppedForNoise:
     case EventLevelResult::kExcessiveReportingOrigins:
     case EventLevelResult::kProhibitedByBrowserPolicy:
-    case EventLevelResult::kNoMatchingConfigurations:
-    case EventLevelResult::kExcessiveReports:
+    case EventLevelResult::kSuccessDroppedLowerPriority:
       return absl::nullopt;
     case EventLevelResult::kNoMatchingImpressions:
       return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
@@ -80,6 +75,23 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
           is_debug_cookie_set);
     case EventLevelResult::kNoMatchingSourceFilterData:
       return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingFilterData,
+                                 is_debug_cookie_set);
+    case EventLevelResult::kDeduplicated:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerEventDeduplicated,
+                                 is_debug_cookie_set);
+    case EventLevelResult::kNoMatchingConfigurations:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerEventNoMatchingConfigurations,
+          is_debug_cookie_set);
+    case EventLevelResult::kDroppedForNoise:
+    case EventLevelResult::kFalselyAttributedSource:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerEventNoise,
+                                 is_debug_cookie_set);
+    case EventLevelResult::kPriorityTooLow:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerEventLowPriority,
+                                 is_debug_cookie_set);
+    case EventLevelResult::kExcessiveReports:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerEventExcessiveReports,
                                  is_debug_cookie_set);
   }
 }
@@ -126,6 +138,16 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-attributions-per-source-destination-limit";
     case DebugDataType::kTriggerNoMatchingFilterData:
       return "trigger-no-matching-filter-data";
+    case DebugDataType::kTriggerEventDeduplicated:
+      return "trigger-event-deduplicated";
+    case DebugDataType::kTriggerEventNoMatchingConfigurations:
+      return "trigger-event-no-matching-configurations";
+    case DebugDataType::kTriggerEventNoise:
+      return "trigger-event-noise";
+    case DebugDataType::kTriggerEventLowPriority:
+      return "trigger-event-low-prioirty";
+    case DebugDataType::kTriggerEventExcessiveReports:
+      return "trigger-event-excessive-reports";
   }
 }
 
@@ -171,6 +193,11 @@ base::Value::Dict GetReportDataBody(
     case DebugDataType::kTriggerNoMatchingSource:
     case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
     case DebugDataType::kTriggerNoMatchingFilterData:
+    case DebugDataType::kTriggerEventDeduplicated:
+    case DebugDataType::kTriggerEventNoMatchingConfigurations:
+    case DebugDataType::kTriggerEventNoise:
+    case DebugDataType::kTriggerEventLowPriority:
+    case DebugDataType::kTriggerEventExcessiveReports:
       NOTREACHED();
       return base::Value::Dict();
   }
@@ -189,7 +216,10 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
       return data_body;
     }
     case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
-    case DebugDataType::kTriggerNoMatchingFilterData: {
+    case DebugDataType::kTriggerNoMatchingFilterData:
+    case DebugDataType::kTriggerEventDeduplicated:
+    case DebugDataType::kTriggerEventNoMatchingConfigurations:
+    case DebugDataType::kTriggerEventNoise: {
       DCHECK(result.source());
 
       base::Value::Dict data_body;
@@ -205,6 +235,10 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
       }
       return data_body;
     }
+    case DebugDataType::kTriggerEventLowPriority:
+    case DebugDataType::kTriggerEventExcessiveReports:
+      DCHECK(result.dropped_event_level_report());
+      return result.dropped_event_level_report()->ReportBody();
     case DebugDataType::kSourceDestinationLimit:
     case DebugDataType::kSourceNoised:
     case DebugDataType::kSourceStorageLimit:

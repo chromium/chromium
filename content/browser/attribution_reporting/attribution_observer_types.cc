@@ -27,7 +27,8 @@ CreateReportResult::CreateReportResult(
     absl::optional<AttributionReport> new_event_level_report,
     absl::optional<AttributionReport> new_aggregatable_report,
     absl::optional<StoredSource> source,
-    absl::optional<int64_t> rate_limits_max_attributions)
+    absl::optional<int64_t> rate_limits_max_attributions,
+    absl::optional<AttributionReport> dropped_event_level_report)
     : trigger_time_(trigger_time),
       event_level_status_(event_level_status),
       aggregatable_status_(aggregatable_status),
@@ -35,7 +36,8 @@ CreateReportResult::CreateReportResult(
       new_event_level_report_(std::move(new_event_level_report)),
       new_aggregatable_report_(std::move(new_aggregatable_report)),
       source_(std::move(source)),
-      rate_limits_max_attributions_(rate_limits_max_attributions) {
+      rate_limits_max_attributions_(rate_limits_max_attributions),
+      dropped_event_level_report_(std::move(dropped_event_level_report)) {
   DCHECK_EQ(
       event_level_status_ == EventLevelResult::kSuccess ||
           event_level_status_ == EventLevelResult::kSuccessDroppedLowerPriority,
@@ -76,6 +78,13 @@ CreateReportResult::CreateReportResult(
       rate_limits_max_attributions_.has_value(),
       event_level_status_ == EventLevelResult::kExcessiveAttributions ||
           aggregatable_status_ == AggregatableResult::kExcessiveAttributions);
+
+  DCHECK_EQ(dropped_event_level_report_.has_value(),
+            event_level_status_ == EventLevelResult::kPriorityTooLow ||
+                event_level_status_ == EventLevelResult::kExcessiveReports);
+  DCHECK(!dropped_event_level_report_.has_value() ||
+         dropped_event_level_report_->GetReportType() ==
+             AttributionReport::Type::kEventLevel);
 }
 
 CreateReportResult::~CreateReportResult() = default;

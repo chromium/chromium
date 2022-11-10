@@ -263,7 +263,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       AttributionReport& report,
       absl::optional<uint64_t> dedup_key,
       int num_conversions,
-      absl::optional<AttributionReport>& replaced_report)
+      absl::optional<AttributionReport>& replaced_report,
+      absl::optional<AttributionReport>& dropped_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is

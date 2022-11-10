@@ -47,7 +47,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kProhibitedByBrowserPolicy = 11,
     kNoMatchingConfigurations = 12,
     kExcessiveReports = 13,
-    kMaxValue = kExcessiveReports,
+    kFalselyAttributedSource = 14,
+    kMaxValue = kFalselyAttributedSource,
   };
 
   // Represents the potential aggregatable outcomes from attempting to register

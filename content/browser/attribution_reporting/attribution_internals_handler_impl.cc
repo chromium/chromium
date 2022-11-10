@@ -409,6 +409,7 @@ WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
     case EventLevelStatus::kPriorityTooLow:
       return WebUITriggerStatus::kLowPriority;
     case EventLevelStatus::kDroppedForNoise:
+    case EventLevelStatus::kFalselyAttributedSource:
       return WebUITriggerStatus::kNoised;
     case EventLevelStatus::kExcessiveReportingOrigins:
       return WebUITriggerStatus::kExcessiveReportingOrigins;

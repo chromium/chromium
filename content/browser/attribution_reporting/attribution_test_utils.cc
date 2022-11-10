@@ -983,6 +983,9 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::EventLevelResult::kExcessiveReports:
       out << "excessiveReports";
       break;
+    case AttributionTrigger::EventLevelResult::kFalselyAttributedSource:
+      out << "falselyAttributedSource";
+      break;
   }
   return out;
 }

@@ -891,6 +891,11 @@ MATCHER_P(NewAggregatableReportIs, matcher, "") {
                             result_listener);
 }
 
+MATCHER_P(DroppedEventLevelReportIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.dropped_event_level_report(),
+                            result_listener);
+}
+
 struct EventTriggerDataMatcherConfig {
   ::testing::Matcher<uint64_t> data;
   ::testing::Matcher<int64_t> priority;
