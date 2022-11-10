@@ -39,8 +39,7 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
   RlweDmserverClientImpl(
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<RlweClient> psm_rlwe_client,
-      PlaintextId plaintext_id);
+      std::unique_ptr<RlweClient> psm_rlwe_client);
 
   // Disallow copy constructor and assignment operator.
   RlweDmserverClientImpl(const RlweDmserverClientImpl&) = delete;
@@ -50,7 +49,7 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
   // callbacks).
   ~RlweDmserverClientImpl() override;
 
-  // Determines membership for the |psm_rlwe_id_|.
+  // Determines membership for the |psm_rlwe_client_|.
   void CheckMembership(CompletionCallback callback) override;
 
   // Returns true if the PSM protocol is still running,
@@ -104,9 +103,6 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
 
   // Callback will be triggered upon completing of the protocol.
   CompletionCallback on_completion_callback_;
-
-  // PSM identifier, which is going to be used while preparing the PSM requests.
-  PlaintextId psm_rlwe_id_;
 
   // The time when the PSM request started.
   base::TimeTicks time_start_;

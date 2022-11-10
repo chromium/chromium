@@ -39,12 +39,10 @@ class RlweClient {
   virtual ::rlwe::StatusOr<QueryRequest> CreateQueryRequest(
       const OprfResponse& oprf_response) = 0;
 
-  // Processes the query response from the server and returns the membership
-  // response map.
-  //
-  // Keys of the returned map match the original plaintext ids supplied to the
-  // client when it was created.
-  virtual ::rlwe::StatusOr<MembershipResponses> ProcessQueryResponse(
+  // Processes the query response from the server.
+  // The return value indicates whether the requested `plaintext_id_` is part of
+  // the set, or why the determination failed.
+  virtual ::rlwe::StatusOr<bool> ProcessQueryResponse(
       const QueryResponse& query_response) = 0;
 };
 

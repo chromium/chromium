@@ -33,7 +33,7 @@ class AutoEnrollmentController {
       base::RepeatingCallbackList<void(policy::AutoEnrollmentState)>;
   using RlweClientFactory =
       base::RepeatingCallback<std::unique_ptr<policy::psm::RlweClient>(
-          const std::vector<private_membership::rlwe::RlwePlaintextId>&)>;
+          const private_membership::rlwe::RlwePlaintextId&)>;
 
   // State of the system clock.
   enum class SystemClockSyncState {

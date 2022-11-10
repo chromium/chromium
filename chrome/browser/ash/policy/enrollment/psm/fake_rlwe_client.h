@@ -18,10 +18,9 @@ namespace policy::psm {
 class FakeRlweClient : public RlweClient {
  public:
   // Creates a fake PSM RLWE client for testing purposes.
-  static std::unique_ptr<RlweClient> Create(
-      const std::vector<PlaintextId>& plaintext_ids);
+  static std::unique_ptr<RlweClient> Create(const PlaintextId& plaintext_id);
 
-  FakeRlweClient(UseCase use_case, std::vector<PlaintextId> plaintext_ids);
+  FakeRlweClient(UseCase use_case, const PlaintextId& plaintext_id);
   FakeRlweClient(const FakeRlweClient&) = delete;
   FakeRlweClient& operator=(const FakeRlweClient&) = delete;
   ~FakeRlweClient() override;
@@ -30,12 +29,12 @@ class FakeRlweClient : public RlweClient {
   ::rlwe::StatusOr<OprfRequest> CreateOprfRequest() override;
   ::rlwe::StatusOr<QueryRequest> CreateQueryRequest(
       const OprfResponse& oprf_response) override;
-  ::rlwe::StatusOr<MembershipResponses> ProcessQueryResponse(
+  ::rlwe::StatusOr<bool> ProcessQueryResponse(
       const QueryResponse& query_response) override;
 
  private:
   const UseCase use_case_;
-  const std::vector<PlaintextId> plaintext_ids_;
+  const PlaintextId plaintext_id_;
 };
 
 }  // namespace policy::psm

@@ -24,19 +24,19 @@ class RlweClientImpl : public RlweClient {
  public:
   // Creates PSM RLWE client that generates and holds a randomly generated
   // key.
-  static std::unique_ptr<RlweClient> Create(
-      const std::vector<PlaintextId>& plaintext_ids);
+  static std::unique_ptr<RlweClient> Create(const PlaintextId& plaintext_id);
 
   // In contrast to `Create` this creates a PSM RLWE client for testing with a
   // fixed `ec_cipher_key` and `seed`.
   static std::unique_ptr<RlweClient> CreateForTesting(
       const std::string& ec_cipher_key,
       const std::string& seed,
-      const std::vector<PlaintextId>& plaintext_ids);
+      const PlaintextId& plaintext_id);
 
   explicit RlweClientImpl(
       std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
-          psm_rlwe_client);
+          psm_rlwe_client,
+      const PlaintextId& plaintext_id);
 
   RlweClientImpl(const RlweClientImpl&) = delete;
   RlweClientImpl& operator=(const RlweClientImpl&) = delete;
@@ -49,12 +49,13 @@ class RlweClientImpl : public RlweClient {
   ::rlwe::StatusOr<OprfRequest> CreateOprfRequest() override;
   ::rlwe::StatusOr<QueryRequest> CreateQueryRequest(
       const OprfResponse& oprf_response) override;
-  ::rlwe::StatusOr<MembershipResponses> ProcessQueryResponse(
+  ::rlwe::StatusOr<bool> ProcessQueryResponse(
       const QueryResponse& query_response) override;
 
  private:
   const std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
       psm_rlwe_client_;
+  PlaintextId plaintext_id_;
 };
 
 }  // namespace policy::psm

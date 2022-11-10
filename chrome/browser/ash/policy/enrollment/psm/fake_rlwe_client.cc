@@ -26,9 +26,9 @@ namespace policy::psm {
 
 // static
 std::unique_ptr<RlweClient> FakeRlweClient::Create(
-    const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
+    const psm_rlwe::RlwePlaintextId& plaintext_id) {
   return std::make_unique<FakeRlweClient>(
-      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, plaintext_ids);
+      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, plaintext_id);
 }
 
 FakeRlweClient::~FakeRlweClient() = default;
@@ -39,7 +39,7 @@ FakeRlweClient::CreateOprfRequest() {
   request.set_use_case(use_case_);
 
   // Send the plaintext ID as the only encrypted ID.
-  const std::string encrypted_id = plaintext_ids_[0].sensitive_id();
+  const std::string encrypted_id = plaintext_id_.sensitive_id();
   *request.add_encrypted_ids() = encrypted_id;
 
   return request;
@@ -55,7 +55,7 @@ FakeRlweClient::CreateQueryRequest(
       oprf_response.doubly_encrypted_ids(0).queried_encrypted_id();
 
   // Check validity of returned queried ID.
-  if (encrypted_id != plaintext_ids_[0].sensitive_id()) {
+  if (encrypted_id != plaintext_id_.sensitive_id()) {
     return absl::InvalidArgumentError(
         "OPRF response contains a response to an erroneous encrypted ID.");
   }
@@ -69,8 +69,7 @@ FakeRlweClient::CreateQueryRequest(
   return request;
 }
 
-::rlwe::StatusOr<psm_rlwe::RlweMembershipResponses>
-FakeRlweClient::ProcessQueryResponse(
+::rlwe::StatusOr<bool> FakeRlweClient::ProcessQueryResponse(
     const psm_rlwe::PrivateMembershipRlweQueryResponse& query_response) {
   // Validate that we have an existing response.
   if (!query_response.pir_responses_size()) {
@@ -82,7 +81,7 @@ FakeRlweClient::ProcessQueryResponse(
   const std::string encrypted_id = pir_response.queried_encrypted_id();
 
   // Check validity of returned queried ID.
-  if (encrypted_id != plaintext_ids_[0].sensitive_id()) {
+  if (encrypted_id != plaintext_id_.sensitive_id()) {
     return absl::InvalidArgumentError(
         "Query response contains a response to an erroneous encrypted ID.");
   }
@@ -100,27 +99,11 @@ FakeRlweClient::ProcessQueryResponse(
         "encrypted ID.");
   }
 
-  // Include one membership response in RlweMembershipResponses. Its
-  // plaintext_id field will be the first entry of |plaintext_ids_|.
-
-  psm_rlwe::RlweMembershipResponses rlwe_membership_responses;
-  auto* entry = rlwe_membership_responses.add_membership_responses();
-
-  entry->mutable_plaintext_id()->set_sensitive_id(
-      plaintext_ids_[0].sensitive_id());
-  entry->mutable_membership_response()->set_is_member(
-      server_membership_response == kHasMembership);
-  entry->mutable_membership_response()->set_value(encrypted_id);
-
-  return rlwe_membership_responses;
+  return server_membership_response == kHasMembership;
 }
 
-FakeRlweClient::FakeRlweClient(
-    psm_rlwe::RlweUseCase use_case,
-    std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids)
-    : use_case_(use_case), plaintext_ids_(std::move(plaintext_ids)) {
-  // Verify that we have at least one instance of RlwePlaintextId.
-  DCHECK(!plaintext_ids_.empty());
-}
+FakeRlweClient::FakeRlweClient(psm_rlwe::RlweUseCase use_case,
+                               const psm_rlwe::RlwePlaintextId& plaintext_id)
+    : use_case_(use_case), plaintext_id_(plaintext_id) {}
 
 }  // namespace policy::psm

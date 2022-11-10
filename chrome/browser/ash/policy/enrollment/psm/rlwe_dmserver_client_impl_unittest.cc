@@ -111,7 +111,7 @@ class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
 
     psm_client_ = std::make_unique<RlweDmserverClientImpl>(
         service_.get(), shared_url_loader_factory_,
-        std::move(psm_rlwe_test_client_), psm_test_case_.plaintext_id());
+        std::move(psm_rlwe_test_client_));
   }
 
   void CreatePsmTestCase() {
@@ -138,7 +138,7 @@ class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
     // Create PSM RLWE test client.
     psm_rlwe_test_client_ = RlweClientImpl::CreateForTesting(
         psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
-        {psm_test_case_.plaintext_id()});
+        psm_test_case_.plaintext_id());
   }
 
   // Start the `RlweDmserverClient` to retrieve the device state.

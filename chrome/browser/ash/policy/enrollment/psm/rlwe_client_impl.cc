@@ -20,26 +20,27 @@ namespace psm_rlwe = private_membership::rlwe;
 namespace policy::psm {
 
 std::unique_ptr<RlweClient> RlweClientImpl::Create(
-    const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
+    const psm_rlwe::RlwePlaintextId& plaintext_id) {
   auto status_or_client = psm_rlwe::PrivateMembershipRlweClient::Create(
-      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, plaintext_ids);
+      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, {plaintext_id});
   DCHECK(status_or_client.ok()) << status_or_client.status().message();
 
   return std::make_unique<psm::RlweClientImpl>(
-      std::move(status_or_client).value());
+      std::move(status_or_client).value(), plaintext_id);
 }
 
 std::unique_ptr<RlweClient> RlweClientImpl::CreateForTesting(
     const std::string& ec_cipher_key,
     const std::string& seed,
-    const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
+    const psm_rlwe::RlwePlaintextId& plaintext_id) {
   auto status_or_client =
       psm_rlwe::PrivateMembershipRlweClient::CreateForTesting(
           private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE,
-          plaintext_ids, ec_cipher_key, seed);
+          {plaintext_id}, ec_cipher_key, seed);
   DCHECK(status_or_client.ok()) << status_or_client.status().message();
 
-  return std::make_unique<RlweClientImpl>(std::move(status_or_client).value());
+  return std::make_unique<RlweClientImpl>(std::move(status_or_client).value(),
+                                          plaintext_id);
 }
 
 RlweClientImpl::~RlweClientImpl() = default;
@@ -55,15 +56,27 @@ RlweClientImpl::CreateQueryRequest(
   return psm_rlwe_client_->CreateQueryRequest(oprf_response);
 }
 
-::rlwe::StatusOr<psm_rlwe::RlweMembershipResponses>
-RlweClientImpl::ProcessQueryResponse(
+::rlwe::StatusOr<bool> RlweClientImpl::ProcessQueryResponse(
     const psm_rlwe::PrivateMembershipRlweQueryResponse& query_response) {
-  return psm_rlwe_client_->ProcessQueryResponse(query_response);
+  const auto responses = psm_rlwe_client_->ProcessQueryResponse(query_response);
+  if (!responses.ok()) {
+    return responses.status();
+  }
+
+  if (responses->membership_responses_size() != 1 ||
+      responses->membership_responses(0).plaintext_id().sensitive_id() !=
+          plaintext_id_.sensitive_id()) {
+    return absl::InvalidArgumentError("id mismatch");
+  }
+
+  return responses->membership_responses(0).membership_response().is_member();
 }
 
 RlweClientImpl::RlweClientImpl(
-    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client)
-    : psm_rlwe_client_(std::move(psm_rlwe_client)) {
+    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client,
+    const psm_rlwe::RlwePlaintextId& plaintext_id)
+    : psm_rlwe_client_(std::move(psm_rlwe_client)),
+      plaintext_id_(plaintext_id) {
   DCHECK(psm_rlwe_client_);
 }
 

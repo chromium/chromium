@@ -432,7 +432,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
           service,
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),
-          psm_rlwe_client_factory_.Run({plaintext_id}), plaintext_id));
+          psm_rlwe_client_factory_.Run(plaintext_id)));
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();
