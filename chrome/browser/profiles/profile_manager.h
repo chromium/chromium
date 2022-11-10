@@ -582,7 +582,7 @@ class ProfileManager : public Profile::Delegate {
 
   // Destroy after |profile_attributes_storage_| since Profile destruction may
   // trigger some observers to unregister themselves.
-  base::ObserverList<ProfileManagerObserver> observers_;
+  base::ObserverList<ProfileManagerObserver, /*check_empty=*/true> observers_;
 
   // Object to cache various information about profiles. Contains information
   // about every profile which has been created for this instance of Chrome,
