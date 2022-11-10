@@ -847,3 +847,40 @@ FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/service
 ### What is the security story for Extensions?
 
 See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md).
+
+<a name="TOC-Im-making-a-Chromium-based-browser-how-should-I-secure-it-"></a>
+### I'm making a Chromium-based browser. How should I secure it?
+
+If you want to make a browser based on Chromium, you should stay up to date
+with Chromium's security fixes. There are adversaries who weaponize fixed
+Chromium bugs ("n-day vulnerabilities") to target browsers which haven’t yet
+absorbed those fixes.
+
+Decide whether your approach is to stay constantly up to date with Chromium
+releases, or to backport security fixes onto some older version, upgrading
+Chromium versions less frequently.
+
+Backporting security fixes sounds easier than forward-porting features, but in
+our experience, this is false. Chromium releases 400+ security bug fixes per
+year ([example
+query](https://bugs.chromium.org/p/chromium/issues/list?q=type%3DBug-Security%20has%3Arelease%20closed%3Etoday-730%20closed%3Ctoday-365%20allpublic&can=1)).
+Some downstream browsers take risks by backporting only Medium+ severity fixes,
+but that's still over 300 ([example
+query](https://bugs.chromium.org/p/chromium/issues/list?q=type%3DBug-Security%20has%3Arelease%20closed%3Etoday-730%20closed%3Ctoday-365%20allpublic%20Security_Severity%3DMedium%2CHigh%2CCritical&can=1)).
+Most are trivial cherry-picks; but others require rework and require versatile
+engineers who can make good decisions about any part of a large codebase.
+
+Our recommendation is to stay up-to-date with Chrome's released versions. You
+should aim to release a version of your browser within just a few days of each
+Chrome [stable
+release](https://chromereleases.googleblog.com/search/label/Stable%20updates).
+If your browser is sufficiently widely-used, you can [apply for advance notice
+of fixed vulnerabilities](https://www.chromium.org/Home/chromium-security/) to
+make this a little easier.
+
+Finally, if you choose the backporting approach, please explain the security
+properties to your users. Some fraction of security improvements cannot be
+backported. This can happen for several reasons, for example: because they
+depend upon architectural changes (e.g. breaking API changes); because the
+security improvement is a significant new feature; or because the security
+improvement is the removal of a broken feature.
