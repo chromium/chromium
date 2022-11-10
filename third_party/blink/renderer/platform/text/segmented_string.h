@@ -177,7 +177,8 @@ class PLATFORM_EXPORT SegmentedString {
         number_of_characters_consumed_prior_to_current_line_(0),
         current_line_(0),
         closed_(false),
-        empty_(true) {}
+        empty_(true),
+        current_char_('\0') {}
 
   SegmentedString(const String& str)
       : current_string_(str),
@@ -185,7 +186,8 @@ class PLATFORM_EXPORT SegmentedString {
         number_of_characters_consumed_prior_to_current_line_(0),
         current_line_(0),
         closed_(false),
-        empty_(!str.length()) {}
+        empty_(!str.length()),
+        current_char_(empty_ ? '\0' : current_string_.GetCurrentChar()) {}
 
   void Clear();
   void Close();
@@ -237,7 +239,8 @@ class PLATFORM_EXPORT SegmentedString {
 
   ALWAYS_INLINE UChar Advance() {
     if (LIKELY(current_string_.CanAdvance())) {
-      return current_string_.Advance();
+      current_char_ = current_string_.Advance();
+      return current_char_;
     }
     return AdvanceSubstring();
   }
@@ -254,7 +257,7 @@ class PLATFORM_EXPORT SegmentedString {
 
   ALWAYS_INLINE UChar AdvanceAndUpdateLineNumber() {
     DCHECK_GE(current_string_.length(), 1);
-    if (current_string_.GetCurrentChar() == '\n')
+    if (current_char_ == '\n')
       UpdateLineNumber();
     return Advance();
   }
@@ -286,7 +289,7 @@ class PLATFORM_EXPORT SegmentedString {
   // have space for at least |count| characters.
   void Advance(unsigned count, UChar* consumed_characters);
 
-  int NumberOfCharactersConsumed() const {
+  ALWAYS_INLINE int NumberOfCharactersConsumed() const {
     int number_of_pushed_characters = 0;
     return number_of_characters_consumed_prior_to_current_string_ +
            current_string_.NumberOfCharactersConsumed() -
@@ -295,9 +298,7 @@ class PLATFORM_EXPORT SegmentedString {
 
   String ToString() const;
 
-  ALWAYS_INLINE UChar CurrentChar() const {
-    return current_string_.GetCurrentChar();
-  }
+  ALWAYS_INLINE UChar CurrentChar() const { return current_char_; }
 
   // The method is moderately slow, comparing to currentLine method.
   OrdinalNumber CurrentColumn() const;
@@ -352,6 +353,7 @@ class PLATFORM_EXPORT SegmentedString {
   Deque<SegmentedSubstring> substrings_;
   bool closed_;
   bool empty_;
+  UChar current_char_;
   const SegmentedString* next_segmented_string_ = nullptr;
 };
 

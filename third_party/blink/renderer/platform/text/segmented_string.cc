@@ -57,6 +57,7 @@ void SegmentedString::Append(const SegmentedSubstring& s) {
     number_of_characters_consumed_prior_to_current_string_ +=
         current_string_.NumberOfCharactersConsumed();
     current_string_ = s;
+    current_char_ = current_string_.GetCurrentChar();
   } else {
     substrings_.push_back(s);
   }
@@ -70,8 +71,10 @@ void SegmentedString::Push(UChar c) {
   // however it will fail if the SegmentedSubstring is empty, or
   // when we prepended some text while consuming a SegmentedSubstring by
   // document.write().
-  if (current_string_.PushIfPossible(c))
+  if (current_string_.PushIfPossible(c)) {
+    current_char_ = current_string_.GetCurrentChar();
     return;
+  }
 
   Prepend(SegmentedString(String(&c, 1u)), PrependType::kUnconsume);
 }
@@ -95,6 +98,7 @@ void SegmentedString::Prepend(const SegmentedSubstring& s, PrependType type) {
     substrings_.push_front(current_string_);
     current_string_ = s;
   }
+  current_char_ = current_string_.GetCurrentChar();
   empty_ = false;
 }
 
@@ -140,6 +144,7 @@ void SegmentedString::Advance(unsigned num_chars,
   }
   number_of_characters_consumed_prior_to_current_line_ =
       NumberOfCharactersConsumed() - current_column;
+  current_char_ = empty_ ? '\0' : current_string_.GetCurrentChar();
 }
 
 UChar SegmentedString::AdvanceSubstring() {
@@ -152,10 +157,12 @@ UChar SegmentedString::AdvanceSubstring() {
     // string, not as part of "prior to current string."
     number_of_characters_consumed_prior_to_current_string_ -=
         current_string_.NumberOfCharactersConsumed();
+    current_char_ = current_string_.GetCurrentChar();
     return CurrentChar();
   } else {
     current_string_.Clear();
     empty_ = true;
+    current_char_ = '\0';
     return 0;
   }
 }
