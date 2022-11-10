@@ -38,7 +38,6 @@ static_library("xml_reader") {
     "//base/test:test_support",
     "//components/policy/core/common:unit_tests",
     "//services/data_decoder:*",
-    "//tools/traffic_annotation/auditor:auditor_sources",
   ]
   sources = [
     "chromium/xml_reader.cc",

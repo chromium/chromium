@@ -180,19 +180,21 @@ class AuditorError:
       assert self._details
       return (
           "'tools/traffic_annotation/summary/annotations.xml' requires update. "
-          "It is recommended to run traffic_annotation_auditor locally to do "
-          "the updates automatically (please refer to tools/traffic_annotation/"
-          "auditor/README.md), but you can also apply the following edit(s) to "
-          "do it manually:\n{}".format(self._details[0]))
+          "It is recommended to run the Traffic Annotation Auditor locally to "
+          "do the updates automatically (please refer to tools/"
+          "traffic_annotation/scripts/auditor/README.md), but you can also "
+          "apply the following edit(s) to do it manually:\n{}".format(
+              self._details[0]))
 
     if self.type == ErrorType.GROUPING_XML_UPDATE:
       assert self._details
       return (
           "'tools/traffic_annotation/summary/grouping.xml' requires update. "
-          "It is recommended to run traffic_annotation_auditor locally to do "
-          "the updates automatically (please refer to tools/traffic_annotation/"
-          "auditor/README.md), but you can also apply the following edit(s) to "
-          "do it manually:\n{}".format(self._details[0]))
+          "It is recommended to run the Traffic Annotation Auditor locally to "
+          "do the updates automatically (please refer to tools/"
+          "traffic_annotation/scripts/auditor/README.md), but you can also "
+          "apply the following edit(s) to do it manually:\n{}".format(
+              self._details[0]))
 
     raise NotImplementedError("Unimplemented ErrorType: {}".format(
         self.type.name))

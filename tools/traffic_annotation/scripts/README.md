@@ -3,9 +3,9 @@ This file describes the scripts in `tools/traffic_annotation/scripts`.
 
 # auditor/auditor.py
 
-The new implementation of `traffic_annotation_auditor`. It is meant as a
-drop-in replacement, and it adds new annotations to the grouping xml file.
-After the grouping xml file is generated, we'll decide if the new annotation 
+This is the python implementation of the Traffic Annotation Auditor, and it
+adds new annotations to the grouping xml file.
+After the grouping xml file is generated, we'll decide if the new annotation
 should be in the report by adding hidden="false".
 i.e. you can call it with the same command-line arguments
 and it should give similar output.
@@ -15,7 +15,7 @@ Runs traffic annotation tests on the changed files or all repository. The tests
 are run in error resilient mode. Requires a compiled build directory to run.
 
 # traffic_annotation_auditor_tests.py
-Runs tests to ensure traffic_annotation_auditor is performing as expected. Tests
+Runs tests to ensure auditor/auditor.py is performing as expected. Tests
 include:
  - Checking if auditor and underlying extractor run, and an expected minimum
    number of outputs are returned.

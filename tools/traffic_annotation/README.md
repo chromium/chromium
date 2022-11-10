@@ -6,22 +6,14 @@ This folder provides tools to ensure that every operation in the code base that
 requires annotation, is annotated, and annotations are sound and complete.
 
 # Traffic Annotation Auditor
-This is the main executable for all the tests. It runs Traffic Annotation
-Extractor python script to check the repository, extract annotations, and
-perform required tests and maintenance. See more details in
-`tools/traffic_annotation/auditor/README.md`.
+This is a python script that checks the repository, extracts annotations, and
+performs required tests and maintenance. See more details in
+`tools/traffic_annotation/scripts/README.md`.
 
 # Traffic Annotation Extractor
 Traffic Annotation Auditor uses this python script (located in
 `tools/traffic_annotation/scripts/extractor.py`) to parse the code and extract
 required data for testing and maintenance.
-
-# Building the Checkers
-We do not want every developer to have to build the auditor, and so we store
-pre-built binaries in a Google Cloud Storage bucket and retrieve them via
-gclient hooks. The binaries are in `tools/traffic_annotation/bin/[platform]`
-folder. To roll new versions of the binaries, please see
-`tools/traffic_annotation/bin/README.md`.
 
 # Automatic Annotation Tests
 Network traffic annotations are tested in commit queue using

@@ -174,7 +174,6 @@ vars = {
   # support for other platforms may be added in the future.
   'checkout_openxr' : 'checkout_win',
 
-  'checkout_traffic_annotation_tools': 'checkout_configuration != "small"',
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration != "small"',
 
   # By default bot checkouts the WPR archive files only when this
@@ -4504,38 +4503,6 @@ hooks = [
                 '--no_auth',
                 '--bucket', 'chromium-telemetry',
                 '-s', 'src/tools/perf/page_sets/maps_perf_test/load_dataset.sha1',
-    ],
-  },
-
-  # This is used to ensure that all network operations are properly
-  # annotated so we can document what they're for.
-  {
-    'name': 'tools_traffic_annotation_linux',
-    'pattern': '.',
-    'condition': 'host_os == "linux" and checkout_traffic_annotation_tools',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--num_threads=4',
-                '--bucket', 'chromium-tools-traffic_annotation',
-                '-d', 'src/tools/traffic_annotation/bin/linux64',
-    ],
-  },
-
-# This is used to ensure that all network operations are properly
-# annotated so we can document what they're for.
-  {
-    'name': 'tools_traffic_annotation_windows',
-    'pattern': '.',
-    'condition': 'host_os == "win" and checkout_traffic_annotation_tools',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--num_threads=4',
-                '--bucket', 'chromium-tools-traffic_annotation',
-                '-d', 'src/tools/traffic_annotation/bin/win32',
     ],
   },
 

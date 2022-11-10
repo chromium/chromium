@@ -332,10 +332,6 @@ group("gn_all") {
     ]
   }
 
-  if (is_win || is_linux) {
-    deps += [ "//tools/traffic_annotation/auditor:traffic_annotation_auditor" ]
-  }
-
   if (is_mac) {
     deps += [
       "//chrome/installer/gcapi_mac:gcapi_example",
@@ -466,7 +462,6 @@ group("gn_all") {
       "//components/exo/wayland:wayland_client_compatibility_tests",
       "//components/session_manager/core",
       "//third_party/shell-encryption:shell_encryption_unittests",
-      "//tools/traffic_annotation/auditor:traffic_annotation_auditor",
       "//ui/chromeos:ui_chromeos_unittests",
     ]
   }
