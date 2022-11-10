@@ -101,6 +101,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
     SyncConfirmationStyle style) {
   int title_id = IDS_SYNC_CONFIRMATION_TITLE;
   int info_title_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE;
+  int info_desc_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC;
   int confirm_label_id = IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
   int undo_label_id = IDS_CANCEL;
   int settings_label_id = IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL;
@@ -122,11 +123,12 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_HTML);
 
   bool isTangibleSync = base::FeatureList::IsEnabled(switches::kTangibleSync);
+  bool isSigninInterceptFre =
+      style == SyncConfirmationStyle::kSigninInterceptModal;
   source->AddBoolean("isModalDialog",
                      style == SyncConfirmationStyle::kDefaultModal ||
                          style == SyncConfirmationStyle::kSigninInterceptModal);
-  source->AddBoolean("isSigninInterceptFre",
-                     style == SyncConfirmationStyle::kSigninInterceptModal);
+  source->AddBoolean("isSigninInterceptFre", isSigninInterceptFre);
   source->AddBoolean("isTangibleSync", isTangibleSync);
 
   source->AddString("accountPictureUrl",
@@ -136,7 +138,9 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED;
 #endif
-  if (style == SyncConfirmationStyle::kSigninInterceptModal) {
+  // TODO(crbug.com/1374702): Rename SyncConfirmationStyle enum based on the
+  // purpose instead of what kind of container the page is displayed in.
+  if (isSigninInterceptFre) {
     DCHECK(base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
     info_title_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_SIGNIN_INTERCEPT;
     confirm_label_id = IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL;
@@ -161,8 +165,17 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
         IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_DARK_SVG;
   }
 
+  if (isTangibleSync) {
+    title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE;
+    info_desc_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
+    info_title_id =
+        isSigninInterceptFre
+            ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT
+            : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
+  }
+
   // Registering and resolving the strings with placeholders
-  if (style == SyncConfirmationStyle::kSigninInterceptModal) {
+  if (isSigninInterceptFre) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
@@ -183,10 +196,17 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   AddStringResource(source, "syncConfirmationConfirmLabel", confirm_label_id);
   AddStringResource(source, "syncConfirmationUndoLabel", undo_label_id);
   AddStringResource(source, "syncConfirmationSettingsLabel", settings_label_id);
-  AddStringResource(source, "syncConfirmationSyncInfoDesc",
-                    IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC);
+  AddStringResource(source, "syncConfirmationSyncInfoDesc", info_desc_id);
   AddStringResource(source, "syncConfirmationSettingsInfo",
                     IDS_SYNC_CONFIRMATION_SETTINGS_INFO);
+  AddStringResource(source, "syncConfirmationBookmarks",
+                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_BOOKMARKS);
+  AddStringResource(source, "syncConfirmationAutofill",
+                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_AUTOFILL);
+  AddStringResource(source, "syncConfirmationHistory",
+                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_HISTORY);
+  AddStringResource(source, "syncConfirmationExtensionsAndMore",
+                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_EXTENSIONS_AND_MORE);
 
   source->AddResourcePath(illustration_path, illustration_id);
   source->AddResourcePath(illustration_dark_path, illustration_dark_id);

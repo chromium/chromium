@@ -278,7 +278,7 @@
     margin: 24px 0 16px;
   }
 
-  #syncDescription {
+  #syncInfoTitle {
     font-size: 1.6em;
     line-height: 24px;
   }
@@ -311,7 +311,7 @@
     width: 24px;
   }
 
-  #syncSettingsInfo {
+  #syncInfoDesc {
     font-size: 0.95em;
     line-height: 20px;
   }
@@ -470,14 +470,15 @@
 </template>
 
 <template is="dom-if" if="[[isTangibleSync_]]">
-  <!-- TODO(crbug.com/1374702): Replace hardcoded strings -->
   <div id="contentContainer" class="tangible-sync">
     <!-- TODO(crbug.com/1374702): Add work badge to avatar for managed
          accounts -->
     <img id="avatar" alt="" src="[[accountImageSrc_]]">
-    <h1 id="syncConfirmationHeading">Turn on sync</h1>
-    <div id="syncDescription" class="secondary">
-      Back up your stuff and use it on any device
+    <h1 id="syncConfirmationHeading" consent-description>
+      $i18n{syncConfirmationTitle}
+    </h1>
+    <div id="syncInfoTitle" class="secondary" consent-description>
+      $i18n{syncConfirmationSyncInfoTitle}
     </div>
     <div id="syncBenefitsList">
       <!-- TODO(crbug.com/1374702): Transform the sync benefit item into a
@@ -486,57 +487,57 @@
       <div class="sync-benefit">
         <iron-icon class="sync-benefit-icon" icon="signin:star-border">
         </iron-icon>
-        <div class="sync-benefit-text">
-          Bookmarks
+        <div class="sync-benefit-text" consent-description>
+          $i18n{syncConfirmationBookmarks}
         </div>
       </div>
       <div class="sync-benefit">
         <iron-icon class="sync-benefit-icon" icon="signin:assignment">
         </iron-icon>
-        <div class="sync-benefit-text">
-          Autofill
+        <div class="sync-benefit-text" consent-description>
+          $i18n{syncConfirmationAutofill}
         </div>
       </div>
       <div class="sync-benefit">
         <iron-icon class="sync-benefit-icon" icon="signin:devices"></iron-icon>
-        <div class="sync-benefit-text">
-          History
+        <div class="sync-benefit-text" consent-description>
+          $i18n{syncConfirmationHistory}
         </div>
       </div>
       <div class="sync-benefit">
         <iron-icon class="sync-benefit-icon" icon="cr:extension"></iron-icon>
-        <div class="sync-benefit-text">
-          Extensions and more
+        <div class="sync-benefit-text" consent-description>
+          $i18n{syncConfirmationExtensionsAndMore}
         </div>
       </div>
     </div>
-    <div id="syncSettingsInfo" class="secondary">
-      You can always choose what to sync in settings. Google may personalize Search and other services based on your history.
+    <div id="syncInfoDesc" class="secondary" consent-description>
+      $i18n{syncConfirmationSyncInfoDesc}
     </div>
   </div>
 
   <div class="action-row">
     <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
     <div id="buttonsContainer" class="action-container">
-      <cr-button id="confirmButton" class="action-button"
-          on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
-          consent-confirmation autofocus="[[isModalDialog_]]">
-        Yes, I'm in
+      <cr-button id="confirmButton" class="action-button" on-click="onConfirm_"
+          disabled="[[anyButtonClicked_]]" consent-confirmation
+          autofocus="[[isModalDialog_]]">
+        $i18n{syncConfirmationConfirmLabel}
       </cr-button>
       <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
         <cr-button id="settingsButton" on-click="onGoToSettings_"
             disabled="[[anyButtonClicked_]]" consent-confirmation>
-          Sync Settings
+          $i18n{syncConfirmationSettingsLabel}
         </cr-button>
       </if>
       <cr-button id="notNowButton" on-click="onUndo_"
-        disabled="[[anyButtonClicked_]]">
-        No, thanks
+          disabled="[[anyButtonClicked_]]">
+        $i18n{syncConfirmationUndoLabel}
       </cr-button>
       <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
         <cr-button id="settingsButton" on-click="onGoToSettings_"
             disabled="[[anyButtonClicked_]]" consent-confirmation>
-          Sync Settings
+          $i18n{syncConfirmationSettingsLabel}
         </cr-button>
       </if>
     </div>

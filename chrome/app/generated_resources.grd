@@ -10153,6 +10153,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Sync settings
       </message>
       <if expr="chromeos_lacros">
+        <!--  TODO(crbug.com/1383167): Move to Chrome-specific resource file -->
         <message name="IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED" desc="Title of the sync confirmation dialog/screen on lacros when sync is not forced.">
           Turn on Chrome browser sync?
         </message>
@@ -10160,6 +10161,32 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Your bookmarks, passwords, history, and more are synced on all your devices
         </message>
       </if>
+
+      <!--  Tangible Sync version of the Sync Confirmation page -->
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE" desc="Title of the tangible sync confirmation page">
+        Turn on sync
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE" desc="Title in the information about sync on the tangible sync confirmation page">
+        Back up your stuff and use it on any device
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT" desc="Title in the information about sync on the tangible sync confirmation page during the Sign-in Intercept flow">
+        Turn on sync to back up your stuff and use it on any device
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_BOOKMARKS" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb. Used in the tangible sync confirmation page.">
+        Bookmarks
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_AUTOFILL" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'autofill' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=77d3626. Used in the tangible sync confirmation page.">
+        Autofill
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_HISTORY" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'history' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c3162. Used in the tangible sync confirmation page.">
+        History
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_EXTENSIONS_AND_MORE" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'extensions' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=62f9351. Translate 'and more' so that it conveys that there are additional similar items that are not listed. Used in the tangible sync confirmation page.">
+        Extensions and more
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC" desc="Description in the information about sync and information about customizing Sync settings on the tangible sync confirmation page">
+        You can always choose what to sync in settings. Google may personalize Search and other services based on your history.
+      </message>
 
       <!--  Sync Confirmation section of the Signin Intercept first run experience flow -->
       <message name="IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT" desc="Title of the sync confirmation dialog in the Signin Intercept flow, after the user creates a new profile through this flow.">
