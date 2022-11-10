@@ -15,6 +15,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/apps_grid_row_change_animator.h"
+#include "ash/app_list/grid_index.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -120,9 +121,14 @@ constexpr base::TimeDelta kFolderItemFadeInDuration = base::Milliseconds(300);
 // faded out.
 constexpr base::TimeDelta kFolderItemFadeInDelay = base::Milliseconds(300);
 
-// The time duration for item bounds animations.
-constexpr base::TimeDelta kItemBoundsAnimationDuration =
+// The base time duration for item bounds animations.
+constexpr base::TimeDelta kItemBoundsBaseAnimationDuration =
     base::Milliseconds(300);
+
+// The additional time duration for each subsequent row/slot used for creating a
+// cascading item bounds animation.
+constexpr base::TimeDelta kItemBoundsAnimationOffsetDuration =
+    base::Milliseconds(50);
 
 bool IsOEMFolderItem(AppListItem* item) {
   return IsFolderItem(item) &&
@@ -633,6 +639,9 @@ void AppsGridView::EndDrag(bool cancel) {
   // the item is moved to a folder.
   std::string target_folder_id;
 
+  // The animation direction used for the ideal bounds animation.
+  bool top_to_bottom_animation = reorder_placeholder_ < drop_target_;
+
   if (forward_events_to_drag_and_drop_host_) {
     DCHECK(!IsDraggingForReparentInRootLevelGridView());
     forward_events_to_drag_and_drop_host_ = false;
@@ -671,6 +680,9 @@ void AppsGridView::EndDrag(bool cancel) {
       UpdateDropTargetRegion();
       if (drop_target_region_ == ON_ITEM && DraggedItemCanEnterFolder() &&
           DropTargetIsValidFolder()) {
+        // Adding an item to a folder moves items similarly to moving it to the
+        // end of the list, so set as a top_to_bottom animation direction.
+        top_to_bottom_animation = true;
         bool is_new_folder = false;
         if (MoveItemToFolder(drag_item_, drop_target_, kMoveByDragIntoFolder,
                              &target_folder_id, &is_new_folder)) {
@@ -723,7 +735,7 @@ void AppsGridView::EndDrag(bool cancel) {
   if (cardified_state_)
     MaybeEndCardifiedView();
   else
-    AnimateToIdealBounds();
+    AnimateToIdealBounds(top_to_bottom_animation);
 
   if (!cancel) {
     // Select the page where dragged item is dropped. Avoid doing so when the
@@ -878,12 +890,18 @@ void AppsGridView::FolderHidden(const std::string& item_id) {
 }
 
 void AppsGridView::AnimateFolderItemViewIn() {
+  const GridIndex before_index =
+      open_folder_info_ ? open_folder_info_->grid_index : GridIndex();
+  const GridIndex after_index =
+      GetIndexOfView(reordering_folder_view_.value_or(nullptr));
+  const bool top_to_bottom_animation = before_index < after_index;
+
   // Once folder item view fades out, animate remaining items into their target
   // location, and schedule the folder item view fade-in (note that
   // `AnimateToIdealBounds()` updates `reordering_folder_view_` bounds without
   // animation).
   open_folder_info_.reset();
-  AnimateToIdealBounds();
+  AnimateToIdealBounds(top_to_bottom_animation);
 
   if (!reordering_folder_view_)
     return;
@@ -1325,7 +1343,7 @@ void AppsGridView::CalculateIdealBounds() {
   }
 }
 
-void AppsGridView::AnimateToIdealBounds() {
+void AppsGridView::AnimateToIdealBounds(bool is_animating_top_to_bottom) {
   if (layer()->GetCompositor()) {
     item_reorder_animation_tracker_ =
         layer()->GetCompositor()->RequestNewThroughputTracker();
@@ -1353,15 +1371,28 @@ void AppsGridView::AnimateToIdealBounds() {
         .OnAborted(base::BindOnce(&AppsGridView::OnIdealBoundsAnimationDone,
                                   weak_factory_.GetWeakPtr()))
         .Once()
-        .SetDuration(kItemBoundsAnimationDuration);
+        .SetDuration(kItemBoundsBaseAnimationDuration);
     return animation;
   };
 
   base::AutoReset<bool> auto_reset(&setting_up_ideal_bounds_animation_, true);
+  const bool is_animating_multiple_rows = WillAnimateMultipleRows();
+
+  // A duration which is incremented for cascading item animations.
+  base::TimeDelta animation_duration = kItemBoundsBaseAnimationDuration;
+
+  // Keeps track of the current slot/row for the current `animation_duration`.
+  int animation_duration_index = -1;
 
   for (size_t i = 0; i < view_model_.view_size(); ++i) {
-    AppListItemView* view = GetItemViewAt(i);
-    const gfx::Rect& target_bounds = view_model_.ideal_bounds(i);
+    // When not animating top to bottom, reverse the direction of iteration, so
+    // bottom animating items have the shortest `animation_duration`.
+    const size_t current_view_index =
+        is_animating_top_to_bottom ? i : view_model_.view_size() - 1 - i;
+
+    AppListItemView* view = GetItemViewAt(current_view_index);
+    const gfx::Rect& target_bounds =
+        view_model_.ideal_bounds(current_view_index);
     gfx::Rect current_bounds = view->GetMirroredBounds();
 
     if (view->bounds() == target_bounds)
@@ -1372,15 +1403,38 @@ void AppsGridView::AnimateToIdealBounds() {
     const bool visible =
         !IsViewExplicitlyHidden(view) && (current_visible || target_visible);
 
-    if (visible && view->has_pending_row_change()) {
+    if (!visible) {
+      view->SetBoundsRect(target_bounds);
+      continue;
+    }
+
+    const int view_row = view->most_recent_grid_index().slot / cols_;
+    const int view_slot = view->most_recent_grid_index().slot;
+    // When animating multiple rows, each row of items will have an animation
+    // duration that is increased at each new row. When animating items within a
+    // single row, the duration will be increased at each new item slot.
+    const int current_animation_duration_index =
+        is_animating_multiple_rows ? view_row : view_slot;
+    // Increment the `animation_duration` when the `animation_duration_index`
+    // has been initialized and the current index has changed.
+    if (animation_duration_index != -1 &&
+        animation_duration_index != current_animation_duration_index) {
+      animation_duration += kItemBoundsAnimationOffsetDuration;
+    }
+    animation_duration_index = current_animation_duration_index;
+
+    if (view->has_pending_row_change()) {
       view->EnsureLayer();
       view->reset_has_pending_row_change();
       if (!animation)
         animation = init_animation();
+      animation->GetCurrentSequence()
+          .At(base::TimeDelta())
+          .SetDuration(animation_duration);
       row_change_animator_->AnimateBetweenRows(
           view, current_bounds, target_bounds,
           &animation->GetCurrentSequence());
-    } else if (visible) {
+    } else {
       view->EnsureLayer();
 
       // Update `current_bounds` to include the current layer transform of
@@ -1393,18 +1447,27 @@ void AppsGridView::AnimateToIdealBounds() {
       gfx::Transform transform =
           gfx::TransformBetweenRects(gfx::RectF(GetMirroredRect(target_bounds)),
                                      gfx::RectF(current_bounds));
-
       view->layer()->SetTransform(transform);
       view->SetBoundsRect(target_bounds);
 
       if (!animation)
         animation = init_animation();
-      animation->GetCurrentSequence().SetTransform(
-          view->layer(), gfx::Transform(), gfx::Tween::ACCEL_40_DECEL_100_3);
-    } else {
-      view->SetBoundsRect(target_bounds);
+      animation->GetCurrentSequence()
+          .At(base::TimeDelta())
+          .SetDuration(animation_duration)
+          .SetTransform(view->layer(), gfx::Transform(),
+                        gfx::Tween::ACCEL_40_DECEL_100_3);
     }
   }
+}
+
+bool AppsGridView::WillAnimateMultipleRows() {
+  for (size_t i = 0; i < view_model_.view_size(); ++i) {
+    // Return true if an item will animate to a new row.
+    if (GetItemViewAt(i)->has_pending_row_change())
+      return true;
+  }
+  return false;
 }
 
 void AppsGridView::ExtractDragLocation(const gfx::Point& root_location,
@@ -1647,9 +1710,11 @@ bool AppsGridView::DragIsCloseToItem(const gfx::Point& point) {
 }
 
 void AppsGridView::OnReorderTimer() {
+  const GridIndex before_index = reorder_placeholder_;
   reorder_placeholder_ = drop_target_;
+  const GridIndex after_index = reorder_placeholder_;
   MaybeCreateDragReorderAccessibilityEvent();
-  AnimateToIdealBounds();
+  AnimateToIdealBounds(/*top to bottom animation=*/before_index < after_index);
   CreateGhostImageView();
 }
 
@@ -1945,6 +2010,10 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
 
   SetAsFolderDroppingTarget(drop_target_, false);
 
+  const GridIndex before_index = reorder_placeholder_;
+  const GridIndex after_index = drop_target_;
+  const bool top_to_bottom_animation = before_index < after_index;
+
   UpdatePaging();
   ClearDragState();
   if (GetWidget()) {
@@ -1960,7 +2029,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   if (cardified_state_)
     MaybeEndCardifiedView();
   else
-    AnimateToIdealBounds();
+    AnimateToIdealBounds(top_to_bottom_animation);
 
   // Hide the |current_ghost_view_| after completed drag from within
   // folder to |apps_grid_view_|.
@@ -2575,7 +2644,7 @@ void AppsGridView::OnListItemMoved(size_t from_index,
 
   if (!updating_model_ && GetWidget() && GetWidget()->IsVisible() &&
       enable_item_move_animation_) {
-    AnimateToIdealBounds();
+    AnimateToIdealBounds(/*top to bottom animation=*/from_index < to_index);
   } else if (IsUnderWholeGridAnimation()) {
     // During reorder animation, multiple items could be moved subsequently so
     // use the asynchronous layout to reduce painting cost.
@@ -2681,7 +2750,8 @@ bool AppsGridView::IsUnderWholeGridAnimation() const {
 }
 
 bool AppsGridView::IsViewExplicitlyHidden(const views::View* view) const {
-  return IsViewHiddenForDrag(view) || IsViewHiddenForFolderReorder(view);
+  return IsViewHiddenForDrag(view) || IsViewHiddenForFolderReorder(view) ||
+         hidden_view_for_test_ == view;
 }
 
 void AppsGridView::MaybeAbortWholeGridAnimation() {

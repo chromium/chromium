@@ -249,6 +249,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // rows.
   void SetMostRecentGridIndex(GridIndex new_grid_index, int columns);
 
+  GridIndex most_recent_grid_index() { return most_recent_grid_index_; }
+
   bool has_pending_row_change() { return has_pending_row_change_; }
   void reset_has_pending_row_change() { has_pending_row_change_ = false; }
 

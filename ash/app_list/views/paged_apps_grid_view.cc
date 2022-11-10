@@ -1316,7 +1316,7 @@ void PagedAppsGridView::AnimateOnNudgeRemoved() {
   }
 
   PrepareItemsForBoundsAnimation();
-  AnimateToIdealBounds();
+  AnimateToIdealBounds(/*top to bottom animation=*/true);
 }
 
 void PagedAppsGridView::SetCardifiedStateEndedTestCallback(

@@ -338,6 +338,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns true if there is any waiting reorder animation test callback.
   bool HasAnyWaitingReorderDoneCallbackForTest() const;
 
+  // Set `view` as hidden for testing, similar to when a view is hidden during
+  // drag or a sorted folder is renamed and hidden during reorder.
+  void set_hidden_view_for_test(views::View* view) {
+    hidden_view_for_test_ = view;
+  }
+
   // For test: Return if the drag and drop handler was set.
   bool has_drag_and_drop_host_for_test() {
     return nullptr != drag_and_drop_host_;
@@ -624,7 +630,14 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Calculates ideal bounds for app list item views within the apps grid, and
   // animates their bounds using layer transform.
-  void AnimateToIdealBounds();
+  // `is_animating_top_to_bottom` - Whether the ideal bounds animation will
+  // initialize starting from the top items or bottom items. The result is used
+  // to determine whether item animation duration grows top to bottom or bottom
+  // to top.
+  void AnimateToIdealBounds(bool is_animating_top_to_bottom);
+
+  // Whether the ideal bounds animation will happen across multiple rows.
+  bool WillAnimateMultipleRows();
 
   // Extracts drag location info from |root_location| into |drag_point|.
   void ExtractDragLocation(const gfx::Point& root_location,
@@ -1036,7 +1049,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Folder item view that is being animated into it's target position. The
   // animation runs after a folder gets closed if the folder intended position
   // in the grid changed while the folder was open.
-  absl::optional<views::View*> reordering_folder_view_;
+  absl::optional<AppListItemView*> reordering_folder_view_;
+
+  // A view which is hidden for testing purposes.
+  views::View* hidden_view_for_test_ = nullptr;
 
   std::unique_ptr<AppsGridContextMenu> context_menu_;
 

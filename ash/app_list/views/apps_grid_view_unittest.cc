@@ -55,6 +55,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/utility/haptics_tracking_test_input_controller.h"
+#include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -239,6 +240,28 @@ class BoundsChangeCounter : public views::ViewObserver {
  private:
   views::View* const observed_view_;
   int bounds_change_count_ = 0;
+};
+
+// Records the longest scheduled animation duration for the given view.
+class AnimationDurationRecorder {
+ public:
+  explicit AnimationDurationRecorder(AppListItemView* view) {
+    view->EnsureLayer();
+    subscription_ = view->layer()->GetAnimator()->AddSequenceScheduledCallback(
+        base::BindRepeating(&AnimationDurationRecorder::OnSequenceScheduled,
+                            base::Unretained(this)));
+  }
+
+  void OnSequenceScheduled(ui::LayerAnimationSequence* sequence) {
+    // There can be more than one sequence scheduled for an animator, so keep
+    // track of the largest animation duration.
+    if (sequence->FirstElement()->duration() > largest_duration_) {
+      largest_duration_ = sequence->FirstElement()->duration();
+    }
+  }
+
+  base::TimeDelta largest_duration_;
+  base::CallbackListSubscription subscription_;
 };
 
 }  // namespace
@@ -1056,6 +1079,182 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   EndDrag(apps_grid_view_, false /*cancel*/);
   test_api_->WaitForItemMoveAnimationDone();
   EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
+}
+
+// Test that cascading item animation durations are correct when an item moves
+// from a top row to a bottom row.
+TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemTopToBottom) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  model_->PopulateApps(20);
+  UpdateLayout();
+
+  // The expected animation duration for items on each row. Each subsequent row
+  // should have a duration that is 50ms longer than the last.
+  base::TimeDelta first_row_duration = base::Milliseconds(300);
+  base::TimeDelta second_row_duration = base::Milliseconds(350);
+  base::TimeDelta third_row_duration = base::Milliseconds(400);
+  base::TimeDelta fourth_row_duration = base::Milliseconds(450);
+
+  std::vector<base::TimeDelta> expected_durations;
+  expected_durations.insert(expected_durations.end(), 5, first_row_duration);
+  expected_durations.insert(expected_durations.end(), 5, second_row_duration);
+  expected_durations.insert(expected_durations.end(), 5, third_row_duration);
+  expected_durations.insert(expected_durations.end(), 4, fourth_row_duration);
+
+  std::vector<std::unique_ptr<AnimationDurationRecorder>> actual_durations;
+
+  // Create a duration recorder for all item views starting at the second item,
+  // since the very first item is the one being moved.
+  for (size_t i = 1; i < model_->top_level_item_list()->item_count(); ++i) {
+    AppListItemView* view = GetItemViewInTopLevelGrid(i);
+
+    // Create an AnimationDurationRecorder to record the animation duration
+    // for each item view's layer animation.
+    actual_durations.push_back(
+        std::make_unique<AnimationDurationRecorder>(view));
+  }
+
+  // Set hidden the item to be moved in the apps grid, so the item is ignored
+  // in cascading animation setup.
+  apps_grid_view_->set_hidden_view_for_test(GetItemViewInTopLevelGrid(0));
+
+  // Move the first item to the last slot, causing a cascading item animation.
+  model_->top_level_item_list()->MoveItem(0, 19);
+
+  // Check that the expected duration of each item animation is correct.
+  for (size_t i = 0; i < model_->top_level_item_list()->item_count() - 1; ++i)
+    EXPECT_EQ(expected_durations[i], actual_durations[i]->largest_duration_);
+}
+
+// Test that cascading item animation durations are correct when an item moves
+// from a bottom row to a top row.
+TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemBottomToTop) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  model_->PopulateApps(20);
+  UpdateLayout();
+
+  // The expected animation duration for items on each row. Each subsequent row
+  // should have a duration that is 50ms shorter than the last.
+  base::TimeDelta first_row_duration = base::Milliseconds(450);
+  base::TimeDelta second_row_duration = base::Milliseconds(400);
+  base::TimeDelta third_row_duration = base::Milliseconds(350);
+  base::TimeDelta fourth_row_duration = base::Milliseconds(300);
+
+  std::vector<base::TimeDelta> expected_durations;
+  expected_durations.insert(expected_durations.end(), 4, first_row_duration);
+  expected_durations.insert(expected_durations.end(), 5, second_row_duration);
+  expected_durations.insert(expected_durations.end(), 5, third_row_duration);
+  expected_durations.insert(expected_durations.end(), 5, fourth_row_duration);
+
+  std::vector<std::unique_ptr<AnimationDurationRecorder>> actual_durations;
+
+  // Create a duration recorder for all item views except the last item, since
+  // the last item is the one being moved.
+  for (size_t i = 0; i < model_->top_level_item_list()->item_count() - 1; ++i) {
+    AppListItemView* view = GetItemViewInTopLevelGrid(i);
+
+    // Create an AnimationDurationRecorder to record the animation duration
+    // for each item view's layer animation.
+    actual_durations.push_back(
+        std::make_unique<AnimationDurationRecorder>(view));
+  }
+
+  // Set hidden the item to be moved in the apps grid, so the item is ignored
+  // in cascading animation setup.
+  apps_grid_view_->set_hidden_view_for_test(GetItemViewInTopLevelGrid(19));
+
+  // Move the last item to the first slot, causing a cascading item animation.
+  model_->top_level_item_list()->MoveItem(19, 0);
+
+  // Check that the expected duration of each item animation is correct.
+  for (size_t i = 0; i < model_->top_level_item_list()->item_count() - 1; ++i)
+    EXPECT_EQ(expected_durations[i], actual_durations[i]->largest_duration_);
+}
+
+// Test that cascading item animation durations are correct when an item moves
+// within a single row, from the left side to the right side.
+TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemLeftToRight) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  model_->PopulateApps(5);
+  UpdateLayout();
+
+  // The expected animation duration for items in each slot. Each subsequent
+  // item should have a duration that is 50ms longer than the last.
+  std::vector<base::TimeDelta> expected_durations;
+  expected_durations.push_back(base::Milliseconds(300));
+  expected_durations.push_back(base::Milliseconds(350));
+  expected_durations.push_back(base::Milliseconds(400));
+  expected_durations.push_back(base::Milliseconds(450));
+
+  std::vector<std::unique_ptr<AnimationDurationRecorder>> actual_durations;
+
+  // Create a duration recorder for all item views except the first, since the
+  // first item is the one being moved.
+  for (size_t i = 1; i < model_->top_level_item_list()->item_count(); ++i) {
+    AppListItemView* view = GetItemViewInTopLevelGrid(i);
+
+    // Create an AnimationDurationRecorder to record the animation duration
+    // for each item view's layer animation.
+    actual_durations.push_back(
+        std::make_unique<AnimationDurationRecorder>(view));
+  }
+
+  // Set hidden the item to be moved in the apps grid, so the item is ignored
+  // in cascading animation setup.
+  apps_grid_view_->set_hidden_view_for_test(GetItemViewInTopLevelGrid(0));
+
+  // Move the first item to the row to the last slot in the row, causing a
+  // cascading item animation.
+  model_->top_level_item_list()->MoveItem(0, 4);
+
+  // Check that the expected duration of each item animation is correct.
+  for (size_t i = 0; i < model_->top_level_item_list()->item_count() - 1; ++i)
+    EXPECT_EQ(expected_durations[i], actual_durations[i]->largest_duration_);
+}
+
+// Test that cascading item animation durations are correct when an item moves
+// within a single row, from the right side to the left side.
+TEST_P(AppsGridViewClamshellTest, CascadingItemAnimationMoveItemRightToLeft) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  model_->PopulateApps(5);
+  UpdateLayout();
+
+  // The expected animation duration for items in each slot. Each subsequent
+  // item should have a duration that is 50ms shorter than the last.
+  std::vector<base::TimeDelta> expected_durations;
+  expected_durations.push_back(base::Milliseconds(450));
+  expected_durations.push_back(base::Milliseconds(400));
+  expected_durations.push_back(base::Milliseconds(350));
+  expected_durations.push_back(base::Milliseconds(300));
+
+  std::vector<std::unique_ptr<AnimationDurationRecorder>> actual_durations;
+
+  // Create a duration recorder for all item views except the last item,
+  // since the last item is the one being moved.
+  for (size_t i = 0; i < model_->top_level_item_list()->item_count() - 1; ++i) {
+    AppListItemView* view = GetItemViewInTopLevelGrid(i);
+
+    // Create an AnimationDurationRecorder to record the animation duration
+    // for each item view's layer animation.
+    actual_durations.push_back(
+        std::make_unique<AnimationDurationRecorder>(view));
+  }
+
+  // Set hidden the item to be moved in the apps grid, so the item is ignored
+  // in cascading animation setup.
+  apps_grid_view_->set_hidden_view_for_test(GetItemViewInTopLevelGrid(4));
+
+  // Move the last item in the row to the first slot in the row, causing a
+  // cascading item animation.
+  model_->top_level_item_list()->MoveItem(4, 0);
+
+  // Check that the expected duration of each item animation is correct.
+  for (size_t i = 0; i < model_->top_level_item_list()->item_count() - 1; ++i)
+    EXPECT_EQ(expected_durations[i], actual_durations[i]->largest_duration_);
 }
 
 TEST_F(AppsGridViewTest, ItemTooltip) {
