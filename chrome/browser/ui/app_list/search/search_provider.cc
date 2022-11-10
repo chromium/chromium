@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 
@@ -15,29 +14,11 @@ namespace app_list {
 SearchProvider::SearchProvider() {}
 SearchProvider::~SearchProvider() {}
 
-void SearchProvider::Add(std::unique_ptr<ChromeSearchResult> result) {
-  results_.emplace_back(std::move(result));
-  FireResultChanged();
-}
-
-// TODO(crbug.com/1199206): As part of the change to category-based search,
-// the method of updating the search controller is being changed. Once
-// categorical search is enabled, we should clean up the SearchProvider
-// interface.
-
 void SearchProvider::SwapResults(Results* new_results) {
   Results results;
   results.swap(*new_results);
   if (search_controller_)
     search_controller_->SetResults(this, std::move(results));
-  FireResultChanged();
-}
-
-void SearchProvider::FireResultChanged() {
-  if (result_changed_callback_.is_null())
-    return;
-
-  result_changed_callback_.Run();
 }
 
 }  // namespace app_list

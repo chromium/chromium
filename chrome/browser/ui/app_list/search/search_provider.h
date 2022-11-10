@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/callback.h"
 
 class ChromeSearchResult;
 
@@ -22,7 +21,6 @@ class SearchController;
 class SearchProvider {
  public:
   using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
-  using ResultChangedCallback = base::RepeatingClosure;
 
   SearchProvider();
 
@@ -57,25 +55,15 @@ class SearchProvider {
     search_controller_ = controller;
   }
 
-  void set_result_changed_callback(ResultChangedCallback callback) {
-    result_changed_callback_ = std::move(callback);
-  }
-
   const Results& results() const { return results_; }
 
  protected:
-  // Interface for the derived class to generate search results.
-  void Add(std::unique_ptr<ChromeSearchResult> result);
-
   // Swaps the internal results with |new_results|.
   // This is useful when multiple results will be added, and the notification is
   // desired to be done only once when all results are added.
   void SwapResults(Results* new_results);
 
  private:
-  void FireResultChanged();
-
-  ResultChangedCallback result_changed_callback_;
   SearchController* search_controller_ = nullptr;
   Results results_;
 };

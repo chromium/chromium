@@ -210,9 +210,6 @@ void SearchControllerImplNew::AddProvider(
   if (ash::IsZeroStateResultType(provider->ResultType()))
     ++total_zero_state_blockers_;
   provider->set_controller(this);
-  provider->set_result_changed_callback(
-      base::BindRepeating(&SearchControllerImplNew::OnResultsChangedWithType,
-                          base::Unretained(this), provider->ResultType()));
   providers_.emplace_back(std::move(provider));
 }
 
@@ -254,6 +251,8 @@ void SearchControllerImplNew::SetResults(const SearchProvider* provider,
   } else {
     SetSearchResults(provider);
   }
+  if (results_changed_callback_for_test_)
+    results_changed_callback_for_test_.Run(provider->ResultType());
 }
 
 void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
@@ -440,12 +439,6 @@ void SearchControllerImplNew::AppListClosing() {
     provider->StopZeroState();
 }
 
-void SearchControllerImplNew::OnResultsChangedWithType(
-    ash::AppListSearchResultType result_type) {
-  if (results_changed_callback_)
-    results_changed_callback_.Run(result_type);
-}
-
 void SearchControllerImplNew::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -464,7 +457,7 @@ base::Time SearchControllerImplNew::session_start() {
 
 void SearchControllerImplNew::set_results_changed_callback_for_test(
     ResultsChangedCallback callback) {
-  results_changed_callback_ = std::move(callback);
+  results_changed_callback_for_test_ = std::move(callback);
 }
 
 void SearchControllerImplNew::disable_ranking_for_test() {

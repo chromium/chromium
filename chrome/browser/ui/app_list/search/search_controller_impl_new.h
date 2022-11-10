@@ -146,8 +146,8 @@ class SearchControllerImplNew : public SearchController {
   // Storage for category scores for the current query.
   CategoriesList categories_;
 
-  // If set, called when results set by a provider change.
-  ResultsChangedCallback results_changed_callback_;
+  // If set, called when results set by a provider change. Only set by tests.
+  ResultsChangedCallback results_changed_callback_for_test_;
 
   std::unique_ptr<SearchMetricsManager> metrics_manager_;
   std::unique_ptr<AppSearchDataSource> app_search_data_source_;
