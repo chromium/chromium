@@ -13,11 +13,13 @@
 
 namespace views {
 class Button;
+class ImageView;
 }  // namespace views
 
 namespace ash {
 
 class DetailedViewDelegate;
+class HoverHighlightView;
 class RoundedContainer;
 
 // The implementation of BluetoothDetailedView.
@@ -45,6 +47,9 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   friend class BluetoothDetailedViewImplTest;
 
@@ -64,6 +69,8 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   // Owned by views hierarchy.
   views::Button* settings_button_ = nullptr;
   RoundedContainer* main_container_ = nullptr;
+  HoverHighlightView* pair_new_device_view_ = nullptr;
+  views::ImageView* pair_new_device_icon_ = nullptr;
   views::View* device_list_ = nullptr;
 
   base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};

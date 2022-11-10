@@ -11,6 +11,7 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -32,13 +33,16 @@ class FakeBluetoothDetailedViewDelegate
   // BluetoothDetailedView::Delegate:
   void OnToggleClicked(bool new_state) override {}
 
-  void OnPairNewDeviceRequested() override {}
+  void OnPairNewDeviceRequested() override {
+    ++pair_new_device_requested_count_;
+  }
 
   void OnDeviceListItemSelected(
       const PairedBluetoothDevicePropertiesPtr& device) override {
     last_device_list_item_selected_ = mojo::Clone(device);
   }
 
+  int pair_new_device_requested_count_ = 0;
   PairedBluetoothDevicePropertiesPtr last_device_list_item_selected_;
 };
 
@@ -83,6 +87,10 @@ class BluetoothDetailedViewImplTest : public AshTestBase {
     return bluetooth_detailed_view_->settings_button_;
   }
 
+  views::Button* GetPairNewDeviceView() {
+    return bluetooth_detailed_view_->pair_new_device_view_;
+  }
+
   std::unique_ptr<views::Widget> widget_;
   FakeBluetoothDetailedViewDelegate bluetooth_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
@@ -105,6 +113,17 @@ TEST_F(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {
   LeftClickOn(settings_button);
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
   EXPECT_EQ(1, detailed_view_delegate_.close_bubble_count_);
+}
+
+TEST_F(BluetoothDetailedViewImplTest, PressingPairNewDeviceNotifiesDelegate) {
+  bluetooth_detailed_view_->UpdateBluetoothEnabledState(true);
+  views::test::RunScheduledLayout(bluetooth_detailed_view_);
+
+  // Clicking the "pair new device" row notifies the delegate.
+  views::Button* pair_new_device_view = GetPairNewDeviceView();
+  LeftClickOn(pair_new_device_view);
+  EXPECT_EQ(1,
+            bluetooth_detailed_view_delegate_.pair_new_device_requested_count_);
 }
 
 TEST_F(BluetoothDetailedViewImplTest, SelectingDeviceListItemNotifiesDelegate) {
