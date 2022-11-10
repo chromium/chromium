@@ -10120,7 +10120,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SharedSandboxPoliciesWindows"
+                        "SharedSandboxPolicies"
                     ]
                 }
             ]
