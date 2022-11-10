@@ -41,7 +41,7 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
   /** @override */
   getParentAccessURL() {
     this.methodCalled('getParentAccessURL');
-    return Promise.resolve({url: 'https://www.google.com'});
+    return Promise.resolve({url: 'https://families.google.com/parentaccess'});
   }
 
   /** @override */

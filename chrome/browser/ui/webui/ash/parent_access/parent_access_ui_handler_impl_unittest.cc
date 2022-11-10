@@ -38,7 +38,10 @@ class FakeParentAccessUIHandlerDelegate : public ParentAccessUIHandlerDelegate {
 
   parent_access_ui::mojom::ParentAccessParamsPtr CloneParentAccessParams()
       override {
-    return parent_access_ui::mojom::ParentAccessParams::New();
+    return parent_access_ui::mojom::ParentAccessParams::New(
+        parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+        parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+            parent_access_ui::mojom::WebApprovalsParams::New()));
   }
 
   MOCK_METHOD2(SetApproved, void(const std::string&, const base::Time&));
@@ -95,7 +98,6 @@ TEST_F(ParentAccessUIHandlerImplTest, GetParentAccessURL) {
         }
 
         // Validate the query parameters.
-        // TODO(b/200853161): Validate caller id from params.
         EXPECT_EQ(query_parts.at("callerid"), "39454505");
         EXPECT_EQ(query_parts.at("cros-origin"), "chrome://parent-access");
         EXPECT_EQ(query_parts.at("platform_version"),

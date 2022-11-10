@@ -34,6 +34,19 @@ constexpr char kParentAccessDefaultURL[] =
     "https://families.google.com/parentaccess";
 constexpr char kParentAccessSwitch[] = "parent-access-url";
 
+// Returns the caller id to be used for the web widget.  The caller id is
+// mapped from the flow type.   When new flow types are added to
+// ParentAccessParams, a new case statement should be added here.
+std::string GetCallerId(
+    parent_access_ui::mojom::ParentAccessParams::FlowType flow_type) {
+  switch (flow_type) {
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess:
+      return "39454505";
+      // NOTE:  Do not add default case here, to ensure that adding new flow
+      // types to ParentAccessParams forces this case statement to be updated.
+  }
+}
+
 }  // namespace
 
 ParentAccessUIHandlerImpl::ParentAccessUIHandlerImpl(
@@ -133,6 +146,13 @@ void ParentAccessUIHandlerImpl::OnParentAccessDone(
 
 void ParentAccessUIHandlerImpl::GetParentAccessURL(
     GetParentAccessURLCallback callback) {
+  if (!delegate_) {
+    LOG(ERROR) << "Delegate not available in ParentAccessUIHandler - WebUI was "
+                  "probably created without a dialog";
+    std::move(callback).Run("");
+    return;
+  }
+
   std::string platform_version = base::SysInfo::OperatingSystemVersion();
   std::string language_code =
       google_util::GetGoogleLocale(g_browser_process->GetApplicationLocale());
@@ -145,13 +165,17 @@ void ParentAccessUIHandlerImpl::GetParentAccessURL(
     url = kParentAccessDefaultURL;
     DCHECK(GURL(url).DomainIs("google.com"));
   }
+
+  parent_access_ui::mojom::ParentAccessParamsPtr params =
+      delegate_->CloneParentAccessParams();
+
   const GURL base_url(url);
   GURL::Replacements replacements;
   std::string query_string = base::StringPrintf(
       "callerid=%s&hl=%s&platform_version=%s&cros-origin=chrome://"
       "parent-access",
-      // TODO(b/200853161): Set caller id from params.
-      "39454505", language_code.c_str(), platform_version.c_str());
+      GetCallerId(params->flow_type).c_str(), language_code.c_str(),
+      platform_version.c_str());
   replacements.SetQueryStr(query_string);
   const GURL result = base_url.ReplaceComponents(replacements);
   DCHECK(result.is_valid()) << "Invalid URL \"" << url << "\" for switch \""
