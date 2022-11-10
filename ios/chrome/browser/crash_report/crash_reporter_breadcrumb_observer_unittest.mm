@@ -139,7 +139,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
     breadcrumb_service->AddEvent("Breadcrumb Event");
-    const std::list<std::string> events =
+    const auto& events =
         breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
     std::string expected_breadcrumbs;
     for (const auto& event : events) {
@@ -156,7 +156,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
     if (![value isKindOfClass:[NSString class]]) {
       return NO;
     }
-    const std::list<std::string> events =
+    const auto& events =
         breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
     std::string expected_breadcrumbs;
     for (const auto& event : events) {

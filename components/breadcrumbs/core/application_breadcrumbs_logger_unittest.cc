@@ -4,6 +4,7 @@
 
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
 
+#include "base/containers/circular_deque.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/user_metrics_action.h"
@@ -25,14 +26,14 @@ const char kUserAction2Name[] = "OverscrollActionCloseTab";
 const char kInProductHelpUserActionName[] = "InProductHelp.Dismissed";
 
 // Returns a list of breadcrumb events logged so far.
-std::list<std::string> GetEvents() {
+const base::circular_deque<std::string>& GetEvents() {
   return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
 }
 
 // Returns true if no breadcrumb events except "Startup" have been logged so
 // far.
 bool OnlyStartupEventLogged() {
-  const auto events = GetEvents();
+  const auto& events = GetEvents();
   return events.size() == 1u &&
          events.back().find("Startup") != std::string::npos;
 }

@@ -308,8 +308,4 @@ void BreadcrumbPersistentStorageManager::WriteEvents() {
   ++write_counter_;
 }
 
-void BreadcrumbPersistentStorageManager::OldEventsRemoved() {
-  RewriteAllExistingBreadcrumbs();
-}
-
 }  // namespace breadcrumbs

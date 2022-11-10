@@ -39,7 +39,7 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
 
 // Tests logging device orientation.
 TEST_F(ApplicationBreadcrumbsLoggerTest, Orientation) {
-  auto events = BreadcrumbManager::GetInstance().GetEvents();
+  const auto& events = BreadcrumbManager::GetInstance().GetEvents();
   ASSERT_EQ(1u, events.size());
   ASSERT_NE(std::string::npos, events.back().find("Startup"));
 
@@ -47,7 +47,6 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, Orientation) {
       postNotificationName:UIDeviceOrientationDidChangeNotification
                     object:nil];
 
-  events = BreadcrumbManager::GetInstance().GetEvents();
   ASSERT_EQ(2u, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find(kBreadcrumbOrientation))

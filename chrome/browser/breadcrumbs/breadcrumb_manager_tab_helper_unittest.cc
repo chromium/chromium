@@ -4,6 +4,7 @@
 
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
+#include "base/containers/circular_deque.h"
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -51,7 +52,7 @@ std::unique_ptr<infobars::InfoBar> CreateInfoBar(
   return std::make_unique<infobars::InfoBar>(std::move(infobar_delegate));
 }
 
-std::list<std::string> GetEvents() {
+const base::circular_deque<std::string>& GetEvents() {
   return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
 }
 
@@ -108,7 +109,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, EventsLogged) {
       GURL(), web_contents());
   simulator->Start();
 
-  std::list<std::string> events = GetEvents();
+  auto events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbDidStartNavigation))
@@ -135,7 +136,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, UniqueEvents) {
   auto second_simulator = content::NavigationSimulator::CreateBrowserInitiated(
       GURL(), web_contents());
   second_simulator->Start();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
   EXPECT_STRNE(events.front().c_str(), events.back().c_str());
   EXPECT_NE(std::string::npos,
@@ -152,7 +153,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, GoogleNavigationStart) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://www.google.com"), web_contents());
   simulator->Start();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos,
             events.front().find(breadcrumbs::kBreadcrumbGoogleNavigation))
@@ -165,7 +166,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, GooglePlayNavigationStart) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://play.google.com/"), web_contents());
   simulator->Start();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   // #google is useful to indicate SRP. There is no need to know URLs of other
   // visited google properties.
@@ -183,7 +184,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, ChromeNewTabNavigationStart) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       GURL(chrome::kChromeUINewTabURL), web_contents());
   simulator->Start();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos,
             events.front().find(base::StringPrintf(
@@ -203,7 +204,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationUniqueId) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://test"), web_contents());
   simulator->Start();
-  std::list<std::string> events = GetEvents();
+  auto events = GetEvents();
   ASSERT_EQ(1u, events.size());
   const int64_t navigation_id =
       simulator->GetNavigationHandle()->GetNavigationId();
@@ -235,7 +236,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByUser) {
   simulator->SetHasUserGesture(true);
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos, events.back().find("#link")) << events.back();
   EXPECT_NE(std::string::npos,
@@ -257,7 +258,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByScript) {
       GURL(), web_contents()->GetPrimaryMainFrame());
   simulator->SetHasUserGesture(false);
   simulator->Start();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos, events.back().find("#link")) << events.back();
   EXPECT_NE(std::string::npos,
@@ -279,7 +280,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, BrowserInitiatedByScript) {
       GURL(), web_contents());
   simulator->SetTransition(ui::PAGE_TRANSITION_TYPED);
   simulator->Start();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos, events.back().find("#typed")) << events.back();
   EXPECT_NE(std::string::npos,
@@ -301,7 +302,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, PdfLoad) {
       GURL(), web_contents());
   simulator->SetContentsMimeType("application/pdf");
   simulator->Commit();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(3u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
@@ -316,7 +317,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadSuccess) {
   ASSERT_EQ(0u, GetNumEvents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              GURL());
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(3u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
@@ -336,7 +337,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadFailure) {
   static_cast<content::TestWebContents*>(web_contents())
       ->GetPrimaryMainFrame()
       ->DidFailLoadWithError(GURL(), net::ERR_ABORTED);
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
@@ -354,7 +355,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, NtpPageLoad) {
   ASSERT_EQ(0u, GetNumEvents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(chrome::kChromeUINewTabURL));
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(3u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
@@ -374,7 +375,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationError) {
   ASSERT_EQ(0u, GetNumEvents());
   content::NavigationSimulator::NavigateAndFailFromBrowser(
       web_contents(), GURL("https://test"), net::ERR_INTERNET_DISCONNECTED);
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
@@ -390,7 +391,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, AddInfobar) {
   const auto identifier = InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateInfoBar(identifier));
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(base::StringPrintf(
@@ -413,7 +414,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
       InfoBarDelegate::InfoBarIdentifier::SYNC_ERROR_INFOBAR_DELEGATE_IOS;
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateInfoBar(second_identifier));
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(3u, events.size());
   EXPECT_NE(events.front(), events.back());
   EXPECT_NE(std::string::npos, events.front().find(base::StringPrintf(
@@ -435,7 +436,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarNotAnimated) {
       ->AddInfoBar(CreateInfoBar(identifier));
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->RemoveAllInfoBars(/*animate=*/false);
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(base::StringPrintf(
@@ -455,7 +456,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarAnimated) {
       ->AddInfoBar(CreateInfoBar(identifier));
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->RemoveAllInfoBars(/*animate=*/true);
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(base::StringPrintf(
@@ -475,7 +476,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, ReplaceInfobar) {
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateInfoBar(identifier),
                    /*replace_existing=*/true);
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(base::StringPrintf(
@@ -495,7 +496,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, SequentialInfobarReplacements) {
         ->AddInfoBar(CreateInfoBar(identifier),
                      /*replace_existing=*/true);
   }
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   // Replacing the infobar 500 times should only log breadcrumbs on the 1st,
   // 2nd, 5th, 20th, 100th, 200th replacement.
   ASSERT_EQ(7u, events.size());

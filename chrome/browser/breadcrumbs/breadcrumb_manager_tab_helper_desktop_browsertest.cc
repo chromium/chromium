@@ -4,6 +4,7 @@
 
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
+#include "base/containers/circular_deque.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -39,7 +40,7 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-std::list<std::string> GetEvents() {
+const base::circular_deque<std::string>& GetEvents() {
   return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
 }
 
@@ -63,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
                                 base::FilePath().AppendASCII("a_zip_file.zip"));
   ui_test_utils::DownloadURL(browser(), url);
 
-  const auto events = GetEvents();
+  const auto& events = GetEvents();
   // Breadcrumbs should have been logged for starting and finishing the
   // navigation, and the navigation should be labeled as a download.
   ASSERT_EQ(2u, events.size() - num_startup_breadcrumbs);

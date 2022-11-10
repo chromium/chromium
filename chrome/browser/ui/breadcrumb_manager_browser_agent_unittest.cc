@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 
+#include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -17,7 +18,7 @@
 
 namespace {
 
-std::list<std::string> GetEvents() {
+const base::circular_deque<std::string>& GetEvents() {
   return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
 }
 
@@ -73,7 +74,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
   // Insert tab into `browser2`.
   InsertTab(browser2.get());
 
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   EXPECT_EQ(2u, events.size());
   const std::string event1 = events.front();
   const std::string event2 = events.back();
@@ -110,7 +111,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, BatchOperations) {
 
   // Close multiple tabs.
   browser()->tab_strip_model()->CloseAllTabs();
-  const std::list<std::string> events = GetEvents();
+  const auto& events = GetEvents();
   ASSERT_EQ(3u, events.size());
   EXPECT_NE(std::string::npos, events.back().find("Closed 2 tabs"))
       << events.back();

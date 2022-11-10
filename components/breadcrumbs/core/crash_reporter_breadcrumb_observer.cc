@@ -19,9 +19,6 @@ namespace {
 
 constexpr char kEventSeparator[] = "\n";
 
-// The maximum number of breadcrumbs to attach to a crash report.
-constexpr int kMaxBreadcrumbs = 30;
-
 }  // namespace
 
 const char kBreadcrumbsProductDataKey[] = "breadcrumbs";

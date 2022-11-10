@@ -128,8 +128,8 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistEvents) {
   EXPECT_NE(std::string::npos, events.front().find("event"));
 }
 
-// Ensures that persisted events do not grow too large for a single large
-// event bucket when events are logged very quickly one after the other.
+// Ensures that persisted events do not grow too large when events are logged
+// very quickly one after the other.
 TEST_F(BreadcrumbPersistentStorageManagerTest, PersistLargeBucket) {
   std::string event;
   unsigned long event_count = 0;
@@ -168,35 +168,6 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistManyEventsOverTime) {
   const auto events = GetPersistedEvents();
   ASSERT_GT(events.size(), 0ul);
   EXPECT_LT(events.size(), event_count);
-  EXPECT_TRUE(ValidatePersistedEvents(event, events));
-}
-
-// Ensures that old events are removed from the persisted file when old buckets
-// are dropped.
-TEST_F(BreadcrumbPersistentStorageManagerTest,
-       OldEventsRemovedFromPersistedFile) {
-  std::string event;
-  unsigned long event_counter = 0;
-  constexpr int kNumEventsPerBucket = 200;
-  constexpr int kNumEvents = kNumEventsPerBucket * 3;
-  while (event_counter < kNumEvents) {
-    event = base::StringPrintf("event %lu", event_counter);
-    breadcrumb_manager_service_.AddEvent(event);
-    event_counter++;
-
-    if (event_counter % kNumEventsPerBucket == 0)
-      task_env_.FastForwardBy(base::Hours(1));
-  }
-
-  // Advance clock to trigger writing final events.
-  task_env_.FastForwardBy(base::Minutes(1));
-
-  // The exact number of events could vary based on changes in the
-  // implementation. The important part of this test is to verify that a single
-  // event bucket will not grow unbounded and it will be limited to a value
-  // smaller than the overall total number of events which have been logged.
-  const auto events = GetPersistedEvents();
-  EXPECT_LT(events.size(), event_counter);
   EXPECT_TRUE(ValidatePersistedEvents(event, events));
 }
 

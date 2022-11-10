@@ -77,7 +77,6 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
 
   // BreadcrumbManagerObserver
   void EventAdded(const std::string& event) override;
-  void OldEventsRemoved() override;
 
   // Individual breadcrumbs that have not yet been written to disk.
   std::string pending_breadcrumbs_;

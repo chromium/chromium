@@ -32,12 +32,8 @@ class FakeBreadcrumbManagerObserver : public BreadcrumbManagerObserver {
     event_added_last_received_event_ = event;
   }
 
-  void OldEventsRemoved() override { old_events_removed_count_++; }
-
   size_t event_added_count_ = 0u;
   std::string event_added_last_received_event_;
-
-  size_t old_events_removed_count_ = 0u;
 };
 
 }  // namespace
@@ -65,21 +61,6 @@ TEST_F(BreadcrumbManagerObserverTest, EventAdded) {
   // A timestamp will be prepended to the event passed to `AddEvent`.
   EXPECT_NE(std::string::npos,
             observer_.event_added_last_received_event_.find(event));
-}
-
-// Tests that `BreadcumbManager::OldEventsRemoved` is called when old events are
-// dropped from the BreadcrumbManager.
-TEST_F(BreadcrumbManagerObserverTest, OldEventsRemoved) {
-  ASSERT_EQ(0u, observer_.old_events_removed_count_);
-
-  const std::string event = "event";
-  BreadcrumbManager::GetInstance().AddEvent(event);
-  task_env_.FastForwardBy(base::Hours(1));
-  BreadcrumbManager::GetInstance().AddEvent(event);
-  task_env_.FastForwardBy(base::Hours(1));
-  BreadcrumbManager::GetInstance().AddEvent(event);
-
-  EXPECT_EQ(1u, observer_.old_events_removed_count_);
 }
 
 }  // namespace breadcrumbs
