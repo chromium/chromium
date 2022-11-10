@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -186,8 +187,9 @@ public class MessageAnimationCoordinatorUnitTest {
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
-        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
-        verify(m2.handler).show(Position.FRONT, Position.BACK);
+        InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
+        inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        inOrder.verify(m2.handler).show(Position.FRONT, Position.BACK);
 
         HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
                 MessagesMetrics.StackingAnimationType.REMOVE_FRONT_AND_SHOW_BACK);
@@ -201,8 +203,8 @@ public class MessageAnimationCoordinatorUnitTest {
                 2);
         // Hide the front one so that the back one is brought to front.
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, null), false, () -> {});
-        verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
-        verify(m2.handler).show(Position.BACK, Position.FRONT);
+        inOrder.verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
+        inOrder.verify(m2.handler).show(Position.BACK, Position.FRONT);
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, null}, currentMessages.toArray());
@@ -223,16 +225,17 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
-        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
-        verify(m2.handler).show(Position.FRONT, Position.BACK);
+        InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
+        inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        inOrder.verify(m2.handler).show(Position.FRONT, Position.BACK);
 
         MessageState m3 = buildMessageState();
         setMessageIdentifier(m3, 3);
 
         // Hide the front one so that the back one is brought to front.
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m3), false, () -> {});
-        verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
-        verify(m2.handler).show(Position.BACK, Position.FRONT);
+        inOrder.verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
+        inOrder.verify(m2.handler).show(Position.BACK, Position.FRONT);
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, null}, currentMessages.toArray());
@@ -262,8 +265,9 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
-        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
-        verify(m2.handler).show(Position.FRONT, Position.BACK);
+        InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
+        inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        inOrder.verify(m2.handler).show(Position.FRONT, Position.BACK);
 
         HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
                 MessagesMetrics.StackingAnimationType.REMOVE_BACK_ONLY);
@@ -272,11 +276,42 @@ public class MessageAnimationCoordinatorUnitTest {
                                 MessagesMetrics.StackingAnimationAction.REMOVE_BACK),
                 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
-        verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
-        verify(m2.handler).hide(Position.BACK, Position.FRONT, true);
+        inOrder.verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
+        inOrder.verify(m2.handler).hide(Position.BACK, Position.FRONT, true);
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, null}, currentMessages.toArray());
+        Assert.assertEquals(1, d1.getDelta());
+        Assert.assertEquals(1, d2.getDelta());
+    }
+
+    // Test pushing front message to back.
+    // [m1, null] -> [m2, m1]
+    @Test
+    @SmallTest
+    public void testPushFrontBack() {
+        MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
+        MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
+
+        InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
+        inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        inOrder.verify(m2.handler, never()).show(Position.FRONT, Position.BACK);
+
+        HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
+                MessagesMetrics.StackingAnimationType.INSERT_AT_FRONT);
+        HistogramDelta d2 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.PUSH_TO_BACK),
+                1);
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m1), false, () -> {});
+        inOrder.verify(m2.handler).show(Position.INVISIBLE, Position.FRONT);
+        inOrder.verify(m1.handler).show(Position.FRONT, Position.BACK);
+
+        var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {m2, m1}, currentMessages.toArray());
         Assert.assertEquals(1, d1.getDelta());
         Assert.assertEquals(1, d2.getDelta());
     }

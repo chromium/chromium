@@ -9,12 +9,15 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * Static utility methods for recording messages related metrics.
+ * TODO(https://crbug.com/1382967): remove logs.
  */
 public class MessagesMetrics {
+    private static final String TAG = "MessagesMetrics";
     private static final String ENQUEUED_HISTOGRAM_NAME = "Android.Messages.Enqueued";
     private static final String ENQUEUED_VISIBLE_HISTOGRAM_NAME =
             "Android.Messages.Enqueued.Visible";
@@ -111,6 +114,7 @@ public class MessagesMetrics {
     }
 
     static void recordStackingAnimationType(@StackingAnimationType int type) {
+        Log.i(TAG, "Triggered message stacking animation type %s.", type);
         RecordHistogram.recordEnumeratedHistogram(
                 STACKING_HISTOGRAM_NAME, type, StackingAnimationType.MAX_VALUE);
     }
