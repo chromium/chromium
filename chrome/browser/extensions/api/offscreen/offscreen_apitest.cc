@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/offscreen/audio_lifetime_enforcer.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
@@ -22,7 +21,6 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -101,10 +99,7 @@ void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
 
 class OffscreenApiTest : public ExtensionApiTest {
  public:
-  OffscreenApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsOffscreenDocuments);
-  }
+  OffscreenApiTest() = default;
   ~OffscreenApiTest() override = default;
 
   // Creates a new offscreen document through an API call, expecting success.
@@ -176,12 +171,6 @@ class OffscreenApiTest : public ExtensionApiTest {
     EXPECT_TRUE(result.is_bool()) << result;
     return result.is_bool() && result.GetBool();
   }
-
- private:
-  // The `offscreen` API is currently behind both a feature and a channel
-  // restriction.
-  base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_channel_override_{version_info::Channel::CANARY};
 };
 
 // Tests the general flow of creating an offscreen document.
@@ -407,12 +396,14 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
 
 class OffscreenApiTestWithoutFeature : public ExtensionApiTest {
  public:
-  OffscreenApiTestWithoutFeature() = default;
+  OffscreenApiTestWithoutFeature() {
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionsOffscreenDocuments);
+  }
   ~OffscreenApiTestWithoutFeature() override = default;
 
  private:
-  ScopedCurrentChannel current_channel_override_{
-      version_info::Channel::UNKNOWN};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the `offscreen` API is unavailable if the requisite feature

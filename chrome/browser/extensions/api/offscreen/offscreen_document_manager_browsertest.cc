@@ -5,7 +5,6 @@
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -19,7 +18,6 @@
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/offscreen.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -72,10 +70,7 @@ std::unique_ptr<OffscreenDocumentLifetimeEnforcer> CreateTestLifetimeEnforcer(
 
 class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
  public:
-  OffscreenDocumentManagerBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsOffscreenDocuments);
-  }
+  OffscreenDocumentManagerBrowserTest() = default;
   ~OffscreenDocumentManagerBrowserTest() override = default;
 
   // Creates a new offscreen document with the given `extension`, `url`,
@@ -104,9 +99,6 @@ class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
   OffscreenDocumentManager* offscreen_document_manager() {
     return OffscreenDocumentManager::Get(profile());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests the flow of the OffscreenDocumentManager creating a new offscreen

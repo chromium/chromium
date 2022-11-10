@@ -5,7 +5,6 @@
 #include "extensions/browser/offscreen_document_host.h"
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -26,7 +25,6 @@
 #include "extensions/browser/script_result_queue.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
@@ -37,10 +35,7 @@ namespace extensions {
 
 class OffscreenDocumentBrowserTest : public ExtensionApiTest {
  public:
-  OffscreenDocumentBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsOffscreenDocuments);
-  }
+  OffscreenDocumentBrowserTest() = default;
   ~OffscreenDocumentBrowserTest() override = default;
 
   // Creates a new OffscreenDocumentHost and waits for it to load.
@@ -76,9 +71,6 @@ class OffscreenDocumentBrowserTest : public ExtensionApiTest {
     ExtensionBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test basic properties of offscreen documents.
