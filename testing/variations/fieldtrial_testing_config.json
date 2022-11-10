@@ -4109,7 +4109,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "StackCapacity": "16"
+                        "StackCapacity": "24"
                     },
                     "enable_features": [
                         "DifferentWorkQueueCapacities"
