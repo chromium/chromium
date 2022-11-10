@@ -6,8 +6,6 @@
 
 #include <fuchsia/component/cpp/fidl.h>
 #include <fuchsia/component/decl/cpp/fidl.h>
-#include <fuchsia/legacymetrics/cpp/fidl.h>
-#include <fuchsia/modular/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/ui/app/cpp/fidl.h>
 #include <lib/fdio/directory.h>
@@ -24,6 +22,7 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/common/modular/agent_manager.h"
 #include "url/gurl.h"
 
 namespace {
@@ -44,10 +43,13 @@ class CastComponentV1 : public fuchsia::sys::ComponentController {
   CastComponentV1(GURL component_url,
                   std::unique_ptr<base::StartupContext> startup_context,
                   fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                      controller_request)
+                      controller_request,
+                  std::string agent_url)
       : component_url_(std::move(component_url)),
         startup_context_(std::move(startup_context)),
-        child_id_(base::GUID::GenerateRandomV4().AsLowercaseString()) {
+        agent_url_(std::move(agent_url)),
+        child_id_(base::GUID::GenerateRandomV4().AsLowercaseString()),
+        agent_manager_(startup_context_->svc()) {
     // Bind the ComponentController request, if provided, to trigger teardown.
     if (controller_request.is_valid()) {
       controller_binding_.Bind(std::move(controller_request));
@@ -65,14 +67,14 @@ class CastComponentV1 : public fuchsia::sys::ComponentController {
         SvcForCfv2Dir()->AddEntry(child_id_, std::move(child_svc));
     ZX_CHECK(status == ZX_OK, status);
 
-    // TODO(crbug.com/1332972): Migrate the CFv2 code not to need this!
-    OfferFromStartupContext<fuchsia::modular::ComponentContext>();
-    OfferFromStartupContext<fuchsia::modular::ModuleContext>();
-
-    // Offer services from the CFv1 service-directory to the CFv2 component.
+    // TODO(crbug.com/1332972): Migrate the CFv2 code not to need these routed
+    // via the Cast activity's incoming services.
     OfferFromStartupContext<chromium::cast::ApplicationConfigManager>();
-    OfferFromStartupContext<chromium::cast::CorsExemptHeaderProvider>();
-    OfferFromStartupContext<fuchsia::legacymetrics::MetricsRecorder>();
+
+    // Offer services from the associated Agent to the CFv2 component.
+    OfferFromAgent<chromium::cast::ApiBindings>();
+    OfferFromAgent<chromium::cast::ApplicationContext>();
+    OfferFromAgent<chromium::cast::UrlRequestRewriteRulesProvider>();
 
     // Expose services from the CFv2 component, via the CFv1 component's
     // outgoing directory.
@@ -195,6 +197,18 @@ class CastComponentV1 : public fuchsia::sys::ComponentController {
   }
 
   template <typename Interface>
+  void OfferFromAgent() {
+    zx_status_t status = svc_for_cfv2_->AddEntry(
+        Interface::Name_,
+        std::make_unique<vfs::Service>(fidl::InterfaceRequestHandler<Interface>(
+            [this](fidl::InterfaceRequest<Interface> request) {
+              agent_manager_.ConnectToAgentService(agent_url_,
+                                                   std::move(request));
+            })));
+    ZX_CHECK(status == ZX_OK, status);
+  }
+
+  template <typename Interface>
   void ExposeFromCfv2Component() {
     zx_status_t status = startup_context_->outgoing()->AddPublicService(
         fidl::InterfaceRequestHandler<Interface>(
@@ -228,10 +242,14 @@ class CastComponentV1 : public fuchsia::sys::ComponentController {
 
   const GURL component_url_;
   const std::unique_ptr<base::StartupContext> startup_context_;
+  const std::string agent_url_;
   const std::string child_id_;
 
   // Binds the ComponentController request to this implementation.
   fidl::Binding<fuchsia::sys::ComponentController> controller_binding_{this};
+
+  // Used to connect to services provided by the Agent that owns the activity.
+  cr_fuchsia::AgentManager agent_manager_;
 
   // Holds the complete set of services to be offered to the CFv2 activity.
   vfs::PseudoDir* svc_for_cfv2_ = nullptr;
@@ -247,6 +265,57 @@ class CastComponentV1 : public fuchsia::sys::ComponentController {
 
   // Exit-code reported to the ComponentController, if bound, on exit.
   int64_t exit_code_ = ZX_ERR_INTERNAL;
+};
+
+// Maintains the state associated with a new Cast activity while the owning
+// Agent URL is being resolved.
+// This class self-deletes when its work is complete.
+class PendingCastComponentV1 {
+ public:
+  PendingCastComponentV1(
+      GURL component_url,
+      std::unique_ptr<base::StartupContext> startup_context,
+      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+          controller_request)
+      : component_url_(std::move(component_url)),
+        startup_context_(std::move(startup_context)),
+        controller_request_(std::move(controller_request)) {
+    // Request the application's configuration, including the identity of the
+    // Agent that should provide component-specific resources, e.g. API
+    // bindings.
+    // TODO(https://crbug.com/1065707): Access the ApplicationConfigManager via
+    // the Runner's incoming service directory once it is available there.
+    startup_context_->svc()->Connect(application_config_manager_.NewRequest());
+    application_config_manager_.set_error_handler([this](zx_status_t status) {
+      ZX_LOG(ERROR, status) << "ApplicationConfigManager disconnected.";
+      delete this;
+    });
+    application_config_manager_->GetConfig(
+        component_url_.GetContent(),
+        fit::bind_member(this,
+                         &PendingCastComponentV1::OnApplicationConfigReceived));
+  }
+
+ private:
+  void OnApplicationConfigReceived(
+      chromium::cast::ApplicationConfig application_config) {
+    if (application_config.has_agent_url()) {
+      new CastComponentV1(std::move(component_url_),
+                          std::move(startup_context_),
+                          std::move(controller_request_),
+                          std::move(*application_config.mutable_agent_url()));
+    } else {
+      LOG(ERROR) << "No Agent is associated with this application.";
+    }
+    delete this;
+  }
+
+  GURL component_url_;
+  std::unique_ptr<base::StartupContext> startup_context_;
+  fidl::InterfaceRequest<fuchsia::sys::ComponentController> controller_request_;
+
+  // Used to obtain the component URL of the owning Agent.
+  chromium::cast::ApplicationConfigManagerPtr application_config_manager_;
 };
 
 }  // namespace
@@ -283,6 +352,16 @@ void CastRunnerV1::StartComponent(
     return;
   }
 
-  new CastComponentV1(std::move(cast_url), std::move(startup_context),
-                      std::move(controller_request));
+  // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
+  // used to route fuchsia.web.FrameHost capabilities cleanly.
+  static constexpr char kFrameHostComponentName[] =
+      "cast:fuchsia.web.FrameHost";
+  if (cast_url.spec() == kFrameHostComponentName) {
+    new CastComponentV1(std::move(cast_url), std::move(startup_context),
+                        std::move(controller_request), std::string());
+    return;
+  }
+
+  new PendingCastComponentV1(std::move(cast_url), std::move(startup_context),
+                             std::move(controller_request));
 }

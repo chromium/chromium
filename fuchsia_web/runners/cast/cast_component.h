@@ -23,10 +23,6 @@
 #include "fuchsia_web/runners/common/web_component.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace cr_fuchsia {
-class AgentManager;
-}
-
 FORWARD_DECLARE_TEST(HeadlessCastRunnerIntegrationTest, Headless);
 
 // A specialization of WebComponent which adds Cast-specific services.
@@ -50,7 +46,6 @@ class CastComponent final
         controller_request;
 
     // Parameters initialized synchronously.
-    std::unique_ptr<cr_fuchsia::AgentManager> agent_manager;
     chromium::cast::UrlRequestRewriteRulesProviderPtr
         url_rewrite_rules_provider;
 
@@ -80,10 +75,6 @@ class CastComponent final
   ~CastComponent() override;
 
   bool HasWebPermission(fuchsia::web::PermissionType permission_type) const;
-
-  const std::string& agent_url() const {
-    return application_config_.agent_url();
-  }
 
   // WebComponent overrides.
   void StartComponent() override;
@@ -121,7 +112,6 @@ class CastComponent final
 
   const bool is_headless_;
 
-  std::unique_ptr<cr_fuchsia::AgentManager> agent_manager_;
   chromium::cast::ApplicationConfig application_config_;
   chromium::cast::UrlRequestRewriteRulesProviderPtr url_rewrite_rules_provider_;
   std::vector<fuchsia::web::UrlRequestRewriteRule> initial_url_rewrite_rules_;

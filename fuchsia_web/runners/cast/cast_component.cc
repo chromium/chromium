@@ -22,7 +22,6 @@
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
-#include "fuchsia_web/runners/common/modular/agent_manager.h"
 #include "fuchsia_web/runners/common/web_component.h"
 
 namespace {
@@ -78,7 +77,6 @@ CastComponent::CastComponent(base::StringPiece debug_name,
                    std::move(params.startup_context),
                    nullptr),
       is_headless_(is_headless),
-      agent_manager_(std::move(params.agent_manager)),
       application_config_(std::move(params.application_config)),
       url_rewrite_rules_provider_(std::move(params.url_rewrite_rules_provider)),
       initial_url_rewrite_rules_(

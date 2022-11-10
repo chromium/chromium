@@ -8,7 +8,6 @@
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia_web/runners/common/modular/agent_manager.h"
 
 PendingCastComponent::PendingCastComponent(
     Delegate* delegate,
@@ -38,13 +37,6 @@ PendingCastComponent::PendingCastComponent(
       std::string(app_id),
       fit::bind_member(this,
                        &PendingCastComponent::OnApplicationConfigReceived));
-
-  // Create the AgentManager through which component-specific Agent services
-  // will be connected.
-  // TODO(https://crbug.com/1065709): Migrate off the ConnectToAgentService()
-  // API and remove the cr_fuchsia::AgentManager.
-  params_.agent_manager = std::make_unique<cr_fuchsia::AgentManager>(
-      params_.startup_context->component_context()->svc().get());
 }
 
 PendingCastComponent::~PendingCastComponent() = default;
@@ -63,24 +55,16 @@ void PendingCastComponent::OnApplicationConfigReceived(
     return;
   }
 
-  if (!application_config.has_agent_url()) {
-    DLOG(WARNING) << "No agent has been associated with this app.";
-    delegate_->CancelPendingComponent(this);
-    return;
-  }
-
   params_.application_config = std::move(application_config);
 
   // Request custom API bindings from the component's Agent.
   params_.api_bindings_client = std::make_unique<ApiBindingsClient>(
-      params_.agent_manager->ConnectToAgentService<chromium::cast::ApiBindings>(
-          params_.application_config.agent_url()),
+      params_.startup_context->svc()->Connect<chromium::cast::ApiBindings>(),
       base::BindOnce(&PendingCastComponent::OnApiBindingsInitialized,
                      base::Unretained(this)));
 
   // Request UrlRequestRewriteRulesProvider from the Agent.
-  params_.agent_manager->ConnectToAgentService(
-      params_.application_config.agent_url(),
+  params_.startup_context->svc()->Connect(
       params_.url_rewrite_rules_provider.NewRequest());
   params_.url_rewrite_rules_provider.set_error_handler([this](
                                                            zx_status_t status) {
@@ -102,10 +86,8 @@ void PendingCastComponent::OnApplicationConfigReceived(
 
   // Connect to the component-specific ApplicationContext to retrieve the
   // media-session identifier assigned to this instance.
-  application_context_ =
-      params_.agent_manager
-          ->ConnectToAgentService<chromium::cast::ApplicationContext>(
-              params_.application_config.agent_url());
+  application_context_ = params_.startup_context->svc()
+                             ->Connect<chromium::cast::ApplicationContext>();
   application_context_.set_error_handler([this](zx_status_t status) {
     ZX_LOG(ERROR, status) << "ApplicationContext disconnected.";
     delegate_->CancelPendingComponent(this);

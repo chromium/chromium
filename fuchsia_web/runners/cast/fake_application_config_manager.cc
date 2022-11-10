@@ -47,12 +47,54 @@ void FakeApplicationConfigManager::AddApp(const std::string& id,
 
 void FakeApplicationConfigManager::GetConfig(std::string id,
                                              GetConfigCallback callback) {
-  if (id_to_config_.find(id) == id_to_config_.end()) {
+  auto it = id_to_config_.find(id);
+  if (it == id_to_config_.end()) {
     LOG(ERROR) << "Unknown Cast App ID: " << id;
     callback(chromium::cast::ApplicationConfig());
     return;
   }
 
-  callback(std::move(id_to_config_[id]));
-  id_to_config_.erase(id);
+  // ContextDirectoryProviders contain move-only fuchsia.io.Directory resources,
+  // so if those are present then remove them, manually clone them, then
+  // put them back.
+  absl::optional<std::vector<fuchsia::web::ContentDirectoryProvider>>
+      content_directories;
+  chromium::cast::ApplicationConfig& config = it->second;
+  if (config.has_content_directories_for_isolated_application()) {
+    content_directories.emplace(std::move(
+        *config.mutable_content_directories_for_isolated_application()));
+  }
+
+  // Now it should be safe to Clone() the configuration.
+  chromium::cast::ApplicationConfig result;
+  zx_status_t status = config.Clone(&result);
+  ZX_CHECK(status == ZX_OK, status) << "Clone result";
+
+  // Manually clone across the content directories, if necessary.
+  if (content_directories) {
+    for (auto& content_directory : *content_directories) {
+      fuchsia::web::ContentDirectoryProvider entry;
+      entry.set_name(content_directory.name());
+
+      // Borrow the directory handle to clone it.
+      fuchsia::io::DirectorySyncPtr sync_ptr;
+      sync_ptr.Bind(std::move(*content_directory.mutable_directory()));
+      fidl::InterfaceHandle<fuchsia::io::Node> node;
+      status = sync_ptr->Clone(fuchsia::io::OpenFlags::CLONE_SAME_RIGHTS,
+                               node.NewRequest());
+      ZX_CHECK(status == ZX_OK, status) << "Clone content directory";
+      entry.set_directory(
+          fidl::InterfaceHandle<fuchsia::io::Directory>(node.TakeChannel()));
+      *content_directory.mutable_directory() = sync_ptr.Unbind();
+
+      result.mutable_content_directories_for_isolated_application()->push_back(
+          std::move(entry));
+    }
+
+    // Restore the content directories into the stored configuration.
+    config.set_content_directories_for_isolated_application(
+        std::move(*content_directories));
+  }
+
+  callback(std::move(result));
 }
