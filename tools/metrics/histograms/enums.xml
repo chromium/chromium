@@ -80913,6 +80913,7 @@ Called by update_net_trust_anchors.py.-->
     Operation not supported on transport endpoint on Linux.
   </int>
   <int value="122" label="EDQUOT/_/_">Quota exceeeded on Linux.</int>
+  <int value="123" label="ENOMEDIUM">No medium found</int>
 </enum>
 
 <enum name="PopupBlockerAction">
