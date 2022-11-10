@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/impression_limit.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,6 +25,11 @@
 
 - (promos_manager::Promo)identifier {
   return promos_manager::Promo::AppStoreRating;
+}
+
+- (NSArray<ImpressionLimit*>*)impressionLimits {
+  return [NSArray arrayWithObject:[[ImpressionLimit alloc] initWithLimit:1
+                                                              forNumDays:365]];
 }
 
 @end
