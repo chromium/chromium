@@ -68,7 +68,7 @@ TEST_F(DemoAshPixelDiffTest, VerifyTopLevelWidgets) {
       SK_ColorYELLOW);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_widgets", widget1.get(), widget2.get(), widget3.get(),
+      "check_widgets.rev_0", widget1.get(), widget2.get(), widget3.get(),
       widget4.get()));
 }
 

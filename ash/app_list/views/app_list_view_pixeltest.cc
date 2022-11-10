@@ -82,7 +82,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
 
   HideCursor();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_answer_card_search_results",
+      "bubble_launcher_answer_card_search_results.rev_0",
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -95,7 +95,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
   ShowAppList();
   HideCursor();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_basics", GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_basics.rev_0", GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -115,7 +115,8 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
                                 /*position=*/20);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gradient_zone", GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_gradient_zone.rev_0",
+      GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
