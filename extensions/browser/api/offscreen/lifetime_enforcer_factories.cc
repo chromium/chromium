@@ -65,6 +65,37 @@ LifetimeEnforcerFactories& GetFactoriesInstance() {
   return *instance;
 }
 
+using FactoryMethodPtr = std::unique_ptr<OffscreenDocumentLifetimeEnforcer> (*)(
+    OffscreenDocumentHost*,
+    OffscreenDocumentLifetimeEnforcer::TerminationCallback,
+    OffscreenDocumentLifetimeEnforcer::NotifyInactiveCallback);
+
+struct ReasonAndFactoryMethodPair {
+  api::offscreen::Reason reason;
+  FactoryMethodPtr factory_method;
+};
+
+// A mapping between each of the different reasons and their corresponding
+// factory methods.
+constexpr ReasonAndFactoryMethodPair kReasonAndFactoryMethodPairs[] = {
+    {api::offscreen::REASON_TESTING, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_AUDIO_PLAYBACK, &CreateAudioLifetimeEnforcer},
+    // The following reasons do not currently have bespoke lifetime enforcement.
+    // This enforcement can be added on as-appropriate basis.
+    {api::offscreen::REASON_IFRAME_SCRIPTING, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_DOM_SCRAPING, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_BLOBS, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_DOM_PARSER, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_USER_MEDIA, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_DISPLAY_MEDIA, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_WEB_RTC, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_CLIPBOARD, &CreateEmptyEnforcer},
+};
+
+static_assert(std::size(kReasonAndFactoryMethodPairs) ==
+                  api::offscreen::REASON_LAST,
+              "Factory method size does not equal reason size.");
+
 }  // namespace
 
 LifetimeEnforcerFactories::LifetimeEnforcerFactories() {
@@ -110,10 +141,9 @@ LifetimeEnforcerFactories::TestingOverride::~TestingOverride() {
 }
 
 void LifetimeEnforcerFactories::InitializeFactories() {
-  map_.emplace(api::offscreen::REASON_TESTING,
-               base::BindRepeating(CreateEmptyEnforcer));
-  map_.emplace(api::offscreen::REASON_AUDIO_PLAYBACK,
-               base::BindRepeating(CreateAudioLifetimeEnforcer));
+  for (const auto& entry : kReasonAndFactoryMethodPairs) {
+    map_.emplace(entry.reason, base::BindRepeating(entry.factory_method));
+  }
 }
 
 }  // namespace extensions
