@@ -617,9 +617,9 @@ class LocalDeviceInstrumentationTestRun(
       tests: List containing tests or test batches.
 
     Returns:
-      True if tests should be sharded across several devices,
-      False otherwise.
+      List of tests or batches.
     """
+    # Each test or test batch will be a single shard.
     return tests
 
   #override

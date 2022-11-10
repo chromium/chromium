@@ -587,8 +587,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       tests: List containing tests or test batches.
 
     Returns:
-      True if tests should be sharded across several devices,
-      False otherwise.
+      List of test batches.
     """
     # _crashes are tests that might crash and make the tests in the same shard
     # following the crashed testcase not run.
