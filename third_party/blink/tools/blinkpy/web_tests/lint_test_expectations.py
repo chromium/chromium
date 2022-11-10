@@ -255,8 +255,8 @@ def _check_never_fix_tests(host, port, path, expectations):
 
         if port.lookup_virtual_test_base(exp.test):
             error = (
-                "{}:{} {}: Please use 'exclusive_tests' in VirtualTestSuite to skip"
-                " base tests of a virtual suite".format(
+                "{}:{} {}: Please use 'exclusive_tests' in VirtualTestSuites to"
+                " skip base tests of a virtual suite".format(
                     host.filesystem.basename(path), exp.lineno, exp.test))
         else:
             error = (
@@ -264,6 +264,21 @@ def _check_never_fix_tests(host, port, path, expectations):
                 " entry with a more specific test name or tags".format(
                     host.filesystem.basename(path), exp.lineno, exp.test))
         failures.append(error)
+    return failures
+
+
+def _check_skip_in_test_expectations(host, path, expectations):
+    if not path.endswith('TestExpectations'):
+        return []
+
+    failures = []
+    for exp in expectations:
+        if exp.results == set([ResultType.Skip]):
+            error = (
+                '{}:{} Single [ Skip ] is not allowed in TestExpectations. '
+                'See comments at the beginning of the file for details.'.
+                format(host.filesystem.basename(path), exp.lineno))
+            failures.append(error)
     return failures
 
 
@@ -281,6 +296,7 @@ def _check_expectations(host, port, path, test_expectations, options,
     failures.extend(_check_never_fix_tests(host, port, path, expectations))
     failures.extend(
         _check_stable_webexposed_not_disabled(host, path, expectations))
+    failures.extend(_check_skip_in_test_expectations(host, path, expectations))
     # TODO(crbug.com/1080691): Change this to failures once
     # wpt_expectations_updater is fixed.
     warnings.extend(

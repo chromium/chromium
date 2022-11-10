@@ -416,8 +416,8 @@ class LintTest(LoggingTestCase):
         test_expectations = (
             '# tags: [ mac win ]\n'
             '# results: [ Skip Pass Failure ]\n'
-            'test/* [ Skip ]\n'
-            '[ mac ] webexposed/* [ Skip ]\n'
+            'test/* [ Skip Failure ]\n'
+            '[ mac ] webexposed/* [ Skip Failure ]\n'
             'test/sub/* [ Pass ]\n'
             'test/test1.html [ Pass ]\n'
             'webexposed/foo/* [ Pass ]\n'
@@ -425,7 +425,7 @@ class LintTest(LoggingTestCase):
             'virtual/test/test/* [ Failure ]\n'
             'virtual/test/foo.html [ Pass ]\n'
             'virtual/stable/webexposed/test1/* [ Pass ]\n'
-            'virtual/stable/webexposed/test2/* [ Skip ]\n'
+            'virtual/stable/webexposed/test2/* [ Skip Failure ]\n'
             'virtual/stable/webexposed/api.html [ Pass Failure ]\n')
         port.expectations_dict = lambda: {
             'TestExpectations': test_expectations
@@ -438,6 +438,28 @@ class LintTest(LoggingTestCase):
         self.assertRegexpMatches(fail1, '.*virtual/stable/webexposed/test2/.*')
         self.assertRegexpMatches(fail2,
                                  r'.*virtual/stable/webexposed/api\.html.*')
+
+    def test_lint_skip_in_test_expectations(self):
+        options = optparse.Values({
+            'additional_expectations': [],
+            'platform': 'test'
+        })
+        host = MockHost()
+        port = host.port_factory.get(options.platform, options=options)
+        test_expectations = ('# results: [ Skip Timeout Failure ]\n'
+                             'test1.html [ Skip ]\n'
+                             'test2.html [ Skip Timeout ]\n'
+                             'test3.html [ Skip Failure ]\n')
+        port.expectations_dict = lambda: {
+            'TestExpectations': test_expectations
+        }
+        port.test_exists = lambda test: True
+        host.port_factory.get = lambda platform=None, options=None: port
+
+        failures, warnings = lint_test_expectations.lint(host, options)
+        self.assertEqual(warnings, [])
+        self.assertEquals(len(failures), 1)
+        self.assertRegexpMatches(failures[0], ':2 .*Skip')
 
 
 class CheckVirtualSuiteTest(unittest.TestCase):

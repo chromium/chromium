@@ -84,6 +84,26 @@
 [ Mac ] fast/events/menu-key-context-menu-reveal-focus.html [ Skip ]
 [ Mac ] fast/events/menu-key-context-menu.html [ Skip ]
 
+# The following touch gesture tests don't apply on Mac.
+crbug.com/613672 [ Mac ] fast/events/pointerevents/multi-pointer-event-in-slop-region.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/gesture-scroll.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/gesture-scroll-by-page.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/gesture-scrollbar-touchpad-fling.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/gesture-scrollbar-touchscreen-fling.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/gesture-scrollbar-mainframe.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/gesture-scrollbar.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-noscroll-body-xhidden.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-noscroll-body-yhidden.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-div-past-extent-diagonally.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-div-zoomed.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-div.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-iframe-editable.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-iframe.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-page-past-extent.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-page-zoomed.html [ Skip ]
+crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-page.html [ Skip ]
+
 # Thumb snapping is not supported on Linux and Mac.
 [ Linux ] fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Skip ]
 [ Mac ] fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Skip ]
@@ -235,6 +255,11 @@ crbug.com/381840 virtual/prefer_compositing_to_lcd_text/compositing/overflow/ove
 # GPU rasterization antialiases differently.
 crbug.com/665014 virtual/gpu-rasterization/images/cross-fade-svg-size-diff.html [ Skip ]
 crbug.com/665014 virtual/gpu-rasterization/images/cross-fade-svg-size.html [ Skip ]
+
+# WebGPU tests are only run on GPU bots, so they are skipped by default and run
+# separately from other Web Tests.
+external/wpt/webgpu/* [ Skip ]
+wpt_internal/webgpu/* [ Skip ]
 
 # Debug rendering difference only on Win Debug
 crbug.com/484370 [ Debug Win ] svg/custom/gradient-userSpaceOnUse-with-percentage.svg [ Skip ]
@@ -1711,8 +1736,15 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/icons-member/icons-member
 crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/start_url-member/start_url-member-pass-manual.html [ Skip ]
 crbug.com/626703 [ Mac11 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-postMessage-windows-manual.https.html [ Skip ]
 
-# Skip manual tests, see crbug/1114920
-external/wpt/html/semantics/forms/the-input-element/disabled-click-picker-manual.html [ Skip ]
+# This test requires a special browser flag and seems not suitable for a wpt test, see bug.
+crbug.com/691944 external/wpt/service-workers/service-worker/update-after-oneday.https.html [ Skip ]
+
+# Cross-origin WebAssembly module sharing is getting deprecated.
+crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html [ Skip ]
+crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-domain-success.sub.html [ Skip ]
+
+# Utility for manual testing, not intended to be run as part of layout tests.
+crbug.com/785955 http/tests/credentialmanagement/tools/virtual-authenticator-environment-manual.html [ Skip ]
 
 # Feature can only be disabled via base feature flag, not by commandline switch.
 crbug.com/1293679 virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/pending-beacon-origin-trial-interfaces.html [ Skip ]

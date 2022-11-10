@@ -39,6 +39,8 @@
               "http/tests/inspector-protocol/network",
               "http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html",
               "navigator_language/reduce_accept_language"],
+    "exclusive_tests": ["http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html",
+                        "navigator_language/reduce_accept_language"],
     "args": ["--enable-features=ReduceAcceptLanguage"]
   },
   {
@@ -71,6 +73,8 @@
               "external/wpt/feature-policy/experimental-features",
               "external/wpt/permissions-policy/experimental-features",
               "external/wpt/html/canvas/offscreen/manual/convert-to-blob",
+              "external/wpt/pointerevents/pointerlock/pointerevent_getPredictedEvents_when_pointerlocked-manual.html",
+              "external/wpt/pointerevents/pointerevent_predicted_events_attributes-manual.html",
               "external/wpt/scroll-animations",
               "external/wpt/requestidlecallback",
               "external/wpt/web-animations/crashtests",
@@ -84,6 +88,8 @@
               "transitions"],
     "exclusive_tests": ["external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html",
                         "external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html",
+                        "external/wpt/pointerevents/pointerlock/pointerevent_getPredictedEvents_when_pointerlocked-manual.html",
+                        "external/wpt/pointerevents/pointerevent_predicted_events_attributes-manual.html",
                         "external/wpt/requestidlecallback",
                         "http/tests/devtools/isolated-code-cache"],
     "args": ["--enable-threaded-compositing"]
@@ -930,6 +936,7 @@
     "prefix": "disable-frequency-capping-for-overlay-popup-detection",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/subresource_filter/overlay_popup_ad"],
+    "exclusive_tests": "ALL",
     "args": ["--disable-features=FrequencyCappingForOverlayPopupDetection"]
   },
   {
@@ -1428,7 +1435,7 @@
       "external/wpt/pending-beacon",
       "wpt_internal/pending-beacon"
     ],
-    "exclusive_tests": ["external/wpt/pending-beacon"],
+    "exclusive_tests": "ALL",
     "args": [
       "--enable-features=PendingBeaconAPI:requires_origin_trial/false"
     ]
