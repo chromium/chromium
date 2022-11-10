@@ -1043,9 +1043,10 @@ class LayerTreeHostPresentationDuringAnimation
     if (const_cast<const LayerTreeHost*>(layer_tree_host())
             ->pending_commit_state()
             ->source_frame_number == 2) {
-      layer_tree_host()->RequestPresentationTimeForNextFrame(base::BindOnce(
-          &LayerTreeHostPresentationDuringAnimation::OnPresentation,
-          base::Unretained(this)));
+      layer_tree_host()->RequestSuccessfulPresentationTimeForNextFrame(
+          base::BindOnce(
+              &LayerTreeHostPresentationDuringAnimation::OnPresentation,
+              base::Unretained(this)));
     }
   }
 
@@ -1079,7 +1080,7 @@ class LayerTreeHostPresentationDuringAnimation
   }
 
  private:
-  void OnPresentation(const gfx::PresentationFeedback& feedback) { EndTest(); }
+  void OnPresentation(base::TimeTicks presentation_timestamp) { EndTest(); }
 
   FakeContentLayerClient client_;
   scoped_refptr<FakePictureLayer> scroll_layer_;
