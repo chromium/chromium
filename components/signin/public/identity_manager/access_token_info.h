@@ -16,7 +16,9 @@ struct AccessTokenInfo {
   // The access token itself.
   std::string token;
 
-  // The time at which this access token will expire.
+  // The time at which this access token will expire. This will be set to the
+  // NULL time value of `base::Time()` when no expiration time is available
+  // (this happens sometimes on Android).
   base::Time expiration_time;
 
   // Contains extra information regarding the user's currently registered
