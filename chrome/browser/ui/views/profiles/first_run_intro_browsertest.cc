@@ -50,7 +50,7 @@ const TestParam kTestParams[] = {
      .use_longer_strings = true},
 };
 
-const std::string kMakeCardDescriptionLongerJsString =
+const char kMakeCardDescriptionLongerJsString[] =
     "(async () => {"
     "const introApp = document.querySelector('intro-app');"
     "const signInPromo = introApp.shadowRoot.querySelector('sign-in-promo');"
