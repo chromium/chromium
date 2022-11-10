@@ -1,0 +1,9 @@
+Combined dialog placeholder
+<template is="dom-if"
+          if="[[isCurrentStep_(stepEnum_.CONSENT, step_)]]">
+  Consent step
+</template>
+<template is="dom-if"
+          if="[[isCurrentStep_(stepEnum_.NOTICE, step_)]]">
+  Notice step
+</template>

@@ -32,6 +32,12 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       base::make_span(kPrivacySandboxResources, kPrivacySandboxResourcesSize),
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
 
+  // TODO(crbug.com/1378703): Add path constants to webui_url_constants.h.
+  source->AddResourcePath(
+      "combined", IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COMBINED_DIALOG_HTML);
+  source->AddResourcePath(
+      "notice", IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_DIALOG_HTML);
+
   static constexpr webui::LocalizedString kStrings[] = {
       {"privacySandboxTitle", IDS_SETTINGS_PRIVACY_SANDBOX_TITLE},
       {"consentTitle", IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_TITLE},

@@ -12,11 +12,17 @@ build_webui("build") {
 
   static_files = [
     "privacy_sandbox_dialog.html",
+    "privacy_sandbox_combined_dialog.html",
+    "privacy_sandbox_notice_dialog.html",
     "images/privacy_sandbox_confirmation_banner.svg",
     "images/privacy_sandbox_confirmation_banner_dark.svg",
   ]
 
-  web_component_files = [ "privacy_sandbox_dialog_app.ts" ]
+  web_component_files = [
+    "privacy_sandbox_dialog_app.ts",
+    "privacy_sandbox_combined_dialog_app.ts",
+    "privacy_sandbox_notice_dialog_app.ts",
+  ]
 
   non_web_component_files = [ "privacy_sandbox_dialog_browser_proxy.ts" ]
 
