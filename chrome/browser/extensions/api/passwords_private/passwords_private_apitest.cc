@@ -379,4 +379,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AddShortcut) {
   EXPECT_TRUE(get_add_shortcut_dialog_shown());
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetCredentialGroups) {
+  EXPECT_TRUE(RunPasswordsSubtest("getCredentialGroups"));
+}
+
 }  // namespace extensions

@@ -112,6 +112,12 @@ declare global {
         compromisedInfo?: CompromisedInfo;
       }
 
+      export interface CredentialGroup {
+        name: string;
+        iconUrl: string;
+        entries: PasswordUiEntry[];
+      }
+
       export interface ExceptionEntry {
         urls: UrlCollection;
         id: number;
@@ -155,6 +161,7 @@ declare global {
       export function requestCredentialsDetails(ids: number[]):
           Promise<PasswordUiEntry[]>;
       export function getSavedPasswordList(): Promise<PasswordUiEntry[]>;
+      export function getCredentialGroups(): Promise<CredentialGroup[]>;
       export function getPasswordExceptionList(): Promise<ExceptionEntry[]>;
       export function movePasswordsToAccount(ids: number[]): void;
       export function importPasswords(toStore: PasswordStoreSet):

@@ -703,6 +703,34 @@ var availableTests = [
     chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
+
+  function getCredentialGroups() {
+    var callback = function(list) {
+      chrome.test.assertTrue(!!list);
+      chrome.test.assertEq(list.length, 1);
+
+      const group = list[0];
+      chrome.test.assertTrue(!!group);
+      chrome.test.assertTrue(group.entries.length > 0);
+
+      var idSet = new Set();
+      for (var i = 0; i < group.entries.length; ++i) {
+        var entry = group.entries[i];
+        chrome.test.assertTrue(!!entry);
+        chrome.test.assertTrue(!!entry.urls.signonRealm);
+        chrome.test.assertTrue(!!entry.urls.shown);
+        chrome.test.assertTrue(!!entry.urls.link);
+        idSet.add(entry.id);
+      }
+
+      // Ensure that all entry ids are unique.
+      chrome.test.assertEq(group.entries.length, idSet.size);
+      // Ensure that the callback is invoked.
+      chrome.test.succeed();
+    };
+
+    chrome.passwordsPrivate.getCredentialGroups(callback);
+  },
 ];
 
 var testToRun = window.location.search.substring(1);

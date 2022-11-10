@@ -39,7 +39,7 @@ export class PasswordListItemElement extends PolymerElement {
     };
   }
 
-  item: chrome.passwordsPrivate.PasswordUiEntry;
+  item: chrome.passwordsPrivate.CredentialGroup;
   first: boolean;
 
   private computeElementClass_(): string {

@@ -36553,6 +36553,7 @@ Called by update_extension_histograms.py.-->
   <int value="1728" label="ACTION_SETBADGETEXTCOLOR"/>
   <int value="1729" label="AUTOTESTPRIVATE_REMOVECOMPONENTEXTENSION"/>
   <int value="1730" label="PASSWORDSPRIVATE_REQUESTCREDENTIALSDETAILS"/>
+  <int value="1731" label="PASSWORDSPRIVATE_GETCREDENTIALGROUPS"/>
 </enum>
 
 <enum name="ExtensionIconState">

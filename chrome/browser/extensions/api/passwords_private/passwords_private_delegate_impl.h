@@ -55,6 +55,7 @@ class PasswordsPrivateDelegateImpl
 
   // PasswordsPrivateDelegate implementation.
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
+  CredentialsGroups GetCredentialGroups() override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
   absl::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) override;

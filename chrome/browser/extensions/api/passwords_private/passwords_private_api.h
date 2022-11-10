@@ -128,6 +128,18 @@ class PasswordsPrivateGetSavedPasswordListFunction : public ExtensionFunction {
   void GotList(const PasswordsPrivateDelegate::UiEntries& entries);
 };
 
+class PasswordsPrivateGetCredentialGroupsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.getCredentialGroups",
+                             PASSWORDSPRIVATE_GETCREDENTIALGROUPS)
+
+ protected:
+  ~PasswordsPrivateGetCredentialGroupsFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class PasswordsPrivateGetPasswordExceptionListFunction
     : public ExtensionFunction {
  public:

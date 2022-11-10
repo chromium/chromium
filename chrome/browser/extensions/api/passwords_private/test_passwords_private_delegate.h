@@ -23,6 +23,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // PasswordsPrivateDelegate implementation.
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
+  CredentialsGroups GetCredentialGroups() override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
   // Fake implementation of `GetUrlCollection`. This returns a value if `url` is
   // not empty.

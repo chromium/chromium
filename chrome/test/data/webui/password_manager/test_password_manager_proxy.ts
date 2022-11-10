@@ -16,6 +16,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     PasswordManagerProxy {
   data: {
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
+    groups: chrome.passwordsPrivate.CredentialGroup[],
     blockedSites: BlockedSite[],
     checkStatus: chrome.passwordsPrivate.PasswordCheckStatus,
     insecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[],
@@ -31,6 +32,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getBlockedSitesList',
+      'getCredentialGroups',
       'getInsecureCredentials',
       'getPasswordCheckStatus',
       'getSavedPasswordList',
@@ -41,6 +43,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     // Set these to have non-empty data.
     this.data = {
       passwords: [],
+      groups: [],
       blockedSites: [],
       checkStatus: makePasswordCheckStatus(),
       insecureCredentials: [],
@@ -93,12 +96,17 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   getSavedPasswordList(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]> {
     this.methodCalled('getSavedPasswordList');
-    return Promise.resolve(this.data.passwords);
+    return Promise.resolve(this.data.passwords.slice());
+  }
+
+  getCredentialGroups(): Promise<chrome.passwordsPrivate.CredentialGroup[]> {
+    this.methodCalled('getCredentialGroups');
+    return Promise.resolve(this.data.groups.slice());
   }
 
   getBlockedSitesList(): Promise<BlockedSite[]> {
     this.methodCalled('getBlockedSitesList');
-    return Promise.resolve(this.data.blockedSites);
+    return Promise.resolve(this.data.blockedSites.slice());
   }
 
   getPasswordCheckStatus() {
@@ -108,7 +116,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   getInsecureCredentials() {
     this.methodCalled('getInsecureCredentials');
-    return Promise.resolve(this.data.insecureCredentials);
+    return Promise.resolve(this.data.insecureCredentials.slice());
   }
 
   startBulkPasswordCheck() {

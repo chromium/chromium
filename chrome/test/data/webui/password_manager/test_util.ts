@@ -69,6 +69,22 @@ export function createPasswordEntry(params?: PasswordEntryParams):
   };
 }
 
+export interface CredentialGroupParams {
+  name?: string;
+  icon?: string;
+  credentials?: chrome.passwordsPrivate.PasswordUiEntry[];
+}
+
+export function createCredentialGroup(params?: CredentialGroupParams):
+    chrome.passwordsPrivate.CredentialGroup {
+  params = params || {};
+  return {
+    name: params.name || '',
+    iconUrl: params.icon || '',
+    entries: params.credentials || [],
+  };
+}
+
 /**
  * Creates a single item for the list of password blockedSites. If no |id| is
  * passed, it is set to a default, value so this should probably not be done in

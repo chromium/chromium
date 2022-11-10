@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {createPasswordEntry} from './test_util.js';
+import {createCredentialGroup, createPasswordEntry} from './test_util.js';
 
 /**
  * @param subsection The passwords subsection element that will be checked.
@@ -19,18 +19,17 @@ import {createPasswordEntry} from './test_util.js';
  */
 async function validatePasswordsSubsection(
     list: IronListElement,
-    expectedPasswords: chrome.passwordsPrivate.PasswordUiEntry[]) {
-  assertDeepEquals(expectedPasswords, list.items);
+    expectedGroups: chrome.passwordsPrivate.CredentialGroup[]) {
+  assertDeepEquals(expectedGroups, list.items);
 
   const listItemElements = list.querySelectorAll('password-list-item');
-  for (let index = 0; index < expectedPasswords.length; ++index) {
-    const expectedPassword = expectedPasswords[index]!;
+  for (let index = 0; index < expectedGroups.length; ++index) {
+    const expectedGroup = expectedGroups[index]!;
     const listItemElement = listItemElements[index];
 
     assertTrue(!!listItemElement);
     assertEquals(
-        expectedPassword.urls.shown,
-        listItemElement.$.displayName.textContent!.trim());
+        expectedGroup.name, listItemElement.$.displayName.textContent!.trim());
   }
 }
 
@@ -53,15 +52,21 @@ suite('PasswordsSectionTest', function() {
     // PasswordsList is hidden as there are no passwords.
     assertFalse(isVisible(section.$.passwordsList));
 
-    // Add passwords
-    const passwordList = [
-      createPasswordEntry({url: 'test.com', username: 'user', id: 0}),
-      createPasswordEntry({url: 'test2.com', username: 'user', id: 1}),
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'test.com',
+        credentials: [createPasswordEntry({username: 'user', id: 0})],
+      }),
+      createCredentialGroup({
+        name: 'test2.com',
+        credentials: [createPasswordEntry({username: 'user', id: 1})],
+      }),
     ];
     assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
-    passwordManager.listeners.savedPasswordListChangedListener!(passwordList);
+    passwordManager.listeners.savedPasswordListChangedListener!([]);
     await flushTasks();
 
-    validatePasswordsSubsection(section.$.passwordsList, passwordList);
+    validatePasswordsSubsection(
+        section.$.passwordsList, passwordManager.data.groups);
   });
 });

@@ -157,6 +157,15 @@ chrome.passwordsPrivate.PasswordUiEntry;
 
 /**
  * @typedef {{
+ *   name: string,
+ *   iconUrl: string,
+ *   entries: !Array<!chrome.passwordsPrivate.PasswordUiEntry>
+ * }}
+ */
+chrome.passwordsPrivate.CredentialGroup;
+
+/**
+ * @typedef {{
  *   urls: !chrome.passwordsPrivate.UrlCollection,
  *   id: number
  * }}
@@ -271,6 +280,13 @@ chrome.passwordsPrivate.requestCredentialsDetails = function(ids, callback) {};
  *     callback Called with the list of saved passwords.
  */
 chrome.passwordsPrivate.getSavedPasswordList = function(callback) {};
+
+/**
+ * Returns the list of Credentials groups.
+ * @param {function(!Array<!chrome.passwordsPrivate.CredentialGroup>): void}
+ *     callback Called with the list of groups.
+ */
+chrome.passwordsPrivate.getCredentialsGroups = function(callback) {};
 
 /**
  * Returns the list of password exceptions.

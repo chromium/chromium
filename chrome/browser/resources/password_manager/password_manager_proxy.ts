@@ -96,6 +96,11 @@ export interface PasswordManagerProxy {
   getSavedPasswordList(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
 
   /**
+   * Request grouped credentials.
+   */
+  getCredentialGroups(): Promise<chrome.passwordsPrivate.CredentialGroup[]>;
+
+  /**
    * Request the list of blocked sites.
    */
   getBlockedSitesList(): Promise<BlockedSite[]>;
@@ -173,6 +178,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   getSavedPasswordList() {
     return chrome.passwordsPrivate.getSavedPasswordList().catch(() => []);
+  }
+
+  getCredentialGroups() {
+    return chrome.passwordsPrivate.getCredentialGroups();
   }
 
   getBlockedSitesList() {

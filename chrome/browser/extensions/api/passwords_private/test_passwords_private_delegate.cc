@@ -60,6 +60,18 @@ void TestPasswordsPrivateDelegate::GetSavedPasswordsList(
   std::move(callback).Run(current_entries_);
 }
 
+PasswordsPrivateDelegate::CredentialsGroups
+TestPasswordsPrivateDelegate::GetCredentialGroups() {
+  std::vector<api::passwords_private::CredentialGroup> groups;
+  api::passwords_private::CredentialGroup group_api;
+  group_api.name = "test.com";
+  for (size_t i = 0; i < kNumMocks; i++) {
+    group_api.entries.push_back(CreateEntry(i));
+  }
+  groups.push_back(std::move(group_api));
+  return groups;
+}
+
 void TestPasswordsPrivateDelegate::GetPasswordExceptionsList(
     ExceptionEntriesCallback callback) {
   std::move(callback).Run(current_exceptions_);

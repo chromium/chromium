@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -301,6 +302,27 @@ void PasswordsPrivateDelegateImpl::GetSavedPasswordsList(
     std::move(callback).Run(current_entries_);
   else
     get_saved_passwords_list_callbacks_.push_back(std::move(callback));
+}
+
+PasswordsPrivateDelegate::CredentialsGroups
+PasswordsPrivateDelegateImpl::GetCredentialGroups() {
+  std::vector<api::passwords_private::CredentialGroup> groups;
+  for (const password_manager::AffiliatedGroup& group :
+       saved_passwords_presenter_.GetAffiliatedGroups()) {
+    api::passwords_private::CredentialGroup group_api;
+    group_api.name = group.GetDisplayName();
+    group_api.icon_url = group.GetIconURL().spec();
+
+    DCHECK(!group.GetCredentials().empty());
+    for (const CredentialUIEntry& credential : group.GetCredentials()) {
+      int id = credential_id_generator_.GenerateId(credential);
+      group_api.entries.push_back(
+          CreatePasswordUiEntryFromCredentialUiEntry(id, credential));
+    }
+
+    groups.push_back(std::move(group_api));
+  }
+  return groups;
 }
 
 void PasswordsPrivateDelegateImpl::GetPasswordExceptionsList(

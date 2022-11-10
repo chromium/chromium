@@ -52,6 +52,10 @@ class PasswordsPrivateDelegate : public KeyedService {
   using UiEntriesCallback = base::OnceCallback<void(const UiEntries&)>;
   virtual void GetSavedPasswordsList(UiEntriesCallback callback) = 0;
 
+  using CredentialsGroups =
+      std::vector<api::passwords_private::CredentialGroup>;
+  virtual CredentialsGroups GetCredentialGroups() = 0;
+
   // Gets the password exceptions list.
   using ExceptionEntries = std::vector<api::passwords_private::ExceptionEntry>;
   using ExceptionEntriesCallback =

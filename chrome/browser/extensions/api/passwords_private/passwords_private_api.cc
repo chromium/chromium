@@ -179,6 +179,13 @@ void PasswordsPrivateGetSavedPasswordListFunction::GotList(
       api::passwords_private::GetSavedPasswordList::Results::Create(list)));
 }
 
+// PasswordsPrivateGetCredentialGroupsFunction
+ResponseAction PasswordsPrivateGetCredentialGroupsFunction::Run() {
+  return RespondNow(
+      ArgumentList(api::passwords_private::GetCredentialGroups::Results::Create(
+          GetDelegate(browser_context())->GetCredentialGroups())));
+}
+
 // PasswordsPrivateGetPasswordExceptionListFunction
 ResponseAction PasswordsPrivateGetPasswordExceptionListFunction::Run() {
   // GetList() can immediately call GotList() (which would Respond() before
