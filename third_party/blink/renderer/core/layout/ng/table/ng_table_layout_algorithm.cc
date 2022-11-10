@@ -1479,6 +1479,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
           minimal_table_grid_block_size, &(*table_box_extent),
           &grid_block_size_inflation);
 
+      has_ended_table_box_layout = true;
+
       if (!broke_inside) {
         // If the table box fits inside the fragmentainer, we're past it.
         is_past_table_box =
@@ -1503,8 +1505,23 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
   LayoutUnit block_size = child_block_offset.ClampNegativeToZero();
   DCHECK_GE(block_size, grid_block_size_inflation);
-  container_builder_.SetIntrinsicBlockSize(block_size -
-                                           grid_block_size_inflation);
+
+  LayoutUnit intrinsic_block_size = block_size - grid_block_size_inflation;
+  if (!has_ended_table_box_layout && !is_past_table_box) {
+    // Include block-end border/padding/border-spacing when setting the
+    // block-size. Even if we're positive at this point that we're going to
+    // break inside, the fragmentation machinery expects this to be part of the
+    // block-size. The reason is that the algorithms themselves don't really
+    // know enough to tell for sure that we're *not* going to break inside. In
+    // order for FinishFragmentation() to make that decision correctly, add
+    // this, if it hasn't already been added.
+    LayoutUnit table_block_end_fluff =
+        border_padding.block_end + border_spacing_after_last_section;
+    intrinsic_block_size += table_block_end_fluff;
+    block_size += table_block_end_fluff;
+  }
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
+
   block_size += previously_consumed_block_size;
   if (ConstraintSpace().IsFixedBlockSize())
     block_size = ConstraintSpace().AvailableSize().block_size;
