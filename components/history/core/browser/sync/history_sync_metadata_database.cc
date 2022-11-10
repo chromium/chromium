@@ -68,6 +68,13 @@ bool HistorySyncMetadataDatabase::GetAllSyncMetadata(
   return true;
 }
 
+bool HistorySyncMetadataDatabase::ClearAllEntityMetadata() {
+  sql::Statement s(
+      db_->GetUniqueStatement("DELETE FROM history_sync_metadata"));
+
+  return s.Run();
+}
+
 bool HistorySyncMetadataDatabase::UpdateSyncMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key,

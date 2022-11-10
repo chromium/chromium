@@ -52,9 +52,9 @@ enum class SyncHistoryDatabaseError {
   kApplySyncChangesWriteMetadata = 1,
   kOnDatabaseError = 2,
   kLoadMetadata = 3,
-  // Deprecated (call site was removed):
+  // Deprecated (call sites were removed):
   // kOnURLVisitedGetVisit = 4,
-  kOnURLsDeletedReadMetadata = 5,
+  // kOnURLsDeletedReadMetadata = 5,
   kOnVisitUpdatedGetURL = 6,
   kGetAllDataReadMetadata = 7,
   kMaxValue = kGetAllDataReadMetadata
@@ -430,9 +430,6 @@ HistorySyncBridge::HistorySyncBridge(
       history_backend_(history_backend),
       sync_metadata_database_(sync_metadata_database) {
   DCHECK(history_backend_);
-  DCHECK(sync_metadata_database_);
-  // Note that `sync_metadata_database_` can become null later, in case of
-  // database errors.
 
   history_backend_observation_.Observe(history_backend_.get());
   LoadMetadata();
@@ -477,6 +474,7 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_started_);
   DCHECK(!processing_syncer_changes_);
+  DCHECK(sync_metadata_database_);
   // Set flag to stop accepting history change notifications from backend.
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
@@ -607,6 +605,10 @@ void HistorySyncBridge::GetData(StorageKeyList storage_keys,
 void HistorySyncBridge::GetAllDataForDebugging(DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!sync_metadata_database_) {
+    return;
+  }
+
   auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
   if (!sync_metadata_database_->GetAllSyncMetadata(metadata_batch.get())) {
     RecordDatabaseError(SyncHistoryDatabaseError::kGetAllDataReadMetadata);
@@ -724,7 +726,6 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
                                       const URLRows& deleted_rows,
                                       const std::set<GURL>& favicon_urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sync_metadata_database_);
 
   if (!ShouldCommitRightNow()) {
     return;
@@ -741,24 +742,12 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
   // No need to send any actual deletions: A HistoryDeleteDirective will take
   // care of that. Just untrack all entities and clear their metadata. (The only
   // case where such metadata actually exists is if there are entities that are
-  // waiting for a commit. Clear their metadata, to cancel those commits.)
-  auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-  if (!sync_metadata_database_->GetAllSyncMetadata(metadata_batch.get())) {
-    RecordDatabaseError(SyncHistoryDatabaseError::kOnURLsDeletedReadMetadata);
-    change_processor()->ReportError(
-        {FROM_HERE,
-         "Failed reading metadata from HistorySyncMetadataDatabase."});
-    return;
-  }
-  for (const auto& [storage_key, metadata] : metadata_batch->GetAllMetadata()) {
-    sync_metadata_database_->ClearSyncMetadata(syncer::HISTORY, storage_key);
-    change_processor()->UntrackEntityForStorageKey(storage_key);
-  }
+  // waiting for a commit. Clear their metadata, to cancel those commits.
+  UntrackAndClearMetadataForAllEntities();
 }
 
 void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sync_metadata_database_);
 
   if (!ShouldCommitRightNow()) {
     return;
@@ -786,7 +775,6 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
 
 void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sync_metadata_database_);
 
   if (!ShouldCommitRightNow()) {
     return;
@@ -810,9 +798,9 @@ void HistorySyncBridge::OnDatabaseError() {
 }
 
 void HistorySyncBridge::LoadMetadata() {
-  // `sync_metadata_database_` can become null in case of database errors, but
-  // this is the very first usage of it, so here it can't be null yet.
-  DCHECK(sync_metadata_database_);
+  if (!sync_metadata_database_) {
+    return;
+  }
 
   auto batch = std::make_unique<syncer::MetadataBatch>();
   if (!sync_metadata_database_->GetAllSyncMetadata(batch.get())) {
@@ -826,6 +814,10 @@ void HistorySyncBridge::LoadMetadata() {
 }
 
 bool HistorySyncBridge::ShouldCommitRightNow() const {
+  if (!sync_metadata_database_) {
+    return false;  // History DB is not functional; don't commit anything.
+  }
+
   if (processing_syncer_changes_) {
     return false;  // These are changes originating from us, ignore.
   }
@@ -991,7 +983,17 @@ bool HistorySyncBridge::UpdateEntityInBackend(
   return true;
 }
 
+void HistorySyncBridge::UntrackAndClearMetadataForAllEntities() {
+  DCHECK(sync_metadata_database_);
+  sync_metadata_database_->ClearAllEntityMetadata();
+  for (const std::string& storage_key :
+       change_processor()->GetAllTrackedStorageKeys()) {
+    change_processor()->UntrackEntityForStorageKey(storage_key);
+  }
+}
+
 void HistorySyncBridge::UntrackAndClearMetadataForSyncedEntities() {
+  DCHECK(sync_metadata_database_);
   for (const std::string& storage_key :
        change_processor()->GetAllTrackedStorageKeys()) {
     if (change_processor()->IsEntityUnsynced(storage_key)) {

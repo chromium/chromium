@@ -30,8 +30,8 @@ class VisitIDRemapper;
 class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
                           public HistoryBackendObserver {
  public:
-  // `sync_metadata_store` is owned by `history_backend`, and must outlive
-  // HistorySyncBridge.
+  // `history_backend` must not be null.
+  // `sync_metadata_store` may be null, but if non-null, must outlive this.
   HistorySyncBridge(
       HistoryBackendForSync* history_backend,
       HistorySyncMetadataDatabase* sync_metadata_store,
@@ -109,6 +109,10 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // commonly, because no matching entry exists in the backend).
   bool UpdateEntityInBackend(VisitIDRemapper* id_remapper,
                              const sync_pb::HistorySpecifics& specifics);
+
+  // Untracks all entities from the processor, and clears their (persisted)
+  // metadata.
+  void UntrackAndClearMetadataForAllEntities();
 
   // Untracks all entities from the processor, and clears their (persisted)
   // metadata, except for entities that are "unsynced", i.e. that are waiting to
