@@ -356,9 +356,11 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::AggregatableResult
-  MaybeStoreAggregatableAttributionReport(AttributionReport& report,
-                                          int64_t aggregatable_budget_consumed,
-                                          absl::optional<uint64_t> dedup_key)
+  MaybeStoreAggregatableAttributionReport(
+      AttributionReport& report,
+      int64_t aggregatable_budget_consumed,
+      absl::optional<uint64_t> dedup_key,
+      absl::optional<int64_t>& aggregatable_budget_per_source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool StoreAggregatableAttributionReport(

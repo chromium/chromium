@@ -38,6 +38,9 @@ class CONTENT_EXPORT AttributionDebugReport {
     kTriggerEventNoise,
     kTriggerEventLowPriority,
     kTriggerEventExcessiveReports,
+    kTriggerAggregateDeduplicated,
+    kTriggerAggregateNoContributions,
+    kTriggerAggregateInsufficientBudget,
   };
 
   static absl::optional<AttributionDebugReport> Create(

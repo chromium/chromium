@@ -103,11 +103,8 @@ absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
     case AggregatableResult::kInternalError:
     case AggregatableResult::kNoCapacityForConversionDestination:
     case AggregatableResult::kExcessiveReportingOrigins:
-    case AggregatableResult::kNoHistograms:
-    case AggregatableResult::kInsufficientBudget:
     case AggregatableResult::kNotRegistered:
     case AggregatableResult::kProhibitedByBrowserPolicy:
-    case AggregatableResult::kDeduplicated:
       return absl::nullopt;
     case AggregatableResult::kNoMatchingImpressions:
       return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
@@ -119,6 +116,16 @@ absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
     case AggregatableResult::kNoMatchingSourceFilterData:
       return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingFilterData,
                                  is_debug_cookie_set);
+    case AggregatableResult::kDeduplicated:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerAggregateDeduplicated,
+                                 is_debug_cookie_set);
+    case AggregatableResult::kNoHistograms:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerAggregateNoContributions, is_debug_cookie_set);
+    case AggregatableResult::kInsufficientBudget:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerAggregateInsufficientBudget,
+          is_debug_cookie_set);
   }
 }
 
@@ -148,6 +155,12 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-event-low-prioirty";
     case DebugDataType::kTriggerEventExcessiveReports:
       return "trigger-event-excessive-reports";
+    case DebugDataType::kTriggerAggregateDeduplicated:
+      return "trigger-aggregate-deduplicated";
+    case DebugDataType::kTriggerAggregateNoContributions:
+      return "trigger-aggregate-no-contributions";
+    case DebugDataType::kTriggerAggregateInsufficientBudget:
+      return "trigger-aggregate-insufficient-budget";
   }
 }
 
@@ -198,6 +211,9 @@ base::Value::Dict GetReportDataBody(
     case DebugDataType::kTriggerEventNoise:
     case DebugDataType::kTriggerEventLowPriority:
     case DebugDataType::kTriggerEventExcessiveReports:
+    case DebugDataType::kTriggerAggregateDeduplicated:
+    case DebugDataType::kTriggerAggregateNoContributions:
+    case DebugDataType::kTriggerAggregateInsufficientBudget:
       NOTREACHED();
       return base::Value::Dict();
   }
@@ -208,33 +224,33 @@ base::Value::Dict GetReportDataBody(
 base::Value::Dict GetReportDataBody(DebugDataType data_type,
                                     const AttributionTrigger& trigger,
                                     const CreateReportResult& result) {
+  base::Value::Dict data_body;
+  SetAttributionDestination(data_body,
+                            net::SchemefulSite(trigger.destination_origin()));
+
+  if (result.source())
+    SetSourceData(data_body, result.source()->common_info());
+
   switch (data_type) {
-    case DebugDataType::kTriggerNoMatchingSource: {
-      base::Value::Dict data_body;
-      SetAttributionDestination(
-          data_body, net::SchemefulSite(trigger.destination_origin()));
-      return data_body;
-    }
-    case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
+    case DebugDataType::kTriggerNoMatchingSource:
     case DebugDataType::kTriggerNoMatchingFilterData:
     case DebugDataType::kTriggerEventDeduplicated:
     case DebugDataType::kTriggerEventNoMatchingConfigurations:
-    case DebugDataType::kTriggerEventNoise: {
-      DCHECK(result.source());
-
-      base::Value::Dict data_body;
-      SetAttributionDestination(
-          data_body, net::SchemefulSite(trigger.destination_origin()));
-      SetSourceData(data_body, result.source()->common_info());
-
-      if (data_type ==
-          DebugDataType::kTriggerAttributionsPerSourceDestinationLimit) {
-        DCHECK(result.rate_limits_max_attributions());
-        data_body.Set(kLimit, base::NumberToString(
-                                  *result.rate_limits_max_attributions()));
-      }
-      return data_body;
-    }
+    case DebugDataType::kTriggerEventNoise:
+    case DebugDataType::kTriggerAggregateDeduplicated:
+    case DebugDataType::kTriggerAggregateNoContributions:
+      break;
+    case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
+      DCHECK(result.limits().rate_limits_max_attributions);
+      data_body.Set(kLimit, base::NumberToString(
+                                *result.limits().rate_limits_max_attributions));
+      break;
+    case DebugDataType::kTriggerAggregateInsufficientBudget:
+      DCHECK(result.limits().aggregatable_budget_per_source);
+      data_body.Set(kLimit,
+                    base::NumberToString(
+                        *result.limits().aggregatable_budget_per_source));
+      break;
     case DebugDataType::kTriggerEventLowPriority:
     case DebugDataType::kTriggerEventExcessiveReports:
       DCHECK(result.dropped_event_level_report());
@@ -246,6 +262,8 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
       NOTREACHED();
       return base::Value::Dict();
   }
+
+  return data_body;
 }
 
 }  // namespace

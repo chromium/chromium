@@ -847,7 +847,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   absl::optional<AttributionInfo> attribution_info;
 
-  absl::optional<int64_t> rate_limits_max_attributions;
+  CreateReportResult::Limits limits;
 
   auto assemble_report_result =
       [&](absl::optional<EventLevelResult> new_event_level_status,
@@ -878,8 +878,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
             attribution_info
                 ? absl::make_optional(std::move(attribution_info->source))
                 : absl::nullopt,
-            rate_limits_max_attributions,
-            std::move(dropped_event_level_report));
+            limits, std::move(dropped_event_level_report));
       };
 
   if (trigger.aggregatable_trigger_data().empty() &&
@@ -959,7 +958,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
-      rate_limits_max_attributions =
+      limits.rate_limits_max_attributions =
           delegate_->GetRateLimits().max_attributions;
       return assemble_report_result(EventLevelResult::kExcessiveAttributions,
                                     AggregatableResult::kExcessiveAttributions);
@@ -1002,7 +1001,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     store_aggregatable_status = MaybeStoreAggregatableAttributionReport(
         *new_aggregatable_report,
         source_to_attribute->source.aggregatable_budget_consumed(),
-        trigger.aggregatable_dedup_key());
+        trigger.aggregatable_dedup_key(),
+        limits.aggregatable_budget_per_source);
   }
 
   if (store_event_level_status == EventLevelResult::kInternalError ||
@@ -2882,7 +2882,8 @@ AggregatableResult
 AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
     AttributionReport& report,
     int64_t aggregatable_budget_consumed,
-    absl::optional<uint64_t> dedup_key) {
+    absl::optional<uint64_t> dedup_key,
+    absl::optional<int64_t>& aggregatable_budget_per_source) {
   const auto* aggregatable_attribution =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &report.data());
@@ -2893,6 +2894,8 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
+      aggregatable_budget_per_source =
+          delegate_->GetAggregatableBudgetPerSource();
       return AggregatableResult::kInsufficientBudget;
     case RateLimitResult::kError:
       return AggregatableResult::kInternalError;
