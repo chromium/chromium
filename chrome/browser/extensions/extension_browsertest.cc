@@ -22,7 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -647,8 +646,6 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
   ExtensionRegistry* registry = extension_registry();
   size_t num_before = registry->enabled_extensions().size();
 
-  scoped_refptr<CrxInstaller> installer;
-  absl::optional<CrxInstallError> install_error;
   {
     std::unique_ptr<ScopedTestDialogAutoConfirm> prompt_auto_confirm;
     if (ui_type == INSTALL_UI_TYPE_CANCEL) {
@@ -683,8 +680,8 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
       install_ui = std::make_unique<ExtensionInstallPrompt>(
           browser->tab_strip_model()->GetActiveWebContents());
     }
-    installer =
-        CrxInstaller::Create(extension_service(), std::move(install_ui));
+    scoped_refptr<CrxInstaller> installer(
+        CrxInstaller::Create(extension_service(), std::move(install_ui)));
     installer->set_expected_id(id);
     installer->set_creation_flags(creation_flags);
     installer->set_install_source(install_source);
@@ -695,15 +692,12 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
           CrxInstaller::OffStoreInstallAllowedInTest);
     }
 
-    base::test::TestFuture<absl::optional<CrxInstallError>>
-        installer_done_future;
-    installer->AddInstallerCallback(
-        installer_done_future
-            .GetCallback<const absl::optional<CrxInstallError>&>());
+    observer_->Watch(NOTIFICATION_CRX_INSTALLER_DONE,
+                     content::Source<CrxInstaller>(installer.get()));
 
     installer->InstallCrx(crx_path);
 
-    install_error = installer_done_future.Get();
+    observer_->Wait();
   }
 
   size_t num_after = registry->enabled_extensions().size();
@@ -728,13 +722,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
 
   if (!observer_->WaitForExtensionViewsToLoad())
     return nullptr;
-
-  if (install_error)
-    return nullptr;
-
-  // Even though we can already get the Extension from the CrxInstaller,
-  // ensure it's also in the list of enabled extensions.
-  return registry->GetExtensionById(installer->extension()->id(),
+  return registry->GetExtensionById(last_loaded_extension_id(),
                                     ExtensionRegistry::ENABLED);
 }
 
