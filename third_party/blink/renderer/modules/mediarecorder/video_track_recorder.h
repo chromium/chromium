@@ -168,14 +168,6 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
         base::TimeTicks capture_timestamp,
         bool is_key_frame)>;
 
-    static void OnFrameEncodeCompleted(
-        const OnEncodedVideoInternalCB& on_encoded_video_cb,
-        const media::WebmMuxer::VideoParameters& params,
-        std::string data,
-        std::string alpha_data,
-        base::TimeTicks capture_timestamp,
-        bool keyframe);
-
     void SetPaused(bool paused);
     virtual bool CanEncodeAlphaChannel();
 

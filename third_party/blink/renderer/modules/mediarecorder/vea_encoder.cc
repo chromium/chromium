@@ -166,12 +166,8 @@ void VEAEncoder::BitstreamBufferReady(
   const auto front_frame = frames_in_encode_.front();
   frames_in_encode_.pop();
 
-  PostCrossThreadTask(
-      *origin_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(OnFrameEncodeCompleted,
-                          CrossThreadBindRepeating(on_encoded_video_cb_),
-                          front_frame.first, std::move(data), std::string(),
-                          front_frame.second, metadata.key_frame));
+  on_encoded_video_cb_.Run(front_frame.first, std::move(data), std::string(),
+                           front_frame.second, metadata.key_frame);
 
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 }

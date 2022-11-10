@@ -186,12 +186,8 @@ void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
   }
   frame = nullptr;
 
-  PostCrossThreadTask(
-      *origin_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(OnFrameEncodeCompleted,
-                          CrossThreadBindRepeating(on_encoded_video_cb_),
-                          video_params, std::move(data), std::move(alpha_data),
-                          capture_timestamp, keyframe));
+  on_encoded_video_cb_.Run(video_params, std::move(data), std::move(alpha_data),
+                           capture_timestamp, keyframe);
 }
 
 void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,

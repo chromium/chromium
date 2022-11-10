@@ -186,12 +186,8 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
   }
 
   const bool is_key_frame = info.eFrameType == videoFrameTypeIDR;
-  PostCrossThreadTask(
-      *origin_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(OnFrameEncodeCompleted,
-                          CrossThreadBindRepeating(on_encoded_video_cb_),
-                          video_params, std::move(data), std::string(),
-                          capture_timestamp, is_key_frame));
+  on_encoded_video_cb_.Run(video_params, std::move(data), std::string(),
+                           capture_timestamp, is_key_frame);
 }
 
 bool H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {

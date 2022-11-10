@@ -546,20 +546,6 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
   EncodeOnEncodingTaskRunner(std::move(frame), capture_timestamp);
 }
 
-// static
-void VideoTrackRecorderImpl::Encoder::OnFrameEncodeCompleted(
-    const OnEncodedVideoInternalCB& on_encoded_video_cb,
-    const media::WebmMuxer::VideoParameters& params,
-    std::string data,
-    std::string alpha_data,
-    base::TimeTicks capture_timestamp,
-    bool keyframe) {
-  DVLOG(1) << (keyframe ? "" : "non ") << "keyframe " << data.length() << "B, "
-           << capture_timestamp << " ms";
-  on_encoded_video_cb.Run(params, std::move(data), std::move(alpha_data),
-                          capture_timestamp, keyframe);
-}
-
 void VideoTrackRecorderImpl::Encoder::SetPaused(bool paused) {
   if (!encoding_task_runner_->RunsTasksInCurrentSequence()) {
     PostCrossThreadTask(
