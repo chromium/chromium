@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_EXTERNAL_CACHE_DELEGATE_H_
 
 #include "base/values.h"
+#include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
 
 namespace chromeos {
@@ -17,11 +18,15 @@ class ExternalCacheDelegate {
   // Caller owns |prefs|.
   virtual void OnExtensionListsUpdated(const base::Value::Dict& prefs);
 
-  // Called after extension with |id| is loaded in cache.
-  virtual void OnExtensionLoadedInCache(const extensions::ExtensionId& id);
+  // Called after extension with |id| is loaded in cache. |is_updated| indicates
+  // whether the extension is updated.
+  virtual void OnExtensionLoadedInCache(const extensions::ExtensionId& id,
+                                        bool is_updated);
 
   // Called when extension with |id| fails to load due to a download error.
-  virtual void OnExtensionDownloadFailed(const extensions::ExtensionId& id);
+  virtual void OnExtensionDownloadFailed(
+      const extensions::ExtensionId& id,
+      extensions::ExtensionDownloaderDelegate::Error error);
 
   // Called when the cached .crx file for |id| is deleted (e.g. due to failed
   // install / corrupted file).

@@ -13,6 +13,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
+#include "extensions/browser/updater/extension_downloader_delegate.h"
 
 namespace chromeos {
 
@@ -51,19 +52,23 @@ class TestExternalCache : public ExternalCache {
   // |id| - the "downloaded" extension ID.
   // |crx_path| - the path to which the CRX is "downloaded".
   // |version| - the "downloaded" extension version.
+  // |is_update| - whether the CRX download is started by extension update.
   // Returns whether the extension information has actually been saved. This
   // will return false if the cache does not think that the extension's
   // downaload is pending.
   bool SimulateExtensionDownloadFinished(const std::string& id,
                                          const std::string& crx_path,
-                                         const std::string& version);
+                                         const std::string& version,
+                                         bool is_update);
 
   // Simulates the extension's download failure. This will remove the extension
   // info from the set of extensions tracked in this external cache.
   // Returns whether the extension information has actually been changed. This
   // will return false if the cache does not think that the extension's
   // downaload is pending.
-  bool SimulateExtensionDownloadFailed(const std::string& id);
+  bool SimulateExtensionDownloadFailed(
+      const std::string& id,
+      extensions::ExtensionDownloaderDelegate::Error error);
 
   // Set of the extension IDs in download pending state. Note that |this| does
   // not actually initiate the download, the user is expected to call either

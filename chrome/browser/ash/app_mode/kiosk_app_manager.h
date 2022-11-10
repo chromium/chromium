@@ -23,6 +23,7 @@
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -44,6 +45,10 @@ class KioskAppData;
 class KioskExternalUpdater;
 class OwnerSettingsServiceAsh;
 
+extern const char kKioskPrimaryAppInstallErrorUMA[];
+extern const char kKioskPrimaryAppUpdateResultUMA[];
+extern const char kKioskExternalUpdateSuccessUMA[];
+
 // KioskAppManager manages cached app data.
 class KioskAppManager : public KioskAppManagerBase,
                         public chromeos::ExternalCacheDelegate {
@@ -56,6 +61,30 @@ class KioskAppManager : public KioskAppManagerBase,
     // Consumer kiosk mode auto-launch feature is disabled and cannot any longer
     // be enabled on this machine.
     kDisabled,
+  };
+
+  // Result of downloading primary app from ExternalCache. Should be in sync
+  // with extensions::ExtensionDownloaderDelegate::Error. Used in UMA metrics.
+  enum class PrimaryAppDownloadResult {
+    // Successful update.
+    kSuccess,
+    // Background networking is disabled.
+    kDisabled,
+    // Failed to fetch the manifest for this extension.
+    kManifestFetchFailed,
+    // The manifest couldn't be parsed.
+    kManifestInvalid,
+    // The manifest was fetched and parsed, and there are no updates for
+    // this extension.
+    kNoUpdateAvailable,
+    // The update entry for the extension contained no fetch URL.
+    kCrxFetchUrlEmpty,
+    // The update entry for the extension contained invalid fetch URL.
+    kCrxFetchUrlInvalid,
+    // There was an update for this extension but the download of the crx
+    // failed.
+    kCrxFetchFailed,
+    kMaxValue = kCrxFetchFailed,
   };
 
   using EnableKioskAutoLaunchCallback = base::OnceCallback<void(bool success)>;
@@ -262,8 +291,11 @@ class KioskAppManager : public KioskAppManagerBase,
   void UpdateExternalCachePrefs();
 
   // chromeos::ExternalCacheDelegate:
-  void OnExtensionLoadedInCache(const extensions::ExtensionId& id) override;
-  void OnExtensionDownloadFailed(const extensions::ExtensionId& id) override;
+  void OnExtensionLoadedInCache(const extensions::ExtensionId& id,
+                                bool is_updated) override;
+  void OnExtensionDownloadFailed(
+      const extensions::ExtensionId& id,
+      extensions::ExtensionDownloaderDelegate::Error error) override;
 
   // Callback for `InstallAttributes::LockDevice()` during
   // EnableConsumerModeKiosk() call.

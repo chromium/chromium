@@ -53,6 +53,70 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.ChromeApp.ExtensionUpdateDuration.{Result}" units="ms"
+    expires_after="2023-11-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the duration for checking updates of secondary apps
+    and extensions for a Kiosk Chrome app while launching.
+  </summary>
+  <token key="Result">
+    <variant name="HasUpdate" summary="found updates"/>
+    <variant name="NoUpdate" summary="no update found"/>
+  </token>
+</histogram>
+
+<histogram name="Kiosk.ChromeApp.ExtensionUpdateError"
+    enum="ExtensionInstallationFailureReason" expires_after="2023-11-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the reason for failed secondary apps and extensions
+    updates while a Kiosk Chrome app is launching.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.ChromeApp.ExternalUpdateSuccess" enum="BooleanYesNo"
+    expires_after="2023-11-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records whether Kiosk Chrome app update via external USB
+    drive is successful.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.ChromeApp.PrimaryAppInSessionUpdate" units="times"
+    expires_after="2023-11-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records count of in-session updates of primary Kiosk Chrome
+    app. A forced restart is scheduled in 24 hours.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.ChromeApp.PrimaryAppInstallError"
+    enum="KioskPrimaryAppDownloadResult" expires_after="2023-11-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records error for failed initial install of primary Chrome
+    app in Kiosk.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.ChromeApp.PrimaryAppUpdateResult"
+    enum="KioskPrimaryAppDownloadResult" expires_after="2023-11-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the result for an update of primary Chrome app in
+    Kiosk.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.ChromeProcessCount" units="processes"
     expires_after="2023-08-23">
   <owner>vkovalova@chromium.org</owner>

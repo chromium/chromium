@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -640,6 +641,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, FailedToLoadFromCrx) {
   const char kAppId[] = "iiigpodgfihagabpagjehoocpakbnclp";
   const char kAppName[] = "Test Kiosk App";
 
+  base::HistogramTester histogram;
+
   SetExistingApp(kAppId, kAppName, "red16x16.png", "");
   fake_cws()->SetNoUpdate(kAppId);
   AppDataLoadWaiter waiter(manager(), 1);
@@ -687,6 +690,11 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, FailedToLoadFromCrx) {
   }
   ASSERT_EQ(KioskAppData::Status::kInit, app_data->status());
   CheckAppData(kAppId, kAppName, "");
+
+  histogram.ExpectUniqueSample(
+      kKioskPrimaryAppInstallErrorUMA,
+      KioskAppManager::PrimaryAppDownloadResult::kCrxFetchUrlEmpty,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, BadApp) {
@@ -779,6 +787,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, RemoveApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
+  base::HistogramTester histogram;
+
   // Add a version 1 app first.
   RunAddNewAppTest(kTestLocalFsKioskApp, "1.0.0", kTestLocalFsKioskAppName, "");
   KioskAppManager::AppList apps;
@@ -826,6 +836,11 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
     EXPECT_TRUE(base::PathExists(v2_file_path));
   }
   EXPECT_TRUE(base::ContentsEqual(v2_file_path, new_crx_path));
+
+  histogram.ExpectUniqueSample(
+      kKioskPrimaryAppUpdateResultUMA,
+      KioskAppManager::PrimaryAppDownloadResult::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAndRemoveApp) {

@@ -3336,6 +3336,7 @@ source_set("ash") {
     "//extensions/browser/api/automation_internal",
     "//extensions/browser/api/file_handlers",
     "//extensions/browser/api/messaging:native_messaging",
+    "//extensions/browser/updater:updater",
     "//extensions/common",
     "//extensions/common/api",
     "//google_apis",
