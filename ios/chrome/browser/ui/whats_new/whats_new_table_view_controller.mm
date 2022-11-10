@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_banner_item.h"
+#import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_fake_header_item.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_item.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
@@ -255,10 +255,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (TableViewItem*)defaultSectionCell {
-  TableViewDetailTextItem* cell =
-      [[TableViewDetailTextItem alloc] initWithType:ItemTypeHeader];
+  WhatsNewTableViewFakeHeaderItem* cell =
+      [[WhatsNewTableViewFakeHeaderItem alloc] initWithType:ItemTypeHeader];
   cell.text = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE);
-  cell.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return cell;
 }
 
