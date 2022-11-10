@@ -608,12 +608,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
                                  EditableType::kTextArea)));
 
-INSTANTIATE_TEST_SUITE_P(
-    OnDeviceContentEditable,
-    DictationTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
-                                 EditableType::kContentEditable)));
-
 // Tests the behavior of the GetAllSupportedLocales method, specifically how
 // it sets locale data.
 IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
@@ -2038,12 +2032,6 @@ INSTANTIATE_TEST_SUITE_P(
     DictationPumpkinTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
                                  EditableType::kTextArea)));
-
-INSTANTIATE_TEST_SUITE_P(
-    OnDeviceContentEditable,
-    DictationPumpkinTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
-                                 EditableType::kContentEditable)));
 
 // TODO(crbug.com/1368843): Test is flaky on MSAN builds.
 #if defined(MEMORY_SANITIZER)
