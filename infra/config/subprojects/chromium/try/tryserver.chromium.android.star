@@ -90,6 +90,40 @@ try_.builder(
     ],
 )
 
+try_.orchestrator_builder(
+    name = "android-arm64-rel",
+    mirrors = [
+        # TODO(crbug.com/1367393): Enable mirroring pie builder.
+        #"ci/android-pie-arm64-rel",
+        "ci/Android Release (Nexus 5X)",
+    ],
+    description_html = "This builder may trigger tests on multiple Android versions.",
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    compilator = "android-arm64-rel-compilator",
+    check_for_flakiness = True,
+    # TODO(crbug.com/1367393): Enable on branch once not experimental.
+    # branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
+)
+
+try_.compilator_builder(
+    name = "android-arm64-rel-compilator",
+    # TODO(crbug.com/1367393): Enable on branch once not experimental.
+    # branch_selector = branches.STANDARD_MILESTONE,
+    check_for_flakiness = True,
+    main_list_view = "try",
+)
+
 try_.builder(
     name = "android-asan",
     goma_backend = None,
@@ -382,6 +416,7 @@ try_.builder(
     ),
 )
 
+# TODO(crbug.com/1367393): Remove after android-arm64-rel is fully enabled.
 try_.orchestrator_builder(
     name = "android-pie-arm64-rel",
     mirrors = [
