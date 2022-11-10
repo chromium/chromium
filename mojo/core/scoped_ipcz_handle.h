@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "mojo/core/system_impl_export.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
@@ -17,6 +18,34 @@ namespace mojo::core {
 // yet.
 class MOJO_SYSTEM_IMPL_EXPORT ScopedIpczHandle {
  public:
+  // Receiver is an adapter which can be used to pass a ScopedIpczHandle as an
+  // IpczHandle*, for interfacing with C APIs that return handles through
+  // output parameters. For some function like:
+  //
+  //     Foo(IpczHandle* out_handle)
+  //
+  // We can receive Foo's output into a ScopedIpczHandles with something like:
+  //
+  //     ScopedIpczHandle foo;
+  //     Foo(ScopedIpczHandle::Receiver(foo))
+  //
+  class Receiver {
+   public:
+    explicit Receiver(ScopedIpczHandle& target) : target_(target) {}
+
+    ~Receiver() {
+      if (received_handle_ != IPCZ_INVALID_HANDLE) {
+        target_ = ScopedIpczHandle(received_handle_);
+      }
+    }
+
+    operator IpczHandle*() { return &received_handle_; }
+
+   private:
+    ScopedIpczHandle& target_;
+    IpczHandle received_handle_ = IPCZ_INVALID_HANDLE;
+  };
+
   ScopedIpczHandle();
   explicit ScopedIpczHandle(IpczHandle handle);
   ScopedIpczHandle(ScopedIpczHandle&&);
@@ -26,7 +55,7 @@ class MOJO_SYSTEM_IMPL_EXPORT ScopedIpczHandle {
   ~ScopedIpczHandle();
 
   bool is_valid() const { return handle_ != IPCZ_INVALID_HANDLE; }
-  IpczHandle get() const { return handle_; }
+  const IpczHandle& get() const { return handle_; }
 
   // Resets this object to an invalid handle, closing the previously held handle
   // if it was valid.

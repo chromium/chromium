@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/c/system/types.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
@@ -49,12 +50,12 @@ class MojoMessage {
   std::vector<IpczHandle>& handles() { return handles_; }
   uintptr_t context() const { return context_; }
 
-  IpczHandle validator() const { return validator_; }
+  IpczHandle validator() const { return validator_.get(); }
 
   // Sets the contents of this message, as read from a portal by ipcz.
   bool SetContents(std::vector<uint8_t> data,
                    std::vector<IpczHandle> handles,
-                   IpczHandle validator);
+                   ScopedIpczHandle validator);
 
   // Appends data to a new or partially serialized message, effectively
   // implementing MojoAppendMessageData().
@@ -89,7 +90,7 @@ class MojoMessage {
   MojoResult Serialize();
 
  private:
-  IpczHandle validator_ = IPCZ_INVALID_HANDLE;
+  ScopedIpczHandle validator_;
   std::vector<uint8_t> data_storage_;
   base::span<uint8_t> data_;
   std::vector<IpczHandle> handles_;

@@ -66,7 +66,7 @@ class DataPipe : public Object<DataPipe> {
     void operator=(const PortalWrapper&) = delete;
 
     IpczHandle handle() const { return handle_.get(); }
-    void SetHandle(ScopedIpczHandle handle) { handle_ = std::move(handle); }
+    void set_handle(ScopedIpczHandle handle) { handle_ = std::move(handle); }
 
     ScopedIpczHandle TakeHandle() { return std::move(handle_); }
 

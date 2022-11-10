@@ -179,21 +179,25 @@ MojoResult MojoWriteMessageIpcz(MojoHandle message_pipe_handle,
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  IpczResult result;
   if (m->context()) {
     // Wrap unserialized messages so that driver serialization can be used to
     // force serialized message transmission. See MessageWrapper. The parcel
     // containing this box will be ignored by the receiving endpoint.
-    const IpczHandle box = ipcz_driver::MessageWrapper::MakeBoxed(
-        std::move(m), message_pipe_handle);
-    return GetIpczAPI().Put(message_pipe_handle, nullptr, 0, &box, 1,
-                            IPCZ_NO_FLAGS, nullptr);
-  } else {
-    m->AttachDataPipePortals();
-    result = GetIpczAPI().Put(message_pipe_handle, m->data().data(),
-                              m->data().size(), m->handles().data(),
-                              m->handles().size(), IPCZ_NO_FLAGS, nullptr);
+    ScopedIpczHandle box{ipcz_driver::MessageWrapper::MakeBoxed(
+        std::move(m), message_pipe_handle)};
+    const IpczResult result = GetIpczAPI().Put(
+        message_pipe_handle, nullptr, 0, &box.get(), 1, IPCZ_NO_FLAGS, nullptr);
+    if (result == IPCZ_RESULT_OK) {
+      // On success, ownership of the box is passed into the portal.
+      std::ignore = box.release();
+    }
+    return result;
   }
+
+  m->AttachDataPipePortals();
+  const IpczResult result = GetIpczAPI().Put(
+      message_pipe_handle, m->data().data(), m->data().size(),
+      m->handles().data(), m->handles().size(), IPCZ_NO_FLAGS, nullptr);
   if (result == IPCZ_RESULT_NOT_FOUND) {
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
@@ -214,13 +218,13 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
   std::vector<MojoHandle> handles;
   size_t num_bytes = 0;
   size_t num_handles = 0;
-  IpczHandle validator;
-  IpczResult result =
-      GetIpczAPI().Get(message_pipe_handle, IPCZ_NO_FLAGS, nullptr, nullptr,
-                       &num_bytes, nullptr, &num_handles, &validator);
+  ScopedIpczHandle validator;
+  IpczResult result = GetIpczAPI().Get(
+      message_pipe_handle, IPCZ_NO_FLAGS, nullptr, nullptr, &num_bytes, nullptr,
+      &num_handles, ScopedIpczHandle::Receiver(validator));
   if (result == IPCZ_RESULT_OK) {
     auto new_message = std::make_unique<ipcz_driver::MojoMessage>();
-    new_message->SetContents({}, {}, validator);
+    new_message->SetContents({}, {}, std::move(validator));
     *message = new_message.release()->handle();
     return MOJO_RESULT_OK;
   }
@@ -231,9 +235,9 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
 
   data.resize(num_bytes);
   handles.resize(num_handles);
-  result =
-      GetIpczAPI().Get(message_pipe_handle, IPCZ_NO_FLAGS, nullptr, data.data(),
-                       &num_bytes, handles.data(), &num_handles, &validator);
+  result = GetIpczAPI().Get(
+      message_pipe_handle, IPCZ_NO_FLAGS, nullptr, data.data(), &num_bytes,
+      handles.data(), &num_handles, ScopedIpczHandle::Receiver(validator));
   if (result != IPCZ_RESULT_OK) {
     return GetMojoReadResultForIpczGet(result);
   }
@@ -255,7 +259,7 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
   } else {
     mojo_message = std::make_unique<ipcz_driver::MojoMessage>();
     if (!mojo_message->SetContents(std::move(data), std::move(handles),
-                                   validator)) {
+                                   std::move(validator))) {
       return MOJO_RESULT_INVALID_ARGUMENT;
     }
   }

@@ -22,7 +22,7 @@ MojoMessage::MojoMessage() = default;
 
 MojoMessage::MojoMessage(std::vector<uint8_t> data,
                          std::vector<IpczHandle> handles) {
-  SetContents(std::move(data), std::move(handles), IPCZ_INVALID_HANDLE);
+  SetContents(std::move(data), std::move(handles), ScopedIpczHandle());
 }
 
 MojoMessage::~MojoMessage() {
@@ -32,10 +32,6 @@ MojoMessage::~MojoMessage() {
     }
   }
 
-  if (validator_ != IPCZ_INVALID_HANDLE) {
-    GetIpczAPI().Close(validator_, IPCZ_NO_FLAGS, nullptr);
-  }
-
   if (destructor_) {
     destructor_(context_);
   }
@@ -43,7 +39,7 @@ MojoMessage::~MojoMessage() {
 
 bool MojoMessage::SetContents(std::vector<uint8_t> data,
                               std::vector<IpczHandle> handles,
-                              IpczHandle validator) {
+                              ScopedIpczHandle validator) {
   const size_t size = data.size();
   if (size >= kMinBufferSize) {
     data_storage_ = std::move(data);
@@ -52,7 +48,7 @@ bool MojoMessage::SetContents(std::vector<uint8_t> data,
     base::ranges::copy(data, data_storage_.begin());
   }
 
-  validator_ = validator;
+  validator_ = std::move(validator);
   data_ = base::make_span(data_storage_).first(size);
   size_committed_ = true;
   if (handles.empty()) {

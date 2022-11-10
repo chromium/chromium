@@ -139,10 +139,12 @@ DataPipe::~DataPipe() {
 
 // static
 DataPipe::Pair DataPipe::CreatePair(const Config& config) {
-  IpczHandle producer;
-  IpczHandle consumer;
-  const IpczResult result = GetIpczAPI().OpenPortals(
-      GetIpczNode(), IPCZ_NO_FLAGS, nullptr, &producer, &consumer);
+  ScopedIpczHandle producer;
+  ScopedIpczHandle consumer;
+  const IpczResult result =
+      GetIpczAPI().OpenPortals(GetIpczNode(), IPCZ_NO_FLAGS, nullptr,
+                               ScopedIpczHandle::Receiver(producer),
+                               ScopedIpczHandle::Receiver(consumer));
   DCHECK_EQ(result, IPCZ_RESULT_OK);
 
   auto region = base::UnsafeSharedMemoryRegion::Create(config.byte_capacity);
@@ -150,12 +152,12 @@ DataPipe::Pair DataPipe::CreatePair(const Config& config) {
   pair.consumer = base::MakeRefCounted<DataPipe>(
       EndpointType::kConsumer, config,
       SharedBuffer::MakeForRegion(region.Duplicate()));
-  pair.consumer->AdoptPortal(ScopedIpczHandle(consumer));
+  pair.consumer->AdoptPortal(std::move(consumer));
 
   pair.producer = base::MakeRefCounted<DataPipe>(
       EndpointType::kProducer, config,
       SharedBuffer::MakeForRegion(std::move(region)));
-  pair.producer->AdoptPortal(ScopedIpczHandle(producer));
+  pair.producer->AdoptPortal(std::move(producer));
   return pair;
 }
 

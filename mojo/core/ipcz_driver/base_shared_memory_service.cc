@@ -42,23 +42,25 @@ void CreateBrokerHostOnIOThread(PlatformChannelEndpoint endpoint) {
 }
 
 void CreateServiceFromNextParcel(ScopedIpczHandle portal) {
-  IpczHandle box;
+  ScopedIpczHandle box;
   size_t num_handles = 1;
   const IpczResult result =
       GetIpczAPI().Get(portal.get(), IPCZ_NO_FLAGS, nullptr, nullptr, nullptr,
-                       &box, &num_handles, nullptr);
+                       ScopedIpczHandle::Receiver(box), &num_handles, nullptr);
 
   if (result != IPCZ_RESULT_OK) {
     DLOG(ERROR) << "Invalid shared memory client connection";
     return;
   }
 
-  auto transport = Transport::Unbox(box);
+  auto transport = Transport::Unbox(box.get());
   if (!transport) {
     DLOG(ERROR) << "Invalid shared memory client connection";
     return;
   }
 
+  // On successful unboxing, the box is consumed.
+  std::ignore = box.release();
   Transport::GetIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CreateBrokerHostOnIOThread, transport->TakeEndpoint()));
@@ -146,14 +148,17 @@ void BaseSharedMemoryService::CreateClient(ScopedIpczHandle portal) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
   PlatformChannel channel;
 
-  IpczHandle box = Transport::Box(Transport::Create(
+  ScopedIpczHandle box{Transport::Box(Transport::Create(
       {.source = Transport::kBroker, .destination = Transport::kNonBroker},
-      channel.TakeRemoteEndpoint()));
-  const IpczResult result = GetIpczAPI().Put(portal.get(), nullptr, 0, &box, 1,
-                                             IPCZ_NO_FLAGS, nullptr);
-  DCHECK_EQ(result, IPCZ_RESULT_OK);
-  g_client = new Broker(channel.TakeLocalEndpoint().TakePlatformHandle(),
-                        /*wait_for_channel_handle=*/false);
+      channel.TakeRemoteEndpoint()))};
+  const IpczResult result = GetIpczAPI().Put(
+      portal.get(), nullptr, 0, &box.get(), 1, IPCZ_NO_FLAGS, nullptr);
+  if (result == IPCZ_RESULT_OK) {
+    // On success, ownership of the box is passed into the portal.
+    std::ignore = box.release();
+    g_client = new Broker(channel.TakeLocalEndpoint().TakePlatformHandle(),
+                          /*wait_for_channel_handle=*/false);
+  }
 #endif
 }
 
