@@ -26,11 +26,15 @@ class PowerBookmarkBackend {
   PowerBookmarkBackend& operator=(const PowerBookmarkBackend&) = delete;
   ~PowerBookmarkBackend();
 
-  void Init();
+  void Init(bool use_database);
   void Shutdown();
 
-  // Returns a vector of Powers for the given `url`.
-  std::vector<std::unique_ptr<Power>> GetPowersForURL(const GURL& url);
+  // Returns a vector of Powers for the given `url`. Use `power_type` to
+  // restrict which type is returned or use POWER_TYPE_UNSPECIFIED to return
+  // everything.
+  std::vector<std::unique_ptr<Power>> GetPowersForURL(
+      const GURL& url,
+      const PowerType& power_type);
 
   // Returns a vector of PowerOverviews for the given `power_type`.
   std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForType(
@@ -46,8 +50,9 @@ class PowerBookmarkBackend {
   // the operation was successful.
   bool DeletePower(const base::GUID& guid);
   // Delete all powers for the given `url`. Success of the operation is
-  // returned through the given `callback`.
-  bool DeletePowersForURL(const GURL& url);
+  // returned through the given `callback`. Use `power_type` to restrict which
+  // type is deleted or use POWER_TYPE_UNSPECIFIED to delete everything.
+  bool DeletePowersForURL(const GURL& url, const PowerType& power_type);
 
  private:
   const base::FilePath database_dir_;

@@ -11,8 +11,8 @@ option optimize_for = LITE_RUNTIME;
 
 package power_bookmarks;
 
-import "components/power_bookmarks/core/proto/power_specifics.proto";
-
+// PowerType is persisted to disk and therefore shouldn't be reoderered or
+// changed.
 enum PowerType {
   // All powers should have type so this should be unused.
   POWER_TYPE_UNSPECIFIED = 0;
@@ -20,7 +20,11 @@ enum PowerType {
   POWER_TYPE_MOCK = 1;
 }
 
-message SaveSpecifics {
+message PowerSpecifics {
+  optional string placeholder = 1;
+}
+
+message PowerBookmarkSpecifics {
   // The primary key for local storage.
   /* required */ optional string guid = 1;
 
@@ -31,10 +35,10 @@ message SaveSpecifics {
   /* required */ optional PowerType power_type = 3;
 
   // Tracks when this was added.
-  optional int64 creation_time_usec = 4;
+  /* required */ optional int64 creation_time_usec = 4;
 
   // Tracks when this was last modified.
-  optional int64 update_time_usec = 5;
+  /* required */ optional int64 update_time_usec = 5;
 
   // Power specifics.
   /* required */ optional PowerSpecifics power_specifics = 100;

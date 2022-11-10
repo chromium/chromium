@@ -13,7 +13,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/power_bookmarks/core/proto/save_specifics.pb.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -45,9 +45,14 @@ class PowerBookmarkService : public KeyedService,
 
   ~PowerBookmarkService() override;
 
+  void InitPowerBookmarkDatabase();
+
   // Returns a vector of Powers for the given `url` through the given
-  // `callback`.
-  void GetPowersForURL(const GURL& url, PowersCallback callback);
+  // `callback`. Use `power_type` to restrict which type is returned or use
+  // POWER_TYPE_UNSPECIFIED to return everything.
+  void GetPowersForURL(const GURL& url,
+                       const PowerType& power_type,
+                       PowersCallback callback);
 
   // Returns a vector of PowerOverviews for the given `power_type` through the
   // given `callback`.
@@ -58,17 +63,23 @@ class PowerBookmarkService : public KeyedService,
   // will be updated. Success of the operation is returned through the given
   // `callback`.
   void CreatePower(std::unique_ptr<Power> power, SuccessCallback callback);
+
   // Update the given `power` in the database. If it doesn't exist, then it
   // will be created instead. Success of the operation is returned through the
   // given `callback`.
   void UpdatePower(std::unique_ptr<Power> power, SuccessCallback callback);
+
   // Delete the given `guid` in the database, if it exists. Success of the
   // operation is returned through the given `callback`.
   // TODO(crbug.com/1378793): Encapsulate the storage key if possible.
   void DeletePower(const base::GUID& guid, SuccessCallback callback);
+
   // Delete all powers for the given `url`. Success of the operation is
-  // returned through the given `callback`.
-  void DeletePowersForURL(const GURL& url, SuccessCallback callback);
+  // returned through the given `callback`. Use `power_type` to restrict which
+  // type is deleted or use POWER_TYPE_UNSPECIFIED to delete everything.
+  void DeletePowersForURL(const GURL& url,
+                          const PowerType& power_type,
+                          SuccessCallback callback);
 
   // Allow features to receive notification when a bookmark node is created to
   // add extra information. The `data_provider` can be removed with the remove

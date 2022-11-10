@@ -52,8 +52,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "proto/power_bookmark_meta.proto",
-    "proto/power_specifics.proto",
-    "proto/save_specifics.proto",
+    "proto/power_bookmark_specifics.proto",
     "proto/shopping_specifics.proto",
   ]
   deps = [ "//components/commerce/core:proto" ]

@@ -6,14 +6,14 @@
 
 #include "base/guid.h"
 #include "base/time/time.h"
-#include "components/power_bookmarks/core/proto/save_specifics.pb.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace power_bookmarks {
 
 namespace {
-SaveSpecifics CreateSaveSpecifics() {
-  SaveSpecifics specifics;
+PowerBookmarkSpecifics CreatePowerBookmarkSpecifics() {
+  PowerBookmarkSpecifics specifics;
   specifics.set_guid(base::GUID::GenerateRandomV4().AsLowercaseString());
   specifics.set_url("http://google.com/");
   specifics.set_power_type(PowerType::POWER_TYPE_MOCK);
@@ -27,7 +27,7 @@ SaveSpecifics CreateSaveSpecifics() {
 }  // namespace
 
 TEST(PowerTest, CreateFromSpecifics) {
-  SaveSpecifics specifics = CreateSaveSpecifics();
+  PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
   Power power(specifics);
 
   EXPECT_EQ(power.guid(), base::GUID::ParseLowercase(specifics.guid()));
@@ -42,10 +42,10 @@ TEST(PowerTest, CreateFromSpecifics) {
 }
 
 TEST(PowerTest, ToAndFromSpecifics) {
-  SaveSpecifics specifics = CreateSaveSpecifics();
+  PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
   Power power(specifics);
-  SaveSpecifics new_specifics;
-  power.ToSaveSpecifics(&new_specifics);
+  PowerBookmarkSpecifics new_specifics;
+  power.ToPowerBookmarkSpecifics(&new_specifics);
 
   EXPECT_EQ(specifics.guid(), new_specifics.guid());
   EXPECT_EQ(specifics.url(), new_specifics.url());

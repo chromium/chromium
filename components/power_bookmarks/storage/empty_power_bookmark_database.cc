@@ -4,7 +4,7 @@
 
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"
 
-#include "components/power_bookmarks/core/proto/save_specifics.pb.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
 #include "url/origin.h"
 
 namespace power_bookmarks {
@@ -22,7 +22,8 @@ bool EmptyPowerBookmarkDatabase::IsOpen() {
 }
 
 std::vector<std::unique_ptr<Power>> EmptyPowerBookmarkDatabase::GetPowersForURL(
-    const GURL& url) {
+    const GURL& url,
+    const PowerType& power_type) {
   return std::vector<std::unique_ptr<Power>>();
 }
 
@@ -44,7 +45,9 @@ bool EmptyPowerBookmarkDatabase::DeletePower(const base::GUID& guid) {
   return false;
 }
 
-bool EmptyPowerBookmarkDatabase::DeletePowersForURL(const GURL& url) {
+bool EmptyPowerBookmarkDatabase::DeletePowersForURL(
+    const GURL& url,
+    const PowerType& power_type) {
   return false;
 }
 

@@ -9,6 +9,8 @@ static_library("storage") {
     "power_bookmark_backend.cc",
     "power_bookmark_backend.h",
     "power_bookmark_database.h",
+    "power_bookmark_database_impl.cc",
+    "power_bookmark_database_impl.h",
   ]
 
   deps = [
@@ -17,5 +19,20 @@ static_library("storage") {
     "//sql",
     "//third_party/sqlite",
     "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "power_bookmark_database_impl_unittest.cc" ]
+
+  deps = [
+    ":storage",
+    "//base",
+    "//components/power_bookmarks/core:powers",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gtest",
   ]
 }

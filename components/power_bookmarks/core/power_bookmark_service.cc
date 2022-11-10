@@ -28,7 +28,10 @@ PowerBookmarkService::PowerBookmarkService(
 
   backend_ = base::SequenceBound<PowerBookmarkBackend>(backend_task_runner_,
                                                        database_dir);
-  backend_.AsyncCall(&PowerBookmarkBackend::Init);
+  // Features that wish to use the real database, must call
+  // `InitPowerBookmarkDatabase`.
+  backend_.AsyncCall(&PowerBookmarkBackend::Init)
+      .WithArgs(/*use_database=*/false);
 }
 
 PowerBookmarkService::~PowerBookmarkService() {
@@ -39,10 +42,16 @@ PowerBookmarkService::~PowerBookmarkService() {
   backend_task_runner_ = nullptr;
 }
 
+void PowerBookmarkService::InitPowerBookmarkDatabase() {
+  backend_.AsyncCall(&PowerBookmarkBackend::Init)
+      .WithArgs(/*use_database=*/true);
+}
+
 void PowerBookmarkService::GetPowersForURL(const GURL& url,
+                                           const PowerType& power_type,
                                            PowersCallback callback) {
   backend_.AsyncCall(&PowerBookmarkBackend::GetPowersForURL)
-      .WithArgs(url)
+      .WithArgs(url, power_type)
       .Then(std::move(callback));
 }
 
@@ -76,9 +85,10 @@ void PowerBookmarkService::DeletePower(const base::GUID& guid,
 }
 
 void PowerBookmarkService::DeletePowersForURL(const GURL& url,
+                                              const PowerType& power_type,
                                               SuccessCallback callback) {
   backend_.AsyncCall(&PowerBookmarkBackend::DeletePowersForURL)
-      .WithArgs(url)
+      .WithArgs(url, power_type)
       .Then(std::move(callback));
 }
 

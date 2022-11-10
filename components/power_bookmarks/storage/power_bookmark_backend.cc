@@ -5,6 +5,7 @@
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
 
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"
+#include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 
 namespace power_bookmarks {
 
@@ -19,11 +20,18 @@ PowerBookmarkBackend::~PowerBookmarkBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PowerBookmarkBackend::Init() {
+void PowerBookmarkBackend::Init(bool use_database) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.reset();
-  db_ = std::make_unique<EmptyPowerBookmarkDatabase>();
+
+  // Substitute a dummy implementation when the feature is disabled.
+  if (use_database) {
+    db_ = std::make_unique<PowerBookmarkDatabaseImpl>(database_dir_);
+  } else {
+    db_ = std::make_unique<EmptyPowerBookmarkDatabase>();
+  }
+
   bool success = db_->Init();
   DCHECK(success);
 }
@@ -35,9 +43,10 @@ void PowerBookmarkBackend::Shutdown() {
 }
 
 std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetPowersForURL(
-    const GURL& url) {
+    const GURL& url,
+    const PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->GetPowersForURL(url);
+  return db_->GetPowersForURL(url, power_type);
 }
 
 std::vector<std::unique_ptr<PowerOverview>>
@@ -61,9 +70,10 @@ bool PowerBookmarkBackend::DeletePower(const base::GUID& guid) {
   return db_->DeletePower(guid);
 }
 
-bool PowerBookmarkBackend::DeletePowersForURL(const GURL& url) {
+bool PowerBookmarkBackend::DeletePowersForURL(const GURL& url,
+                                              const PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->DeletePowersForURL(url);
+  return db_->DeletePowersForURL(url, power_type);
 }
 
 }  // namespace power_bookmarks

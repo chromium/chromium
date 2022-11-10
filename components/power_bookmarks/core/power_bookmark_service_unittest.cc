@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/guid.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
@@ -22,9 +23,14 @@
 using testing::_;
 using testing::IsEmpty;
 using testing::IsFalse;
+using testing::IsTrue;
+using testing::SizeIs;
 
 namespace power_bookmarks {
 
+// Tests for the power bookmark service.
+// In-depth tests for the actual storage can be found in
+// `power_bookmark_database_unittest`.
 class PowerBookmarkServiceTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -37,6 +43,7 @@ class PowerBookmarkServiceTest : public testing::Test {
     service_ = std::make_unique<PowerBookmarkService>(
         model_.get(), temp_directory_.GetPath(), backend_task_runner_);
     RunUntilIdle();
+    service_->InitPowerBookmarkDatabase();
   }
 
   void TearDown() override {
@@ -108,16 +115,58 @@ TEST_F(PowerBookmarkServiceTest, Shutdown) {
 }
 
 TEST_F(PowerBookmarkServiceTest, GetPowersForURL) {
-  base::MockCallback<PowersCallback> cb;
-  EXPECT_CALL(cb, Run(IsEmpty()));
+  base::MockCallback<SuccessCallback> success_cb;
+  EXPECT_CALL(success_cb, Run(IsTrue()));
 
-  service()->GetPowersForURL(GURL("https://google.com"), cb.Get());
+  std::unique_ptr<PowerSpecifics> power_specifics =
+      std::make_unique<PowerSpecifics>();
+  std::unique_ptr<Power> power =
+      std::make_unique<Power>(std::move(power_specifics));
+  power->set_url(GURL("https://google.com"));
+  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  service()->CreatePower(std::move(power), success_cb.Get());
+  RunUntilIdle();
+
+  base::MockCallback<PowersCallback> powers_cb;
+  EXPECT_CALL(powers_cb, Run(SizeIs(1)));
+
+  service()->GetPowersForURL(GURL("https://google.com"),
+                             PowerType::POWER_TYPE_UNSPECIFIED,
+                             powers_cb.Get());
   RunUntilIdle();
 }
 
 TEST_F(PowerBookmarkServiceTest, GetPowerOverviewsForType) {
+  base::MockCallback<SuccessCallback> success_cb;
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+
+  std::unique_ptr<PowerSpecifics> power_specifics =
+      std::make_unique<PowerSpecifics>();
+  std::unique_ptr<Power> power =
+      std::make_unique<Power>(std::move(power_specifics));
+  power->set_url(GURL("https://google.com"));
+  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  service()->CreatePower(std::move(power), success_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+  power_specifics = std::make_unique<PowerSpecifics>();
+  power = std::make_unique<Power>(std::move(power_specifics));
+  power->set_url(GURL("https://google.com"));
+  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  service()->CreatePower(std::move(power), success_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+  power_specifics = std::make_unique<PowerSpecifics>();
+  power = std::make_unique<Power>(std::move(power_specifics));
+  power->set_url(GURL("https://boogle.com"));
+  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  service()->CreatePower(std::move(power), success_cb.Get());
+  RunUntilIdle();
+
   base::MockCallback<PowerOverviewsCallback> cb;
-  EXPECT_CALL(cb, Run(IsEmpty()));
+  EXPECT_CALL(cb, Run(SizeIs(2)));
 
   service()->GetPowerOverviewsForType(PowerType::POWER_TYPE_MOCK, cb.Get());
   RunUntilIdle();
@@ -125,7 +174,7 @@ TEST_F(PowerBookmarkServiceTest, GetPowerOverviewsForType) {
 
 TEST_F(PowerBookmarkServiceTest, CreatePower) {
   base::MockCallback<SuccessCallback> cb;
-  EXPECT_CALL(cb, Run(IsFalse()));
+  EXPECT_CALL(cb, Run(IsTrue()));
 
   std::unique_ptr<PowerSpecifics> power_specifics =
       std::make_unique<PowerSpecifics>();
@@ -139,7 +188,7 @@ TEST_F(PowerBookmarkServiceTest, CreatePower) {
 
 TEST_F(PowerBookmarkServiceTest, UpdatePower) {
   base::MockCallback<SuccessCallback> cb;
-  EXPECT_CALL(cb, Run(IsFalse()));
+  EXPECT_CALL(cb, Run(IsTrue()));
 
   std::unique_ptr<PowerSpecifics> power_specifics =
       std::make_unique<PowerSpecifics>();
@@ -152,8 +201,41 @@ TEST_F(PowerBookmarkServiceTest, UpdatePower) {
 }
 
 TEST_F(PowerBookmarkServiceTest, DeletePower) {
-  base::MockCallback<SuccessCallback> cb;
-  EXPECT_CALL(cb, Run(IsFalse()));
+  base::MockCallback<SuccessCallback> success_cb;
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+
+  base::GUID guid = base::GUID::GenerateRandomV4();
+  std::unique_ptr<PowerSpecifics> power_specifics =
+      std::make_unique<PowerSpecifics>();
+  std::unique_ptr<Power> power =
+      std::make_unique<Power>(std::move(power_specifics));
+  power->set_guid(guid);
+  power->set_url(GURL("https://google.com"));
+  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  service()->CreatePower(std::move(power), success_cb.Get());
+  RunUntilIdle();
+
+  base::MockCallback<PowersCallback> powers_cb;
+  EXPECT_CALL(powers_cb, Run(SizeIs(1)));
+  service()->GetPowersForURL(GURL("https://google.com"),
+                             PowerType::POWER_TYPE_UNSPECIFIED,
+                             powers_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+  service()->DeletePower(guid, success_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(powers_cb, Run(SizeIs(0)));
+  service()->GetPowersForURL(GURL("https://google.com"),
+                             PowerType::POWER_TYPE_UNSPECIFIED,
+                             powers_cb.Get());
+  RunUntilIdle();
+}
+
+TEST_F(PowerBookmarkServiceTest, DeletePowersForURL) {
+  base::MockCallback<SuccessCallback> success_cb;
+  EXPECT_CALL(success_cb, Run(IsTrue()));
 
   std::unique_ptr<PowerSpecifics> power_specifics =
       std::make_unique<PowerSpecifics>();
@@ -161,15 +243,35 @@ TEST_F(PowerBookmarkServiceTest, DeletePower) {
       std::make_unique<Power>(std::move(power_specifics));
   power->set_url(GURL("https://google.com"));
   power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  service()->DeletePower(power->guid(), cb.Get());
+  service()->CreatePower(std::move(power), success_cb.Get());
   RunUntilIdle();
-}
 
-TEST_F(PowerBookmarkServiceTest, DeletePowersForURL) {
-  base::MockCallback<SuccessCallback> cb;
-  EXPECT_CALL(cb, Run(IsFalse()));
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+  power_specifics = std::make_unique<PowerSpecifics>();
+  power = std::make_unique<Power>(std::move(power_specifics));
+  power->set_url(GURL("https://google.com"));
+  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  service()->CreatePower(std::move(power), success_cb.Get());
+  RunUntilIdle();
 
-  service()->DeletePowersForURL(GURL("https://google.com"), cb.Get());
+  base::MockCallback<PowersCallback> powers_cb;
+  EXPECT_CALL(powers_cb, Run(SizeIs(2)));
+
+  service()->GetPowersForURL(GURL("https://google.com"),
+                             PowerType::POWER_TYPE_UNSPECIFIED,
+                             powers_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+  service()->DeletePowersForURL(GURL("https://google.com"),
+                                PowerType::POWER_TYPE_UNSPECIFIED,
+                                success_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(powers_cb, Run(SizeIs(0)));
+  service()->GetPowersForURL(GURL("https://google.com"),
+                             PowerType::POWER_TYPE_UNSPECIFIED,
+                             powers_cb.Get());
   RunUntilIdle();
 }
 

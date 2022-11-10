@@ -7,7 +7,7 @@
 
 #include "base/guid.h"
 #include "base/time/time.h"
-#include "components/power_bookmarks/core/proto/save_specifics.pb.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace power_bookmarks {
@@ -22,7 +22,7 @@ class Power {
   // ctor used for creating a Power in-memory.
   explicit Power(std::unique_ptr<PowerSpecifics> power_specifics);
   // ctor used for creating a Power from the db.
-  explicit Power(SaveSpecifics& save_specifics);
+  explicit Power(const PowerBookmarkSpecifics& specifics);
 
   Power(const Power&) = delete;
   Power& operator=(const Power&) = delete;
@@ -46,9 +46,9 @@ class Power {
     time_modified_ = time_modified;
   }
 
-  // Write the properties held in this class to save_specifics.proto.
-  // `save_specifics` will never be nullptr.
-  void ToSaveSpecifics(SaveSpecifics* save_specifics);
+  // Write the properties held in this class to power_bookmark_specifics.proto.
+  // `power_bookmark_specifics` will never be nullptr.
+  void ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* save_specifics);
 
  private:
   base::GUID guid_;

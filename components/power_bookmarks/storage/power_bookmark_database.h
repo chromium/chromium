@@ -24,9 +24,12 @@ class PowerBookmarkDatabase {
   // Returns whether the database is currently open.
   virtual bool IsOpen() = 0;
 
-  // Returns a vector of Powers for the given `url`.
+  // Returns a vector of Powers for the given `url`. Use `power_type` to
+  // restrict which type is returned or use POWER_TYPE_UNSPECIFIED to return
+  // everything.
   virtual std::vector<std::unique_ptr<Power>> GetPowersForURL(
-      const GURL& url) = 0;
+      const GURL& url,
+      const PowerType& power_type) = 0;
 
   // Returns a vector of PowerOverviews for the given `power_type`.
   virtual std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForType(
@@ -44,8 +47,10 @@ class PowerBookmarkDatabase {
   // the operation was successful.
   virtual bool DeletePower(const base::GUID& guid) = 0;
 
-  // Delete all powers for the given `url`.
-  virtual bool DeletePowersForURL(const GURL& url) = 0;
+  // Delete all powers for the given `url`. Use `power_type` to restrict which
+  // type is deleted or use POWER_TYPE_UNSPECIFIED to delete everything.
+  virtual bool DeletePowersForURL(const GURL& url,
+                                  const PowerType& power_type) = 0;
 };
 
 }  // namespace power_bookmarks
