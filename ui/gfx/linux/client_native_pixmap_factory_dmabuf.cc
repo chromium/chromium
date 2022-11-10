@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -79,9 +80,48 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
       case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
       case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
       case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
-      case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
+      case gfx::BufferUsage::SCANOUT_FRONT_RENDERING: {
+        if (!CanFitImageForSizeAndFormat(
+                handle, size, format, /*assume_single_memory_object=*/false)) {
+          return nullptr;
+        }
+
+        for (size_t i = 0; i < handle.planes.size(); ++i) {
+          if (!base::IsValueInRangeForNumericType<size_t>(
+                  handle.planes[i].offset) ||
+              !base::IsValueInRangeForNumericType<size_t>(
+                  handle.planes[i].size)) {
+            return nullptr;
+          }
+
+          if (!handle.planes[i].fd.is_valid())
+            return nullptr;
+
+          const int fd = handle.planes[i].fd.get();
+          const off_t dma_buf_size = lseek(fd, /*offset=*/0, SEEK_END);
+          if (dma_buf_size == static_cast<off_t>(-1)) {
+            PLOG(ERROR) << "Failed to get the size of the dma-buf";
+            return nullptr;
+          }
+          if (lseek(fd, /*offset=*/0, SEEK_SET) == static_cast<off_t>(-1)) {
+            PLOG(ERROR) << "Failed to reset the file offset of the dma-buf";
+            return nullptr;
+          }
+          if (!base::IsValueInRangeForNumericType<size_t>(dma_buf_size))
+            return nullptr;
+
+          base::CheckedNumeric<uint64_t> size_to_map =
+              base::CheckAdd(handle.planes[i].size, handle.planes[i].offset);
+          if (!size_to_map.IsValid<size_t>())
+            return nullptr;
+          if (size_to_map.ValueOrDie<size_t>() >
+              base::checked_cast<size_t>(dma_buf_size)) {
+            return nullptr;
+          }
+        }
         return ClientNativePixmapDmaBuf::ImportFromDmabuf(std::move(handle),
                                                           size, format);
+      }
       case gfx::BufferUsage::GPU_READ:
       case gfx::BufferUsage::SCANOUT:
       case gfx::BufferUsage::SCANOUT_VDA_WRITE:
