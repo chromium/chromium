@@ -163,7 +163,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
     source_data->priority = 20;
     source_data->debug_key = 789;
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys = {
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New();
+    source_data->aggregation_keys->keys = {
         {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
     };
     source_data->debug_reporting = true;
@@ -235,6 +237,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->reporting_origin =
         url::Origin::Create(GURL(test_case.reporting_origin));
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New();
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
 
@@ -279,6 +283,8 @@ TEST_F(AttributionDataHostManagerImplTest,
         url::Origin::Create(GURL("https://reporter.example"));
     source_data->filter_data =
         blink::mojom::AttributionFilterData::New(test_case.AsMap());
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New();
     data_host_remote->SourceDataAvailable(std::move(source_data));
     data_host_remote.FlushForTesting();
 
@@ -337,6 +343,8 @@ TEST_F(AttributionDataHostManagerImplTest,
         url::Origin::Create(GURL("https://reporter.example"));
     source_data->filter_data =
         blink::mojom::AttributionFilterData::New(test_case.filter_data);
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New();
     data_host_remote->SourceDataAvailable(std::move(source_data));
     data_host_remote.FlushForTesting();
 
@@ -388,6 +396,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->destination = destination_origin;
     source_data->reporting_origin = reporting_origin;
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New();
     data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
     data_host_remote.data_host.FlushForTesting();
 
@@ -465,7 +475,9 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->reporting_origin =
         url::Origin::Create(GURL("https://reporter.example"));
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys = test_case.GetAggregationKeys();
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New(
+            test_case.GetAggregationKeys());
     data_host_remote->SourceDataAvailable(std::move(source_data));
     data_host_remote.FlushForTesting();
 
@@ -977,6 +989,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       source_data->destination = destination_origin;
       source_data->reporting_origin = reporting_origin;
       source_data->filter_data = blink::mojom::AttributionFilterData::New();
+      source_data->aggregation_keys =
+          blink::mojom::AttributionAggregationKeys::New();
 
       data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
       data_host_remote.data_host.FlushForTesting();
@@ -1034,6 +1048,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->destination = destination_origin;
     source_data->reporting_origin = reporting_origin;
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New();
 
     data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
     data_host_remote.data_host.FlushForTesting();
@@ -1126,7 +1142,9 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->priority = 20;
     source_data->debug_key = 789;
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys = {
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New();
+    source_data->aggregation_keys->keys = {
         {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
     };
     source_data->debug_reporting = true;
@@ -1865,6 +1883,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
   source_data->reporting_origin =
       url::Origin::Create(GURL("https://report1.test"));
   source_data->filter_data = blink::mojom::AttributionFilterData::New();
+  source_data->aggregation_keys =
+      blink::mojom::AttributionAggregationKeys::New();
   source_data_host_remote->SourceDataAvailable(std::move(source_data));
   source_data_host_remote.FlushForTesting();
 
@@ -1951,6 +1971,8 @@ TEST_F(AttributionDataHostManagerImplTest, InsecureNavigationOrigin_Dropped) {
     source_data->reporting_origin =
         url::Origin::Create(GURL("https://reporter.example"));
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
+    source_data->aggregation_keys =
+        blink::mojom::AttributionAggregationKeys::New();
     source_data_host_remote->SourceDataAvailable(std::move(source_data));
     source_data_host_remote.FlushForTesting();
 
@@ -2088,6 +2110,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   source_data->reporting_origin =
       url::Origin::Create(GURL("https://reporter.example"));
   source_data->filter_data = blink::mojom::AttributionFilterData::New();
+  source_data->aggregation_keys =
+      blink::mojom::AttributionAggregationKeys::New();
   data_host_remote1->SourceDataAvailable(source_data.Clone());
   data_host_remote1.FlushForTesting();
 
@@ -2123,6 +2147,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   source_data->destination = destination_origin;
   source_data->reporting_origin = reporting_origin;
   source_data->filter_data = blink::mojom::AttributionFilterData::New();
+  source_data->aggregation_keys =
+      blink::mojom::AttributionAggregationKeys::New();
   data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
   data_host_remote.data_host.FlushForTesting();
 }

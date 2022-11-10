@@ -14,10 +14,6 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace absl {
-class uint128;
-}  // namespace absl
-
 namespace blink {
 
 class JSONValue;
@@ -38,10 +34,9 @@ namespace attribution_response_parsing {
 //   "key_piece": "0x5"
 // }]
 //
-// Returns whether parsing was successful.
-CORE_EXPORT bool ParseAggregationKeys(
-    const JSONValue* json,
-    WTF::HashMap<String, absl::uint128>& aggregation_keys);
+// Returns `nullptr` on failure.
+CORE_EXPORT mojom::blink::AttributionAggregationKeysPtr ParseAggregationKeys(
+    const JSONValue* json);
 
 // Parses a 64-bit unsigned integer encoded as a base-10
 // string. Returns `absl::nullopt` on failure.

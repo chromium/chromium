@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
   EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
-  EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
+  EXPECT_THAT(source_data.front()->aggregation_keys->keys, IsEmpty());
   EXPECT_FALSE(source_data.front()->debug_reporting);
 }
 
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
     EXPECT_FALSE(source_data.front()->debug_key);
     EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
-    EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
+    EXPECT_THAT(source_data.front()->aggregation_keys->keys, IsEmpty());
     EXPECT_FALSE(source_data.front()->debug_reporting);
   }
 }
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(source_data.front()->priority, 0);
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
-  EXPECT_THAT(source_data.front()->aggregation_keys,
+  EXPECT_THAT(source_data.front()->aggregation_keys->keys,
               UnorderedElementsAre(
                   Pair("key1", absl::MakeUint128(/*high=*/0, /*low=*/5)),
                   Pair("key2", absl::MakeUint128(/*high=*/0, /*low=*/345))));
@@ -1255,7 +1255,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
             url::Origin::Create(GURL("https://d.test")));
-  EXPECT_THAT(source_data.back()->aggregation_keys, SizeIs(2));
+  EXPECT_THAT(source_data.back()->aggregation_keys->keys, SizeIs(2));
 }
 
 class AttributionSrcPrerenderBrowserTest : public AttributionSrcBrowserTest {

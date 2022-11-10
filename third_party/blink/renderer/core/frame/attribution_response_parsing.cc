@@ -152,12 +152,13 @@ bool ParseFilterValues(
   return true;
 }
 
-bool ParseAggregationKeys(
-    const JSONValue* json,
-    WTF::HashMap<String, absl::uint128>& aggregation_keys) {
+mojom::blink::AttributionAggregationKeysPtr ParseAggregationKeys(
+    const JSONValue* json) {
+  auto aggregation_keys = mojom::blink::AttributionAggregationKeys::New();
+
   // Aggregation keys may be omitted.
   if (!json)
-    return true;
+    return aggregation_keys;
 
   const int kExclusiveMaxHistogramValue = 101;
 
@@ -168,16 +169,16 @@ bool ParseAggregationKeys(
 
   const auto* object = JSONObject::Cast(json);
   if (!object)
-    return false;
+    return nullptr;
 
   const wtf_size_t num_keys = object->size();
   if (num_keys > attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger)
-    return false;
+    return nullptr;
 
   base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource",
                               num_keys);
 
-  aggregation_keys.ReserveCapacityForSize(num_keys);
+  aggregation_keys->keys.ReserveCapacityForSize(num_keys);
 
   for (wtf_size_t i = 0; i < num_keys; ++i) {
     JSONObject::Entry entry = object->at(i);
@@ -187,17 +188,17 @@ bool ParseAggregationKeys(
 
     if (key_id.CharactersSizeInBytes() >
         attribution_reporting::kMaxBytesPerAggregationKeyId) {
-      return false;
+      return nullptr;
     }
 
     absl::uint128 key;
     if (!ParseAttributionAggregationKey(value, &key))
-      return false;
+      return nullptr;
 
-    aggregation_keys.insert(std::move(key_id), key);
+    aggregation_keys->keys.insert(std::move(key_id), key);
   }
 
-  return true;
+  return aggregation_keys;
 }
 
 absl::optional<uint64_t> ParseUint64(const String& string) {
@@ -272,10 +273,10 @@ bool ParseSourceRegistrationHeader(
   if (source_data.filter_data->filter_values.Contains("source_type"))
     return false;
 
-  if (!ParseAggregationKeys(object->Get("aggregation_keys"),
-                            source_data.aggregation_keys)) {
+  source_data.aggregation_keys =
+      ParseAggregationKeys(object->Get("aggregation_keys"));
+  if (!source_data.aggregation_keys)
     return false;
-  }
 
   if (bool debug_reporting;
       object->GetBoolean("debug_reporting", &debug_reporting)) {

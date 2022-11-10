@@ -31,6 +31,12 @@ struct AttributionFilters {
   map<string, array<string>> filter_values;
 };
 
+// See https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#attribution-source-registration
+// for details.
+struct AttributionAggregationKeys {
+  map<string, mojo_base.mojom.Uint128> keys;
+};
+
 // Struct containing the trigger-side aggregatable data.
 struct AttributionAggregatableTriggerData {
   mojo_base.mojom.Uint128 key_piece;
@@ -73,7 +79,7 @@ struct AttributionSourceData {
 
   AttributionFilterData filter_data;
 
-  map<string, mojo_base.mojom.Uint128> aggregation_keys;
+  AttributionAggregationKeys aggregation_keys;
 
   // Specifies whether to enable verbose debug reporting.
   bool debug_reporting = false;
