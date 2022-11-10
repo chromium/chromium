@@ -12,10 +12,10 @@
 namespace autofill_assistant {
 
 LocalScriptStore::LocalScriptStore(
-    std::vector<GetNoRoundTripScriptsByHashPrefixResponseProto::MatchInfo::
-                    RoutineScript> routines,
-    std::string domain,
-    SupportsScriptResponseProto supports_site_response)
+    const std::vector<GetNoRoundTripScriptsByHashPrefixResponseProto::
+                          MatchInfo::RoutineScript>& routines,
+    const std::string& domain,
+    const SupportsScriptResponseProto& supports_site_response)
     : routines_(routines),
       domain_(domain),
       supports_site_response_(supports_site_response) {}

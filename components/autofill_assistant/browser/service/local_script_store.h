@@ -18,10 +18,11 @@ class LocalScriptStore {
   LocalScriptStore(const LocalScriptStore&);
   LocalScriptStore(LocalScriptStore&&);
 
-  LocalScriptStore(std::vector<GetNoRoundTripScriptsByHashPrefixResponseProto::
-                                   MatchInfo::RoutineScript> routines,
-                   std::string domain,
-                   SupportsScriptResponseProto supports_site_response);
+  LocalScriptStore(
+      const std::vector<GetNoRoundTripScriptsByHashPrefixResponseProto::
+                            MatchInfo::RoutineScript>& routines,
+      const std::string& domain,
+      const SupportsScriptResponseProto& supports_site_response);
 
   // Returns routines aka pairs of [script_path, ClientActionsResponseProto].
   [[nodiscard]] const std::vector<

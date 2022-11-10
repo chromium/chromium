@@ -161,6 +161,21 @@ void WaitForDomOperation::RunChecks(
                          weak_ptr_factory_.GetWeakPtr(),
                          interrupt->handle.path));
     }
+
+    for (const auto& additional_interrupt :
+         main_script_->additional_interrupt_scripts) {
+      if (ran_interrupts_.find(additional_interrupt.first->handle.path) !=
+          ran_interrupts_.end()) {
+        continue;
+      }
+
+      additional_interrupt.first->precondition->Check(
+          delegate_->GetCurrentURL(), batch_element_checker_.get(),
+          *delegate_->GetTriggerContext(),
+          base::BindOnce(&WaitForDomOperation::OnPreconditionCheckDone,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         additional_interrupt.first->handle.path));
+    }
   }
 
   batch_element_checker_->AddAllDoneCallback(
@@ -213,7 +228,17 @@ void WaitForDomOperation::OnAllChecksDone(
          *main_script_->ordered_interrupts_) {
       const std::string& path = interrupt->handle.path;
       if (runnable_interrupts_.find(path) != runnable_interrupts_.end()) {
-        RunInterrupt(path);
+        RunInterrupt(path, /* optional_service= */ nullptr);
+        return;
+      }
+    }
+
+    for (const auto& additional_interrupt :
+         main_script_->additional_interrupt_scripts) {
+      const std::string& path = additional_interrupt.first->handle.path;
+      if (runnable_interrupts_.find(path) != runnable_interrupts_.end()) {
+        RunInterrupt(path,
+                     /* optional_service= */ additional_interrupt.second.get());
         return;
       }
     }
@@ -221,7 +246,8 @@ void WaitForDomOperation::OnAllChecksDone(
   std::move(report_attempt_result).Run(element_check_result_);
 }
 
-void WaitForDomOperation::RunInterrupt(const std::string& path) {
+void WaitForDomOperation::RunInterrupt(const std::string& path,
+                                       Service* optional_service) {
   batch_element_checker_.reset();
   for (auto* observer : observers_) {
     observer->OnInterruptStarted();
@@ -234,7 +260,8 @@ void WaitForDomOperation::RunInterrupt(const std::string& path) {
       std::make_unique<TriggerContext>(std::vector<const TriggerContext*>{
           main_script_->additional_context_.get()}),
       main_script_->last_global_payload_, main_script_->initial_script_payload_,
-      /* listener= */ this, &no_interrupts_, delegate_, main_script_->service_,
+      /* listener= */ this, &no_interrupts_, delegate_,
+      optional_service ? optional_service : main_script_->service_.get(),
       ui_delegate_,
       /* is_interrupt_executor= */ true);
   delegate_->EnterState(AutofillAssistantState::RUNNING);

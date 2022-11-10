@@ -16,7 +16,9 @@
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/details.h"
+#include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
@@ -262,6 +264,11 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD2(ReportProgress,
                void(const std::string& payload,
                     base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD(void,
+              AddInterruptScript,
+              (std::unique_ptr<Script> interrupt_script,
+               std::unique_ptr<Service> optional_service),
+              (override));
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

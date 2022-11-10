@@ -306,6 +306,8 @@ class ScriptExecutor : public ActionDelegate,
       const std::vector<std::string>& keys) const override;
   void ReportProgress(const std::string& payload,
                       base::OnceCallback<void(bool)> callback) override;
+  void AddInterruptScript(std::unique_ptr<Script> interrupt_script,
+                          std::unique_ptr<Service> optional_service) override;
 
  private:
   // TODO(b/220079189): remove this friend declaration.
@@ -415,6 +417,12 @@ class ScriptExecutor : public ActionDelegate,
   // change while the script is running, as a result of OnScriptListChanged
   // being called.
   const raw_ptr<const std::vector<std::unique_ptr<Script>>> ordered_interrupts_;
+  // A list of additional and possibly self-contained (if the override service
+  // serves from a local store) interrupt scripts that is maintained separatedly
+  // from |ordered_interrupts_| since they are directly owned by the script
+  // executor.
+  std::vector<std::pair<std::unique_ptr<Script>, std::unique_ptr<Service>>>
+      additional_interrupt_scripts;
   std::unique_ptr<ElementStore> element_store_;
   RunScriptCallback callback_;
   std::vector<std::unique_ptr<Action>> actions_;

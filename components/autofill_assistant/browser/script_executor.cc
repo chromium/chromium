@@ -1257,4 +1257,17 @@ void ScriptExecutor::OnReportProgress(
   std::move(callback).Run(http_status == net::HTTP_OK);
 }
 
+void ScriptExecutor::AddInterruptScript(
+    std::unique_ptr<Script> interrupt_script,
+    std::unique_ptr<Service> optional_service) {
+  DCHECK(interrupt_script);
+  if (!interrupt_script->handle.interrupt) {
+    LOG(ERROR) << "Tried to add non-interrupt script as interrupt";
+    return;
+  }
+
+  additional_interrupt_scripts.push_back(
+      std::make_pair(std::move(interrupt_script), std::move(optional_service)));
+}
+
 }  // namespace autofill_assistant

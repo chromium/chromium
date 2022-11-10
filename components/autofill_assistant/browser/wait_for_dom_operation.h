@@ -96,7 +96,7 @@ class WaitForDomOperation : public ScriptExecutor::Listener,
   void OnElementCheckDone(const ClientStatus&);
   void OnAllChecksDone(
       base::OnceCallback<void(const ClientStatus&)> report_attempt_result);
-  void RunInterrupt(const std::string& path);
+  void RunInterrupt(const std::string& path, Service* optional_service);
   void OnInterruptDone(const ScriptExecutor::Result& result);
   void RunCallback(const ClientStatus& element_status);
   void RunCallbackWithResult(const ClientStatus& element_status,
