@@ -15,9 +15,7 @@
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/accessibility/ax_dummy_tree_manager.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/accessibility/ax_tree_update.h"
 
 class Browser;
 
@@ -28,6 +26,13 @@ class BrowserContext;
 namespace gfx {
 class Image;
 }
+
+namespace ui {
+
+struct AXTreeUpdate;
+class AXTreeID;
+
+}  // namespace ui
 
 namespace screen_ai {
 
@@ -80,10 +85,9 @@ class AXScreenAIAnnotator : public KeyedService,
   mojo::Remote<mojom::ScreenAIAnnotator> screen_ai_annotator_;
   mojo::Receiver<mojom::ScreenAIAnnotatorClient> screen_ai_service_client_;
 
-  // A list of managers for accessibility trees that have been produced by the
-  // Screen AI Service after it has been requested to analyze an image, either
-  // by a browser or by a renderer process.
-  std::vector<ui::AXDummyTreeManager> tree_managers_;
+  // Holds the IDs of all the accessibility trees containing the results of the
+  // Screen AI Service that have been generated in this browser context.
+  std::vector<ui::AXTreeID> tree_ids_;
 
   base::WeakPtrFactory<AXScreenAIAnnotator> weak_ptr_factory_{this};
 };

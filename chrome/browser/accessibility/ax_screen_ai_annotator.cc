@@ -4,10 +4,9 @@
 
 #include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
 
-#include <memory>
 #include <utility>
-#include <vector>
 
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -17,9 +16,17 @@
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
+
+#if defined(USE_AURA)
+#include "extensions/browser/api/automation_internal/automation_event_router.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_event.h"
+#include "ui/aura/env.h"
+#include "ui/gfx/geometry/point.h"
+#endif  // defined(USE_AURA)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 namespace {
@@ -38,7 +45,7 @@ gfx::Image GrabViewSnapshot(
 }
 
 }  // namespace
-#endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 namespace screen_ai {
 
@@ -132,8 +139,21 @@ void AXScreenAIAnnotator::OnAnnotationPerformed(
 
 void AXScreenAIAnnotator::HandleAXTreeUpdate(const ui::AXTreeUpdate& update) {
   VLOG(2) << "HandleAXTreeUpdate:\n" << update.ToString();
-  auto tree = std::make_unique<ui::AXTree>(update);
-  tree_managers_.emplace_back(std::move(tree));
+  DCHECK(update.has_tree_data);
+  DCHECK_NE(update.tree_data.tree_id, ui::AXTreeIDUnknown());
+  tree_ids_.push_back(update.tree_data.tree_id);
+  DCHECK_NE(ui::kInvalidAXNodeID, update.root_id);
+
+#if defined(USE_AURA)
+  auto* event_router = extensions::AutomationEventRouter::GetInstance();
+  DCHECK(event_router);
+  const gfx::Point& mouse_location =
+      aura::Env::GetInstance()->last_mouse_location();
+  event_router->DispatchAccessibilityEvents(
+      update.tree_data.tree_id, {update}, mouse_location,
+      {ui::AXEvent(update.root_id, ax::mojom::Event::kLayoutComplete,
+                   ax::mojom::EventFrom::kNone)});
+#endif  // defined(USE_AURA)
 }
 
 }  // namespace screen_ai
