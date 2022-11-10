@@ -83857,6 +83857,22 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Failed to initialize schema"/>
 </enum>
 
+<enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Valid but empty; no budget data stored"/>
+  <int value="2"
+      label="Valid but contains an entry with a stale entry, i.e. a window
+             from over a day ago"/>
+  <int value="3" label="Contains a value with a timestamp in the future"/>
+  <int value="4"
+      label="Contains a value with a value that exceeds the budget limit"/>
+  <int value="5"
+      label="Contains an entry with a timestamp that is not rounded to an
+             hour"/>
+  <int value="6" label="Contains budget data that spans more than a day"/>
+  <int value="7" label="Contains an entry with a nonpositive budget value"/>
+</enum>
+
 <enum name="PrivacySandboxPrivateAggregationBudgeterRequestResult">
   <int value="0" label="Approved"/>
   <int value="1" label="Insufficient budget"/>

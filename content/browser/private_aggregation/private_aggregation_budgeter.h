@@ -57,6 +57,24 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
     kMaxValue = kBadValuesOnDisk,
   };
 
+  // Represents the validity status of the stored budget data for the provided
+  // origin and API retrieved during a `ConsumeBudget()` call. In case multiple
+  // statuses apply, the first one encountered/detected will be used.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class BudgetValidityStatus {
+    kValid = 0,
+    kValidAndEmpty = 1,
+    kValidButContainsStaleWindow = 2,
+    kContainsTimestampInFuture = 3,
+    kContainsValueExceedingLimit = 4,
+    kContainsTimestampNotRoundedToHour = 5,
+    kSpansMoreThanADay = 6,
+    kContainsNonPositiveValue = 7,
+    kMaxValue = kContainsNonPositiveValue,
+  };
+
   // Maximum budget allowed to be claimed per-origin per-day per-API.
   static constexpr int kMaxBudgetPerScope = 65536;
 

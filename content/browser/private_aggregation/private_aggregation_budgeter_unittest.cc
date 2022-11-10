@@ -4,6 +4,8 @@
 
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,23 +17,30 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
+#include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "content/browser/storage_partition_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
 namespace {
+using BudgetEntryValidityStatus =
+    PrivateAggregationBudgeter::BudgetValidityStatus;
 
 using RequestResult = PrivateAggregationBudgeter::RequestResult;
 
@@ -56,15 +65,48 @@ class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
     return storage_status_;
   }
 
+  // This function adds the value received directly on the storage. As a result,
+  // invalid data can be added.
+  void AddBudgetValueAtTimestamp(const PrivateAggregationBudgetKey& budget_key,
+                                 int budget_value,
+                                 int64_t timestamp) {
+    if (raw_storage_ == nullptr)
+      return;
+
+    std::string origin_key = budget_key.origin().Serialize();
+
+    proto::PrivateAggregationBudgets budgets;
+    raw_storage_->budgets_data()->TryGetData(origin_key, &budgets);
+
+    google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetPerHour>*
+        hourly_budgets =
+            budget_key.api() == PrivateAggregationBudgetKey::Api::kFledge
+                ? budgets.mutable_fledge_budgets()
+                : budgets.mutable_shared_storage_budgets();
+
+    proto::PrivateAggregationBudgetPerHour* new_budget = hourly_budgets->Add();
+    new_budget->set_hour_start_timestamp(timestamp);
+    new_budget->set_budget_used(budget_value);
+
+    raw_storage_->budgets_data()->UpdateData(origin_key, budgets);
+  }
+
+  void DeleteAllData() { raw_storage_->budgets_data()->DeleteAllData(); }
+
  private:
   void OnStorageDoneInitializing(
       std::unique_ptr<PrivateAggregationBudgetStorage> storage) override {
+    raw_storage_ = storage.get();
     PrivateAggregationBudgeter::OnStorageDoneInitializing(std::move(storage));
     if (on_storage_done_initializing_)
       std::move(on_storage_done_initializing_).Run();
   }
 
   base::OnceClosure on_storage_done_initializing_;
+
+  // This storage is owned by the base budgeter class so this raw pointer on the
+  // derived class is destroyed first and won't become dangling.
+  raw_ptr<PrivateAggregationBudgetStorage> raw_storage_;
 };
 
 // TODO(alexmt): Consider moving logic shared with
@@ -112,6 +154,21 @@ class PrivateAggregationBudgeterTest : public testing::Test {
   }
 
   PrivateAggregationBudgeter* budgeter() { return budgeter_.get(); }
+
+  void AddBudgetValueAtTimestamp(const PrivateAggregationBudgetKey& budget_key,
+                                 int value,
+                                 int64_t timestamp) {
+    budgeter_.get()->AddBudgetValueAtTimestamp(budget_key, value, timestamp);
+  }
+
+  void DeleteAllBudgetData() { budgeter_.get()->DeleteAllData(); }
+
+  PrivateAggregationBudgetKey CreateBudgetKey() {
+    return PrivateAggregationBudgetKey::CreateForTesting(
+        /*origin=*/url::Origin::Create(GURL("https://a.example/")),
+        /*api_invocation_time=*/kExampleTime,
+        /*api-*/ PrivateAggregationBudgetKey::Api::kFledge);
+  }
 
   base::FilePath db_path() const {
     return storage_directory().Append(FILE_PATH_LITERAL("PrivateAggregation"));
@@ -472,6 +529,96 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
 
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 3);
+}
+
+TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
+  CreateBudgeterAndWait();
+
+  PrivateAggregationBudgetKey budget_key = CreateBudgetKey();
+
+  constexpr int64_t scope_duration =
+      PrivateAggregationBudgeter::kBudgetScopeDuration.InMicroseconds();
+  constexpr int64_t window_duration =
+      PrivateAggregationBudgetKey::TimeWindow::kDuration.InMicroseconds();
+  int64_t latest_window_start = budget_key.time_window()
+                                    .start_time()
+                                    .ToDeltaSinceWindowsEpoch()
+                                    .InMicroseconds();
+
+  int64_t oldest_window_start =
+      latest_window_start + window_duration - scope_duration;
+
+  int64_t after_latest_window_start = latest_window_start + window_duration;
+  int64_t before_oldest_window_start = oldest_window_start - window_duration;
+
+  constexpr int max_budget = PrivateAggregationBudgeter::kMaxBudgetPerScope;
+
+  struct HourlyBudget {
+    int budget;
+    int64_t timestamp;
+  };
+
+  const struct {
+    BudgetEntryValidityStatus expected_status;
+    std::vector<HourlyBudget> budgets;
+  } kTestCases[] = {
+      {BudgetEntryValidityStatus::kValid,
+       {
+           {1, oldest_window_start},
+           {1, latest_window_start},
+       }},
+      {BudgetEntryValidityStatus::kValidAndEmpty, {}},
+      {BudgetEntryValidityStatus::kValidButContainsStaleWindow,
+       {
+
+           {1, before_oldest_window_start},
+           {1, oldest_window_start},
+       }},
+      {BudgetEntryValidityStatus::kContainsTimestampInFuture,
+       {
+           {1, latest_window_start},
+           {3, after_latest_window_start},
+       }},
+      {BudgetEntryValidityStatus::kContainsValueExceedingLimit,
+       {
+           {1, oldest_window_start},
+           {max_budget + 1, latest_window_start},
+       }},
+      {BudgetEntryValidityStatus::kContainsTimestampNotRoundedToHour,
+       {
+           {1, oldest_window_start},
+           {max_budget, latest_window_start + 1},
+       }},
+      {BudgetEntryValidityStatus::kContainsNonPositiveValue,
+       {
+           {-1, after_latest_window_start},
+           {3, oldest_window_start + 1},
+           {max_budget + 1, latest_window_start},
+       }},
+      {BudgetEntryValidityStatus::kSpansMoreThanADay,
+       {
+           {5, before_oldest_window_start},
+           {3, latest_window_start},
+       }}};
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    base::RunLoop run_loop;
+    for (const auto& budget : test_case.budgets) {
+      AddBudgetValueAtTimestamp(budget_key, budget.budget, budget.timestamp);
+    }
+
+    budgeter()->ConsumeBudget(
+        /*budget=*/1, budget_key,
+        base::BindLambdaForTesting([&](RequestResult result) {
+          DeleteAllBudgetData();
+          run_loop.Quit();
+        }));
+    histograms.ExpectUniqueSample(
+        "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus",
+        test_case.expected_status, 1);
+    run_loop.Run();
+  }
 }
 
 TEST_F(PrivateAggregationBudgeterTest,

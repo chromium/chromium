@@ -504,6 +504,23 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus"
+    enum="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus"
+    expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the validity of budget entries read from disk. Recorded once every
+    time that budget is attempted to be consumed to reflect the state of stored
+    budget data for the requested origin and API. If multiple errors are found,
+    only the first encountered/detected is reported. As a result, reported
+    errors will be skewed in favor of checks performed first, but we expect
+    multiple instances of corruption for budget entries on disk to be rare.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult"
     enum="PrivacySandboxPrivateAggregationBudgeterRequestResult"
     expires_after="2023-04-27">

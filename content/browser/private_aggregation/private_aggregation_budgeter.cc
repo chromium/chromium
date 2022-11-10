@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
@@ -34,8 +35,81 @@ namespace content {
 
 namespace {
 
+using ValidityStatus = PrivateAggregationBudgeter::BudgetValidityStatus;
+
 int64_t SerializeTimeForStorage(base::Time time) {
   return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
+void RecordBudgetValidity(ValidityStatus status) {
+  static_assert(
+      ValidityStatus::kContainsNonPositiveValue == ValidityStatus::kMaxValue,
+      "Bump version of "
+      "PrivacySandbox.PrivateAggregation.Budgeter."
+      "BudgetValidityStatus histogram.");
+
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus",
+      status);
+}
+
+void ComputeAndRecordBudgetValidity(
+    google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetPerHour>*
+        hourly_budgets,
+    int64_t earliest_window_in_scope_start,
+    int64_t current_window_start) {
+  if (hourly_budgets->empty()) {
+    RecordBudgetValidity(ValidityStatus::kValidAndEmpty);
+    return;
+  }
+
+  constexpr int64_t kWindowDuration =
+      PrivateAggregationBudgetKey::TimeWindow::kDuration.InMicroseconds();
+
+  ValidityStatus status = ValidityStatus::kValid;
+
+  for (proto::PrivateAggregationBudgetPerHour& elem : *hourly_budgets) {
+    int64_t hour_start = elem.hour_start_timestamp();
+    int budget = elem.budget_used();
+
+    if (budget <= 0) {
+      RecordBudgetValidity(ValidityStatus::kContainsNonPositiveValue);
+      return;
+
+    } else if (hour_start % kWindowDuration != 0) {
+      RecordBudgetValidity(ValidityStatus::kContainsTimestampNotRoundedToHour);
+      return;
+
+    } else if (budget > PrivateAggregationBudgeter::kMaxBudgetPerScope) {
+      RecordBudgetValidity(ValidityStatus::kContainsValueExceedingLimit);
+      return;
+
+    } else if (hour_start >= current_window_start + kWindowDuration) {
+      RecordBudgetValidity(ValidityStatus::kContainsTimestampInFuture);
+      return;
+
+    } else if (hour_start < earliest_window_in_scope_start) {
+      status = ValidityStatus::kValidButContainsStaleWindow;
+    }
+  }
+
+  constexpr int64_t kMaximumWindowStartDifference =
+      PrivateAggregationBudgeter::kBudgetScopeDuration.InMicroseconds() -
+      kWindowDuration;
+  const auto minmax = base::ranges::minmax(
+      *hourly_budgets, /*comp=*/{},
+      &proto::PrivateAggregationBudgetPerHour::hour_start_timestamp);
+
+  DCHECK_EQ(kMaximumWindowStartDifference,
+            current_window_start - earliest_window_in_scope_start);
+  if (minmax.second.hour_start_timestamp() -
+          minmax.first.hour_start_timestamp() >
+      kMaximumWindowStartDifference) {
+    RecordBudgetValidity(ValidityStatus::kSpansMoreThanADay);
+    return;
+  }
+
+  RecordBudgetValidity(status);
 }
 
 google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetPerHour>*
@@ -173,25 +247,30 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
       hourly_budgets = GetHourlyBudgets(budget_key.api(), budgets);
   DCHECK(hourly_budgets);
 
-  // Budget windows must start strictly after this timestamp to be counted in
-  // the current day. The storage should not contain any time windows from the
-  // future.
-  int64_t window_must_start_strictly_after = SerializeTimeForStorage(
-      budget_key.time_window().start_time() - kBudgetScopeDuration);
-
-  int64_t window_for_key_begins =
+  const int64_t current_window_start =
       SerializeTimeForStorage(budget_key.time_window().start_time());
-  DCHECK_EQ(window_for_key_begins % base::Time::kMicrosecondsPerHour, 0);
+  DCHECK_EQ(current_window_start % base::Time::kMicrosecondsPerHour, 0);
+
+  // Budget windows must start on or after this timestamp to be counted in the
+  // current day.
+  const int64_t earliest_window_in_scope_start =
+      current_window_start +
+      PrivateAggregationBudgetKey::TimeWindow::kDuration.InMicroseconds() -
+      kBudgetScopeDuration.InMicroseconds();
+
+  ComputeAndRecordBudgetValidity(hourly_budgets, earliest_window_in_scope_start,
+                                 current_window_start);
 
   proto::PrivateAggregationBudgetPerHour* window_for_key = nullptr;
   base::CheckedNumeric<int> total_budget_used = 0;
   bool should_clean_up_stale_budgets = false;
+
   for (proto::PrivateAggregationBudgetPerHour& elem : *hourly_budgets) {
-    if (elem.hour_start_timestamp() <= window_must_start_strictly_after) {
+    if (elem.hour_start_timestamp() < earliest_window_in_scope_start) {
       should_clean_up_stale_budgets = true;
       continue;
     }
-    if (elem.hour_start_timestamp() == window_for_key_begins) {
+    if (elem.hour_start_timestamp() == current_window_start) {
       window_for_key = &elem;
     }
 
@@ -218,7 +297,7 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
   if (budget_increase_request_result == RequestResult::kApproved) {
     if (!window_for_key) {
       window_for_key = hourly_budgets->Add();
-      window_for_key->set_hour_start_timestamp(window_for_key_begins);
+      window_for_key->set_hour_start_timestamp(current_window_start);
       window_for_key->set_budget_used(0);
     }
     int budget_used_for_key = window_for_key->budget_used() + additional_budget;
@@ -228,13 +307,12 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
   }
 
   if (should_clean_up_stale_budgets) {
-    auto new_end =
-        std::remove_if(hourly_budgets->begin(), hourly_budgets->end(),
-                       [&window_must_start_strictly_after](
-                           const proto::PrivateAggregationBudgetPerHour& elem) {
-                         return elem.hour_start_timestamp() <=
-                                window_must_start_strictly_after;
-                       });
+    auto new_end = std::remove_if(
+        hourly_budgets->begin(), hourly_budgets->end(),
+        [&earliest_window_in_scope_start](
+            const proto::PrivateAggregationBudgetPerHour& elem) {
+          return elem.hour_start_timestamp() < earliest_window_in_scope_start;
+        });
     hourly_budgets->erase(new_end, hourly_budgets->end());
   }
 
