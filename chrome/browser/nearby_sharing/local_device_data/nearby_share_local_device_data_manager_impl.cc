@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -15,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
@@ -114,8 +116,13 @@ std::string NearbyShareLocalDeviceDataManagerImpl::GetId() {
   if (!id.empty())
     return id;
 
-  for (size_t i = 0; i < kDeviceIdLength; ++i)
-    id += kAlphaNumericChars[base::RandGenerator(kAlphaNumericChars.size())];
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kNearbyShareDeviceID)) {
+    id = command_line->GetSwitchValueASCII(switches::kNearbyShareDeviceID);
+  } else {
+    for (size_t i = 0; i < kDeviceIdLength; ++i)
+      id += kAlphaNumericChars[base::RandGenerator(kAlphaNumericChars.size())];
+  }
 
   pref_service_->SetString(prefs::kNearbySharingDeviceIdPrefName, id);
 

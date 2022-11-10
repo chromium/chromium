@@ -11,6 +11,10 @@ namespace switches {
 const char kNearbyShareCertificateValidityPeriodHours[] =
     "nearby-share-certificate-validity-period-hours";
 
+// Overrides the default device ID to provide a stable ID in test environments.
+// By default we generate a random 10-character string.
+const char kNearbyShareDeviceID[] = "nearby-share-device-id";
+
 // Overrides the default URL for Google APIs (https://www.googleapis.com) used
 // by Nearby Share
 const char kNearbyShareHTTPHost[] = "nearbysharing-http-host";
