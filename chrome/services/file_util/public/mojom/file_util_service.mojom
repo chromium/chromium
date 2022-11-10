@@ -13,7 +13,7 @@ import "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom";
 import "chrome/services/file_util/public/mojom/zip_file_creator.mojom";
 
 [EnableIf=xz_extractor]
-import "chrome/services/file_util/public/mojom/xz_file_extractor.mojom";
+import "chrome/services/file_util/public/mojom/single_file_tar_xz_file_extractor.mojom";
 
 // The main interface to the file utility service. Binds any of various
 // specific utility receivers.
@@ -27,7 +27,8 @@ interface FileUtilService {
   [EnableIf=full_safe_browsing]
   BindSafeArchiveAnalyzer(pending_receiver<SafeArchiveAnalyzer> receiver);
 
-  // Binds an interface of the XzFileExtractor interface.
+  // Binds an interface of the SingleFileTarXzFileExtractor interface.
   [EnableIf=xz_extractor]
-  BindXzFileExtractor(pending_receiver<XzFileExtractor> receiver);
+  BindSingleFileTarXzFileExtractor(
+      pending_receiver<SingleFileTarXzFileExtractor> receiver);
 };

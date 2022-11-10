@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "base/files/file.h"
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
-#include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
+#include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
-#include "chrome/services/file_util/public/mojom/xz_file_extractor.mojom.h"
+#include "chrome/services/file_util/public/mojom/single_file_tar_xz_file_extractor.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
@@ -23,7 +23,7 @@ namespace image_writer {
 
 // .tar.xz archive extractor. Should be called from a SequencedTaskRunner
 // context.
-class XzExtractor : public SingleFileTarReader::Delegate {
+class XzExtractor : public chrome::mojom::SingleFileTarXzFileExtractorListener {
  public:
   static bool IsXzFile(const base::FilePath& image_path);
 
@@ -41,35 +41,23 @@ class XzExtractor : public SingleFileTarReader::Delegate {
   explicit XzExtractor(ExtractionProperties properties);
   ~XzExtractor() override;
 
-  void ExtractImpl();
-  void OnXzWritable(MojoResult result);
-  void OnTarReadable(MojoResult result);
-  void OnRemoteFinished(bool success);
+  // chrome::mojom::SingleFileTarXzFileExtractorListener implementation.
+  void OnProgress(uint64_t total_bytes, uint64_t progress_bytes) override;
 
+  void ExtractImpl();
+  void OnRemoteFinished(chrome::file_util::mojom::ExtractionResult result);
   // |error_id| might be a member variable, so it cannot be a reference.
   void RunFailureCallbackAndDeleteThis(std::string error_id);
 
-  // SingleFileTarReader::Delegate:
-  SingleFileTarReader::Result ReadTarFile(char* data,
-                                          uint32_t* size,
-                                          std::string* error_id) override;
-  bool WriteContents(const char* data,
-                     int size,
-                     std::string* error_id) override;
-
   mojo::Remote<chrome::mojom::FileUtilService> service_;
-  mojo::Remote<chrome::mojom::XzFileExtractor> remote_xz_file_extractor_;
+  mojo::Remote<chrome::mojom::SingleFileTarXzFileExtractor>
+      remote_single_file_tar_xz_file_extractor_;
 
-  SingleFileTarReader tar_reader_;
-
-  base::File infile_;
-  base::File outfile_;
-
-  mojo::ScopedDataPipeProducerHandle xz_producer_;
-  mojo::ScopedDataPipeConsumerHandle tar_consumer_;
-
-  mojo::SimpleWatcher xz_producer_watcher_;
-  mojo::SimpleWatcher tar_consumer_watcher_;
+  // Listener receiver.
+  // This class listens for .tar.xz extraction progress reports from the utility
+  // process.
+  mojo::Receiver<chrome::mojom::SingleFileTarXzFileExtractorListener> listener_{
+      this};
 
   ExtractionProperties properties_;
 };

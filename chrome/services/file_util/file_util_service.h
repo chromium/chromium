@@ -37,8 +37,9 @@ class FileUtilService : public chrome::mojom::FileUtilService {
 #endif
 
 #if BUILDFLAG(ENABLE_XZ_EXTRACTOR)
-  void BindXzFileExtractor(
-      mojo::PendingReceiver<chrome::mojom::XzFileExtractor> receiver) override;
+  void BindSingleFileTarXzFileExtractor(
+      mojo::PendingReceiver<chrome::mojom::SingleFileTarXzFileExtractor>
+          receiver) override;
 #endif
 
   mojo::Receiver<chrome::mojom::FileUtilService> receiver_;

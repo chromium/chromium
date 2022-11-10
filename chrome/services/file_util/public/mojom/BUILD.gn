@@ -28,7 +28,10 @@ mojom("mojom") {
   }
 
   if (enable_xz_extractor) {
-    sources += [ "xz_file_extractor.mojom" ]
+    sources += [
+      "constants.mojom",
+      "single_file_tar_xz_file_extractor.mojom",
+    ]
     enabled_features += [ "xz_extractor" ]
   }
 

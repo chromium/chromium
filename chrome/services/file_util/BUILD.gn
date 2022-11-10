@@ -73,8 +73,10 @@ source_set("file_util") {
 
   if (enable_xz_extractor) {
     sources += [
-      "xz_file_extractor.cc",
-      "xz_file_extractor.h",
+      "single_file_tar_reader.cc",
+      "single_file_tar_reader.h",
+      "single_file_tar_xz_file_extractor.cc",
+      "single_file_tar_xz_file_extractor.h",
     ]
     deps += [
       "//third_party/lzma_sdk:lzma_sdk",
@@ -87,11 +89,12 @@ source_set("unit_tests") {
   testonly = true
 
   if (enable_xz_extractor) {
-    sources = ["xz_file_extractor_unittest.cc"]
+    sources = [ "single_file_tar_xz_file_extractor_unittest.cc" ]
 
     deps = [
       ":file_util",
       "//base/test:test_support",
+      "//chrome/common:constants",
       "//testing/gmock",
       "//testing/gtest",
     ]
