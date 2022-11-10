@@ -425,15 +425,15 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 }
 
 #view-document-review {
-  --preview-area-padding-inline-end: 22px;
-  --preview-area-padding-inline-start: 26px;
   --buttons-container-height: calc(var(--bottom-line) * 2);
+  --preview-area-padding-inline-end: calc(var(--right-line) * 2);
+  --preview-area-padding-inline-start: calc(var(--left-line) * 2);
   display: flex;
 }
 
-#view-document-review.single {
-  --preview-area-padding-inline-end: calc(var(--right-line) * 2);
-  --preview-area-padding-inline-start: calc(var(--left-line) * 2);
+#view-document-review:has(.page:nth-child(2)) {
+  --preview-area-padding-inline-end: 22px;
+  --preview-area-padding-inline-start: 26px;
 }
 
 #view-document-review .document-pages {
@@ -443,7 +443,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   padding: 16px;
 }
 
-#view-document-review.single .document-pages {
+#view-document-review:not(:has(.page:nth-child(2))) .document-pages {
   display: none;
 }
 
@@ -563,7 +563,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   justify-content: center;
 }
 
-#view-document-review:not(.single) .document-preview-mode button[i18n-text=label_save_photo_document] {
+#view-document-review:has(.page:nth-child(2)) .document-preview-mode button[i18n-text=label_save_photo_document] {
   display: none;
 }
 
