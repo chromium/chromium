@@ -367,9 +367,18 @@ class ManualFillingMediator
         if (mActivity == null) return false;
         WebContents webContents = mActivity.getCurrentWebContents();
         if (webContents == null) return false;
-        float height = webContents.getHeight(); // getHeight actually returns dip, not Px!
+        float height = webContents.getHeight(); // In dip. Includes top control elements only.
+
+        // WebContents height ignores the soft keyboard — subtract the keyboard height:
+        height -= mWindowAndroid.getApplicationBottomInsetProvider().get()
+                / mWindowAndroid.getDisplay().getDipScale();
+
+        // Don't consider the impact of the accessory as shown already. If we have space for a bar,
+        // we continue to have it. The sheet is never bigger than the an open keyboard — so if an
+        // open sheet affects the inset, we can safely ignore it, too.
         height += mViewportInsetSupplier.get() / mWindowAndroid.getDisplay().getDipScale();
-        return height >= MINIMAL_AVAILABLE_VERTICAL_SPACE
+
+        return height >= MINIMAL_AVAILABLE_VERTICAL_SPACE // Allows for a bar if not shown yet.
                 && webContents.getWidth() >= MINIMAL_AVAILABLE_HORIZONTAL_SPACE;
     }
 
@@ -644,8 +653,7 @@ class ManualFillingMediator
         float density = mWindowAndroid.getDisplay().getDipScale();
         // The maximal height for the sheet ensures a minimal amount of WebContents space.
         @Px
-        int maxHeight = mViewportInsetSupplier.get();
-        maxHeight += Math.round(density * webContents.getHeight());
+        int maxHeight = Math.round(density * webContents.getHeight());
         maxHeight -= Math.round(density * MINIMAL_AVAILABLE_VERTICAL_SPACE);
         if (mAccessorySheet.getHeight() <= maxHeight) return; // Sheet height needs no adjustment!
         mAccessorySheet.setHeight(maxHeight);
