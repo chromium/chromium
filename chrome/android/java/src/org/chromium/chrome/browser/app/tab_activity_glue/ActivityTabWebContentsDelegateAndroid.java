@@ -379,13 +379,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    public int getVirtualKeyboardHeight() {
-        return mCompositorViewHolderSupplier.hasValue()
-                ? mCompositorViewHolderSupplier.get().getVirtualKeyboardHeight()
-                : 0;
-    }
-
-    @Override
     public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {
         if (mFullscreenManager != null) {
             mFullscreenManager.onEnterFullscreen(

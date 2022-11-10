@@ -632,6 +632,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // mode.
   void GotResponseToKeyboardLockRequest(bool allowed);
 
+  // Called when the response to an earlier WidgetMsg_ForceRedraw message has
+  // arrived. The reply includes the snapshot-id from the request.
+  void GotResponseToForceRedraw(int snapshot_id);
+
   // When the WebContents (which acts as the Delegate) is destroyed, this object
   // may still outlive it while the renderer is shutting down. In that case the
   // delegate pointer is removed (since it would be a UAF).
@@ -813,13 +817,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Returns the keyboard layout mapping.
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
-  // Tells the blink widget to commit and forces a redraw so that a compositor
-  // frame is submitted. The given callback is invoked when the frame is
-  // presented in the display compositor.
-  // TODO(bokan): This has a lot of overlap with
-  // RenderFrameHost::InsertVisualStateCallback, we should combine them into a
-  // single API.
-  void ForceRedrawAndWaitForPresentation(base::OnceClosure presented_callback);
+  void RequestForceRedraw(int snapshot_id);
 
   void DidStopFlinging();
 
@@ -1134,10 +1132,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Stop intercepting system keyboard events.
   void UnlockKeyboard();
-
-  // Called when the response to an earlier WidgetMsg_ForceRedraw message has
-  // arrived. The reply includes the snapshot-id from the request.
-  void SnapshotFramePresented(int snapshot_id);
 
 #if BUILDFLAG(IS_MAC)
   device::mojom::WakeLock* GetWakeLock();

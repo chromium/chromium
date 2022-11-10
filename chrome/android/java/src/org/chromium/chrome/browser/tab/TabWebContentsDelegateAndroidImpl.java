@@ -390,11 +390,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.controlsResizeView();
     }
 
-    @Override
-    public int getVirtualKeyboardHeight() {
-        return mDelegate.getVirtualKeyboardHeight();
-    }
-
     @VisibleForTesting
     void showFramebustBlockInfobarForTesting(String url) {
         TabWebContentsDelegateAndroidImplJni.get().showFramebustBlockInfoBar(
