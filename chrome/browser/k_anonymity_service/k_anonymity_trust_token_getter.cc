@@ -146,14 +146,6 @@ void KAnonymityTrustTokenGetter::OnAccessTokenRequestCompleted(
     return;
   }
 
-  if (access_token_info.expiration_time <= base::Time::Now()) {
-    // Token we got has already expired.
-    RecordTrustTokenGetterAction(
-        KAnonymityTrustTokenGetterAction::kAccessTokenRequestFailed);
-    FailAllCallbacks();
-    return;
-  }
-
   access_token_ = access_token_info;
   CheckTrustTokenKeyCommitment();
 }
