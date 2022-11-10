@@ -948,7 +948,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       R"([{)"
       R"("body":{)"
       R"("attribution_destination":"https://conversion.test",)"
-      R"("limit":3,)"
+      R"("limit":"3",)"
       R"("source_event_id":"123",)"
       R"("source_site":"https://impression.test"},)"
       R"("type":"source-destination-limit")"

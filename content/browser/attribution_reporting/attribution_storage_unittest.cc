@@ -78,6 +78,15 @@ StoragePartition::StorageKeyMatcherFunction GetMatcher(
                              blink::StorageKey(to_delete));
 }
 
+MATCHER_P(CreateReportSourceIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.source(), result_listener);
+}
+
+MATCHER_P(CreateReportMaxAttributionsLimitIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.rate_limits_max_attributions(),
+                            result_listener);
+}
+
 }  // namespace
 
 // Unit test suite for the AttributionStorage interface. All AttributionStorage
@@ -200,7 +209,8 @@ TEST_F(AttributionStorageTest,
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kNoMatchingImpressions),
             NewEventLevelReportIs(absl::nullopt),
-            NewAggregatableReportIs(absl::nullopt)));
+            NewAggregatableReportIs(absl::nullopt),
+            CreateReportSourceIs(absl::nullopt)));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
@@ -870,12 +880,12 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
   storage()->StoreSource(source_builder.Build());
 
   auto conversion1 = DefaultTrigger();
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(conversion1),
-      AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kSuccess),
-            CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kNotRegistered)));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion1),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kNotRegistered),
+                    CreateReportMaxAttributionsLimitIs(absl::nullopt)));
 
   auto conversion2 =
       DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5}).Build();
@@ -883,7 +893,8 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
                     CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
+                        AttributionTrigger::AggregatableResult::kSuccess),
+                    CreateReportMaxAttributionsLimitIs(absl::nullopt)));
 
   // Event-level reports and aggregatable reports share the attribution limit.
   EXPECT_THAT(
@@ -892,7 +903,8 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
                 AttributionTrigger::EventLevelResult::kExcessiveAttributions),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kExcessiveAttributions),
-            ReplacedEventLevelReportIs(absl::nullopt)));
+            ReplacedEventLevelReportIs(absl::nullopt),
+            CreateReportMaxAttributionsLimitIs(2)));
 
   const auto source =
       source_builder.SetAggregatableBudgetConsumed(5).BuildStored();
@@ -1433,7 +1445,8 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                   TriggerBuilder().SetPriority(0).SetTriggerData(20).Build()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
-                    ReplacedEventLevelReportIs(absl::nullopt)));
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    CreateReportSourceIs(Optional(SourceEventIdIs(5u)))));
 
   // This conversion should replace the one above because it has a higher
   // priority.
@@ -1443,7 +1456,8 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                         AttributionTrigger::EventLevelResult::
                             kSuccessDroppedLowerPriority),
                     ReplacedEventLevelReportIs(
-                        Optional(EventLevelDataIs(TriggerDataIs(20u))))));
+                        Optional(EventLevelDataIs(TriggerDataIs(20u)))),
+                    CreateReportSourceIs(Optional(SourceEventIdIs(5u)))));
 
   storage()->StoreSource(
       SourceBuilder().SetSourceEventId(7).SetPriority(2).Build());
@@ -1457,7 +1471,8 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                   TriggerBuilder().SetPriority(0).SetTriggerData(23).Build()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kPriorityTooLow),
-                    ReplacedEventLevelReportIs(absl::nullopt)));
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    CreateReportSourceIs(Optional(SourceEventIdIs(7u)))));
 
   task_environment_.FastForwardBy(kReportDelay);
 

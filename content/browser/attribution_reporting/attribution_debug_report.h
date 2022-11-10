@@ -31,6 +31,8 @@ class CONTENT_EXPORT AttributionDebugReport {
     kSourceStorageLimit,
     kSourceUnknownError,
     kTriggerNoMatchingSource,
+    kTriggerAttributionsPerSourceDestinationLimit,
+    kTriggerNoMatchingFilterData,
   };
 
   static absl::optional<AttributionDebugReport> Create(

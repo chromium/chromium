@@ -844,6 +844,10 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   absl::optional<AttributionReport> replaced_event_level_report;
 
+  absl::optional<AttributionInfo> attribution_info;
+
+  absl::optional<int64_t> rate_limits_max_attributions;
+
   auto assemble_report_result =
       [&](absl::optional<EventLevelResult> new_event_level_status,
           absl::optional<AggregatableResult> new_aggregatable_status) {
@@ -865,11 +869,15 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         if (!IsSuccessResult(*aggregatable_status))
           new_aggregatable_report = absl::nullopt;
 
-        return CreateReportResult(trigger_time, *event_level_status,
-                                  *aggregatable_status,
-                                  std::move(replaced_event_level_report),
-                                  std::move(new_event_level_report),
-                                  std::move(new_aggregatable_report));
+        return CreateReportResult(
+            trigger_time, *event_level_status, *aggregatable_status,
+            std::move(replaced_event_level_report),
+            std::move(new_event_level_report),
+            std::move(new_aggregatable_report),
+            attribution_info
+                ? absl::make_optional(std::move(attribution_info->source))
+                : absl::nullopt,
+            rate_limits_max_attributions);
       };
 
   if (trigger.aggregatable_trigger_data().empty() &&
@@ -918,12 +926,12 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       source_to_attribute->source.common_info().source_type(),
       trigger.filters(), trigger.not_filters());
 
-  AttributionInfo attribution_info(std::move(source_to_attribute->source),
-                                   trigger_time, trigger.debug_key());
+  attribution_info.emplace(std::move(source_to_attribute->source), trigger_time,
+                           trigger.debug_key());
 
   absl::optional<uint64_t> dedup_key;
   if (EventLevelResult create_event_level_status = MaybeCreateEventLevelReport(
-          attribution_info, trigger, top_level_filters_match,
+          *attribution_info, trigger, top_level_filters_match,
           new_event_level_report, dedup_key);
       create_event_level_status != EventLevelResult::kSuccess) {
     event_level_status = create_event_level_status;
@@ -931,7 +939,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   if (!aggregatable_status.has_value()) {
     if (AggregatableResult create_aggregatable_status =
-            MaybeCreateAggregatableAttributionReport(attribution_info, trigger,
+            MaybeCreateAggregatableAttributionReport(*attribution_info, trigger,
                                                      top_level_filters_match,
                                                      new_aggregatable_report);
         create_aggregatable_status != AggregatableResult::kSuccess) {
@@ -945,10 +953,12 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   }
 
   switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
-      db_.get(), attribution_info)) {
+      db_.get(), *attribution_info)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
+      rate_limits_max_attributions =
+          delegate_->GetRateLimits().max_attributions;
       return assemble_report_result(EventLevelResult::kExcessiveAttributions,
                                     AggregatableResult::kExcessiveAttributions);
     case RateLimitResult::kError:
@@ -957,7 +967,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   }
 
   switch (rate_limit_table_.AttributionAllowedForReportingOriginLimit(
-      db_.get(), attribution_info)) {
+      db_.get(), *attribution_info)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -1045,7 +1055,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   }
 
   if (!rate_limit_table_.AddRateLimitForAttribution(db_.get(),
-                                                    attribution_info)) {
+                                                    *attribution_info)) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }

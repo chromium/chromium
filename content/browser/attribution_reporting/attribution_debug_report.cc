@@ -28,7 +28,7 @@ using DebugDataType = ::content::AttributionDebugReport::DataType;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
-constexpr char kAttributionDestination[] = "attribution_destination";
+constexpr char kLimit[] = "limit";
 
 absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
                                                   bool is_debug_cookie_set) {
@@ -64,17 +64,22 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
     case EventLevelResult::kInternalError:
     case EventLevelResult::kNoCapacityForConversionDestination:
     case EventLevelResult::kDeduplicated:
-    case EventLevelResult::kExcessiveAttributions:
     case EventLevelResult::kPriorityTooLow:
     case EventLevelResult::kDroppedForNoise:
     case EventLevelResult::kExcessiveReportingOrigins:
-    case EventLevelResult::kNoMatchingSourceFilterData:
     case EventLevelResult::kProhibitedByBrowserPolicy:
     case EventLevelResult::kNoMatchingConfigurations:
     case EventLevelResult::kExcessiveReports:
       return absl::nullopt;
     case EventLevelResult::kNoMatchingImpressions:
       return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
+                                 is_debug_cookie_set);
+    case EventLevelResult::kExcessiveAttributions:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerAttributionsPerSourceDestinationLimit,
+          is_debug_cookie_set);
+    case EventLevelResult::kNoMatchingSourceFilterData:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingFilterData,
                                  is_debug_cookie_set);
   }
 }
@@ -85,17 +90,22 @@ absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
     case AggregatableResult::kSuccess:
     case AggregatableResult::kInternalError:
     case AggregatableResult::kNoCapacityForConversionDestination:
-    case AggregatableResult::kExcessiveAttributions:
     case AggregatableResult::kExcessiveReportingOrigins:
     case AggregatableResult::kNoHistograms:
     case AggregatableResult::kInsufficientBudget:
-    case AggregatableResult::kNoMatchingSourceFilterData:
     case AggregatableResult::kNotRegistered:
     case AggregatableResult::kProhibitedByBrowserPolicy:
     case AggregatableResult::kDeduplicated:
       return absl::nullopt;
     case AggregatableResult::kNoMatchingImpressions:
       return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
+                                 is_debug_cookie_set);
+    case AggregatableResult::kExcessiveAttributions:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerAttributionsPerSourceDestinationLimit,
+          is_debug_cookie_set);
+    case AggregatableResult::kNoMatchingSourceFilterData:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingFilterData,
                                  is_debug_cookie_set);
   }
 }
@@ -112,7 +122,23 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "source-unknown-error";
     case DebugDataType::kTriggerNoMatchingSource:
       return "trigger-no-matching-source";
+    case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
+      return "trigger-attributions-per-source-destination-limit";
+    case DebugDataType::kTriggerNoMatchingFilterData:
+      return "trigger-no-matching-filter-data";
   }
+}
+
+void SetSourceData(base::Value::Dict& data_body,
+                   const CommonSourceInfo& common_info) {
+  data_body.Set("source_event_id",
+                base::NumberToString(common_info.source_event_id()));
+  data_body.Set("source_site", common_info.SourceSite().Serialize());
+}
+
+void SetAttributionDestination(base::Value::Dict& data_body,
+                               const net::SchemefulSite& destination) {
+  data_body.Set("attribution_destination", destination.Serialize());
 }
 
 base::Value::Dict GetReportDataBody(
@@ -123,28 +149,28 @@ base::Value::Dict GetReportDataBody(
 
   const CommonSourceInfo& common_info = source.common_info();
   base::Value::Dict data_body;
-  data_body.Set(kAttributionDestination,
-                common_info.DestinationSite().Serialize());
-  data_body.Set("source_event_id",
-                base::NumberToString(common_info.source_event_id()));
-  data_body.Set("source_site", common_info.SourceSite().Serialize());
-
-  static constexpr char kLimit[] = "limit";
+  SetAttributionDestination(data_body, common_info.DestinationSite());
+  SetSourceData(data_body, common_info);
 
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
       DCHECK(result.max_destinations_per_source_site_reporting_origin);
-      data_body.Set(kLimit,
-                    *result.max_destinations_per_source_site_reporting_origin);
+      data_body.Set(
+          kLimit,
+          base::NumberToString(
+              *result.max_destinations_per_source_site_reporting_origin));
       break;
     case DebugDataType::kSourceStorageLimit:
       DCHECK(result.max_sources_per_origin);
-      data_body.Set(kLimit, *result.max_sources_per_origin);
+      data_body.Set(kLimit,
+                    base::NumberToString(*result.max_sources_per_origin));
       break;
     case DebugDataType::kSourceNoised:
     case DebugDataType::kSourceUnknownError:
       break;
     case DebugDataType::kTriggerNoMatchingSource:
+    case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
+    case DebugDataType::kTriggerNoMatchingFilterData:
       NOTREACHED();
       return base::Value::Dict();
   }
@@ -153,13 +179,30 @@ base::Value::Dict GetReportDataBody(
 }
 
 base::Value::Dict GetReportDataBody(DebugDataType data_type,
-                                    const AttributionTrigger& trigger) {
+                                    const AttributionTrigger& trigger,
+                                    const CreateReportResult& result) {
   switch (data_type) {
     case DebugDataType::kTriggerNoMatchingSource: {
       base::Value::Dict data_body;
-      data_body.Set(
-          kAttributionDestination,
-          net::SchemefulSite(trigger.destination_origin()).Serialize());
+      SetAttributionDestination(
+          data_body, net::SchemefulSite(trigger.destination_origin()));
+      return data_body;
+    }
+    case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
+    case DebugDataType::kTriggerNoMatchingFilterData: {
+      DCHECK(result.source());
+
+      base::Value::Dict data_body;
+      SetAttributionDestination(
+          data_body, net::SchemefulSite(trigger.destination_origin()));
+      SetSourceData(data_body, result.source()->common_info());
+
+      if (data_type ==
+          DebugDataType::kTriggerAttributionsPerSourceDestinationLimit) {
+        DCHECK(result.rate_limits_max_attributions());
+        data_body.Set(kLimit, base::NumberToString(
+                                  *result.rate_limits_max_attributions()));
+      }
       return data_body;
     }
     case DebugDataType::kSourceDestinationLimit:
@@ -244,7 +287,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   if (event_level_data_type) {
     report_data.emplace_back(
         *event_level_data_type,
-        GetReportDataBody(*event_level_data_type, trigger));
+        GetReportDataBody(*event_level_data_type, trigger, result));
   }
 
   if (absl::optional<DataType> aggregatable_data_type =
@@ -253,7 +296,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
       aggregatable_data_type != event_level_data_type) {
     report_data.emplace_back(
         *aggregatable_data_type,
-        GetReportDataBody(*aggregatable_data_type, trigger));
+        GetReportDataBody(*aggregatable_data_type, trigger, result));
   }
 
   if (report_data.empty())

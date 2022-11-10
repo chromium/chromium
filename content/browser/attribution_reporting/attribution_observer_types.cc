@@ -8,35 +8,45 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 
 namespace content {
 
+namespace {
+
+using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
+using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
+
+}  // namespace
+
 CreateReportResult::CreateReportResult(
     base::Time trigger_time,
-    AttributionTrigger::EventLevelResult event_level_status,
-    AttributionTrigger::AggregatableResult aggregatable_status,
+    EventLevelResult event_level_status,
+    AggregatableResult aggregatable_status,
     absl::optional<AttributionReport> replaced_event_level_report,
     absl::optional<AttributionReport> new_event_level_report,
-    absl::optional<AttributionReport> new_aggregatable_report)
+    absl::optional<AttributionReport> new_aggregatable_report,
+    absl::optional<StoredSource> source,
+    absl::optional<int64_t> rate_limits_max_attributions)
     : trigger_time_(trigger_time),
       event_level_status_(event_level_status),
       aggregatable_status_(aggregatable_status),
       replaced_event_level_report_(std::move(replaced_event_level_report)),
       new_event_level_report_(std::move(new_event_level_report)),
-      new_aggregatable_report_(std::move(new_aggregatable_report)) {
+      new_aggregatable_report_(std::move(new_aggregatable_report)),
+      source_(std::move(source)),
+      rate_limits_max_attributions_(rate_limits_max_attributions) {
   DCHECK_EQ(
-      event_level_status_ == AttributionTrigger::EventLevelResult::kSuccess ||
-          event_level_status_ == AttributionTrigger::EventLevelResult::
-                                     kSuccessDroppedLowerPriority,
+      event_level_status_ == EventLevelResult::kSuccess ||
+          event_level_status_ == EventLevelResult::kSuccessDroppedLowerPriority,
       new_event_level_report_.has_value());
 
   DCHECK(!new_event_level_report_.has_value() ||
          new_event_level_report_->GetReportType() ==
              AttributionReport::Type::kEventLevel);
 
-  DCHECK_EQ(
-      aggregatable_status_ == AttributionTrigger::AggregatableResult::kSuccess,
-      new_aggregatable_report_.has_value());
+  DCHECK_EQ(aggregatable_status_ == AggregatableResult::kSuccess,
+            new_aggregatable_report_.has_value());
 
   DCHECK(!new_aggregatable_report_.has_value() ||
          new_aggregatable_report_->GetReportType() ==
@@ -44,8 +54,28 @@ CreateReportResult::CreateReportResult(
 
   DCHECK_EQ(
       replaced_event_level_report_.has_value(),
-      event_level_status_ ==
-          AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
+      event_level_status_ == EventLevelResult::kSuccessDroppedLowerPriority);
+
+  if (event_level_status_ != EventLevelResult::kInternalError) {
+    DCHECK_EQ(source_.has_value(),
+              event_level_status_ != EventLevelResult::kNoMatchingImpressions &&
+                  event_level_status_ !=
+                      EventLevelResult::kProhibitedByBrowserPolicy);
+  }
+
+  if (aggregatable_status_ != AggregatableResult::kInternalError &&
+      aggregatable_status_ != AggregatableResult::kNotRegistered) {
+    DCHECK_EQ(
+        source_.has_value(),
+        aggregatable_status_ != AggregatableResult::kNoMatchingImpressions &&
+            aggregatable_status_ !=
+                AggregatableResult::kProhibitedByBrowserPolicy);
+  }
+
+  DCHECK_EQ(
+      rate_limits_max_attributions_.has_value(),
+      event_level_status_ == EventLevelResult::kExcessiveAttributions ||
+          aggregatable_status_ == AggregatableResult::kExcessiveAttributions);
 }
 
 CreateReportResult::~CreateReportResult() = default;

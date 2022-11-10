@@ -463,7 +463,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           AttributionTrigger::AggregatableResult::kSuccess,
           /*replaced_event_level_report=*/absl::nullopt,
           /*new_event_level_report=*/IrreleventEventLevelReport(),
-          /*new_aggregatable_report=*/IrreleventAggregatableReport()),
+          /*new_aggregatable_report=*/IrreleventAggregatableReport(),
+          /*source=*/SourceBuilder().BuildStored()),
       /*cleared_debug_key=*/1234);
 
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
@@ -590,7 +591,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetReportTime(now + base::Hours(1))
               .SetPriority(11)
               .Build(),
-          /*new_event_level_report=*/IrreleventEventLevelReport()));
+          /*new_event_level_report=*/IrreleventEventLevelReport(),
+          /*new_aggregatable_report=*/absl::nullopt,
+          /*source=*/SourceBuilder().BuildStored()));
 
   {
     static constexpr char wait_script[] = R"(
@@ -1093,7 +1096,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                 event_status, aggregatable_status,
                 /*replaced_event_level_report=*/absl::nullopt,
                 /*new_event_level_report=*/IrreleventEventLevelReport(),
-                /*new_aggregatable_report=*/IrreleventAggregatableReport()));
+                /*new_aggregatable_report=*/IrreleventAggregatableReport(),
+                /*source=*/SourceBuilder().BuildStored()));
       };
 
   notify_trigger_handled(AttributionTrigger::EventLevelResult::kSuccess,
