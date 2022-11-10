@@ -3589,6 +3589,8 @@ static_library("test_support") {
     "system/holding_space/holding_space_test_api.cc",
     "system/message_center/test_notifier_settings_controller.cc",
     "system/message_center/test_notifier_settings_controller.h",
+    "system/notification_center/notification_center_test_api.cc",
+    "system/notification_center/notification_center_test_api.h",
     "system/palette/palette_tray_test_api.cc",
     "system/palette/palette_tray_test_api.h",
     "system/power/power_button_controller_test_api.cc",

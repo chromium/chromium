@@ -5,17 +5,12 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/shell.h"
-#include "ash/system/notification_center/notification_center_bubble.h"
-#include "ash/system/notification_center/notification_center_view.h"
-#include "ash/system/notification_center/stacked_notification_bar.h"
+#include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
 
@@ -33,120 +28,81 @@ class NotificationCenterTrayTest : public AshTestBase {
 
     AshTestBase::SetUp();
 
-    notification_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-                             ->notification_center_tray();
+    test_api_ = std::make_unique<NotificationCenterTestApi>(
+        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+            ->notification_center_tray());
   }
 
-  void TearDown() override {
-    notification_tray_ = nullptr;
-    AshTestBase::TearDown();
-  }
-
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const std::string& id,
-      const std::string& title = "test_title") {
-    return std::make_unique<message_center::Notification>(
-        message_center::NOTIFICATION_TYPE_SIMPLE, id, base::UTF8ToUTF16(title),
-        u"test message", ui::ImageModel(),
-        /*display_source=*/std::u16string(), GURL(),
-        message_center::NotifierId(), message_center::RichNotificationData(),
-        new message_center::NotificationDelegate());
-  }
-
-  std::string AddNotification() {
-    std::string id = base::NumberToString(id_++);
-    message_center::MessageCenter::Get()->AddNotification(
-        CreateNotification(id));
-    return id;
-  }
-
-  NotificationCenterTray* GetNotificationCenterTray() {
-    return notification_tray_;
-  }
-
-  views::View* GetClearAllButton() {
-    DCHECK(notification_tray_->bubble_);
-    return notification_tray_->bubble_->notification_center_view_
-        ->notification_bar_->clear_all_button_;
-  }
+  NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
  private:
-  int id_ = 0;
-
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  // Owned by `StatusAreaWidget`.
-  NotificationCenterTray* notification_tray_ = nullptr;
+  std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 
 // Test the initial state.
 TEST_F(NotificationCenterTrayTest, ShowTrayButtonOnNotificationAvailability) {
-  EXPECT_FALSE(GetNotificationCenterTray()->GetVisible());
+  EXPECT_FALSE(test_api()->GetTray()->GetVisible());
 
-  std::string id = AddNotification();
-  EXPECT_TRUE(GetNotificationCenterTray()->GetVisible());
+  std::string id = test_api()->AddNotification();
+  EXPECT_TRUE(test_api()->GetTray()->GetVisible());
 
   message_center::MessageCenter::Get()->RemoveNotification(id, true);
 
-  EXPECT_FALSE(GetNotificationCenterTray()->GetVisible());
+  EXPECT_FALSE(test_api()->GetTray()->GetVisible());
 }
 
 // Bubble creation and destruction.
 TEST_F(NotificationCenterTrayTest, ShowAndHideBubbleOnUserInteraction) {
-  AddNotification();
+  test_api()->AddNotification();
 
-  auto* tray = GetNotificationCenterTray();
+  auto* tray = test_api()->GetTray();
 
   // Clicking on the tray button should show  the bubble.
   LeftClickOn(tray);
-  EXPECT_TRUE(tray->GetBubbleWidget()->IsVisible());
-  EXPECT_TRUE(tray->is_active());
+  EXPECT_TRUE(test_api()->IsBubbleShown());
 
   // Clicking a second time should destroy the bubble.
-  LeftClickOn(GetNotificationCenterTray());
-  EXPECT_FALSE(tray->GetBubbleWidget());
-  EXPECT_FALSE(tray->is_active());
+  LeftClickOn(test_api()->GetTray());
+  EXPECT_FALSE(test_api()->IsBubbleShown());
 }
 
 // Hitting escape after opening the bubble should destroy the bubble
 // gracefully.
 TEST_F(NotificationCenterTrayTest, EscapeClosesBubble) {
-  auto* tray = GetNotificationCenterTray();
+  auto* tray = test_api()->GetTray();
   LeftClickOn(tray);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(tray->GetBubbleWidget());
-  EXPECT_FALSE(tray->is_active());
+  EXPECT_FALSE(test_api()->IsBubbleShown());
 }
+
 // Removing all notifications by hitting the `clear_all_button_` should result
 // in the bubble being destroyed and the tray bubble going invisible.
 TEST_F(NotificationCenterTrayTest,
        ClearAllNotificationsDestroysBubbleAndHidesTray) {
-  AddNotification();
-  AddNotification();
-  AddNotification();
+  test_api()->AddNotification();
+  test_api()->AddNotification();
+  test_api()->AddNotification();
 
-  auto* tray = GetNotificationCenterTray();
+  auto* tray = test_api()->GetTray();
 
   LeftClickOn(tray);
-  LeftClickOn(GetClearAllButton());
-  EXPECT_FALSE(tray->GetBubbleWidget());
-  EXPECT_FALSE(tray->is_active());
-  EXPECT_FALSE(tray->GetVisible());
+  LeftClickOn(test_api()->GetClearAllButton());
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+  EXPECT_FALSE(test_api()->IsTrayShown());
 }
 
 // The last notification being removed directly by the
 // `message_center::MessageCenter` API should result in the bubble being
 // destroyed and tray visibilty being updated.
 TEST_F(NotificationCenterTrayTest, NotificationsRemovedByMessageCenterApi) {
-  std::string id = AddNotification();
-  message_center::MessageCenter::Get()->RemoveNotification(id,
-                                                           /*by_user=*/true);
+  std::string id = test_api()->AddNotification();
+  test_api()->RemoveNotification(id);
 
-  auto* tray = GetNotificationCenterTray();
-  EXPECT_FALSE(tray->GetBubbleWidget());
-  EXPECT_FALSE(tray->is_active());
-  EXPECT_FALSE(tray->GetVisible());
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+  EXPECT_FALSE(test_api()->IsTrayShown());
 }
 
 // TODO(b/252875025):

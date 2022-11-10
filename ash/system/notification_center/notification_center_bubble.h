@@ -33,7 +33,7 @@ class NotificationCenterBubble {
   views::Widget* GetBubbleWidget();
 
  private:
-  friend class NotificationCenterTrayTest;
+  friend class NotificationCenterTestApi;
 
   // The owner of this class.
   NotificationCenterTray* const notification_center_tray_;

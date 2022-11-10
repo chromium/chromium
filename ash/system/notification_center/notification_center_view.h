@@ -167,7 +167,7 @@ class ASH_EXPORT NotificationCenterView
   bool collapsed() { return collapsed_; }
 
  private:
-  friend class NotificationCenterTrayTest;
+  friend class NotificationCenterTestApi;
   friend class NotificationCenterViewTest;
   friend class UnifiedMessageCenterBubbleTest;
 
