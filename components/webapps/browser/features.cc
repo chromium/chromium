@@ -17,12 +17,12 @@ BASE_FEATURE(kAddToHomescreenMessaging,
 // Enables or disables the installable ambient badge infobar.
 BASE_FEATURE(kInstallableAmbientBadgeInfoBar,
              "InstallableAmbientBadgeInfoBar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the installable ambient badge message.
 BASE_FEATURE(kInstallableAmbientBadgeMessage,
              "InstallableAmbientBadgeMessage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The capacity of cached domains which do not show message again if
 // users do not accept the message.
