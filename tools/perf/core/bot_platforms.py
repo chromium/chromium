@@ -700,7 +700,7 @@ ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
 LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '', _LACROS_BENCHMARK_CONFIGS,
                                4, 'chromeos')
 LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
-                               10, 'chromeos')
+                               6, 'chromeos')
 # Fuchsia
 FUCHSIA_PERF_ASTRO = PerfPlatform('fuchsia-perf-ast',
                                   '',

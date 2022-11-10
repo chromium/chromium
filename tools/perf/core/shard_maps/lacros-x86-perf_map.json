@@ -8,15 +8,6 @@
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 50,
-                "abridged": false
-            }
-        }
-    },
-    "1": {
-        "benchmarks": {
-            "blink_perf.css": {
-                "begin": 50,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -29,15 +20,15 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 84,
+                "end": 44,
                 "abridged": false
             }
         }
     },
-    "2": {
+    "1": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 84,
+                "begin": 44,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -53,15 +44,6 @@
                 "abridged": false
             },
             "blink_perf.svg": {
-                "end": 6,
-                "abridged": false
-            }
-        }
-    },
-    "3": {
-        "benchmarks": {
-            "blink_perf.svg": {
-                "begin": 6,
                 "abridged": false
             },
             "blink_perf.webaudio": {
@@ -71,6 +53,15 @@
                 "abridged": false
             },
             "blink_perf.webgl": {
+                "end": 3,
+                "abridged": false
+            }
+        }
+    },
+    "2": {
+        "benchmarks": {
+            "blink_perf.webgl": {
+                "begin": 3,
                 "abridged": false
             },
             "blink_perf.webgl_fast_call": {
@@ -95,15 +86,6 @@
                 "abridged": false
             },
             "loading.desktop": {
-                "end": 43,
-                "abridged": false
-            }
-        }
-    },
-    "4": {
-        "benchmarks": {
-            "loading.desktop": {
-                "begin": 43,
                 "abridged": false
             },
             "media.desktop": {
@@ -124,31 +106,22 @@
             }
         }
     },
-    "5": {
+    "3": {
         "benchmarks": {
             "rasterize_and_record_micro.top_25": {
                 "begin": 9,
                 "abridged": false
             },
             "rendering.desktop": {
-                "end": 104,
+                "end": 184,
                 "abridged": false
             }
         }
     },
-    "6": {
+    "4": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 104,
-                "end": 224,
-                "abridged": false
-            }
-        }
-    },
-    "7": {
-        "benchmarks": {
-            "rendering.desktop": {
-                "begin": 224,
+                "begin": 184,
                 "abridged": false
             },
             "rendering.desktop.notracing": {
@@ -170,27 +143,18 @@
                 "abridged": false
             },
             "system_health.common_desktop": {
-                "end": 9,
+                "end": 49,
                 "abridged": false
             }
         }
     },
-    "8": {
+    "5": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 9,
+                "begin": 49,
                 "abridged": false
             },
             "system_health.memory_desktop": {
-                "end": 48,
-                "abridged": false
-            }
-        }
-    },
-    "9": {
-        "benchmarks": {
-            "system_health.memory_desktop": {
-                "begin": 48,
                 "abridged": false
             },
             "system_health.pcscan": {
@@ -218,19 +182,15 @@
     },
     "extra_infos": {
         "num_stories": 1199,
-        "predicted_min_shard_time": 1190,
-        "predicted_min_shard_index": 9,
-        "predicted_max_shard_time": 1200,
+        "predicted_min_shard_time": 1990,
+        "predicted_min_shard_index": 5,
+        "predicted_max_shard_time": 2000,
         "predicted_max_shard_index": 0,
-        "shard #0": 1200,
-        "shard #1": 1200,
-        "shard #2": 1200,
-        "shard #3": 1200,
-        "shard #4": 1200,
-        "shard #5": 1200,
-        "shard #6": 1200,
-        "shard #7": 1200,
-        "shard #8": 1200,
-        "shard #9": 1190
+        "shard #0": 2000,
+        "shard #1": 2000,
+        "shard #2": 2000,
+        "shard #3": 2000,
+        "shard #4": 2000,
+        "shard #5": 1990
     }
 }
