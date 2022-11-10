@@ -46,6 +46,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
@@ -80,80 +81,78 @@ class CookieControlsModeTransformer : public PrefTransformerInterface {
   using CookieControlsMode = content_settings::CookieControlsMode;
 
  public:
-  std::unique_ptr<base::Value> ExtensionToBrowserPref(
-      const base::Value* extension_pref,
-      std::string* error,
-      bool* bad_message) override {
-    bool third_party_cookies_allowed = extension_pref->GetBool();
-    return std::make_unique<base::Value>(static_cast<int>(
+  absl::optional<base::Value> ExtensionToBrowserPref(
+      const base::Value& extension_pref,
+      std::string& error,
+      bool& bad_message) override {
+    bool third_party_cookies_allowed = extension_pref.GetBool();
+    return base::Value(static_cast<int>(
         third_party_cookies_allowed ? CookieControlsMode::kOff
                                     : CookieControlsMode::kBlockThirdParty));
   }
 
-  std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref,
+  absl::optional<base::Value> BrowserToExtensionPref(
+      const base::Value& browser_pref,
       bool is_incognito_profile) override {
     auto cookie_control_mode =
-        static_cast<CookieControlsMode>(browser_pref->GetInt());
+        static_cast<CookieControlsMode>(browser_pref.GetInt());
 
     bool third_party_cookies_allowed =
         cookie_control_mode == content_settings::CookieControlsMode::kOff ||
         (!is_incognito_profile &&
          cookie_control_mode == CookieControlsMode::kIncognitoOnly);
 
-    return std::make_unique<base::Value>(third_party_cookies_allowed);
+    return base::Value(third_party_cookies_allowed);
   }
 };
 
 class NetworkPredictionTransformer : public PrefTransformerInterface {
  public:
-  std::unique_ptr<base::Value> ExtensionToBrowserPref(
-      const base::Value* extension_pref,
-      std::string* error,
-      bool* bad_message) override {
-    if (!extension_pref->is_bool()) {
+  absl::optional<base::Value> ExtensionToBrowserPref(
+      const base::Value& extension_pref,
+      std::string& error,
+      bool& bad_message) override {
+    if (!extension_pref.is_bool()) {
       DCHECK(false) << "Preference not found.";
-    } else if (extension_pref->GetBool()) {
-      return std::make_unique<base::Value>(
+    } else if (extension_pref.GetBool()) {
+      return base::Value(
           static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
     }
-    return std::make_unique<base::Value>(
+    return base::Value(
         static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
   }
 
-  std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref,
+  absl::optional<base::Value> BrowserToExtensionPref(
+      const base::Value& browser_pref,
       bool is_incognito_profile) override {
     prefetch::NetworkPredictionOptions value =
         prefetch::NetworkPredictionOptions::kDefault;
-    if (browser_pref->is_int()) {
+    if (browser_pref.is_int()) {
       value = static_cast<prefetch::NetworkPredictionOptions>(
-          browser_pref->GetInt());
+          browser_pref.GetInt());
     }
-    return std::make_unique<base::Value>(
-        value != prefetch::NetworkPredictionOptions::kDisabled);
+    return base::Value(value != prefetch::NetworkPredictionOptions::kDisabled);
   }
 };
 
 class ProtectedContentEnabledTransformer : public PrefTransformerInterface {
  public:
-  std::unique_ptr<base::Value> ExtensionToBrowserPref(
-      const base::Value* extension_pref,
-      std::string* error,
-      bool* bad_message) override {
-    bool protected_identifier_allowed = extension_pref->GetBool();
-    return std::make_unique<base::Value>(
-        static_cast<int>(protected_identifier_allowed ? CONTENT_SETTING_ALLOW
-                                                      : CONTENT_SETTING_BLOCK));
+  absl::optional<base::Value> ExtensionToBrowserPref(
+      const base::Value& extension_pref,
+      std::string& error,
+      bool& bad_message) override {
+    bool protected_identifier_allowed = extension_pref.GetBool();
+    return base::Value(static_cast<int>(protected_identifier_allowed
+                                            ? CONTENT_SETTING_ALLOW
+                                            : CONTENT_SETTING_BLOCK));
   }
 
-  std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref,
+  absl::optional<base::Value> BrowserToExtensionPref(
+      const base::Value& browser_pref,
       bool is_incognito_profile) override {
     auto protected_identifier_mode =
-        static_cast<ContentSetting>(browser_pref->GetInt());
-    return std::make_unique<base::Value>(protected_identifier_mode ==
-                                         CONTENT_SETTING_ALLOW);
+        static_cast<ContentSetting>(browser_pref.GetInt());
+    return base::Value(protected_identifier_mode == CONTENT_SETTING_ALLOW);
   }
 };
 
@@ -307,9 +306,8 @@ void PreferenceEventRouter::OnAshGetSuccess(
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
 
-  base::Value* pref_value = &opt_value.value();
-  std::unique_ptr<base::Value> transformed_value =
-      transformer->BrowserToExtensionPref(pref_value, incognito);
+  absl::optional<base::Value> transformed_value =
+      transformer->BrowserToExtensionPref(opt_value.value(), incognito);
   if (!transformed_value) {
     LOG(ERROR) << ErrorUtils::FormatErrorMessage(kConversionErrorMessage,
                                                  browser_pref);
@@ -344,8 +342,8 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
   CHECK(pref);
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
-  std::unique_ptr<base::Value> transformed_value =
-      transformer->BrowserToExtensionPref(pref->GetValue(), incognito);
+  absl::optional<base::Value> transformed_value =
+      transformer->BrowserToExtensionPref(*pref->GetValue(), incognito);
   if (!transformed_value) {
     LOG(ERROR) << ErrorUtils::FormatErrorMessage(kConversionErrorMessage,
                                                  pref->name());
@@ -608,8 +606,8 @@ void GetPreferenceFunction::ProduceGetResult(
     bool incognito) {
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
-  std::unique_ptr<base::Value> transformed_value =
-      transformer->BrowserToExtensionPref(pref_value, incognito);
+  absl::optional<base::Value> transformed_value =
+      transformer->BrowserToExtensionPref(*pref_value, incognito);
   if (!transformed_value) {
     // TODO(devlin): Can this happen?  When?  Should it be an error, or a bad
     // message?
@@ -618,8 +616,7 @@ void GetPreferenceFunction::ProduceGetResult(
     return;
   }
 
-  result->SetKey(kValue,
-                 base::Value::FromUniquePtrValue(std::move(transformed_value)));
+  result->SetKey(kValue, std::move(*transformed_value));
   result->SetStringKey(kLevelOfControl, level_of_control);
 
   // Retrieve incognito status.
@@ -750,8 +747,8 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
   std::string error;
   bool bad_message = false;
-  std::unique_ptr<base::Value> browser_pref_value(
-      transformer->ExtensionToBrowserPref(value, &error, &bad_message));
+  absl::optional<base::Value> browser_pref_value =
+      transformer->ExtensionToBrowserPref(*value, error, bad_message);
   if (!browser_pref_value) {
     EXTENSION_FUNCTION_VALIDATE(!bad_message);
     return RespondNow(Error(std::move(error)));
@@ -760,8 +757,8 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
 
   // Validate also that the stored value can be converted back by the
   // transformer.
-  std::unique_ptr<base::Value> extension_pref_value(
-      transformer->BrowserToExtensionPref(browser_pref_value.get(), incognito));
+  absl::optional<base::Value> extension_pref_value =
+      transformer->BrowserToExtensionPref(*browser_pref_value, incognito);
   EXTENSION_FUNCTION_VALIDATE(extension_pref_value);
 
   auto* prefs_helper = ExtensionPrefsHelper::Get(browser_context());
@@ -791,17 +788,14 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
                                              scope, base::Value(false));
   }
 
-  base::Value val =
-      base::Value::FromUniquePtrValue(std::move(browser_pref_value));
-
   prefs_helper->SetExtensionControlledPref(extension_id(), browser_pref, scope,
-                                           val.Clone());
+                                           browser_pref_value->Clone());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (pref_path != crosapi::mojom::PrefPath::kUnknown &&
       prefs_helper->DoesExtensionControlPref(extension_id(), browser_pref,
                                              nullptr)) {
     lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
-        pref_path, val.Clone(),
+        pref_path, std::move(*browser_pref_value),
         base::BindOnce(&SetPreferenceFunction::OnLacrosSetSuccess, this));
     return RespondLater();
   }

@@ -19,6 +19,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
@@ -144,17 +145,17 @@ const PrefMappingEntry kMappings[] = {
 
 class IdentityPrefTransformer : public PrefTransformerInterface {
  public:
-  std::unique_ptr<base::Value> ExtensionToBrowserPref(
-      const base::Value* extension_pref,
-      std::string* error,
-      bool* bad_message) override {
-    return base::Value::ToUniquePtrValue(extension_pref->Clone());
+  absl::optional<base::Value> ExtensionToBrowserPref(
+      const base::Value& extension_pref,
+      std::string& error,
+      bool& bad_message) override {
+    return extension_pref.Clone();
   }
 
-  std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref,
+  absl::optional<base::Value> BrowserToExtensionPref(
+      const base::Value& browser_pref,
       bool is_incognito_profile) override {
-    return base::Value::ToUniquePtrValue(browser_pref->Clone());
+    return browser_pref.Clone();
   }
 };
 

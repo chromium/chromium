@@ -11,12 +11,10 @@
 #include <string>
 
 #include "base/memory/singleton.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/pref_transformer_interface.h"
 #include "components/proxy_config/proxy_prefs.h"
-
-namespace base {
-class Value;
-}
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 class EventRouterForwarder;
@@ -34,12 +32,12 @@ class ProxyPrefTransformer : public PrefTransformerInterface {
   ~ProxyPrefTransformer() override;
 
   // Implementation of PrefTransformerInterface.
-  std::unique_ptr<base::Value> ExtensionToBrowserPref(
-      const base::Value* extension_pref,
-      std::string* error,
-      bool* bad_message) override;
-  std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref,
+  absl::optional<base::Value> ExtensionToBrowserPref(
+      const base::Value& extension_pref,
+      std::string& error,
+      bool& bad_message) override;
+  absl::optional<base::Value> BrowserToExtensionPref(
+      const base::Value& browser_pref,
       bool is_incognito_profile) override;
 };
 
