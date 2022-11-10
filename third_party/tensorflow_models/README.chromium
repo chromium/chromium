@@ -1,8 +1,8 @@
 Name: TensorFlow Models
 Short Name: tensorflow_models
 URL: https://github.com/tensorflow/models
-Version: 45fd32c82e1bb55f8eac44d77d40902302c5aee2
-Date: 2022/09/29
+Version: a2e1e19eea5e7b926dafcc7e10c4e4e475d42f51
+Date: 2022/11/09
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: Yes

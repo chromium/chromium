@@ -20,7 +20,6 @@ static_library("tflite_custom_ops") {
     # Shim headers.
     "shims/icu4c/source/common/unicode/uchar.h",
     "shims/icu4c/source/common/unicode/utf8.h",
-    "shims/libutf/utf.h",
 
     # When adding/removing entries from this list, also change |update.sh| in
     # this directory.
@@ -46,7 +45,6 @@ static_library("tflite_custom_ops") {
     "//third_party/flatbuffers",
     "//third_party/icu",
     "//third_party/tflite",
-    "//third_party/utf",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
