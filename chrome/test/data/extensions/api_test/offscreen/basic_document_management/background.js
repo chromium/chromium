@@ -104,6 +104,18 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function callingCreateDocumentWithNoReasonsRejects() {
+    await chrome.test.assertPromiseRejects(
+        chrome.offscreen.createDocument(
+        {
+          url: 'offscreen.html',
+          reasons: [],
+          justification: 'ignored',
+        }),
+        'Error: A `reason` must be provided.');
+    chrome.test.succeed();
+  },
+
   async function callingCreateDocumentWithMultipleReasonsRejects() {
     await chrome.test.assertPromiseRejects(
         chrome.offscreen.createDocument(
