@@ -4,26 +4,12 @@
 
 #include "ash/webui/diagnostics_ui/backend/input/keyboard_input_data_event_watcher.h"
 
-#include <errno.h>
-#include <fcntl.h>
 #include <linux/input-event-codes.h>
 #include <linux/input.h>
-#include <sys/socket.h>
-#include <unistd.h>
 
 #include <cstdint>
 #include <memory>
 
-#include "ash/webui/diagnostics_ui/backend/input/input_data_event_watcher.h"
-#include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/location.h"
-#include "base/logging.h"
-#include "base/memory/weak_ptr.h"
-#include "base/posix/eintr_wrapper.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::diagnostics {
@@ -133,11 +119,7 @@ class FakeKeyboardInputDataEventWatcher : public KeyboardInputDataEventWatcher {
 
 class KeyboardInputDataEventWatcherTest : public testing::Test {
  public:
-  KeyboardInputDataEventWatcherTest()
-      : task_environment_(
-            std::make_unique<base::test::SingleThreadTaskEnvironment>(
-                base::test::SingleThreadTaskEnvironment::MainThreadType::UI)),
-        dispatcher_{} {}
+  KeyboardInputDataEventWatcherTest() = default;
   KeyboardInputDataEventWatcherTest(const KeyboardInputDataEventWatcherTest&) =
       delete;
   KeyboardInputDataEventWatcherTest& operator=(
@@ -171,7 +153,6 @@ class KeyboardInputDataEventWatcherTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   StubDispatcher dispatcher_;
   std::unique_ptr<FakeKeyboardInputDataEventWatcher> watcher_;
 };

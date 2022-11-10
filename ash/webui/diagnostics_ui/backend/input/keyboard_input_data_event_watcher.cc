@@ -11,12 +11,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/files/scoped_file.h"
-#include "base/functional/callback.h"
-#include "base/location.h"
-#include "base/logging.h"
-#include "base/message_loop/message_pump_for_ui.h"
-#include "base/task/current_thread.h"
 
 namespace ash::diagnostics {
 

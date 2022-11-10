@@ -7,10 +7,7 @@
 
 #include "ash/webui/diagnostics_ui/backend/input/input_data_event_watcher.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_file.h"
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_pump_for_ui.h"
 
 namespace ash::diagnostics {
 
