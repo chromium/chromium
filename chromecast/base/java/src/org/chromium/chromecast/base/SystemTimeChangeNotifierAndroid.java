@@ -40,7 +40,8 @@ public final class SystemTimeChangeNotifierAndroid {
             }
         };
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_CHANGED);
-        ContextUtils.getApplicationContext().registerReceiver(mTimeChangeObserver, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mTimeChangeObserver, filter);
     }
 
     @CalledByNative private void finalizeFromNative() {

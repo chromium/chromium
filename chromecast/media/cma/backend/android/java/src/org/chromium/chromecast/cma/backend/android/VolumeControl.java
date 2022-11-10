@@ -205,7 +205,8 @@ class VolumeControl {
         IntentFilter mediaEventIntentFilter = new IntentFilter();
         mediaEventIntentFilter.addAction(VOLUME_CHANGED_ACTION);
         mediaEventIntentFilter.addAction(STREAM_MUTE_CHANGED_ACTION);
-        mContext.registerReceiver(mMediaEventIntentListener, mediaEventIntentFilter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                mContext, mMediaEventIntentListener, mediaEventIntentFilter);
     }
 
     /**
