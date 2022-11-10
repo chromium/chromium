@@ -266,16 +266,16 @@ TEST_F(FeatureAggregatorImplTest, BucketedCumulativeSumAggregation) {
 
 TEST_F(FeatureAggregatorImplTest, LatestOrDefaultAggregation) {
   VerifyAllOptional(SignalType::USER_ACTION, Aggregation::LATEST_OR_DEFAULT,
-                    absl::optional<std::vector<float>>({15}),
-                    absl::optional<std::vector<float>>({0}), absl::nullopt);
+                    absl::optional<std::vector<float>>{{15}},
+                    absl::optional<std::vector<float>>{{0}}, absl::nullopt);
 
   VerifyAllOptional(SignalType::HISTOGRAM_ENUM, Aggregation::LATEST_OR_DEFAULT,
-                    absl::optional<std::vector<float>>({15}),
-                    absl::optional<std::vector<float>>({0}), absl::nullopt);
+                    absl::optional<std::vector<float>>{{15}},
+                    absl::optional<std::vector<float>>{{0}}, absl::nullopt);
 
   VerifyAllOptional(SignalType::HISTOGRAM_VALUE, Aggregation::LATEST_OR_DEFAULT,
-                    absl::optional<std::vector<float>>({15}),
-                    absl::optional<std::vector<float>>({0}), absl::nullopt);
+                    absl::optional<std::vector<float>>{{15}},
+                    absl::optional<std::vector<float>>{{0}}, absl::nullopt);
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketizationThresholds) {
