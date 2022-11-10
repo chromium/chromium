@@ -24,6 +24,8 @@
 namespace updater {
 namespace {
 
+constexpr char kArchAmd64Omaha3[] = "x64";
+
 absl::optional<base::FilePath> GetOfflineManifest(
     const base::FilePath& offline_dir,
     const std::string& app_id) {
@@ -123,29 +125,80 @@ void ReadInstallCommandFromManifest(
   }
 }
 
-bool IsArchCompatible(const std::string& arch_list) {
-  std::vector<std::string> architectures = base::SplitString(
-      arch_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  if (architectures.empty()) {
+bool IsArchitectureSupported(const std::string& arch,
+                             const std::string& current_architecture) {
+  if (arch.empty())
     return true;
-  }
-
-  const std::string arch = update_client::GetArchitecture();
 
   // This code accounts for Omaha 3 Offline manifests having `arch` as "x64",
   // but `GetArchitecture` returning "x86_64" for amd64.
-  const std::string current_architecture =
-      arch == update_client::kArchAmd64 ? kArchAmd64Omaha3 : arch;
+  if (arch == current_architecture ||
+      (arch == kArchAmd64Omaha3 &&
+       current_architecture == update_client::kArchAmd64)) {
+    return true;
+  }
+
+  using IsWow64GuestMachineSupportedFunc = HRESULT(WINAPI*)(USHORT, BOOL*);
+  const IsWow64GuestMachineSupportedFunc is_wow64_guest_machine_supported =
+      reinterpret_cast<IsWow64GuestMachineSupportedFunc>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "IsWow64GuestMachineSupported"));
+
+  if (is_wow64_guest_machine_supported) {
+    const base::flat_map<std::string, int> kNativeArchitectureStringsToImages =
+        {
+            {update_client::kArchIntel, IMAGE_FILE_MACHINE_I386},
+            {kArchAmd64Omaha3, IMAGE_FILE_MACHINE_AMD64},
+            {update_client::kArchAmd64, IMAGE_FILE_MACHINE_AMD64},
+            {update_client::kArchArm64, IMAGE_FILE_MACHINE_ARM64},
+        };
+
+    const auto image = kNativeArchitectureStringsToImages.find(arch);
+    if (image != kNativeArchitectureStringsToImages.end()) {
+      BOOL is_machine_supported = false;
+      if (SUCCEEDED(is_wow64_guest_machine_supported(
+              static_cast<USHORT>(image->second), &is_machine_supported))) {
+        return is_machine_supported;
+      }
+    }
+  }
+
+  return arch == update_client::kArchIntel;
+}
+
+bool IsArchitectureCompatible(const std::string& arch_list,
+                              const std::string& current_architecture) {
+  std::vector<std::string> architectures = base::SplitString(
+      arch_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (architectures.empty())
+    return true;
 
   base::ranges::sort(architectures);
-  if (base::ranges::find(architectures, '-' + current_architecture) !=
-      architectures.end()) {
+
+  if (base::ranges::find_if(
+          architectures, [&current_architecture](const std::string& narch) {
+            if (narch[0] != '-')
+              return false;
+
+            const std::string arch = narch.substr(1);
+
+            // This code accounts for Omaha 3 Offline manifests having `arch` as
+            // "x64", but `GetArchitecture` returning "x86_64" for amd64.
+            return (arch == current_architecture ||
+                    (arch == kArchAmd64Omaha3 &&
+                     current_architecture == update_client::kArchAmd64));
+          }) != architectures.end()) {
     return false;
   }
 
-  return base::ranges::find_if(architectures, IsArchitectureSupported) !=
-         architectures.end();
+  std::erase_if(architectures,
+                [](const std::string& arch) { return arch[0] == '-'; });
+
+  return architectures.empty() ||
+         base::ranges::find_if(
+             architectures, [&current_architecture](const std::string& arch) {
+               return IsArchitectureSupported(arch, current_architecture);
+             }) != architectures.end();
 }
 
 }  // namespace updater

@@ -554,9 +554,24 @@ that the application requires to install. It has the following members:
  *   `platform`: The operating system family that the application requires
      (e.g. "win", "mac", "linux", "ios", "android"), or "" if not applicable.
  *   `arch`: Expected host processor architecture that the app is compatible
-     with. `arch` can be a single entry, or multiple entries separated with `,`.
+     with, or "" if not applicable.
+
+     `arch` can be a single entry, or multiple entries separated with `,`.
      Entries prefixed with a `-` (negative entries) indicate non-compatible
-     hosts. Examples:
+     hosts. Non-prefixed entries indicate compatible guests.
+
+     An application is compatible with the current architecture if:
+     * `arch` is empty, or
+     * none of the negative entries within `arch` match the current host
+       architecture exactly, and there are no non-negative entries, or
+     * one of the non-negative entries within `arch` matches the current
+       architecture, or is compatible with the current architecture (i.e., it is
+       a compatible guest for the current host). The latter is determined by
+       `::IsWow64GuestMachineSupported()` on Windows.
+       * If `::IsWow64GuestMachineSupported()` is not available, returns `true`
+         if `arch` is x86.
+
+     Examples:
      * `arch` == "x86".
      * `arch` == "x64".
      * `arch` == "x86,x64,-arm64": installation will fail if the underlying host

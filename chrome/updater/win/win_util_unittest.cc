@@ -346,12 +346,4 @@ TEST(WinUtil, StopGoogleUpdateProcesses) {
   EXPECT_TRUE(StopGoogleUpdateProcesses(GetTestScope()));
 }
 
-TEST(WinUtil, IsArchitectureSupported) {
-  EXPECT_TRUE(IsArchitectureSupported({}));
-  EXPECT_TRUE(IsArchitectureSupported("x86"));
-
-  const std::string arch = base::SysInfo().OperatingSystemArchitecture();
-  EXPECT_TRUE(IsArchitectureSupported(arch)) << arch;
-}
-
 }  // namespace updater

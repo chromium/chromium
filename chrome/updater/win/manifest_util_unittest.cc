@@ -38,39 +38,57 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
             "      }");
 }
 
-TEST(ManifestUtil, IsArchCompatible_ArchEmpty) {
-  EXPECT_TRUE(IsArchCompatible({}));
+TEST(ManifestUtil, IsArchitectureSupported) {
+  for (const char* const current_architecture :
+       {update_client::kArchIntel, update_client::kArchAmd64,
+        update_client::kArchArm64}) {
+    const struct {
+      const char* arch;
+      const bool expected_result;
+    } test_cases[] = {
+        {"", true},
+        {"unknown", false},
+        {"x86", true},
+        {"x64", current_architecture == update_client::kArchAmd64},
+        {"x86_64", current_architecture == update_client::kArchAmd64},
+    };
+
+    for (const auto& test_case : test_cases) {
+      EXPECT_EQ(IsArchitectureSupported(test_case.arch, current_architecture),
+                test_case.expected_result)
+          << test_case.arch << ": " << current_architecture << ": "
+          << test_case.expected_result;
+    }
+  }
 }
 
-TEST(ManifestUtil, IsArchCompatible_ArchUnknown) {
-  EXPECT_FALSE(IsArchCompatible("unknown"));
-}
+TEST(ManifestUtil, IsArchitectureCompatible) {
+  for (const char* const current_architecture :
+       {update_client::kArchIntel, update_client::kArchAmd64,
+        update_client::kArchArm64}) {
+    const struct {
+      const char* arch_list;
+      const bool expected_result;
+    } test_cases[] = {
+        {"", true},
+        {"unknown", false},
+        {"x86", true},
+        {"x64", current_architecture == update_client::kArchAmd64},
+        {"-x64", current_architecture != update_client::kArchAmd64},
+        {"-x86_64", current_architecture != update_client::kArchAmd64},
+        {"-x86", current_architecture != update_client::kArchIntel},
+        {"x86,-x64", current_architecture != update_client::kArchAmd64},
+        {"x86,x64,-arm64", current_architecture != update_client::kArchArm64},
+    };
 
-TEST(ManifestUtil, IsArchCompatible_Archx86) {
-  EXPECT_TRUE(IsArchCompatible("x86"));
-}
-
-TEST(ManifestUtil, IsArchCompatible_Archx64) {
-  EXPECT_EQ(update_client::GetArchitecture() == update_client::kArchAmd64,
-            IsArchCompatible("x64"));
-}
-
-TEST(ManifestUtil, IsArchCompatible_NotArchx64) {
-  // TODO(crbug.com/1382666) : re-examine `IsArchCompatible` impl.
-  if (update_client::GetArchitecture() == update_client::kArchAmd64)
-    EXPECT_FALSE(IsArchCompatible("-x64"));
-}
-
-TEST(ManifestUtil, IsArchCompatible_Archx86Notx64) {
-  // TODO(crbug.com/1382666) : re-examine `IsArchCompatible` impl.
-  if (update_client::GetArchitecture() == update_client::kArchAmd64)
-    EXPECT_FALSE(IsArchCompatible("x86,-x64"));
-}
-
-TEST(ManifestUtil, IsArchCompatible_Archx86x64NotArm64) {
-  // TODO(crbug.com/1382666) : re-examine `IsArchCompatible` impl.
-  if (update_client::GetArchitecture() == update_client::kArchArm64)
-    EXPECT_FALSE(IsArchCompatible("x86,x64,-arm64"));
+    for (const auto& test_case : test_cases) {
+      EXPECT_EQ(
+          IsArchitectureCompatible(test_case.arch_list, current_architecture),
+          test_case.expected_result)
+          << test_case.arch_list << ": " << current_architecture << ": "
+          << test_case.expected_result;
+    }
+  }
 }
 
 }  // namespace updater

@@ -55,12 +55,9 @@
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
-#include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
-const char kArchAmd64Omaha3[] = "x64";
 
 namespace {
 
@@ -991,46 +988,6 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
   PathPrefixProcessFilter path_prefix_filter(target->DirName());
   return base::CleanupProcesses(kLegacyExeName, kShutdownWaitSeconds, -1,
                                 &path_prefix_filter);
-}
-
-bool IsArchitectureSupported(const std::string& arch) {
-  if (arch.empty())
-    return true;
-
-  const std::string current_arch = update_client::GetArchitecture();
-
-  // This code accounts for Omaha 3 Offline manifests having `arch` as "x64",
-  // but `GetArchitecture` returning "x86_64" for amd64.
-  if (arch == current_arch ||
-      (arch == kArchAmd64Omaha3 && current_arch == update_client::kArchAmd64)) {
-    return true;
-  }
-
-  using IsWow64GuestMachineSupportedFunc = HRESULT(WINAPI*)(USHORT, BOOL*);
-  const IsWow64GuestMachineSupportedFunc is_wow64_guest_machine_supported =
-      reinterpret_cast<IsWow64GuestMachineSupportedFunc>(::GetProcAddress(
-          ::GetModuleHandle(L"kernel32.dll"), "IsWow64GuestMachineSupported"));
-
-  if (is_wow64_guest_machine_supported) {
-    const base::flat_map<std::string, int> kNativeArchitectureStringsToImages =
-        {
-            {update_client::kArchIntel, IMAGE_FILE_MACHINE_I386},
-            {kArchAmd64Omaha3, IMAGE_FILE_MACHINE_AMD64},
-            {update_client::kArchAmd64, IMAGE_FILE_MACHINE_AMD64},
-            {update_client::kArchArm64, IMAGE_FILE_MACHINE_ARM64},
-        };
-
-    const auto image = kNativeArchitectureStringsToImages.find(arch);
-    if (image != kNativeArchitectureStringsToImages.end()) {
-      BOOL is_machine_supported = false;
-      if (SUCCEEDED(is_wow64_guest_machine_supported(
-              static_cast<USHORT>(image->second), &is_machine_supported))) {
-        return is_machine_supported;
-      }
-    }
-  }
-
-  return arch == update_client::kArchIntel;
 }
 
 }  // namespace updater

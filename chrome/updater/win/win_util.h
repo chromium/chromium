@@ -43,8 +43,6 @@ struct std::hash<IID> {
 
 namespace updater {
 
-extern const char kArchAmd64Omaha3[];
-
 // Helper for methods which perform system operations which may fail. The
 // failure reason is returned as an HRESULT.
 // TODO(crbug.com/1369769): Remove the following warning once resolved in
@@ -313,15 +311,6 @@ bool IsShutdownEventSignaled(UpdaterScope scope);
 // Attempts to stop the legacy GoogleUpdate processes. Returns `true` if all the
 // processes exited cleanly.
 bool StopGoogleUpdateProcesses(UpdaterScope scope);
-
-// Returns `true` if:
-//* `arch` is empty, or
-// * `arch` matches the current architecture, or
-// * `arch` is supported on the machine, as determined by
-// `::IsWow64GuestMachineSupported()`.
-//   * If `::IsWow64GuestMachineSupported()` is not available, returns `true`
-//     if `arch` is x86.
-bool IsArchitectureSupported(const std::string& arch);
 
 }  // namespace updater
 
