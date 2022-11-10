@@ -322,13 +322,7 @@ tast_disabled_tests_from_chrome_all = [
   "lacros.AudioPinnedStream.play",
 
   # b/257865249
-  "policy.BrowserLabsEnabled",
-  "policy.DefaultSearchProviderEnabled",
-  "policy.DeveloperToolsAvailability",
-  "policy.DisableScreenshotsHotkey",
-  "policy.DownloadRestrictions",
-  "policy.ManagedBookmarks",
-  "policy.NewTabPageLocation",
+  "policy.*",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
