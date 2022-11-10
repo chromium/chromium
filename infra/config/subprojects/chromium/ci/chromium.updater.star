@@ -334,7 +334,7 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "mac-arm64-updater-tester-dbg",
+    name = "mac11.0-arm64-updater-tester-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -358,7 +358,7 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "mac-arm64-updater-tester-rel",
+    name = "mac11.0-arm64-updater-tester-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
