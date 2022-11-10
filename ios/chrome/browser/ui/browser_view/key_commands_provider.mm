@@ -168,15 +168,26 @@ using base::UserMetricsAction;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if (sel_isEqual(action, @selector(keyCommand_back)) ||
-      sel_isEqual(action, @selector(keyCommand_forward))) {
-    // Since cmd+left and cmd+right are valid system shortcuts when editing
-    // text, register those only if text is not being edited.
-    if ([sender isEqual:UIKeyCommand.cr_back_2] ||
-        [sender isEqual:UIKeyCommand.cr_forward_2]) {
-      return self.tabsCount > 0 && !self.editingText;
+  if (sel_isEqual(action, @selector(keyCommand_back))) {
+    BOOL canPerformBack =
+        self.tabsCount > 0 && self.navigationAgent->CanGoBack();
+    // Since cmd+left is a valid system shortcuts when editing text, register it
+    // only if text is not being edited.
+    if ([sender isEqual:UIKeyCommand.cr_back_2]) {
+      return canPerformBack && !self.editingText;
     }
-    return self.tabsCount > 0;
+    return canPerformBack;
+  }
+
+  if (sel_isEqual(action, @selector(keyCommand_forward))) {
+    BOOL canPerformForward =
+        self.tabsCount > 0 && self.navigationAgent->CanGoForward();
+    // Since cmd+right is a valid system shortcuts when editing text, register
+    // it only if text is not being edited.
+    if ([sender isEqual:UIKeyCommand.cr_forward_2]) {
+      return canPerformForward && !self.editingText;
+    }
+    return canPerformForward;
   }
   if (sel_isEqual(action, @selector(keyCommand_openLocation)) ||
       sel_isEqual(action, @selector(keyCommand_closeTab)) ||
