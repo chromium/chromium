@@ -145,7 +145,8 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
             }
         };
 
-        ContextUtils.getApplicationContext().registerReceiver(mBluetoothScoReceiver, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mBluetoothScoReceiver, filter);
     }
 
     private void unregisterForBluetoothScoIntentBroadcast() {

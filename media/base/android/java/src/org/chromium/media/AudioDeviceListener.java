@@ -216,7 +216,8 @@ class AudioDeviceListener {
         // Note: the intent we register for here is sticky, so it'll tell us
         // immediately what the last action was (plugged or unplugged).
         // It will enable us to set the speakerphone correctly.
-        ContextUtils.getApplicationContext().registerReceiver(mWiredHeadsetReceiver, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mWiredHeadsetReceiver, filter);
     }
 
     /** Unregister receiver for broadcasted ACTION_HEADSET_PLUG intent. */
@@ -276,7 +277,8 @@ class AudioDeviceListener {
             }
         };
 
-        ContextUtils.getApplicationContext().registerReceiver(mBluetoothHeadsetReceiver, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mBluetoothHeadsetReceiver, filter);
     }
 
     /**
@@ -336,7 +338,8 @@ class AudioDeviceListener {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 
-        ContextUtils.getApplicationContext().registerReceiver(mUsbAudioReceiver, filter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mUsbAudioReceiver, filter);
     }
 
     /** Unregister receiver for broadcasted ACTION_USB_DEVICE_ATTACHED/DETACHED intent. */
