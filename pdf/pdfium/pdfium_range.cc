@@ -106,8 +106,9 @@ std::u16string PDFiumRange::GetText() const {
 
   AdjustForBackwardsRange(index, count);
   if (count > 0) {
+    // Note that the `expected_size` value includes the NUL terminator.
     PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(
-        &result, count, /*check_expected_size=*/false);
+        &result, /*expected_size=*/count + 1, /*check_expected_size=*/true);
     unsigned short* data =
         reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
     int written = FPDFText_GetText(page_->GetTextPage(), index, count, data);
