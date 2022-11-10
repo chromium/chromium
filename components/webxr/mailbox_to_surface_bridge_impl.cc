@@ -487,10 +487,7 @@ void MailboxToSurfaceBridgeImpl::DrawQuad(unsigned int texture_handle,
 
   // We're redrawing over the entire viewport, but it's generally more
   // efficient on mobile tiling GPUs to clear anyway as a hint that
-  // we're done with the old content. TODO(klausw, https://crbug.com/700389):
-  // investigate using gl_->DiscardFramebufferEXT here since that's more
-  // efficient on desktop, but it would need a capability check since
-  // it's not supported on older devices such as Nexus 5X.
+  // we're done with the old content.
   gl_->Clear(GL_COLOR_BUFFER_BIT);
 
   float uv_transform_floats[16];
