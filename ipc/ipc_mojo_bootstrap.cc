@@ -16,13 +16,15 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
-#include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -48,6 +50,7 @@
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/tracing_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace IPC {
 
@@ -466,6 +469,11 @@ class ChannelAssociatedGroupController
       return *this;
     }
 
+    bool HasRequestId(uint64_t request_id) {
+      return !value_.IsNull() && value_.version() >= 1 &&
+             value_.header_v1()->request_id == request_id;
+    }
+
     mojo::Message& value() { return value_; }
 
    private:
@@ -557,10 +565,15 @@ class ChannelAssociatedGroupController
       sync_watcher_.reset();
     }
 
-    uint32_t EnqueueSyncMessage(MessageWrapper message) {
+    absl::optional<uint32_t> EnqueueSyncMessage(MessageWrapper message) {
       controller_->lock_.AssertAcquired();
+      if (exclusive_wait_ && exclusive_wait_->TryFulfillingWith(message)) {
+        exclusive_wait_ = nullptr;
+        return absl::nullopt;
+      }
+
       uint32_t id = GenerateSyncMessageId();
-      sync_messages_.emplace(id, std::move(message));
+      sync_messages_.emplace_back(id, std::move(message));
       SignalSyncMessageEvent();
       return id;
     }
@@ -577,7 +590,7 @@ class ChannelAssociatedGroupController
       if (sync_messages_.empty() || sync_messages_.front().first != id)
         return MessageWrapper();
       MessageWrapper message = std::move(sync_messages_.front().second);
-      sync_messages_.pop();
+      sync_messages_.pop_front();
       return message;
     }
 
@@ -607,10 +620,38 @@ class ChannelAssociatedGroupController
       return sync_watcher_->SyncWatch(&should_stop);
     }
 
+    MessageWrapper WaitForIncomingSyncReply(uint64_t request_id) {
+      absl::optional<ExclusiveSyncWait> wait;
+      {
+        base::AutoLock lock(controller_->lock_);
+        for (auto& [id, message] : sync_messages_) {
+          if (message.HasRequestId(request_id)) {
+            return std::move(message);
+          }
+        }
+
+        DCHECK(!exclusive_wait_);
+        wait.emplace(request_id);
+        exclusive_wait_ = &wait.value();
+      }
+
+      wait->event.Wait();
+      return std::move(wait->message);
+    }
+
     bool SyncWatchExclusive(uint64_t request_id) override {
-      // We don't support exclusive waits on Channel-associated interfaces.
-      NOTREACHED();
-      return false;
+      MessageWrapper message = WaitForIncomingSyncReply(request_id);
+      if (message.value().IsNull() || !client_) {
+        return false;
+      }
+
+      if (!client_->HandleIncomingMessage(&message.value())) {
+        base::AutoLock locker(controller_->lock_);
+        controller_->RaiseError();
+        return false;
+      }
+
+      return true;
     }
 
     void RegisterExternalSyncWaiter(uint64_t request_id) override {}
@@ -624,6 +665,9 @@ class ChannelAssociatedGroupController
       DCHECK(closed_);
       DCHECK(peer_closed_);
       DCHECK(!sync_watcher_);
+      if (exclusive_wait_) {
+        exclusive_wait_->event.Signal();
+      }
     }
 
     void OnSyncMessageEventReady() {
@@ -637,7 +681,7 @@ class ChannelAssociatedGroupController
       if (!sync_messages_.empty()) {
         MessageWrapper message_wrapper =
             std::move(sync_messages_.front().second);
-        sync_messages_.pop();
+        sync_messages_.pop_front();
 
         bool dispatch_succeeded;
         mojo::InterfaceEndpointClient* client = client_;
@@ -685,6 +729,28 @@ class ChannelAssociatedGroupController
       return id;
     }
 
+    // Tracks the state of a pending sync wait which excludes all other incoming
+    // IPC on the waiting thread.
+    struct ExclusiveSyncWait {
+      explicit ExclusiveSyncWait(uint64_t request_id)
+          : request_id(request_id) {}
+      ~ExclusiveSyncWait() = default;
+
+      bool TryFulfillingWith(MessageWrapper& wrapper) {
+        if (!wrapper.HasRequestId(request_id)) {
+          return false;
+        }
+
+        message = std::move(wrapper);
+        event.Signal();
+        return true;
+      }
+
+      uint64_t request_id;
+      base::WaitableEvent event;
+      MessageWrapper message;
+    };
+
     const raw_ptr<ChannelAssociatedGroupController> controller_;
     const mojo::InterfaceId id_;
 
@@ -696,7 +762,8 @@ class ChannelAssociatedGroupController
     raw_ptr<mojo::InterfaceEndpointClient> client_ = nullptr;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
-    base::queue<std::pair<uint32_t, MessageWrapper>> sync_messages_;
+    base::circular_deque<std::pair<uint32_t, MessageWrapper>> sync_messages_;
+    ExclusiveSyncWait* exclusive_wait_ = nullptr;
     uint32_t next_sync_message_id_ = 0;
   };
 
@@ -929,12 +996,15 @@ class ChannelAssociatedGroupController
         // sync message queue. If the endpoint was blocking, it will dequeue the
         // message and dispatch it. Otherwise the posted |AcceptSyncMessage()|
         // call will dequeue the message and dispatch it.
-        uint32_t message_id =
+        absl::optional<uint32_t> message_id =
             endpoint->EnqueueSyncMessage(std::move(message_wrapper));
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ChannelAssociatedGroupController::AcceptSyncMessage,
-                           this, id, message_id));
+        if (message_id) {
+          task_runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &ChannelAssociatedGroupController::AcceptSyncMessage, this,
+                  id, *message_id));
+        }
         return true;
       }
 
