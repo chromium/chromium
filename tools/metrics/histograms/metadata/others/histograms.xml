@@ -5885,7 +5885,7 @@ chromium-metrics-reviews@google.com.
   <owner>exo-core-eng@google.com</owner>
   <summary>
     Events logged the root cause of Eche connection failure. Records when
-    signaling timeout.
+    signaling timeout on EcheSignaler or the tablet mode check on EcheTray.
   </summary>
 </histogram>
 

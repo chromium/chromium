@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -226,14 +227,14 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenNoReceiveAnyMessage) {
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
-      eche_app::mojom::ConnectionFailReason::kSignalingNotTriggered, 0);
+      EcheTray::ConnectionFailReason::kSignalingNotTriggered, 0);
 
   signaler_->SetSignalingMessageObserver(std::move(observer));
   signaler_->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
-      eche_app::mojom::ConnectionFailReason::kSignalingNotTriggered, 1);
+      EcheTray::ConnectionFailReason::kSignalingNotTriggered, 1);
   EXPECT_TRUE(fake_observer.received_signals().size() == 0);
 }
 
@@ -246,7 +247,7 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateRequest) {
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
-      eche_app::mojom::ConnectionFailReason::SignalingHasLateRequest, 0);
+      EcheTray::ConnectionFailReason::kSignalingHasLateRequest, 0);
 
   signaler_->SetSignalingMessageObserver(std::move(observer));
   signaler_->OnMessageReceived(message.SerializeAsString());
@@ -255,7 +256,7 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateRequest) {
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
-      eche_app::mojom::ConnectionFailReason::SignalingHasLateRequest, 1);
+      EcheTray::ConnectionFailReason::kSignalingHasLateRequest, 1);
   EXPECT_TRUE(fake_observer.received_signals().size() > 0);
 }
 
@@ -268,7 +269,7 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
-      eche_app::mojom::ConnectionFailReason::SignalingHasLateResponse, 0);
+      EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 0);
 
   signaler_->SetSignalingMessageObserver(std::move(observer));
   signaler_->OnMessageReceived(message.SerializeAsString());
@@ -277,7 +278,7 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
-      eche_app::mojom::ConnectionFailReason::SignalingHasLateResponse, 1);
+      EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 1);
   EXPECT_TRUE(fake_observer.received_signals().size() > 0);
 }
 
@@ -289,14 +290,14 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSecurityChannelDisconnected) {
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
-      eche_app::mojom::ConnectionFailReason::kSecurityChannelDisconnected, 0);
+      EcheTray::ConnectionFailReason::kSecurityChannelDisconnected, 0);
 
   signaler_->SetSignalingMessageObserver(std::move(observer));
   signaler_->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
-      eche_app::mojom::ConnectionFailReason::kSecurityChannelDisconnected, 1);
+      EcheTray::ConnectionFailReason::kSecurityChannelDisconnected, 1);
 }
 
 }  // namespace eche_app

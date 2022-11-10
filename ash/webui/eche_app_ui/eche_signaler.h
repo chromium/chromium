@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_SIGNALER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_SIGNALER_H_
 
+#include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/gtest_prod_util.h"
@@ -57,14 +58,17 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
   std::unique_ptr<base::DelayTimer> signaling_timeout_timer_;
 
   // This is for identify the timeout reason.
-  eche_app::mojom::ConnectionFailReason probably_connection_failed_reason_ =
-      eche_app::mojom::ConnectionFailReason::kUnknown;
+  EcheTray::ConnectionFailReason probably_connection_failed_reason_ =
+      EcheTray::ConnectionFailReason::kUnknown;
 
   EcheConnector* eche_connector_;
   secure_channel::ConnectionManager* connection_manager_;
   mojo::Remote<mojom::SignalingMessageObserver> observer_;
   mojo::Receiver<mojom::SignalingMessageExchanger> exchanger_{this};
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         EcheTray::ConnectionFailReason connection_fail_reason);
 
 }  // namespace eche_app
 }  // namespace ash

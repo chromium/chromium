@@ -69,6 +69,38 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
  public:
   METADATA_HEADER(EcheTray);
 
+  // TODO(b/226687249): Move to ash/webui/eche_app_ui if dependency cycle error
+  // is fixed. Enum representing the connection fail reason. These values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused.
+  enum class ConnectionFailReason {
+    // Initial state.
+    kUnknown = 0,
+
+    // Timeout because signaling no response, we don't received any response
+    // or request before timeout. Report this from EcheSignaler.
+    kSignalingNotTriggered = 1,
+
+    // Timeout because signaling response is late. Report this from
+    // EcheSignaler.
+    kSignalingHasLateResponse = 2,
+
+    // Timeout because we can't finish the whole connection process on time
+    // after receiving the signaling request from the remote device. Report
+    // this from EcheSignaler.
+    kSignalingHasLateRequest = 3,
+
+    // Timeout because the security channel disconnected. Report this from
+    // EcheSignaler.
+    kSecurityChannelDisconnected = 4,
+
+    // Connection fail because the device is in the tablet mode. Report this
+    // from EcheTray.
+    kConnectionFailInTabletMode = 5,
+
+    kMaxValue = kConnectionFailInTabletMode,
+  };
+
   using GracefulCloseCallback = base::OnceCallback<void()>;
   using GracefulGoBackCallback = base::RepeatingCallback<void()>;
 
@@ -277,6 +309,8 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // The time a stream is initializing. Used to record the elapsed time from
   // when the stream is initializing to when the stream is closed by user.
   absl::optional<base::TimeTicks> init_stream_timestamp_;
+
+  bool is_stream_started_ = false;
 
   // Observers
   base::ScopedObservation<SessionControllerImpl, SessionObserver>

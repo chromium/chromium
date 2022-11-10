@@ -339,16 +339,19 @@ void EcheTray::OnStreamStatusChanged(eche_app::mojom::StreamStatus status) {
     case eche_app::mojom::StreamStatus::kStreamStatusStarted:
       // Reset the timestamp when the streaming is started.
       init_stream_timestamp_.reset();
+      is_stream_started_ = true;
       ShowBubble();
       break;
     case eche_app::mojom::StreamStatus::kStreamStatusStopped:
+      is_stream_started_ = false;
       PurgeAndClose();
       break;
     case eche_app::mojom::StreamStatus::kStreamStatusInitializing:
-      // Ignores initializing stream status.
+      is_stream_started_ = false;
       break;
     case eche_app::mojom::StreamStatus::kStreamStatusUnknown:
       PA_LOG(WARNING) << "Unexpected stream status";
+      is_stream_started_ = false;
       break;
   }
 }
@@ -401,6 +404,9 @@ bool EcheTray::LoadBubble(const GURL& url,
         ash::ToastData::kDefaultToastDuration,
         /*visible_on_lock_screen=*/false));
     PA_LOG(WARNING) << "Eche load failed due to tablet mode.";
+    base::UmaHistogramEnumeration(
+        "Eche.StreamEvent.ConnectionFail",
+        EcheTray::ConnectionFailReason::kConnectionFailInTabletMode);
     return false;
   }
   SetUrl(url);
@@ -709,6 +715,14 @@ void EcheTray::OnAutoHideStateChanged(ShelfAutoHideState state) {
 void EcheTray::OnTabletModeStarted() {
   if (!IsBubbleVisible())
     return;
+
+  // Device changes to tablet mode but the streaming has not started yet, we
+  // should log as connection failure.
+  if (!is_stream_started_) {
+    base::UmaHistogramEnumeration(
+        "Eche.StreamEvent.ConnectionFail",
+        EcheTray::ConnectionFailReason::kConnectionFailInTabletMode);
+  }
   ash::ToastManager::Get()->Show(ash::ToastData(
       kEcheTrayTabletModeNotSupportedId,
       ash::ToastCatalogName::kEcheTrayTabletModeNotSupported,

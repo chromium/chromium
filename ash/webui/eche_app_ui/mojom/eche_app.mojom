@@ -132,24 +132,3 @@ interface StreamActionObserver {
   // SWA
   OnStreamAction(StreamAction action);
 };
-
-// Enum representing the connection fail reason. Numerical values should not
-// be changed because they must stay in sync with value on for UMA histogram.
-enum ConnectionFailReason {
-    // Initial state.
-    kUnknown,
-
-    // Timeout because signaling no response, we don't received any response
-    // or request before timeout.
-    kSignalingNotTriggered,
-
-    // Timeout because signaling response is late.
-    SignalingHasLateResponse,
-
-    // Timeout because we can't finish the whole connection process on time
-    // after receiving the signaling request from the remote device.
-    SignalingHasLateRequest,
-
-    // Timeout because the security channel disconnected.
-    kSecurityChannelDisconnected,
-};
