@@ -29,7 +29,7 @@ MATCHER_P(MatchesFormExceptStore, expected, "") {
 class TestPasswordStore : public PasswordStore {
  public:
   // TODO(crbug.com/1222591): Clean up all references using this.
-  using PasswordMap = PasswordMap;
+  using PasswordMap = password_manager::PasswordMap;
 
   // We need to qualify password_manager::IsAccountStore with the full
   // namespace, otherwise, it's confused with the method
