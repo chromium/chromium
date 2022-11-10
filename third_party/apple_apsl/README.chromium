@@ -7,7 +7,7 @@ License: Apple Public Source License 2.0
 Four files are excerpted here:
 
 malloc.h from:
-https://opensource.apple.com/source/libmalloc/libmalloc-283/include/malloc/malloc.h
+https://github.com/apple-oss-distributions/libmalloc/blob/libmalloc-409.40.6/include/malloc/malloc.h
 
 Modifications:
 - Modified #ifdef guards.

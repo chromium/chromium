@@ -46,7 +46,7 @@ typedef struct _ChromeMallocZone {
 
     struct malloc_introspection_t	*introspect;
     unsigned	version;
-    
+    	
     /* aligned memory allocation. The callback may be NULL. Present in version >= 5. */
     void *(*memalign)(struct _malloc_zone_t *zone, size_t alignment, size_t size);
     
@@ -56,12 +56,47 @@ typedef struct _ChromeMallocZone {
     /* Empty out caches in the face of memory pressure. The callback may be NULL. Present in version >= 8. */
     size_t 	(*pressure_relief)(struct _malloc_zone_t *zone, size_t goal);
 
-    /*
-     * Checks whether an address might belong to the zone. May be NULL. Present in version >= 10.
-     * False positives are allowed (e.g. the pointer was freed, or it's in zone space that has
-     * not yet been allocated. False negatives are not allowed.
-     */
+	/*
+	 * Checks whether an address might belong to the zone. May be NULL. Present in version >= 10.
+	 * False positives are allowed (e.g. the pointer was freed, or it's in zone space that has
+	 * not yet been allocated. False negatives are not allowed.
+	 */
     boolean_t (*claimed_address)(struct _malloc_zone_t *zone, void *ptr);
+
+    /* For zone 0 implementations: try to free ptr, promising to call find_zone_and_free
+     * if it turns out not to belong to us */
+    void 	(*try_free_default)(struct _malloc_zone_t *zone, void *ptr);
 } ChromeMallocZone;
+
+/*********  Zone version summary ************/
+// Version 0, but optional:
+//   malloc_zone_t::batch_malloc
+//   malloc_zone_t::batch_free
+// Version 5:
+//   malloc_zone_t::memalign
+// Version 6:
+//   malloc_zone_t::free_definite_size
+// Version 7:
+//   malloc_introspection_t::enable_discharge_checking
+//   malloc_introspection_t::disable_discharge_checking
+//   malloc_introspection_t::discharge
+// Version 8:
+//   malloc_zone_t::pressure_relief
+// Version 9:
+//   malloc_introspection_t::reinit_lock
+// Version 10:
+//   malloc_zone_t::claimed_address
+// Version 11:
+//   malloc_introspection_t::print_task
+// Version 12:
+//   malloc_introspection_t::task_statistics
+// Version 13:
+//   - malloc_zone_t::malloc and malloc_zone_t::calloc assume responsibility for
+//     setting errno to ENOMEM on failure
+//   - malloc_zone_t::try_free_default
+
+// These functions are optional and calling them requires two checks:
+//  * Check zone version to ensure zone struct is large enough to include the member.
+//  * Check that the function pointer is not null.
 
 #endif  // THIRD_PARTY_APPLE_APSL_MALLOC_H_
