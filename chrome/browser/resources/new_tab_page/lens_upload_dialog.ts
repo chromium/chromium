@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -49,6 +49,7 @@ const EventKeys = {
   ENTER: 'Enter',
   ESCAPE: 'Escape',
   SPACE: ' ',
+  TAB: 'Tab',
 };
 
 export interface LensUploadDialogElement {
@@ -56,6 +57,7 @@ export interface LensUploadDialogElement {
     dialog: HTMLDivElement,
     lensForm: LensFormElement,
     dragDropArea: HTMLDivElement,
+    closeButton: CrIconButtonElement,
   };
 }
 
@@ -204,7 +206,14 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     // otherwise the click of the icon which initially opened the dialog would
     // also be registered in the outside click handler, causing the dialog to
     // immediately close after opening.
-    afterNextRender(this, () => this.attachOutsideHandler_());
+    afterNextRender(this, () => {
+      this.attachOutsideHandler_();
+      if (this.computeIsOffline_(this.dialogState_)) {
+        this.shadowRoot!.getElementById('offlineRetryButton')?.focus();
+      } else {
+        this.shadowRoot!.getElementById('uploadText')?.focus();
+      }
+    });
     recordLensUploadDialogAction(LensUploadDialogAction.DIALOG_OPENED);
   }
 
@@ -271,6 +280,30 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
       this.outsideHandlerAttached_ = false;
     }
   }
+
+  private onCloseButtonKeydown_ = (event: KeyboardEvent) => {
+    if (event.key === EventKeys.TAB &&
+        (this.computeIsDragging_(this.dialogState_) ||
+         this.computeIsLoading_(this.dialogState_))) {
+      event.preventDefault();
+      // In the dragging and loading states, the close button is the only
+      // tabbable element in the dialog, so focus should stay on it.
+    } else if (event.key === EventKeys.TAB && event.shiftKey) {
+      event.preventDefault();
+      if (this.computeIsNormalOrError_(this.dialogState_)) {
+        this.shadowRoot!.getElementById('inputSubmit')?.focus();
+      } else if (this.computeIsOffline_(this.dialogState_)) {
+        this.shadowRoot!.getElementById('offlineRetryButton')?.focus();
+      }
+    }
+  };
+
+  private onOfflineRetryButtonKeydown_ = (event: KeyboardEvent) => {
+    if (event.key === EventKeys.TAB && !event.shiftKey) {
+      event.preventDefault();
+      this.$.closeButton.focus();
+    }
+  };
 
   private onCloseButtonClick_() {
     this.closeDialog();
@@ -360,6 +393,9 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
   private onInputSubmitKeyDown_(event: KeyboardEvent) {
     if (event.key === EventKeys.ENTER || event.key === EventKeys.SPACE) {
       this.onSubmitUrl_();
+    } else if (event.key === EventKeys.TAB && !event.shiftKey) {
+      event.preventDefault();
+      this.$.closeButton.focus();
     }
   }
 

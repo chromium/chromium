@@ -285,7 +285,12 @@
   }
 </style>
 
-<div id="dialog" hidden$="{{isHidden_}}" tabindex="-1" lang="$i18n{language}">
+<div id="dialog"
+     hidden$="{{isHidden_}}"
+     tabindex="-1"
+     lang="$i18n{language}"
+     role="dialog"
+     aria-modal="true">
   <ntp-lens-form id="lensForm"
                  on-loading="handleFormLoading_"
                  on-error="handleFormError_">
@@ -293,7 +298,8 @@
   <div id="container">
     <cr-icon-button id="closeButton" class="icon-clear"
         title="$i18n{lensSearchUploadDialogCloseButtonLabel}"
-        on-click="onCloseButtonClick_">
+        on-click="onCloseButtonClick_"
+        on-keydown="onCloseButtonKeydown_">
     </cr-icon-button>
     <div id="title">
       $i18n{lensSearchUploadDialogTitle}
@@ -377,7 +383,8 @@
             $i18n{lensSearchUploadDialogOfflineSubtitleText}
           </div>
           <cr-button id="offlineRetryButton" class="action-button"
-              on-click="onOfflineRetryButtonClick_">
+              on-click="onOfflineRetryButtonClick_"
+              on-keydown="onOfflineRetryButtonKeydown_">
             $i18n{lensSearchUploadDialogOfflineButtonLabel}
           </cr-button>
         </div>
