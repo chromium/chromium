@@ -191,8 +191,8 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
         sequence_->SelectNextTask(lazy_now_select_task);
     LazyNow lazy_now_task_selected(time_source_);
     run_level_tracker_.OnApplicationTaskSelected(
-        (selected_task && selected_task->task.delayed_run_time.is_null())
-            ? selected_task->task.queue_time
+        (selected_task && selected_task->task->delayed_run_time.is_null())
+            ? selected_task->task->queue_time
             : TimeTicks(),
         lazy_now_task_selected);
     if (!selected_task) {
@@ -209,11 +209,11 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
       // Note: all arguments after task are just passed to a TRACE_EVENT for
       // logging so lambda captures are safe as lambda is executed inline.
       task_annotator_.RunTask(
-          "ThreadControllerImpl::RunTask", selected_task->task,
+          "ThreadControllerImpl::RunTask", *selected_task->task,
           [&selected_task](perfetto::EventContext& ctx) {
             if (selected_task->task_execution_trace_logger)
               selected_task->task_execution_trace_logger.Run(
-                  ctx, selected_task->task);
+                  ctx, *selected_task->task);
             SequenceManagerImpl::MaybeEmitTaskDetails(ctx, *selected_task);
           });
       if (!weak_ptr)

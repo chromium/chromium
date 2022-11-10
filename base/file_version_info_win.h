@@ -16,6 +16,7 @@
 #include "base/base_export.h"
 #include "base/file_version_info.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/version.h"
 
 struct tagVS_FIXEDFILEINFO;
@@ -71,7 +72,7 @@ class BASE_EXPORT FileVersionInfoWin : public FileVersionInfo {
   const WORD code_page_;
 
   // This is a reference for a portion of |data_|.
-  const VS_FIXEDFILEINFO& fixed_file_info_;
+  const raw_ref<const VS_FIXEDFILEINFO> fixed_file_info_;
 };
 
 #endif  // BASE_FILE_VERSION_INFO_WIN_H_

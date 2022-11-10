@@ -32,7 +32,7 @@ ThreadController::RunLevelTracker::RunLevelTracker(
     : outer_(outer) {}
 
 ThreadController::RunLevelTracker::~RunLevelTracker() {
-  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
 
   // There shouldn't be any remaining |run_levels_| by the time this unwinds.
   DCHECK_EQ(run_levels_.size(), 0u);
@@ -73,7 +73,7 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
 
 void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
                                                          LazyNow& lazy_now) {
-  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
 
   const bool is_nested = !run_levels_.empty();
   run_levels_.emplace(initial_state, is_nested, time_keeper_, lazy_now);
@@ -84,7 +84,7 @@ void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopEnded() {
-  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
   // Normally this will occur while kIdle or kInBetweenWorkItems but it can also
   // occur while kRunningWorkItem in rare situations where the owning
   // ThreadController is deleted from within a task. Ref.
@@ -92,13 +92,13 @@ void ThreadController::RunLevelTracker::OnRunLoopEnded() {
   // can't assert anything about the current state other than that it must be
   // exiting an existing RunLevel.
   DCHECK(!run_levels_.empty());
-  LazyNow exit_lazy_now(outer_.time_source_);
+  LazyNow exit_lazy_now(outer_->time_source_);
   run_levels_.top().set_exit_lazy_now(&exit_lazy_now);
   run_levels_.pop();
 }
 
 void ThreadController::RunLevelTracker::OnWorkStarted(LazyNow& lazy_now) {
-  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
   // Ignore work outside the main run loop.
   // The only practical case where this would happen is if a native loop is spun
   // outside the main runloop (e.g. system dialog during startup). We cannot
@@ -128,7 +128,7 @@ void ThreadController::RunLevelTracker::OnWorkStarted(LazyNow& lazy_now) {
 void ThreadController::RunLevelTracker::OnApplicationTaskSelected(
     TimeTicks queue_time,
     LazyNow& lazy_now) {
-  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
   // As-in OnWorkStarted. Early native loops can result in
   // ThreadController::DoWork because the lack of a top-level RunLoop means
   // `task_execution_allowed` wasn't consumed.
@@ -142,7 +142,7 @@ void ThreadController::RunLevelTracker::OnApplicationTaskSelected(
 }
 
 void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now) {
-  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
   if (run_levels_.empty())
     return;
 
@@ -161,7 +161,7 @@ void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now) {
 }
 
 void ThreadController::RunLevelTracker::OnIdle(LazyNow& lazy_now) {
-  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
   if (run_levels_.empty())
     return;
 
@@ -370,7 +370,7 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordEndOfPhase(
 bool ThreadController::RunLevelTracker::TimeKeeper::ShouldRecordNow(
     ShouldRecordReqs reqs) {
   DCHECK_CALLED_ON_VALID_THREAD(
-      outer_.outer_.associated_thread_->thread_checker);
+      outer_->outer_->associated_thread_->thread_checker);
   // Recording is technically enabled once `histogram_` is set, however
   // `last_phase_end_` will be null until the next RecordWakeUp in the work
   // cycle in which `histogram_` is enabled. Only start recording from there.
@@ -382,12 +382,12 @@ bool ThreadController::RunLevelTracker::TimeKeeper::ShouldRecordNow(
   switch (reqs) {
     case ShouldRecordReqs::kRegular:
       return histogram_ && !last_phase_end_.is_null() &&
-             outer_.run_levels_.size() == 1;
+             outer_->run_levels_.size() == 1;
     case ShouldRecordReqs::kOnWakeUp:
-      return histogram_ && outer_.run_levels_.size() == 1;
+      return histogram_ && outer_->run_levels_.size() == 1;
     case ShouldRecordReqs::kOnEndNested:
       return histogram_ && !last_phase_end_.is_null() &&
-             outer_.run_levels_.size() <= 2;
+             outer_->run_levels_.size() <= 2;
   }
 }
 
@@ -419,8 +419,8 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordTimeInPhase(
   if (phase == kIdleWork)
     last_sleep_ = phase_end;
 
-  if (outer_.trace_observer_for_testing_)
-    outer_.trace_observer_for_testing_->OnPhaseRecorded(phase);
+  if (outer_->trace_observer_for_testing_)
+    outer_->trace_observer_for_testing_->OnPhaseRecorded(phase);
 }
 
 // static

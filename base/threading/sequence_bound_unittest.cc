@@ -988,7 +988,7 @@ class IgnoreResultTestHelperWithArgs {
       : loop_(loop), value_(value) {}
 
   int ConstMethod(int arg) const {
-    value_ = arg;
+    *value_ = arg;
     if (loop_) {
       loop_->Quit();
     }
@@ -996,7 +996,7 @@ class IgnoreResultTestHelperWithArgs {
   }
 
   int Method(int arg) {
-    value_ = arg;
+    *value_ = arg;
     if (loop_) {
       loop_->Quit();
     }
@@ -1005,7 +1005,7 @@ class IgnoreResultTestHelperWithArgs {
 
  private:
   const raw_ptr<RunLoop> loop_ = nullptr;
-  int& value_;
+  const raw_ref<int> value_;
 };
 
 TYPED_TEST(SequenceBoundTest, AsyncCallIgnoreResultWithArgs) {

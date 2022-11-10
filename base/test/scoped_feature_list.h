@@ -30,7 +30,7 @@ struct FeatureRefAndParams {
 
   ~FeatureRefAndParams();
 
-  const Feature& feature;
+  const raw_ref<const Feature> feature;
   const FieldTrialParams params;
 };
 

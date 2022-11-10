@@ -77,9 +77,9 @@ DefaultEnabledBackForwardCacheParametersForTests(
   // additional feature as is.
   for (auto feature_and_params : additional_params) {
     auto default_feature_and_param = base::ranges::find(
-        default_features_and_params, feature_and_params.feature.name,
+        default_features_and_params, feature_and_params.feature->name,
         [](const base::test::FeatureRefAndParams default_feature) {
-          return default_feature.feature.name;
+          return default_feature.feature->name;
         });
     if (default_feature_and_param != default_features_and_params.end()) {
       base::FieldTrialParams combined_params;
@@ -88,7 +88,7 @@ DefaultEnabledBackForwardCacheParametersForTests(
       combined_params.insert(feature_and_params.params.begin(),
                              feature_and_params.params.end());
       final_params.emplace_back(base::test::FeatureRefAndParams(
-          feature_and_params.feature, combined_params));
+          *feature_and_params.feature, combined_params));
     } else {
       final_params.emplace_back(feature_and_params);
     }
@@ -96,9 +96,9 @@ DefaultEnabledBackForwardCacheParametersForTests(
   // Add any default features we didn't have additional params for.
   for (auto feature_and_params : default_features_and_params) {
     if (!base::Contains(
-            final_params, feature_and_params.feature.name,
+            final_params, feature_and_params.feature->name,
             [](const base::test::FeatureRefAndParams default_feature) {
-              return default_feature.feature.name;
+              return default_feature.feature->name;
             })) {
       final_params.emplace_back(feature_and_params);
     }

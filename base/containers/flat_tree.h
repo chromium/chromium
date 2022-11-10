@@ -476,7 +476,10 @@ class flat_tree {
     const K& extract_if_value_type(const K& k) const {
       return k;
     }
-
+    // This field was not rewritten into `const raw_ref<const key_compare>` due
+    // to binary size increase. There's also little value to rewriting this
+    // member as it points to `flat_tree::comp_`. The flat_tree itself should be
+    // holding raw_ptr/raw_ref if necessary.
     const key_compare& comp_;
   };
 

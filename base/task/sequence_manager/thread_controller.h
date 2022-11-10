@@ -268,7 +268,7 @@ class BASE_EXPORT ThreadController {
     void OnIdle(LazyNow& lazy_now);
 
     size_t num_run_levels() const {
-      DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+      DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
       return run_levels_.size();
     }
 
@@ -364,7 +364,7 @@ class BASE_EXPORT ThreadController {
       // True if tracing was enabled during the last pass of RecordTimeInPhase.
       bool was_tracing_enabled_;
 #endif
-      const RunLevelTracker& outer_;
+      const raw_ref<const RunLevelTracker> outer_;
     } time_keeper_{*this};
 
     class RunLevel {
@@ -419,10 +419,10 @@ class BASE_EXPORT ThreadController {
       TruePostMove was_moved_;
     };
 
-    [[maybe_unused]] const ThreadController& outer_;
+    [[maybe_unused]] const raw_ref<const ThreadController> outer_;
 
     std::stack<RunLevel, std::vector<RunLevel>> run_levels_
-        GUARDED_BY_CONTEXT(outer_.associated_thread_->thread_checker);
+        GUARDED_BY_CONTEXT(outer_->associated_thread_->thread_checker);
 
     static TraceObserverForTesting* trace_observer_for_testing_;
   } run_level_tracker_{*this};

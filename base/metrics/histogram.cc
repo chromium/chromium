@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -136,7 +137,7 @@ class Histogram::Factory {
   // Allocate the correct Histogram object off the heap (in case persistent
   // memory is not available).
   virtual std::unique_ptr<HistogramBase> HeapAlloc(const BucketRanges* ranges) {
-    return WrapUnique(new Histogram(GetPermanentName(name_), ranges));
+    return WrapUnique(new Histogram(GetPermanentName(*name_), ranges));
   }
 
   // Perform any required datafill on the just-created histogram.  If
@@ -147,7 +148,7 @@ class Histogram::Factory {
   // These values are protected (instead of private) because they need to
   // be accessible to methods of sub-classes in order to avoid passing
   // unnecessary parameters everywhere.
-  const std::string& name_;
+  const raw_ref<const std::string> name_;
   const HistogramType histogram_type_;
   HistogramBase::Sample minimum_;
   HistogramBase::Sample maximum_;
@@ -156,11 +157,11 @@ class Histogram::Factory {
 };
 
 HistogramBase* Histogram::Factory::Build() {
-  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name_);
+  HistogramBase* histogram = StatisticsRecorder::FindHistogram(*name_);
   if (!histogram) {
     // constructor. Refactor code to avoid the additional call.
     bool should_record = StatisticsRecorder::ShouldRecordHistogram(
-        HashMetricNameAs32Bits(name_));
+        HashMetricNameAs32Bits(*name_));
     if (!should_record)
       return DummyHistogram::GetInstance();
     // To avoid racy destruction at shutdown, the following will be leaked.
@@ -192,13 +193,8 @@ HistogramBase* Histogram::Factory::Build() {
     PersistentHistogramAllocator* allocator = GlobalHistogramAllocator::Get();
     if (allocator) {
       tentative_histogram = allocator->AllocateHistogram(
-          histogram_type_,
-          name_,
-          minimum_,
-          maximum_,
-          registered_ranges,
-          flags_,
-          &histogram_ref);
+          histogram_type_, *name_, minimum_, maximum_, registered_ranges,
+          flags_, &histogram_ref);
     }
 
     // Handle the case where no persistent allocator is present or the
@@ -237,8 +233,8 @@ HistogramBase* Histogram::Factory::Build() {
     // return would cause Chrome to crash; better to just record it for later
     // analysis.
     UmaHistogramSparse("Histogram.MismatchedConstructionArguments",
-                       static_cast<Sample>(HashMetricName(name_)));
-    DLOG(ERROR) << "Histogram " << name_
+                       static_cast<Sample>(HashMetricName(*name_)));
+    DLOG(ERROR) << "Histogram " << *name_
                 << " has mismatched construction arguments";
     return DummyHistogram::GetInstance();
   }
@@ -705,7 +701,7 @@ class LinearHistogram::Factory : public Histogram::Factory {
 
   std::unique_ptr<HistogramBase> HeapAlloc(
       const BucketRanges* ranges) override {
-    return WrapUnique(new LinearHistogram(GetPermanentName(name_), ranges));
+    return WrapUnique(new LinearHistogram(GetPermanentName(*name_), ranges));
   }
 
   void FillHistogram(HistogramBase* base_histogram) override {
@@ -987,7 +983,7 @@ class BooleanHistogram::Factory : public Histogram::Factory {
 
   std::unique_ptr<HistogramBase> HeapAlloc(
       const BucketRanges* ranges) override {
-    return WrapUnique(new BooleanHistogram(GetPermanentName(name_), ranges));
+    return WrapUnique(new BooleanHistogram(GetPermanentName(*name_), ranges));
   }
 };
 
@@ -1087,7 +1083,7 @@ class CustomHistogram::Factory : public Histogram::Factory {
 
   std::unique_ptr<HistogramBase> HeapAlloc(
       const BucketRanges* ranges) override {
-    return WrapUnique(new CustomHistogram(GetPermanentName(name_), ranges));
+    return WrapUnique(new CustomHistogram(GetPermanentName(*name_), ranges));
   }
 
  private:

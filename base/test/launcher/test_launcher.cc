@@ -31,6 +31,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -185,7 +186,7 @@ class ProcessResultWatcher : public ResultWatcher {
   bool WaitWithTimeout(TimeDelta timeout) override;
 
  private:
-  Process& process_;
+  const raw_ref<Process> process_;
   int exit_code_ = -1;
 };
 
@@ -194,7 +195,7 @@ int ProcessResultWatcher::GetExitCode() {
 }
 
 bool ProcessResultWatcher::WaitWithTimeout(TimeDelta timeout) {
-  return process_.WaitForExitWithTimeout(timeout, &exit_code_);
+  return process_->WaitForExitWithTimeout(timeout, &exit_code_);
 }
 
 namespace {

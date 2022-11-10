@@ -1637,7 +1637,7 @@ struct BoundRawPtrTestHelper {
             Unretained(this))) {}
 
   void DeleteItselfAndCheckIfInQuarantine() {
-    auto& allocator = owning_allocator;
+    auto& allocator = *owning_allocator;
     EXPECT_TRUE(IsQuarantineEmpty(allocator));
 
     // Since we use a non-default partition, `delete` has to be simulated.
@@ -1647,7 +1647,7 @@ struct BoundRawPtrTestHelper {
     EXPECT_FALSE(IsQuarantineEmpty(allocator));
   }
 
-  partition_alloc::PartitionAllocator& owning_allocator;
+  const raw_ref<partition_alloc::PartitionAllocator> owning_allocator;
   OnceClosure once_callback;
   RepeatingClosure repeating_callback;
 };

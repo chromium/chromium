@@ -25,6 +25,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
@@ -1277,7 +1278,7 @@ class BASE_EXPORT GSL_POINTER DictAdapterForMigration {
   const Value::Dict& dict_for_test() const;
 
  private:
-  const Value::Dict& dict_;
+  const raw_ref<const Value::Dict> dict_;
 };
 
 // DictionaryValue provides a key-value dictionary with (optional) "path"

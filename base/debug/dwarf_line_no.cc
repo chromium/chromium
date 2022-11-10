@@ -4,6 +4,8 @@
 
 #include "base/debug/dwarf_line_no.h"
 
+#include "base/memory/raw_ref.h"
+
 #ifdef USE_SYMBOLIZE
 #include <algorithm>
 #include <cstdint>
@@ -188,7 +190,7 @@ void EvaluateLineNumberProgram(const int fd,
    private:
     raw_ptr<LineNumberInfo> info;
     uint64_t module_relative_pc;
-    const ProgramInfo& program_info;
+    const raw_ref<const ProgramInfo> program_info;
 
    public:
     OnCommitImpl(LineNumberInfo* info,
@@ -213,7 +215,7 @@ void EvaluateLineNumberProgram(const int fd,
           module_relative_pc >= registers->address)
         return;
 
-      if (registers->last_file < program_info.num_filenames) {
+      if (registers->last_file < program_info->num_filenames) {
         info->line = registers->last_line;
         info->column = registers->last_column;
 
@@ -222,19 +224,19 @@ void EvaluateLineNumberProgram(const int fd,
         // follow spec, but seems to be common behavior. See the following LLVM
         // bug for more info: https://reviews.llvm.org/D11003
         if (registers->last_file == 0 &&
-            program_info.filename_offsets[0] == 0 &&
-            1 < program_info.num_filenames) {
-          program_info.filename_offsets[0] = program_info.filename_offsets[1];
-          program_info.filename_dirs[0] = program_info.filename_dirs[1];
+            program_info->filename_offsets[0] == 0 &&
+            1 < program_info->num_filenames) {
+          program_info->filename_offsets[0] = program_info->filename_offsets[1];
+          program_info->filename_dirs[0] = program_info->filename_dirs[1];
         }
 
         if (registers->last_file < kMaxFilenames) {
           info->module_filename_offset =
-              program_info.filename_offsets[registers->last_file];
+              program_info->filename_offsets[registers->last_file];
 
-          uint8_t dir = program_info.filename_dirs[registers->last_file];
-          info->module_dir_offset = program_info.directory_offsets[dir];
-          info->dir_size = program_info.directory_sizes[dir];
+          uint8_t dir = program_info->filename_dirs[registers->last_file];
+          info->module_dir_offset = program_info->directory_offsets[dir];
+          info->dir_size = program_info->directory_sizes[dir];
         }
       }
     }

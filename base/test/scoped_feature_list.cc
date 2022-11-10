@@ -448,7 +448,7 @@ void ScopedFeatureList::InitWithFeaturesImpl(
   if (!enabled_features_and_params.empty()) {
     for (const auto& feature : enabled_features_and_params) {
       std::string trial_name = "scoped_feature_list_trial_for_";
-      trial_name += feature.feature.name;
+      trial_name += feature.feature->name;
 
       // If features.params has 2 params whose values are value1 and value2,
       // |params| will be "param1/value1/param2/value2/".
@@ -463,7 +463,7 @@ void ScopedFeatureList::InitWithFeaturesImpl(
       }
 
       merged_features.enabled_feature_list.emplace_back(
-          feature.feature.name, trial_name, kTrialGroup, params);
+          feature.feature->name, trial_name, kTrialGroup, params);
     }
     create_associated_field_trials = true;
   } else {

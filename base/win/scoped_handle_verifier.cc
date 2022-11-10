@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
+#include "base/memory/raw_ref.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/win/base_win_buildflags.h"
@@ -69,15 +70,15 @@ NOINLINE void ReportErrorOnScopedHandleOperation(
 // recursive locking.
 class AutoNativeLock {
  public:
-  explicit AutoNativeLock(NativeLock& lock) : lock_(lock) { lock_.Lock(); }
+  explicit AutoNativeLock(NativeLock& lock) : lock_(lock) { lock_->Lock(); }
 
   AutoNativeLock(const AutoNativeLock&) = delete;
   AutoNativeLock& operator=(const AutoNativeLock&) = delete;
 
-  ~AutoNativeLock() { lock_.Unlock(); }
+  ~AutoNativeLock() { lock_->Unlock(); }
 
  private:
-  NativeLock& lock_;
+  const raw_ref<NativeLock> lock_;
 };
 
 ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(

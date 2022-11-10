@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/suspendable_thread_delegate.h"
@@ -61,16 +62,17 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
       *thread_context = *thread_context_;
     // Set the stack pointer to be consistent with the provided fake stack.
     RegisterContextStackPointer(thread_context) =
-        reinterpret_cast<uintptr_t>(&fake_stack_[0]);
+        reinterpret_cast<uintptr_t>(&(*fake_stack_)[0]);
     RegisterContextInstructionPointer(thread_context) =
-        reinterpret_cast<uintptr_t>(fake_stack_[0]);
+        reinterpret_cast<uintptr_t>((*fake_stack_)[0]);
     return true;
   }
 
   PlatformThreadId GetThreadId() const override { return PlatformThreadId(); }
 
   uintptr_t GetStackBaseAddress() const override {
-    return reinterpret_cast<uintptr_t>(&fake_stack_[0] + fake_stack_.size());
+    return reinterpret_cast<uintptr_t>(&(*fake_stack_)[0] +
+                                       fake_stack_->size());
   }
 
   bool CanCopyStack(uintptr_t stack_pointer) override { return true; }
@@ -83,7 +85,7 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
  private:
   // Must be a reference to retain the underlying allocation from the vector
   // passed to the constructor.
-  const std::vector<uintptr_t>& fake_stack_;
+  const raw_ref<const std::vector<uintptr_t>> fake_stack_;
   raw_ptr<RegisterContext> thread_context_;
 };
 

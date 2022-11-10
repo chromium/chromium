@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -26,8 +27,8 @@ class ThreeTasksTest {
   ThreeTasksTest() {}
 
   void Run() {
-    task_runner.PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskA,
-                                                   base::Unretained(this)));
+    task_runner->PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskA,
+                                                    base::Unretained(this)));
     task_environment.RunUntilIdle();
   }
 
@@ -37,8 +38,8 @@ class ThreeTasksTest {
     base::span<const void* const> addresses = task_trace.AddressesForTesting();
     EXPECT_EQ(addresses.size(), 1ul);
     task_a_address = addresses[0];
-    task_runner.PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskB,
-                                                   base::Unretained(this)));
+    task_runner->PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskB,
+                                                    base::Unretained(this)));
   }
 
   void TaskB() {
@@ -48,8 +49,8 @@ class ThreeTasksTest {
     EXPECT_EQ(addresses.size(), 2ul);
     task_b_address = addresses[0];
     EXPECT_EQ(addresses[1], task_a_address);
-    task_runner.PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskC,
-                                                   base::Unretained(this)));
+    task_runner->PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskC,
+                                                    base::Unretained(this)));
   }
 
   void TaskC() {
@@ -63,8 +64,8 @@ class ThreeTasksTest {
 
  private:
   base::test::TaskEnvironment task_environment;
-  base::SingleThreadTaskRunner& task_runner =
-      *task_environment.GetMainThreadTaskRunner();
+  const raw_ref<base::SingleThreadTaskRunner> task_runner{
+      *task_environment.GetMainThreadTaskRunner()};
 
   raw_ptr<const void> task_a_address = nullptr;
   raw_ptr<const void> task_b_address = nullptr;

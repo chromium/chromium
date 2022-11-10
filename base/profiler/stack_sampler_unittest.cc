@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/stack_buffer.h"
@@ -71,10 +72,10 @@ class TestStackCopier : public StackCopier {
                  TimeTicks* timestamp,
                  RegisterContext* thread_context,
                  Delegate* delegate) override {
-    std::memcpy(stack_buffer->buffer(), &fake_stack_[0],
-                fake_stack_.size() * sizeof(fake_stack_[0]));
+    std::memcpy(stack_buffer->buffer(), &(*fake_stack_)[0],
+                fake_stack_->size() * sizeof((*fake_stack_)[0]));
     *stack_top = reinterpret_cast<uintptr_t>(stack_buffer->buffer() +
-                                             fake_stack_.size());
+                                             fake_stack_->size());
     // Set the stack pointer to be consistent with the copied stack.
     *thread_context = {};
     RegisterContextStackPointer(thread_context) =
@@ -88,7 +89,7 @@ class TestStackCopier : public StackCopier {
  private:
   // Must be a reference to retain the underlying allocation from the vector
   // passed to the constructor.
-  const std::vector<uintptr_t>& fake_stack_;
+  const raw_ref<const std::vector<uintptr_t>> fake_stack_;
 
   const TimeTicks timestamp_;
 };

@@ -31,7 +31,7 @@ class SegmentationPlatformConfigTest : public testing::Test {
     for (const auto& feature : enabled_features) {
       constexpr char kTrialPrefix[] = "scoped_feature_list_trial_for_";
       auto* field_trial = base::FieldTrialList::Find(
-          base::StrCat({kTrialPrefix, feature.feature.name}));
+          base::StrCat({kTrialPrefix, feature.feature->name}));
       ASSERT_TRUE(field_trial);
       field_trial->Activate();
     }

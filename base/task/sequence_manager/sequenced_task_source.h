@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/pending_task.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -37,7 +38,7 @@ class SequencedTaskSource {
                  QueueName task_queue_name);
     ~SelectedTask();
 
-    Task& task;
+    const raw_ref<Task> task;
     // Callback to fill trace event arguments associated with the task
     // execution. Can be null
     TaskExecutionTraceLogger task_execution_trace_logger =
