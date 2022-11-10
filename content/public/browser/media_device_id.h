@@ -47,11 +47,13 @@ CONTENT_EXPORT bool GetMediaDeviceIDForHMAC(
 // |security_origin| and |salt|. The result is passed via |callback| on the
 // task runner where this function is called. If |hmac_device_id| is not a
 // valid device ID nullopt is returned.
+// The |callback| will be posted on the given |task_runner|.
 CONTENT_EXPORT void GetMediaDeviceIDForHMAC(
     blink::mojom::MediaStreamType stream_type,
     std::string salt,
     url::Origin security_origin,
     std::string hmac_device_id,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
 CONTENT_EXPORT bool IsValidDeviceId(const std::string& device_id);

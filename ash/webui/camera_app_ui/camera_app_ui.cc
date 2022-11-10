@@ -129,7 +129,8 @@ void TranslateVideoDeviceId(
              callback) {
         content::GetMediaDeviceIDForHMAC(
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt,
-            std::move(origin), source_id, std::move(callback));
+            std::move(origin), source_id, content::GetIOThreadTaskRunner({}),
+            std::move(callback));
       },
       salt, std::move(origin), source_id, std::move(callback));
   content::GetIOThreadTaskRunner({})->PostTask(

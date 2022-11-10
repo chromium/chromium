@@ -45,11 +45,11 @@ void GetMediaDeviceIDForHMAC(
     std::string salt,
     url::Origin security_origin,
     std::string hmac_device_id,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
   MediaStreamManager::GetMediaDeviceIDForHMAC(
       stream_type, std::move(salt), std::move(security_origin),
-      std::move(hmac_device_id), base::SequencedTaskRunnerHandle::Get(),
-      std::move(callback));
+      std::move(hmac_device_id), task_runner, std::move(callback));
 }
 
 bool IsValidDeviceId(const std::string& device_id) {
