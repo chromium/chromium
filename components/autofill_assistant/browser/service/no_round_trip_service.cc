@@ -84,6 +84,10 @@ NoRoundTripService::NoRoundTripService(
       client_(client),
       request_sender_(std::move(request_sender)) {}
 
+NoRoundTripService::NoRoundTripService(
+    std::unique_ptr<LocalScriptStore> script_store)
+    : client_(nullptr), script_store_(std::move(script_store)) {}
+
 NoRoundTripService::~NoRoundTripService() = default;
 
 // static
@@ -226,7 +230,7 @@ void NoRoundTripService::ReportProgress(
     const std::string& token,
     const std::string& payload,
     ServiceRequestSender::ResponseCallback callback) {
-  if (!client_->GetMakeSearchesAndBrowsingBetterEnabled() ||
+  if (!client_ || !client_->GetMakeSearchesAndBrowsingBetterEnabled() ||
       !client_->GetMetricsReportingEnabled()) {
     return;
   }
@@ -282,10 +286,6 @@ void NoRoundTripService::OnNoRountripByHashPrefixResponse(
 #endif
   std::move(callback).Run(net::HTTP_BAD_REQUEST, "", {});
 }
-
-NoRoundTripService::NoRoundTripService(
-    std::unique_ptr<LocalScriptStore> script_store)
-    : script_store_(std::move(script_store)) {}
 
 const LocalScriptStore* NoRoundTripService::GetStore() const {
   return script_store_.get();

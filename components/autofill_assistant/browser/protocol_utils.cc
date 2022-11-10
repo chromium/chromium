@@ -32,6 +32,7 @@
 #include "components/autofill_assistant/browser/actions/prompt_action.h"
 #include "components/autofill_assistant/browser/actions/prompt_qr_code_scan_action.h"
 #include "components/autofill_assistant/browser/actions/register_password_reset_request_action.h"
+#include "components/autofill_assistant/browser/actions/register_self_contained_interrupt_scripts_action.h"
 #include "components/autofill_assistant/browser/actions/release_elements_action.h"
 #include "components/autofill_assistant/browser/actions/report_progress_action.h"
 #include "components/autofill_assistant/browser/actions/reset_pending_credentials_action.h"
@@ -541,6 +542,9 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<ParseSingleTagXmlAction>(delegate, action);
     case ActionProto::ActionInfoCase::kReportProgress:
       return std::make_unique<ReportProgressAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kRegisterInterruptScripts:
+      return std::make_unique<RegisterSelfContainedInterruptScriptsAction>(
+          delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
@@ -825,6 +829,11 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
     case ActionProto::ActionInfoCase::kReportProgress:
       success = ParseActionFromString(action_id, bytes, error_message,
                                       proto.mutable_report_progress());
+      break;
+    case ActionProto::ActionInfoCase::kRegisterInterruptScripts:
+      success =
+          ParseActionFromString(action_id, bytes, error_message,
+                                proto.mutable_register_interrupt_scripts());
       break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       // This is an "unknown action", handled as such in CreateAction.

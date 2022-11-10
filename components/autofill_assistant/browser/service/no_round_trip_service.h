@@ -45,8 +45,8 @@ class NoRoundTripService : public Service {
                      const GURL& progress_endpoint,
                      Client* client);
 
-  // Initializes a NoRoundTripService, only used for testing purposes.
-  // Does not initializes RPC endpoints and the client.
+  // Initializes a NoRoundTripService with a local script store.
+  // Does not initialize RPC endpoints and the client.
   explicit NoRoundTripService(std::unique_ptr<LocalScriptStore> script_store);
 
   NoRoundTripService(const NoRoundTripService&) = delete;
@@ -126,7 +126,7 @@ class NoRoundTripService : public Service {
   GURL get_scripts_endpoint_;
   GURL progress_endpoint_;
 
-  raw_ptr<Client> client_;
+  const raw_ptr<Client> client_;
 
   ScriptStoreConfig script_store_config_;
 

@@ -1196,6 +1196,7 @@ message ActionProto {
     PromptQrCodeScanProto prompt_qr_code_scan = 98;
     ReportProgressProto report_progress = 99;
     ParseSingleTagXmlProto parse_single_tag_xml = 100;
+    RegisterSelfContainedInterruptScripts register_interrupt_scripts = 101;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -3746,4 +3747,12 @@ message ReportProgressRequestProto {
 message ReportProgressProto {
   // Data to be logged; generated at script compile time.
   optional string payload = 1;
+}
+
+// Registers one or multiple self-contained interrupt scripts. These will take
+// effect in the next WaitForDom action that allows interrupts.
+message RegisterSelfContainedInterruptScripts {
+  // Must only contain interrupt scripts!
+  optional GetNoRoundTripScriptsByHashPrefixResponseProto.MatchInfo match_info =
+      1;
 }
