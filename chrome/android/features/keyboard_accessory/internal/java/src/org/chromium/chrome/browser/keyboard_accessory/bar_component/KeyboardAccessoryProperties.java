@@ -4,15 +4,15 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import android.view.View;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator.TabLayoutCallbacks;
+import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator.SheetOpenerCallbacks;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,8 +43,8 @@ class KeyboardAccessoryProperties {
             new WritableObjectPropertyKey<>("sheet_title");
     static final WritableBooleanPropertyKey KEYBOARD_TOGGLE_VISIBLE =
             new WritableBooleanPropertyKey("toggle_visible");
-    static final WritableObjectPropertyKey<TabLayoutBarItem> TAB_LAYOUT_ITEM =
-            new WritableObjectPropertyKey<>("tab_layout_item");
+    static final WritableObjectPropertyKey<SheetOpenerBarItem> SHEET_OPENER_ITEM =
+            new WritableObjectPropertyKey<>("sheet_opener_item");
     static final WritableObjectPropertyKey<Runnable> SHOW_KEYBOARD_CALLBACK =
             new WritableObjectPropertyKey<>("keyboard_callback");
     static final ReadableBooleanPropertyKey DISABLE_ANIMATIONS_FOR_TESTING =
@@ -57,7 +57,7 @@ class KeyboardAccessoryProperties {
     static PropertyModel.Builder defaultModelBuilder() {
         return new PropertyModel
                 .Builder(DISABLE_ANIMATIONS_FOR_TESTING, BAR_ITEMS, VISIBLE, SKIP_CLOSING_ANIMATION,
-                        BOTTOM_OFFSET_PX, TAB_LAYOUT_ITEM, KEYBOARD_TOGGLE_VISIBLE, SHEET_TITLE,
+                        BOTTOM_OFFSET_PX, SHEET_OPENER_ITEM, KEYBOARD_TOGGLE_VISIBLE, SHEET_TITLE,
                         SHOW_KEYBOARD_CALLBACK, OBFUSCATED_CHILD_AT_CALLBACK, SHOW_SWIPING_IPH)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
@@ -173,24 +173,24 @@ class KeyboardAccessoryProperties {
     }
 
     /**
-     * A tab layout in a {@link RecyclerView} can be destroyed and recreated whenever it is
-     * scrolled out of/into view. This wrapper allows to trigger a callback whenever the view is
-     * recreated so it can be bound to its component.
+     * A tab layout or a button group in a {@link RecyclerView} can be destroyed and recreated
+     * whenever it is scrolled out of/into view. This wrapper allows to trigger a callback whenever
+     * the view is recreated so it can be bound to its component.
      */
-    static final class TabLayoutBarItem extends BarItem {
-        private final TabLayoutCallbacks mTabLayoutCallbacks;
+    static final class SheetOpenerBarItem extends BarItem {
+        private final SheetOpenerCallbacks mSheetOpenerCallbacks;
 
-        TabLayoutBarItem(TabLayoutCallbacks tabLayoutCallbacks) {
+        SheetOpenerBarItem(SheetOpenerCallbacks sheetOpenerCallbacks) {
             super(Type.TAB_LAYOUT, null);
-            mTabLayoutCallbacks = tabLayoutCallbacks;
+            mSheetOpenerCallbacks = sheetOpenerCallbacks;
         }
 
-        void notifyAboutViewCreation(TabLayout tabs) {
-            mTabLayoutCallbacks.onTabLayoutBound(tabs);
+        void notifyAboutViewCreation(View view) {
+            mSheetOpenerCallbacks.onViewBound(view);
         }
 
-        void notifyAboutViewDestruction(TabLayout tabs) {
-            mTabLayoutCallbacks.onTabLayoutUnbound(tabs);
+        void notifyAboutViewDestruction(View view) {
+            mSheetOpenerCallbacks.onViewUnbound(view);
         }
     }
 

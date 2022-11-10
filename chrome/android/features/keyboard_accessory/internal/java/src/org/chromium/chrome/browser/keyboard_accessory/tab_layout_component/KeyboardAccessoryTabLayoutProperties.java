@@ -20,8 +20,13 @@ class KeyboardAccessoryTabLayoutProperties {
             new ReadableObjectPropertyKey<>("tabs");
     static final WritableObjectPropertyKey<Integer> ACTIVE_TAB =
             new WritableObjectPropertyKey<>("active_tab");
+    // TODO(crbug/1382030): remove TAB_SELECTION_CALLBACKS once ButtonGroup is launched.
     static final WritableObjectPropertyKey<TabLayout.OnTabSelectedListener>
             TAB_SELECTION_CALLBACKS = new WritableObjectPropertyKey<>("tab_selection_callback");
+    static final WritableObjectPropertyKey<
+            KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener>
+            BUTTON_SELECTION_CALLBACKS =
+                    new WritableObjectPropertyKey<>("button_selection_callback");
 
     private KeyboardAccessoryTabLayoutProperties() {}
 }

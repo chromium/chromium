@@ -17,14 +17,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
-import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.TabLayoutBarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -43,7 +41,7 @@ class KeyboardAccessoryModernViewBinder {
             case BarItem.Type.SUGGESTION:
                 return new BarItemChipViewHolder(parent);
             case BarItem.Type.TAB_LAYOUT:
-                return new TabItemViewHolder(parent);
+                return new SheetOpenerViewHolder(parent);
             case BarItem.Type.ACTION_BUTTON:
                 return new KeyboardAccessoryViewBinder.BarItemTextViewHolder(
                         parent, R.layout.keyboard_accessory_action_modern);
@@ -122,24 +120,24 @@ class KeyboardAccessoryModernViewBinder {
         }
     }
 
-    static class TabItemViewHolder extends BarItemViewHolder<TabLayoutBarItem, TabLayout> {
-        private TabLayoutBarItem mTabItem;
-        private TabLayout mTabLayout;
+    static class SheetOpenerViewHolder extends BarItemViewHolder<SheetOpenerBarItem, View> {
+        private SheetOpenerBarItem mSheetOpenerItem;
+        private View mView;
 
-        TabItemViewHolder(ViewGroup parent) {
-            super(parent, R.layout.keyboard_accessory_tabs);
+        SheetOpenerViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_buttons);
         }
 
         @Override
-        protected void bind(TabLayoutBarItem tabItem, TabLayout tabLayout) {
-            mTabItem = tabItem;
-            mTabLayout = tabLayout;
-            tabItem.notifyAboutViewCreation(tabLayout);
+        protected void bind(SheetOpenerBarItem sheetOpenerItem, View view) {
+            mSheetOpenerItem = sheetOpenerItem;
+            mView = view;
+            sheetOpenerItem.notifyAboutViewCreation(view);
         }
 
         @Override
         protected void recycle() {
-            mTabItem.notifyAboutViewDestruction(mTabLayout);
+            mSheetOpenerItem.notifyAboutViewDestruction(mView);
         }
     }
 
