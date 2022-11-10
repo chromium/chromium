@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 
 #include <algorithm>
 
@@ -49,14 +49,14 @@ void ClearNonZeroStateResults(ResultsMap& results) {
 
 }  // namespace
 
-SearchControllerImplNew::SearchControllerImplNew(
+SearchControllerImpl::SearchControllerImpl(
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier,
     Profile* profile)
     : profile_(profile),
       burnin_controller_(std::make_unique<BurnInController>(
-          base::BindRepeating(&SearchControllerImplNew::OnBurnInPeriodElapsed,
+          base::BindRepeating(&SearchControllerImpl::OnBurnInPeriodElapsed,
                               base::Unretained(this)))),
       ranker_manager_(std::make_unique<RankerManager>(profile, this)),
       metrics_manager_(
@@ -68,9 +68,9 @@ SearchControllerImplNew::SearchControllerImplNew(
       model_updater_(model_updater),
       list_controller_(list_controller) {}
 
-SearchControllerImplNew::~SearchControllerImplNew() {}
+SearchControllerImpl::~SearchControllerImpl() {}
 
-void SearchControllerImplNew::StartSearch(const std::u16string& query) {
+void SearchControllerImpl::StartSearch(const std::u16string& query) {
   DCHECK(!query.empty());
 
   burnin_controller_->Start();
@@ -98,7 +98,7 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
     provider->Start(query);
 }
 
-void SearchControllerImplNew::ClearSearch() {
+void SearchControllerImpl::ClearSearch() {
   // Cancel a pending search publish if it exists.
   burnin_controller_->Stop();
 
@@ -112,8 +112,8 @@ void SearchControllerImplNew::ClearSearch() {
   ranker_manager_->Start(u"", results_, categories_);
 }
 
-void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
-                                             base::TimeDelta timeout) {
+void SearchControllerImpl::StartZeroState(base::OnceClosure on_done,
+                                          base::TimeDelta timeout) {
   // Clear all results - zero state search request is made when the app list
   // gets first shown, which would indicate that search is not currently active.
   results_.clear();
@@ -135,11 +135,11 @@ void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
 
   zero_state_timeout_.Start(
       FROM_HERE, timeout,
-      base::BindOnce(&SearchControllerImplNew::OnZeroStateTimedOut,
+      base::BindOnce(&SearchControllerImpl::OnZeroStateTimedOut,
                      base::Unretained(this)));
 }
 
-void SearchControllerImplNew::OnZeroStateTimedOut() {
+void SearchControllerImpl::OnZeroStateTimedOut() {
   // `on_zero_state_done_` will be empty if all zero-state blocking providers
   // have returned. If it isn't, publish whatever results have been returned.
   // If `last_query_` is non-empty, this indicates that a search query has been
@@ -152,13 +152,13 @@ void SearchControllerImplNew::OnZeroStateTimedOut() {
   }
 }
 
-void SearchControllerImplNew::OnBurnInPeriodElapsed() {
+void SearchControllerImpl::OnBurnInPeriodElapsed() {
   ranker_manager_->OnBurnInPeriodElapsed();
   Publish();
 }
 
-void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
-                                         int event_flags) {
+void SearchControllerImpl::OpenResult(ChromeSearchResult* result,
+                                      int event_flags) {
   // This can happen in certain circumstances due to races. See
   // https://crbug.com/534772
   if (!result)
@@ -186,7 +186,7 @@ void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
   }
 }
 
-void SearchControllerImplNew::InvokeResultAction(
+void SearchControllerImpl::InvokeResultAction(
     ChromeSearchResult* result,
     ash::SearchResultActionType action) {
   if (!result)
@@ -201,11 +201,11 @@ void SearchControllerImplNew::InvokeResultAction(
   }
 }
 
-AppSearchDataSource* SearchControllerImplNew::GetAppSearchDataSource() {
+AppSearchDataSource* SearchControllerImpl::GetAppSearchDataSource() {
   return app_search_data_source_.get();
 }
 
-void SearchControllerImplNew::AddProvider(
+void SearchControllerImpl::AddProvider(
     std::unique_ptr<SearchProvider> provider) {
   if (ash::IsZeroStateResultType(provider->ResultType()))
     ++total_zero_state_blockers_;
@@ -213,7 +213,7 @@ void SearchControllerImplNew::AddProvider(
   providers_.emplace_back(std::move(provider));
 }
 
-size_t SearchControllerImplNew::ReplaceProvidersForResultTypeForTest(
+size_t SearchControllerImpl::ReplaceProvidersForResultTypeForTest(
     ash::AppListSearchResultType result_type,
     std::unique_ptr<SearchProvider> new_provider) {
   DCHECK_EQ(result_type, new_provider->ResultType());
@@ -233,14 +233,14 @@ size_t SearchControllerImplNew::ReplaceProvidersForResultTypeForTest(
   return removed_providers;
 }
 
-void SearchControllerImplNew::SetResults(const SearchProvider* provider,
-                                         Results results) {
+void SearchControllerImpl::SetResults(const SearchProvider* provider,
+                                      Results results) {
   // Re-post onto the UI sequence if not called from there.
   auto ui_thread = content::GetUIThreadTaskRunner({});
   if (!ui_thread->RunsTasksInCurrentSequence()) {
     ui_thread->PostTask(
         FROM_HERE,
-        base::BindOnce(&SearchControllerImplNew::SetResults,
+        base::BindOnce(&SearchControllerImpl::SetResults,
                        base::Unretained(this), provider, std::move(results)));
     return;
   }
@@ -255,7 +255,7 @@ void SearchControllerImplNew::SetResults(const SearchProvider* provider,
     results_changed_callback_for_test_.Run(provider->ResultType());
 }
 
-void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
+void SearchControllerImpl::SetSearchResults(const SearchProvider* provider) {
   Rank(provider->ResultType());
   burnin_controller_->UpdateResults(results_, categories_,
                                     provider->ResultType());
@@ -265,8 +265,7 @@ void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
     Publish();
 }
 
-void SearchControllerImplNew::SetZeroStateResults(
-    const SearchProvider* provider) {
+void SearchControllerImpl::SetZeroStateResults(const SearchProvider* provider) {
   Rank(provider->ResultType());
 
   if (ash::IsZeroStateResultType(provider->ResultType()))
@@ -287,7 +286,7 @@ void SearchControllerImplNew::SetZeroStateResults(
   Publish();
 }
 
-void SearchControllerImplNew::Rank(ProviderType provider_type) {
+void SearchControllerImpl::Rank(ProviderType provider_type) {
   DCHECK(ranker_manager_);
   if (results_.empty()) {
     // Happens if the burn-in period has elapsed without any results having been
@@ -304,7 +303,7 @@ void SearchControllerImplNew::Rank(ProviderType provider_type) {
   ranker_manager_->UpdateCategoryRanks(results_, categories_, provider_type);
 }
 
-void SearchControllerImplNew::Publish() {
+void SearchControllerImpl::Publish() {
   SortCategories(categories_);
 
   // Create a vector of category enums in display order.
@@ -319,7 +318,7 @@ void SearchControllerImplNew::Publish() {
     for (const auto& result : type_results.second) {
       // TODO(crbug.com/1199206): Category-based search combines apps into the
       // results list, so redirect any kTile results to kList before updating
-      // the UI. Once SearchControllerImplNew is the only search controller,
+      // the UI. Once SearchControllerImpl is the only search controller,
       // this can be removed and all results can be created as kList.
       if (result->display_type() == ash::SearchResultDisplayType::kTile) {
         result->SetDisplayType(ash::SearchResultDisplayType::kList);
@@ -358,7 +357,7 @@ void SearchControllerImplNew::Publish() {
   }
 }
 
-ChromeSearchResult* SearchControllerImplNew::FindSearchResult(
+ChromeSearchResult* SearchControllerImpl::FindSearchResult(
     const std::string& result_id) {
   for (const auto& provider_results : results_) {
     for (const auto& result : provider_results.second) {
@@ -369,7 +368,7 @@ ChromeSearchResult* SearchControllerImplNew::FindSearchResult(
   return nullptr;
 }
 
-ChromeSearchResult* SearchControllerImplNew::GetResultByTitleForTest(
+ChromeSearchResult* SearchControllerImpl::GetResultByTitleForTest(
     const std::string& title) {
   std::u16string target_title = base::ASCIIToUTF16(title);
   for (const auto& provider_results : results_) {
@@ -385,7 +384,7 @@ ChromeSearchResult* SearchControllerImplNew::GetResultByTitleForTest(
   return nullptr;
 }
 
-void SearchControllerImplNew::Train(LaunchData&& launch_data) {
+void SearchControllerImpl::Train(LaunchData&& launch_data) {
   // For non-zero state results (i.e. non continue section results), record the
   // last search query.
   const std::string query = ash::IsZeroStateResultType(launch_data.result_type)
@@ -434,37 +433,37 @@ void SearchControllerImplNew::Train(LaunchData&& launch_data) {
   ranker_manager_->Train(launch_data);
 }
 
-void SearchControllerImplNew::AppListClosing() {
+void SearchControllerImpl::AppListClosing() {
   for (const auto& provider : providers_)
     provider->StopZeroState();
 }
 
-void SearchControllerImplNew::AddObserver(Observer* observer) {
+void SearchControllerImpl::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void SearchControllerImplNew::RemoveObserver(Observer* observer) {
+void SearchControllerImpl::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-std::u16string SearchControllerImplNew::get_query() {
+std::u16string SearchControllerImpl::get_query() {
   return last_query_;
 }
 
-base::Time SearchControllerImplNew::session_start() {
+base::Time SearchControllerImpl::session_start() {
   return session_start_;
 }
 
-void SearchControllerImplNew::set_results_changed_callback_for_test(
+void SearchControllerImpl::set_results_changed_callback_for_test(
     ResultsChangedCallback callback) {
   results_changed_callback_for_test_ = std::move(callback);
 }
 
-void SearchControllerImplNew::disable_ranking_for_test() {
+void SearchControllerImpl::disable_ranking_for_test() {
   disable_ranking_for_test_ = true;
 }
 
-void SearchControllerImplNew::WaitForZeroStateCompletionForTest(
+void SearchControllerImpl::WaitForZeroStateCompletionForTest(
     base::OnceClosure callback) {
   if (on_zero_state_done_.empty()) {
     std::move(callback).Run();

@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
 #include "chrome/browser/ui/app_list/search/personalization_provider.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
@@ -62,7 +62,7 @@ std::unique_ptr<SearchController> CreateSearchController(
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier) {
   std::unique_ptr<SearchController> controller;
-  controller = std::make_unique<SearchControllerImplNew>(
+  controller = std::make_unique<SearchControllerImpl>(
       model_updater, list_controller, notifier, profile);
 
   // Add search providers.

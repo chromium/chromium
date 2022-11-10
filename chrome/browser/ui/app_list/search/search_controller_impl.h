@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_CONTROLLER_IMPL_NEW_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_CONTROLLER_IMPL_NEW_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_CONTROLLER_IMPL_H_
 
 #include <stddef.h>
 
@@ -39,22 +39,19 @@ class SearchMetricsManager;
 class SearchProvider;
 enum class RankingItemType;
 
-// TODO(crbug.com/1199206): This is the new implementation of the search
-// controller. Once we have fully migrated to the new system, this can replace
-// SearchController.
-class SearchControllerImplNew : public SearchController {
+class SearchControllerImpl : public SearchController {
  public:
   using ResultsChangedCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType)>;
 
-  SearchControllerImplNew(AppListModelUpdater* model_updater,
-                          AppListControllerDelegate* list_controller,
-                          ash::AppListNotifier* notifier,
-                          Profile* profile);
-  ~SearchControllerImplNew() override;
+  SearchControllerImpl(AppListModelUpdater* model_updater,
+                       AppListControllerDelegate* list_controller,
+                       ash::AppListNotifier* notifier,
+                       Profile* profile);
+  ~SearchControllerImpl() override;
 
-  SearchControllerImplNew(const SearchControllerImplNew&) = delete;
-  SearchControllerImplNew& operator=(const SearchControllerImplNew&) = delete;
+  SearchControllerImpl(const SearchControllerImpl&) = delete;
+  SearchControllerImpl& operator=(const SearchControllerImpl&) = delete;
 
   // SearchController:
   void StartSearch(const std::u16string& query) override;
@@ -91,7 +88,7 @@ class SearchControllerImplNew : public SearchController {
   }
 
  private:
-  friend class SearchControllerImplNewTest;
+  friend class SearchControllerImplTest;
 
   // Rank the results of |provider_type|.
   void Rank(ash::AppListSearchResultType provider_type);
@@ -160,4 +157,4 @@ class SearchControllerImplNew : public SearchController {
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_CONTROLLER_IMPL_NEW_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_CONTROLLER_IMPL_H_

@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
@@ -314,7 +314,7 @@ class SpokenFeedbackAppListSearchTest
     // Reset default search controller, so the test has better control over the
     // set of results shown in the search result UI.
     std::unique_ptr<app_list::SearchController> search_controller =
-        std::make_unique<app_list::SearchControllerImplNew>(
+        std::make_unique<app_list::SearchControllerImpl>(
             app_list_client->GetModelUpdaterForTest(), app_list_client, nullptr,
             browser()->profile());
     // Disable ranking, which may override the explicitly set relevance scores

@@ -7433,7 +7433,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/ranking/removed_results_proto_unittest.cc",
       "../browser/ui/app_list/search/ranking/removed_results_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/score_normalizing_ranker_unittest.cc",
-      "../browser/ui/app_list/search/search_controller_impl_new_unittest.cc",
+      "../browser/ui/app_list/search/search_controller_impl_unittest.cc",
       "../browser/ui/app_list/search/test/ranking_test_util.cc",
       "../browser/ui/app_list/search/test/ranking_test_util.h",
       "../browser/ui/app_list/search/test/test_search_controller.cc",
