@@ -71,9 +71,7 @@ class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
  private:
   const std::string app_id_;
   base::ScopedObservation<extensions::TestEventRouter,
-                          extensions::TestEventRouter::EventObserver,
-                          &extensions::TestEventRouter::AddEventObserver,
-                          &extensions::TestEventRouter::RemoveEventObserver>
+                          extensions::TestEventRouter::EventObserver>
       observation_{this};
   std::vector<std::string> launched_apps_;
 };

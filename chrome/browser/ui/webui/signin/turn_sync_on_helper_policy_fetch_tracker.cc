@@ -137,9 +137,7 @@ class PolicyFetchTracker
   base::OnceClosure on_policy_updated_callback_;
   base::OneShotTimer policy_update_timeout_timer_;
   base::ScopedObservation<policy::PolicyService,
-                          policy::PolicyService::ProviderUpdateObserver,
-                          &policy::PolicyService::AddProviderUpdateObserver,
-                          &policy::PolicyService::RemoveProviderUpdateObserver>
+                          policy::PolicyService::ProviderUpdateObserver>
       scoped_policy_update_observer_{this};
 
   base::WeakPtrFactory<PolicyFetchTracker> weak_pointer_factory_{this};

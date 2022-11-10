@@ -10,6 +10,10 @@
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/linux/window_button_order_observer.h"
 
+namespace ui {
+class LinuxUi;
+}  // namespace ui
+
 // A specialization of OpaqueBrowserFrameView that is also able to
 // render client side decorations (shadow, border, and rounded corners).
 class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
@@ -56,10 +60,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
  private:
   const raw_ptr<BrowserFrameViewLayoutLinux> layout_;
 
-  base::ScopedObservation<ui::LinuxUi,
-                          ui::WindowButtonOrderObserver,
-                          &ui::LinuxUi::AddWindowButtonOrderObserver,
-                          &ui::LinuxUi::RemoveWindowButtonOrderObserver>
+  base::ScopedObservation<ui::LinuxUi, ui::WindowButtonOrderObserver>
       window_button_order_observation_{this};
 };
 

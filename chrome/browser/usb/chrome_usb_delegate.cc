@@ -144,10 +144,7 @@ class ChromeUsbDelegate::ContextObservation
   // Safe because `this` is destroyed when the context is lost.
   const raw_ptr<content::BrowserContext> browser_context_;
 
-  base::ScopedObservation<UsbChooserContext,
-                          UsbChooserContext::DeviceObserver,
-                          &UsbChooserContext::AddObserver,
-                          &UsbChooserContext::RemoveObserver>
+  base::ScopedObservation<UsbChooserContext, UsbChooserContext::DeviceObserver>
       device_observation_{this};
   base::ScopedObservation<
       permissions::ObjectPermissionContextBase,

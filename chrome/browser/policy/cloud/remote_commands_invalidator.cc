@@ -162,10 +162,8 @@ void RemoteCommandsInvalidator::Unregister() {
 }
 
 void RemoteCommandsInvalidator::UnsubscribeFromTopics() {
-  base::ScopedObservation<
-      invalidation::InvalidationService, invalidation::InvalidationHandler,
-      &invalidation::InvalidationService::RegisterInvalidationHandler,
-      &invalidation::InvalidationService::UnregisterInvalidationHandler>
+  base::ScopedObservation<invalidation::InvalidationService,
+                          invalidation::InvalidationHandler>
       temporary_registration(this);
 
   // Invalidator cannot unset its topics without being registered. Let's quickly

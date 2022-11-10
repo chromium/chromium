@@ -100,10 +100,7 @@ class ChromeHidDelegate::ContextObservation
   // Safe because `this` is destroyed when the context is lost.
   const raw_ptr<content::BrowserContext> browser_context_;
 
-  base::ScopedObservation<HidChooserContext,
-                          HidChooserContext::DeviceObserver,
-                          &HidChooserContext::AddDeviceObserver,
-                          &HidChooserContext::RemoveDeviceObserver>
+  base::ScopedObservation<HidChooserContext, HidChooserContext::DeviceObserver>
       device_observation_{this};
   base::ScopedObservation<
       permissions::ObjectPermissionContextBase,

@@ -168,9 +168,7 @@ class SerialChooserContextTestBase {
       scoped_permission_observation_{&permission_observer_};
   NiceMock<MockPortObserver> port_observer_;
   base::ScopedObservation<SerialChooserContext,
-                          SerialChooserContext::PortObserver,
-                          &SerialChooserContext::AddPortObserver,
-                          &SerialChooserContext::RemovePortObserver>
+                          SerialChooserContext::PortObserver>
       scoped_port_observation_{&port_observer_};
 };
 

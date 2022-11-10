@@ -17,7 +17,7 @@
 namespace history {
 struct HistoryAddPageArgs;
 class HistoryService;
-}
+}  // namespace history
 
 class HistoryTabHelper
     : public content::WebContentsObserver,
@@ -92,11 +92,8 @@ class HistoryTabHelper
 
   // Observes LanguageDetectionObserver, which notifies us when the language of
   // the contents of the current page has been determined.
-  base::ScopedObservation<
-      translate::TranslateDriver,
-      translate::TranslateDriver::LanguageDetectionObserver,
-      &translate::TranslateDriver::AddLanguageDetectionObserver,
-      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
+  base::ScopedObservation<translate::TranslateDriver,
+                          translate::TranslateDriver::LanguageDetectionObserver>
       translate_observation_{this};
 
   // True after navigation to a page is complete and the page is currently

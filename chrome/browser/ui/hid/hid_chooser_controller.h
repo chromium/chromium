@@ -24,8 +24,6 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
-class HidChooserContext;
-
 // HidChooserController provides data for the WebHID API permission prompt.
 class HidChooserController : public permissions::ChooserController,
                              public HidChooserContext::DeviceObserver {
@@ -112,10 +110,7 @@ class HidChooserController : public permissions::ChooserController,
   // in the chooser.
   std::vector<std::string> items_;
 
-  base::ScopedObservation<HidChooserContext,
-                          HidChooserContext::DeviceObserver,
-                          &HidChooserContext::AddDeviceObserver,
-                          &HidChooserContext::RemoveDeviceObserver>
+  base::ScopedObservation<HidChooserContext, HidChooserContext::DeviceObserver>
       observation_{this};
 
   base::WeakPtrFactory<HidChooserController> weak_factory_{this};

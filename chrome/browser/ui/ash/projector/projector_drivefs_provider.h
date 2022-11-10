@@ -8,13 +8,16 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 
 namespace drive {
 class DriveIntegrationService;
-}
+}  // namespace drive
+
+namespace session_manager {
+class SessionManager;
+}  // namespace session_manager
 
 // A class provides DriveFs service for active profile. Encapsulates the logic
 // to observe UserSession and Profile change and trigger the callback when
@@ -48,11 +51,8 @@ class ProjectorDriveFsProvider
                           session_manager::SessionManagerObserver>
       session_observation_{this};
 
-  base::ScopedObservation<
-      user_manager::UserManager,
-      user_manager::UserManager::UserSessionStateObserver,
-      &user_manager::UserManager::AddSessionStateObserver,
-      &user_manager::UserManager::RemoveSessionStateObserver>
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::UserSessionStateObserver>
       session_state_observation_{this};
 
   OnDriveFsObservationChangeCallback on_drivefs_observation_change_;

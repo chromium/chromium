@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/unguessable_token.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -154,5 +155,22 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
 
   base::WeakPtrFactory<HidChooserContext> weak_factory_{this};
 };
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<HidChooserContext,
+                               HidChooserContext::DeviceObserver> {
+  static void AddObserver(HidChooserContext* source,
+                          HidChooserContext::DeviceObserver* observer) {
+    source->AddDeviceObserver(observer);
+  }
+  static void RemoveObserver(HidChooserContext* source,
+                             HidChooserContext::DeviceObserver* observer) {
+    source->RemoveDeviceObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_HID_HID_CHOOSER_CONTEXT_H_

@@ -18,7 +18,6 @@
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
-#include "ui/events/event_target.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
@@ -31,15 +30,16 @@
 namespace content {
 class WebContents;
 enum class Visibility;
-}
+}  // namespace content
 
 namespace gfx {
 class Canvas;
-}
+}  // namespace gfx
 
 namespace ui {
+class EventTarget;
 class Layer;
-}
+}  // namespace ui
 
 namespace image_editor {
 
@@ -206,11 +206,8 @@ class ScreenshotFlow : public content::WebContentsObserver,
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<EventCaptureMac> event_capture_mac_;
 #else
-  base::ScopedObservation<ui::EventTarget,
-                          ui::EventHandler,
-                          &ui::EventTarget::AddPreTargetHandler,
-                          &ui::EventTarget::RemovePreTargetHandler>
-      event_capture_{this};
+  base::ScopedObservation<ui::EventTarget, ui::EventHandler> event_capture_{
+      this};
 #endif
 
   // Selection rectangle coordinates.

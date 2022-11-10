@@ -170,11 +170,8 @@ class InSessionAuthDialogClient
 
   FingerprintScanDoneCallback fingerprint_scan_done_callback_;
 
-  base::ScopedObservation<
-      ash::UserDataAuthClient,
-      ash::UserDataAuthClient::FingerprintAuthObserver,
-      &ash::UserDataAuthClient::AddFingerprintAuthObserver,
-      &ash::UserDataAuthClient::RemoveFingerprintAuthObserver>
+  base::ScopedObservation<ash::UserDataAuthClient,
+                          ash::UserDataAuthClient::FingerprintAuthObserver>
       observation_{this};
 
   base::WeakPtrFactory<InSessionAuthDialogClient> weak_factory_{this};

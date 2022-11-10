@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/unguessable_token.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/serial_delegate.h"
@@ -128,5 +129,22 @@ class SerialChooserContext
 
   base::WeakPtrFactory<SerialChooserContext> weak_factory_{this};
 };
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<SerialChooserContext,
+                               SerialChooserContext::PortObserver> {
+  static void AddObserver(SerialChooserContext* source,
+                          SerialChooserContext::PortObserver* observer) {
+    source->AddPortObserver(observer);
+  }
+  static void RemoveObserver(SerialChooserContext* source,
+                             SerialChooserContext::PortObserver* observer) {
+    source->RemovePortObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_H_

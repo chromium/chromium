@@ -6,14 +6,13 @@
 #define CHROME_BROWSER_SPEECH_TTS_ASH_H_
 
 #include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "content/public/browser/tts_controller.h"
-#include "content/public/browser/tts_utterance.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -21,10 +20,9 @@
 class ProfileManager;
 
 namespace crosapi {
-
-// Implements tts interface to allow Lacros to call ash to handle TTS requests,
-// , manages remote TtsClient objects registered by Lacros, and caches the
-// voices from Lacros.
+// Implements tts interface to allow Lacros to call ash to handle TTS
+// requests, manages remote TtsClient objects registered by Lacros, and
+// caches the voices from Lacros.
 class TtsAsh : public mojom::Tts,
                public content::VoicesChangedDelegate,
                public ProfileManagerObserver {
@@ -42,7 +40,8 @@ class TtsAsh : public mojom::Tts,
   // Returns the browser context id for primary profile.
   base::UnguessableToken GetPrimaryProfileBrowserContextId() const;
 
-  // Returns the cached lacros voices in |out_voices| for |browser_context_id|.
+  // Returns the cached lacros voices in |out_voices| for
+  // |browser_context_id|.
   void GetCrosapiVoices(base::UnguessableToken browser_context_id,
                         std::vector<content::VoiceData>* out_voices);
 
@@ -83,9 +82,7 @@ class TtsAsh : public mojom::Tts,
   base::UnguessableToken primary_profile_browser_context_id_;
 
   base::ScopedObservation<content::TtsController,
-                          content::VoicesChangedDelegate,
-                          &content::TtsController::AddVoicesChangedDelegate,
-                          &content::TtsController::RemoveVoicesChangedDelegate>
+                          content::VoicesChangedDelegate>
       voices_changed_observation_{this};
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>

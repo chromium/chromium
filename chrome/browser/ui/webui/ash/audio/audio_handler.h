@@ -58,11 +58,7 @@ class AudioHandler : public audio::mojom::PageHandler,
  private:
   void UpdateAudioDeviceInfo();
 
-  base::ScopedObservation<CrasAudioHandler,
-                          AudioObserver,
-                          &CrasAudioHandler::AddAudioObserver,
-                          &CrasAudioHandler::RemoveAudioObserver>
-      observation_{this};
+  base::ScopedObservation<CrasAudioHandler, AudioObserver> observation_{this};
 
   audio::mojom::DeviceDataPtr CreateDeviceData(const AudioDevice* item) const;
 

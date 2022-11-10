@@ -298,10 +298,7 @@ class HidChooserContextTestBase {
       permissions::ObjectPermissionContextBase::PermissionObserver>
       scoped_permission_observation_{&permission_observer_};
   MockHidDeviceObserver device_observer_;
-  base::ScopedObservation<HidChooserContext,
-                          HidChooserContext::DeviceObserver,
-                          &HidChooserContext::AddDeviceObserver,
-                          &HidChooserContext::RemoveDeviceObserver>
+  base::ScopedObservation<HidChooserContext, HidChooserContext::DeviceObserver>
       scoped_device_observation_{&device_observer_};
 };
 

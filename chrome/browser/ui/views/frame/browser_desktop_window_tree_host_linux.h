@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "ui/linux/device_scale_factor_observer.h"
-#include "ui/linux/linux_ui.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"  // nogncheck
 
 #if defined(USE_DBUS_MENU)
@@ -23,7 +22,12 @@ enum class TabDragKind;
 
 namespace views {
 class DesktopNativeWidgetAura;
-}
+}  // namespace views
+
+namespace ui {
+class LinuxUi;
+class NativeTheme;
+}  // namespace ui
 
 class BrowserDesktopWindowTreeHostLinux
     : public BrowserDesktopWindowTreeHost,
@@ -108,10 +112,7 @@ class BrowserDesktopWindowTreeHostLinux
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
-  base::ScopedObservation<ui::LinuxUi,
-                          ui::DeviceScaleFactorObserver,
-                          &ui::LinuxUi::AddDeviceScaleFactorObserver,
-                          &ui::LinuxUi::RemoveDeviceScaleFactorObserver>
+  base::ScopedObservation<ui::LinuxUi, ui::DeviceScaleFactorObserver>
       scale_observation_{this};
 };
 

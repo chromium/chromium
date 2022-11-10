@@ -39,9 +39,7 @@ class ExternalLogoutDoneEventHandler
  private:
   EventRouter* event_router_;
   base::ScopedObservation<crosapi::LoginAsh,
-                          crosapi::LoginAsh::ExternalLogoutDoneObserver,
-                          &crosapi::LoginAsh::AddExternalLogoutDoneObserver,
-                          &crosapi::LoginAsh::RemoveExternalLogoutDoneObserver>
+                          crosapi::LoginAsh::ExternalLogoutDoneObserver>
       scoped_observation_{this};
 };
 
