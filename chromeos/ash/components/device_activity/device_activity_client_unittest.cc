@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/components/dbus/private_computing/fake_private_computing_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
@@ -301,6 +302,9 @@ class DeviceActivityClientTest : public testing::Test {
     chromeos::system::StatisticsProvider::SetTestProvider(
         &statistics_provider_);
 
+    // Initialize the fake PrivateComputingClient used to send DBus calls.
+    PrivateComputingClient::InitializeFake();
+
     // Create vector of device active use cases, which device activity client
     // should maintain ownership of.
     std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
@@ -339,6 +343,10 @@ class DeviceActivityClientTest : public testing::Test {
     // The system clock must be shutdown after the |device_activity_client_| is
     // destroyed.
     SystemClockClient::Shutdown();
+
+    // The private computing client must be shutdown after the
+    // |device_activity_client_| is destroyed.
+    PrivateComputingClient::Shutdown();
   }
 
   SystemClockClient::TestInterface* GetSystemClockTestInterface() {

@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -149,6 +150,18 @@ base::Time DeviceActiveUseCase::DecryptPsmValueAsTimestamp(
   (void)ciphertext;
   NOTREACHED();
   return base::Time::UnixEpoch();
+}
+
+std::string DeviceActiveUseCase::FormatUTCDateString(base::Time ts) {
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+  return base::StringPrintf("%04d-%02d-%02d %02d:%02d:%02d.%03d UTC",
+                            exploded.year, exploded.month,
+                            exploded.day_of_month,
+                            /* hour */ 0,
+                            /* minute */ 0,
+                            /* second */ 0,
+                            /* millisecond */ 0);
 }
 
 std::string DeviceActiveUseCase::GetFullHardwareClass() const {

@@ -232,7 +232,9 @@ DeviceActivityClient::DeviceActivityClient(
                        &DeviceActivityClient::ReportingTriggeredByTimer);
 
   network_state_handler_observer_.Observe(network_state_handler_);
-  DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
+
+  // Send DBus method to read preserved files for last ping timestamps.
+  GetLastPingDatesStatus();
 }
 
 DeviceActivityClient::~DeviceActivityClient() {
@@ -274,6 +276,137 @@ std::vector<DeviceActiveUseCase*> DeviceActivityClient::GetUseCases() const {
     use_cases_ptr.push_back(use_case.get());
   }
   return use_cases_ptr;
+}
+
+private_computing::SaveStatusRequest
+DeviceActivityClient::GetSaveStatusRequest() {
+  // private_computing:
+  private_computing::SaveStatusRequest request;
+
+  for (auto* use_case : GetUseCases()) {
+    private_computing::ActiveStatus status;
+
+    // TODO: Before submission, check handling a last known ts that is
+    // unset / unix::epoch.
+    std::string last_ping_utc_date =
+        use_case->FormatUTCDateString(use_case->GetLastKnownPingTimestamp());
+
+    psm_rlwe::RlweUseCase psm_use_case = use_case->GetPsmUseCase();
+    switch (psm_use_case) {
+      case psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY:
+        status.set_use_case(
+            private_computing::PrivateComputingUseCase::CROS_FRESNEL_DAILY);
+        status.set_last_ping_utc_date(last_ping_utc_date);
+        break;
+      case psm_rlwe::RlweUseCase::CROS_FRESNEL_7DAY_ACTIVE:
+        break;
+      case psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE:
+        break;
+      case psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE:
+        break;
+      default:
+        VLOG(1) << "Use case is not supported yet. "
+                << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase());
+        break;
+    }
+
+    if (status.has_use_case()) {
+      *request.add_active_status() = status;
+    }
+  }
+
+  return request;
+}
+
+DeviceActiveUseCase* DeviceActivityClient::GetUseCasePtr(
+    psm_rlwe::RlweUseCase psm_use_case) const {
+  for (auto* use_case : GetUseCases()) {
+    if (use_case->GetPsmUseCase() == psm_use_case)
+      return use_case;
+  }
+
+  VLOG(1) << "Use Case is not supported yet.";
+  return nullptr;
+}
+
+void DeviceActivityClient::SaveLastPingDatesStatus() {
+  private_computing::SaveStatusRequest request = GetSaveStatusRequest();
+
+  // Call DBus method with callback to |OnSaveLastPingDatesStatusComplete|.
+  PrivateComputingClient::Get()->SaveLastPingDatesStatus(
+      request,
+      base::BindOnce(&DeviceActivityClient::OnSaveLastPingDatesStatusComplete,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void DeviceActivityClient::OnSaveLastPingDatesStatusComplete(
+    private_computing::SaveStatusResponse response) {
+  if (response.has_error_message()) {
+    LOG(ERROR) << "Failed to store last ping timestamps with error message: "
+            << response.error_message();
+  } else {
+    VLOG(1) << "Successfully stored last ping timestamp to preserved file";
+  }
+}
+
+void DeviceActivityClient::GetLastPingDatesStatus() {
+  PrivateComputingClient::Get()->GetLastPingDatesStatus(
+      base::BindOnce(&DeviceActivityClient::OnGetLastPingDatesStatusFetched,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
+    private_computing::GetStatusResponse response) {
+  // Update the last ping timestamps if the preserved file has a valid
+  // timestamp value for the use case.
+  if (!response.has_error_message()) {
+    VLOG(1) << "Successfully read PSM file.";
+    // 1. Iterate FileContent for the active_statuses and update use case
+    // timestamps.
+    for (auto& status : response.active_status()) {
+      std::string last_ping_utc_date = status.last_ping_utc_date();
+      base::Time last_ping_utc_time;
+      bool success = base::Time::FromUTCString(last_ping_utc_date.c_str(),
+                                               &last_ping_utc_time);
+
+      if (!success)
+        continue;
+
+      DeviceActiveUseCase* device_active_use_case_ptr;
+
+      private_computing::PrivateComputingUseCase use_case = status.use_case();
+      switch (use_case) {
+        case private_computing::PrivateComputingUseCase::CROS_FRESNEL_DAILY:
+          device_active_use_case_ptr =
+              GetUseCasePtr(psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY);
+          break;
+        case private_computing::PrivateComputingUseCase::
+            CROS_FRESNEL_28DAY_ACTIVE:
+          device_active_use_case_ptr =
+              GetUseCasePtr(psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE);
+          break;
+        case private_computing::PrivateComputingUseCase::
+            CROS_FRESNEL_FIRST_ACTIVE:
+          device_active_use_case_ptr =
+              GetUseCasePtr(psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE);
+          break;
+        default:
+          VLOG(1) << "PSM use case is not supported yet.";
+          continue;
+      }
+
+      if (!device_active_use_case_ptr->IsLastKnownPingTimestampSet()) {
+        VLOG(1) << "Updating local pref timestamp value with file timestamp = "
+                << last_ping_utc_time;
+        device_active_use_case_ptr->SetLastKnownPingTimestamp(
+            last_ping_utc_time);
+      }
+    }
+  }
+
+  // Always trigger step to check for network status changing after reading the
+  // preserved file.
+  DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
 }
 
 void DeviceActivityClient::ReportingTriggeredByTimer() {
@@ -927,6 +1060,9 @@ void DeviceActivityClient::TransitionToIdle(
     TransitionOutOfIdle(pending_use_cases_.front());
     return;
   }
+
+  // Send DBus method to update last ping timestamps in preserved file.
+  SaveLastPingDatesStatus();
 
   // Report UMA histogram for transitioning state back to |kIdle|.
   RecordStateCountMetric(state_);

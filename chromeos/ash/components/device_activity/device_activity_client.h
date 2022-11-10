@@ -14,6 +14,9 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/dbus/private_computing/private_computing_client.h"
+#include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
+#include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 #include "url/gurl.h"
@@ -134,6 +137,28 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Used for testing.
   std::vector<DeviceActiveUseCase*> GetUseCases() const;
+
+  DeviceActiveUseCase* GetUseCasePtr(
+      private_membership::rlwe::RlweUseCase psm_use_case) const;
+
+  // Generate the proto with the latest last ping date values.
+  private_computing::SaveStatusRequest GetSaveStatusRequest();
+
+  // Write the last ping dates for all use cases to preserved files via
+  // the private_computingd dbus daemon.
+  void SaveLastPingDatesStatus();
+
+  // After the dbus call is complete, return response via this method.
+  void OnSaveLastPingDatesStatusComplete(
+      private_computing::SaveStatusResponse response);
+
+  // Read the last ping dates status for all use cases from preserved files
+  // via the private_comutingd dbus daemon.
+  void GetLastPingDatesStatus();
+
+  // After the dbus call is complete, return response via this method.
+  void OnGetLastPingDatesStatusFetched(
+      private_computing::GetStatusResponse response);
 
  private:
   // |report_timer_| triggers method to retry reporting device actives if

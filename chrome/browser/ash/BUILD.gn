@@ -3183,6 +3183,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/lorgnette_manager",
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//chromeos/ash/components/dbus/os_install",
+    "//chromeos/ash/components/dbus/private_computing",
     "//chromeos/ash/components/dbus/resourced",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/dbus/seneschal:seneschal_proto",

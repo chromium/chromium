@@ -134,6 +134,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Retrieves and decrypts the AES-256 encrypted psm value to a timestamp.
   virtual base::Time DecryptPsmValueAsTimestamp(std::string ciphertext) const;
 
+  // Format a base::Time object to a valid UTC date.
+  // This function removes the exact time of day when generating the date string
+  // by nulling out the hour, minute, second, and millisecond.
+  // Method is used to store and read the last ping timestamp as a string
+  // when interacting with preserved files over private_computingd dbus.
+  std::string FormatUTCDateString(base::Time ts);
+
  protected:
   // Retrieve full hardware class from MachineStatistics.
   // |DeviceActivityController| waits for object to finish loading, to avoid

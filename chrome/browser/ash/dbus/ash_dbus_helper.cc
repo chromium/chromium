@@ -55,6 +55,7 @@
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/private_computing/private_computing_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
@@ -183,6 +184,7 @@ void InitializeDBus() {
   InitializeDBusClient<OsInstallClient>(bus);
   InitializeDBusClient<PatchPanelClient>(bus);
   InitializeDBusClient<PciguardClient>(bus);
+  InitializeDBusClient<PrivateComputingClient>(bus);
   InitializeDBusClient<chromeos::PermissionBrokerClient>(bus);
   InitializeDBusClient<chromeos::PowerManagerClient>(bus);
   InitializeDBusClient<ResourcedClient>(bus);
