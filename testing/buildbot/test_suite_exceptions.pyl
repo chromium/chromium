@@ -4036,6 +4036,9 @@
         ],
       },
       'android-nougat-x86-rel': {
+        'args': [
+          '--use-persistent-shell',
+        ],
         'swarming': {
           'shards': 27,
         },
