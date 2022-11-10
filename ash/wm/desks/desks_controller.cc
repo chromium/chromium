@@ -906,6 +906,12 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   // added.
   if (!visible_on_all_desks_windows_.emplace(window).second)
     return;
+
+  if (features::IsPerDeskZOrderEnabled()) {
+    for (auto& desk : desks_)
+      desk->AddAllDeskWindow(window);
+  }
+
   wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
   NotifyAllDesksForContentChanged();
   Shell::Get()
@@ -916,6 +922,11 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
 
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   if (visible_on_all_desks_windows_.erase(window)) {
+    if (features::IsPerDeskZOrderEnabled()) {
+      for (auto& desk : desks_)
+        desk->RemoveAllDeskWindow(window);
+    }
+
     wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     NotifyAllDesksForContentChanged();
     Shell::Get()
@@ -1486,6 +1497,10 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   // `old_active` desk do not activate other windows on the same desk. See
   // `ash::AshFocusRules::GetNextActivatableWindow()`.
   Desk* old_active = active_desk_;
+
+  if (features::IsPerDeskZOrderEnabled())
+    old_active->BuildAllDeskStackingData();
+
   MoveVisibleOnAllDesksWindowsFromActiveDeskTo(const_cast<Desk*>(desk));
   active_desk_ = const_cast<Desk*>(desk);
   RestackVisibleOnAllDesksWindowsOnActiveDesk();
@@ -1923,6 +1938,11 @@ void DesksController::NotifyFullScreenStateChangedAcrossDesksIfNeeded(
 }
 
 void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
+  if (features::IsPerDeskZOrderEnabled()) {
+    active_desk_->RestackAllDeskWindows();
+    return;
+  }
+
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {

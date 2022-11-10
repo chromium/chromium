@@ -16,6 +16,7 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
@@ -3544,6 +3545,185 @@ TEST_P(DesksTest, RemoveDeskPreservesOverviewClipping) {
 
   // Tests that the clip is the same after the desk removal.
   EXPECT_EQ(expected_clip, win0->layer()->GetTargetClipRect());
+}
+
+struct PerDeskZOrderTestCase {
+  std::string test_name;
+
+  // Numerical identifiers of windows on desk 1 and 2. Windows will be stacked
+  // in the order they appear, with .back() at top.
+  std::vector<int> desk_1_windows;
+  std::vector<int> desk_2_windows;
+
+  // Numerical identifiers of all-desk windows. Entries must match windows in
+  // desk_1_windows.
+  std::set<int> adw_windows;
+
+  // Once windows have been created and (some) promoted to all-desk, we start
+  // the test by switching to desk 2. This is the list of windows that we expect
+  // to find on desk 2.
+  std::vector<int> expected_desk_2_windows;
+
+  // We can then move some set of windows from desk 2 to desk 1. This must be a
+  // subset of `desk_2_windows` and cannot contain entries from `adw_windows`
+  // (since those not logically part of a specific desk). Prior to moving, the
+  // window will be activated (to simulate the user interacting with it), and
+  // this will push it to the front of the MRU list.
+  std::vector<int> move_windows;
+
+  // Windows to close while on the second desk. Can include any windows.
+  std::vector<int> close_windows;
+
+  // We then switch back to desk 1 and expect to find windows in this order.
+  std::vector<int> expected_desk_1_windows;
+};
+
+TEST_P(DesksTest, PerDeskZOrder) {
+  const PerDeskZOrderTestCase tests[] = {
+      {.test_name = "Single adw window 1",
+       .desk_1_windows = {1},
+       .desk_2_windows = {},
+       .adw_windows = {1},
+       .expected_desk_2_windows = {1},
+       .move_windows = {},
+       .close_windows = {},
+       .expected_desk_1_windows = {1}},
+      {.test_name = "Single adw window 2",
+       .desk_1_windows = {1, 2, 3},
+       .desk_2_windows = {5, 4},
+       .adw_windows = {1},
+       .expected_desk_2_windows = {5, 4, 1},
+       .move_windows = {},
+       .close_windows = {},
+       .expected_desk_1_windows = {1, 2, 3}},
+      {.test_name = "Single adw window 3",
+       .desk_1_windows = {1, 2, 3},
+       .desk_2_windows = {5, 4},
+       .adw_windows = {1},
+       .expected_desk_2_windows = {5, 4, 1},
+       .move_windows = {5},
+       .close_windows = {},
+       .expected_desk_1_windows = {1, 2, 3, 5}},
+      {.test_name = "Single adw window 4",
+       .desk_1_windows = {1, 2, 3},
+       .desk_2_windows = {5, 4},
+       .adw_windows = {2},
+       .expected_desk_2_windows = {5, 4, 2},
+       .move_windows = {5},
+       .close_windows = {1},
+       .expected_desk_1_windows = {2, 3, 5}},
+      {.test_name = "Single adw window 5",
+       .desk_1_windows = {1, 2, 3, 4, 5},
+       .desk_2_windows = {6},
+       .adw_windows = {3},
+       .expected_desk_2_windows = {6, 3},
+       .move_windows = {6},
+       .close_windows = {1, 2},
+       .expected_desk_1_windows = {3, 4, 5, 6}},
+      {.test_name = "Multiple adw windows 1",
+       .desk_1_windows = {1, 2, 3, 4, 5},
+       .desk_2_windows = {6, 7},
+       .adw_windows = {2, 4},
+       .expected_desk_2_windows = {6, 7, 2, 4},
+       .move_windows = {},
+       .close_windows = {},
+       .expected_desk_1_windows = {1, 2, 3, 4, 5}},
+      {.test_name = "Multiple adw windows 2",
+       .desk_1_windows = {1, 2, 3, 4, 5},
+       .desk_2_windows = {6, 7},
+       .adw_windows = {1, 3, 5},
+       .expected_desk_2_windows = {6, 7, 1, 3, 5},
+       .move_windows = {},
+       .close_windows = {},
+       .expected_desk_1_windows = {1, 2, 3, 4, 5}},
+      {.test_name = "Multiple adw windows 3",
+       .desk_1_windows = {1, 2},
+       .desk_2_windows = {},
+       .adw_windows = {1, 2},
+       .expected_desk_2_windows = {1, 2},
+       .move_windows = {},
+       .close_windows = {},
+       .expected_desk_1_windows = {1, 2}},
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(features::kEnablePerDeskZOrder,
+                                           true);
+
+  NewDesk();
+  auto* controller = DesksController::Get();
+  auto* desk_1 = controller->desks()[0].get();
+  auto* desk_2 = controller->desks()[1].get();
+
+  for (const auto& test : tests) {
+    SCOPED_TRACE(test.test_name);
+
+    std::map<int, std::unique_ptr<aura::Window>> id_to_window;
+    std::map<aura::Window*, int> window_to_id;
+
+    for (auto* window_ids : {&test.desk_1_windows, &test.desk_2_windows}) {
+      for (int id : *window_ids) {
+        auto window = CreateAppWindow(gfx::Rect(0 + id, 0 + id, 100, 100));
+        window_to_id[window.get()] = id;
+        id_to_window[id] = std::move(window);
+      }
+
+      if (!desk_2->is_active())
+        ActivateDesk(desk_2);
+    }
+    ActivateDesk(desk_1);
+
+    // Mark windows as awd.
+    for (int id : test.adw_windows) {
+      views::Widget::GetWidgetForNativeWindow(id_to_window.at(id).get())
+          ->SetVisibleOnAllWorkspaces(true);
+    }
+
+    aura::Window* root = window_to_id.begin()->first->GetRootWindow();
+
+    // Verifies that windows on the given desk are found in the expected
+    // order. Any windows that have not been created by the test will be
+    // ignored.
+    auto verify_windows = [&](Desk* desk,
+                              const std::vector<int>& expected_windows) {
+      SCOPED_TRACE("Verify " + base::UTF16ToUTF8(desk->name()));
+      aura::Window* container = desk->GetDeskContainerForRoot(root);
+
+      // Collect any test windows present on the desk.
+      std::vector<int> actual_windows;
+      for (aura::Window* child : container->children()) {
+        auto it = window_to_id.find(child);
+        if (it != window_to_id.end())
+          actual_windows.push_back(it->second);
+      }
+
+      ASSERT_EQ(expected_windows, actual_windows);
+    };
+
+    // Now we are ready to actually execute the test.
+    ActivateDesk(desk_2);
+    verify_windows(desk_2, test.expected_desk_2_windows);
+
+    // Move specified windows to desk 1.
+    for (int id : test.move_windows) {
+      const auto& window = id_to_window.at(id);
+      wm::ActivateWindow(window.get());
+      ASSERT_TRUE(controller->MoveWindowFromActiveDeskTo(
+          window.get(), desk_1, window.get()->GetRootWindow(),
+          DesksMoveWindowFromActiveDeskSource::kShortcut));
+    }
+
+    // Close specified windows.
+    for (int id : test.close_windows) {
+      auto it = id_to_window.find(id);
+      ASSERT_NE(it, id_to_window.end()) << "Test setup error";
+      window_to_id.erase(it->second.get());
+      id_to_window.erase(it);
+    }
+
+    ActivateDesk(desk_1);
+    verify_windows(desk_1, test.expected_desk_1_windows);
+  }
 }
 
 namespace {

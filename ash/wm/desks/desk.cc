@@ -42,7 +42,6 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-
 namespace {
 
 // The name of the histogram for consecutive daily visits.
@@ -141,6 +140,32 @@ void FixWindowStackingAccordingToGlobalMru(aura::Window* window_to_fix) {
   }
 }
 
+// Returns true for windows that are interesting from an all-desk z-order
+// tracking perspective.
+bool IsZOrderTracked(aura::Window* window) {
+  return window->GetType() == aura::client::WindowType::WINDOW_TYPE_NORMAL &&
+         window->GetProperty(aura::client::kZOrderingKey) ==
+             ui::ZOrderLevel::kNormal;
+}
+
+// Get the position of `window` in `windows` (as filtered by `IsZOrderTracked`)
+// in reverse order. If `window` is not in the list (or isn't z-order tracked),
+// then nullopt is returned.
+absl::optional<size_t> GetWindowZOrder(
+    const std::vector<aura::Window*>& windows,
+    aura::Window* window) {
+  size_t position = 0;
+  for (aura::Window* w : base::Reversed(windows)) {
+    if (IsZOrderTracked(w)) {
+      if (w == window)
+        return position;
+      ++position;
+    }
+  }
+
+  return absl::nullopt;
+}
+
 // Used to temporarily turn off the automatic window positioning while windows
 // are being moved between desks.
 class ScopedWindowPositionerDisabler {
@@ -190,6 +215,10 @@ class DeskContainerObserver : public aura::WindowObserver {
       // so we need to refresh all the desk previews.
       Shell::Get()->desks_controller()->NotifyAllDesksForContentChanged();
     }
+  }
+
+  void OnWillRemoveWindow(aura::Window* window) override {
+    owner_->WillRemoveWindowFromDesk(window);
   }
 
   void OnWindowRemoved(aura::Window* removed_window) override {
@@ -321,10 +350,32 @@ void Desk::OnRootWindowClosing(aura::Window* root) {
     if (window->GetRootWindow() == root)
       base::Erase(windows_, window);
   }
+
+  all_desk_window_stacking_.erase(root);
 }
 
 void Desk::AddWindowToDesk(aura::Window* window) {
   DCHECK(!base::Contains(windows_, window));
+
+  // Maybe update stacking data for all-desk windows when a window is added. If
+  // `window` itself is an all-desk window, it will be handled by
+  // `AddAllDeskWindow`.
+  if (ShouldUpdateAllDeskStackingData() &&
+      !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+    aura::Window* root = window->GetRootWindow();
+    auto& adw_data = all_desk_window_stacking_[root];
+
+    // Find z-order of the added window.
+    auto* container = GetDeskContainerForRoot(root);
+    if (auto order = GetWindowZOrder(container->children(), window)) {
+      for (auto& adw : adw_data) {
+        // All desk windows that are below the added window will have their
+        // order updated (since they are now farther from the top).
+        if (adw.order >= order)
+          ++adw.order;
+      }
+    }
+  }
 
   windows_.push_back(window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
@@ -356,6 +407,33 @@ void Desk::RemoveWindowFromDesk(aura::Window* window) {
   if (!window->GetProperty(kHideInDeskMiniViewKey) &&
       !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
     NotifyContentChanged();
+  }
+}
+
+void Desk::WillRemoveWindowFromDesk(aura::Window* window) {
+  // Maybe update stacking data for all-desk windows when a window is removed.
+  // If `window` itself is an all-desk window, it will be handled by
+  // `RemoveAllDeskWindow`.
+  if (!ShouldUpdateAllDeskStackingData() ||
+      desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+    return;
+  }
+
+  aura::Window* root = window->GetRootWindow();
+  auto& adw_data = all_desk_window_stacking_[root];
+
+  // Nothing to update.
+  if (adw_data.empty())
+    return;
+
+  aura::Window* container = GetDeskContainerForRoot(root);
+  if (auto order = GetWindowZOrder(container->children(), window)) {
+    for (auto& info : adw_data) {
+      // All-desk windows that are below the removed window will have their
+      // order updated (since they are now closer to the top).
+      if (info.order > order)
+        --info.order;
+    }
   }
 }
 
@@ -446,6 +524,23 @@ void Desk::Activate(bool update_window_activation) {
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     if (!base::Contains(windows_, window))
       continue;
+
+    if (features::IsPerDeskZOrderEnabled() &&
+        desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+      // If per-desk z-order is enabled, then we will activate an all-desk
+      // window only if it is actually supposed to be stacked on top. Not doing
+      // this check could result in promoting an all-desk window to the top of
+      // the stack if it was the MRU window on the previous desk.
+      aura::Window* root = window->GetRootWindow();
+      auto& adw_data = all_desk_window_stacking_[root];
+      if (!adw_data.empty() && adw_data.front().window == window &&
+          adw_data.front().order == 0) {
+        wm::ActivateWindow(window);
+        return;
+      }
+
+      continue;
+    }
 
     // Do not activate minimized windows, otherwise they will unminimize.
     if (WindowState::Get(window)->IsMinimized())
@@ -600,7 +695,10 @@ void Desk::MoveWindowToDesk(aura::Window* window,
     //  by `wm::TransientWindowManager::OnWindowHierarchyChanged()`.
     aura::Window* transient_root = ::wm::GetTransientRoot(window);
     MoveWindowToDeskInternal(transient_root, target_desk, target_root);
-    FixWindowStackingAccordingToGlobalMru(transient_root);
+
+    if (!desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+      FixWindowStackingAccordingToGlobalMru(transient_root);
+    }
 
     // Unminimize the window so that it shows up in the mini_view after it had
     // been dragged and moved to another desk. Don't unminimize if the window is
@@ -720,6 +818,88 @@ std::vector<aura::Window*> Desk::GetAllAssociatedWindows() const {
   return windows_;
 }
 
+void Desk::BuildAllDeskStackingData() {
+  // This function should not be invoked when this feature isn't enabled.
+  DCHECK(features::IsPerDeskZOrderEnabled());
+
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    auto& adw_data = all_desk_window_stacking_[root];
+    aura::Window* container = GetDeskContainerForRoot(root);
+
+    const auto& desk_windows = container->children();
+
+    adw_data.clear();
+    size_t order = 0;
+    for (aura::Window* window : base::Reversed(desk_windows)) {
+      if (IsZOrderTracked(window)) {
+        if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
+          adw_data.push_back({.window = window, .order = order});
+        ++order;
+      }
+    }
+  }
+}
+
+void Desk::RestackAllDeskWindows() {
+  // This function should not be invoked when this feature isn't enabled.
+  DCHECK(features::IsPerDeskZOrderEnabled());
+
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    auto& adw_data = all_desk_window_stacking_[root];
+    if (adw_data.empty())
+      return;
+
+    aura::Window* container = GetDeskContainerForRoot(root);
+
+    // At this point, all desk windows have been moved to the container and
+    // should be at the end of the list of children.
+    const size_t count = container->children().size();
+    DCHECK_LE(adw_data.size(), count);
+
+    if (count > 1) {
+      for (auto& adw : base::Reversed(adw_data)) {
+        DCHECK(adw.window);
+        if (adw.order != 0) {
+          // TODO: Make this robust rather than DCHECK'ing
+          DCHECK_GT(container->children().size(), count - adw.order - 1);
+          aura::Window* stack_below =
+              container->children()[count - adw.order - 1];
+          if (adw.window != stack_below) {
+            container->StackChildBelow(adw.window, stack_below);
+          }
+        }
+      }
+    }
+  }
+}
+
+void Desk::AddAllDeskWindow(aura::Window* window) {
+  DCHECK(features::IsPerDeskZOrderEnabled());
+  aura::Window* root = window->GetRootWindow();
+  auto& adw_data = all_desk_window_stacking_[root];
+
+  // Assume this window is going to be on top and bump remaining windows down.
+  adw_data.insert(adw_data.begin(), {.window = window, .order = 0});
+  for (size_t i = 1; i != adw_data.size(); ++i)
+    ++adw_data[i].order;
+}
+
+void Desk::RemoveAllDeskWindow(aura::Window* window) {
+  DCHECK(features::IsPerDeskZOrderEnabled());
+  aura::Window* root = window->GetRootWindow();
+  DCHECK(root);
+
+  auto& adw_data = all_desk_window_stacking_[root];
+  auto it =
+      base::ranges::find(adw_data, window, &AllDeskWindowStackingData::window);
+  DCHECK(it != adw_data.end());
+
+  it = adw_data.erase(it);
+  // Raise all remaining windows up.
+  for (; it != adw_data.end(); ++it)
+    --it->order;
+}
+
 void Desk::MoveWindowToDeskInternal(aura::Window* window,
                                     Desk* target_desk,
                                     aura::Window* target_root) {
@@ -749,6 +929,10 @@ void Desk::MoveWindowToDeskInternal(aura::Window* window,
                                          .id());
     DCHECK_EQ(target_desk->container_id_, window->parent()->GetId());
   }
+}
+
+bool Desk::ShouldUpdateAllDeskStackingData() {
+  return features::IsPerDeskZOrderEnabled() && !is_active_;
 }
 
 bool Desk::MaybeResetContainersOpacities() {
