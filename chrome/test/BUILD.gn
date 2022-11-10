@@ -4595,6 +4595,7 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux) {
       sources += [
+        "../browser/ui/startup/first_run_service_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
       ]
@@ -4869,7 +4870,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/browser_navigator_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.h",
       "../browser/ui/browser_navigator_browsertest_chromeos.cc",
-      "../browser/ui/startup/lacros_first_run_service_browsertest.cc",
+      "../browser/ui/startup/first_run_service_browsertest.cc",
       "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
       "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",

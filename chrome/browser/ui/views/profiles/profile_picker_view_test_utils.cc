@@ -138,18 +138,6 @@ void ViewDeletedWaiter::OnViewIsDeleting(views::View* observed_view) {
 
 // -- ProfileManagementStepTestView --------------------------------------------
 
-// static
-ProfileManagementStepTestView* ProfileManagementStepTestView::CreateForStep(
-    Profile* profile,
-    ProfileManagementFlowController::Step step,
-    StepControllerFactory step_controller_factory) {
-  auto* view = new ProfileManagementStepTestView(
-      ProfilePicker::Params::ForFirstRun(profile->GetPath()), step,
-      std::move(step_controller_factory));
-
-  return view;
-}
-
 ProfileManagementStepTestView::ProfileManagementStepTestView(
     ProfilePicker::Params&& params,
     ProfileManagementFlowController::Step step,
@@ -266,7 +254,7 @@ void CompleteLacrosFirstRun(
   WaitForPickerWidgetCreated();
   WaitForPickerLoadStop(GURL("chrome://enterprise-profile-welcome/"));
 
-  ASSERT_TRUE(ProfilePicker::IsLacrosFirstRunOpen());
+  ASSERT_TRUE(ProfilePicker::IsFirstRunOpen());
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 
   EnterpriseProfileWelcomeHandler* handler = ExpectPickerWelcomeScreenType(

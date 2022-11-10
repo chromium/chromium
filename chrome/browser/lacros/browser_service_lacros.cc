@@ -41,7 +41,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/startup/lacros_first_run_service.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
@@ -104,13 +104,12 @@ void OnMainProfileInitialized(base::OnceCallback<void(Profile*)> callback,
     return;
   }
 
-  auto* fre_service =
-      LacrosFirstRunServiceFactory::GetForBrowserContext(profile);
+  auto* fre_service = FirstRunServiceFactory::GetForBrowserContext(profile);
   if (fre_service && can_trigger_fre && fre_service->ShouldOpenFirstRun()) {
     // TODO(https://crbug.com/1313848): Consider taking a
     // `ScopedProfileKeepAlive`.
     fre_service->OpenFirstRunIfNeeded(
-        LacrosFirstRunService::EntryPoint::kOther,
+        FirstRunService::EntryPoint::kOther,
         base::BindOnce(&MaybeProceedWithProfile, std::move(callback),
                        base::Unretained(profile)));
   } else {

@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
-#include "chrome/browser/ui/startup/lacros_first_run_service.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/views/session_crashed_bubble_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
+  EXPECT_TRUE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
-      LacrosFirstRunService::EntryPoint::kOther, 1);
+      FirstRunService::EntryPoint::kOther, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun_UiClose) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
+  EXPECT_TRUE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
-      LacrosFirstRunService::EntryPoint::kOther, 1);
+      FirstRunService::EntryPoint::kOther, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewTab_OpensFirstRun) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
+  EXPECT_TRUE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
-      LacrosFirstRunService::EntryPoint::kOther, 1);
+      FirstRunService::EntryPoint::kOther, 1);
 }
 
 class BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest,
                        NewWindow_OpensFirstRun) {
-  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
+  EXPECT_FALSE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest,
     NewWindow_OpensFirstRun) {
-  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
+  EXPECT_FALSE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);

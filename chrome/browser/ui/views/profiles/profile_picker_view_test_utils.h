@@ -68,21 +68,16 @@ class ProfileManagementStepTestView : public ProfilePickerView {
       base::RepeatingCallback<std::unique_ptr<ProfileManagementStepController>(
           ProfilePickerWebContentsHost* host)>;
 
-  static ProfileManagementStepTestView* CreateForStep(
-      Profile* profile,
-      ProfileManagementFlowController::Step step,
-      StepControllerFactory step_controller_factory);
-
-  // Returns when the content of the step reached the first non-empty paint.
-  void ShowAndWait(absl::optional<gfx::Size> view_size = absl::nullopt);
-
- protected:
   explicit ProfileManagementStepTestView(
       ProfilePicker::Params&& params,
       ProfileManagementFlowController::Step step,
       StepControllerFactory step_controller_factory);
   ~ProfileManagementStepTestView() override;
 
+  // Returns when the content of the step reached the first non-empty paint.
+  void ShowAndWait(absl::optional<gfx::Size> view_size = absl::nullopt);
+
+ protected:
   std::unique_ptr<ProfileManagementFlowController> CreateFlowController(
       Profile* picker_profile,
       ClearHostClosure clear_host_callback) override;

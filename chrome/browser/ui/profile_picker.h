@@ -27,7 +27,6 @@ class WebView;
 
 class ProfilePicker {
  public:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   enum class FirstRunExitStatus {
     // The user completed the FRE and is continuing to launch the browser.
     kCompleted = 0,
@@ -43,6 +42,7 @@ class ProfilePicker {
       base::OnceCallback<void(FirstRunExitStatus status,
                               base::OnceClosure callback)>;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Added for bug investigation purposes.
   // TODO(crbug.com/1340791): Remove this once the source of the bug is found.
   enum class FirstRunExitSource {
@@ -81,6 +81,7 @@ class ProfilePicker {
     // May only be used on lacros, opens a first run experience (provided no
     // policies prevent it) to let the user opt in to sync, etc. for the primary
     // profile.
+    // TODO(crbug.com/1375277): Migrate to only using kFirstRun.
     kLacrosPrimaryProfileFirstRun = 9,
     // The Profile became idle, due to the IdleProfileCloseTimeout policy.
     kProfileIdle = 10,
@@ -110,8 +111,6 @@ class ProfilePicker {
     static Params ForBackgroundManager(
         const GURL& on_select_profile_target_url);
 
-    static Params ForFirstRun(const base::FilePath& profile_path);
-
     EntryPoint entry_point() const { return entry_point_; }
 
     // Returns the path to the profile to use to display the Web UI.
@@ -139,30 +138,35 @@ class ProfilePicker {
         const base::FilePath& profile_path,
         base::OnceCallback<void(const std::string&)> account_selected_callback);
 
-    // Builds parameter with the `kLacrosPrimaryProfileFirstRun` entry point.
+    // Calls `account_selected_callback_`. See
+    // `ForLacrosSelectAvailableAccount()` for more details.
+    void NotifyAccountSelected(const std::string& gaia_id);
+#endif
+
+    // Builds parameter with the `kFirstRun` (on Dice) or the
+    //  `kLacrosPrimaryProfileFirstRun` (on Lacros) entry point.
     //
+    // `profile_path` is the profile for which to open the FRE. On Lacros we
+    // expect it to be the main profile path.
     // `first_run_exited_callback` is called when the first run experience is
     // exited, with a `FirstRunExitStatus` indicating how the user responded to
     // it, and an optional callback that must be run if the user has proceeded
     // to the browser after the FRE.
-    static Params ForLacrosPrimaryProfileFirstRun(
-        FirstRunExitedCallback first_run_exited_callback);
-
-    // Calls `account_selected_callback_`. See
-    // `ForLacrosSelectAvailableAccount()` for more details.
-    void NotifyAccountSelected(const std::string& gaia_id);
+    static Params ForFirstRun(const base::FilePath& profile_path,
+                              FirstRunExitedCallback first_run_exited_callback);
 
     // Calls `first_run_exited_callback_`, forwarding `exit_status` and
-    // `maybe_callback`. See `ForLacrosPrimaryProfileFirstRun()` for more
+    // `maybe_callback`. See `ForFirstRun()` for more
     // details.
     //
     // If this method is not called by the time this `Param` is destroyed, an
     // intent to quit will be assumed and `first_run_exited_callback_` will be
     // called by the destructor with quit-related arguments.
     void NotifyFirstRunExited(FirstRunExitStatus exit_status,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
                               FirstRunExitSource exit_source,
-                              base::OnceClosure maybe_callback);
 #endif
+                              base::OnceClosure maybe_callback);
 
     // Returns whether the current profile picker window can be reused for
     // different parameters. If this returns false, the picker cannot be reused
@@ -176,9 +180,10 @@ class ProfilePicker {
     EntryPoint entry_point_ = EntryPoint::kOnStartup;
     GURL on_select_profile_target_url_;
     base::FilePath profile_path_;
+    FirstRunExitedCallback first_run_exited_callback_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     base::OnceCallback<void(const std::string&)> account_selected_callback_;
-    FirstRunExitedCallback first_run_exited_callback_;
+
 #endif
   };
 
@@ -251,11 +256,9 @@ class ProfilePicker {
   // Returns whether the profile picker is currently open.
   static bool IsOpen();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns whether the profile picker is currently open and showing the Lacros
-  // First Run Experience.
-  static bool IsLacrosFirstRunOpen();
-#endif
+  // Returns whether the profile picker is currently open and showing the First
+  // Run Experience.
+  static bool IsFirstRunOpen();
 
   // Returns whether the Profile picker is showing and active.
   static bool IsActive();

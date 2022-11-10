@@ -27,7 +27,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
-#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
@@ -54,6 +53,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_toolbar.h"
 #endif
 
@@ -249,14 +249,14 @@ bool ProfilePicker::IsOpen() {
   return g_profile_picker_view;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
-bool ProfilePicker::IsLacrosFirstRunOpen() {
+bool ProfilePicker::IsFirstRunOpen() {
   return ProfilePicker::IsOpen() &&
-         g_profile_picker_view->params_.entry_point() ==
-             ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun;
+         (g_profile_picker_view->params_.entry_point() ==
+              ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun ||
+          g_profile_picker_view->params_.entry_point() ==
+              ProfilePicker::EntryPoint::kFirstRun);
 }
-#endif
 
 bool ProfilePicker::IsActive() {
   if (!IsOpen())

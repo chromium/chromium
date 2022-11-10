@@ -84,8 +84,11 @@ class FirstRunIntroPixelTest : public UiBrowserTest,
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-    profile_picker_view_ = ProfileManagementStepTestView::CreateForStep(
-        browser()->profile(), ProfileManagementFlowController::Step::kIntro,
+    profile_picker_view_ = new ProfileManagementStepTestView(
+        ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
+                                           base::DoNothing()),
+        ProfileManagementFlowController::Step::kIntro,
+        /*step_controller_factory=*/
         base::BindRepeating([](ProfilePickerWebContentsHost* host) {
           return CreateIntroStep(host, base::DoNothing(),
                                  /*enable_animations=*/false);

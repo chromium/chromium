@@ -109,8 +109,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/startup/first_run_service.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -578,7 +581,7 @@ void RecordIncognitoForcedStart(bool should_launch_incognito,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Launches a browser by using a dedicated `StartupBrowserCreator`, to avoid
 // having to rely on the current instance staying alive while this method is
 // bound as a callback.
@@ -661,15 +664,14 @@ void StartupBrowserCreator::LaunchBrowser(
       command_line, {profile, StartupProfileMode::kBrowserWindow});
 
   if (!IsSilentLaunchEnabled(command_line, profile)) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* fre_service =
-        LacrosFirstRunServiceFactory::GetForBrowserContext(profile);
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+    auto* fre_service = FirstRunServiceFactory::GetForBrowserContext(profile);
     if (fre_service && fre_service->ShouldOpenFirstRun()) {
       // Show the FRE and let `OpenNewWindowForFirstRun()` handle the browser
       // launch. This `StartupBrowserCreator` will get destroyed when the method
       // returns so the relevant data is copied over and passed to the callback.
       fre_service->OpenFirstRunIfNeeded(
-          LacrosFirstRunService::EntryPoint::kProcessStartup,
+          FirstRunService::EntryPoint::kProcessStartup,
           base::BindOnce(&OpenNewWindowForFirstRun, command_line, profile,
                          cur_dir, first_run_tabs_, process_startup,
                          is_first_run, std::move(launch_mode_recorder)));

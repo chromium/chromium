@@ -249,7 +249,7 @@
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
-#include "chrome/browser/ui/startup/lacros_first_run_service.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -412,7 +412,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   InstantServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LacrosFirstRunServiceFactory::GetInstance();
+  FirstRunServiceFactory::GetInstance();
 #endif
   LanguageModelManagerFactory::GetInstance();
   if (base::FeatureList::IsEnabled(

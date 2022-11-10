@@ -166,7 +166,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#include "chrome/browser/ui/startup/lacros_first_run_service.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
@@ -2408,7 +2408,7 @@ void ProfileManager::OnBrowserOpened(Browser* browser) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // No browser should be opened before the FRE is finished.
-  DCHECK(!ShouldOpenPrimaryProfileFirstRun(profile));
+  DCHECK(!ShouldOpenFirstRun(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   if (!profile->IsOffTheRecord() &&

@@ -78,12 +78,6 @@ ProfilePicker::Params ProfilePicker::Params::ForBackgroundManager(
   return params;
 }
 
-// static
-ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
-    const base::FilePath& profile_path) {
-  return ProfilePicker::Params(EntryPoint::kFirstRun, profile_path);
-}
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 ProfilePicker::Params ProfilePicker::Params::ForLacrosSelectAvailableAccount(
@@ -95,35 +89,49 @@ ProfilePicker::Params ProfilePicker::Params::ForLacrosSelectAvailableAccount(
   return params;
 }
 
-// static
-ProfilePicker::Params ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(
-    FirstRunExitedCallback first_run_finished_callback) {
-  Params params(EntryPoint::kLacrosPrimaryProfileFirstRun,
-                ProfileManager::GetPrimaryUserProfilePath());
-  params.first_run_exited_callback_ = std::move(first_run_finished_callback);
-  return params;
-}
-
 void ProfilePicker::Params::NotifyAccountSelected(const std::string& gaia_id) {
   if (account_selected_callback_)
     std::move(account_selected_callback_).Run(gaia_id);
 }
+#endif
+
+// static
+ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
+    const base::FilePath& profile_path,
+    FirstRunExitedCallback first_run_exited_callback) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK_EQ(profile_path, ProfileManager::GetPrimaryUserProfilePath());
+#endif
+
+  Params params(
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      EntryPoint::kFirstRun,
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      EntryPoint::kLacrosPrimaryProfileFirstRun,
+#endif
+      profile_path);
+  params.first_run_exited_callback_ = std::move(first_run_exited_callback);
+  return params;
+}
 
 void ProfilePicker::Params::NotifyFirstRunExited(
     FirstRunExitStatus exit_status,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     FirstRunExitSource exit_source,
+#endif
     base::OnceClosure maybe_callback) {
   if (!first_run_exited_callback_)
     return;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   LOG(ERROR) << "Notifying FirstRun exit with status="
              << static_cast<int>(exit_status)
              << " from source=" << static_cast<int>(exit_source);
+#endif
 
   std::move(first_run_exited_callback_)
       .Run(exit_status, std::move(maybe_callback));
 }
-#endif
 
 bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -467,7 +467,10 @@
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
 #include "chrome/browser/lacros/net/proxy_config_service_lacros.h"
-#include "chrome/browser/ui/startup/lacros_first_run_service.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/startup/first_run_service.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1131,8 +1134,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   WhatsNewUI::RegisterLocalStatePrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LacrosFirstRunService::RegisterLocalStatePrefs(registry);
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+  FirstRunService::RegisterLocalStatePrefs(registry);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -3398,8 +3398,6 @@ static_library("ui") {
 
   if (is_chromeos_lacros) {
     sources += [
-      "startup/lacros_first_run_service.cc",
-      "startup/lacros_first_run_service.h",
       "startup/silent_sync_enabler.cc",
       "startup/silent_sync_enabler.h",
       "views/chrome_browser_main_extra_parts_views_lacros.cc",
@@ -3548,6 +3546,8 @@ static_library("ui") {
       "startup/default_browser_infobar_delegate.h",
       "startup/default_browser_prompt.cc",
       "startup/default_browser_prompt.h",
+      "startup/first_run_service.cc",
+      "startup/first_run_service.h",
       "views/profiles/badged_profile_photo.cc",
       "views/profiles/badged_profile_photo.h",
       "views/profiles/profile_customization_bubble_sync_controller.cc",

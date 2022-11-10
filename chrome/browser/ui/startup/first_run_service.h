@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_STARTUP_LACROS_FIRST_RUN_SERVICE_H_
-#define CHROME_BROWSER_UI_STARTUP_LACROS_FIRST_RUN_SERVICE_H_
+#ifndef CHROME_BROWSER_UI_STARTUP_FIRST_RUN_SERVICE_H_
+#define CHROME_BROWSER_UI_STARTUP_FIRST_RUN_SERVICE_H_
 
 #include <memory>
 
@@ -13,12 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-#error This file should only be included on lacros.
-#endif
 
 class PrefRegistrySimple;
 class Profile;
@@ -30,7 +24,7 @@ using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 
 // Service handling the First Run Experience for the primary profile on Lacros.
 // It is not available on the other profiles.
-class LacrosFirstRunService : public KeyedService {
+class FirstRunService : public KeyedService {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -50,17 +44,20 @@ class LacrosFirstRunService : public KeyedService {
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  explicit LacrosFirstRunService(Profile* profile);
-  ~LacrosFirstRunService() override;
+  explicit FirstRunService(Profile* profile);
+  ~FirstRunService() override;
 
   // Returns whether first run experience (including sync promo) should be
   // opened on startup.
   bool ShouldOpenFirstRun() const;
 
-  // Assuming that the first run experience needs to be opened on startup,
-  // asynchronously attempts to complete it silently, in case collecting consent
-  // is not needed. If `callback` is provided, it will run once the attempt is
-  // completed. To see if it the attempt worked, call `ShouldOpenFirstRun()`.
+  // Asynchronously attempts to complete the first run silently.
+  // By the time `callback` is run (if non-null), either:
+  // - the first run has been marked finished because it can't be run for this
+  //   profile (e.g. policies) or because we want to enable Sync silently (on
+  //   Lacros only)
+  // - the first run is ready to be opened.
+  // The finished state can be checked by calling `ShouldOpenFirstRun()`.
   void TryMarkFirstRunAlreadyFinished(base::OnceClosure callback);
 
   // This function takes the user through the browser FRE.
@@ -86,41 +83,45 @@ class LacrosFirstRunService : public KeyedService {
  private:
   void OpenFirstRunInternal(EntryPoint entry_point,
                             ResumeTaskCallback callback);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   void StartSilentSync(base::OnceClosure callback);
   void ClearSilentSyncEnabler();
+#endif
 
   // Owns of this instance via the KeyedService mechanism.
   const raw_ptr<Profile> profile_;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<SilentSyncEnabler> silent_sync_enabler_;
+#endif
 
-  base::WeakPtrFactory<LacrosFirstRunService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FirstRunService> weak_ptr_factory_{this};
 };
 
-class LacrosFirstRunServiceFactory : public ProfileKeyedServiceFactory {
+class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  LacrosFirstRunServiceFactory(const LacrosFirstRunServiceFactory&) = delete;
-  LacrosFirstRunServiceFactory& operator=(const LacrosFirstRunServiceFactory&) =
-      delete;
+  FirstRunServiceFactory(const FirstRunServiceFactory&) = delete;
+  FirstRunServiceFactory& operator=(const FirstRunServiceFactory&) = delete;
 
-  static LacrosFirstRunService* GetForBrowserContext(
+  static FirstRunService* GetForBrowserContext(
       content::BrowserContext* context);
 
-  static LacrosFirstRunServiceFactory* GetInstance();
+  static FirstRunServiceFactory* GetInstance();
 
  private:
-  friend class base::NoDestructor<LacrosFirstRunServiceFactory>;
+  friend class base::NoDestructor<FirstRunServiceFactory>;
 
-  LacrosFirstRunServiceFactory();
-  ~LacrosFirstRunServiceFactory() override;
+  FirstRunServiceFactory();
+  ~FirstRunServiceFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
-// Helper to call `LacrosFirstRunService::ShouldOpenFirstRun()` without having
+// Helper to call `FirstRunService::ShouldOpenFirstRun()` without having
 // to first obtain the service instance.
-bool ShouldOpenPrimaryProfileFirstRun(Profile* profile);
+bool ShouldOpenFirstRun(Profile* profile);
 
-#endif  // CHROME_BROWSER_UI_STARTUP_LACROS_FIRST_RUN_SERVICE_H_
+#endif  // CHROME_BROWSER_UI_STARTUP_FIRST_RUN_SERVICE_H_

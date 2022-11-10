@@ -170,14 +170,19 @@ TEST_F(ProfilePickerParamsTest, CanReuse) {
       params.CanReusePickerWindow(ProfilePicker::Params::ForBackgroundManager(
           GURL("https://google.com/"))));
 
+  ProfilePicker::Params first_run_params = ProfilePicker::Params::ForFirstRun(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      ProfileManager::GetPrimaryUserProfilePath(),
+#else
+      base::FilePath(FILE_PATH_LITERAL("Profile1")),
+#endif
+      ProfilePicker::FirstRunExitedCallback());
+  EXPECT_TRUE(first_run_params.CanReusePickerWindow(first_run_params));
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   ProfilePicker::Params select_account_params =
       ProfilePicker::Params::ForLacrosSelectAvailableAccount(
           base::FilePath(), base::OnceCallback<void(const std::string&)>());
-  ProfilePicker::Params first_run_params =
-      ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(
-          ProfilePicker::FirstRunExitedCallback());
-  EXPECT_TRUE(first_run_params.CanReusePickerWindow(first_run_params));
   EXPECT_TRUE(
       select_account_params.CanReusePickerWindow(select_account_params));
 
@@ -188,7 +193,7 @@ TEST_F(ProfilePickerParamsTest, CanReuse) {
   // Cannot reuse because of the path.
   EXPECT_FALSE(select_account_params.CanReusePickerWindow(
       ProfilePicker::Params::ForLacrosSelectAvailableAccount(
-          base::FilePath("Foo"),
+          base::FilePath(FILE_PATH_LITERAL("Foo")),
           base::OnceCallback<void(const std::string&)>())));
 #endif
 }
@@ -208,13 +213,13 @@ TEST_F(ProfilePickerParamsTest, ForLacrosSelectAvailableAccount) {
   }
 }
 
-TEST_F(ProfilePickerParamsTest, ForLacrosPrimaryProfileFirstRun_Exit) {
+TEST_F(ProfilePickerParamsTest, ForFirstRun_Exit) {
   testing::StrictMock<base::MockOnceCallback<void(
       ProfilePicker::FirstRunExitStatus, base::OnceClosure)>>
       callback;
   {
-    ProfilePicker::Params params =
-        ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(callback.Get());
+    ProfilePicker::Params params = ProfilePicker::Params::ForFirstRun(
+        ProfileManager::GetPrimaryUserProfilePath(), callback.Get());
     EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
               params.profile_path().BaseName());
     // The callback is called at destruction.
@@ -223,13 +228,13 @@ TEST_F(ProfilePickerParamsTest, ForLacrosPrimaryProfileFirstRun_Exit) {
   }
 }
 
-TEST_F(ProfilePickerParamsTest, ForLacrosPrimaryProfileFirstRun_Notify) {
+TEST_F(ProfilePickerParamsTest, ForFirstRun_Notify) {
   testing::StrictMock<base::MockOnceCallback<void(
       ProfilePicker::FirstRunExitStatus, base::OnceClosure)>>
       callback;
   {
-    ProfilePicker::Params params =
-        ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(callback.Get());
+    ProfilePicker::Params params = ProfilePicker::Params::ForFirstRun(
+        ProfileManager::GetPrimaryUserProfilePath(), callback.Get());
     EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
               params.profile_path().BaseName());
     EXPECT_CALL(callback, Run(ProfilePicker::FirstRunExitStatus::kCompleted,
