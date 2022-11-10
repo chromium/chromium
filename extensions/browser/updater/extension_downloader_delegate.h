@@ -49,8 +49,6 @@ class ExtensionDownloaderDelegate {
     // There was an update for this extension but the download of the crx
     // failed.
     CRX_FETCH_FAILED,
-
-    kMaxValue = CRX_FETCH_FAILED,
   };
 
   // Passed as an argument to OnExtensionDownloadStageChanged() to detail how

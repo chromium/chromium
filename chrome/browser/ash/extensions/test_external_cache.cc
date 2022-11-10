@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "extensions/browser/updater/extension_downloader_delegate.h"
 
 namespace chromeos {
 
@@ -91,23 +90,20 @@ void TestExternalCache::PutExternalExtension(
 bool TestExternalCache::SimulateExtensionDownloadFinished(
     const std::string& id,
     const std::string& crx_path,
-    const std::string& version,
-    bool is_update) {
+    const std::string& version) {
   if (!pending_downloads_.count(id))
     return false;
 
   AddEntryToCrxCache(id, crx_path, version);
-  delegate_->OnExtensionLoadedInCache(id, is_update);
+  delegate_->OnExtensionLoadedInCache(id);
   return true;
 }
 
-bool TestExternalCache::SimulateExtensionDownloadFailed(
-    const std::string& id,
-    extensions::ExtensionDownloaderDelegate::Error error) {
+bool TestExternalCache::SimulateExtensionDownloadFailed(const std::string& id) {
   if (!pending_downloads_.count(id))
     return false;
 
-  delegate_->OnExtensionDownloadFailed(id, error);
+  delegate_->OnExtensionDownloadFailed(id);
   return true;
 }
 

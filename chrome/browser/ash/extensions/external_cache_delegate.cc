@@ -12,12 +12,10 @@ void ExternalCacheDelegate::OnExtensionListsUpdated(
     const base::Value::Dict& prefs) {}
 
 void ExternalCacheDelegate::OnExtensionLoadedInCache(
-    const extensions::ExtensionId& id,
-    bool is_update) {}
+    const extensions::ExtensionId& id) {}
 
 void ExternalCacheDelegate::OnExtensionDownloadFailed(
-    const extensions::ExtensionId& id,
-    extensions::ExtensionDownloaderDelegate::Error error) {}
+    const extensions::ExtensionId& id) {}
 
 void ExternalCacheDelegate::OnCachedExtensionFileDeleted(
     const extensions::ExtensionId& id) {}
