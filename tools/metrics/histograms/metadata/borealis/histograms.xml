@@ -224,6 +224,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Borealis.Install.Retries" units="retries"
+    expires_after="2023-04-09">
+  <owner>hollingum@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The number of times the borealis DLC installation was retried by the
+    installer. The main use of this is to determine if 1 and 2 appear often, and
+    significantly more often than 3 (the maximum), i.e. to see whether retrying
+    leads to success or changes nothing.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.Shutdown.Attempt" enum="BooleanAttempted"
     expires_after="2023-02-01">
   <owner>lqu@google.com</owner>

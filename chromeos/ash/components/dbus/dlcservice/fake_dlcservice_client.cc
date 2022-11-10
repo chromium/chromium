@@ -21,7 +21,7 @@ void FakeDlcserviceClient::Install(
   VLOG(1) << "Requesting to install DLC(s).";
   const std::string& id = install_request.id();
   InstallResult install_result{
-      .error = install_err_,
+      .error = GetInstallError(),
       .dlc_id = id,
       .root_path = install_root_path_,
   };
@@ -87,6 +87,15 @@ void FakeDlcserviceClient::AddObserver(Observer* observer) {
 
 void FakeDlcserviceClient::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+std::string FakeDlcserviceClient::GetInstallError() {
+  if (extra_install_errs_.empty()) {
+    return install_err_;
+  }
+  std::string ret(std::move(extra_install_errs_.front()));
+  extra_install_errs_.pop_front();
+  return ret;
 }
 
 }  // namespace ash

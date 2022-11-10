@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/borealis/borealis_installer.h"
 
 namespace borealis {
 
@@ -35,6 +36,7 @@ const char kBorealisInstallNumAttemptsHistogram[] =
 const char kBorealisInstallResultHistogram[] = "Borealis.Install.Result";
 const char kBorealisInstallOverallTimeHistogram[] =
     "Borealis.Install.OverallTime";
+const char kBorealisInstallRetriesHistogram[] = "Borealis.Install.Retries";
 const char kBorealisShutdownNumAttemptsHistogram[] =
     "Borealis.Shutdown.NumAttempts";
 const char kBorealisShutdownResultHistogram[] = "Borealis.Shutdown.Result";
@@ -60,6 +62,14 @@ void RecordBorealisInstallResultHistogram(
 
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time) {
   base::UmaHistogramTimes(kBorealisInstallOverallTimeHistogram, install_time);
+}
+
+void RecordBorealisInstallRetries(int retry_count) {
+  base::UmaHistogramCustomCounts(
+      kBorealisInstallRetriesHistogram, retry_count,
+      /*min=*/0,
+      /*exclusive_max=*/BorealisInstaller::kMaxDlcRetries + 1,
+      /*buckets=*/BorealisInstaller::kMaxDlcRetries + 1);
 }
 
 void RecordBorealisUninstallNumAttemptsHistogram() {

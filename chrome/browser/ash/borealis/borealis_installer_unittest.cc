@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
 #include "chrome/browser/ash/borealis/borealis_installer_impl.h"
 
@@ -37,6 +38,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace borealis {
 
@@ -359,6 +361,20 @@ TEST_F(BorealisInstallerTest, ReportsMainAppMissingAsError) {
                                   testing::Not("")));
 
   StartAndRunToCompletion();
+}
+
+TEST_F(BorealisInstallerTest, RetriesAfterInternalFailure) {
+  PrepareSuccessfulInstallation();
+  FakeDlcserviceClient()->set_install_errors({dlcservice::kErrorInternal,
+                                              dlcservice::kErrorInternal,
+                                              dlcservice::kErrorNone});
+
+  EXPECT_CALL(*observer_,
+              OnInstallationEnded(BorealisInstallResult::kSuccess, ""));
+  StartAndRunToCompletion();
+
+  histogram_tester_.ExpectTotalCount(kBorealisInstallRetriesHistogram, 1);
+  histogram_tester_.ExpectBucketCount(kBorealisInstallRetriesHistogram, 2, 1);
 }
 
 // Note that we don't check if the DLC has/hasn't been installed, since the

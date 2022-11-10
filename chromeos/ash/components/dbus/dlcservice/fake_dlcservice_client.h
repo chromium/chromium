@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/containers/queue.h"
+#include "base/containers/circular_deque.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
@@ -40,7 +40,18 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   void NotifyObserversForTest(const dlcservice::DlcState& dlc_state);
 
   // Setters:
+
+  // This error will be returned by default (i.e. when there are no errors
+  // queued by set_install_errors().
   void set_install_error(const std::string& err) { install_err_ = err; }
+
+  // Set a list of errors which will be returned (in queue order). When there
+  // are no errors left the default error set by set_install_error() will be
+  // returned repeatedly.
+  void set_install_errors(base::circular_deque<std::string> errs) {
+    extra_install_errs_ = std::move(errs);
+  }
+
   void set_install_root_path(const std::string& path) {
     install_root_path_ = path;
   }
@@ -61,7 +72,10 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   }
 
  private:
+  std::string GetInstallError();
+
   std::string install_err_ = dlcservice::kErrorNone;
+  base::circular_deque<std::string> extra_install_errs_;
   std::string uninstall_err_ = dlcservice::kErrorNone;
   std::string purge_err_ = dlcservice::kErrorNone;
   std::string get_dlc_state_err_ = dlcservice::kErrorNone;

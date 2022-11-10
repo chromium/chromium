@@ -23,6 +23,7 @@ extern const char kBorealisDiskStartupTotalSpaceHistogram[];
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
+extern const char kBorealisInstallRetriesHistogram[];
 extern const char kBorealisShutdownNumAttemptsHistogram[];
 extern const char kBorealisShutdownResultHistogram[];
 extern const char kBorealisStabilityHistogram[];
@@ -134,6 +135,7 @@ enum class BorealisShutdownResult {
 void RecordBorealisInstallNumAttemptsHistogram();
 void RecordBorealisInstallResultHistogram(BorealisInstallResult install_result);
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);
+void RecordBorealisInstallRetries(int retry_count);
 void RecordBorealisUninstallNumAttemptsHistogram();
 void RecordBorealisUninstallResultHistogram(
     BorealisUninstallResult uninstall_result);
