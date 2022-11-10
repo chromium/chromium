@@ -23,8 +23,6 @@ component("metal_util") {
     "hdr_copier_layer.h",
     "hdr_copier_layer.mm",
     "metal_util_export.h",
-    "test_shader.h",
-    "test_shader.mm",
   ]
 
   public_deps = [ ":metal_util_types" ]
@@ -45,15 +43,5 @@ component("metal_util") {
   weak_frameworks = [
     "Metal.framework",
     "MetalKit.framework",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "test_shader_unittest.cc" ]
-  deps = [
-    ":metal_util",
-    "//base",
-    "//testing/gtest",
   ]
 }

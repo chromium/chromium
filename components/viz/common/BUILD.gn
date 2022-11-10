@@ -78,8 +78,6 @@ if (is_mac) {
     defines = [ "VIZ_METAL_CONTEXT_PROVIDER_IMPLEMENTATION" ]
 
     sources = [
-      "gpu/metal_api_proxy.h",
-      "gpu/metal_api_proxy.mm",
       "gpu/metal_context_provider.h",
       "gpu/metal_context_provider.mm",
       "viz_metal_context_provider_export.h",

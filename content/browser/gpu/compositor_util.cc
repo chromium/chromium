@@ -182,12 +182,6 @@ const GpuFeatureData GetGpuFeatureData(
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_GL),
      false /* disabled */, DisableInfo::NotProblem(),
      false /* fallback_to_software */},
-#if BUILDFLAG(IS_MAC)
-    {"metal",
-     SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_METAL),
-     !base::FeatureList::IsEnabled(features::kMetal) /* disabled */,
-     DisableInfo::NotProblem(), false /* fallback_to_software */},
-#endif
 #if BUILDFLAG(ENABLE_VULKAN)
     {"vulkan",
      SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_VULKAN),

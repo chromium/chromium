@@ -2630,9 +2630,6 @@ extern const char kImmersiveFullscreenDescription[];
 extern const char kMacSyscallSandboxName[];
 extern const char kMacSyscallSandboxDescription[];
 
-extern const char kMetalName[];
-extern const char kMetalDescription[];
-
 extern const char kScreenTimeName[];
 extern const char kScreenTimeDescription[];
 

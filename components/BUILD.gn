@@ -589,10 +589,7 @@ test("components_unittests") {
   }
 
   if (is_mac) {
-    deps += [
-      "//components/metal_util:unit_tests",
-      "//components/power_metrics:unit_tests",
-    ]
+    deps += [ "//components/power_metrics:unit_tests" ]
   }
 
   if (toolkit_views) {

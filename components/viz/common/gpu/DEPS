@@ -13,10 +13,3 @@ include_rules = [
   "+third_party/skia/include/gpu",
   "+third_party/vulkan_headers/include",
 ]
-
-specific_include_rules = {
-  "metal_api_proxy.mm": [
-    "+components/crash/core/common/crash_key.h",
-    "+ui/gl",
-  ]
-}
