@@ -55,8 +55,12 @@ void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
 
   std::string provider_string = ProviderToString(provider);
   for (auto& result : it->second) {
+    normalizer_.Update(provider_string, result->relevance());
+  }
+
+  for (auto& result : it->second) {
     result->scoring().normalized_relevance =
-        normalizer_.UpdateAndNormalize(provider_string, result->relevance());
+        normalizer_.Normalize(provider_string, result->relevance());
   }
 }
 

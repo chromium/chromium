@@ -238,12 +238,6 @@ void ScoreNormalizer::Update(const std::string& name, double score) {
   proto_.QueueWrite();
 }
 
-double ScoreNormalizer::UpdateAndNormalize(const std::string& name,
-                                           double score) {
-  Update(name, score);
-  return Normalize(name, score);
-}
-
 void ScoreNormalizer::OnProtoRead(ReadStatus status) {
   DCHECK(proto_.initialized());
 

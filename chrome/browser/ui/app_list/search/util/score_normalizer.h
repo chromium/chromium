@@ -50,9 +50,6 @@ class ScoreNormalizer {
   // Train the |name| normalizer on |score|.
   void Update(const std::string& name, double score);
 
-  // A convenience method that calls Update and then Normalize.
-  double UpdateAndNormalize(const std::string& name, double score);
-
  private:
   friend class ScoreNormalizerTest;
 
