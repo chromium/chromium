@@ -672,38 +672,10 @@ export class Output {
         type, buff, formatLog);
   }
 
-  /**
-   * Format the node given the format specifier.
-   * @param {!outputTypes.OutputFormattingData} params All the required and
-   *     optional parameters for formatting.
-   * @private
-   */
+  /** @override */
   format_(params) {
     const formatter = new OutputFormatter(this, params);
     new OutputFormatParser(formatter).parse(params.outputFormat);
-  }
-
-  /** @override */
-  formatNameOrDescendants_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    options.annotation.push(token);
-    if (node.name &&
-        (node.nameFrom !== NameFromType.CONTENTS ||
-         node.children.every(child => child.role === RoleType.STATIC_TEXT))) {
-      this.append_(buff, node.name || '', options);
-      formatLog.writeTokenWithValue(token, node.name);
-    } else {
-      formatLog.writeToken(token);
-      this.format_({
-        node,
-        outputFormat: '$descendants',
-        outputBuffer: buff,
-        outputFormatLogger: formatLog,
-      });
-    }
   }
 
   /** @override */

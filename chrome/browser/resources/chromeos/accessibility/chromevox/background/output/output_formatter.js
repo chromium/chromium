@@ -12,6 +12,7 @@ import {OutputInterface} from './output_interface.js';
 import * as outputTypes from './output_types.js';
 
 const NameFromType = chrome.automation.NameFromType;
+const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
 // TODO(anastasi): Move formatting logic to this class.
@@ -54,7 +55,7 @@ export class OutputFormatter {
       // rich output for descendants. It also lets name from contents
       // override the descendants text if |node| has only static text
       // children.
-      this.output_.formatNameOrDescendants_(this.params_, token, options);
+      this.formatNameOrDescendants_(this.params_, token, options);
     } else if (token === 'indexInParent') {
       this.output_.formatIndexInParent_(this.params_, token, tree, options);
     } else if (token === 'restriction') {
@@ -228,6 +229,34 @@ export class OutputFormatter {
     options.annotation.push('name');
     this.output_.append_(buff, node.name || '', options);
     formatLog.writeTokenWithValue(token, node.name);
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatNameOrDescendants_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    options.annotation.push(token);
+    if (node.name &&
+        (node.nameFrom !== NameFromType.CONTENTS ||
+         node.children.every(child => child.role === RoleType.STATIC_TEXT))) {
+      this.output_.append_(buff, node.name || '', options);
+      formatLog.writeTokenWithValue(token, node.name);
+    } else {
+      formatLog.writeToken(token);
+      this.output_.format_({
+        node,
+        outputFormat: '$descendants',
+        outputBuffer: buff,
+        outputFormatLogger: formatLog,
+      });
+    }
   }
 
   /**

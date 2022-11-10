@@ -39,6 +39,13 @@ export class OutputInterface {
   findEarcon_(node, opt_prevNode) {}
 
   /**
+   * Format the node given the format specifier.
+   * @param {!OutputFormattingData} params All the required and
+   *     optional parameters for formatting.
+   */
+  format_(params) {}
+
+  /**
    * @param {!OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
@@ -120,13 +127,6 @@ export class OutputInterface {
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatMessage_(data, token, tree, options) {}
-
-  /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatNameOrDescendants_(data, token, options) {}
 
   /**
    * @param {!OutputFormattingData} data
