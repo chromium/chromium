@@ -180,17 +180,23 @@ void AutocompleteControllerAndroid::StartPrefetch(
     return;
   }
 
+  const bool is_ntp_page = BaseSearchProvider::IsNTPPage(page_classification);
   const bool interaction_clobber_focus_type =
       base::FeatureList::IsEnabled(
           omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
-      !BaseSearchProvider::IsNTPPage(page_classification);
+      !is_ntp_page;
 
   GURL current_url;
   std::u16string auto_complete_text;
 
   if (!j_current_url.is_null()) {
-    auto_complete_text = ConvertJavaStringToUTF16(env, j_current_url);
     current_url = GURL(ConvertJavaStringToUTF16(env, j_current_url));
+
+    // We will not assign text to autocomplete input when on NTP page and input
+    // type is not clobber focus type.
+    if (!is_ntp_page && !interaction_clobber_focus_type) {
+      auto_complete_text = ConvertJavaStringToUTF16(env, j_current_url);
+    }
   }
 
   AutocompleteInput input(auto_complete_text, page_classification,
