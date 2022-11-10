@@ -179,11 +179,6 @@ bool ExtensionsMenuTestUtil::HidePopup() {
   return !HasPopup();
 }
 
-void ExtensionsMenuTestUtil::SetWidth(int width) {
-  extensions_container_->SetSize(
-      gfx::Size(width, extensions_container_->height()));
-}
-
 ExtensionsContainer* ExtensionsMenuTestUtil::GetExtensionsContainer() {
   return extensions_container_;
 }
@@ -191,18 +186,6 @@ ExtensionsContainer* ExtensionsMenuTestUtil::GetExtensionsContainer() {
 void ExtensionsMenuTestUtil::WaitForExtensionsContainerLayout() {
   views::test::WaitForAnimatingLayoutManager(
       static_cast<views::View*>(extensions_container_));
-}
-
-std::unique_ptr<ExtensionActionTestHelper>
-ExtensionsMenuTestUtil::CreateOverflowBar(Browser* browser) {
-  // There is no overflow bar with the ExtensionsMenu implementation.
-  NOTREACHED();
-  return nullptr;
-}
-
-void ExtensionsMenuTestUtil::LayoutForOverflowBar() {
-  // There is no overflow bar with the ExtensionsMenu implementation.
-  NOTREACHED();
 }
 
 gfx::Size ExtensionsMenuTestUtil::GetMinPopupSize() {

@@ -81,25 +81,11 @@ class ExtensionActionTestHelper {
   // Hides the given popup and returns whether the hide was successful.
   virtual bool HidePopup() = 0;
 
-  // Sets the current width of the browser actions container without resizing
-  // the underlying controller. This is to simulate e.g. when the browser window
-  // is too small for the preferred width.
-  virtual void SetWidth(int width) = 0;
-
   // Returns the associated ExtensionsContainer.
   virtual ExtensionsContainer* GetExtensionsContainer() = 0;
 
   // Waits for the ExtensionContainer's layout to be done.
   virtual void WaitForExtensionsContainerLayout() = 0;
-
-  // Creates and returns a ExtensionActionTestHelper with an "overflow"
-  // container, with this object's container as the main bar.
-  virtual std::unique_ptr<ExtensionActionTestHelper> CreateOverflowBar(
-      Browser* browser) = 0;
-
-  // Forces a layout of an overflow bar. Must only be called on the helper
-  // returned by CreateOverflowBar().
-  virtual void LayoutForOverflowBar() = 0;
 
   // Returns the minimum allowed size of an extension popup.
   virtual gfx::Size GetMinPopupSize() = 0;
