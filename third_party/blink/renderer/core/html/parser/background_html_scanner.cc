@@ -105,6 +105,32 @@ wtf_size_t GetMinimumCSSSize() {
   return kMinimumCSSSizeValue;
 }
 
+bool ShouldPrecompileFrame(bool is_main_frame) {
+  if (!base::FeatureList::IsEnabled(features::kPrecompileInlineScripts))
+    return false;
+
+  static const base::FeatureParam<bool> kPrecompileMainFrameOnlyParam{
+      &features::kPrecompileInlineScripts, "precompile-main-frame-only", false};
+  // Cache the value to avoid parsing the param string more than once.
+  static const bool kPrecompileMainFrameOnlyValue =
+      kPrecompileMainFrameOnlyParam.Get();
+  return is_main_frame || !kPrecompileMainFrameOnlyValue;
+}
+
+bool ShouldPretokenizeFrame(bool is_main_frame) {
+  if (!base::FeatureList::IsEnabled(features::kPretokenizeCSS) ||
+      !features::kPretokenizeInlineSheets.Get()) {
+    return false;
+  }
+
+  static const base::FeatureParam<bool> kPretokenizeMainFrameOnlyParam{
+      &features::kPretokenizeCSS, "pretokenize-main-frame-only", false};
+  // Cache the value to avoid parsing the param string more than once.
+  static const bool kPretokenizeMainFrameOnlyValue =
+      kPretokenizeMainFrameOnlyParam.Get();
+  return is_main_frame || !kPretokenizeMainFrameOnlyValue;
+}
+
 void TokenizeInlineCSS(const String& style_text,
                        ScriptableDocumentParser* parser) {
   if (!parser)
@@ -122,14 +148,16 @@ WTF::SequenceBound<BackgroundHTMLScanner> BackgroundHTMLScanner::Create(
     const HTMLParserOptions& options,
     ScriptableDocumentParser* parser) {
   TRACE_EVENT0("blink", "BackgroundHTMLScanner::Create");
+  auto token_scanner = ScriptTokenScanner::Create(parser);
+  if (!token_scanner)
+    return WTF::SequenceBound<BackgroundHTMLScanner>();
   // The background scanner lives on one sequence, while the script streamers
   // work on a second sequence. This allows us to continue scanning the HTML
   // while scripts are compiling.
   return WTF::SequenceBound<BackgroundHTMLScanner>(
       worker_pool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}),
-      std::make_unique<HTMLTokenizer>(options),
-      ScriptTokenScanner::Create(parser));
+      std::make_unique<HTMLTokenizer>(options), std::move(token_scanner));
 }
 
 BackgroundHTMLScanner::BackgroundHTMLScanner(
@@ -157,11 +185,10 @@ void BackgroundHTMLScanner::Scan(const String& source) {
 std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
 BackgroundHTMLScanner::ScriptTokenScanner::Create(
     ScriptableDocumentParser* parser) {
-  bool precompile_scripts =
-      base::FeatureList::IsEnabled(features::kPrecompileInlineScripts);
-  bool pretokenize_css =
-      base::FeatureList::IsEnabled(features::kPretokenizeCSS) &&
-      features::kPretokenizeInlineSheets.Get();
+  bool is_main_frame =
+      parser->GetDocument() && parser->GetDocument()->IsInOutermostMainFrame();
+  bool precompile_scripts = ShouldPrecompileFrame(is_main_frame);
+  bool pretokenize_css = ShouldPretokenizeFrame(is_main_frame);
   if (!precompile_scripts && !pretokenize_css)
     return nullptr;
 

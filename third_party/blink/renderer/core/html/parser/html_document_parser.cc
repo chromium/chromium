@@ -1654,12 +1654,13 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
     return;
 
   DCHECK(!background_scanner_);
-  if (!background_script_scanner_) {
+  if (!background_script_scanner_)
     background_script_scanner_ = BackgroundHTMLScanner::Create(options_, this);
-  }
 
-  background_script_scanner_.AsyncCall(&BackgroundHTMLScanner::Scan)
-      .WithArgs(source);
+  if (background_script_scanner_) {
+    background_script_scanner_.AsyncCall(&BackgroundHTMLScanner::Scan)
+        .WithArgs(source);
+  }
 }
 
 // static
