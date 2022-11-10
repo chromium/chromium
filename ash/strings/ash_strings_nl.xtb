@@ -352,6 +352,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2960314608273155470">Opnamemodus, standaard is <ph name="SOURCE" /> <ph name="TYPE" />. Druk op Tab voor toetsenbordnavigatie.</translation>
 <translation id="2961963223658824723">Er is iets misgegaan. Probeer het over een paar seconden opnieuw.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Microfoontoegang aanzetten?</translation>
 <translation id="296762781903199866">Kan spraakbestanden in het <ph name="LANGUAGE" /> niet downloaden</translation>
 <translation id="2970920913501714344">Apps, extensies en thema's installeren</translation>
 <translation id="2977598380246111477">Volgend cijfer</translation>
@@ -430,6 +431,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3386978599540877378">het vergrootglas op volledige schermgrootte</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Aanvullende instellingen</translation>
+<translation id="3405101454990027959">Microfoontoegang aanzetten</translation>
 <translation id="3410336247007142655">Instellingen voor donker thema bekijken</translation>
 <translation id="3413817803639110246">Er is nog niets te zien</translation>
 <translation id="3428447136709161042">Verbinding met <ph name="NETWORK_NAME" /> verbreken</translation>
@@ -516,6 +518,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3861651314799684201">Druk op Enter om het volledige scherm op te nemen</translation>
+<translation id="3885531177412808398">Microfoontoegang toestaan voor alle apps en websites met microfoonrechten</translation>
 <translation id="3886872229787704059">Vandaag geopend</translation>
 <translation id="3891340733213178823">Druk twee keer op Ctrl+Shift+Q om uit te loggen.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproken feedback)</translation>
@@ -1372,6 +1375,7 @@ Nieuwe installatie</translation>
 <translation id="8666856788528804727">Open <ph name="NAME" /> om je apparaat in te stellen</translation>
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
 <translation id="8683506306463609433">Bijhouden van prestaties is actief</translation>
+<translation id="8684405646663021166">Microfoontoegang toestaan voor <ph name="APP_NAME" /> en alle apps en websites met microfoonrechten</translation>
 <translation id="8685326675965865247">Zoek op je apparaat, in apps en instellingen en op internet. Gebruik de pijltoetsen om te navigeren in je apps.</translation>
 <translation id="8703634754197148428">Opname starten. Nadat de opname is gestart, gebruik je Alt + Shift + L om op de plank naar de knop voor het stoppen van de opname te gaan.</translation>
 <translation id="8721053961083920564">Volume aan/uit. <ph name="STATE_TEXT" /></translation>

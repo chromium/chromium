@@ -309,7 +309,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3393920035788932672">Pop-upy akceptowane</translation>
 <translation id="3399930248910934354">Otwórz ustawienia Chrome</translation>
 <translation id="3404744938087714423">Wylogowanie spowoduje wyłączenie synchronizacji.</translation>
-<translation id="3414451675185661089">2. Kliknij Hasła.</translation>
 <translation id="3425644765244388016">Nazwa karty</translation>
 <translation id="3433057996795775706">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="WEBSITE" />. Aby uniemożliwić innym osobom dostęp do konta w serwisie <ph name="WEBSITE" />, zmień do niego hasło.</translation>
 <translation id="3443810440409579745">Odebrano kartę.</translation>
@@ -587,7 +586,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5614553682702429503">Zapisać hasło?</translation>
 <translation id="5626245204502895507">Nie udało się pobrać teraz tego pliku.</translation>
 <translation id="5631164295104953411">Dodaj formę płatności</translation>
-<translation id="5636282538000367086">Poznaj nowości w Chrome</translation>
 <translation id="5652623411397330904">Produkty, których ceny monitorujesz, pojawią się tutaj.</translation>
 <translation id="5657859710142657190">Otwórz siatkę kart</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -602,7 +600,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5711039611392265845">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Synchronizacja i usługi Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Aby przeglądać strony internetowe prywatnie, dodaj nową kartę</translation>
 <translation id="5728700505257787410">Niestety, wystąpił problem z zalogowaniem się na konto.</translation>
-<translation id="5731784586962650619">Hasła w innych aplikacjach</translation>
 <translation id="5733084997078800044">Wskazówka dotycząca Chrome</translation>
 <translation id="5737974891429562743">Dane logowania na konto są nieaktualne. Zaktualizuj je, by rozpocząć synchronizację.</translation>
 <translation id="5738385766833540397">Zarządzaj sposobami otrzymywania alertów o obniżkach cen produktów, które śledzisz</translation>
@@ -681,7 +678,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6229318421047648685">Wersja na komputer</translation>
 <translation id="6231782223312638214">Sugerowane</translation>
 <translation id="6232329973559504466">Wyszukiwanie incognito</translation>
-<translation id="6232736989810857397">Dzięki temu możesz łatwo tworzyć wydarzenia w kalendarzu za pomocą Obiektywu Google.</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6254066287920239840">Otwieraj linki w aplikacji, a nie w przeglądarce.</translation>
 <translation id="6255097610484507482">Edytuj kartę kredytową</translation>
@@ -708,7 +704,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6383719166112032471">Otwórz lokalizację…</translation>
 <translation id="6387994324662817823">Hasła są zapisywane w Menedżerze haseł Google tylko na tym urządzeniu.</translation>
 <translation id="6389470377220713856">Imię i nazwisko na karcie</translation>
-<translation id="6403371459378431832">Synchronizuj dane na wszystkich urządzeniach</translation>
 <translation id="6406506848690869874">Synchronizacja</translation>
 <translation id="6410390304316730527">Bezpieczne przeglądanie chroni Cię przed osobami przeprowadzającymi ataki, które mogą podstępem nakłonić Cię do wykonania niebezpiecznych czynności, takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). Gdy wyłączasz tę funkcję, zachowaj ostrożność, przeglądając nieznane lub cieszące się złą sławą strony.</translation>
 <translation id="6410883413783534063">Otwórz karty, by odwiedzić jednocześnie wiele stron</translation>
@@ -931,7 +926,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8032569120109842252">Obserwujesz</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Historia wyszukiwania<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />inne formy aktywności<ph name="END_LINK" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
 <translation id="804427445359061970">Znajdziesz tu swoje karty z innych urządzeń</translation>
-<translation id="8048728378294435881">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu</translation>
 <translation id="8059533439631660104">Zwija sekcję.</translation>
 <translation id="8065292699993359127">Otwórz adresy URL w Chrome w trybie incognito</translation>
 <translation id="806745655614357130">Przechowuj dane oddzielnie</translation>

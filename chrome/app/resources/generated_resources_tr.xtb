@@ -4455,7 +4455,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="514575469079499857">Konumu belirlemek için IP adresinizi kullanın (varsayılan)</translation>
 <translation id="5147103632304200977">Bir site HID cihazlarına erişmek istediğinde sor (önerilen)</translation>
 <translation id="5148277445782867161">Google'ın konum hizmeti, cihazınızın konumunu tahmin etmeye yardımcı olması için kablosuz bağlantı, mobil ağlar ve sensörler gibi kaynakları kullanır.</translation>
-<translation id="5150070631291639005">Gizlilik ayarları</translation>
 <translation id="5150254825601720210">Netscape Sertifikası SSL Sunucu Adı</translation>
 <translation id="5151354047782775295">Disk alanını boşaltmazsanız bazı veriler otomatik olarak silinebilir</translation>
 <translation id="5153234146675181447">Telefonu unutma</translation>
@@ -4650,6 +4649,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5331568967879689647">ChromeOS Sistem Uygulaması</translation>
 <translation id="5331975486040154427">USB-C cihaz (sol arka bağlantı noktası)</translation>
 <translation id="5333896723098573627">Uygulamaları kaldırmak için Ayarlar &gt; Google Play Store &gt; Android tercihlerini yönet &gt; Uygulamalar veya Uygulama yöneticisi'ne gidin. Daha sonra, yüklemesini kaldırmak istediğiniz uygulamaya dokunun (uygulamayı bulmak için sağa veya sola doğru hızlıca kaydırmanız gerekebilir). Ardından, Yüklemeyi Kaldır veya Devre Dışı Bırak'a dokunun.</translation>
+<translation id="5334113802138581043">Mikrofon erişimi</translation>
 <translation id="5334142896108694079">Komut Dosyası Önbelleği</translation>
 <translation id="5336688142483283574">Bu sayfa geçmişinizden ve <ph name="SEARCH_ENGINE" /> etkinliğinizden de kaldırılacak.</translation>
 <translation id="5336689872433667741">İmleç ve dokunmatik alan</translation>
@@ -8646,6 +8646,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9081543426177426948">Ziyaret ettiğiniz siteler Gizli modda kaydedilmez</translation>
 <translation id="9084064520949870008">Pencere Olarak Aç</translation>
 <translation id="9085256200913095638">Seçili Sekmeyi Kopyala</translation>
+<translation id="9085446486797400519">Kamera erişimi</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> seçili değil. Seçmek için Arama'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="9087949559523851360">Kısıtlanmış kullanıcı ekle</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> eklentisi kurumsal politika tarafından engellendi</translation>

@@ -305,6 +305,7 @@
 <translation id="4044093238444069296">Չհաջողվեց կապ հաստատել անցախուցի հետ</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="404928562651467259">ԶԳՈՒՇԱՑՈՒՄ</translation>
+<translation id="4060260348856573701">Նոր APN</translation>
 <translation id="4093865285251893588">Պրոֆիլի պատկեր</translation>
 <translation id="409427325554347132">Պահել թեստի մանրամասները</translation>
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ստեղնը սեղմված է</translation>
+<translation id="435692326371619097">Կառավարեք ցանցի APN կարգավորումները։ APN-ները կապ են հաստատում բջջային ցանցի և համացանցի միջև։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Չի գործարկվել</translation>
 <translation id="4378551569595875038">Միացում…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -605,6 +607,7 @@
 <translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
 <translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
 <translation id="6791471867139427246">ստեղնաշարի լուսավորության գույնը</translation>
+<translation id="6793680441750437230">Ձեր ստեղնաշարին սեղմեք ցանկացած ստեղն։ Միաժամանակ կարող եք սեղմել 4 ստեղն։ Սեղմեք Alt + Esc՝ երկխոսության պատուհանը փակելու համար։</translation>
 <translation id="680983167891198932">Բանալի</translation>
 <translation id="6816797338148849397">Ձեր ընտրության վերաբերյալ հասանելի են տեղեկություններ։ Դրանք բացելու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="6853312040151791195">Լիցքաթափման արագությունը</translation>

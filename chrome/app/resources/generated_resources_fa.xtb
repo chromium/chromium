@@ -3750,6 +3750,7 @@
 <translation id="445099924538929605">‏<ph name="DEVICE_OS" /> TPM فعالی را شناسایی کرد که می‌تواند داده‌هایتان را با ایمنی بیشتری ذخیره کند.</translation>
 <translation id="4451479197788154834">‏گذرواژه‌تان در این دستگاه و در «حساب Google» شما ذخیره می‌شود</translation>
 <translation id="4451757071857432900">در سایت‌هایی که آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهند مسدود شود (توصیه می‌شود)</translation>
+<translation id="4452898361839215358">‏یا PPD را انتخاب کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">جستجوی <ph name="SEARCH_ENGINE_NAME" /> یا تایپ نشانی وب</translation>
 <translation id="4458535500699390320">وقتی این برگه غیرفعال بود، «بهینه‌سازی حافظ» حافظه را برای کارهای دیگر آزاد کرد. هرزمان بخواهید می‌توانید آن را در تنظیمات تغییر دهید.</translation>
 <translation id="4459169140545916303">آخرین فعالیت: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> روز قبل</translation>
@@ -4470,7 +4471,6 @@
 <translation id="514575469079499857">‏از نشانی IP برای تعیین مکان (پیش‌فرض) استفاده شود</translation>
 <translation id="5147103632304200977">‏وقتی سایتی می‌خواهد به دستگاه‌های HID دسترسی پیدا کند سؤال شود (توصیه می‌شود)</translation>
 <translation id="5148277445782867161">‏«خدمات مکان Google» از منابعی مانند Wi-Fi، شبکه‌های تلفن همراه، و حسگرها برای کمک به تخمین مکان دستگاهتان استفاده می‌کند.</translation>
-<translation id="5150070631291639005">تنظیمات حریم خصوصی</translation>
 <translation id="5150254825601720210">‏نام سرور SSL گواهی Netscape</translation>
 <translation id="5151354047782775295">فضای دیسک را آزاد کنید، در غیر این صورت ممکن است داده‌های انتخابی به‌صورت خودکار حذف شوند</translation>
 <translation id="5153234146675181447">فراموش کردن تلفن</translation>
@@ -4665,6 +4665,7 @@
 <translation id="5331568967879689647">‏برنامه سیستم ChromeOS</translation>
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="5333896723098573627">‏برای حذف برنامه‌ها به «تنظیمات &gt; برنامه‌ها &gt; فروشگاه Google Play &gt; مدیریت اولویت‌های Android &gt; برنامه‌ها یا مدیر برنامه» بروید. سپس روی برنامه‌ای که می‌خواهید حذف نصب شود ضربه بزنید (ممکن است برای پیدا کردن برنامه لازم باشد صفحه را تند به راست یا چپ بکشید). سپس روی «حذف نصب» یا «غیرفعال کردن» ضربه بزنید.</translation>
+<translation id="5334113802138581043">دسترسی به میکروفون</translation>
 <translation id="5334142896108694079">حافظهٔ پنهان اسکریپت</translation>
 <translation id="5336688142483283574">این صفحه از سابقه و فعالیت <ph name="SEARCH_ENGINE" /> شما هم حذف خواهد شد.</translation>
 <translation id="5336689872433667741">نشانگر و صفحه لمسی</translation>
@@ -8377,6 +8378,7 @@
 <translation id="8823514049557262177">کپی کردن متن &amp;پیوند</translation>
 <translation id="8823559166155093873">مسدود کردن کوکی‌ها</translation>
 <translation id="8823704566850948458">پیشنهاد گذرواژه…</translation>
+<translation id="8823963789776061136">‏یا PPD چاپگر را انتخاب کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">افزودن &amp;صفحه...</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> و <ph name="COUNT" /> اجازه دیگر مسدود شده‌اند</translation>
 <translation id="8827289157496676362">سنجاق کردن افزونه</translation>
@@ -8631,6 +8633,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> می‌خواهد به محتوای زیر دسترسی پیدا کند:</translation>
 <translation id="9057354806206861646">زمان‌بندی به‌روزرسانی</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{حدود یک اعلان در روز}one{حدود {NUM_NOTIFICATION} اعلان در روز}other{حدود {NUM_NOTIFICATION} اعلان در روز}}</translation>
+<translation id="9058760336383947367">‏مشاهده PPD چاپگر</translation>
 <translation id="9061383912634843744">بااستفاده از اطلاعات کاربری ذخیره‌شده، به‌طور خودکار به سیستم سایت‌ها و برنامه‌ها وارد می‌شوید. اگر خاموش باشد، هر بار قبل‌از وارد شدن به سیستم سایت یا برنامه، از شما درخواست می‌شود اطلاعات را تأیید کنید.</translation>
 <translation id="9062468308252555888">۱۴ برابر</translation>
 <translation id="9063208415146866933">خطا از خط <ph name="ERROR_LINE_START" /> تا <ph name="ERROR_LINE_END" /></translation>
@@ -8662,6 +8665,7 @@
 <translation id="9081543426177426948">سایت‌هایی که بازدید می‌کنید در «حالت ناشناس» ذخیره نمی‌شود</translation>
 <translation id="9084064520949870008">بازکردن به‌عنوان پنجره</translation>
 <translation id="9085256200913095638">تکرار برگه انتخابی</translation>
+<translation id="9085446486797400519">دسترسی به دوربین</translation>
 <translation id="9085776959277692427">‏<ph name="LANGUAGE" /> انتخاب نشده است. برای انتخاب،Search (جستجو) را به‌همراه Space فشار دهید.</translation>
 <translation id="9087949559523851360">افزودن کاربر محدودشده</translation>
 <translation id="9088234649737575428">خط‌مشی شرکت <ph name="PLUGIN_NAME" /> را مسدود کرده است</translation>

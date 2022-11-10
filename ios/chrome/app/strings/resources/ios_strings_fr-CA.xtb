@@ -309,7 +309,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3393920035788932672">Fenêtr context autor</translation>
 <translation id="3399930248910934354">Ouvrir les paramètres de Chrome</translation>
 <translation id="3404744938087714423">La déconnexion désactive la synchronisation.</translation>
-<translation id="3414451675185661089">2. Touchez Mots de passe</translation>
 <translation id="3425644765244388016">Pseudo de la carte</translation>
 <translation id="3433057996795775706">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />. Changez votre mot de passe sur <ph name="WEBSITE" /> pour le protéger des autres.</translation>
 <translation id="3443810440409579745">Onglet reçu.</translation>
@@ -587,7 +586,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="5631164295104953411">Ajouter un mode de paiement</translation>
-<translation id="5636282538000367086">Découvrez les nouveautés de Chrome</translation>
 <translation id="5652623411397330904">Les produits que vous suivez s'afficheront ici.</translation>
 <translation id="5657859710142657190">Accéder à la grille d'onglets</translation>
 <translation id="5659593005791499971">Courriel</translation>
@@ -602,7 +600,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5711039611392265845">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, consultez l'article <ph name="BEGIN_LINK" />Synchronisation et services Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Pour naviguer confidentiellement sur le Web, ouvrez un nouvel onglet</translation>
 <translation id="5728700505257787410">Un problème est survenu lors de la connexion à votre compte.</translation>
-<translation id="5731784586962650619">Mots de passe dans d'autres applications</translation>
 <translation id="5733084997078800044">Astuce Chrome</translation>
 <translation id="5737974891429562743">Les renseignements de connexion au compte ne sont plus à jour. Mettez-les à jour pour commencer la synchronisation.</translation>
 <translation id="5738385766833540397">Gérez la façon dont vous recevez des alertes de réduction pour les produits que vous suivez</translation>
@@ -681,7 +678,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6229318421047648685">Voir la version pour ordinateur</translation>
 <translation id="6231782223312638214">Suggéré</translation>
 <translation id="6232329973559504466">Rechercher en mode de navigation privée</translation>
-<translation id="6232736989810857397">Cette option vous permet de créer facilement des événements d'agenda au moyen de Lentille Google.</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6254066287920239840">Ouvrez les liens dans l'application plutôt que dans le navigateur.</translation>
 <translation id="6255097610484507482">Modif. carte crédit</translation>
@@ -708,7 +704,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6383719166112032471">Ouvrir un emplacement…</translation>
 <translation id="6387994324662817823">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe Google sur cet appareil uniquement.</translation>
 <translation id="6389470377220713856">Nom sur carte</translation>
-<translation id="6403371459378431832">Synchronisez vos données sur tous les appareils</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6410390304316730527">La navigation sécurisée vous protège contre les pirates qui pourraient vous inciter à faire quelque chose de dangereux comme installer un logiciel malveillant ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). Si vous la désactivez, faites attention lorsque vous naviguez sur des sites inconnus ou de mauvaise réputation.</translation>
 <translation id="6410883413783534063">Ouvrez des onglets pour visiter différentes pages en même temps</translation>
@@ -931,7 +926,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8032569120109842252">Suivi</translation>
 <translation id="804225253087497565">L'<ph name="BEGIN_LINK" />historique de recherche<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="804427445359061970">Vous trouverez ici les onglets ouverts sur d'autres appareils</translation>
-<translation id="8048728378294435881">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8065292699993359127">Ouvrir les URL dans Chrome en mode de navigation privée</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>

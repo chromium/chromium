@@ -3735,6 +3735,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> datanızı daha etibarlı şəkildə saxlaya biləcək aktiv TPM aşkar etdi.</translation>
 <translation id="4451479197788154834">Parolunuz bu cihazda və Google Hesabınızda saxlanılıb</translation>
 <translation id="4451757071857432900">İnadçı və ya aldadıcı reklam göstərən saytlarda blok edildi (tövsiyə olunur)</translation>
+<translation id="4452898361839215358">və ya PPD seçin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> üzrə axtarış edin və ya link yazın</translation>
 <translation id="4458535500699390320">Bu tab qeyri-aktiv olsa da, Yaddaşa Qənaət digər tapşırıqlar üçün yaddaşı boşaldıb. Bunu istənilən zaman ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> gün əvvəl aktiv olub</translation>
@@ -4454,7 +4455,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="514575469079499857">Məkanı müəyyən etmək (defolt) üçün IP ünvanından istifadə edin</translation>
 <translation id="5147103632304200977">Sayt HID cihazlarına daxil olmaq istədikdə icazə tələb edin (məsləhətlidir)</translation>
 <translation id="5148277445782867161">Google'un məkan xidməti cihazınızın məkanını təxmin etməkdə kömək üçün Wi-Fi, mobil şəbəkələr və sensorlar kimi mənbələrdən istifadə edir.</translation>
-<translation id="5150070631291639005">Məxfilik ayarları</translation>
 <translation id="5150254825601720210">Netscape Sertifikat SSL Server adı</translation>
 <translation id="5151354047782775295">Diskdə yer boşaldın və ya avtomatik silinə bilən datanı seçin</translation>
 <translation id="5153234146675181447">Telefonu unudun</translation>
@@ -8355,6 +8355,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8823514049557262177">Link mətnini kopyalayın</translation>
 <translation id="8823559166155093873">Kukiləri bloklayın</translation>
 <translation id="8823704566850948458">Parol təklif edin...</translation>
+<translation id="8823963789776061136">Alternativ olaraq, printer PPD'ni seçin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Səhifə əlavə edin...</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> və daha <ph name="COUNT" /> bloklanıb</translation>
 <translation id="8827289157496676362">Artırmanı taba bərkidin</translation>
@@ -8609,6 +8610,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> aşağıdakı məzmuna giriş etmək istəyir:</translation>
 <translation id="9057354806206861646">Cədvəli güncəlləyin</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Gündə təxminən 1 bildiriş}other{Gündə təxminən {NUM_NOTIFICATION} bildiriş}}</translation>
+<translation id="9058760336383947367">Printer PPD'nə baxın</translation>
 <translation id="9061383912634843744">Saxlanmış giriş məlumatları ilə saytlara və tətbiqlərə avtomatik daxil olun. Deaktiv olduqda hər dəfə sayta və ya tətbiqə daxil olmazdan əvvəl təsdiq tələb ediləcək.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> - <ph name="ERROR_LINE_END" /> üzrə xəta baş verdi</translation>

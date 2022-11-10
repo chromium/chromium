@@ -309,7 +309,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3393920035788932672">Tillat forgrunnsvinduer</translation>
 <translation id="3399930248910934354">Åpne Chrome-innstillingene</translation>
 <translation id="3404744938087714423">Hvis du logger av, blir synkronisering slått av.</translation>
-<translation id="3414451675185661089">2. Trykk på Passord</translation>
 <translation id="3425644765244388016">Kallenavn på kortet</translation>
 <translation id="3433057996795775706">Sletting av dette passordet sletter ikke kontoen din på <ph name="WEBSITE" />. Endre passordet på <ph name="WEBSITE" /> for å beskytte den mot andre.</translation>
 <translation id="3443810440409579745">Fane er mottatt.</translation>
@@ -588,7 +587,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
 <translation id="5626245204502895507">Filen kan ikke lastes ned for øyeblikket.</translation>
 <translation id="5631164295104953411">Legg til betalingsmåte</translation>
-<translation id="5636282538000367086">Finn ut hva som er nytt i Chrome</translation>
 <translation id="5652623411397330904">Produktene du sporer, vises her.</translation>
 <translation id="5657859710142657190">Gå til fanerutenettet</translation>
 <translation id="5659593005791499971">E-post</translation>
@@ -603,7 +601,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5711039611392265845">Se <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="5724941645893276623">For å surfe privat på nettet, legg til en ny fane</translation>
 <translation id="5728700505257787410">Det oppsto et problem ved pålogging til kontoen din.</translation>
-<translation id="5731784586962650619">Passord i andre apper</translation>
 <translation id="5733084997078800044">Chrome-tips</translation>
 <translation id="5737974891429562743">Påloggingsdetaljene for kontoen er utdatert. Oppdater for å starte synkroniseringen.</translation>
 <translation id="5738385766833540397">Administrer hvordan du mottar varsler om avslag for produkter du sporer</translation>
@@ -682,7 +679,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6229318421047648685">Be om datamaskinversjonen av nettstedet</translation>
 <translation id="6231782223312638214">Foreslått</translation>
 <translation id="6232329973559504466">Inkognitosøk</translation>
-<translation id="6232736989810857397">Dette gjør det mulig å opprette kalenderaktiviteter på en enkel måte med Google Lens.</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6254066287920239840">Åpne linker i appen i stedet for i nettleseren.</translation>
 <translation id="6255097610484507482">Rediger kredittkort</translation>
@@ -709,7 +705,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6383719166112032471">Åpne plassering</translation>
 <translation id="6387994324662817823">Passord lagres i Google Passordlagring kun på denne enheten.</translation>
 <translation id="6389470377220713856">Navn som er oppført på kortet</translation>
-<translation id="6403371459378431832">Synkroniser dataene dine på alle enheter</translation>
 <translation id="6406506848690869874">Synkroniser</translation>
 <translation id="6410390304316730527">Safe Browsing beskytter deg mot angripere som kan prøve å lure deg til å gjøre farlige ting, som å installere skadelig programvare eller avsløre personopplysninger, for eksempel passord, telefonnumre eller kredittkortinformasjon. Hvis du slår det av, må du være forsiktig når du surfer på ukjente eller useriøse nettsteder.</translation>
 <translation id="6410883413783534063">Åpne faner for å besøke ulike sider samtidig</translation>
@@ -933,7 +928,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8032569120109842252">Følger</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Søkeloggen<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />andre typer aktivitet<ph name="END_LINK" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.</translation>
 <translation id="804427445359061970">Her finner du fanene dine fra andre enheter</translation>
-<translation id="8048728378294435881">Sikkerhetskopier tingene dine og bruk dem på alle enheter</translation>
 <translation id="8059533439631660104">Skjuler delen.</translation>
 <translation id="8065292699993359127">Åpne nettadresser i Chrome i inkognitomodus</translation>
 <translation id="806745655614357130">Hold dataene mine adskilt</translation>

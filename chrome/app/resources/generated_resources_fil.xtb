@@ -940,6 +940,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1832848789136765277">Para matiyak na maa-access mo anumang oras ang iyong naka-sync na data, i-verify na ikaw ito</translation>
 <translation id="1834503245783133039">Hindi na-download: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Ina-upgrade ang Linux</translation>
+<translation id="1835612721186505600">Pinapayagan ang access para sa mga app at website na may pahintulot sa camera</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1839021455997460752">Ang iyong email address</translation>
 <translation id="1839540115464516994">Ipakita sa <ph name="LOCATION" /></translation>
@@ -2510,6 +2511,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3279230909244266691">Maaaring abutin nang ilang minuto ang prosesong ito. Sinisimulan ang virtual machine.</translation>
 <translation id="3280237271814976245">I-save &amp;bilang...</translation>
 <translation id="3280243678470289153">Manatili sa Chrome</translation>
+<translation id="328119399589609861">Kontrolin ang access ng device sa mikropono, camera, at higit pa</translation>
 <translation id="3281892622610078515">Mga file at program na iku-quarantine:</translation>
 <translation id="3282210178675490297">Nagbabahagi ng tab sa <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Bagong &amp;Tab</translation>
@@ -4474,7 +4476,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="514575469079499857">Gamitin ang iyong IP address upang matukoy ang lokasyon (default)</translation>
 <translation id="5147103632304200977">Magtanong kapag gusto ng isang site na i-access ang mga HID device (inirerekomenda)</translation>
 <translation id="5148277445782867161">Ang serbisyo ng lokasyon ng Google ay gumagamit ng mga source tulad ng Wi-Fi, mga mobile network, at sensor para makatulong na tantyahin ang lokasyon ng iyong device.</translation>
-<translation id="5150070631291639005">Mga setting ng privacy</translation>
 <translation id="5150254825601720210">Pangalan ng Server ng Netscape Certificate SSL</translation>
 <translation id="5151354047782775295">Magbakante ng espasyo sa disk o pumili ng data na maaaring awtomatikong i-delete</translation>
 <translation id="5153234146675181447">Kalimutan ang telepono</translation>
@@ -4516,6 +4517,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5185500136143151980">Walang Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">I-activate ang port</translation>
+<translation id="5190959794678983197">Walang mikropono</translation>
 <translation id="5191094172448199359">Hindi tugma ang mga PIN na inilagay mo</translation>
 <translation id="5191251636205085390">Matuto pa tungkol sa at kontrolin ang mga bagong teknolohiyang naglalayong palitan ang third-party na cookies</translation>
 <translation id="519185197579575131">Gamitin ang QT</translation>
@@ -4875,6 +4877,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Ito ba ang inaasahan mong home page?</translation>
 <translation id="5522156646677899028">Naglalaman ang extension na ito ng isang malubhang kahinaan sa seguridad.</translation>
+<translation id="5522403133543437426">Search engine na ginamit sa address bar.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Isang extension ang na-install ng iyong administrator}one{# extension ang na-install ng iyong administrator}other{# na extension ang na-install ng iyong administrator}}</translation>
 <translation id="5523558474028191231">Puwedeng gumamit ang pangalan ng mga titik, numero, at special character, at dapat na <ph name="MAX_CHARACTER_COUNT" /> (na) character o mas kaunti</translation>
 <translation id="5526701598901867718">Lahat (hindi secure)</translation>
@@ -7059,6 +7062,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7608810328871051088">Mga kagustuhan sa Android</translation>
 <translation id="7609148976235050828">Kumonekta sa internet at subukang muli.</translation>
+<translation id="7612401678989660900">Payagan ang access para sa mga app at website na may pahintulot sa mikropono</translation>
 <translation id="7612655942094160088">Nag-e-enable sa mga feature ng nakakonektang telepono.</translation>
 <translation id="7614260613810441905">Itanong kapag gusto ng site na mag-edit ng mga file o folder sa iyong device (inirerekomenda)</translation>
 <translation id="761530003705945209">I-back up sa Google Drive. Walang hirap na i-restore ang iyong data o magpalit ng device anumang oras. Kasama sa iyong backup ang data ng app. Ina-upload ang mga backup mo sa Google at ine-encrypt ang mga ito gamit ang password ng iyong Google Account.</translation>
@@ -8444,6 +8448,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8872155268274985541">May nahanap na di-wastong manifest file ng external na pag-update ng Kiosk. Hindi na-update ang Kiosk app. Mangyaring alisin ang USB stick.</translation>
 <translation id="8872506776304248286">Buksan sa app</translation>
 <translation id="8872777911145321141">Magtanong kapag gusto ng isang site na gamitin ang iyong mga virtual reality device at data (inirerekomenda)</translation>
+<translation id="887292602123626481">Matuto pa tungkol sa mga default na search engine</translation>
 <translation id="8874341931345877644">Mag-cast sa isang device:</translation>
 <translation id="8875520811099717934">Pag-upgrade ng Linux</translation>
 <translation id="8875736897340638404">Piliin ang iyong visibility</translation>
@@ -8564,6 +8569,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8987927404178983737">Buwan</translation>
 <translation id="8989359959810288806">I-refresh ang Status ng Pag-tether</translation>
 <translation id="8991520179165052608">Maaaring gamitin ng site ang iyong mikropono</translation>
+<translation id="8991694323904646277">Walang camera</translation>
 <translation id="8993059306046735527">Kung nakalimutan mo ang iyong password sa <ph name="DEVICE_TYPE" />, puwede mo pa ring i-restore ang iyong lokal na data. Kakailanganin mong mag-sign in sa iyong Google Account o gamitin ang pag-recover ng account.</translation>
 <translation id="899384117894244799">Alisin ang pinaghihigpitang user</translation>
 <translation id="899403249577094719">URL ng Netscape Certificate Base</translation>

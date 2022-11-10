@@ -928,6 +928,7 @@
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
 <translation id="1834503245783133039">下載失敗：<ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">正在升級 Linux</translation>
+<translation id="1835612721186505600">允許應用程式和網站存取相機</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839021455997460752">你的電子郵件地址</translation>
 <translation id="1839540115464516994">在「<ph name="LOCATION" />」中顯示</translation>
@@ -2494,6 +2495,7 @@
 <translation id="3279230909244266691">正在啟動虛擬機器，過程可能需要幾分鐘。</translation>
 <translation id="3280237271814976245">另存新檔(&amp;A)...</translation>
 <translation id="3280243678470289153">繼續使用 Chrome</translation>
+<translation id="328119399589609861">控管麥克風、相機等裝置的存取權</translation>
 <translation id="3281892622610078515">要隔離的檔案和程式：</translation>
 <translation id="3282210178675490297">正在與 <ph name="APP_NAME" /> 共用這個分頁</translation>
 <translation id="3285322247471302225">新增分頁(&amp;T)</translation>
@@ -4456,7 +4458,6 @@
 <translation id="514575469079499857">使用你的 IP 位址判斷所在位置 (預設)</translation>
 <translation id="5147103632304200977">網站必須先詢問你，才能存取 HID 裝置 (建議)</translation>
 <translation id="5148277445782867161">Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。</translation>
-<translation id="5150070631291639005">隱私權設定</translation>
 <translation id="5150254825601720210">Netscape 憑證 SSL 伺服器名稱</translation>
 <translation id="5151354047782775295">請釋出磁碟空間，或選取系統可自動刪除的資料</translation>
 <translation id="5153234146675181447">移除手機</translation>
@@ -4498,6 +4499,7 @@
 <translation id="5185500136143151980">沒有網際網路連線</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">啟用連接埠</translation>
+<translation id="5190959794678983197">沒有麥克風</translation>
 <translation id="5191094172448199359">你輸入的 PIN 碼不相符</translation>
 <translation id="5191251636205085390">進一步瞭解用於取代第三方 Cookie 的全新技術並進行控管</translation>
 <translation id="519185197579575131">使用 QT</translation>
@@ -4651,6 +4653,7 @@
 <translation id="5331568967879689647">Chrome OS 系統應用程式</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左後方連接埠)</translation>
 <translation id="5333896723098573627">如要移除應用程式，請依序前往「設定」&gt;「應用程式」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕觸要解除安裝的應用程式 (您可能需要向左或向右滑動才能找出應用程式)。接著，輕觸「解除安裝」或「停用」。</translation>
+<translation id="5334113802138581043">麥克風存取權</translation>
 <translation id="5334142896108694079">指令碼快取</translation>
 <translation id="5336688142483283574">這個頁面也會從你的歷史記錄和 <ph name="SEARCH_ENGINE" /> 活動中移除。</translation>
 <translation id="5336689872433667741">游標和觸控板</translation>
@@ -4856,6 +4859,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">這是你想要的首頁嗎？</translation>
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
+<translation id="5522403133543437426">網址列中使用的搜尋引擎。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{你的系統管理員已安裝擴充功能}other{你的系統管理員已安裝 # 個擴充功能}}</translation>
 <translation id="5523558474028191231">名稱可以包含字母、數字和特殊字元，且不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
@@ -7035,6 +7039,7 @@
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7608810328871051088">Android 偏好設定</translation>
 <translation id="7609148976235050828">請連上網際網路，然後再試一次。</translation>
+<translation id="7612401678989660900">允許應用程式和網站存取麥克風</translation>
 <translation id="7612655942094160088">啟用已連結的手機功能。</translation>
 <translation id="7614260613810441905">網站必須先詢問你，才能編輯裝置上的檔案或資料夾 (建議使用)</translation>
 <translation id="761530003705945209">使用 Google 雲端硬碟備份你的資料。你隨時可以輕鬆還原資料或切換裝置。備份項目包含應用程式資料。備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
@@ -8417,6 +8422,7 @@
 <translation id="8872155268274985541">找到的 Kiosk 外部更新資訊清單檔案無效，無法更新 Kiosk 應用程式。請移除 USB 隨身碟。</translation>
 <translation id="8872506776304248286">在應用程式中開啟</translation>
 <translation id="8872777911145321141">網站必須先詢問你，才能使用你的虛擬實境裝置和資料 (建議設定)</translation>
+<translation id="887292602123626481">進一步瞭解預設搜尋引擎</translation>
 <translation id="8874341931345877644">投放到裝置：</translation>
 <translation id="8875520811099717934">Linux 升級</translation>
 <translation id="8875736897340638404">選擇瀏覽權限</translation>
@@ -8537,6 +8543,7 @@
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">重新整理網路共用狀態</translation>
 <translation id="8991520179165052608">網站可以使用你的麥克風</translation>
+<translation id="8991694323904646277">找不到相機</translation>
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，還是可以還原本機資料。你必須登入 Google 帳戶或使用帳戶救援功能。</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>
@@ -8643,6 +8650,7 @@
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
 <translation id="9085256200913095638">複製所選分頁</translation>
+<translation id="9085446486797400519">相機存取權</translation>
 <translation id="9085776959277692427">未選取<ph name="LANGUAGE" />。按下搜尋鍵加空白鍵即可選取。</translation>
 <translation id="9087949559523851360">新增受限制的使用者</translation>
 <translation id="9088234649737575428">「<ph name="PLUGIN_NAME" />」遭到企業政策封鎖</translation>

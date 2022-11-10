@@ -2280,7 +2280,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3024374909719388945">Sử dụng đồng hồ 24 giờ</translation>
 <translation id="3027296729579831126">Bật tính năng Chia sẻ lân cận</translation>
 <translation id="3029466929721441205">Hiển thị các công cụ bút cảm ứng trong giá</translation>
-<translation id="3029808567601324798">Đã đến lúc khoá</translation>
+<translation id="3029808567601324798">Thời gian chờ khoá</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn tải bản cập nhật xuống ngay hôm nay. Bản cập nhật sẽ tự động tải xuống khi bạn kết nối Internet.}other{<ph name="MANAGER" /> yêu cầu bạn tải bản cập nhật xuống trước thời hạn. Bản cập nhật sẽ tự động tải xuống khi bạn kết nối Internet.}}</translation>
 <translation id="3030967311408872958">Từ tối đến sáng</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
@@ -4475,7 +4475,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="514575469079499857">Sử dụng địa chỉ IP của bạn để xác định vị trí (mặc định)</translation>
 <translation id="5147103632304200977">Hỏi khi một trang web muốn truy cập vào các thiết bị HID (khuyên dùng)</translation>
 <translation id="5148277445782867161">Dịch vụ vị trí của Google sử dụng các nguồn như mạng di động, Wi-Fi và các cảm biến để giúp ước đoán vị trí thiết bị của bạn.</translation>
-<translation id="5150070631291639005">Cài đặt quyền riêng tư</translation>
 <translation id="5150254825601720210">Tên Máy chủ SSL của Chứng chỉ Netscape</translation>
 <translation id="5151354047782775295">Giải phóng dung lượng đĩa, nếu không một số dữ liệu có thể tự động bị xóa</translation>
 <translation id="5153234146675181447">Quên điện thoại</translation>

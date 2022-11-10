@@ -352,6 +352,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2960314608273155470">Opptaksmodus – standard er <ph name="SOURCE" /> <ph name="TYPE" />. Trykk på Tab for å navigere med tastaturet.</translation>
 <translation id="2961963223658824723">Noe gikk galt. Prøv på nytt om noen sekunder.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Vil du slå på mikrofontilgang?</translation>
 <translation id="296762781903199866">Kunne ikke laste ned talefiler for <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">installere apper, utvidelser og temaer</translation>
 <translation id="2977598380246111477">Neste nummer</translation>
@@ -430,6 +431,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3386978599540877378">fullskjermlupen</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Flere innstillinger</translation>
+<translation id="3405101454990027959">Slå på mikrofontilgang</translation>
 <translation id="3410336247007142655">Vis innstillinger for mørkt tema</translation>
 <translation id="3413817803639110246">Ingenting å se ennå</translation>
 <translation id="3428447136709161042">Koble fra <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Koble enheten til strøm.</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="385300504083504382">Begynnelsen</translation>
 <translation id="3861651314799684201">Trykk på Enter for å ta opp hele skjermen</translation>
+<translation id="3885531177412808398">Gir mikrofontilgang til alle apper og nettsteder som har mikrofontillatelsen</translation>
 <translation id="3886872229787704059">Åpnet i dag</translation>
 <translation id="3891340733213178823">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
 <translation id="3893630138897523026">ChromeVox (muntlig tilbakemelding)</translation>
@@ -1375,6 +1378,7 @@ Nylig installert</translation>
 <translation id="8666856788528804727">Åpne <ph name="NAME" /> for å konfigurere enheten din</translation>
 <translation id="8676770494376880701">Laveffektslader er tilkoblet</translation>
 <translation id="8683506306463609433">Ytelsessporing er aktiv</translation>
+<translation id="8684405646663021166">Gir mikrofontilgang til <ph name="APP_NAME" /> og alle apper og nettsteder som har mikrofontillatelsen</translation>
 <translation id="8685326675965865247">Søk på enheten, i apper, i innstillinger og på nettet. Bruk piltastene til å navigere i appene.</translation>
 <translation id="8703634754197148428">Start opptak. Når opptaket har startet, kan du bruke Alt + Shift + L for å navigere til hyllen og finne knappen for å stoppe opptaket</translation>
 <translation id="8721053961083920564">Slå lyden av/på. <ph name="STATE_TEXT" /></translation>

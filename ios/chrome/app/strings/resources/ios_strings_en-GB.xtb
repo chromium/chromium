@@ -309,7 +309,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3393920035788932672">Pop-ups Allowed</translation>
 <translation id="3399930248910934354">Open Chrome settings</translation>
 <translation id="3404744938087714423">Signing out turns off sync.</translation>
-<translation id="3414451675185661089">2. Tap on Passwords</translation>
 <translation id="3425644765244388016">Card nickname</translation>
 <translation id="3433057996795775706">Deleting this password will not delete your account on <ph name="WEBSITE" />. Change your password on <ph name="WEBSITE" /> to keep it safe from others.</translation>
 <translation id="3443810440409579745">Tab received.</translation>
@@ -588,7 +587,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5626245204502895507">The file could not be downloaded at this time.</translation>
 <translation id="5631164295104953411">Add payment method</translation>
-<translation id="5636282538000367086">Find out what's new in Chrome</translation>
 <translation id="5652623411397330904">The products that you track will show up here.</translation>
 <translation id="5657859710142657190">Go to Tab grid</translation>
 <translation id="5659593005791499971">Email</translation>
@@ -603,7 +601,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5711039611392265845">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Sync and Google Services<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">To browse the web privately, add a new tab</translation>
 <translation id="5728700505257787410">Sorry, there was a problem signing in to your account.</translation>
-<translation id="5731784586962650619">Passwords in other apps</translation>
 <translation id="5733084997078800044">Chrome tip</translation>
 <translation id="5737974891429562743">Account sign-in details are out of date. Update to start sync.</translation>
 <translation id="5738385766833540397">Manage how you receive price drop alerts for products that you track</translation>
@@ -682,7 +679,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6229318421047648685">Request Desktop Site</translation>
 <translation id="6231782223312638214">Suggested</translation>
 <translation id="6232329973559504466">Incognito search</translation>
-<translation id="6232736989810857397">This allows you to easily create calendar events using Google Lens.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6254066287920239840">Open links in the app instead of the browser.</translation>
 <translation id="6255097610484507482">Edit credit card</translation>
@@ -709,7 +705,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6383719166112032471">Open location…</translation>
 <translation id="6387994324662817823">Passwords are saved to Google Password Manager on this device only.</translation>
 <translation id="6389470377220713856">Name on Card</translation>
-<translation id="6403371459378431832">Sync your data on all devices</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
@@ -933,7 +928,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8032569120109842252">Following</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>
-<translation id="8048728378294435881">Back up your stuff and use it on any device</translation>
 <translation id="8059533439631660104">Collapses the section.</translation>
 <translation id="8065292699993359127">Open URLs in Chrome in Incognito</translation>
 <translation id="806745655614357130">Keep my data separate</translation>

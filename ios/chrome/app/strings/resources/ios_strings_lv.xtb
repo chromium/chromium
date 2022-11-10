@@ -309,7 +309,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3393920035788932672">Uznir. logi atļauti</translation>
 <translation id="3399930248910934354">Atvērt Chrome iestatījumus</translation>
 <translation id="3404744938087714423">Izrakstoties tiks izslēgta sinhronizācija.</translation>
-<translation id="3414451675185661089">2. Pieskarieties vienumam Paroles</translation>
 <translation id="3425644765244388016">Kredītkartes apzīmējums</translation>
 <translation id="3433057996795775706">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="WEBSITE" />. Lai aizsargātu kontu no citām personām, nomainiet paroli vietnē <ph name="WEBSITE" />.</translation>
 <translation id="3443810440409579745">Saņemta cilne.</translation>
@@ -587,7 +586,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5614553682702429503">Vai saglabāt paroli?</translation>
 <translation id="5626245204502895507">Pašlaik failu nevar lejupielādēt.</translation>
 <translation id="5631164295104953411">Pievienot maksājuma veidu</translation>
-<translation id="5636282538000367086">Uzziniet jaunumus pārlūkā Chrome</translation>
 <translation id="5652623411397330904">Šeit tiks parādīti produkti, ko izsekojat.</translation>
 <translation id="5657859710142657190">Pāriet uz ciļņu režģi</translation>
 <translation id="5659593005791499971">E-pasts</translation>
@@ -602,7 +600,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5711039611392265845">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu apkopošanu, skatiet lapā <ph name="BEGIN_LINK" />Sinhronizēšana un Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Lai pārlūkotu tīmekli privāti, pievienojiet jaunu cilni</translation>
 <translation id="5728700505257787410">Diemžēl, pierakstoties kontā, radās problēma.</translation>
-<translation id="5731784586962650619">Paroles citās lietotnēs</translation>
 <translation id="5733084997078800044">Chrome padoms</translation>
 <translation id="5737974891429562743">Konta pieteikuminformācija ir novecojusi. Atjauniniet to, lai sāktu sinhronizāciju.</translation>
 <translation id="5738385766833540397">Pārvaldiet, kā saņemt paziņojumus par izsekoto produktu cenu kritumu</translation>
@@ -681,7 +678,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6229318421047648685">Pieprasīt vietni datoriem</translation>
 <translation id="6231782223312638214">Ieteikts</translation>
 <translation id="6232329973559504466">Meklēt inkognito režīmā</translation>
-<translation id="6232736989810857397">Tādējādi varēsiet ērti izveidot kalendāra pasākumus, izmantojot Google Lens.</translation>
 <translation id="6247557882553405851">Google paroļu pārvaldnieks</translation>
 <translation id="6254066287920239840">Atvērt saites lietotnē, nevis pārlūkā.</translation>
 <translation id="6255097610484507482">Rediģēt kredītkarti</translation>
@@ -708,7 +704,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6383719166112032471">Atvērt atrašanās vietu…</translation>
 <translation id="6387994324662817823">Paroles tiek saglabātas tikai šīs ierīces Google paroļu pārvaldniekā.</translation>
 <translation id="6389470377220713856">Vārds un uzvārds uz kartes</translation>
-<translation id="6403371459378431832">Sinhronizējiet savus datus visās ierīcēs</translation>
 <translation id="6406506848690869874">Sinhronizācija</translation>
 <translation id="6410390304316730527">Izmantojot drošu pārlūkošanu, jūs iegūstat aizsardzību pret uzbrucējiem, kuri varētu mudināt jūs veikt bīstamas darbības, piemēram, instalēt ļaunprātīgu programmatūru vai atklāt personas informāciju — paroles, tālruņa numurus, kredītkaršu datus u.tml. Ja izslēgsiet drošu pārlūkošanu, ievērojiet piesardzību, pārlūkojot nepazīstamas vietnes vai vietnes ar sliktu reputāciju.</translation>
 <translation id="6410883413783534063">Atveriet cilnes, lai vienlaikus apmeklētu vairākas lapas</translation>
@@ -931,7 +926,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8032569120109842252">Sekojat</translation>
 <translation id="804225253087497565">Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />meklēšanas vēsturi<ph name="END_LINK" /> un <ph name="BEGIN_LINK" />citu veidu darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.</translation>
 <translation id="804427445359061970">Šeit varēsiet skatīt cilnes no citām ierīcēm</translation>
-<translation id="8048728378294435881">Dublējiet savus failus un izmantojiet tos jebkurā ierīcē.</translation>
 <translation id="8059533439631660104">Sakļauj sadaļu.</translation>
 <translation id="8065292699993359127">Vietrāžu URL atvēršana inkognito režīmā pārlūkā Chrome</translation>
 <translation id="806745655614357130">Glabāt datus atsevišķi</translation>

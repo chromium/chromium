@@ -309,7 +309,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3393920035788932672">Cửa sổ bật lên được cho phép</translation>
 <translation id="3399930248910934354">Mở phần Cài đặt của Chrome</translation>
 <translation id="3404744938087714423">Thao tác đăng xuất sẽ tắt tính năng đồng bộ hóa.</translation>
-<translation id="3414451675185661089">2. Nhấn vào Mật khẩu</translation>
 <translation id="3425644765244388016">Biệt hiệu của thẻ</translation>
 <translation id="3433057996795775706">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />. Hãy đổi mật khẩu của bạn trên <ph name="WEBSITE" /> để giữ an toàn cho tài khoản của bạn.</translation>
 <translation id="3443810440409579745">Đã nhận thẻ.</translation>
@@ -587,7 +586,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5614553682702429503">Bạn có muốn lưu mật khẩu không?</translation>
 <translation id="5626245204502895507">Không thể tải xuống tệp vào lúc này.</translation>
 <translation id="5631164295104953411">Thêm phương thức thanh toán</translation>
-<translation id="5636282538000367086">Tìm hiểu các tính năng mới trong Chrome</translation>
 <translation id="5652623411397330904">Những sản phẩm bạn theo dõi sẽ xuất hiện tại đây.</translation>
 <translation id="5657859710142657190">Chuyển đến Lưới thẻ</translation>
 <translation id="5659593005791499971">Email</translation>
@@ -602,7 +600,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5711039611392265845">Bạn có thể xem thêm các tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Đồng bộ hóa và các dịch vụ của Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Để duyệt web ở chế độ riêng tư, hãy thêm một thẻ mới</translation>
 <translation id="5728700505257787410">Rất tiếc, đã xảy ra sự cố khi đăng nhập tài khoản của bạn.</translation>
-<translation id="5731784586962650619">Mật khẩu trong các ứng dụng khác</translation>
 <translation id="5733084997078800044">Mẹo khi dùng Chrome</translation>
 <translation id="5737974891429562743">Thông tin chi tiết để đăng nhập tài khoản đã lỗi thời. Hãy cập nhật để bắt đầu đồng bộ hóa.</translation>
 <translation id="5738385766833540397">Quản lý cách nhận thông báo khi các sản phẩm bạn theo dõi được giảm giá</translation>
@@ -681,7 +678,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6229318421047648685">Yêu cầu trang web dành cho máy tính</translation>
 <translation id="6231782223312638214">Ðược đề xuất</translation>
 <translation id="6232329973559504466">Tìm kiếm ẩn danh</translation>
-<translation id="6232736989810857397">Nhờ đó, bạn có thể dễ dàng tạo sự kiện trên lịch bằng cách sử dụng Google Ống kính.</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
 <translation id="6254066287920239840">Mở đường liên kết trong ứng dụng thay vì trình duyệt.</translation>
 <translation id="6255097610484507482">Chỉnh sửa thẻ tín dụng</translation>
@@ -708,7 +704,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6383719166112032471">Mở vị trí…</translation>
 <translation id="6387994324662817823">Chỉ lưu mật khẩu vào Trình quản lý mật khẩu của Google trên thiết bị này.</translation>
 <translation id="6389470377220713856">Tên trên thẻ</translation>
-<translation id="6403371459378431832">Đồng bộ hoá dữ liệu trên tất cả thiết bị</translation>
 <translation id="6406506848690869874">Đồng bộ hóa</translation>
 <translation id="6410390304316730527">Tính năng Duyệt web an toàn bảo vệ bạn trước những kẻ tấn công có thể đánh lừa bạn làm một việc gì đó nguy hiểm như cài đặt phần mềm độc hại hoặc tiết lộ thông tin cá nhân như mật khẩu, số điện thoại hoặc thẻ tín dụng. Nếu bạn tắt tính năng này, hãy cẩn thận khi duyệt các trang web lạ hoặc không có uy tín.</translation>
 <translation id="6410883413783534063">Mở các thẻ để truy cập vào nhiều trang cùng một lúc</translation>
@@ -931,7 +926,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8032569120109842252">Đang theo dõi</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Nhật ký tìm kiếm<ph name="END_LINK" /> và <ph name="BEGIN_LINK" />các hình thức hoạt động khác<ph name="END_LINK" /> có thể được lưu vào Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những dữ liệu này bất cứ lúc nào.</translation>
 <translation id="804427445359061970">Tại đây, bạn sẽ thấy các thẻ mà bạn mở trên những thiết bị khác</translation>
-<translation id="8048728378294435881">Sao lưu và sử dụng dữ liệu của bạn trên mọi thiết bị</translation>
 <translation id="8059533439631660104">Thu gọn phần.</translation>
 <translation id="8065292699993359127">Mở URL trong Chrome ở chế độ Ẩn danh</translation>
 <translation id="806745655614357130">Giữ dữ liệu của tôi riêng biệt</translation>

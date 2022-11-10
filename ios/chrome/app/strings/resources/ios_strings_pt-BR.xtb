@@ -309,7 +309,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3393920035788932672">Pop-ups permitidos</translation>
 <translation id="3399930248910934354">Abrir configurações do Chrome</translation>
 <translation id="3404744938087714423">Sair da conta desativará a sincronização.</translation>
-<translation id="3414451675185661089">2. Toque em "Senhas"</translation>
 <translation id="3425644765244388016">Apelido do cartão</translation>
 <translation id="3433057996795775706">Remover a senha não excluirá a conta em <ph name="WEBSITE" />. Mude a senha em <ph name="WEBSITE" /> para proteger a conta.</translation>
 <translation id="3443810440409579745">Guia recebida.</translation>
@@ -587,7 +586,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5614553682702429503">Salvar senha?</translation>
 <translation id="5626245204502895507">Não foi possível fazer download do arquivo neste momento.</translation>
 <translation id="5631164295104953411">Adicionar forma de pagamento.</translation>
-<translation id="5636282538000367086">Confira as novidades do Chrome</translation>
 <translation id="5652623411397330904">Os produtos que você acompanha vão aparecer aqui.</translation>
 <translation id="5657859710142657190">Acessar a grade de guias</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -602,7 +600,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5711039611392265845">Para ver mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google e de sincronização<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Para navegar na Web com privacidade, adicione uma nova guia</translation>
 <translation id="5728700505257787410">Houve um problema durante o login em sua conta.</translation>
-<translation id="5731784586962650619">Senhas em outros apps</translation>
 <translation id="5733084997078800044">Dica do Chrome</translation>
 <translation id="5737974891429562743">Os detalhes de login da conta estão desatualizados. Atualize-os para iniciar a sincronização.</translation>
 <translation id="5738385766833540397">Gerencie como você recebe alertas de redução no preço de produtos monitorados.</translation>
@@ -681,7 +678,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6229318421047648685">Solicitar o site para computador</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6232329973559504466">Pesquisa anônima</translation>
-<translation id="6232736989810857397">Isso permite que você crie eventos da agenda de forma simples usando o Google Lens.</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
 <translation id="6254066287920239840">Abrir links no app em vez de abrir no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
@@ -708,7 +704,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6383719166112032471">Abrir local…</translation>
 <translation id="6387994324662817823">As senhas são salvas no Gerenciador de senhas do Google somente neste dispositivo.</translation>
 <translation id="6389470377220713856">Nome no cartão</translation>
-<translation id="6403371459378431832">Sincronize seus dados em todos os dispositivos</translation>
 <translation id="6406506848690869874">Sincronizar</translation>
 <translation id="6410390304316730527">O "Navegação segura" protege contra invasores que podem levar você a fazer algo perigoso, como instalar um software malicioso ou revelar informações pessoais como senhas, números de telefone ou cartões de crédito. Se desativá-lo, tenha cuidado ao navegar em sites desconhecidos ou com má reputação.</translation>
 <translation id="6410883413783534063">Abra guias para acessar páginas diferentes ao mesmo tempo</translation>
@@ -931,7 +926,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="804225253087497565">O <ph name="BEGIN_LINK" />histórico de pesquisa<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser salvos na sua Conta do Google quando ela está conectada. É possível excluí-los a qualquer momento.</translation>
 <translation id="804427445359061970">Você encontrará as guias de outros dispositivos aqui</translation>
-<translation id="8048728378294435881">Faça backup e use seus dados em qualquer dispositivo</translation>
 <translation id="8059533439631660104">Recolhe a seção.</translation>
 <translation id="8065292699993359127">Abrir URLs na navegação anônima do Chrome</translation>
 <translation id="806745655614357130">Manter meus dados separados</translation>

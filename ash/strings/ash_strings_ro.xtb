@@ -352,6 +352,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2960314608273155470">Modul de capturare, setarea prestabilită este <ph name="TYPE" /> <ph name="SOURCE" />. Apasă pe tasta Tab pentru navigare pe tastatură.</translation>
 <translation id="2961963223658824723">A apărut o eroare. Încearcă din nou în câteva secunde.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Activezi accesul la microfon?</translation>
 <translation id="296762781903199866">Nu s-au putut descărca fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">să instaleze aplicații, extensii și teme;</translation>
 <translation id="2977598380246111477">Următorul număr</translation>
@@ -430,6 +431,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3386978599540877378">lupa de ecran complet</translation>
 <translation id="3387527074123400161">Sistemul de operare Chromium</translation>
 <translation id="3400357268283240774">Setări suplimentare</translation>
+<translation id="3405101454990027959">Activează accesul la microfon</translation>
 <translation id="3410336247007142655">Afișează setările pentru tema întunecată</translation>
 <translation id="3413817803639110246">Încă nu este nimic de văzut</translation>
 <translation id="3428447136709161042">Deconectează-te de la <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="385300504083504382">Început</translation>
 <translation id="3861651314799684201">Apasă pe Enter pentru a înregistra ecranul complet</translation>
+<translation id="3885531177412808398">Permite accesul la microfon pentru toate aplicațiile și site-urile care au permisiune de microfon</translation>
 <translation id="3886872229787704059">Deschis astăzi</translation>
 <translation id="3891340733213178823">Apăsați de două ori Ctrl+Shift+Q pentru a vă deconecta.</translation>
 <translation id="3893630138897523026">ChromeVox (feedback rostit)</translation>
@@ -1375,6 +1378,7 @@ Instalare nouă</translation>
 <translation id="8666856788528804727">Deschide <ph name="NAME" /> pentru a configura dispozitivul</translation>
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>
 <translation id="8683506306463609433">Urmărirea performanțelor este activă</translation>
+<translation id="8684405646663021166">Permite accesul la microfon pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiune de microfon</translation>
 <translation id="8685326675965865247">Caută pe dispozitiv, în aplicații, în setări și pe web. Folosește tastele săgeată ca să navighezi în aplicațiile tale.</translation>
 <translation id="8703634754197148428">Pornește înregistrarea. După ce a început înregistrarea, apasă pe Alt + Shift + L pentru a naviga la raft și caută butonul de oprire a înregistrării</translation>
 <translation id="8721053961083920564">Activează sau dezactivează volumul: <ph name="STATE_TEXT" /></translation>

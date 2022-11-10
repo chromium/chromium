@@ -4468,7 +4468,6 @@
 <translation id="514575469079499857">‏קביעת המיקום באמצעות כתובת ה-IP (ברירת מחדל)</translation>
 <translation id="5147103632304200977">‏צריך לבקש ממני אישור כשאתר רוצה לגשת להתקני HID (מומלץ)</translation>
 <translation id="5148277445782867161">‏כדי להעריך את המיקום של המכשיר שלך, שירותי המיקום של Google מסתמכים על מקורות כמו Wi-Fi, רשתות סלולריות וחיישנים.</translation>
-<translation id="5150070631291639005">הגדרות פרטיות</translation>
 <translation id="5150254825601720210">‏שם שרת SSL של אישור Netscape</translation>
 <translation id="5151354047782775295">אם לא מפנים שטח אחסון, ייבחרו נתונים למחיקה אוטומטית</translation>
 <translation id="5153234146675181447">מחיקת הטלפון</translation>
@@ -4663,6 +4662,7 @@
 <translation id="5331568967879689647">‏אפליקציית מערכת של ChromeOS</translation>
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
 <translation id="5333896723098573627">‏כדי להסיר אפליקציות, צריך לעבור אל 'הגדרות' &gt; 'חנות Google Play' &gt; 'ניהול העדפות Android' &gt;'אפליקציות' או 'מנהל האפליקציות'. לאחר מכן מקישים על האפליקציה שרוצים להסיר את ההתקנה שלה (יכול להיות שצריך יהיה להחליק ימינה או שמאלה כדי למצוא את האפליקציה). לבסוף, מקישים על 'הסרת התקנה' או 'השבתה'.</translation>
+<translation id="5334113802138581043">גישה למיקרופון</translation>
 <translation id="5334142896108694079">מטמון של סקריפט</translation>
 <translation id="5336688142483283574">הדף הזה יוסר גם מההיסטוריה שלך ומהפעילות של <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">סמן ולוח מגע</translation>
@@ -8659,6 +8659,7 @@
 <translation id="9081543426177426948">אתרים שנכנסים אליהם לא נשמרים במצב אנונימי</translation>
 <translation id="9084064520949870008">פתיחה כחלון</translation>
 <translation id="9085256200913095638">שכפול הכרטיסייה שנבחרה</translation>
+<translation id="9085446486797400519">גישה למצלמה</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> לא נבחרה. כדי לבחור, יש ללחוץ על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="9087949559523851360">הוספת משתמש בעל הרשאות מוגבלות</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> חסום לפי מדיניות הארגון</translation>

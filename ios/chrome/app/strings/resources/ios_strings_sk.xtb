@@ -309,7 +309,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3393920035788932672">Povolené okná</translation>
 <translation id="3399930248910934354">Otvoriť nastavenia Chromu</translation>
 <translation id="3404744938087714423">Po odhlásení sa vypne synchronizácia.</translation>
-<translation id="3414451675185661089">2. Klepnite na Heslá</translation>
 <translation id="3425644765244388016">Prezývka karty</translation>
 <translation id="3433057996795775706">Odstránením tohto hesla nevymažete svoj účet na webe <ph name="WEBSITE" />. Ak chcete svoj účet chrániť pred ostatnými, zmeňte svoje heslo na webe <ph name="WEBSITE" />.</translation>
 <translation id="3443810440409579745">Karta bola prijatá.</translation>
@@ -587,7 +586,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5614553682702429503">Uložiť heslo?</translation>
 <translation id="5626245204502895507">Súbor sa momentálne nedá stiahnuť.</translation>
 <translation id="5631164295104953411">Pridať spôsob platby</translation>
-<translation id="5636282538000367086">Zistite, čo je nové v Chrome</translation>
 <translation id="5652623411397330904">Tu sa zobrazia výrobky, ktoré sledujete.</translation>
 <translation id="5657859710142657190">Prejsť na mriežku kariet</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -602,7 +600,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5711039611392265845">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v časti <ph name="BEGIN_LINK" />Synchronizácia a služby Googlu<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Ak chcete internet prehliadať v súkromí, pridajte novú kartu</translation>
 <translation id="5728700505257787410">Je nám ľúto, pri prihlasovaní do účtu sa vyskytol problém.</translation>
-<translation id="5731784586962650619">Heslá v ďalších aplikáciách</translation>
 <translation id="5733084997078800044">Tip pre Chrome</translation>
 <translation id="5737974891429562743">Informácie o prihlásení do účtu sú neaktuálne. Ak chcete spustiť synchronizáciu, aktualizujte ich.</translation>
 <translation id="5738385766833540397">Spravujte, ako dostávate upozornenia na pokles cien výrobkov, ktoré sledujete</translation>
@@ -681,7 +678,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6229318421047648685">Vyžiadať web pre počítače</translation>
 <translation id="6231782223312638214">Navrhované</translation>
 <translation id="6232329973559504466">Vyhľadávanie v režime inkognito</translation>
-<translation id="6232736989810857397">Budete tak môcť jednoducho vytvárať udalosti v kalendári pomocou funkcie Google Lens.</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
 <translation id="6254066287920239840">Otvárať odkazy v aplikácii namiesto prehliadača.</translation>
 <translation id="6255097610484507482">Upraviť platobnú kartu</translation>
@@ -708,7 +704,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6383719166112032471">Otvoriť umiestnenie…</translation>
 <translation id="6387994324662817823">Heslá sa ukladajú do správcu hesiel od Googlu iba v tomto zariadení.</translation>
 <translation id="6389470377220713856">Meno na karte</translation>
-<translation id="6403371459378431832">Synchronizujte údaje vo všetkých zariadeniach</translation>
 <translation id="6406506848690869874">Synchronizácia</translation>
 <translation id="6410390304316730527">Bezpečné prehliadanie vás chráni pred útočníkmi, ktorí vás môžu oklamať, aby ste urobili niečo nebezpečné, napríklad nainštalovali škodlivý softvér alebo odhalili osobné údaje, ako sú heslá, telefónne čísla alebo kreditné karty. Ak ho vypnete, pri prehliadaní neznámych alebo pochybných webov postupujte opatrne.</translation>
 <translation id="6410883413783534063">Otvorte karty a navštívte tak rôzne stránky naraz</translation>
@@ -931,7 +926,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8032569120109842252">Sledované</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />História vyhľadávania<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />ďalšie formy aktivity<ph name="END_LINK" /> sa môžu ukladať do vášho účtu Google, keď sa doň prihlásite. Môžete ich kedykoľvek odstrániť.</translation>
 <translation id="804427445359061970">Tu nájdete svoje karty z iných zariadení</translation>
-<translation id="8048728378294435881">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení</translation>
 <translation id="8059533439631660104">Zbalí sekciu.</translation>
 <translation id="8065292699993359127">Otvárať webové adresy v Chrome v režime inkognito</translation>
 <translation id="806745655614357130">Ponechať moje údaje oddelené</translation>

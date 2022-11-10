@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">לא ניתן לייצא את <ph name="FILE" /></translation>
 <translation id="1899697626337024495">רזולוציית תמונה</translation>
 <translation id="1925845977604399247">מעבר לגלריה</translation>
+<translation id="199526504800285197">צילום הסרטון הופסק</translation>
+<translation id="1995951722691075581">צילום הסרטון הופסק כי אין מספיק מקום אחסון במכשיר. כדי לצלם עוד סרטונים, עליך לפנות מקום במכשיר.</translation>
 <translation id="2022953316617983419">‏קוד QR</translation>
 <translation id="2036868001356139588">משך זמן בטיימר</translation>
 <translation id="2050339315714019657">לאורך</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">סרטון</translation>
 <translation id="3838931309141338733">סריקת ברקוד</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
+<translation id="4060608699153044055">לא ניתן לצלם כי אין מספיק מקום אחסון במכשיר. כדי לצלם סרטון, עליך לפנות מקום במכשיר.</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">השהיית ההקלטה</translation>
 <translation id="4121305183798804752">זוהה מסמך</translation>
@@ -161,6 +164,7 @@
 <translation id="7748344063862150053">הפינה השמאלית העליונה במסמך</translation>
 <translation id="7933675232020478311">מתבצעת תזוזה לימין למטה</translation>
 <translation id="7983668134180549431">זוהה טקסט.</translation>
+<translation id="8079255378695216066">לא ניתן להתחיל את צילום הסרטון</translation>
 <translation id="8120146556401698679">הזזה הטיה זום</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8145038249676204903">מעבר לצילום תמונות</translation>

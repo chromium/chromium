@@ -939,6 +939,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1832848789136765277">Untuk memastikan Anda selalu dapat mengakses data yang disinkronkan, verifikasi diri Anda</translation>
 <translation id="1834503245783133039">Download tidak berhasil: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Mengupgrade Linux</translation>
+<translation id="1835612721186505600">Mengizinkan akses untuk aplikasi dan situs yang memiliki izin kamera</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
 <translation id="1839021455997460752">Alamat email Anda</translation>
 <translation id="1839540115464516994">Tampilkan di <ph name="LOCATION" /></translation>
@@ -2509,6 +2510,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3279230909244266691">Proses ini dapat memerlukan waktu beberapa menit. Memulai mesin virtual.</translation>
 <translation id="3280237271814976245">Simp&amp;an sebagai...</translation>
 <translation id="3280243678470289153">Tetap di Chrome</translation>
+<translation id="328119399589609861">Mengontrol akses perangkat ke mikrofon, kamera, dan lainnya</translation>
 <translation id="3281892622610078515">File dan program yang akan dikarantina:</translation>
 <translation id="3282210178675490297">Membagikan tab ke <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">&amp;Tab Baru</translation>
@@ -4473,7 +4475,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="514575469079499857">Gunakan alamat IP untuk menentukan lokasi (default)</translation>
 <translation id="5147103632304200977">Tanyakan saat situs ingin mengakses perangkat HID (direkomendasikan)</translation>
 <translation id="5148277445782867161">Layanan lokasi Google menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat Anda.</translation>
-<translation id="5150070631291639005">Setelan privasi</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">Kosongkan ruang penyimpanan atau pilih data yang dapat dihapus otomatis.</translation>
 <translation id="5153234146675181447">Lupakan ponsel</translation>
@@ -4515,6 +4516,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5185500136143151980">Tidak ada internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktifkan port</translation>
+<translation id="5190959794678983197">Tidak ada mikrofon</translation>
 <translation id="5191094172448199359">PIN yang Anda masukkan tidak cocok</translation>
 <translation id="5191251636205085390">Pelajari dan kontrol teknologi baru yang ditujukan untuk menggantikan cookie pihak ketiga</translation>
 <translation id="519185197579575131">Gunakan QT</translation>
@@ -4874,6 +4876,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Apakah ini beranda yang Anda harapkan?</translation>
 <translation id="5522156646677899028">Ekstensi ini berisi kerentanan keamanan serius.</translation>
+<translation id="5522403133543437426">Mesin telusur yang digunakan di kolom URL.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ekstensi telah diinstal oleh administrator Anda}other{# ekstensi telah diinstal oleh administrator Anda}}</translation>
 <translation id="5523558474028191231">Nama dapat menggunakan huruf, angka, serta karakter khusus, dan harus maksimal <ph name="MAX_CHARACTER_COUNT" /> karakter</translation>
 <translation id="5526701598901867718">Semua (tidak aman)</translation>
@@ -7056,6 +7059,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7608810328871051088">Preferensi Android</translation>
 <translation id="7609148976235050828">Sambungkan ke internet dan coba lagi.</translation>
+<translation id="7612401678989660900">Mengizinkan akses untuk aplikasi dan situs yang memiliki izin mikrofon</translation>
 <translation id="7612655942094160088">Fitur telepon yang terhubung aktif.</translation>
 <translation id="7614260613810441905">Tanyakan saat situs ingin mengedit file atau folder di perangkat Anda (direkomendasikan)</translation>
 <translation id="761530003705945209">Cadangkan ke Google Drive. Pulihkan data Anda atau beralih perangkat kapan saja dengan mudah. Cadangan Anda mencakup data aplikasi. Cadangan Anda diupload ke Google dan dienkripsi menggunakan sandi Akun Google Anda.</translation>
@@ -8438,6 +8442,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8872155268274985541">File manifes pembaruan eksternal Kios yang tidak valid ditemukan. Gagal memperbarui aplikasi Kios. Lepaskan stik USB.</translation>
 <translation id="8872506776304248286">Buka di aplikasi</translation>
 <translation id="8872777911145321141">Tanyakan saat situs ingin menggunakan perangkat dan data virtual reality Anda (direkomendasikan)</translation>
+<translation id="887292602123626481">Pelajari mesin telusur default lebih lanjut</translation>
 <translation id="8874341931345877644">Transmisikan ke perangkat:</translation>
 <translation id="8875520811099717934">Upgrade Linux</translation>
 <translation id="8875736897340638404">Pilih visibilitas Anda</translation>
@@ -8558,6 +8563,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8987927404178983737">Bulan</translation>
 <translation id="8989359959810288806">Refresh Status Tethering</translation>
 <translation id="8991520179165052608">Situs dapat menggunakan mikrofon</translation>
+<translation id="8991694323904646277">Tidak ada kamera</translation>
 <translation id="8993059306046735527">Jika lupa sandi <ph name="DEVICE_TYPE" />, Anda masih dapat memulihkan data lokal. Anda harus login ke Akun Google Anda atau menggunakan pemulihan akun.</translation>
 <translation id="899384117894244799">Hapus pengguna yang dibatasi</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>

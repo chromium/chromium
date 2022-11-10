@@ -309,7 +309,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3393920035788932672">Pop op-vinduer tilladt</translation>
 <translation id="3399930248910934354">Åbn indstillingerne for Chrome</translation>
 <translation id="3404744938087714423">Synkronisering deaktiveres, når du logger ud</translation>
-<translation id="3414451675185661089">2. Tryk på Adgangskoder</translation>
 <translation id="3425644765244388016">Kortets kaldenavn</translation>
 <translation id="3433057996795775706">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />. Skift din adgangskode på <ph name="WEBSITE" /> for at beskytte den mod andre.</translation>
 <translation id="3443810440409579745">Du har modtaget en fane.</translation>
@@ -588,7 +587,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
 <translation id="5626245204502895507">Filen kunne ikke downloades på nuværende tidspunkt.</translation>
 <translation id="5631164295104953411">Tilføj betalingsmetode</translation>
-<translation id="5636282538000367086">Se nyheder i Chrome</translation>
 <translation id="5652623411397330904">De produkter, hvis pris du holder øje med, vises her.</translation>
 <translation id="5657859710142657190">Gå til fanegitter</translation>
 <translation id="5659593005791499971">Mail</translation>
@@ -603,7 +601,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5711039611392265845">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Tilføj en ny fane for at surfe privat på nettet</translation>
 <translation id="5728700505257787410">Der var et problem med at logge ind på din konto.</translation>
-<translation id="5731784586962650619">Adgangskoder i andre apps</translation>
 <translation id="5733084997078800044">Tip til Chrome</translation>
 <translation id="5737974891429562743">Loginoplysningerne for kontoen er forældede. Opdater dem for at påbegynde synkroniseringen.</translation>
 <translation id="5738385766833540397">Administrer, hvordan du modtager underretninger om prisfald på produkter, du holder øje med</translation>
@@ -682,7 +679,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6229318421047648685">Request Desktop Site [Vis computerversion]</translation>
 <translation id="6231782223312638214">Foreslået</translation>
 <translation id="6232329973559504466">Søgning i inkognitotilstand</translation>
-<translation id="6232736989810857397">Dette giver dig mulighed for nemt at oprette kalenderbegivenheder ved hjælp af Google Lens.</translation>
 <translation id="6247557882553405851">Google Adgangskodeadministrator</translation>
 <translation id="6254066287920239840">Åbn links i appen i stedet for i browseren.</translation>
 <translation id="6255097610484507482">Rediger kreditkort</translation>
@@ -709,7 +705,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6383719166112032471">Åbn placering…</translation>
 <translation id="6387994324662817823">Adgangskoder gemmes kun i Adgangskodeadministrator på denne enhed.</translation>
 <translation id="6389470377220713856">Navn på kort</translation>
-<translation id="6403371459378431832">Synkroniser dine data på alle enheder</translation>
 <translation id="6406506848690869874">Synkronisering</translation>
 <translation id="6410390304316730527">Beskyttet browsing beskytter dig mod hackere, som kan narre dig til at gøre uhensigtsmæssige ting, f.eks. at installere skadelig software eller afsløre personlige oplysninger som adgangskoder, telefonnumre eller betalingskortnumre. Hvis du deaktivere funktionen, skal du være ekstra forsigtig, når du besøger websites, du ikke kender eller har tillid til.</translation>
 <translation id="6410883413783534063">Åbn faner for at besøge forskellige sider på samme tid</translation>
@@ -933,7 +928,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8032569120109842252">Følger</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Søgehistorik<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />andre former for aktivitet<ph name="END_LINK" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="804427445359061970">Her kan du se dine faner fra andre enheder</translation>
-<translation id="8048728378294435881">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed</translation>
 <translation id="8059533439631660104">Skjuler sektionen.</translation>
 <translation id="8065292699993359127">Åbn webadresser i Chrome i inkognito</translation>
 <translation id="806745655614357130">Hold mine data adskilt</translation>

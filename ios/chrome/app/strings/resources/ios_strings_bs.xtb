@@ -309,7 +309,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3393920035788932672">Skočni prozori su dozvoljeni</translation>
 <translation id="3399930248910934354">Otvori postavke Chromea</translation>
 <translation id="3404744938087714423">Odjavom se isključuje sinhronizacija.</translation>
-<translation id="3414451675185661089">2. Dodirnite Lozinke</translation>
 <translation id="3425644765244388016">Nadimak kartice</translation>
 <translation id="3433057996795775706">Brisanjem ove lozinke se neće izbrisati vaš račun na web lokaciji <ph name="WEBSITE" />. Promijenite lozinku na web lokaciji <ph name="WEBSITE" /> da je zaštitite od drugih.</translation>
 <translation id="3443810440409579745">Kartica je primljena.</translation>
@@ -588,7 +587,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5614553682702429503">Sačuvati lozinku?</translation>
 <translation id="5626245204502895507">Ovaj put nismo uspjeli preuzeti fajl.</translation>
 <translation id="5631164295104953411">Dodajte način plaćanja</translation>
-<translation id="5636282538000367086">Saznajte šta je novo na Chromeu</translation>
 <translation id="5652623411397330904">Ovdje će se prikazivati proizvodi koje pratite.</translation>
 <translation id="5657859710142657190">Odlazak na mrežu kartice</translation>
 <translation id="5659593005791499971">E-pošta</translation>
@@ -603,7 +601,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5711039611392265845">Za više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka, pogledajte <ph name="BEGIN_LINK" />Sinhronizacija i Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Da privatno pregledate web, dodajte novu karticu</translation>
 <translation id="5728700505257787410">Žao nam je, došlo je do problema s prijavom na vaš račun.</translation>
-<translation id="5731784586962650619">Lozinke u drugim aplikacijama</translation>
 <translation id="5733084997078800044">Savjet za Chrome</translation>
 <translation id="5737974891429562743">Detalji o prijavi za račun su zastarjeli. Ažurirajte da pokrenete sinhronizaciju.</translation>
 <translation id="5738385766833540397">Upravljajte načinom na koji primate obavještenja o padu cijene za proizvode koje pratite</translation>
@@ -682,7 +679,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6229318421047648685">Zatraži web lokaciju za računar</translation>
 <translation id="6231782223312638214">Predloženo</translation>
 <translation id="6232329973559504466">Pretraživanje u anonimnom načinu rada</translation>
-<translation id="6232736989810857397">Ovo vam omogućava da jednostavno kreirate događaje u kalendaru pomoću Google Objektiva.</translation>
 <translation id="6247557882553405851">Google upravitelju lozinki</translation>
 <translation id="6254066287920239840">Otvori linkove u aplikaciji umjesto u pregledniku.</translation>
 <translation id="6255097610484507482">Uredite kreditnu kart</translation>
@@ -709,7 +705,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6383719166112032471">Otvaranje lokacije…</translation>
 <translation id="6387994324662817823">Lozinke se pohranjuju u Google Upravitelju lozinki samo na ovom uređaju.</translation>
 <translation id="6389470377220713856">Ime i prezime na kartici</translation>
-<translation id="6403371459378431832">Sinhronizirajte podatke na svim uređajima</translation>
 <translation id="6406506848690869874">Sinhronizacija</translation>
 <translation id="6410390304316730527">Sigurno pregledanje vas štiti od napadača koji vas mogu prevarom navesti da uradite nešto opasno, naprimjer, da instalirate zlonamjerni softver ili otkrijete lične informacije kao što su lozinke i brojevi telefona ili kreditne kartice. Ako ga isključite, budite oprezni prilikom pregledanja nepoznatih ili sumnjivih web lokacija.</translation>
 <translation id="6410883413783534063">Otvorite kartice da istovremeno posjetite različite stranice</translation>
@@ -933,7 +928,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8032569120109842252">Pratite</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Historija pretraživanja<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />ostali oblici aktivnosti<ph name="END_LINK" /> se mogu pohranjivati na vaš Google račun kada ste prijavljeni. Možete ih izbrisati bilo kada.</translation>
 <translation id="804427445359061970">Kartice s drugih uređaja ćete pronaći ovdje</translation>
-<translation id="8048728378294435881">Napravite sigurnosne kopije svojih stvari i koristite ih na bilo kojem uređaju</translation>
 <translation id="8059533439631660104">Sužavanje odjeljka.</translation>
 <translation id="8065292699993359127">Otvorite URL-ove u Chromeu u anonimnom načinu rada</translation>
 <translation id="806745655614357130">Moje podatke čuvaj zasebno</translation>

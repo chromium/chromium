@@ -352,6 +352,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2960314608273155470">Režim nahrávání, výchozí nastavení je <ph name="SOURCE" /> <ph name="TYPE" />. K procházení pomocí klávesnice použijte tabulátor.</translation>
 <translation id="2961963223658824723">Něco se pokazilo. Zkuste to znovu za několik minut.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Zapnout přístup k mikrofonu?</translation>
 <translation id="296762781903199866">Řečové soubory pro jazyk <ph name="LANGUAGE" /> se nepodařilo stáhnout</translation>
 <translation id="2970920913501714344">Instalovat aplikace, rozšíření a motivy</translation>
 <translation id="2977598380246111477">Další číslo</translation>
@@ -430,6 +431,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3386978599540877378">celoobrazovková lupa</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Další nastavení</translation>
+<translation id="3405101454990027959">Zapněte přístup k mikrofonu</translation>
 <translation id="3410336247007142655">Zobrazit nastavení tmavého motivu</translation>
 <translation id="3413817803639110246">Zatím tu není nic k vidění</translation>
 <translation id="3428447136709161042">Odpojit od sítě <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="385051799172605136">Zpět</translation>
 <translation id="385300504083504382">Začátek</translation>
 <translation id="3861651314799684201">Stisknutím klávesy Enter spustíte nahrávání celé obrazovky</translation>
+<translation id="3885531177412808398">Umožňuje přístup k mikrofonu pro všechny aplikace a weby s oprávněním k mikrofonu</translation>
 <translation id="3886872229787704059">Otevřeno dnes</translation>
 <translation id="3891340733213178823">Odhlaste se dvojitým stisknutím kombinace kláves Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (hlasová odezva)</translation>
@@ -1375,6 +1378,7 @@ Nová instalace</translation>
 <translation id="8666856788528804727">Pokud chcete nastavit zařízení, otevřete aplikaci <ph name="NAME" /></translation>
 <translation id="8676770494376880701">Byla připojena nabíječka s nízkým napětím</translation>
 <translation id="8683506306463609433">Trasování výkonu je aktivní</translation>
+<translation id="8684405646663021166">Umožňuje přístup k mikrofonu pro aplikaci <ph name="APP_NAME" /> a všechny aplikace a weby s oprávněním k mikrofonu</translation>
 <translation id="8685326675965865247">Prohledejte zařízení, aplikace, nastavení a internet. Mezi aplikacemi se můžete pohybovat pomocí kláves.</translation>
 <translation id="8703634754197148428">Zahájit nahrávání. Po zahájení nahrávání můžete stisknutím kláves Alt + Shift + L přejít na poličku a najít tlačítko Zastavit nahrávání</translation>
 <translation id="8721053961083920564">Zapnout či vypnout zvuk. <ph name="STATE_TEXT" /></translation>

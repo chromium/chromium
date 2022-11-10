@@ -4454,7 +4454,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="514575469079499857">Usar dirección IP para determinar ubicación (predeterminado)</translation>
 <translation id="5147103632304200977">Preguntarme cuando un sitio desee acceder a dispositivos HID (recomendado)</translation>
 <translation id="5148277445782867161">El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para ayudar a determinar la ubicación de tu dispositivo.</translation>
-<translation id="5150070631291639005">Configuración de privacidad</translation>
 <translation id="5150254825601720210">Nombre del servidor SSL para el certificado de Microsoft</translation>
 <translation id="5151354047782775295">Libera espacio en el disco o selecciona los datos que se pueden borrar de forma automática.</translation>
 <translation id="5153234146675181447">Olvidar el teléfono</translation>
@@ -4649,6 +4648,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5331568967879689647">App del sistema de Chrome OS</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (puerto lateral izquierdo trasero)</translation>
 <translation id="5333896723098573627">Para quitar apps, ve a Configuración &gt; Apps &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.</translation>
+<translation id="5334113802138581043">Acceso al micrófono</translation>
 <translation id="5334142896108694079">Caché de la secuencia de comandos</translation>
 <translation id="5336688142483283574">Esta página también se quitará de tu historial y actividad de <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursor y panel táctil</translation>
@@ -8644,6 +8644,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9081543426177426948">Los sitios que visitas no se guardan en el modo Incógnito</translation>
 <translation id="9084064520949870008">Abrir como ventana</translation>
 <translation id="9085256200913095638">Duplicar la pestaña seleccionada</translation>
+<translation id="9085446486797400519">Acceso a cámara</translation>
 <translation id="9085776959277692427">No se seleccionó <ph name="LANGUAGE" />. Presiona la tecla de búsqueda+barra espaciadora para seleccionar el idioma.</translation>
 <translation id="9087949559523851360">Agregar un usuario restringido</translation>
 <translation id="9088234649737575428">La política empresarial bloqueó <ph name="PLUGIN_NAME" /></translation>

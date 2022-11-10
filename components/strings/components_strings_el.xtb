@@ -354,6 +354,7 @@
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε τις πληροφορίες σας, το απόρρητο και την ασφάλεια στον Λογαριασμό σας Google</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Υπάρχουν πολλές διαθέσιμες ενέργειες. Πατήστε το πλήκτρο Tab για να μετακινηθείτε ανάμεσά τους.</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">Στοιχεία εικονικής κάρτας</translation>
 <translation id="1803020234906945288">Υγιεινή διατροφή</translation>
 <translation id="1803264062614276815">Όνομα κατόχου κάρτας</translation>
 <translation id="1803351196216024260">Μπορεί να ζητά να χρησιμοποιεί το μικρόφωνό σας.</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">22 x 34 ίντσες</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 πρόταση}other{# προτάσεις}}</translation>
 <translation id="2066915425250589881">ζητήσετε να διαγραφούν</translation>
+<translation id="2066969741541525119">Ο ιστότοπος που θέλετε να επισκεφτείτε έχει αποκλειστεί από τον οργανισμό σας</translation>
 <translation id="2068528718802935086">Βρέφη και νήπια</translation>
 <translation id="2071156619270205202">Αυτή η κάρτα δεν είναι κατάλληλη για έκδοση αριθμού εικονικής κάρτας.</translation>
 <translation id="2071692954027939183">Οι ειδοποιήσεις αποκλείστηκαν αυτόματα επειδή συνήθως δεν τις επιτρέπετε</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">Πολλαπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="219906046732893612">Ανακαίνιση σπιτιού</translation>
 <translation id="2202020181578195191">Εισαγάγετε ένα έγκυρο έτος λήξης</translation>
+<translation id="2202627062836089804">πίσω μέρος της κάρτας σας</translation>
 <translation id="22081806969704220">Δίσκος 3</translation>
 <translation id="2210794033760923560">Μεταφόρτωση αναφοράς</translation>
 <translation id="2212735316055980242">Η πολιτική δε βρέθηκε</translation>
@@ -987,6 +990,7 @@
 <translation id="350069200438440499">Όνομα αρχείου:</translation>
 <translation id="3507936815618196901">Δημιουργία τρισδιάστατου χάρτη του περιβάλλοντα χώρου σας και παρακολούθηση της θέσης της κάμερας.</translation>
 <translation id="3512163584740124171">Αυτή η πολιτική αγνοείται επειδή μια άλλη πολιτική από την ίδια ομάδα πολιτικής έχει υψηλότερη προτεραιότητα.</translation>
+<translation id="3515972145999192222">Ο οργανισμός σας απέκλεισε τον τομέα <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> επειδή παραβαίνει μια πολιτική. <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">Κουμπί διαχείρισης διευθύνσεων, πατήστε Enter για να προσθέσετε και να διαχειριστείτε διευθύνσεις από τις ρυθμίσεις του Chrome</translation>
 <translation id="3518941727116570328">Χειρισμός πολλών αντικειμένων</translation>
 <translation id="3525130752944427905">10 x 14 ίντσες</translation>
@@ -1062,6 +1066,7 @@
 <translation id="3678342917559046352">Μη έγκυρη επέκταση: Η τιμή αναμενόταν να έχει μία από τις ακόλουθες μορφές: &lt;extension_id&gt; ή &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Ανοίξτε τη σελίδα σε ένα νέο παράθυρο ανώνυμης περιήγησης (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Πληροφορίες πιστοποιητικού</translation>
+<translation id="3693327506115126094">Επιλέξτε τον τρόπο επαλήθευσης της ταυτότητάς σας</translation>
 <translation id="3699374065820972102">Το TouchID είναι ενεργό για τη συμπλήρωση κωδικών πρόσβασης</translation>
 <translation id="3701427423622901115">Έγινε επιβεβαίωση της επαναφοράς.</translation>
 <translation id="3704162925118123524">Το δίκτυο που χρησιμοποιείτε ενδέχεται να σας ζητήσει να επισκεφτείτε τη σελίδα σύνδεσης του.</translation>
@@ -1146,6 +1151,7 @@
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Το <ph name="URL" /> επιθυμεί την αναπαραγωγή προστατευμένου περιεχομένου. Η ταυτότητα της συσκευής σας θα επαληθευτεί από την Google και αυτός ο ιστότοπος μπορεί να αποκτήσει πρόσβαση σε αυτήν.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">Εισαγάγετε τον κωδικό ασφαλείας</translation>
 <translation id="3927932062596804919">Άρνηση</translation>
 <translation id="393316646445601645">Διαδίκτυο και τηλεπικοινωνίες</translation>
 <translation id="3939773374150895049">Χρήση WebAuthn αντί του CVC;</translation>
@@ -1393,6 +1399,7 @@
 <translation id="4524805452350978254">Διαχείριση καρτών</translation>
 <translation id="4526465106919207193">Άνθρωποι και κοινωνία</translation>
 <translation id="4530347922939905757">Μήνυμα κειμένου</translation>
+<translation id="4531477351494678589">Αριθμός εικονικής κάρτας:</translation>
 <translation id="4540780316273593836">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="4541810033354695636">επαυξημένη πραγματικότητα</translation>
 <translation id="4542971377163063093">Δίσκος 6</translation>
@@ -1402,6 +1409,7 @@
 <translation id="4567686777917670400">Ο διαχειριστής σας μπορεί να αλλάξει τη ρύθμιση του προγράμματος περιήγησής σας απομακρυσμένα. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί επίσης να πραγματοποιηθεί εκτός Chromium. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Παράδοση</translation>
 <translation id="4582204425268416675">Κατάργηση κάρτας</translation>
+<translation id="4582595824823167856">Λήψη μηνύματος κειμένου</translation>
 <translation id="4587425331216688090">Κατάργηση διεύθυνσης από το Chrome;</translation>
 <translation id="459089498662672729">Η επικόλληση από το <ph name="ORIGIN_NAME" /> σε αυτήν την τοποθεσία δεν συνιστάται από την πολιτική διαχειριστή</translation>
 <translation id="4592951414987517459">Η σύνδεσή σας στο <ph name="DOMAIN" /> κρυπτογραφείται χρησιμοποιώντας ένα σύγχρονο πρόγραμμα κρυπτογράφησης.</translation>
@@ -1413,6 +1421,7 @@
 <translation id="4606870351894164739">Εμφατικό</translation>
 <translation id="4607603470419975064">Κουμπί Εμφάνιση συμβουλών Chrome, πατήστε το πλήκτρο Enter για να μάθετε σχετικά με τις λειτουργίες του Chrome</translation>
 <translation id="4607608436550361748">Εμφάνιση συμβουλών Chrome</translation>
+<translation id="460848736049414407">Αποκλείστηκε από τον διαχειριστή</translation>
 <translation id="4610279718074907952">Αυτός ο ιστότοπος ανήκει σε μια ομάδα που καθορίζεται από τον τομέα <ph name="SET_OWNER" />, ο οποίος μπορεί να βλέπει τη δραστηριότητά σας</translation>
 <translation id="4617273035598175554">Λογισμικό γραφικών και κινουμένων εικόνων</translation>
 <translation id="4622292761762557753">Μεταφορά ούτως ή άλλως</translation>
@@ -1881,6 +1890,7 @@
 <translation id="57689295674415555">Δεν συμπληρώθηκε ο αριθμός εικονικής κάρτας;</translation>
 <translation id="5772086939108830423">Χρήση κλειδιού πρόσβασης σε διαφορετική συσκευή</translation>
 <translation id="5776313857861697733">Προτεραιότητα</translation>
+<translation id="5776574724412881956">Δεν έχει συμπληρωθεί η εικονική κάρτα; Κάντε κλικ στα στοιχεία της εικονικής κάρτας για να τα αντιγράψετε στο πρόχειρο. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Το πείραμα ενεργοποιήθηκε</translation>
 <translation id="578305955206182703">Καφεκίτρινο</translation>
 <translation id="57838592816432529">Σίγαση</translation>
@@ -2010,6 +2020,7 @@
 <translation id="6116338172782435947">Δει κείμενο και εικόνες που αντιγράψατε στο πρόχειρο</translation>
 <translation id="6118782133429281336">Η λίστα προέλευσης είναι κενή.</translation>
 <translation id="6120179357481664955">Θυμάστε το αναγνωριστικό UPI;</translation>
+<translation id="6122181661879998141">μπροστινό μέρος της κάρτας σας</translation>
 <translation id="6124432979022149706">Εφαρμογές σύνδεσης Chrome για επιχειρήσεις</translation>
 <translation id="6126565365696310362">Κινεζικός φάκελος #2</translation>
 <translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
@@ -2377,6 +2388,7 @@
 <translation id="7108634116785509031">Ο ιστότοπος <ph name="HOST" /> επιθυμεί να χρησιμοποιήσει την κάμερα σας</translation>
 <translation id="7108819624672055576">Επιτρέπεται από μια επέκταση</translation>
 <translation id="7111012039238467737">(Έγκυρο)</translation>
+<translation id="7112327784801341716">Δεν βλέπετε τα τρέχοντα στοιχεία σας; Επικοινωνήστε με την τράπεζά σας για να γίνει ενημέρωση.</translation>
 <translation id="7118618213916969306">Αναζήτηση URL στο πρόχειρο, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Κλείστε τις άλλες καρτέλες ή τα προγράμματα</translation>
 <translation id="7129355289156517987">Όταν κλείνετε όλες τις καρτέλες ανώνυμης περιήγησης του Chromium, οι δραστηριότητά σας σε αυτές τις καρτέλες διαγράφεται από αυτήν τη συσκευή:
@@ -2680,6 +2692,7 @@
 <translation id="7798389633136518089">Παραβλέφθηκε επειδή η πολιτική δεν έχει οριστεί από πηγή cloud.</translation>
 <translation id="7800304661137206267">Η σύνδεση είναι κρυπτογραφημένη με χρήση <ph name="CIPHER" />, με <ph name="MAC" /> για έλεγχο ταυτότητας μηνυμάτων και <ph name="KX" /> ως μηχανισμό ανταλλαγής κλειδιών.</translation>
 <translation id="7802523362929240268">Ο ιστότοπος είναι νόμιμος</translation>
+<translation id="7802989406998618639">Εισαγάγετε τον <ph name="NUMBER_OF_DIGITS" />-ψήφιο κωδικό ασφαλείας στο <ph name="SIDE_OF_CARD" /> για να επαληθεύσει η τράπεζα την ταυτότητά σας</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7805571567667010077">Υπό τη διαχείριση του οργανισμού σας</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
@@ -3010,6 +3023,7 @@
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8726549941689275341">Μέγεθος σελίδας:</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
+<translation id="8731268612289859741">Κωδικός ασφαλείας</translation>
 <translation id="8731544501227493793">Κουμπί διαχείρισης κωδικών πρόσβασης, πατήστε Enter για προβολή και διαχείριση των κωδικών πρόσβασής σας στις ρυθμίσεις του Chrome</translation>
 <translation id="8734529307927223492">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 ίντσες</translation>
@@ -3115,6 +3129,7 @@
 <translation id="9005998258318286617">Η φόρτωση του εγγράφου PDF απέτυχε.</translation>
 <translation id="9008178007718859630">Διακόσμηση σπιτιού και εσωτερικών χώρων</translation>
 <translation id="9008201768610948239">Παράβλεψη</translation>
+<translation id="9018120810758822233">Εισαγάγετε τον κωδικό ασφαλείας για την κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">ηλεκτρονικό ταχυδρομείο</translation>
 <translation id="9020200922353704812">Απαιτείται διεύθυνση χρέωσης της κάρτας</translation>
 <translation id="9020542370529661692">Αυτή η σελίδα έχει μεταφραστεί στα <ph name="TARGET_LANGUAGE" />.</translation>

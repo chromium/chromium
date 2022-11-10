@@ -928,6 +928,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1832848789136765277">Bevestig dat jij het bent zodat je altijd toegang hebt tot je synchronisatiegegevens</translation>
 <translation id="1834503245783133039">Download niet geslaagd: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux upgraden</translation>
+<translation id="1835612721186505600">Toegang geven aan apps en websites met camerarechten</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
 <translation id="1839021455997460752">Je e-mailadres</translation>
 <translation id="1839540115464516994">Tonen in <ph name="LOCATION" /></translation>
@@ -2494,6 +2495,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3279230909244266691">Dit proces kan enkele minuten duren. De virtuele machine wordt gestart.</translation>
 <translation id="3280237271814976245">Opslaan &amp;als...</translation>
 <translation id="3280243678470289153">In Chrome blijven</translation>
+<translation id="328119399589609861">Beheer apparaattoegang tot de microfoon, camera en meer</translation>
 <translation id="3281892622610078515">Bestanden en programma's die in quarantaine worden gezet:</translation>
 <translation id="3282210178675490297">Er wordt een tabblad gedeeld met <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Nieuw &amp;tabblad</translation>
@@ -4455,7 +4457,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="514575469079499857">Je IP-adres gebruiken om je locatie te bepalen (standaard)</translation>
 <translation id="5147103632304200977">Vragen als een site toegang wil krijgen tot HID-apparaten (aanbevolen)</translation>
 <translation id="5148277445782867161">De locatieservice van Google maakt gebruik van bronnen zoals wifi, mobiele netwerken en sensoren om de locatie van je apparaat te schatten.</translation>
-<translation id="5150070631291639005">Privacyinstellingen</translation>
 <translation id="5150254825601720210">SSL-servernaam van Netscape-certificaat</translation>
 <translation id="5151354047782775295">Maak schijfruimte vrij of bepaalde gegevens kunnen automatisch worden verwijderd</translation>
 <translation id="5153234146675181447">Telefoon vergeten</translation>
@@ -4497,6 +4498,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5185500136143151980">Geen internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Poort activeren</translation>
+<translation id="5190959794678983197">Geen microfoon</translation>
 <translation id="5191094172448199359">De pincodes die je hebt opgegeven, komen niet overeen</translation>
 <translation id="5191251636205085390">Bekijk meer informatie over en beheer nieuwe technologieën die cookies van derden willen vervangen</translation>
 <translation id="519185197579575131">QT gebruiken</translation>
@@ -4856,6 +4858,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Is dit de homepage die je had verwacht?</translation>
 <translation id="5522156646677899028">Deze extensie bevat een groot beveiligingsprobleem.</translation>
+<translation id="5522403133543437426">Zoekmachine gebruikt in adresbalk.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Je beheerder heeft een extensie geïnstalleerd}other{Je beheerder heeft # extensies geïnstalleerd}}</translation>
 <translation id="5523558474028191231">De naam mag letters, cijfers en speciale tekens bevatten en mag maximaal <ph name="MAX_CHARACTER_COUNT" /> tekens lang zijn</translation>
 <translation id="5526701598901867718">Alle (onbeveiligd)</translation>
@@ -7033,6 +7036,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7608810328871051088">Android-voorkeuren</translation>
 <translation id="7609148976235050828">Maak verbinding met internet en probeer het opnieuw.</translation>
+<translation id="7612401678989660900">Toegang geven aan apps en websites met microfoonrechten</translation>
 <translation id="7612655942094160088">Zet functies van verbonden telefoon aan.</translation>
 <translation id="7614260613810441905">Vragen wanneer een site bestanden of mappen op je apparaat wil bewerken (aanbevolen)</translation>
 <translation id="761530003705945209">Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. De back-up bevat app-gegevens. Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.</translation>
@@ -8414,6 +8418,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8872155268274985541">Ongeldig manifestbestand voor de externe update van Kiosk gevonden. Het updaten van de Kiosk-app is mislukt. Verwijder de USB-stick.</translation>
 <translation id="8872506776304248286">Openen in app</translation>
 <translation id="8872777911145321141">Vragen als een site je virtualreality-apparaten en -gegevens wil gebruiken (aanbevolen)</translation>
+<translation id="887292602123626481">Meer informatie over standaard zoekmachines</translation>
 <translation id="8874341931345877644">Casten naar een apparaat:</translation>
 <translation id="8875520811099717934">Linux upgraden</translation>
 <translation id="8875736897340638404">Je zichtbaarheid kiezen</translation>
@@ -8534,6 +8539,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8987927404178983737">Maand</translation>
 <translation id="8989359959810288806">Tethering-status vernieuwen</translation>
 <translation id="8991520179165052608">Site kan je microfoon gebruiken</translation>
+<translation id="8991694323904646277">Geen camera</translation>
 <translation id="8993059306046735527">Als je je <ph name="DEVICE_TYPE" />-wachtwoord bent vergeten, kun je je lokale gegevens nog steeds herstellen. Log hiervoor in op je Google-account of gebruik accountherstel.</translation>
 <translation id="899384117894244799">Gebruiker met beperkte rechten verwijderen</translation>
 <translation id="899403249577094719">Basis-URL voor Netscape-certificaat</translation>

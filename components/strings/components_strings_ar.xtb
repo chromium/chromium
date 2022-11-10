@@ -1385,6 +1385,7 @@
 <translation id="4514308731478712184">إيقاف ميزة "رحلات البحث"
 </translation>
 <translation id="4515275063822566619">‏يتم أخذ البطاقات والعناوين من Chrome وحسابك على Google (<ph name="ACCOUNT_EMAIL" />)، ويمكنك إدارتها في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">تحظر سياسة المشرف تنزيل هذا الملف.</translation>
 <translation id="4521157617044179198">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> ملم (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">‏ظرف Monarch</translation>
 <translation id="4521916730539354575">الدُرج الأيسر</translation>
@@ -2385,6 +2386,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">لا يمكن الشحن على هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">تحميل الملفات محظور</translation>
 <translation id="7132939140423847331">حظر المشرف نسخ هذه البيانات.</translation>
 <translation id="7135130955892390533">عرض الحالة</translation>
 <translation id="7136009930065337683">مزيد من المعلومات حول وضع التصفُّح المتخفي</translation>
@@ -2618,6 +2620,7 @@
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7659327900411729175">‏ظرف Kaku 8</translation>
 <translation id="7659878911471462949">دموع الفرح</translation>
+<translation id="766014026101194726">{0,plural, =1{تحظر سياسة المشرف تحميل هذا الملف}zero{تحظر سياسة المشرف تحميل # ملف}two{تحظر سياسة المشرف تحميل ملفَين}few{تحظر سياسة المشرف تحميل # ملفات}many{تحظر سياسة المشرف تحميل # ملفًا}other{تحظر سياسة المشرف تحميل # ملف}}</translation>
 <translation id="7662298039739062396">يتم التحكّم في الإعداد بواسطة إحدى الإضافات</translation>
 <translation id="7663736086183791259">شهادة <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">غير مسموح بالإذن في وضع التصفّح المتخفي</translation>
@@ -2712,6 +2715,7 @@
 <translation id="7939744324936979484">موسيقى شعبية وتقليدية</translation>
 <translation id="7941628148012649605">‏ظرف Chou 4</translation>
 <translation id="7942349550061667556">أحمر</translation>
+<translation id="7943397946612013052">تنزيل الملفات محظور</translation>
 <translation id="7943893128817522649">السماح للموقع الإلكتروني بطلب تنزيل ملفات متعدّدة تلقائيًا</translation>
 <translation id="7947285636476623132">تحقق من عام انتهاء الصلاحية وأعِد المحاولة مرة أخرى</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter للتعرّف على ميزات Chrome.</translation>

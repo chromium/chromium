@@ -151,6 +151,7 @@ Güven jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak için
 <translation id="1750259112639922169">Sekme grubu: <ph name="TAB_COUNT" /> sekme</translation>
 <translation id="17513872634828108">Açık sekmeler</translation>
 <translation id="1754404134430936718">Metin Kopyalandı</translation>
+<translation id="1778457539567749232">Okunmadı olarak işaretle</translation>
 <translation id="1779766957982586368">Pencereyi kapat</translation>
 <translation id="1791662854739702043">Yüklendi</translation>
 <translation id="1792959175193046959">Dosyaların indirileceği varsayılan konumu istediğiniz zaman değiştirebilirsiniz</translation>
@@ -398,7 +399,6 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="3130863904455712965">Geçmiş ve daha fazlası</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome’un ana sayfası</translation>
-<translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3166827708714933426">Sekme ve pencere kısayolları</translation>
 <translation id="316694332262407393">Chrome zaten buradan çalışıyor.</translation>
 <translation id="3169472444629675720">Discover</translation>

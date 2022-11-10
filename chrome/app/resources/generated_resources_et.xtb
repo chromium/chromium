@@ -3744,6 +3744,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> tuvastas aktiivse TPM-i, millega saab teie andmeid salvestada turvalisemalt.</translation>
 <translation id="4451479197788154834">Teie parool salvestatakse sellesse seadmesse ja teie Google'i kontole</translation>
 <translation id="4451757071857432900">Blokeeritud saitidel, mis kuvavad sekkuvaid või eksitavaid reklaame (soovitatav)</translation>
+<translation id="4452898361839215358">või valige PPD. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Otsige teenusega <ph name="SEARCH_ENGINE_NAME" /> või sisestage URL</translation>
 <translation id="4458535500699390320">Ajal, mil see vaheleht oli inaktiivne, vabastas mälusäästja mälu muude toimingute jaoks. Saate seda menüüs Seaded alati muuta.</translation>
 <translation id="4459169140545916303">Aktiivne <ph name="DEVICE_LAST_ACTIVATED_TIME" /> päeva tagasi</translation>
@@ -4463,7 +4464,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="514575469079499857">Asukoha määramiseks IP-aadressi kasutamine (vaikimisi)</translation>
 <translation id="5147103632304200977">Küsi, kui sait soovib juurdepääsu HID-seadmetele (soovitatav)</translation>
 <translation id="5148277445782867161">Google'i asukohateenus kasutab teie seadme asukoha prognoosimiseks selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid.</translation>
-<translation id="5150070631291639005">Privaatsusseaded</translation>
 <translation id="5150254825601720210">Netscape'i sertifikaadi SSL-serveri nimi</translation>
 <translation id="5151354047782775295">Vabastage kettaruumi, muidu võidakse valitud andmed automaatselt kustutada</translation>
 <translation id="5153234146675181447">Telefoni unustamine</translation>
@@ -8369,6 +8369,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8823514049557262177">Kopeeri lingi te&amp;kst</translation>
 <translation id="8823559166155093873">Blokeeri küpsisefailid</translation>
 <translation id="8823704566850948458">Soovita parooli …</translation>
+<translation id="8823963789776061136">Teise võimalusena võite valida printeri PPD. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Lisa &amp;leht ...</translation>
 <translation id="8827125715368568315">Blokeeritud on <ph name="PERMISSION" /> ja veel <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Kinnita laiendus</translation>
@@ -8623,6 +8624,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> soovib juurdepääsu järgmisele sisule:</translation>
 <translation id="9057354806206861646">Ajakava värskendamine</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Umbes 1 märguanne päevas}other{Umbes {NUM_NOTIFICATION} märguannet päevas}}</translation>
+<translation id="9058760336383947367">Kuva printeri PPD</translation>
 <translation id="9061383912634843744">Saitidele ja rakendustesse logitakse automaatselt sisse salvestatud mandaatidega. Kui see on välja lülitatud, palutakse teilt saidile või rakendusse sisselogimisel iga kord kinnitust.</translation>
 <translation id="9062468308252555888">14-kordne</translation>
 <translation id="9063208415146866933">Viga ridadel <ph name="ERROR_LINE_START" /> kuni <ph name="ERROR_LINE_END" /></translation>

@@ -352,6 +352,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2960314608273155470">Mode Tangkapan Layar, opsi defaultnya adalah <ph name="TYPE" /> <ph name="SOURCE" />. Tekan tab untuk menavigasi dengan keyboard.</translation>
 <translation id="2961963223658824723">Terjadi error. Coba lagi dalam beberapa detik.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Aktifkan akses mikrofon?</translation>
 <translation id="296762781903199866">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instal aplikasi, ekstensi, dan tema</translation>
 <translation id="2977598380246111477">Nomor berikutnya</translation>
@@ -430,6 +431,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3386978599540877378">kaca pembesar layar penuh</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Setelan tambahan</translation>
+<translation id="3405101454990027959">Aktifkan akses mikrofon</translation>
 <translation id="3410336247007142655">Tampilkan setelan tema gelap</translation>
 <translation id="3413817803639110246">Belum ada notifikasi</translation>
 <translation id="3428447136709161042">Putuskan sambungan dari <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Awal</translation>
 <translation id="3861651314799684201">Tekan Enter untuk merekam dalam layar penuh</translation>
+<translation id="3885531177412808398">Mengizinkan akses mikrofon untuk semua aplikasi dan situs yang memiliki izin mikrofon</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
@@ -1375,6 +1378,7 @@ Baru diinstal</translation>
 <translation id="8666856788528804727">Buka <ph name="NAME" /> untuk menyiapkan perangkat Anda</translation>
 <translation id="8676770494376880701">Pengisi daya rendah terpasang</translation>
 <translation id="8683506306463609433">Pelacakan performa aktif</translation>
+<translation id="8684405646663021166">Mengizinkan akses mikrofon untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin mikrofon</translation>
 <translation id="8685326675965865247">Telusuri perangkat, aplikasi, setelan, dan web Anda. Gunakan tombol panah untuk membuka berbagai bagian aplikasi.</translation>
 <translation id="8703634754197148428">Mulai merekam. Setelah perekaman dimulai, gunakan Alt + Shift + L untuk menuju rak dan temukan tombol hentikan perekaman</translation>
 <translation id="8721053961083920564">Ubah Volume. <ph name="STATE_TEXT" /></translation>

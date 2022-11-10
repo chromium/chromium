@@ -151,6 +151,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="1750259112639922169">Nhóm thẻ – <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="17513872634828108">Thẻ đang mở</translation>
 <translation id="1754404134430936718">Đã sao chép văn bản</translation>
+<translation id="1778457539567749232">Đánh dấu là chưa đọc</translation>
 <translation id="1779766957982586368">Đóng cửa sổ</translation>
 <translation id="1791662854739702043">Đã cài đặt</translation>
 <translation id="1792959175193046959">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào</translation>
@@ -398,7 +399,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="3130863904455712965">Nhật ký và nhiều nội dung khác</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Trang chủ của Chrome</translation>
-<translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3166827708714933426">Phím tắt dành cho thẻ và cửa sổ</translation>
 <translation id="316694332262407393">Chrome hiện đang chạy trên trang này.</translation>
 <translation id="3169472444629675720">Khám phá</translation>

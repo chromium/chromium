@@ -352,6 +352,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2960314608273155470">Mode de capture, la valeur par défaut est <ph name="TYPE" /> <ph name="SOURCE" />. Appuyez sur la touche Tabulation pour utiliser la navigation au clavier.</translation>
 <translation id="2961963223658824723">Un problème est survenu. Réessayez dans quelques secondes.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Activer l'accès au microphone?</translation>
 <translation id="296762781903199866">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Installer des applications, des extensions et des thèmes</translation>
 <translation id="2977598380246111477">Prochain numéro</translation>
@@ -430,6 +431,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3386978599540877378">la loupe plein écran</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Autres paramètres</translation>
+<translation id="3405101454990027959">Activer l'accès au microphone</translation>
 <translation id="3410336247007142655">Afficher les paramètres du thème sombre</translation>
 <translation id="3413817803639110246">Rien à voir pour le moment</translation>
 <translation id="3428447136709161042">Se déconnecter de <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="385300504083504382">Début</translation>
 <translation id="3861651314799684201">Appuyez sur Entrée pour enregistrer en plein écran</translation>
+<translation id="3885531177412808398">Permet l'accès au microphone à toutes les applications et à tous les sites Web en détenant l'autorisation</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
@@ -1375,6 +1378,7 @@ Nouvelle installation</translation>
 <translation id="8666856788528804727">Ouvrez <ph name="NAME" /> pour configurer votre appareil</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8683506306463609433">Suivi des performances activé</translation>
+<translation id="8684405646663021166">Permet l'accès au microphone à <ph name="APP_NAME" />, et à toutes les applications et à tous les sites Web en détenant l'autorisation</translation>
 <translation id="8685326675965865247">Recherchez dans votre appareil, dans vos applications, dans vos paramètres et sur le Web. Utilisez les touches fléchées pour naviguer dans vos applications.</translation>
 <translation id="8703634754197148428">Commencer l'enregistrement. Une fois que l'enregistrement a commencé, servez-vous des touches Alt+Majuscule+L pour naviguer jusqu'à l'étagère et trouver le bouton d'arrêt de l'enregistrement</translation>
 <translation id="8721053961083920564">Activer/Désactiver le volume. <ph name="STATE_TEXT" /></translation>

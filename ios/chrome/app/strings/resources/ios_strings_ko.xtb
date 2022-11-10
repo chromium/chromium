@@ -309,7 +309,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3393920035788932672">팝업 허용</translation>
 <translation id="3399930248910934354">Chrome 설정 열기</translation>
 <translation id="3404744938087714423">로그아웃하면 동기화가 사용 중지됩니다.</translation>
-<translation id="3414451675185661089">2. Passwords(비밀번호)를 탭합니다.</translation>
 <translation id="3425644765244388016">카드 닉네임</translation>
 <translation id="3433057996795775706">비밀번호를 삭제해도 <ph name="WEBSITE" /> 계정은 삭제되지 않습니다. <ph name="WEBSITE" /> 비밀번호를 변경하여 계정 보안을 유지하세요.</translation>
 <translation id="3443810440409579745">탭을 수신했습니다.</translation>
@@ -587,7 +586,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5614553682702429503">비밀번호를 저장하시겠습니까?</translation>
 <translation id="5626245204502895507">현재 파일을 다운로드할 수 없습니다.</translation>
 <translation id="5631164295104953411">결제 수단 추가</translation>
-<translation id="5636282538000367086">Chrome의 새로운 기능을 알아보세요.</translation>
 <translation id="5652623411397330904">가격을 추적 중인 제품이 여기에 표시됩니다.</translation>
 <translation id="5657859710142657190">탭 그리드로 이동</translation>
 <translation id="5659593005791499971">이메일</translation>
@@ -602,7 +600,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5711039611392265845">개인정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
 <translation id="5724941645893276623">비공개로 웹을 탐색하려면 새 탭을 추가하세요.</translation>
 <translation id="5728700505257787410">죄송합니다. 계정에 로그인하는 중에 문제가 발생했습니다.</translation>
-<translation id="5731784586962650619">다른 앱의 비밀번호</translation>
 <translation id="5733084997078800044">Chrome 관련 도움말</translation>
 <translation id="5737974891429562743">계정 로그인 세부정보가 오래되었습니다. 업데이트하여 동기화를 시작하세요.</translation>
 <translation id="5738385766833540397">추적 중인 제품의 가격 인하 알림을 받을 방법 관리</translation>
@@ -681,7 +678,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6229318421047648685">데스크톱 사이트로 보기</translation>
 <translation id="6231782223312638214">추천</translation>
 <translation id="6232329973559504466">시크릿 검색</translation>
-<translation id="6232736989810857397">이렇게 하면 Google 렌즈를 사용하여 간편하게 캘린더 일정을 만들 수 있습니다.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6254066287920239840">브라우저 대신 앱에서 링크 열기</translation>
 <translation id="6255097610484507482">신용카드 수정</translation>
@@ -708,7 +704,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6383719166112032471">위치 열기…</translation>
 <translation id="6387994324662817823">비밀번호가 이 기기의 Google 비밀번호 관리자에만 저장됩니다</translation>
 <translation id="6389470377220713856">카드 명의</translation>
-<translation id="6403371459378431832">모든 기기에서 데이터를 동기화해 보세요</translation>
 <translation id="6406506848690869874">동기화</translation>
 <translation id="6410390304316730527">세이프 브라우징을 사용하면 악성 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드 정보)를 공개하는 등의 위험한 행동을 하도록 사용자를 속이는 공격자를 차단합니다. 이 기능을 사용 중지하는 경우 익숙하지 않거나 평판이 좋지 않은 사이트를 탐색할 때 주의하시기 바랍니다.</translation>
 <translation id="6410883413783534063">탭을 열어 동시에 다른 페이지를 방문합니다.</translation>
@@ -931,7 +926,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8032569120109842252">팔로우 중</translation>
 <translation id="804225253087497565">로그인할 경우 <ph name="BEGIN_LINK" />검색 기록<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />다른 활동 형식<ph name="END_LINK" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.</translation>
 <translation id="804427445359061970">여기에서 다른 기기의 탭을 확인할 수 있습니다</translation>
-<translation id="8048728378294435881">콘텐츠를 백업하고 어느 기기에서나 사용하세요.</translation>
 <translation id="8059533439631660104">섹션을 접습니다.</translation>
 <translation id="8065292699993359127">Chrome에서 시크릿 모드로 URL 열기</translation>
 <translation id="806745655614357130">내 데이터 별도로 유지</translation>

@@ -4474,7 +4474,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="514575469079499857">Nota IP-töluna þína til að ákvarða staðsetningu (sjálfgefið)</translation>
 <translation id="5147103632304200977">Spyrja þegar vefsvæði vill fá aðgang að HID-tækjum (ráðlagt)</translation>
 <translation id="5148277445782867161">Staðsetningarþjónusta Google notar heimildir eins og Wi-Fi, farsímakerfi og skynjara til að ákvarða staðsetningu tækisins.</translation>
-<translation id="5150070631291639005">Persónuverndarstillingar</translation>
 <translation id="5150254825601720210">SSL-þjónsheiti Netscape-vottorðs</translation>
 <translation id="5151354047782775295">Losaðu um geymslupláss eða veldu gögn sem má eyða sjálfkrafa</translation>
 <translation id="5153234146675181447">Gleyma síma</translation>
@@ -4669,6 +4668,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5331568967879689647">Kerfisforrit ChromeOS</translation>
 <translation id="5331975486040154427">USB-C tæki (tengi vinstra megin að aftan)</translation>
 <translation id="5333896723098573627">Þegar þú vilt fjarlægja forrit skaltu opna „Stillingar &gt; Forrit &gt; Google Play Store &gt; Hafa umsjón með stillingum Android &gt; Forrit eða Forritastjórnun“. Ýttu síðan á forritið sem þú vilt fjarlægja (þú gætir þurft að strjúka til hægri eða vinstri til að finna forritið). Ýttu svo á „Fjarlægja“ eða „Slökkva“.</translation>
+<translation id="5334113802138581043">Aðgangur að hljóðnema</translation>
 <translation id="5334142896108694079">Skyndiminni skriftu</translation>
 <translation id="5336688142483283574">Þessi síða verður einnig fjarlægð úr ferlinum og aðgerðum á <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Bendill og snertiflötur</translation>
@@ -8666,6 +8666,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9081543426177426948">Vefsvæði sem þú opnar eru ekki vistuð í huliðsstillingu</translation>
 <translation id="9084064520949870008">Opna sem glugga</translation>
 <translation id="9085256200913095638">Opna annað eintak af völdum flipa</translation>
+<translation id="9085446486797400519">Aðgangur að myndavél</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" />, ekki valið. Ýttu á leit og bilslána til að velja.</translation>
 <translation id="9087949559523851360">Bæta takmörkuðum notanda við</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> er á bannlista vegna fyrirtækjastefnu</translation>

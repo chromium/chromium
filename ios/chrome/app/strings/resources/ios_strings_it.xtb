@@ -309,7 +309,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3393920035788932672">Popup consentiti</translation>
 <translation id="3399930248910934354">Apri Impostazioni di Chrome</translation>
 <translation id="3404744938087714423">Se esci verrà disattivata la sincronizzazione.</translation>
-<translation id="3414451675185661089">2. Tocca Password</translation>
 <translation id="3425644765244388016">Nickname carta</translation>
 <translation id="3433057996795775706">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />. Cambia la password su <ph name="WEBSITE" /> per proteggere il tuo account dagli altri.</translation>
 <translation id="3443810440409579745">Scheda ricevuta.</translation>
@@ -587,7 +586,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>
 <translation id="5631164295104953411">Aggiungi il metodo di pagamento</translation>
-<translation id="5636282538000367086">Scopri le novità di Chrome</translation>
 <translation id="5652623411397330904">I prodotti monitorati verranno visualizzati qui.</translation>
 <translation id="5657859710142657190">Vai alla griglia delle schede</translation>
 <translation id="5659593005791499971">Email</translation>
@@ -602,7 +600,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5711039611392265845">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Sincronizzazione e servizi Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Per navigare sul Web in privato, aggiungi una nuova scheda</translation>
 <translation id="5728700505257787410">Spiacenti, problema durante l'accesso all'account.</translation>
-<translation id="5731784586962650619">Password in altre app</translation>
 <translation id="5733084997078800044">Suggerimento per Chrome</translation>
 <translation id="5737974891429562743">I dati di accesso dell'account sono obsoleti. Aggiorna per avviare la sincronizzazione.</translation>
 <translation id="5738385766833540397">Gestisci la modalità di ricezione degli avvisi relativi ai cali di prezzo dei prodotti monitorati</translation>
@@ -681,7 +678,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6229318421047648685">Richiedi sito desktop</translation>
 <translation id="6231782223312638214">Suggerito</translation>
 <translation id="6232329973559504466">Ricerca in incognito</translation>
-<translation id="6232736989810857397">In questo modo puoi creare facilmente eventi nel calendario con Google Lens.</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6254066287920239840">Apri i link all'interno dell'app invece che nel browser.</translation>
 <translation id="6255097610484507482">Modifica carta di credito</translation>
@@ -708,7 +704,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6383719166112032471">Apri il percorso</translation>
 <translation id="6387994324662817823">Le password vengono salvate in Gestore delle password di Google solo su questo dispositivo.</translation>
 <translation id="6389470377220713856">Nome sulla carta</translation>
-<translation id="6403371459378431832">Sincronizza i tuoi dati su tutti i dispositivi</translation>
 <translation id="6406506848690869874">Sincronizzazione</translation>
 <translation id="6410390304316730527">La Navigazione sicura ti protegge da utenti malintenzionati che potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software dannosi o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). Se la disattivi, fai attenzione quando navighi in siti sconosciuti o sospetti.</translation>
 <translation id="6410883413783534063">Apri più schede per visitare pagine diverse contemporaneamente</translation>
@@ -931,7 +926,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8032569120109842252">Seguito</translation>
 <translation id="804225253087497565">La <ph name="BEGIN_LINK" />cronologia delle ricerche<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="804427445359061970">Qui troverai le tue schede aperte su altri dispositivi</translation>
-<translation id="8048728378294435881">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo</translation>
 <translation id="8059533439631660104">Viene compressa la sezione.</translation>
 <translation id="8065292699993359127">Apri gli URL in Chrome nella modalità in incognito</translation>
 <translation id="806745655614357130">Mantieni separati i miei dati</translation>

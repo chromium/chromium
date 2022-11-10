@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">Rögzítés mód, alapértelmezett beállítás: <ph name="SOURCE" /> <ph name="TYPE" />. A billentyűzettel való navigációhoz nyomja le a Tab billentyűt.</translation>
 <translation id="2961963223658824723">Valami nem sikerült. Próbálja újra néhány másodperc múlva.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Aktiválja a mikrofon-hozzáférést?</translation>
 <translation id="296762781903199866">Nem sikerült letölteni a(z) <ph name="LANGUAGE" /> nyelvű beszédfájlokat</translation>
 <translation id="2970920913501714344">Alkalmazások, bővítmények és témák telepítése</translation>
 <translation id="2977598380246111477">Következő szám</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">teljes képernyős nagyító</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">További beállítások</translation>
+<translation id="3405101454990027959">Mikrofon-hozzáférés aktiválása</translation>
 <translation id="3410336247007142655">Sötét téma beállításainak megjelenítése</translation>
 <translation id="3413817803639110246">Itt most nem látható semmi</translation>
 <translation id="3428447136709161042">Kapcsolat bontása: <ph name="NETWORK_NAME" /></translation>
@@ -517,6 +519,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="385300504083504382">A legelejére</translation>
 <translation id="3861651314799684201">Nyomja le az Entert a teljes képernyő tartalmának rögzítéséhez</translation>
+<translation id="3885531177412808398">Engedélyezi a mikrofonhoz való hozzáférést minden olyan alkalmazásnak és webhelynek, amely rendelkezik a mikrofonhasználati engedéllyel</translation>
 <translation id="3886872229787704059">Ma nyitotta meg</translation>
 <translation id="3891340733213178823">Nyomja meg a Ctrl+Shift+Q billentyűkombinációt kétszer a kijelentkezéshez.</translation>
 <translation id="3893630138897523026">ChromeVox (beszélt visszajelzés)</translation>
@@ -1376,6 +1379,7 @@ Frissen telepítve</translation>
 <translation id="8666856788528804727">Nyissa meg a(z) <ph name="NAME" /> alkalmazást az eszköz beállításához</translation>
 <translation id="8676770494376880701">Kis teljesítményű töltő csatlakoztatva</translation>
 <translation id="8683506306463609433">A teljesítménykövetés aktív</translation>
+<translation id="8684405646663021166">Engedélyezi a mikrofonhoz való hozzáférést a(z) <ph name="APP_NAME" />, illetve a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="8685326675965865247">Kereshet eszközén, az alkalmazások és a beállítások között, valamint az interneten. A nyílbillentyűkkel navigálhat az alkalmazások között.</translation>
 <translation id="8703634754197148428">Indítsa el a rögzítést. A rögzítés elindítása után nyissa meg az Alt+Shift+L billentyűkombináció segítségével a polcot, és keresse meg a felvétel leállítása gombot.</translation>
 <translation id="8721053961083920564">Hang ki-, illetve bekapcsolása. <ph name="STATE_TEXT" /></translation>

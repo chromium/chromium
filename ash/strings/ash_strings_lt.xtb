@@ -352,6 +352,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2960314608273155470">Užfiksavimo režimas, numatytoji parinktis yra <ph name="SOURCE" /> <ph name="TYPE" />. Norėdami naudoti klaviatūrą, paspauskite tabuliavimo klavišą.</translation>
 <translation id="2961963223658824723">Deja, įvyko klaida. Bandykite dar kartą po kelių sekundžių.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Įjungti prieigą prie mikrofono?</translation>
 <translation id="296762781903199866">Nepavyko atsisiųsti <ph name="LANGUAGE" /> kalbos failų</translation>
 <translation id="2970920913501714344">Įdiegti programų, plėtinių ir temų</translation>
 <translation id="2977598380246111477">Kitas skaičius</translation>
@@ -430,6 +431,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3386978599540877378">viso ekrano didinimas</translation>
 <translation id="3387527074123400161">„Chromium“ OS</translation>
 <translation id="3400357268283240774">Papildomi nustatymai</translation>
+<translation id="3405101454990027959">Įjungti prieigą prie mikrofono</translation>
 <translation id="3410336247007142655">Rodyti Tamsiosios temos nustatymus</translation>
 <translation id="3413817803639110246">Dar nėra nieko, ką būtų galima peržiūrėti</translation>
 <translation id="3428447136709161042">Atjungti nuo „<ph name="NETWORK_NAME" />“</translation>
@@ -516,6 +518,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="385300504083504382">Pradžia</translation>
 <translation id="3861651314799684201">Paspauskite „Enter“, kad įrašytumėte visą ekraną</translation>
+<translation id="3885531177412808398">Leidžiama pasiekti mikrofoną visoms programoms ir svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="3886872229787704059">Atidaryta šiandien</translation>
 <translation id="3891340733213178823">Jei norite atsijungti, du kartus paspauskite „Ctrl“ + „Shift“ + Q.</translation>
 <translation id="3893630138897523026">„ChromeVox“ (ekrano skaitymas balsu)</translation>
@@ -1375,6 +1378,7 @@ Naujas įdiegimas</translation>
 <translation id="8666856788528804727">Atidarykite „<ph name="NAME" />“, kad nustatytumėte įrenginį</translation>
 <translation id="8676770494376880701">Prijungtas mažos galios įkroviklis</translation>
 <translation id="8683506306463609433">Našumo stebėjimas aktyvus</translation>
+<translation id="8684405646663021166">Leidžiama pasiekti mikrofoną programai „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="8685326675965865247">Ieškokite įrenginyje, programose, nustatymuose ir žiniatinklyje. Naudodami rodyklių klavišus naršykite programas.</translation>
 <translation id="8703634754197148428">Pradėkite įrašyti. Pradėjus įrašyti, naudodami „Alt“ + „Shift“ + L eikite į juostą ir raskite įrašymo sustabdymo mygtuką</translation>
 <translation id="8721053961083920564">Perjungti garsumą. <ph name="STATE_TEXT" /></translation>

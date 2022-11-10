@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">କ୍ୟାପଚର ମୋଡ, ଡିଫଲ୍ଟ ହେଉଛି <ph name="SOURCE" /> <ph name="TYPE" />। କୀବୋର୍ଡ ନାଭିଗେସନ ପାଇଁ Tabକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="2961963223658824723">କିଛି ସମସ୍ୟା ହୋଇଛି। କିଛି ସେକେଣ୍ଡ ମଧ୍ୟରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="2970920913501714344">ଆପ୍, ଏକ୍ସଟେନ୍‍ସନ୍ ଓ ଥିମ୍‍ଗୁଡ଼ିକ ଇନ୍‍ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2977598380246111477">ପରବର୍ତ୍ତୀ ନମ୍ବର</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମ୍ୟାଗ୍ନିଫାୟାର୍</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">ଅତିରିକ୍ତ ସେଟିଂସ୍</translation>
+<translation id="3405101454990027959">ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3410336247007142655">ଗାଢ଼ ଥିମ୍ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="3413817803639110246">ଏପର୍ଯ୍ୟନ୍ତ ଦେଖିବା ପାଇଁ କିଛି ନାହିଁ</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />ରୁ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">ପଛକୁ</translation>
 <translation id="385300504083504382">ଆରମ୍ଭ</translation>
 <translation id="3861651314799684201">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନକୁ ରେକର୍ଡ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
+<translation id="3885531177412808398">ମାଇକ୍ରୋଫୋନ ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="3886872229787704059">ଆଜି ଖୋଲାଯାଇଛି</translation>
 <translation id="3891340733213178823">ସାଇନ୍‍ ଆଉଟ୍‍ ହେବାକୁ ଦୁଇଥର Ctrl+Shift+Q ଦବାନ୍ତୁ।</translation>
 <translation id="3893630138897523026">ChromeVox (କଥିତ ମତାମତ)</translation>
@@ -1374,6 +1377,7 @@
 <translation id="8666856788528804727">ଆପଣଙ୍କ ଡିଭାଇସକୁ ସେଟଅପ କରିବା ପାଇଁ <ph name="NAME" />କୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8676770494376880701">ନିମ୍ନ-ଶକ୍ତିର ଚାର୍ଜର୍ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="8683506306463609433">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସିଂ ସକ୍ରିୟ ଅଛି</translation>
+<translation id="8684405646663021166"><ph name="APP_NAME" /> ଏବଂ ମାଇକ୍ରୋଫୋନ ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="8685326675965865247">ଆପଣଙ୍କ ଡିଭାଇସ୍, ଆପ୍ସ, ସେଟିଂସ୍ ଏବଂ ୱେବରେ ସନ୍ଧାନ କରନ୍ତୁ। ଆପଣଙ୍କ ଆପକୁ ନାଭିଗେଟ୍ କରିବା ପାଇଁ ତୀର କୀ'ଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8703634754197148428">ରେକର୍ଡିଂ ଆରମ୍ଭ କରନ୍ତୁ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେବା ପରେ ସେଲ୍ଫକୁ ନାଭିଗେଟ୍ କରିବାକୁ ଏବଂ ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ ବଟନ୍ ଖୋଜିବାକୁ Alt + Shift + L ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8721053961083920564">ଭଲ୍ୟୁମ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>

@@ -309,7 +309,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3393920035788932672">Qalqib chiquvchi oynalarga ruxsat</translation>
 <translation id="3399930248910934354">Chrome sozlamalarini oching</translation>
 <translation id="3404744938087714423">Hisobdan chiqsangiz, sinxronizatsiya oʻchiriladi.</translation>
-<translation id="3414451675185661089">2. Parollar ustiga bosing</translation>
 <translation id="3425644765244388016">Karta nomi</translation>
 <translation id="3433057996795775706">Bu parol olib tashlangani bilan <ph name="WEBSITE" /> hisobingiz oʻchib ketmaydi. Boshqalardan himoyalash maqsadida <ph name="WEBSITE" /> hisobingiz parolini almashtiring.</translation>
 <translation id="3443810440409579745">Varaq qabul qilindi.</translation>
@@ -588,7 +587,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5614553682702429503">Parol saqlansinmi?</translation>
 <translation id="5626245204502895507">Faylni yuklab olishda xatolik yuz berdi.</translation>
 <translation id="5631164295104953411">To‘lov usulini qo‘shing</translation>
-<translation id="5636282538000367086">Chromedagi yangi oʻzgarishlar</translation>
 <translation id="5652623411397330904">Kuzatuvdagi mahsulotlar shu yerda chiqadi.</translation>
 <translation id="5657859710142657190">Varaqlar jadvalini ochish</translation>
 <translation id="5659593005791499971">Email</translation>
@@ -603,7 +601,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5711039611392265845">Maxfiylik, xavfsizlik va maʻlumotlar yigʻilishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Sinxronizatsiya va shaxsiy sozlamalar<ph name="END_LINK" /> bilan tanishing</translation>
 <translation id="5724941645893276623">Internetni pinhona kezish uchun yangi varaq oching</translation>
 <translation id="5728700505257787410">Hisobga kirib bo‘lmadi.</translation>
-<translation id="5731784586962650619">Boshqa ilovalardagi parollar</translation>
 <translation id="5733084997078800044">Chrome maslahati</translation>
 <translation id="5737974891429562743">Hisob ma’lumotlaringiz eskirgan. Sinxronizatsiyani boshlash uchun ularni yangilang.</translation>
 <translation id="5738385766833540397">Siz kuzatayotgan mahsulotlar uchun narxlarning tushishi haqida ogohlantirishlarni qanday qabul qilishingizni boshqaring</translation>
@@ -682,7 +679,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6229318421047648685">Kompyuter versiyasi</translation>
 <translation id="6231782223312638214">Tavsiya etiladi</translation>
 <translation id="6232329973559504466">Inkognito qidiruv</translation>
-<translation id="6232736989810857397">Bunda Google Lens yordamida taqvim tadbirlarini oson yaratish mumkin.</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
 <translation id="6254066287920239840">Havolalarni brauzerning o‘rniga boshqa ilovada oching.</translation>
 <translation id="6255097610484507482">Kartani tahrirlash</translation>
@@ -709,7 +705,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6383719166112032471">Joylashuvni ochish…</translation>
 <translation id="6387994324662817823">Parollar faqat shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
 <translation id="6389470377220713856">Karta egasi</translation>
-<translation id="6403371459378431832">Maʼlumotlarni barcha qurilmalarda sinxronlang</translation>
 <translation id="6406506848690869874">Sinxronlash</translation>
 <translation id="6410390304316730527">Saytlarni xavfsiz kezish parollar, telefon raqamlari yoki kredit kartalari kabi shaxsiy maʼlumotlaringizni oʻgʻirlash yoki zararli dasturlarni oʻrnatish orqali xavfli ishlarni amalga oshirishga undovchi shubhali kimsalardan himoyalaydi. Agar bu funksiyani faolsizlantirsangiz, notanish va shubhali saytlarga kirishda ehtiyot boʻling.</translation>
 <translation id="6410883413783534063">Bir vaqtda turli sahifalarga tashrif buyurish uchun varaqlar ochish</translation>
@@ -933,7 +928,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8032569120109842252">Kuzatyapsiz</translation>
 <translation id="804225253087497565">Google hisobingizga kirganingizda <ph name="BEGIN_LINK" />Qidiruv tarixi<ph name="END_LINK" /> va <ph name="BEGIN_LINK" />boshqa shakldagi harakatlaringiz<ph name="END_LINK" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
 <translation id="804427445359061970">Boshqa qurilmalarda ochilgan varaqlar shu yerda chiqadi</translation>
-<translation id="8048728378294435881">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching</translation>
 <translation id="8059533439631660104">Bo‘limni yig‘adi.</translation>
 <translation id="8065292699993359127">URL manzillarni Chrome brauzerida Inkognito rejimda ochish</translation>
 <translation id="806745655614357130">Ma’lumotlar alohida saqlansin</translation>

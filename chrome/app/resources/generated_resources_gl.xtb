@@ -4456,7 +4456,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="514575469079499857">Utilizar o enderezo IP para determinar a localización (predeterminado)</translation>
 <translation id="5147103632304200977">Preguntar cando un sitio queira acceder aos dispositivos de interface humana (recomendado)</translation>
 <translation id="5148277445782867161">O servizo de localización de Google utiliza fontes como a wifi, as redes de telefonía móbil e os sensores para calcular a localización do dispositivo.</translation>
-<translation id="5150070631291639005">Configuración de privacidade</translation>
 <translation id="5150254825601720210">Nome do servidor SSL de certificados Netscape</translation>
 <translation id="5151354047782775295">Libera espazo en disco para que non se eliminen automaticamente datos seleccionados</translation>
 <translation id="5153234146675181447">Esquecer o teléfono</translation>
@@ -4651,6 +4650,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5331568967879689647">Aplicación do sistema Chrome OS</translation>
 <translation id="5331975486040154427">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="5333896723098573627">Para quitar aplicacións, accede a Configuración &gt; Aplicacións &gt; Google Play Store &gt; Xestionar preferencias de Android &gt; Xestor de aplicacións e, logo, toca a aplicación que queiras desinstalar (é posible que debas pasar o dedo cara á dereita ou á esquerda para atopala). Despois, toca Desinstalar ou Desactivar.</translation>
+<translation id="5334113802138581043">Acceso ao micrófono</translation>
 <translation id="5334142896108694079">Caché do script</translation>
 <translation id="5336688142483283574">Esta páxina tamén se quitará do teu historial e da actividade de <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursor e panel táctil</translation>
@@ -8642,6 +8642,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9081543426177426948">Os sitios que visitas non se gardan no modo de incógnito</translation>
 <translation id="9084064520949870008">Abrir como ventá</translation>
 <translation id="9085256200913095638">Duplicar pestana seleccionada</translation>
+<translation id="9085446486797400519">Acceso á cámara</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> (non seleccionado). Preme Buscar e Espazo para seleccionalo.</translation>
 <translation id="9087949559523851360">Engadir usuario restrinxido</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> está bloqueado pola política da empresa</translation>

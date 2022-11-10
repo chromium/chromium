@@ -352,6 +352,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2960314608273155470">Capture Mode, <ph name="SOURCE" /> <ph name="TYPE" /> ang default. Pindutin ang tab para mag-navigate gamit ang keyboard.</translation>
 <translation id="2961963223658824723">Nagkaproblema. Subukang muli sa loob ng ilang segundo.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">I-on ang access sa mikropono?</translation>
 <translation id="296762781903199866">Hindi ma-download ang mga <ph name="LANGUAGE" /> na speech file</translation>
 <translation id="2970920913501714344">Mag-install ng mga app, extension, at tema</translation>
 <translation id="2977598380246111477">Susunod na numero</translation>
@@ -430,6 +431,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3386978599540877378">ang full-screen magnifier</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Mga karagdagang setting</translation>
+<translation id="3405101454990027959">I-on ang access sa mikropono</translation>
 <translation id="3410336247007142655">Ipakita ang mga setting ng madilim na tema</translation>
 <translation id="3413817803639110246">Wala pang makikita</translation>
 <translation id="3428447136709161042">Idiskonekta sa <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Isaksak ang iyong device.</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="385300504083504382">Simula</translation>
 <translation id="3861651314799684201">Pindutin ang enter para mag-record nang full screen</translation>
+<translation id="3885531177412808398">Pinapayagan ang access sa mikropono para sa lahat ng app at website na may pahintulot sa mikropono</translation>
 <translation id="3886872229787704059">Binuksan ngayon</translation>
 <translation id="3891340733213178823">Pindutin ang Ctrl+Shift+Q nang dalawang beses upang mag-sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (pasalitang feedback)</translation>
@@ -1375,6 +1378,7 @@ Kaka-install lang</translation>
 <translation id="8666856788528804727">Buksan ang <ph name="NAME" /> para i-set up ang iyong device</translation>
 <translation id="8676770494376880701">Nakakabit ang low-power charger</translation>
 <translation id="8683506306463609433">Aktibo ang pag-trace ng performance</translation>
+<translation id="8684405646663021166">Pinapayagan ang access sa mikropono para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa mikropono</translation>
 <translation id="8685326675965865247">Maghanap sa iyong device, mga app, mga setting, at web. Gamitin ang mga arrow key para i-navigate ang iyong mga app.</translation>
 <translation id="8703634754197148428">Simulang mag-record. Kapag nagsimula na ang pag-record, gamitin ang Alt + Shift + L para mag-navigate papunta sa shelf at makita ang button na ihinto ang pag-record</translation>
 <translation id="8721053961083920564">I-toggle ang Volume. <ph name="STATE_TEXT" /></translation>

@@ -305,6 +305,7 @@
 <translation id="4044093238444069296">نمی‌توان با دروازه تماس گرفت</translation>
 <translation id="4046123991198612571">آهنگ بعدی</translation>
 <translation id="404928562651467259">اخطار</translation>
+<translation id="4060260348856573701">‏APN جدید</translation>
 <translation id="4093865285251893588">تصویر نمایه</translation>
 <translation id="409427325554347132">ذخیره کردن جزئیات آزمایش</translation>
 <translation id="4110686435123617899">انتخاب آلبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -333,6 +334,7 @@
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصویر</translation>
 <translation id="4333390807948134856">کلید <ph name="KEY_NAME" /> فشار داده شد</translation>
+<translation id="435692326371619097">‏مدیریت تنظیمات APN شبکه. APN اتصالی میان شبکه تلفن همراه و اینترنت برقرار می‌کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">اجرا نشد</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -605,6 +607,7 @@
 <translation id="6766275201586212568">تفکیک ساناد انجام نشد</translation>
 <translation id="6768237774506518020">میزان خطای تفکیک ساناد بالا است</translation>
 <translation id="6791471867139427246">رنگ نور صفحه‌کلید</translation>
+<translation id="6793680441750437230">با هرکدام از کلیدهای صفحه‌کلید که می‌خواهید تایپ کنید. می‌توانید حداکثر ۴ کلید را به‌طور هم‌زمان فشار دهید. برای بستن کادر گفتگو، کلید «دگرساز» را با کلید «گریز» فشار دهید.</translation>
 <translation id="680983167891198932">کلید</translation>
 <translation id="6816797338148849397">اطلاعات مرتبط با انتخاب شما دردسترس است. برای دسترسی، از کلید «پیکان روبه بالا» استفاده کنید.</translation>
 <translation id="6853312040151791195">سرعت تخلیه شارژ</translation>

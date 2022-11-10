@@ -4468,7 +4468,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="514575469079499857">Tumia anwani yako ya IP kubainisha mahali (chaguomsingi)</translation>
 <translation id="5147103632304200977">Iulize wakati tovuti inataka kufikia vifaa vya HID (inapendekezwa)</translation>
 <translation id="5148277445782867161">Huduma ya mahali ya Google hutumia vyanzo kama vile Wi-Fi, mitandao ya simu na vitambuzi ili kusaidia kukadiria mahali kifaa chako kilipo.</translation>
-<translation id="5150070631291639005">Mipangilio ya faragha</translation>
 <translation id="5150254825601720210">Jina la Seva ya SSL ya Cheti cha Netscape</translation>
 <translation id="5151354047782775295">Futa maudhui katika hifadhi ya diski au data iliyochaguliwa itafutwa kiotomatiki</translation>
 <translation id="5153234146675181447">Sahau simu</translation>
@@ -4663,6 +4662,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5331568967879689647">Programu ya Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="5331975486040154427">Kifaa cha USB-C (mlango wa upande wa kushoto nyuma)</translation>
 <translation id="5333896723098573627">Ili uondoe programu, nenda kwenye Mipangilio &gt; Duka la Google Play &gt; Dhibiti mapendeleo kwenye Android &gt; Programu au Kidhibiti cha programu. Kisha, gusa programu unayotaka kuondoa (huenda ukahitaji kutelezesha kidole kulia au kushoto ili upate programu). Kisha, gusa 'Ondoa' au 'Zima'.</translation>
+<translation id="5334113802138581043">Ufikiaji wa maikrofoni</translation>
 <translation id="5334142896108694079">Akiba ya Hati</translation>
 <translation id="5336688142483283574">Ukurasa huu pia utaondolewa katika historia na shughuli zako za <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Kiteuzi na padi ya kugusa</translation>
@@ -8659,6 +8659,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="9081543426177426948">Tovuti unazotembelea hazihifadhiwi katika hali fiche</translation>
 <translation id="9084064520949870008">Fungua kama Dirisha</translation>
 <translation id="9085256200913095638">Toa Nakala ya Kichupo KIlichoteuliwa</translation>
+<translation id="9085446486797400519">Ufikiaji wa kamera</translation>
 <translation id="9085776959277692427">Hujachagua <ph name="LANGUAGE" />. Bonyeza vitufe vya 'Search' na 'Space' ili uchague.</translation>
 <translation id="9087949559523851360">Weka mtumiaji anayedhibitiwa</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> imezuiwa na sera ya biashara</translation>

@@ -4444,7 +4444,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="514575469079499857">Użyj swojego adresu IP, by określić lokalizację (domyślnie)</translation>
 <translation id="5147103632304200977">Pytaj, gdy strona chce uzyskać dostęp do urządzeń HID (zalecane)</translation>
 <translation id="5148277445782867161">Usługa lokalizacyjna Google określa lokalizację urządzenia z użyciem Wi-Fi, sieci komórkowych i czujników.</translation>
-<translation id="5150070631291639005">Ustawienia prywatności</translation>
 <translation id="5150254825601720210">Nazwa serwera SSL certyfikatu firmy Netscape</translation>
 <translation id="5151354047782775295">Zwolnij miejsce na dysku albo wybierz dane, które mogą być usuwane automatycznie</translation>
 <translation id="5153234146675181447">Zapomnij telefon</translation>
@@ -4639,6 +4638,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5331568967879689647">Aplikacja systemowa Chrome OS</translation>
 <translation id="5331975486040154427">Urządzenie USB-C (tylny port na lewym boku)</translation>
 <translation id="5333896723098573627">Aby usunąć aplikacje, kliknij Ustawienia &gt; Sklep Google Play &gt; Zarządzaj ustawieniami Androida &gt; Aplikacje lub Menedżer aplikacji. Następnie kliknij aplikację, którą chcesz odinstalować (jeśli to konieczne, przesuń palcem w prawo lub w lewo, aby ją znaleźć), a potem kliknij Odinstaluj lub Wyłącz.</translation>
+<translation id="5334113802138581043">Dostęp do mikrofonu</translation>
 <translation id="5334142896108694079">Pamięć podręczna skryptów</translation>
 <translation id="5336688142483283574">Ta strona zostanie też usunięta z Twojej historii i aktywności w <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Kursor i touchpad</translation>
@@ -8634,6 +8634,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9081543426177426948">W trybie incognito otwierane strony nie są zapisywane</translation>
 <translation id="9084064520949870008">Otwórz jako okno</translation>
 <translation id="9085256200913095638">Powiel wybraną kartę</translation>
+<translation id="9085446486797400519">Dostęp do aparatu</translation>
 <translation id="9085776959277692427">Nie wybrano: <ph name="LANGUAGE" />. Aby wybrać język, naciśnij Wyszukaj i spację.</translation>
 <translation id="9087949559523851360">Dodawanie użytkownika z ograniczonym dostępem</translation>
 <translation id="9088234649737575428">Wtyczka <ph name="PLUGIN_NAME" /> została zablokowana przez zasady przedsiębiorstwa</translation>

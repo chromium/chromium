@@ -309,7 +309,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3393920035788932672">Vyskakovací okna povolena</translation>
 <translation id="3399930248910934354">Otevřít nastavení Chromu</translation>
 <translation id="3404744938087714423">Odhlášením vypnete synchronizaci.</translation>
-<translation id="3414451675185661089">2. Klepněte na Hesla.</translation>
 <translation id="3425644765244388016">Přezdívka karty</translation>
 <translation id="3433057996795775706">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="WEBSITE" />. Pokud chcete ochránit svá data, změňte své heslo na webu <ph name="WEBSITE" />.</translation>
 <translation id="3443810440409579745">Byla přijata karta.</translation>
@@ -572,6 +571,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5489208564673669003">Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení souborů cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
 <translation id="5513681519188741830">Před <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Klepněte na Správce hesel a poté na Přidat.</translation>
 <translation id="5525095647255982834">Pokud tuto kartu chcete odeslat do jiného zařízení, přihlaste se na něm do Chromu.</translation>
 <translation id="5525269841082836315">Vytvořit heslovou frázi</translation>
 <translation id="5542540507657872337">Nalezeno: <ph name="COUNT" /></translation>
@@ -587,7 +587,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5614553682702429503">Uložit heslo?</translation>
 <translation id="5626245204502895507">Soubor v tuto chvíli nelze stáhnout.</translation>
 <translation id="5631164295104953411">Přidat platební metodu</translation>
-<translation id="5636282538000367086">Co je v Chromu nového</translation>
 <translation id="5652623411397330904">Zde se zobrazí produkty, které sledujete.</translation>
 <translation id="5657859710142657190">Přejít na mřížku karet</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -602,7 +601,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5711039611392265845">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat naleznete v části <ph name="BEGIN_LINK" />Synchronizace a služby Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Chcete-li procházet web v soukromí, přidejte novou kartu</translation>
 <translation id="5728700505257787410">Litujeme, při přihlašování k vašemu účtu se vyskytl problém.</translation>
-<translation id="5731784586962650619">Hesla v jiných aplikacích</translation>
 <translation id="5733084997078800044">Tip pro Chrome</translation>
 <translation id="5737974891429562743">Přihlašovací údaje k účtu jsou zastaralé. Chcete-li zahájit synchronizaci, aktualizujte je.</translation>
 <translation id="5738385766833540397">Nastavte, jak chcete dostávat upozornění na pokles cen produktů, které sledujete</translation>
@@ -681,7 +679,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6229318421047648685">Verze webu pro počítače</translation>
 <translation id="6231782223312638214">Navrženo</translation>
 <translation id="6232329973559504466">Anonymní vyhledávání</translation>
-<translation id="6232736989810857397">Toto oprávnění vám umožní snadno vytvářet události v kalendáři pomocí aplikace Google Lens.</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6254066287920239840">Namísto prohlížeče otevírat odkazy v aplikaci.</translation>
 <translation id="6255097610484507482">Upravit platební kartu</translation>
@@ -708,7 +705,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6383719166112032471">Otevřít umístění…</translation>
 <translation id="6387994324662817823">Hesla se ukládají do Správce hesel Google pouze na tomto zařízení.</translation>
 <translation id="6389470377220713856">Jméno na kartě</translation>
-<translation id="6403371459378431832">Synchronizace dat ve všech zařízeních</translation>
 <translation id="6406506848690869874">Synchronizace</translation>
 <translation id="6410390304316730527">Bezpečné prohlížení vás chrání před útočníky, kteří se vás snaží přimět k nebezpečné akci, jako je instalace škodlivého softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet). Pokud ji vypnete, budete si muset dávat pozor na neznámé a podezřelé weby.</translation>
 <translation id="6410883413783534063">Pomocí karet můžete mít otevřených několik různých stránek najednou</translation>
@@ -883,6 +879,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7726702057919861819">Nabídka → Historie → Vymazat údaje o prohlížení</translation>
 <translation id="7738120385185846461">Nahlásit problém…</translation>
 <translation id="7741325291586284254">Nová stránka Anonymní karta</translation>
+<translation id="7744394900930577716">Hesla v jiných aplikacích</translation>
 <translation id="7756478488453921771">Nabídka → Nastavení → Platební metody</translation>
 <translation id="7765158879357617694">Přesunout</translation>
 <translation id="7772032839648071052">Potvrďte heslovou frázi</translation>
@@ -931,7 +928,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8032569120109842252">Sledováno</translation>
 <translation id="804225253087497565">Když jste přihlášeni, mohou se <ph name="BEGIN_LINK" />historie vyhledávání<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />další typy aktivity<ph name="END_LINK" /> ukládat do vašeho účtu Google. Můžete je kdykoli smazat.</translation>
 <translation id="804427445359061970">Zde najdete své karty z jiných zařízení</translation>
-<translation id="8048728378294435881">Zálohujte si data a používejte je na jakémkoli zařízení</translation>
 <translation id="8059533439631660104">Sbalí sekci.</translation>
 <translation id="8065292699993359127">Otevírat adresy URL v Chromu v anonymním režimu</translation>
 <translation id="806745655614357130">Uchovat má data samostatně.</translation>
@@ -1060,6 +1056,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9081058212938299310">Aktualizovat heslo uživatele <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Chcete-li synchronizovat a přizpůsobit různá zařízení, zapněte synchronizaci.</translation>
 <translation id="9087108903408689779">Heslo navrhované prohlížečem Chrome:</translation>
+<translation id="9093271241977565440">V horní části obrazovky klepněte na ikonu Vyhledávání</translation>
 <translation id="9094033019050270033">Aktualizovat heslo</translation>
 <translation id="9097506547406246598">Sledování nelze zrušit. Něco se pokazilo.</translation>
 <translation id="9100610230175265781">Je vyžadována heslová fráze</translation>

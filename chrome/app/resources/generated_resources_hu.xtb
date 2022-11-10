@@ -939,6 +939,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1832848789136765277">Igazolja személyazonosságát, hogy mindig hozzáférhessen szinkronizált adataihoz</translation>
 <translation id="1834503245783133039">Sikertelen letöltés: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">A Linux frissítése</translation>
+<translation id="1835612721186505600">Engedélyezi a hozzáférést a kamerahasználati engedéllyel rendelkező alkalmazásoknak és webhelyeknek</translation>
 <translation id="1838374766361614909">Keresett kifejezés törlése</translation>
 <translation id="1839021455997460752">Az Ön e-mail-címe</translation>
 <translation id="1839540115464516994">Megjelenítés itt: <ph name="LOCATION" /></translation>
@@ -2508,6 +2509,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3279230909244266691">Ez a folyamat néhány percet is igénybe vehet. A virtuális gép indítása folyamatban van.</translation>
 <translation id="3280237271814976245">Mentés &amp;másként...</translation>
 <translation id="3280243678470289153">A Chrome használatának folytatása</translation>
+<translation id="328119399589609861">Az eszköz mikrofonhoz, kamerához és egyebekhez való hozzáférésének vezérlése</translation>
 <translation id="3281892622610078515">Karanténba helyezendő fájlok és programok:</translation>
 <translation id="3282210178675490297">Lap megosztása a következővel: <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Új lap</translation>
@@ -4471,7 +4473,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="514575469079499857">IP-cím használata a tartózkodási hely megállapítására (alapértelmezett)</translation>
 <translation id="5147103632304200977">Kérdezzen rá, ha valamelyik webhely hozzá szeretne férni a HID-eszközökhöz (ajánlott)</translation>
 <translation id="5148277445782867161">A Google helyszolgáltatásai olyan forrásokat használnak eszköze helyének becsléséhez, mint a Wi-Fi- vagy mobilhálózatok és az érzékelők.</translation>
-<translation id="5150070631291639005">Adatvédelmi beállítások</translation>
 <translation id="5150254825601720210">Netscape tanúsítvány - SSL-szerver neve</translation>
 <translation id="5151354047782775295">Szabadítson fel tárhelyet, vagy bizonyos adatok automatikusan törlődhetnek</translation>
 <translation id="5153234146675181447">Telefon elfelejtése</translation>
@@ -4513,6 +4514,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5185500136143151980">Nincs internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Port aktiválása</translation>
+<translation id="5190959794678983197">Nincs mikrofon</translation>
 <translation id="5191094172448199359">A megadott PIN kódok nem egyeznek</translation>
 <translation id="5191251636205085390">További információ a harmadik felektől származó cookie-k leváltását célzó új technológiákról és a kezelésükről</translation>
 <translation id="519185197579575131">QT használata</translation>
@@ -4873,6 +4875,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Erre a kezdőoldalra számított?</translation>
 <translation id="5522156646677899028">Ez a bővítmény komoly biztonsági rést tartalmaz.</translation>
+<translation id="5522403133543437426">A címsávban használt keresőmotor.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Az adminisztrátor bővítményt telepített}other{Az adminisztrátor # bővítményt telepített}}</translation>
 <translation id="5523558474028191231">A név tartalmazhat betűket, számokat, speciális karaktereket, és legfeljebb<ph name="MAX_CHARACTER_COUNT" /> karakter lehet</translation>
 <translation id="5526701598901867718">Mind (nem biztonságos)</translation>
@@ -7056,6 +7059,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7607002721634913082">Szünet</translation>
 <translation id="7608810328871051088">Android-beállítások</translation>
 <translation id="7609148976235050828">Csatlakozzon az internethez, majd próbálja újra.</translation>
+<translation id="7612401678989660900">Engedélyezi a hozzáférést a mikrofonhasználati engedéllyel rendelkező alkalmazásoknak és webhelyeknek</translation>
 <translation id="7612655942094160088">Telefonos kapcsolatot használó funkciók engedélyezése.</translation>
 <translation id="7614260613810441905">Kérdezzen rá, ha valamelyik webhely módosítani szeretné az eszközén található fájlokat vagy mappákat (ajánlott)</translation>
 <translation id="761530003705945209">Biztonsági mentés a Google Drive-ra. Bármikor könnyedén visszaállíthatja adatait vagy lecserélheti eszközét. A biztonsági másolat tartalmazza az alkalmazásadatokat. A biztonsági másolatokat a Google szervereire tölti fel a rendszer, és az Ön Google-fiókjához használt jelszóval titkosítja őket.</translation>
@@ -8438,6 +8442,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8872155268274985541">A rendszer által talált, külső frissítésre szolgáló kioszkjegyzékfájl érvénytelen. A kioszkalkalmazás frissítése nem sikerült. Kérjük, távolítsa el az USB-meghatjtót.</translation>
 <translation id="8872506776304248286">Megnyitás alkalmazásban</translation>
 <translation id="8872777911145321141">Kérdezzen rá, ha valamelyik webhely használni szeretné az Ön virtuálisvalóság-eszközeit vagy -adatait (ajánlott)</translation>
+<translation id="887292602123626481">További információ az alapértelmezett keresőmotorokról</translation>
 <translation id="8874341931345877644">Átküldés egyetlen eszközre:</translation>
 <translation id="8875520811099717934">A Linux frissítése</translation>
 <translation id="8875736897340638404">Itt megadhatja a láthatóságot</translation>
@@ -8558,6 +8563,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8987927404178983737">hónap</translation>
 <translation id="8989359959810288806">Az internetmegosztás állapotának frissítése</translation>
 <translation id="8991520179165052608">A webhely használhatja a mikrofonját</translation>
+<translation id="8991694323904646277">Nincs kamera</translation>
 <translation id="8993059306046735527">Akkor is visszaállíthatja a helyi adatait, ha elfelejtette <ph name="DEVICE_TYPE" /> eszköze jelszavát. Ehhez be kell jelentkeznie Google-fiókjába, vagy fiók-helyreállítást kell végeznie.</translation>
 <translation id="899384117894244799">Korlátozott felhasználó eltávolítása</translation>
 <translation id="899403249577094719">Netscape tanúsítvány - alap URL</translation>

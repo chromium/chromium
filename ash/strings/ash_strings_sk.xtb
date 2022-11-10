@@ -352,6 +352,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2960314608273155470">Režim snímania, predvolené nastavenie je <ph name="SOURCE" /> <ph name="TYPE" />. Ak chcete používať navigáciu klávesnicou, stlačte kláves Tab.</translation>
 <translation id="2961963223658824723">Vyskytol sa problém. Skúste to znova o niekoľko minút.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Chcete zapnúť prístup k mikrofónu?</translation>
 <translation id="296762781903199866">Súbory s balíkmi reči <ph name="LANGUAGE" /> sa nepodarilo stiahnuť</translation>
 <translation id="2970920913501714344">Inštalácia aplikácií, rozšírení a motívov</translation>
 <translation id="2977598380246111477">Ďalšie číslo</translation>
@@ -430,6 +431,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3386978599540877378">lupa na celú obrazovku</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Ďalšie nastavenia</translation>
+<translation id="3405101454990027959">Zapnúť prístup k mikrofónu</translation>
 <translation id="3410336247007142655">Zobraziť nastavenia tmavého motívu</translation>
 <translation id="3413817803639110246">Zatiaľ nie je čo zobraziť</translation>
 <translation id="3428447136709161042">Odpojiť od siete <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="385300504083504382">Začiatok</translation>
 <translation id="3861651314799684201">Celú obrazovku nahráte stlačením klávesa Enter</translation>
+<translation id="3885531177412808398">Umožňuje prístup k mikrofónu všetkým aplikáciám a webom s povolením používať mikrofón</translation>
 <translation id="3886872229787704059">Otvorené dnes</translation>
 <translation id="3891340733213178823">Ak sa chcete odhlásiť, stlačte dvakrát kombináciu klávesov Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (hlasová spätná väzba)</translation>
@@ -1375,6 +1378,7 @@ Nová inštalácia</translation>
 <translation id="8666856788528804727">Otvorte <ph name="NAME" /> a nastavte svoje zariadenie</translation>
 <translation id="8676770494376880701">Pripojila sa nabíjačka s nízkym výkonom</translation>
 <translation id="8683506306463609433">Trasovanie výkonnosti je aktívne</translation>
+<translation id="8684405646663021166">Umožňuje prístup k mikrofónu aplikácii <ph name="APP_NAME" /> a všetkým aplikáciám a webom s povolením používať mikrofón</translation>
 <translation id="8685326675965865247">Vyhľadávajte v zariadení, aplikáciách, nastaveniach a na internete. Medzi aplikáciami prechádzajte klávesmi so šípkami.</translation>
 <translation id="8703634754197148428">Spustiť nahrávanie. Po spustení nahrávania nájdete tlačidlo na jeho zastavenie v poličke, kam prejdete pomocou skratky Alt + Shift + L.</translation>
 <translation id="8721053961083920564">Prepínač zvuku. <ph name="STATE_TEXT" /></translation>

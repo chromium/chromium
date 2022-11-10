@@ -264,6 +264,7 @@
 <translation id="1567040042588613346">המדיניות הזו פועלת כמו שצריך אבל הוגדר ערך זהה במקום אחר שמוחלף על ידי המדיניות הזו.</translation>
 <translation id="1569487616857761740">יש להזין תאריך תפוגה</translation>
 <translation id="1569694109004336106">‏Google Chrome מנסה להפעיל את Windows Hello כדי למלא סיסמאות.</translation>
+<translation id="1572765991610098222">‏<ph name="WIDTH" />x<ph name="HEIGHT" /> אינץ'</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">משהו השתבש בעת הצגת דף אינטרנט זה.</translation>
 <translation id="1586541204584340881">אילו תוספים התקנת.</translation>
@@ -1105,6 +1106,7 @@
 <translation id="3787705759683870569">תאריך תפוגה: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">גודל 16</translation>
 <translation id="3789841737615482174">התקנה</translation>
+<translation id="3792100426446126328">‏<ph name="NAME" /> ‏(<ph name="WIDTH" />x<ph name="HEIGHT" /> אינץ')</translation>
 <translation id="3793574014653384240">כמות הקריסות שאירעו לאחרונה והסיבות שהובילו לקריסות האלה</translation>
 <translation id="3795344968043407227">מוזיקת אינדי ומוזיקה אלטרנטיבית</translation>
 <translation id="3799805948399000906">גופן שהתבקש</translation>
@@ -2517,6 +2519,7 @@ Del</translation>
 <translation id="7441627299479586546">נושא המדיניות שגוי</translation>
 <translation id="7442725080345379071">כתום בהיר</translation>
 <translation id="7445762425076701745">לא ניתן לאמת לגמרי את הזהות של השרת שאליו התחברת. התחברת לשרת באמצעות שם שקיים רק ברשת שלך, ושלרשות אישורים חיצונית אין דרך לאמת את בעלותך עליו. מכיוון שחלק מרשויות האישורים ינפיקו אישורים לשמות אלה ללא קשר, אין דרך להבטיח שהתחברת לאתר המיועד ואינך גורם תוקף.</translation>
+<translation id="7447625772313191651">‏<ph name="NAME" /> ‏(<ph name="WIDTH" />x<ph name="HEIGHT" /> מ"מ)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /> על בעיה זו.</translation>
 <translation id="7455133967321480974">שימוש בברירת המחדל הכללית (חסימה)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2824,6 +2827,7 @@ Del</translation>
 <translation id="8218327578424803826">מיקום מוקצה:</translation>
 <translation id="8225771182978767009">המשתמש שהגדיר את המחשב הזה בחר לחסום את האתר הזה.</translation>
 <translation id="8228419419708659934">תצוגת 2 עמודים</translation>
+<translation id="8229288958566709448">‏<ph name="WIDTH" />x<ph name="HEIGHT" /> מ"מ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">משחקי ספורט</translation>
 <translation id="8232343881378637145">טמפרטורת פלטפורמה</translation>

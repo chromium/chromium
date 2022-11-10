@@ -305,6 +305,7 @@
 <translation id="4044093238444069296">Nelze kontaktovat bránu</translation>
 <translation id="4046123991198612571">Další skladba</translation>
 <translation id="404928562651467259">UPOZORNĚNÍ</translation>
+<translation id="4060260348856573701">Nový přístupový bod (APN)</translation>
 <translation id="4093865285251893588">Profilová fotka</translation>
 <translation id="409427325554347132">Uložit podrobnosti testu</translation>
 <translation id="4110686435123617899">Vyberte album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -333,6 +334,7 @@
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Klávesa <ph name="KEY_NAME" /> byla stisknuta</translation>
+<translation id="435692326371619097">Spravovat nastavení názvů přístupových bodů sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Nespuštěno</translation>
 <translation id="4378551569595875038">Připojování...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -605,6 +607,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6766275201586212568">Neúspěšné překlady DNS</translation>
 <translation id="6768237774506518020">Vysoká míra selhání překladu DNS</translation>
 <translation id="6791471867139427246">barva světla klávesnice</translation>
+<translation id="6793680441750437230">Stiskněte libovolnou klávesu na klávesnici. Můžete stisknout až 4 klávesy současně. Dialogové okno zavřete stisknutím kombinace kláves Alt a Esc.</translation>
 <translation id="680983167891198932">Klíč</translation>
 <translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
 <translation id="6853312040151791195">Rychlost vybíjení</translation>

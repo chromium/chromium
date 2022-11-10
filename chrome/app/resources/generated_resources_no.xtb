@@ -934,6 +934,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1832848789136765277">For å sikre at du alltid har tilgang til de synkroniserte dataene dine, må du bekrefte at det er deg</translation>
 <translation id="1834503245783133039">Nedlasting mislykket: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Oppgradering av Linux</translation>
+<translation id="1835612721186505600">Bruk kameratillatelsen for å gi apper og nettsteder tilgang til kameraet</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
 <translation id="1839021455997460752">E-postadressen din</translation>
 <translation id="1839540115464516994">Vis i <ph name="LOCATION" /></translation>
@@ -2503,6 +2504,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3279230909244266691">Denne prosessen kan ta noen minutter. Starter den virtuelle maskinen.</translation>
 <translation id="3280237271814976245">L&amp;agre som...</translation>
 <translation id="3280243678470289153">Bli værende i Chrome</translation>
+<translation id="328119399589609861">Kontroller enhetstilgang til mikrofon, kamera med mer</translation>
 <translation id="3281892622610078515">Filer og programmer som blir satt i karantene:</translation>
 <translation id="3282210178675490297">Deler en fane med <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Ny &amp;fane</translation>
@@ -4465,7 +4467,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="514575469079499857">Bruk IP-adressen din til å fastslå posisjonen (standard)</translation>
 <translation id="5147103632304200977">Spør når nettsteder vil ha tilgang til HID-enheter (anbefales)</translation>
 <translation id="5148277445782867161">Googles posisjonstjeneste bruker kilder som Wifi, mobilnettverk og sensorer til å estimere posisjonen til enheten din.</translation>
-<translation id="5150070631291639005">Personverninnstillinger</translation>
 <translation id="5150254825601720210">Navn på Netscape SSL-tjenersertifikat</translation>
 <translation id="5151354047782775295">Frigjør lagringsplass eller velg data som kan slettes automatisk</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
@@ -4507,6 +4508,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5185500136143151980">Ingen internettilkobling</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktivér porten</translation>
+<translation id="5190959794678983197">Ingen mikrofon</translation>
 <translation id="5191094172448199359">PIN-kodene du skrev inn, er ikke like</translation>
 <translation id="5191251636205085390">Finn ut om og kontrollér nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="519185197579575131">Bruk QT</translation>
@@ -4865,6 +4867,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Er dette startsiden du forventet?</translation>
 <translation id="5522156646677899028">Denne utvidelsen inneholder et alvorlig sikkerhetsproblem.</translation>
+<translation id="5522403133543437426">Søkemotoren som brukes i adressefeltet.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratoren har installert en utvidelse}other{Administratoren har installert # utvidelser}}</translation>
 <translation id="5523558474028191231">Navnet kan inneholde bokstaver, tall og spesialtegn og kan maksimalt bestå av <ph name="MAX_CHARACTER_COUNT" /> tegn</translation>
 <translation id="5526701598901867718">Alle (usikre)</translation>
@@ -7047,6 +7050,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7608810328871051088">Android-innstillinger</translation>
 <translation id="7609148976235050828">Koble til Internett og prøv på nytt.</translation>
+<translation id="7612401678989660900">Bruk mikrofontillatelsen for å gi apper og nettsteder tilgang til mikrofonen</translation>
 <translation id="7612655942094160088">Slå på funksjoner for tilkoblet telefon.</translation>
 <translation id="7614260613810441905">Spør når nettsteder vil redigere filer eller mapper på enheten (anbefales)</translation>
 <translation id="761530003705945209">Sikkerhetskopiér til Google Disk. Gjenopprett dataene dine enkelt eller bytt enhet når som helst. Sikkerhetskopien din inkluderer appdata. Sikkerhetskopiene dine lastes opp til Google og krypteres med passordet til Google-kontoen din.</translation>
@@ -8430,6 +8434,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8872155268274985541">Fant ugyldig ekstern manifestfil for Kiosk-oppdatering. Kunne ikke oppdatere Kiosk-appen. Ta ut USB-pinnen.</translation>
 <translation id="8872506776304248286">Åpne i appen</translation>
 <translation id="8872777911145321141">Spør når nettsteder vil bruke virtuell virkelighet-enhetene eller -dataene dine (anbefales)</translation>
+<translation id="887292602123626481">Finn ut mer om standard søkemotorer</translation>
 <translation id="8874341931345877644">Cast til en enhet:</translation>
 <translation id="8875520811099717934">Linux-oppgradering</translation>
 <translation id="8875736897340638404">Velg synligheten din</translation>
@@ -8550,6 +8555,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8987927404178983737">Måned</translation>
 <translation id="8989359959810288806">Last inn statusen for internettdeling på nytt</translation>
 <translation id="8991520179165052608">Nettstedet kan bruke mikrofonen din</translation>
+<translation id="8991694323904646277">Ikke noe kamera</translation>
 <translation id="8993059306046735527">Hvis du glemmer passordet ditt for <ph name="DEVICE_TYPE" />, kan du fremdeles gjenopprette de lokale dataene dine. Du må logge på Google-kontoen din eller bruke kontogjenoppretting.</translation>
 <translation id="899384117894244799">Fjern begrenset bruker</translation>
 <translation id="899403249577094719">Primære nettadresse for Netscape-sertifikat</translation>

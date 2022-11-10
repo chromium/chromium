@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">Режим зйомки. За умовчанням – <ph name="TYPE" /> <ph name="SOURCE" />. Для навігації за допомогою клавіатури натисніть клавішу Tab.</translation>
 <translation id="2961963223658824723">Сталася помилка. Повторіть спробу за кілька секунд.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Надати доступ до мікрофона?</translation>
 <translation id="296762781903199866">Не вдалося завантажити файли живих субтитрів для такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">установлювати додатки, розширення й теми</translation>
 <translation id="2977598380246111477">Наступна цифра</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">лупу для повноекранного режиму</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Додаткові налаштування</translation>
+<translation id="3405101454990027959">Надати доступ до мікрофона</translation>
 <translation id="3410336247007142655">Показати налаштування темної теми</translation>
 <translation id="3413817803639110246">Ще нічого немає</translation>
 <translation id="3428447136709161042">Відключитися від мережі "<ph name="NETWORK_NAME" />"</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">На початок</translation>
 <translation id="3861651314799684201">Щоб записати весь екран, натисніть клавішу Enter</translation>
+<translation id="3885531177412808398">Надайте доступ до мікрофона для всіх додатків і веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="3886872229787704059">Відкрито сьогодні</translation>
 <translation id="3891340733213178823">Щоб вийти, двічі натисніть Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосові підказки)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727">Відкрийте <ph name="NAME" />, щоб налаштувати пристрій</translation>
 <translation id="8676770494376880701">Зарядний пристрій низької потужності підключено</translation>
 <translation id="8683506306463609433">Відстеження ефективності активне</translation>
+<translation id="8684405646663021166">Надайте доступ до мікрофона для додатка <ph name="APP_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="8685326675965865247">Шукайте на пристрої, у додатках, налаштуваннях та Інтернеті. Натискайте клавіші зі стрілками, щоб переходити між додатками.</translation>
 <translation id="8703634754197148428">Почніть запис. Коли запис почнеться, натисніть Alt + Shift + L, щоб перейти на полицю, де розташована кнопка зупинки запису</translation>
 <translation id="8721053961083920564">Увімкнути або вимкнути гучність. <ph name="STATE_TEXT" /></translation>

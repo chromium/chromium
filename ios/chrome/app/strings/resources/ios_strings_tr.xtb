@@ -309,7 +309,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3393920035788932672">İzin Verilen Pop-up'lar</translation>
 <translation id="3399930248910934354">Chrome Ayarlarını Aç</translation>
 <translation id="3404744938087714423">Oturum kapatıldığında senkronizasyon devre dışı kalır.</translation>
-<translation id="3414451675185661089">2. Parolalar seçeneğine dokunun</translation>
 <translation id="3425644765244388016">Kart İçin Takma Ad</translation>
 <translation id="3433057996795775706">Bu şifre kaldırıldığında <ph name="WEBSITE" /> üzerindeki hesabınız silinmez. Başka kişilerin ulaşamaması için <ph name="WEBSITE" /> sitesindeki şifrenizi değiştirin.</translation>
 <translation id="3443810440409579745">Sekme alındı.</translation>
@@ -587,7 +586,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5614553682702429503">Şifre kaydedilsin mi?</translation>
 <translation id="5626245204502895507">Dosya şu anda indirilemedi.</translation>
 <translation id="5631164295104953411">Ödeme Yöntemi Ekle</translation>
-<translation id="5636282538000367086">Chrome'daki yenilikleri öğrenin</translation>
 <translation id="5652623411397330904">Takip ettiğiniz ürünler burada gösterilir.</translation>
 <translation id="5657859710142657190">Sekme Izgarasına Git</translation>
 <translation id="5659593005791499971">E-posta</translation>
@@ -602,7 +600,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5711039611392265845">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK" />Senkronizasyon ve Google Hizmetleri<ph name="END_LINK" /> konusuna bakın.</translation>
 <translation id="5724941645893276623">Web'e gizli modda göz atmak için yeni bir sekme ekleyin</translation>
 <translation id="5728700505257787410">Maalesef hesabınızda oturum açmayla ilgili bir sorun oldu.</translation>
-<translation id="5731784586962650619">Diğer Uygulamalardaki Şifreler</translation>
 <translation id="5733084997078800044">Chrome İpucu</translation>
 <translation id="5737974891429562743">Hesap oturum açma ayrıntıları eski. Senkronizasyonu başlatmak için güncelleyin.</translation>
 <translation id="5738385766833540397">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarılarını nasıl alacağınızı yönetin</translation>
@@ -681,7 +678,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6229318421047648685">Masaüstü Sitesi İste</translation>
 <translation id="6231782223312638214">Önerilen</translation>
 <translation id="6232329973559504466">Gizli Arama</translation>
-<translation id="6232736989810857397">Bu izin, Google Lens'i kullanarak kolayca takvim etkinliği oluşturmanızı sağlar.</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
 <translation id="6254066287920239840">Bağlantıları tarayıcı yerine uygulamada açın.</translation>
 <translation id="6255097610484507482">Kredi Kartını Düzenle</translation>
@@ -708,7 +704,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6383719166112032471">Konumu Aç…</translation>
 <translation id="6387994324662817823">Şifreler yalnızca bu cihazda Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="6389470377220713856">Karttaki Ad</translation>
-<translation id="6403371459378431832">Verilerinizi tüm cihazlarda senkronize edin</translation>
 <translation id="6406506848690869874">Senkronizasyon</translation>
 <translation id="6410390304316730527">Güvenli Tarama, sizi yanıltarak kötü amaçlı yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) ifşa etmek gibi tehlikeli bir şey yapmanıza neden olabilecek saldırganlara karşı korur. Bu özelliği kapatırsanız tanıdık olmayan veya saygınlığı şüpheli sitelere göz atarken dikkatli olun.</translation>
 <translation id="6410883413783534063">Aynı anda birden fazla sayfayı ziyaret etmek için yeni sekme açın</translation>
@@ -931,7 +926,6 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8032569120109842252">Takip ediliyor</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Arama geçmişi<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />diğer etkinlik biçimleri<ph name="END_LINK" />, oturum açtığınızda Google Hesabınıza kaydedilebilir. Bunları istediğiniz zaman silebilirsiniz.</translation>
 <translation id="804427445359061970">Diğer cihazlarınızdaki sekmeleri burada bulabilirsiniz</translation>
-<translation id="8048728378294435881">Verilerinizi yedekleyin ve istediğiniz cihazda kullanın</translation>
 <translation id="8059533439631660104">Bölümü daraltır.</translation>
 <translation id="8065292699993359127">URL'leri Chrome'da Gizli modda aç</translation>
 <translation id="806745655614357130">Verilerimi ayrı tut</translation>

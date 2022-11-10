@@ -309,7 +309,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3393920035788932672">Pop-upuri permise</translation>
 <translation id="3399930248910934354">Deschide setările Chrome</translation>
 <translation id="3404744938087714423">Deconectarea dezactivează sincronizarea.</translation>
-<translation id="3414451675185661089">2. Atinge Parole.</translation>
 <translation id="3425644765244388016">Pseudonimul cardului</translation>
 <translation id="3433057996795775706">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />. Schimbă-ți parola de pe <ph name="WEBSITE" /> ca să-l păstrezi în siguranță.</translation>
 <translation id="3443810440409579745">Fila a fost primită.</translation>
@@ -588,7 +587,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5614553682702429503">Salvezi parola?</translation>
 <translation id="5626245204502895507">Momentan, fișierul nu a putut fi descărcat.</translation>
 <translation id="5631164295104953411">Adaugă o metodă de plată</translation>
-<translation id="5636282538000367086">Află noutățile din Chrome</translation>
 <translation id="5652623411397330904">Produsele pe care le urmărești vor apărea aici.</translation>
 <translation id="5657859710142657190">Accesează Grila de file</translation>
 <translation id="5659593005791499971">Adresă de e-mail</translation>
@@ -603,7 +601,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5711039611392265845">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Sincronizarea și serviciile Google<ph name="END_LINK" /></translation>
 <translation id="5724941645893276623">Pentru a răsfoi în privat pe web, adaugă o filă nouă</translation>
 <translation id="5728700505257787410">A apărut o problemă de conectare la cont.</translation>
-<translation id="5731784586962650619">Parole din alte aplicații</translation>
 <translation id="5733084997078800044">Sfat pentru Chrome</translation>
 <translation id="5737974891429562743">Datele de conectare la cont sunt învechite. Actualizează pentru a începe sincronizarea.</translation>
 <translation id="5738385766833540397">Gestionează modul în care primești alertele de scădere de preț pentru produsele pe care le urmărești</translation>
@@ -682,7 +679,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6229318421047648685">Solicită o versiune a site-ului pentru computer</translation>
 <translation id="6231782223312638214">Sugestii</translation>
 <translation id="6232329973559504466">Căutare incognito</translation>
-<translation id="6232736989810857397">Astfel, poți crea ușor evenimente în calendar cu Google Lens.</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6254066287920239840">Deschide linkurile în aplicație, nu în browser.</translation>
 <translation id="6255097610484507482">Editați cardul de credit</translation>
@@ -709,7 +705,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6383719166112032471">Deschide locația…</translation>
 <translation id="6387994324662817823">Parolele sunt salvate în Managerul de parole Google numai pe acest dispozitiv.</translation>
 <translation id="6389470377220713856">Nume de pe card</translation>
-<translation id="6403371459378431832">Sincronizează-ți datele pe toate dispozitivele</translation>
 <translation id="6406506848690869874">Sincronizare</translation>
 <translation id="6410390304316730527">Navigarea sigură te protejează împotriva atacatorilor care ar putea să te păcălească să faci lucruri periculoase, cum ar fi să instalezi software rău intenționat sau să dezvălui informații cu caracter personal, cum ar fi parole, numere de telefon sau carduri de credit. Dacă o dezactivezi, ai grijă atunci când navighezi pe site-uri nefamiliare sau nelegitime.</translation>
 <translation id="6410883413783534063">Deschide file pentru a accesa pagini diferite în același timp</translation>
@@ -933,7 +928,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8032569120109842252">Urmărești</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Istoricul căutărilor<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />alte tipuri de activități<ph name="END_LINK" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
 <translation id="804427445359061970">Aici vei vedea filele tale de pe alte dispozitive</translation>
-<translation id="8048728378294435881">Fă backup datelor și folosește-le pe orice dispozitiv</translation>
 <translation id="8059533439631660104">Restrânge secțiunea.</translation>
 <translation id="8065292699993359127">Deschide adrese URL în Chrome în modul incognito</translation>
 <translation id="806745655614357130">Păstrează datele separat</translation>

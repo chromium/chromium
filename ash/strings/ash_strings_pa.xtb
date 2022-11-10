@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">ਕੈਪਚਰ ਮੋਡ, <ph name="SOURCE" /> <ph name="TYPE" /> ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਹੈ। ਕੀ-ਬੋਰਡ ਨੈਵੀਗੇਸ਼ਨ ਲਈ ਟੈਬ ਦਬਾਓ।</translation>
 <translation id="2961963223658824723">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਕੁਝ ਸਕਿੰਟਾਂ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">ਕੀ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਚਾਲੂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> ਦੀਆਂ ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="2970920913501714344">ਐਪਾਂ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਥੀਮਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="2977598380246111477">ਅਗਲਾ ਨੰਬਰ</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">ਵਾਧੂ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="3405101454990027959">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3410336247007142655">ਗੂੜ੍ਹੇ ਥੀਮ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="3413817803639110246">ਅਜੇ ਦੇਖਣ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="385300504083504382">ਸ਼ੁਰੂਆਤ</translation>
 <translation id="3861651314799684201">ਪੂਰੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
+<translation id="3885531177412808398">ਇਹ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੇ ਨਾਲ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="3886872229787704059">ਅੱਜ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="3891340733213178823">ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ ਦੋ ਵਾਰ Ctrl+Shift+Q ਦਬਾਓ।</translation>
 <translation id="3893630138897523026">ChromeVox (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
@@ -1376,6 +1379,7 @@
 <translation id="8666856788528804727">ਆਪਣੇ ਡੀਵਾਈਸ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ <ph name="NAME" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="8676770494376880701">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="8683506306463609433">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
+<translation id="8684405646663021166">ਇਹ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੇ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="8685326675965865247">ਆਪਣਾ ਡੀਵਾਈਸ, ਐਪਾਂ, ਸੈਟਿੰਗਾਂ ਅਤੇ ਵੈੱਬ ਖੋਜੋ। ਆਪਣੀਆਂ ਐਪਾਂ ਵਿੱਚ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ।</translation>
 <translation id="8703634754197148428">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ। ਇੱਕ ਵਾਰ ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਸ਼ੈਲਫ 'ਤੇ ਜਾਣ ਲਈ ਅਤੇ 'ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ' ਬਟਨ ਲੱਭਣ ਲਈ Alt + Shift + L ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8721053961083920564">ਅਵਾਜ਼ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>

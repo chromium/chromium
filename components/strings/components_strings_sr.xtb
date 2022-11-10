@@ -354,6 +354,7 @@
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали информацијама, приватношћу и безбедношћу на Google налогу</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, доступно је више радњи, притисните Tab да бисте их прегледали</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">Подаци о виртуелној картици</translation>
 <translation id="1803020234906945288">Здрава исхрана</translation>
 <translation id="1803264062614276815">Име власника картице</translation>
 <translation id="1803351196216024260">Може да тражи да користи микрофон</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">22×34 in</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 предлог}one{# предлог}few{# предлога}other{# предлога}}</translation>
 <translation id="2066915425250589881">затражите брисање</translation>
+<translation id="2066969741541525119">Организација је блокирала сајт у наставку</translation>
 <translation id="2068528718802935086">Бебе и мала деца</translation>
 <translation id="2071156619270205202">Ова картица не испуњава услове за број виртуелне картице.</translation>
 <translation id="2071692954027939183">Обавештења су аутоматски блокирана јер их обично не дозвољавате</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">Вишеструко бушење на дну</translation>
 <translation id="219906046732893612">Уређење дома</translation>
 <translation id="2202020181578195191">Унесите важећу годину истека</translation>
+<translation id="2202627062836089804">полеђини картице</translation>
 <translation id="22081806969704220">3. фиока</translation>
 <translation id="2210794033760923560">Отпреми извештај</translation>
 <translation id="2212735316055980242">Смернице нису пронађене</translation>
@@ -986,6 +989,7 @@
 <translation id="350069200438440499">Име датотеке:</translation>
 <translation id="3507936815618196901">Прави 3D мапу окружења и прати положај камере</translation>
 <translation id="3512163584740124171">Ове смернице су занемарене јер друге смернице из исте групе смерница имају предност.</translation>
+<translation id="3515972145999192222">Организација је блокирала <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> зато што крши смернице. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">Дугме Управљајте адресама, притисните Enter да бисте додали адресе и управљали њима у подешавањима Chrome-а</translation>
 <translation id="3518941727116570328">Обрада више предмета</translation>
 <translation id="3525130752944427905">10×14 in</translation>
@@ -1061,6 +1065,7 @@
 <translation id="3678342917559046352">Неважећи додатак: Очекивано је да вредност буде један од следећих облика: &lt;extension_id&gt; или &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Отворите страницу у ноцом прозору без архивирања (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Информације о сертификату</translation>
+<translation id="3693327506115126094">Одаберите начин на који ћете потврдити да сте то ви</translation>
 <translation id="3699374065820972102">TouchID је укључен за попуњавање лозинки</translation>
 <translation id="3701427423622901115">Ресетовање је потврђено.</translation>
 <translation id="3704162925118123524">Мрежа коју користите ће можда захтевати да посетите страницу за пријављивање.</translation>
@@ -1145,6 +1150,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> жели да пусти заштићени садржај. Google ће потврдити идентитет уређаја и овај сајт ће моћи да му приступа.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">Унесите безбедносни кôд</translation>
 <translation id="3927932062596804919">Одбиј</translation>
 <translation id="393316646445601645">Интернет и телекомуникације</translation>
 <translation id="3939773374150895049">Желите ли да користите WebAuthn уместо CVC-а?</translation>
@@ -1391,6 +1397,7 @@
 <translation id="4524805452350978254">Управљајте картицама</translation>
 <translation id="4526465106919207193">Људи и друштво</translation>
 <translation id="4530347922939905757">SMS</translation>
+<translation id="4531477351494678589">Број виртуелне картице:</translation>
 <translation id="4540780316273593836">Нешто није у реду</translation>
 <translation id="4541810033354695636">проширена реалност</translation>
 <translation id="4542971377163063093">6. фиока</translation>
@@ -1400,6 +1407,7 @@
 <translation id="4567686777917670400">Администратор може даљински да промени подешавање прегледача. Активностима на овом уређају може да се управља и ван Chromium-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Испорука</translation>
 <translation id="4582204425268416675">Уклони картицу</translation>
+<translation id="4582595824823167856">Добијте SMS</translation>
 <translation id="4587425331216688090">Желите ли да уклоните адресу из Chrome-а?</translation>
 <translation id="459089498662672729">Смернице администратора не препоручују налепљивање са <ph name="ORIGIN_NAME" /> на ову локацију</translation>
 <translation id="4592951414987517459">Веза са доменом <ph name="DOMAIN" /> је шифрована помоћу модерног пакета за шифровање.</translation>
@@ -1411,6 +1419,7 @@
 <translation id="4606870351894164739">Упечатљиво</translation>
 <translation id="4607603470419975064">Дугме Погледајте Chrome савете, притисните Enter да бисте сазнали више о Chrome функцијама</translation>
 <translation id="4607608436550361748">Прикажи Chrome савете</translation>
+<translation id="460848736049414407">Блокирао је администратор</translation>
 <translation id="4610279718074907952">Овај сајт је у групи, коју дефинише <ph name="SET_OWNER" />, који може да види ваше активности</translation>
 <translation id="4617273035598175554">Софтвер за графику и анимацију</translation>
 <translation id="4622292761762557753">Ипак пренеси</translation>
@@ -1877,6 +1886,7 @@
 <translation id="57689295674415555">Број виртуелне картице није унет?</translation>
 <translation id="5772086939108830423">Користите приступни кôд на другом уређају</translation>
 <translation id="5776313857861697733">Приоритет</translation>
+<translation id="5776574724412881956">Нема виртуелне картице? Кликните на податке о виртуелној картици да бисте их копирали у привремену меморију. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Експеримент је омогућен</translation>
 <translation id="578305955206182703">Окер</translation>
 <translation id="57838592816432529">Искључи звук</translation>
@@ -2006,6 +2016,7 @@
 <translation id="6116338172782435947">да види текст и слике који су копирани у привремену меморију</translation>
 <translation id="6118782133429281336">Листа порекла је празна.</translation>
 <translation id="6120179357481664955">Желите да сачувате ИД за UPI?</translation>
+<translation id="6122181661879998141">предњој страни картице</translation>
 <translation id="6124432979022149706">Прикључци за Chrome за предузећа</translation>
 <translation id="6126565365696310362">Кинеска коверта бр. 2</translation>
 <translation id="6127379762771434464">Уклонили сте ставку</translation>
@@ -2372,6 +2383,7 @@
 <translation id="7108634116785509031"><ph name="HOST" /> жели да користи камеру</translation>
 <translation id="7108819624672055576">Дозвољава додатак</translation>
 <translation id="7111012039238467737">(Важећи)</translation>
+<translation id="7112327784801341716">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
 <translation id="7118618213916969306">Потражите URL у привременој меморији, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Затворите друге картице или програме</translation>
 <translation id="7129355289156517987">Када затворите све Chromium картице без архивирања, активност на тим картицама се брише са уређаја:
@@ -2675,6 +2687,7 @@
 <translation id="7798389633136518089">Занемарено јер смернице није подесио извор из клауда.</translation>
 <translation id="7800304661137206267">Веза је шифрована помоћу <ph name="CIPHER" />, са <ph name="MAC" /> за потврду идентитета поруке и <ph name="KX" /> као механизмом за размену кључева.</translation>
 <translation id="7802523362929240268">Сајт је легитиман</translation>
+<translation id="7802989406998618639">Унесите <ph name="NUMBER_OF_DIGITS" />-цифрени безбедносни кôд на <ph name="SIDE_OF_CARD" /> да би банка могла да потврди да сте то ви</translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7805571567667010077">Управља организација</translation>
 <translation id="7805768142964895445">Статус</translation>
@@ -3003,6 +3016,7 @@
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8726549941689275341">Величина странице:</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8731268612289859741">Безбедносни кôд</translation>
 <translation id="8731544501227493793">Дугме Управљај лозинкама, притисните Enter да бисте прегледали лозинке и управљали њима у подешавањима Chrome-а</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30×40 in</translation>
@@ -3108,6 +3122,7 @@
 <translation id="9005998258318286617">Учитавање PDF документа није успело.</translation>
 <translation id="9008178007718859630">Декорација куће и ентеријера</translation>
 <translation id="9008201768610948239">Игнориши</translation>
+<translation id="9018120810758822233">Унесите безбедносни кôд за: <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">имејл</translation>
 <translation id="9020200922353704812">Адреса за обрачун за картицу је обавезна</translation>
 <translation id="9020542370529661692">Ова страница је преведена на <ph name="TARGET_LANGUAGE" /></translation>

@@ -265,6 +265,7 @@
 <translation id="2405664212338326887">未接続</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2412593942846481727">アップデートが利用可能</translation>
+<translation id="2417486498593892439">ネットワークにログイン</translation>
 <translation id="2426051945783024481">カメラのフレームの中央にくるよう自動的に調整されます</translation>
 <translation id="2427507373259914951">左クリック</translation>
 <translation id="2429753432712299108">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。許可するにあたっては、このデバイスで次のパスキーが表示されることを確認してください: <ph name="PASSKEY" /></translation>
@@ -351,6 +352,7 @@
 <translation id="2960314608273155470">キャプチャ モードです。デフォルトは <ph name="SOURCE" /> の <ph name="TYPE" /> です。キーボード ナビゲーションを使用するには、タブキーを押してください。</translation>
 <translation id="2961963223658824723">エラーが発生しました。数秒後にもう一度お試しください。</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">マイクへのアクセスをオンにしますか？</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" />の音声ファイルをダウンロードできませんでした</translation>
 <translation id="2970920913501714344">アプリ、拡張機能、テーマをインストールする</translation>
 <translation id="2977598380246111477">次の番号</translation>
@@ -424,10 +426,12 @@
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3371140690572404006">USB-C デバイス（右手前のポート）</translation>
 <translation id="3375634426936648815">接続完了</translation>
+<translation id="3378438761594387761">ここには最近のダウンロードとスクリーン キャプチャが表示されます</translation>
 <translation id="3378442621503952303">プロファイルに接続しています。数分お待ちください。</translation>
 <translation id="3386978599540877378">全画面拡大鏡</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">その他の設定</translation>
+<translation id="3405101454990027959">マイクへのアクセスをオンにする</translation>
 <translation id="3410336247007142655">ダークモードの設定を表示</translation>
 <translation id="3413817803639110246">通知はありません</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> との接続を解除します</translation>
@@ -514,6 +518,7 @@
 <translation id="385051799172605136">戻る</translation>
 <translation id="385300504083504382">先頭</translation>
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
+<translation id="3885531177412808398">マイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
 <translation id="3886872229787704059">今日開いたファイル</translation>
 <translation id="3891340733213178823">ログアウトするには、Ctrl+Shift+Q を 2 回押します。</translation>
 <translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
@@ -736,6 +741,7 @@
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
 <translation id="509790653408515442">スマートフォンのアプリでストリーミングした場合、そのアプリがここに表示されます</translation>
 <translation id="5098537242461068432">デスクとウィンドウが再度開かれました</translation>
+<translation id="5104236669533825617">スクリーンキャストを作成できません</translation>
 <translation id="5107522548814527560">ウェブ</translation>
 <translation id="5111318697104479778"><ph name="DESC" />、<ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">次の月を表示</translation>
@@ -783,6 +789,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
 <translation id="5352250171825660495">ダークモードはオンになっています</translation>
 <translation id="5356963482258194581">ダークモードとライトモードを切り替えます。デスクトップを右クリックして、[壁紙とスタイル] を選択します。</translation>
+<translation id="536019650977002321">管理者が音声キャプチャを許可していません。詳しくは管理者にお問い合わせください。</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> このタブに移動</translation>
 <translation id="5379115545237091094">試行回数が上限を超えました</translation>
 <translation id="5391307769715781764">保存済みのデスクを置き換えますか？</translation>
@@ -1266,6 +1273,7 @@
 <translation id="8091387634532529612">自動更新</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> への画面のキャストを停止する</translation>
 <translation id="8113423164597455979">オン: 全アプリ</translation>
+<translation id="8113515504791187892">選択して読み上げボタン</translation>
 <translation id="8120151603115102514">スマートフォンにロック画面が設定されていません。パスワードを入力してChromebookのロックを解除してください</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8131740175452115882">確認</translation>
@@ -1371,6 +1379,7 @@
 <translation id="8666856788528804727"><ph name="NAME" /> を開いてデバイスを設定してください</translation>
 <translation id="8676770494376880701">低電力の充電器に接続されています</translation>
 <translation id="8683506306463609433">パフォーマンス追跡機能が有効</translation>
+<translation id="8684405646663021166">マイクへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
 <translation id="8685326675965865247">デバイス、アプリ、設定、ウェブを検索します。アプリに移動するには矢印キーを使用します。</translation>
 <translation id="8703634754197148428">録画を開始します。録画を開始した後、シェルフにある [録画を停止] ボタンに移動するには、Alt+Shift+L キーを使用してください</translation>
 <translation id="8721053961083920564">音量を切り替えます。<ph name="STATE_TEXT" /></translation>
@@ -1417,6 +1426,7 @@
 <translation id="8936501819958976551">無効</translation>
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>
 <translation id="8940956008527784070">バッテリー残量: 少（<ph name="PERCENTAGE" />%）</translation>
+<translation id="8949925099261528566">接続済み、インターネット接続なし</translation>
 <translation id="8951539504029375108">お使いの Chromebook に対応しているのは承認済みの Thunderbolt デバイスのみです</translation>
 <translation id="8982906748181120328">周辺ユーザーによる検出</translation>
 <translation id="8983038754672563810">HSPA</translation>

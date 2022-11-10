@@ -309,7 +309,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3393920035788932672">Lejohen dritaret kërcyese</translation>
 <translation id="3399930248910934354">Hap "Cilësimet" e Chrome</translation>
 <translation id="3404744938087714423">Dalja e çaktivizon sinkronizimin.</translation>
-<translation id="3414451675185661089">2. Trokit te "Fjalëkalimet"</translation>
 <translation id="3425644765244388016">Pseudonimi i kartës</translation>
 <translation id="3433057996795775706">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="WEBSITE" />. Ndrysho fjalëkalimin në <ph name="WEBSITE" /> për ta mbajtur të sigurt nga të tjerët.</translation>
 <translation id="3443810440409579745">Skeda u mor.</translation>
@@ -587,7 +586,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
 <translation id="5626245204502895507">Skedari nuk mund të shkarkohej në këtë moment.</translation>
 <translation id="5631164295104953411">Shto mënyrën e pagesës</translation>
-<translation id="5636282538000367086">Zbulo të rejat në Chrome</translation>
 <translation id="5652623411397330904">Produktet që monitoron do të shfaqen këtu.</translation>
 <translation id="5657859710142657190">Shko te rrjeta e skedave</translation>
 <translation id="5659593005791499971">Mail-i</translation>
@@ -602,7 +600,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5711039611392265845">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shiko <ph name="BEGIN_LINK" />Sinkronizimi dhe shërbimet e Google<ph name="END_LINK" /></translation>
 <translation id="5724941645893276623">Për të shfletuar uebin në mënyrë private, shto një skedë të re</translation>
 <translation id="5728700505257787410">Na vjen keq, ka pasur një problem identifikimi në llogarinë tënde.</translation>
-<translation id="5731784586962650619">Fjalëkalimet në aplikacionet e tjera</translation>
 <translation id="5733084997078800044">Këshillë për Chrome</translation>
 <translation id="5737974891429562743">Detajet e identifikimit të llogarisë nuk janë të përditësuara. Përditësoji për të filluar sinkronizimin.</translation>
 <translation id="5738385766833540397">Menaxho se si i merr sinjalizimet për uljet e çmimeve për produktet që monitoron</translation>
@@ -681,7 +678,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6229318421047648685">Kërko sajtin për desktop</translation>
 <translation id="6231782223312638214">Sugjerimet</translation>
 <translation id="6232329973559504466">Kërkimi "i fshehtë"</translation>
-<translation id="6232736989810857397">Kjo të lejon të krijosh me lehtësi ngjarje kalendarike duke përdorur "Lenten e Google".</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6254066287920239840">Hapi lidhjet në aplikacion në vend të shfletuesit.</translation>
 <translation id="6255097610484507482">Modifiko kartën e kreditit</translation>
@@ -708,7 +704,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6383719166112032471">Hap vendndodhjen…</translation>
 <translation id="6387994324662817823">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve të Google" vetëm në këtë pajisje.</translation>
 <translation id="6389470377220713856">Emri në kartë</translation>
-<translation id="6403371459378431832">Sinkronizo të dhënat e tua në të gjitha pajisjet</translation>
 <translation id="6406506848690869874">Sinkronizo</translation>
 <translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
@@ -931,7 +926,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8032569120109842252">Po ndjek</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Historiku i kërkimeve<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />forma të tjera aktiviteti<ph name="END_LINK" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="804427445359061970">Këtu do të gjesh skedat e tua nga pajisjet e tjera</translation>
-<translation id="8048728378294435881">Rezervo gjërat e tua dhe përdori në çdo pajisje</translation>
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8065292699993359127">Hap URL-të në Chrome në modalitetin "i fshehtë"</translation>
 <translation id="806745655614357130">Mbaji më vete të dhënat e mia</translation>

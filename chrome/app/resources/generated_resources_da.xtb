@@ -4475,7 +4475,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="514575469079499857">Brug din IP-adresse til at fastslå placeringen (standard)</translation>
 <translation id="5147103632304200977">Spørg, når et website vil have adgang til HID-enheder (anbefales)</translation>
 <translation id="5148277445782867161">Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere din enheds lokation.</translation>
-<translation id="5150070631291639005">Privatlivsindstillinger</translation>
 <translation id="5150254825601720210">SSL-servernavn for Netscape-certifikat</translation>
 <translation id="5151354047782775295">Hvis du ikke frigør diskplads, slettes udvalgte data muligvis automatisk</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
@@ -4670,6 +4669,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5331568967879689647">ChromeOS-systemapp</translation>
 <translation id="5331975486040154427">USB-C-enhed (porten bagpå i venstre side)</translation>
 <translation id="5333896723098573627">Hvis du vil fjerne apps, skal du gå til Indstillinger &gt; Apps &gt; Google Play Butik &gt; Administrer Android-præferencer &gt; Apps eller Administration af apps. Tryk derefter på den app, du vil afinstallere (du skal muligvis stryge til højre eller venstre for at finde appen). Tryk derefter på Afinstaller eller Deaktiver.</translation>
+<translation id="5334113802138581043">Mikrofonadgang</translation>
 <translation id="5334142896108694079">Scriptcache</translation>
 <translation id="5336688142483283574">Denne side fjernes også fra din historik og <ph name="SEARCH_ENGINE" />-aktivitet.</translation>
 <translation id="5336689872433667741">Markør og touchplade</translation>
@@ -8670,6 +8670,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9081543426177426948">De websites, du besøger, gemmes ikke i inkognitotilstand</translation>
 <translation id="9084064520949870008">Åbn som vindue</translation>
 <translation id="9085256200913095638">Dupliker den valgte fane</translation>
+<translation id="9085446486797400519">Kameraadgang</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> er ikke valgt. Tryk på søgetasten og mellemrumstasten på samme tid for at vælge.</translation>
 <translation id="9087949559523851360">Tilføj begrænset bruger</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> er blokeret af en virksomhedspolitik</translation>

@@ -305,6 +305,7 @@
 <translation id="4044093238444069296">Ei saa lüüsiga ühendust</translation>
 <translation id="4046123991198612571">Järgmine lugu</translation>
 <translation id="404928562651467259">HOIATUS</translation>
+<translation id="4060260348856573701">Uus APN</translation>
 <translation id="4093865285251893588">Profiilipilt</translation>
 <translation id="409427325554347132">Salvesta testi üksikasjad</translation>
 <translation id="4110686435123617899">Valige album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -606,6 +607,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6766275201586212568">Ebaõnnestunud DNS-lahendused</translation>
 <translation id="6768237774506518020">DNS-lahenduste ebaõnnestumiste kõrge määr</translation>
 <translation id="6791471867139427246">klaviatuurivalguse värv</translation>
+<translation id="6793680441750437230">Vajutage klaviatuuril mis tahes klahvi. Võite korraga vajutada kuni nelja klahvi. Dialoogi sulgemiseks vajutage korraga klahve Alt + Esc.</translation>
 <translation id="680983167891198932">Võti</translation>
 <translation id="6816797338148849397">Teie valikuga seotud teave on saadaval. Kasutage juurdepääsemiseks ülesnooleklahvi.</translation>
 <translation id="6853312040151791195">Tühjenemise kiirus</translation>
