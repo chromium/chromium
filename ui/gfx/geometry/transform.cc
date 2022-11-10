@@ -205,28 +205,28 @@ void Transform::Scale(float x, float y) {
   if (LIKELY(!full_matrix_))
     axis_2d_.PreScale(Vector2dF(x, y));
   else
-    matrix_.PreScale(x, y, 1);
+    matrix_.PreScale(x, y);
 }
 
 void Transform::PostScale(float x, float y) {
   if (LIKELY(!full_matrix_))
     axis_2d_.PostScale(Vector2dF(x, y));
   else
-    matrix_.PostScale(x, y, 1);
+    matrix_.PostScale(x, y);
 }
 
 void Transform::Scale3d(float x, float y, float z) {
   if (z == 1)
     Scale(x, y);
   else
-    EnsureFullMatrix().PreScale(x, y, z);
+    EnsureFullMatrix().PreScale3d(x, y, z);
 }
 
 void Transform::PostScale3d(float x, float y, float z) {
   if (z == 1)
     PostScale(x, y);
   else
-    EnsureFullMatrix().PostScale(x, y, z);
+    EnsureFullMatrix().PostScale3d(x, y, z);
 }
 
 void Transform::Translate(const Vector2dF& offset) {
@@ -237,7 +237,7 @@ void Transform::Translate(float x, float y) {
   if (LIKELY(!full_matrix_))
     axis_2d_.PreTranslate(Vector2dF(x, y));
   else
-    matrix_.PreTranslate(x, y, 0);
+    matrix_.PreTranslate(x, y);
 }
 
 void Transform::PostTranslate(const Vector2dF& offset) {
@@ -248,7 +248,7 @@ void Transform::PostTranslate(float x, float y) {
   if (LIKELY(!full_matrix_))
     axis_2d_.PostTranslate(Vector2dF(x, y));
   else
-    matrix_.PostTranslate(x, y, 0);
+    matrix_.PostTranslate(x, y);
 }
 
 void Transform::PostTranslate3d(const Vector3dF& offset) {
@@ -259,7 +259,7 @@ void Transform::PostTranslate3d(float x, float y, float z) {
   if (z == 0)
     PostTranslate(x, y);
   else
-    EnsureFullMatrix().PostTranslate(x, y, z);
+    EnsureFullMatrix().PostTranslate3d(x, y, z);
 }
 
 void Transform::Translate3d(const Vector3dF& offset) {
@@ -270,7 +270,7 @@ void Transform::Translate3d(float x, float y, float z) {
   if (z == 0)
     Translate(x, y);
   else
-    EnsureFullMatrix().PreTranslate(x, y, z);
+    EnsureFullMatrix().PreTranslate3d(x, y, z);
 }
 
 void Transform::Skew(double degrees_x, double degrees_y) {
@@ -289,17 +289,41 @@ void Transform::ApplyPerspectiveDepth(double depth) {
 void Transform::PreConcat(const Transform& transform) {
   if (LIKELY(!transform.full_matrix_)) {
     PreConcat(transform.axis_2d_);
+  } else if (LIKELY(!full_matrix_)) {
+    AxisTransform2d self = axis_2d_;
+    *this = transform;
+    PostConcat(self);
   } else {
-    EnsureFullMatrix().PreConcat(transform.matrix_);
+    matrix_.PreConcat(transform.matrix_);
   }
 }
 
 void Transform::PostConcat(const Transform& transform) {
   if (LIKELY(!transform.full_matrix_)) {
     PostConcat(transform.axis_2d_);
+  } else if (LIKELY(!full_matrix_)) {
+    AxisTransform2d self = axis_2d_;
+    *this = transform;
+    PreConcat(self);
   } else {
-    EnsureFullMatrix().PostConcat(transform.matrix_);
+    matrix_.PostConcat(transform.matrix_);
   }
+}
+
+Transform Transform::operator*(const Transform& transform) const {
+  if (LIKELY(!transform.full_matrix_)) {
+    Transform result = *this;
+    result.PreConcat(transform.axis_2d_);
+    return result;
+  }
+  if (LIKELY(!full_matrix_)) {
+    Transform result = transform;
+    result.PostConcat(axis_2d_);
+    return result;
+  }
+  Transform result(Matrix44::kUninitialized);
+  result.matrix_.SetConcat(matrix_, transform.matrix_);
+  return result;
 }
 
 void Transform::PreConcat(const AxisTransform2d& transform) {
@@ -640,9 +664,8 @@ Point Transform::MapPoint(const Point& point) const {
 }
 
 PointF Transform::MapPoint(const PointF& point) const {
-  return LIKELY(!full_matrix_)
-             ? axis_2d_.MapPoint(point)
-             : MapPointInternal(matrix_, Point3F(point)).AsPointF();
+  return LIKELY(!full_matrix_) ? axis_2d_.MapPoint(point)
+                               : MapPointInternal(matrix_, point);
 }
 
 Point3F Transform::MapPoint(const Point3F& point) const {
@@ -660,7 +683,7 @@ Vector3dF Transform::MapVector(const Vector3dF& vector) const {
                      ClampFloatGeometry(vector.z()));
   }
   double p[4] = {vector.x(), vector.y(), vector.z(), 0};
-  matrix_.MapScalars(p);
+  matrix_.MapVector4(p);
   return Vector3dF(ClampFloatGeometry(p[0]), ClampFloatGeometry(p[1]),
                    ClampFloatGeometry(p[2]));
 }
@@ -676,7 +699,7 @@ void Transform::TransformVector4(float vector[4]) const {
       vector[i] = ClampFloatGeometry(vector[i]);
   } else {
     double v[4] = {vector[0], vector[1], vector[2], vector[3]};
-    matrix_.MapScalars(v);
+    matrix_.MapVector4(v);
     for (int i = 0; i < 4; i++)
       vector[i] = ClampFloatGeometry(v[i]);
   }
@@ -691,7 +714,7 @@ absl::optional<PointF> Transform::InverseMapPoint(const PointF& point) const {
   Matrix44 inverse(Matrix44::kUninitialized);
   if (!matrix_.GetInverse(inverse))
     return absl::nullopt;
-  return MapPointInternal(inverse, Point3F(point)).AsPointF();
+  return MapPointInternal(inverse, point);
 }
 
 absl::optional<Point> Transform::InverseMapPoint(const Point& point) const {
@@ -822,7 +845,7 @@ PointF Transform::ProjectPoint(const PointF& point, bool* clamped) const {
   }
 
   double v[4] = {x, y, z, 1};
-  matrix_.MapScalars(v);
+  matrix_.MapVector4(v);
 
   if (v[3] <= 0) {
     // To represent infinity and ensure the bounding box of ProjectQuad() is
@@ -946,16 +969,32 @@ void Transform::RoundToIdentityOrIntegerTranslation() {
   }
 }
 
+PointF Transform::MapPointInternal(const Matrix44& matrix,
+                                   const PointF& point) const {
+  DCHECK(full_matrix_);
+
+  double p[2] = {point.x(), point.y()};
+
+  double w = matrix.MapVector2(p);
+
+  if (w != 1.0 && std::isnormal(w)) {
+    double w_inverse = 1.0 / w;
+    return PointF(ClampFloatGeometry(p[0] * w_inverse),
+                  ClampFloatGeometry(p[1] * w_inverse));
+  }
+  return PointF(ClampFloatGeometry(p[0]), ClampFloatGeometry(p[1]));
+}
+
 Point3F Transform::MapPointInternal(const Matrix44& matrix,
                                     const Point3F& point) const {
   DCHECK(full_matrix_);
 
   double p[4] = {point.x(), point.y(), point.z(), 1};
 
-  matrix.MapScalars(p);
+  matrix.MapVector4(p);
 
   if (p[3] != 1.0 && std::isnormal(p[3])) {
-    float w_inverse = 1.0 / p[3];
+    double w_inverse = 1.0 / p[3];
     return Point3F(ClampFloatGeometry(p[0] * w_inverse),
                    ClampFloatGeometry(p[1] * w_inverse),
                    ClampFloatGeometry(p[2] * w_inverse));

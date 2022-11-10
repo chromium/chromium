@@ -431,12 +431,18 @@ TEST(XFormTest, ConcatRotate) {
 }
 
 TEST(XFormTest, ConcatSelf) {
-  auto a = Transform::ColMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-                               15, 16);
+  auto a = Transform::ColMajor(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                               16, 17);
   auto expected_a_times_a =
-      Transform::ColMajor(90, 100, 110, 120, 202, 228, 254, 280, 314, 356, 398,
-                          440, 426, 484, 542, 600);
+      Transform::ColMajor(132, 146, 160, 174, 260, 290, 320, 350, 388, 434, 480,
+                          526, 516, 578, 640, 702);
   a.PreConcat(a);
+  EXPECT_EQ(expected_a_times_a, a);
+
+  a = Transform::Affine(2, 3, 4, 5, 6, 7);
+  expected_a_times_a = Transform::Affine(16, 21, 28, 37, 46, 60);
+  a.PreConcat(a);
+  EXPECT_TRUE(a.Is2dTransform());
   EXPECT_EQ(expected_a_times_a, a);
 }
 
@@ -1780,6 +1786,22 @@ TEST(XFormTest, Inverse) {
     EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, inverse_scale);
 
     EXPECT_EQ(inverse_scale, scale.InverseOrIdentity());
+  }
+
+  {
+    Transform m1;
+    m1.Translate(10, 20);
+    m1.Rotate(30);
+    Transform m2;
+    m2.Rotate(-30);
+    m2.Translate(-10, -20);
+    Transform inverse_m1, inverse_m2;
+    EXPECT_TRUE(m1.GetInverse(&inverse_m1));
+    EXPECT_TRUE(m2.GetInverse(&inverse_m2));
+    EXPECT_TRUE(inverse_m1.Is2dTransform());
+    EXPECT_TRUE(inverse_m2.Is2dTransform());
+    EXPECT_TRANSFORM_NEAR(m1, inverse_m2, 1e-6);
+    EXPECT_TRANSFORM_NEAR(m2, inverse_m1, 1e-6);
   }
 
   {

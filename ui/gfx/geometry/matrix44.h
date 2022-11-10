@@ -126,14 +126,18 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   void GetColMajorF(float[16]) const;
 
   // this = this * translation.
-  void PreTranslate(double dx, double dy, double dz);
+  void PreTranslate(double dx, double dy);
+  void PreTranslate3d(double dx, double dy, double dz);
   // this = translation * this.
-  void PostTranslate(double dx, double dy, double dz);
+  void PostTranslate(double dx, double dy);
+  void PostTranslate3d(double dx, double dy, double dz);
 
   // this = this * scale.
-  void PreScale(double sx, double sy, double sz);
+  void PreScale(double sx, double sy);
+  void PreScale3d(double sx, double sy, double sz);
   // this = scale * this.
-  void PostScale(double sx, double sy, double sz);
+  void PostScale(double sx, double sy);
+  void PostScale3d(double sx, double sy, double sz);
 
   // Rotates this matrix about the specified unit-length axis vector,
   // by an angle specified by its sin() and cos(). This does not attempt to
@@ -166,6 +170,8 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   void PreConcat(const Matrix44& m) { SetConcat(*this, m); }
   // this = m * this.
   void PostConcat(const Matrix44& m) { SetConcat(m, *this); }
+  // this = a * b.
+  void SetConcat(const Matrix44& a, const Matrix44& b);
 
   // Returns true and set |inverse| to the inverted matrix if this matrix
   // is invertible. Otherwise return false and leave the |inverse| parameter
@@ -182,14 +188,17 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   void Zoom(double zoom_factor);
 
   // Applies the matrix to the vector in place.
-  void MapScalars(double vec[4]) const;
+  void MapVector4(double vec[4]) const;
+
+  // Same as above, but assumes the vec[2] is 0 and vec[3] is 1, discards
+  // vec[2], and returns vec[3].
+  double MapVector2(double vec[2]) const;
 
   void Flatten();
 
   absl::optional<DecomposedTransform> Decompose() const;
 
  private:
-  void SetConcat(const Matrix44& a, const Matrix44& b);
   absl::optional<DecomposedTransform> Decompose2d() const;
 
   ALWAYS_INLINE Double4 Col(int i) const { return LoadDouble4(matrix_[i]); }

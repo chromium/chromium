@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddoublesequence.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -277,15 +276,10 @@ DOMMatrix* DOMMatrix::perspectiveSelf(double p) {
 }
 
 DOMMatrix* DOMMatrix::invertSelf() {
-  // TODO(crbug.com/1359528): Let gfx::Transform::GetInverse() preserve
-  // 2d status and avoid the following block.
-  if (is2d_) {
-    AffineTransform affine_transform = AffineTransform::FromTransform(matrix_);
-    if (affine_transform.IsInvertible()) {
-      matrix_ = affine_transform.Inverse().ToTransform();
-      return this;
-    }
-  } else if (matrix_.GetInverse(&matrix_)) {
+  if (matrix_.GetInverse(&matrix_)) {
+    // We rely on gfx::Transform::GetInverse() to produce a 2d inverse for any
+    // 2d matrix.
+    DCHECK(!is2d_ || matrix_.Is2dTransform());
     return this;
   }
 

@@ -111,27 +111,56 @@ void Matrix44::GetColMajorF(float dst[16]) const {
   std::copy(src, src + 16, dst);
 }
 
-void Matrix44::PreTranslate(double dx, double dy, double dz) {
+void Matrix44::PreTranslate(double dx, double dy) {
+  SetCol(3, Col(0) * dx + Col(1) * dy + Col(3));
+}
+
+void Matrix44::PreTranslate3d(double dx, double dy, double dz) {
   if (AllTrue(Double4{dx, dy, dz, 0} == Double4{0, 0, 0, 0}))
     return;
 
   SetCol(3, Col(0) * dx + Col(1) * dy + Col(2) * dz + Col(3));
 }
 
-void Matrix44::PostTranslate(double dx, double dy, double dz) {
+void Matrix44::PostTranslate(double dx, double dy) {
+  if (LIKELY(!HasPerspective())) {
+    matrix_[3][0] += dx;
+    matrix_[3][1] += dy;
+  } else {
+    if (dx != 0) {
+      matrix_[0][0] += matrix_[0][3] * dx;
+      matrix_[1][0] += matrix_[1][3] * dx;
+      matrix_[2][0] += matrix_[2][3] * dx;
+      matrix_[3][0] += matrix_[3][3] * dx;
+    }
+    if (dy != 0) {
+      matrix_[0][1] += matrix_[0][3] * dy;
+      matrix_[1][1] += matrix_[1][3] * dy;
+      matrix_[2][1] += matrix_[2][3] * dy;
+      matrix_[3][1] += matrix_[3][3] * dy;
+    }
+  }
+}
+
+void Matrix44::PostTranslate3d(double dx, double dy, double dz) {
   Double4 t{dx, dy, dz, 0};
   if (AllTrue(t == Double4{0, 0, 0, 0}))
     return;
 
-  if (HasPerspective()) {
+  if (LIKELY(!HasPerspective())) {
+    SetCol(3, Col(3) + t);
+  } else {
     for (int i = 0; i < 4; ++i)
       SetCol(i, Col(i) + t * matrix_[i][3]);
-  } else {
-    SetCol(3, Col(3) + t);
   }
 }
 
-void Matrix44::PreScale(double sx, double sy, double sz) {
+void Matrix44::PreScale(double sx, double sy) {
+  SetCol(0, Col(0) * sx);
+  SetCol(1, Col(1) * sy);
+}
+
+void Matrix44::PreScale3d(double sx, double sy, double sz) {
   if (AllTrue(Double4{sx, sy, sz, 1} == Double4{1, 1, 1, 1}))
     return;
 
@@ -140,7 +169,22 @@ void Matrix44::PreScale(double sx, double sy, double sz) {
   SetCol(2, Col(2) * sz);
 }
 
-void Matrix44::PostScale(double sx, double sy, double sz) {
+void Matrix44::PostScale(double sx, double sy) {
+  if (sx != 1) {
+    matrix_[0][0] *= sx;
+    matrix_[1][0] *= sx;
+    matrix_[2][0] *= sx;
+    matrix_[3][0] *= sx;
+  }
+  if (sy != 1) {
+    matrix_[0][1] *= sy;
+    matrix_[1][1] *= sy;
+    matrix_[2][1] *= sy;
+    matrix_[3][1] *= sy;
+  }
+}
+
+void Matrix44::PostScale3d(double sx, double sy, double sz) {
   if (AllTrue(Double4{sx, sy, sz, 1} == Double4{1, 1, 1, 1}))
     return;
 
@@ -157,16 +201,16 @@ void Matrix44::RotateUnitSinCos(double x,
   // Optimize cases where the axis is along a major axis. Since we've already
   // normalized the vector we don't need to check that the other two dimensions
   // are zero. Tiny errors of the other two dimensions are ignored.
-  if (x == 1.0) {
-    RotateAboutXAxisSinCos(sin_angle, cos_angle);
+  if (z == 1.0) {
+    RotateAboutZAxisSinCos(sin_angle, cos_angle);
     return;
   }
   if (y == 1.0) {
     RotateAboutYAxisSinCos(sin_angle, cos_angle);
     return;
   }
-  if (z == 1.0) {
-    RotateAboutZAxisSinCos(sin_angle, cos_angle);
+  if (x == 1.0) {
+    RotateAboutXAxisSinCos(sin_angle, cos_angle);
     return;
   }
 
@@ -234,16 +278,36 @@ void Matrix44::ApplyPerspectiveDepth(double perspective) {
   SetCol(2, Col(2) + Col(3) * (-1.0 / perspective));
 }
 
-void Matrix44::SetConcat(const Matrix44& a, const Matrix44& b) {
-  auto c0 = a.Col(0);
-  auto c1 = a.Col(1);
-  auto c2 = a.Col(2);
-  auto c3 = a.Col(3);
+void Matrix44::SetConcat(const Matrix44& x, const Matrix44& y) {
+  if (x.Is2dTransform() && y.Is2dTransform()) {
+    double a = x.matrix_[0][0];
+    double b = x.matrix_[0][1];
+    double c = x.matrix_[1][0];
+    double d = x.matrix_[1][1];
+    double e = x.matrix_[3][0];
+    double f = x.matrix_[3][1];
+    double ya = y.matrix_[0][0];
+    double yb = y.matrix_[0][1];
+    double yc = y.matrix_[1][0];
+    double yd = y.matrix_[1][1];
+    double ye = y.matrix_[3][0];
+    double yf = y.matrix_[3][1];
+    *this = Matrix44(a * ya + c * yb, b * ya + d * yb, 0, 0,           // col 0
+                     a * yc + c * yd, b * yc + d * yd, 0, 0,           // col 1
+                     0, 0, 1, 0,                                       // col 2
+                     a * ye + c * yf + e, b * ye + d * yf + f, 0, 1);  // col 3
+    return;
+  }
 
-  auto mc0 = b.Col(0);
-  auto mc1 = b.Col(1);
-  auto mc2 = b.Col(2);
-  auto mc3 = b.Col(3);
+  auto c0 = x.Col(0);
+  auto c1 = x.Col(1);
+  auto c2 = x.Col(2);
+  auto c3 = x.Col(3);
+
+  auto mc0 = y.Col(0);
+  auto mc1 = y.Col(1);
+  auto mc2 = y.Col(2);
+  auto mc3 = y.Col(3);
 
   SetCol(0, c0 * mc0[0] + c1 * mc0[1] + c2 * mc0[2] + c3 * mc0[3]);
   SetCol(1, c0 * mc1[0] + c1 * mc1[1] + c2 * mc1[2] + c3 * mc1[3]);
@@ -252,6 +316,26 @@ void Matrix44::SetConcat(const Matrix44& a, const Matrix44& b) {
 }
 
 bool Matrix44::GetInverse(Matrix44& result) const {
+  if (Is2dTransform()) {
+    double determinant = Determinant();
+    if (!std::isnormal(static_cast<float>(determinant)))
+      return false;
+
+    double inv_det = 1.0 / determinant;
+    double a = matrix_[0][0];
+    double b = matrix_[0][1];
+    double c = matrix_[1][0];
+    double d = matrix_[1][1];
+    double e = matrix_[3][0];
+    double f = matrix_[3][1];
+    result = Matrix44(d * inv_det, -b * inv_det, 0, 0,  // col 0
+                      -c * inv_det, a * inv_det, 0, 0,  // col 1
+                      0, 0, 1, 0,                       // col 2
+                      (c * f - d * e) * inv_det, (b * e - a * f) * inv_det, 0,
+                      1);  // col 3
+    return true;
+  }
+
   Double4 c0 = Col(0);
   Double4 c1 = Col(1);
   Double4 c2 = Col(2);
@@ -273,6 +357,9 @@ bool Matrix44::IsInvertible() const {
 
 // This is a simplified version of InverseWithDouble4Cols().
 double Matrix44::Determinant() const {
+  if (Is2dTransform())
+    return matrix_[0][0] * matrix_[1][1] - matrix_[0][1] * matrix_[1][0];
+
   Double4 c0 = Col(0);
   Double4 c1 = Col(1);
   Double4 c2 = Col(2);
@@ -320,7 +407,18 @@ void Matrix44::Zoom(double zoom_factor) {
   matrix_[3][2] *= zoom_factor;
 }
 
-void Matrix44::MapScalars(double vec[4]) const {
+double Matrix44::MapVector2(double vec[2]) const {
+  double v0 = vec[0];
+  double v1 = vec[1];
+  double x = v0 * matrix_[0][0] + v1 * matrix_[1][0] + matrix_[3][0];
+  double y = v0 * matrix_[0][1] + v1 * matrix_[1][1] + matrix_[3][1];
+  double w = v0 * matrix_[0][3] + v1 * matrix_[1][3] + matrix_[3][3];
+  vec[0] = x;
+  vec[1] = y;
+  return w;
+}
+
+void Matrix44::MapVector4(double vec[4]) const {
   Double4 v = LoadDouble4(vec);
   Double4 r0{matrix_[0][0], matrix_[1][0], matrix_[2][0], matrix_[3][0]};
   Double4 r1{matrix_[0][1], matrix_[1][1], matrix_[2][1], matrix_[3][1]};

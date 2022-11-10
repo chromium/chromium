@@ -539,11 +539,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   void RoundToIdentityOrIntegerTranslation();
 
   // Returns |this| * |other|.
-  Transform operator*(const Transform& other) const {
-    Transform t = *this;
-    t.PreConcat(other);
-    return t;
-  }
+  Transform operator*(const Transform& other) const;
 
   // Sets |this| = |this| * |other|
   Transform& operator*=(const Transform& other) {
@@ -580,6 +576,11 @@ class GEOMETRY_SKIA_EXPORT Transform {
             Vector2dF(scale_x, scale_y),
             Vector2dF(trans_x, trans_y))) {}
 
+  // Used internally to construct a Transform with uninitialized full matrix.
+  explicit Transform(Matrix44::UninitializedTag tag)
+      : full_matrix_(true), matrix_(tag) {}
+
+  PointF MapPointInternal(const Matrix44& matrix, const PointF& point) const;
   Point3F MapPointInternal(const Matrix44& matrix, const Point3F& point) const;
 
   Matrix44 GetFullMatrix() const;
