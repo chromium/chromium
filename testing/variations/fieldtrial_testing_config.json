@@ -6065,31 +6065,6 @@
             ]
         }
     ],
-    "IncognitoParamFilterExperimentv3": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "experiment_identifier": "foo",
-                        "should_filter": "true"
-                    },
-                    "enable_features": [
-                        "IncognitoParamFilterEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncognitoReauthenticationForAndroid": [
         {
             "platforms": [

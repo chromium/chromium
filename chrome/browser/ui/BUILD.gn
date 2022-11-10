@@ -1854,7 +1854,6 @@ static_library("ui") {
       "//components/services/app_service/public/mojom",
       "//components/ui_metrics",
       "//components/url_formatter",
-      "//components/url_param_filter/content",
       "//components/user_education/common",
       "//components/user_education/webui",
       "//components/user_notes:features",

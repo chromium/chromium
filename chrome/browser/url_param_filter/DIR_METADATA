@@ -1,1 +1,4 @@
-mixins: "//components/url_param_filter/COMMON_METADATA"
+monorail: {
+  component: "Privacy>Fingerprinting"
+}
+team_email: "dc-komics@google.com"
