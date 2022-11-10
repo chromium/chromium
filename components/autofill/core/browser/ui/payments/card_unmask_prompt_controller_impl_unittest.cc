@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -121,18 +122,17 @@ class CardUnmaskPromptControllerImplGenericTest {
     delegate_ = std::make_unique<TestCardUnmaskDelegate>();
   }
 
-  void ShowPrompt(bool should_unmask_virtual_card = false) {
-    card_.set_record_type(should_unmask_virtual_card
+  // Shows the Card Unmask Prompt. `challenge_option` being present denotes that
+  // we are in the virtual card use-case.
+  void ShowPrompt(const absl::optional<autofill::CardUnmaskChallengeOption>&
+                      challenge_option = absl::nullopt) {
+    card_.set_record_type(challenge_option.has_value()
                               ? CreditCard::VIRTUAL_CARD
                               : CreditCard::MASKED_SERVER_CARD);
 
     CardUnmaskPromptOptions card_unmask_prompt_options =
-        CardUnmaskPromptOptions(
-            should_unmask_virtual_card
-                ? test::GetCardUnmaskChallengeOptions(
-                      {CardUnmaskChallengeOptionType::kCvc})[0]
-                : absl::optional<autofill::CardUnmaskChallengeOption>(),
-            AutofillClient::UnmaskCardReason::kAutofill);
+        CardUnmaskPromptOptions(challenge_option,
+                                AutofillClient::UnmaskCardReason::kAutofill);
 
     controller_->ShowPrompt(
         base::BindOnce(
@@ -143,7 +143,11 @@ class CardUnmaskPromptControllerImplGenericTest {
 
   void ShowPromptAndSimulateResponse(bool enable_fido_auth,
                                      bool should_unmask_virtual_card = false) {
-    ShowPrompt(should_unmask_virtual_card);
+    ShowPrompt(should_unmask_virtual_card
+                   ? absl::optional<autofill::CardUnmaskChallengeOption>(
+                         test::GetCardUnmaskChallengeOptions(
+                             {CardUnmaskChallengeOptionType::kCvc})[0])
+                   : absl::nullopt);
     controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
                                         enable_fido_auth);
   }
@@ -298,20 +302,61 @@ TEST_F(CardUnmaskPromptControllerImplTest, DisplayCardInformation) {
 #endif
 }
 
+// This test ensures that the expected CVC length is correctly set for server
+// cards.
+TEST_F(CardUnmaskPromptControllerImplTest, GetExpectedCvcLength) {
+  // Test that if the network is not American Express and there is no challenge
+  // option, the expected length of the security code is 3.
+  card_ = test::GetMaskedServerCard();
+  ShowPrompt();
+  EXPECT_EQ(controller_->GetExpectedCvcLength(), 3);
+  controller_->OnUnmaskDialogClosed();
+
+  // Test that if the network is American Express and there is no challenge
+  // option, the expected length of the security code is 4.
+  card_ = test::GetMaskedServerCardAmex();
+  ShowPrompt();
+  EXPECT_EQ(controller_->GetExpectedCvcLength(), 4);
+  controller_->OnUnmaskDialogClosed();
+}
+
 // Ensures the instruction message and window title is correctly displayed when
-// showing the card unmask prompt for a virtual card. Virtual cards are not
-// currently supported on iOS, so we don't test on the platform.
+// showing the card unmask prompt for a virtual card. This test also checks that
+// the expected CVC length is correctly set for virtual cards. Virtual cards are
+// not currently supported on iOS, so we don't test on the platform.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CardUnmaskPromptControllerImplTest,
-       ChallengeOptionInstructionMessageAndWindowTitle) {
-  ShowPrompt(/*should_unmask_virtual_card=*/true);
-
+       ChallengeOptionInstructionMessageAndWindowTitleAndExpectedCvcLength) {
+  // Test that if the network is not American Express and the challenge option
+  // denotes that the security code is on the back of the card, its expected
+  // length is 3.
+  card_.set_record_type(CreditCard::VIRTUAL_CARD);
+  ShowPrompt(test::GetCardUnmaskChallengeOptions(
+      {CardUnmaskChallengeOptionType::kCvc})[0]);
   EXPECT_EQ(controller_->GetInstructionsMessage(),
             u"Enter the 3-digit security code on the back of your card so your "
             u"bank can verify it's you");
   EXPECT_EQ(controller_->GetWindowTitle(),
             u"Enter your security code for " +
                 card_.CardIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(controller_->GetExpectedCvcLength(), 3);
+  controller_->OnUnmaskDialogClosed();
+
+  // Test that if the network is American Express and the challenge option
+  // denotes that the security code is on the back of the card, its expected
+  // length is still 3.
+  card_ = test::GetMaskedServerCardAmex();
+  card_.set_record_type(CreditCard::VIRTUAL_CARD);
+  ShowPrompt(test::GetCardUnmaskChallengeOptions(
+      {CardUnmaskChallengeOptionType::kCvc})[0]);
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"Enter the 3-digit security code on the back of your card so your "
+            u"bank can verify it's you");
+  EXPECT_EQ(controller_->GetWindowTitle(),
+            u"Enter your security code for " +
+                card_.CardIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(controller_->GetExpectedCvcLength(), 3);
+  controller_->OnUnmaskDialogClosed();
 }
 #endif
 

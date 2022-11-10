@@ -338,7 +338,20 @@ bool CardUnmaskPromptControllerImpl::InputExpirationIsValid(
 }
 
 int CardUnmaskPromptControllerImpl::GetExpectedCvcLength() const {
-  return GetCvcLengthForCardNetwork(card_.network());
+  CvcType cvc_type;
+
+  // The regular CVC length for an American Express card is 4, but if we have an
+  // American Express card and a challenge option that denotes the security code
+  // is on the back of the American Express card, we need to handle it
+  // separately because its length will be 3.
+  if (IsChallengeOptionPresent() && card_.network() == kAmericanExpressCard &&
+      card_unmask_challenge_option_->cvc_position == CvcPosition::kBackOfCard) {
+    cvc_type = CvcType::kBackOfAmexCvc;
+  } else {
+    cvc_type = CvcType::kRegularCvc;
+  }
+
+  return GetCvcLengthForCardNetwork(card_.network(), cvc_type);
 }
 
 bool CardUnmaskPromptControllerImpl::IsChallengeOptionPresent() const {
