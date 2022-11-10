@@ -10359,6 +10359,43 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="InputMethod.Assistive.AutocorrectV2">
+  <owner>mehrab@google.com</owner>
+  <summary>
+    Metrics recording a summary of user interactions with Autocorrect feature.
+    The event is recorded whenever an autocorrect suggestion is shown or a user
+    interacted with a suggestion to accept or reject it.
+  </summary>
+  <metric name="CompatibilitySummary.PK"
+      enum="IMEAutocorrectCompatibilitySummary">
+    <summary>
+      A summary of interactions with Physical Keyboard Autocorrect suggestions
+      for the purpose of identifying App Compatibility issues.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="CompatibilitySummary.VK"
+      enum="IMEAutocorrectCompatibilitySummary">
+    <summary>
+      A summary of interactions with Virtual Keyboard Autocorrect suggestions
+      for the purpose of identifying App Compatibility issues.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="InputMethod.Assistive.Match">
   <owner>jiwan@chromium.org</owner>
   <summary>
