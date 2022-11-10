@@ -7,6 +7,7 @@
  * APNs
  */
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './network_shared.css.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 

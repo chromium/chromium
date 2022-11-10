@@ -334,6 +334,11 @@ suite('internet-detail-dialog', () => {
             internetDetailDialog.shadowRoot.querySelector('#apnRowSublabel')
                 .textContent.trim();
         assertFalse(!!getApnSectionSublabel());
+        assertTrue(!!internetDetailDialog.shadowRoot.querySelector('apn-list'));
+        const isApnListShowing = () =>
+            internetDetailDialog.shadowRoot.querySelector('iron-collapse')
+                .opened;
+        assertFalse(isApnListShowing());
 
         // Add a connected APN.
         const accessPointName = 'access point name';
@@ -345,16 +350,19 @@ suite('internet-detail-dialog', () => {
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
         assertEquals(accessPointName, getApnSectionSublabel());
+        assertFalse(isApnListShowing());
 
         // Expand the section, the sublabel should no longer show.
         apnSection.click();
         await flushAsync();
         assertFalse(!!getApnSectionSublabel());
+        assertTrue(isApnListShowing());
 
         // Collapse the section, the sublabel should show.
         apnSection.click();
         await flushAsync();
         assertEquals(accessPointName, getApnSectionSublabel());
+        assertFalse(isApnListShowing());
       } else {
         assertTrue(!!legacyApnElement);
         assertFalse(!!apnSection);

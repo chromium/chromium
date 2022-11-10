@@ -119,7 +119,10 @@
         [[getApnRowSublabel_(managedProperties_, apnExpanded_)]]
       </div>
     </cr-expand-button>
-    <!-- TODO(b/162365553): Add <apn-list> element -->
+    <iron-collapse opened="[[apnExpanded_]]">
+      <!-- TODO(b/162365553): Omit links in <apn-list>. -->
+      <apn-list></apn-list>
+    </iron-collapse>
   </template>
 
   <!-- Proxy -->
