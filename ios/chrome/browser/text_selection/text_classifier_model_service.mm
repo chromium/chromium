@@ -7,18 +7,20 @@
 #import <string>
 
 #import "base/files/file_path.h"
+#import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/core/optimization_guide_model_provider.h"
 #import "components/optimization_guide/proto/models.pb.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 TextClassifierModelService::TextClassifierModelService(
-    optimization_guide::OptimizationGuideModelProvider* opt_guide)
-    : opt_guide_(opt_guide) {
-  DCHECK(opt_guide_);
-  opt_guide_->AddObserverForOptimizationTargetModel(
+    OptimizationGuideService* opt_guide_service)
+    : opt_guide_service_(opt_guide_service) {
+  DCHECK(opt_guide_service_);
+  opt_guide_service_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_TEXT_CLASSIFIER,
       /*model_metadata=*/absl::nullopt, this);
 }
@@ -39,7 +41,7 @@ bool TextClassifierModelService::HasValidModelPath() const {
 
 void TextClassifierModelService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  opt_guide_->RemoveObserverForOptimizationTargetModel(
+  opt_guide_service_->RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_TEXT_CLASSIFIER, this);
 }
 
@@ -52,4 +54,17 @@ void TextClassifierModelService::OnModelUpdated(
     return;
   }
   model_path_ = model_info.GetModelFilePath();
+}
+
+bool TextClassifierModelService::ShouldRecordInternalsPageLog() const {
+  return opt_guide_service_->GetOptimizationGuideLogger()
+      ->ShouldEnableDebugLogs();
+}
+
+void TextClassifierModelService::RecordInternalsPageLog(
+    const std::string& debug) {
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::TEXT_CLASSIFIER,
+      opt_guide_service_->GetOptimizationGuideLogger())
+      << debug;
 }

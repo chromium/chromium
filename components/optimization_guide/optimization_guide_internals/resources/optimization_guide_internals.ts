@@ -81,6 +81,9 @@ function getLogSource(logSource: number) {
   if (logSource == 5) {
     return 'HINTS_NOTIFICATIONS';
   }
+  if (logSource == 6) {
+    return 'TEXT_CLASSIFIER';
+  }
   return logSource.toString();
 }
 
