@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -709,6 +710,55 @@ TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest,
       "ServiceWorker.FetchHandler."
       "TypeAtContinueWithActivatedVersion",
       ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler, 1);
+
+  test_resources.ResetHandler();
+}
+
+class ServiceWorkerBypassMainResourceTest
+    : public ServiceWorkerControlleeRequestHandlerTest {
+ public:
+  ServiceWorkerBypassMainResourceTest() {
+    scoped_feature_list_.InitFromCommandLine("ServiceWorkerBypassFetchHandler",
+                                             "");
+  }
+  ~ServiceWorkerBypassMainResourceTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ServiceWorkerBypassMainResourceTest, BypassServiceWorker) {
+  // Store an activated worker.
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetActiveVersion(version_);
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
+
+  // Conduct a main resource load.
+  ServiceWorkerRequestTestResources test_resources(
+      this, GURL("https://host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  test_resources.MaybeCreateLoader();
+
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(version_->HasControllee());
+
+  test_resources.WaitLoader();
+
+  // The loader should be false since the interceptor doesn't handle the main
+  // resource request.
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_TRUE(version_->HasControllee());
+
+  // Use RunUntilIdle() to wait for the ServiceWorker to start.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(version_->running_status(), EmbeddedWorkerStatus::RUNNING);
 
   test_resources.ResetHandler();
 }

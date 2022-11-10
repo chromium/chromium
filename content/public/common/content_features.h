@@ -207,6 +207,20 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSiteIsolationForGuests);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisableProcessReuse);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerBypassFetchHandler);
+enum class ServiceWorkerBypassFetchHandlerTarget {
+  // Bypass fetch handlers for main resource (navigation) requests. Fetch
+  // handlers will be bypassed regardless of the current ServiceWorker running
+  // status.
+  kMainResource,
+  // TODO(crbug.com/1371756) We will add following enum values.
+  // kMainResourceOnlyIfServiceWorkerNotStarted,
+  // kSubResource,
+  // kBoth
+};
+CONTENT_EXPORT extern const base::FeatureParam<
+    ServiceWorkerBypassFetchHandlerTarget>
+    kServiceWorkerBypassFetchHandlerTarget;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerSkipIgnorableFetchHandler);
 CONTENT_EXPORT extern const base::FeatureParam<bool> kSkipEmptyFetchHandler;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaCaptureOnFocus);

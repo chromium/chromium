@@ -901,6 +901,24 @@ BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
              "SkipEarlyCommitPendingForCrashedFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables bypassing the service worker fetch handler. Unlike
+// `kServiceWorkerSkipIgnorableFetchHandler`, this feature starts the service
+// worker for subsequent requests.
+BASE_FEATURE(kServiceWorkerBypassFetchHandler,
+             "ServiceWorkerBypassFetchHandler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>::Option
+    service_worker_bypass_fetch_handler_target_options[] = {{
+        ServiceWorkerBypassFetchHandlerTarget::kMainResource,
+        "main_resource",
+    }};
+const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
+    kServiceWorkerBypassFetchHandlerTarget{
+        &kServiceWorkerBypassFetchHandler, "bypass_for",
+        ServiceWorkerBypassFetchHandlerTarget::kMainResource,
+        &service_worker_bypass_fetch_handler_target_options};
+
 // Enables skipping the service worker fetch handler if the fetch handler is
 // identified as ignorable.
 BASE_FEATURE(kServiceWorkerSkipIgnorableFetchHandler,

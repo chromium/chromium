@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/offline_pages/buildflags/buildflags.h"
@@ -468,6 +469,27 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     }
   }
 
+  // If the feature is enabled, the main resource request bypasses ServiceWorker
+  // and starts the worker in parallel for subsequent subresources.
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerBypassFetchHandler) &&
+      features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
+          features::ServiceWorkerBypassFetchHandlerTarget::kMainResource) {
+    CompleteWithoutLoader();
+    if (registration->active_version()->running_status() ==
+            EmbeddedWorkerStatus::STARTING ||
+        registration->active_version()->running_status() ==
+            EmbeddedWorkerStatus::RUNNING) {
+      return;
+    }
+    registration->active_version()->StartWorker(
+        ServiceWorkerMetrics::EventType::BYPASS_MAIN_RESOURCE,
+        base::BindOnce(&ServiceWorkerControlleeRequestHandler::
+                           DidStartWorkerForSubresources,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   // Finally, we want to forward to the service worker! Make a
   // ServiceWorkerMainResourceLoader which does that work.
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
@@ -478,6 +500,16 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       .Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
           base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
                          loader_wrapper_->get()->AsWeakPtr())));
+}
+
+void ServiceWorkerControlleeRequestHandler::DidStartWorkerForSubresources(
+    blink::ServiceWorkerStatusCode status) {
+  TRACE_EVENT_WITH_FLOW1(
+      "ServiceWorker",
+      "ServiceWorkerControlleeRequestHandler::DidStartWorkerForSubresources",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "Status",
+      blink::ServiceWorkerStatusToString(status));
 }
 
 void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(

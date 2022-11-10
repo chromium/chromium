@@ -81,8 +81,9 @@ class ServiceWorkerMetrics {
     CONTENT_DELETE = 34,
     PUSH_SUBSCRIPTION_CHANGE = 35,
     FETCH_FENCED_FRAME = 36,
+    BYPASS_MAIN_RESOURCE = 37,
     // Add new events to record here.
-    kMaxValue = FETCH_FENCED_FRAME,
+    kMaxValue = BYPASS_MAIN_RESOURCE,
   };
 
   // Not used for UMA.
