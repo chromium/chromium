@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/shutdown_reason.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/lock_state_controller.h"
 #include "base/i18n/rtl.h"
@@ -19,12 +20,19 @@
 #include "quick_settings_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -39,17 +47,62 @@ constexpr gfx::RoundedCornersF kBottomRightNonRoundedCorners(
     kRoundedCornerRadius,
     kNonRoundedCornerRadius,
     kRoundedCornerRadius);
+
 constexpr gfx::RoundedCornersF kBottomLeftNonRoundedCorners(
     kRoundedCornerRadius,
     kRoundedCornerRadius,
     kRoundedCornerRadius,
     kNonRoundedCornerRadius);
+
+constexpr gfx::RoundedCornersF kTopLeftNonRoundedCorners(
+    kNonRoundedCornerRadius,
+    kRoundedCornerRadius,
+    kRoundedCornerRadius,
+    kRoundedCornerRadius);
+
+constexpr gfx::RoundedCornersF kTopRightNonRoundedCorners(
+    kRoundedCornerRadius,
+    kNonRoundedCornerRadius,
+    kRoundedCornerRadius,
+    kRoundedCornerRadius);
+
+constexpr gfx::RoundedCornersF kAllRoundedCorners(kRoundedCornerRadius,
+                                                  kRoundedCornerRadius,
+                                                  kRoundedCornerRadius,
+                                                  kRoundedCornerRadius);
+
+// The highlight path generator for the `PowerButton`.
+class HighlightPathGenerator : public views::HighlightPathGenerator {
+ public:
+  explicit HighlightPathGenerator(PowerButton* power_button)
+      : power_button_(power_button) {}
+  HighlightPathGenerator(const HighlightPathGenerator&) = delete;
+  HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
+
+ private:
+  // HighlightPathGenerator:
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+    gfx::RectF bounds(power_button_->GetLocalBounds());
+    gfx::RoundedCornersF rounded = kAllRoundedCorners;
+    if (power_button_->IsMenuShowing()) {
+      // Don't need to check RTL since the `HighlightPathGenerator` will auto
+      // adjust the shape for the RTL case.
+      rounded = kTopLeftNonRoundedCorners;
+    }
+
+    return gfx::RRectF(bounds, rounded);
+  }
+
+  // Owned by views hierarchy.
+  PowerButton* const power_button_;
+};
+
 }  // namespace
 
 class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
                                     public views::ContextMenuController {
  public:
-  MenuController() = default;
+  explicit MenuController(PowerButton* button) : power_button_(button) {}
   MenuController(const MenuController&) = delete;
   MenuController& operator=(const MenuController&) = delete;
   ~MenuController() override = default;
@@ -163,6 +216,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
     context_menu_model_.reset();
     root_menu_item_view_ = nullptr;
     menu_model_adapter_.reset();
+    power_button_->UpdateView();
   }
 
   // The context menu model and its adapter for `PowerButton`.
@@ -174,20 +228,86 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
   views::MenuItemView* root_menu_item_view_ = nullptr;
+
+  // Owned by views hierarchy.
+  PowerButton* power_button_ = nullptr;
 };
 
 PowerButton::PowerButton()
-    : IconButton(base::BindRepeating(&PowerButton::OnButtonActivated,
-                                     base::Unretained(this)),
-                 IconButton::Type::kSmall,
-                 &kUnifiedMenuPowerIcon,
-                 IDS_ASH_STATUS_TRAY_SHUTDOWN),
-      context_menu_(std::make_unique<MenuController>()) {
-  set_context_menu_controller(context_menu_.get());
+    : background_view_(AddChildView(std::make_unique<View>())),
+      button_content_(AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating(&PowerButton::OnButtonActivated,
+                              base::Unretained(this)),
+          IconButton::Type::kSmallFloating,
+          &kUnifiedMenuPowerIcon,
+          IDS_ASH_STATUS_TRAY_SHUTDOWN))),
+      context_menu_(std::make_unique<MenuController>(/*button=*/this)) {
   SetID(VIEW_ID_QS_POWER_BUTTON);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  // Inits the `background_view_`'s layer. This view is `SetPaintToLayer` so it
+  // can be set the customized rounded corner.
+  background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  auto* background_layer = background_view_->layer();
+  background_layer->SetRoundedCornerRadius(kAllRoundedCorners);
+  background_layer->SetFillsBoundsOpaquely(false);
+  background_layer->SetIsFastRoundedCorner(true);
+
+  set_context_menu_controller(context_menu_.get());
+
+  // Also paint the `IconButton` to a layer on top of the `background_view_`
+  button_content_->SetPaintToLayer();
+  button_content_->layer()->SetFillsBoundsOpaquely(false);
+
+  // Installs the customized focus ring path generator for the button.
+  button_content_->SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(button_content_)
+      ->SetPathGenerator(
+          std::make_unique<HighlightPathGenerator>(/*power_button=*/this));
+  button_content_->SetFocusPainter(nullptr);
 }
 
 PowerButton::~PowerButton() = default;
+
+bool PowerButton::IsMenuShowing() {
+  auto* menu_runner = context_menu_->menu_runner_.get();
+  return menu_runner && menu_runner->IsRunning();
+}
+
+void PowerButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  button_content_->SetIconColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
+  SkColor inactive_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimary);
+  SkColor active_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemPrimaryContainer);
+  background_view_->layer()->SetColor(IsMenuShowing() ? active_color
+                                                      : inactive_color);
+}
+
+void PowerButton::UpdateView() {
+  UpdateRoundedCorners();
+  OnThemeChanged();
+  views::FocusRing* focus_ring = views::FocusRing::Get(button_content_);
+  if (button_content_->HasFocus() && focus_ring) {
+    // Updating the focus ring path, make sure the focus ring gets updated to
+    // match this new state.
+    focus_ring->InvalidateLayout();
+    focus_ring->SchedulePaint();
+  }
+}
+
+void PowerButton::UpdateRoundedCorners() {
+  gfx::RoundedCornersF corners = kAllRoundedCorners;
+  if (IsMenuShowing()) {
+    corners = base::i18n::IsRTL() ? kTopRightNonRoundedCorners
+                                  : kTopLeftNonRoundedCorners;
+  }
+
+  background_view_->layer()->SetRoundedCornerRadius(corners);
+}
 
 void PowerButton::OnButtonActivated(const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
@@ -205,14 +325,12 @@ void PowerButton::OnButtonActivated(const ui::Event& event) {
 
   context_menu_->ShowContextMenuForView(
       /*source=*/this, GetBoundsInScreen().CenterPoint(), type);
+
+  UpdateView();
 }
 
 views::MenuItemView* PowerButton::GetMenuViewForTesting() {
   return context_menu_->root_menu_item_view_;
-}
-
-views::MenuRunner* PowerButton::GetMenuRunnerForTesting() {
-  return context_menu_->menu_runner_.get();
 }
 
 }  // namespace ash

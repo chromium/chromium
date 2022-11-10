@@ -55,10 +55,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
     return GetPowerButton()->GetMenuViewForTesting();
   }
 
-  bool IsMenuShowing() {
-    return GetPowerButton()->GetMenuRunnerForTesting() &&
-           GetPowerButton()->GetMenuRunnerForTesting()->IsRunning();
-  }
+  bool IsMenuShowing() { return GetPowerButton()->IsMenuShowing(); }
 
   views::View* GetSignOutButton() {
     if (!IsMenuShowing())

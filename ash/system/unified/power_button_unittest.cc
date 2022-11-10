@@ -7,10 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -56,13 +59,7 @@ class PowerButtonTest : public NoSessionAshTestBase {
     return button_->GetMenuViewForTesting();
   }
 
-  views::MenuRunner* GetMenuRunner() {
-    return button_->GetMenuRunnerForTesting();
-  }
-
-  bool IsMenuShowing() {
-    return GetMenuRunner() && GetMenuRunner()->IsRunning();
-  }
+  bool IsMenuShowing() { return button_->IsMenuShowing(); }
 
   views::View* GetRestartButton() {
     if (!IsMenuShowing())
@@ -92,6 +89,8 @@ class PowerButtonTest : public NoSessionAshTestBase {
 
   PowerButton* GetPowerButton() { return button_; }
 
+  ui::Layer* GetBackgroundLayer() { return button_->background_view_->layer(); }
+
   // Simulates mouse press event on the power button. The generator click
   // does not work anymore since menu is a nested run loop.
   void SimulatePowerButtonPress() {
@@ -99,7 +98,7 @@ class PowerButtonTest : public NoSessionAshTestBase {
                          button_->GetBoundsInScreen().CenterPoint(),
                          button_->GetBoundsInScreen().CenterPoint(),
                          ui::EventTimeForNow(), 0, 0);
-    GetPowerButton()->OnButtonActivated(event);
+    button_->button_content_->NotifyClick(event);
   }
 
  private:
@@ -310,6 +309,41 @@ TEST_F(PowerButtonTest, ButtonStatesAddingUser) {
   EXPECT_TRUE(GetSignOutButton()->GetVisible());
   EXPECT_TRUE(GetPowerOffButton()->GetVisible());
   EXPECT_TRUE(GetRestartButton()->GetVisible());
+}
+
+// Power button's rounded radii should change correctly when switching between
+// active/inactive.
+TEST_F(PowerButtonTest, ButtonRoundedRadii) {
+  CreateUserSessions(1);
+
+  // Sets a LTR locale.
+  base::i18n::SetICUDefaultLocale("en_US");
+
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+
+  EXPECT_EQ(gfx::RoundedCornersF(16, 16, 16, 16),
+            GetBackgroundLayer()->rounded_corner_radii());
+
+  // Clicks on the power button.
+  SimulatePowerButtonPress();
+
+  EXPECT_EQ(gfx::RoundedCornersF(4, 16, 16, 16),
+            GetBackgroundLayer()->rounded_corner_radii());
+
+  // Click on a random button to close the menu.
+  LeftClickOn(GetLockButton());
+
+  // Sets a RTL locale.
+  base::i18n::SetICUDefaultLocale("ar");
+
+  EXPECT_EQ(gfx::RoundedCornersF(16, 16, 16, 16),
+            GetBackgroundLayer()->rounded_corner_radii());
+
+  // Clicks on the power button.
+  SimulatePowerButtonPress();
+
+  EXPECT_EQ(gfx::RoundedCornersF(16, 4, 16, 16),
+            GetBackgroundLayer()->rounded_corner_radii());
 }
 
 }  // namespace ash
