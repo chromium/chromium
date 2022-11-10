@@ -75,8 +75,19 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
 // TODO(https://crbug.com/1346734): Enable it on all platforms.
 #if BUILDFLAG(IS_LINUX)
   if (browser_view->browser()->is_type_picture_in_picture()) {
-    return std::make_unique<PictureInPictureBrowserFrameView>(frame,
-                                                              browser_view);
+    auto view =
+        std::make_unique<PictureInPictureBrowserFrameView>(frame, browser_view);
+    auto* profile = browser_view->browser()->profile();
+    auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
+    auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
+    if (linux_ui_theme && theme_service_factory->UsingSystemTheme()) {
+      bool solid_frame = !static_cast<DesktopBrowserFrameAuraLinux*>(
+                              frame->native_browser_frame())
+                              ->ShouldDrawRestoredFrameShadow();
+      view->SetWindowFrameProvider(
+          linux_ui_theme->GetWindowFrameProvider(solid_frame));
+    }
+    return view;
   }
 #endif
 

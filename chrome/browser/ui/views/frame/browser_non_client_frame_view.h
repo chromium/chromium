@@ -146,6 +146,21 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // return null.
   virtual TabSearchBubbleHost* GetTabSearchBubbleHost();
 
+  // Returns the insets from the edge of the native window to the client view in
+  // DIPs. The value is left-to-right even on RTL locales. That is,
+  // insets.left() will be on the left in screen coordinates.
+  virtual gfx::Insets MirroredFrameBorderInsets() const;
+
+  // Returns the insets from the client view to the input region. The returned
+  // insets will be negative, such that view_rect.Inset(GetInputInsets()) will
+  // be the input region.
+  virtual gfx::Insets GetInputInsets() const;
+
+  // Gets the rounded-rect that will be used to clip the window frame when
+  // drawing. The region will be as if the window was restored, and will be in
+  // view coordinates.
+  virtual SkRRect GetRestoredClipRegion() const;
+
  protected:
   // Called when |frame_|'s "paint as active" state has changed.
   virtual void PaintAsActiveChanged();

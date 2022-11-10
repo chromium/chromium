@@ -22,14 +22,8 @@ class BrowserFrameViewLayoutLinux : public OpaqueBrowserFrameViewLayout {
 
   ~BrowserFrameViewLayoutLinux() override;
 
-  // Returns the insets from the edge of the native window to the client view in
-  // DIPs. The value is left-to-right even on RTL locales.  That is,
-  // insets.left() will be on the left in screen coordinates.
   gfx::Insets MirroredFrameBorderInsets() const;
 
-  // Returns the insets from the client view to the input region.  The returned
-  // insets will be negative, such that view_rect.Inset(GetInputInsets()) will
-  // be the input region.
   gfx::Insets GetInputInsets() const;
 
   void set_view(BrowserFrameViewLinux* view) { view_ = view; }

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -163,17 +164,10 @@ bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
 }
 
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
-  if (native_frame_->browser_view()->browser()->is_type_picture_in_picture()) {
-    // TODO(https://crbug.com/1346734): Figure out whether or not we need to and
-    // how to set shades for pip window. Skip casting the view for linux below.
-    return;
-  }
-
-  auto* view = static_cast<BrowserFrameViewLinux*>(
-      native_frame_->browser_frame()->GetFrameView());
-  auto* layout = view->layout();
   auto* window = platform_window();
   float scale = device_scale_factor();
+  auto* view =
+      static_cast<BrowserNonClientFrameView*>(browser_frame_->GetFrameView());
   bool showing_frame =
       browser_frame_->native_browser_frame()->UseCustomFrame() &&
       !view->IsFrameCondensed();
@@ -182,7 +176,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
 
   if (SupportsClientFrameShadow()) {
     // Set the frame decoration insets.
-    gfx::Insets insets = layout->MirroredFrameBorderInsets();
+    gfx::Insets insets = view->MirroredFrameBorderInsets();
     const auto tiled_edges = browser_frame_->tiled_edges();
     if (tiled_edges.left)
       insets.set_left(0);
@@ -197,7 +191,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
 
     // Set the input region.
     gfx::Rect input_bounds(widget_size);
-    input_bounds.Inset(insets + layout->GetInputInsets());
+    input_bounds.Inset(insets + view->GetInputInsets());
     input_bounds = gfx::ScaleToEnclosingRect(input_bounds, scale);
     window->SetInputRegion(showing_frame ? &input_bounds : nullptr);
   }

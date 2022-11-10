@@ -20,6 +20,10 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget_observer.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/window_frame_provider.h"
+#endif
+
 namespace views {
 class Label;
 }
@@ -63,6 +67,11 @@ class PictureInPictureBrowserFrameView
   void OnThemeChanged() override;
   void Layout() override;
   void AddedToWidget() override;
+#if BUILDFLAG(IS_LINUX)
+  gfx::Insets MirroredFrameBorderInsets() const override;
+  gfx::Insets GetInputInsets() const override;
+  SkRRect GetRestoredClipRegion() const override;
+#endif
 
   // ChromeLocationBarModelDelegate:
   content::WebContents* GetActiveWebContents() const override;
@@ -102,6 +111,10 @@ class PictureInPictureBrowserFrameView
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
+
+  // PictureInPictureBrowserFrameView:
   // Convert the bounds of a child view of |controls_container_view_| to use
   // the system's coordinate system.
   gfx::Rect ConvertControlViewBounds(views::View* control_view) const;
@@ -126,6 +139,20 @@ class PictureInPictureBrowserFrameView
   // - Dialogs are opened in the PiP window
   void UpdateTopBarView(bool render_active);
 
+  // Returns the insets of the window frame borders.
+  gfx::Insets FrameBorderInsets() const;
+
+  // Returns the height of the top bar area, including the window top border.
+  int GetTopAreaHeight() const;
+
+#if BUILDFLAG(IS_LINUX)
+  // Sets the window frame provider so that it will be used for drawing.
+  void SetWindowFrameProvider(ui::WindowFrameProvider* window_frame_provider);
+
+  // Returns whether a client-side shadow should be drawn for the window.
+  bool ShouldDrawFrameShadow() const;
+#endif
+
  private:
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;
@@ -149,6 +176,12 @@ class PictureInPictureBrowserFrameView
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   bool mouse_inside_window_ = false;
+
+#if BUILDFLAG(IS_LINUX)
+  // Used to draw window frame borders and shadow on Linux when GTK theme is
+  // enabled.
+  raw_ptr<ui::WindowFrameProvider> window_frame_provider_ = nullptr;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_

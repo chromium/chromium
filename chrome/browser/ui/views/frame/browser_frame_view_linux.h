@@ -26,10 +26,10 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
 
   BrowserFrameViewLayoutLinux* layout() { return layout_; }
 
-  // Gets the rounded-rect that will be used to clip the window frame when
-  // drawing.  The region will be as if the window was restored, and will be in
-  // view coordinates.
-  SkRRect GetRestoredClipRegion() const;
+  // BrowserNonClientFrameView:
+  gfx::Insets MirroredFrameBorderInsets() const override;
+  gfx::Insets GetInputInsets() const override;
+  SkRRect GetRestoredClipRegion() const override;
 
   // Gets the shadow metrics (radius, offset, and number of shadows).  This will
   // always return shadow values, even if shadows are not actually drawn.

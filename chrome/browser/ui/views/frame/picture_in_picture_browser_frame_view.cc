@@ -32,6 +32,10 @@
 #include "ui/aura/window.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#endif
+
 namespace {
 
 // TODO(https://crbug.com/1346734): Check whether any of the below should be
@@ -43,8 +47,8 @@ constexpr int kBackToTabImageSize = 14;
 // The height of the controls bar at the top of the window.
 constexpr int kTopControlsHeight = 30;
 
-constexpr int kWindowBorderThickness = 5;
-constexpr int kResizeAreaCornerSize = 10;
+constexpr int kWindowBorderThickness = 10;
+constexpr int kResizeAreaCornerSize = 16;
 
 // The window has a smaller minimum size than normal Chrome windows.
 constexpr gfx::Size kMinWindowSize(300, 300);
@@ -159,7 +163,7 @@ gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForTabStripRegion(
 }
 
 int PictureInPictureBrowserFrameView::GetTopInset(bool restored) const {
-  return kTopControlsHeight;
+  return GetTopAreaHeight();
 }
 
 int PictureInPictureBrowserFrameView::GetThemeBackgroundXInset() const {
@@ -167,18 +171,28 @@ int PictureInPictureBrowserFrameView::GetThemeBackgroundXInset() const {
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForClientView() const {
-  return bounds();
+  auto border_thickness = FrameBorderInsets();
+  int top_height = GetTopAreaHeight();
+  return gfx::Rect(border_thickness.left(), top_height,
+                   width() - border_thickness.width(),
+                   height() - top_height - border_thickness.bottom());
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
-  return bounds();
+  auto border_thickness = FrameBorderInsets();
+  int top_height = GetTopAreaHeight();
+  return gfx::Rect(
+      client_bounds.x() - border_thickness.left(),
+      client_bounds.y() - top_height,
+      client_bounds.width() + border_thickness.width(),
+      client_bounds.height() + top_height + border_thickness.bottom());
 }
 
 int PictureInPictureBrowserFrameView::NonClientHitTest(
     const gfx::Point& point) {
   // Do nothing if the click is outside the window.
-  if (!bounds().Contains(point))
+  if (!GetLocalBounds().Contains(point))
     return HTNOWHERE;
 
   // Allow interacting with the buttons.
@@ -194,8 +208,8 @@ int PictureInPictureBrowserFrameView::NonClientHitTest(
 
   // Allow dragging and resizing the window.
   int window_component = GetHTComponentForFrame(
-      point, gfx::Insets(kWindowBorderThickness), kResizeAreaCornerSize,
-      kResizeAreaCornerSize, GetWidget()->widget_delegate()->CanResize());
+      point, FrameBorderInsets(), kResizeAreaCornerSize, kResizeAreaCornerSize,
+      GetWidget()->widget_delegate()->CanResize());
   if (window_component != HTNOWHERE)
     return window_component;
 
@@ -234,23 +248,33 @@ gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
 }
 
 void PictureInPictureBrowserFrameView::OnThemeChanged() {
-  BrowserNonClientFrameView::OnThemeChanged();
-
   const auto* color_provider = GetColorProvider();
   window_background_view_->SetBackground(views::CreateSolidBackground(
       color_provider->GetColor(kColorPipWindowBackground)));
-  controls_container_view_->SetBackground(views::CreateSolidBackground(
-      SkColorSetA(color_provider->GetColor(kColorPipWindowControlsBackground),
-                  SK_AlphaOPAQUE)));
   window_title_->SetEnabledColor(
       color_provider->GetColor(kColorPipWindowForeground));
   for (ContentSettingImageView* view : content_setting_views_)
     view->SetIconColor(color_provider->GetColor(kColorOmniboxResultsIcon));
+
+#if BUILDFLAG(IS_LINUX)
+  // If the top bar background is already drawn by window_frame_provider_, skip
+  // drawing it again below.
+  if (window_frame_provider_) {
+    BrowserNonClientFrameView::OnThemeChanged();
+    return;
+  }
+#endif
+  controls_container_view_->SetBackground(views::CreateSolidBackground(
+      SkColorSetA(color_provider->GetColor(kColorPipWindowControlsBackground),
+                  SK_AlphaOPAQUE)));
+  BrowserNonClientFrameView::OnThemeChanged();
 }
 
 void PictureInPictureBrowserFrameView::Layout() {
+  auto border_thickness = FrameBorderInsets();
   controls_container_view_->SetBoundsRect(
-      gfx::Rect(0, 0, width(), kTopControlsHeight));
+      gfx::Rect(border_thickness.left(), border_thickness.top(),
+                width() - border_thickness.width(), kTopControlsHeight));
 
   BrowserNonClientFrameView::Layout();
 }
@@ -267,6 +291,37 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
 
   BrowserNonClientFrameView::AddedToWidget();
 }
+
+#if BUILDFLAG(IS_LINUX)
+gfx::Insets PictureInPictureBrowserFrameView::MirroredFrameBorderInsets()
+    const {
+  auto border = FrameBorderInsets();
+  return base::i18n::IsRTL() ? gfx::Insets::TLBR(border.top(), border.right(),
+                                                 border.bottom(), border.left())
+                             : border;
+}
+
+gfx::Insets PictureInPictureBrowserFrameView::GetInputInsets() const {
+  return gfx::Insets(ShouldDrawFrameShadow() ? -kWindowBorderThickness : 0);
+}
+
+SkRRect PictureInPictureBrowserFrameView::GetRestoredClipRegion() const {
+  gfx::RectF bounds_dip(GetLocalBounds());
+  if (ShouldDrawFrameShadow()) {
+    gfx::InsetsF border(MirroredFrameBorderInsets());
+    bounds_dip.Inset(border);
+  }
+
+  float radius_dip = 0;
+  if (window_frame_provider_) {
+    radius_dip = window_frame_provider_->GetTopCornerRadiusDip();
+  }
+  SkVector radii[4]{{radius_dip, radius_dip}, {radius_dip, radius_dip}, {}, {}};
+  SkRRect clip;
+  clip.setRectRadii(gfx::RectFToSkRect(bounds_dip), radii);
+  return clip;
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // ChromeLocationBarModelDelegate implementations:
@@ -437,6 +492,21 @@ void PictureInPictureBrowserFrameView::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// views::View implementations:
+void PictureInPictureBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
+#if BUILDFLAG(IS_LINUX)
+  if (window_frame_provider_) {
+    // Draw the PiP window frame borders and shadows, including the top bar
+    // background.
+    window_frame_provider_->PaintWindowFrame(
+        canvas, GetLocalBounds(), GetTopAreaHeight(), ShouldPaintAsActive(),
+        frame()->tiled_edges());
+  }
+#endif
+  BrowserNonClientFrameView::OnPaint(canvas);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // PictureInPictureBrowserFrameView implementations:
 gfx::Rect PictureInPictureBrowserFrameView::ConvertControlViewBounds(
     views::View* control_view) const {
@@ -490,6 +560,40 @@ void PictureInPictureBrowserFrameView::UpdateTopBarView(bool render_active) {
   for (ContentSettingImageView* view : content_setting_views_)
     view->SetIconColor(color);
 }
+
+gfx::Insets PictureInPictureBrowserFrameView::FrameBorderInsets() const {
+#if BUILDFLAG(IS_LINUX)
+  if (window_frame_provider_) {
+    const auto insets = window_frame_provider_->GetFrameThicknessDip();
+    const auto tiled_edges = frame()->tiled_edges();
+
+    // If edges of the window are tiled and snapped to the edges of the desktop,
+    // window_frame_provider_ will skip drawing.
+    return gfx::Insets::TLBR(tiled_edges.top ? 0 : insets.top(),
+                             tiled_edges.left ? 0 : insets.left(),
+                             tiled_edges.bottom ? 0 : insets.bottom(),
+                             tiled_edges.right ? 0 : insets.right());
+  }
+#endif
+  return gfx::Insets(kWindowBorderThickness);
+}
+
+int PictureInPictureBrowserFrameView::GetTopAreaHeight() const {
+  return FrameBorderInsets().top() + kTopControlsHeight;
+}
+
+#if BUILDFLAG(IS_LINUX)
+void PictureInPictureBrowserFrameView::SetWindowFrameProvider(
+    ui::WindowFrameProvider* window_frame_provider) {
+  window_frame_provider_ = window_frame_provider;
+}
+
+bool PictureInPictureBrowserFrameView::ShouldDrawFrameShadow() const {
+  return static_cast<DesktopBrowserFrameAuraLinux*>(
+             frame()->native_browser_frame())
+      ->ShouldDrawRestoredFrameShadow();
+}
+#endif
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
 END_METADATA

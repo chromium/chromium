@@ -30,6 +30,14 @@ BrowserFrameViewLinux::BrowserFrameViewLinux(
 
 BrowserFrameViewLinux::~BrowserFrameViewLinux() = default;
 
+gfx::Insets BrowserFrameViewLinux::MirroredFrameBorderInsets() const {
+  return layout_->MirroredFrameBorderInsets();
+}
+
+gfx::Insets BrowserFrameViewLinux::GetInputInsets() const {
+  return layout_->GetInputInsets();
+}
+
 SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
   gfx::RectF bounds_dip(GetLocalBounds());
   if (ShouldDrawRestoredFrameShadow()) {

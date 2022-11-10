@@ -174,6 +174,10 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // regenerated.
   bool RegenerateFrameOnThemeChange(BrowserThemeChangeType theme_change_type);
 
+  // Returns whether the browser should always use the dark theme no matter user
+  // makes any selection.
+  bool ShouldUseDarkTheme() const;
+
   raw_ptr<NativeBrowserFrame> native_browser_frame_;
 
   // A weak reference to the root view associated with the window. We save a

@@ -249,10 +249,11 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
 
 ui::ColorProviderManager::ThemeInitializerSupplier*
 BrowserFrame::GetCustomTheme() const {
-  Browser* browser = browser_view_->browser();
-  // If this is an incognito profile, there should never be a custom theme.
-  if (browser->profile()->IsIncognitoProfile())
+  // Do not return any custom theme if the browser has to use the dark theme.
+  if (ShouldUseDarkTheme())
     return nullptr;
+
+  Browser* browser = browser_view_->browser();
   auto* app_controller = browser->app_controller();
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
@@ -385,7 +386,7 @@ void BrowserFrame::SelectNativeTheme() {
   // Select between regular, dark and Linux toolkit themes.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
-  if (browser_view_->browser()->profile()->IsIncognitoProfile()) {
+  if (ShouldUseDarkTheme()) {
     // No matter if we are using the default theme or not we always use the dark
     // ui instance.
     SetNativeTheme(ui::NativeTheme::GetInstanceForDarkUI());
@@ -436,4 +437,9 @@ bool BrowserFrame::RegenerateFrameOnThemeChange(
   }
 
   return false;
+}
+
+bool BrowserFrame::ShouldUseDarkTheme() const {
+  return browser_view_->browser()->profile()->IsIncognitoProfile() ||
+         browser_view_->GetIsPictureInPictureType();
 }

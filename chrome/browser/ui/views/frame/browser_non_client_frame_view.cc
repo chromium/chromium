@@ -254,6 +254,21 @@ TabSearchBubbleHost* BrowserNonClientFrameView::GetTabSearchBubbleHost() {
   return nullptr;
 }
 
+gfx::Insets BrowserNonClientFrameView::MirroredFrameBorderInsets() const {
+  NOTREACHED();
+  return gfx::Insets();
+}
+
+gfx::Insets BrowserNonClientFrameView::GetInputInsets() const {
+  NOTREACHED();
+  return gfx::Insets();
+}
+
+SkRRect BrowserNonClientFrameView::GetRestoredClipRegion() const {
+  NOTREACHED();
+  return SkRRect();
+}
+
 void BrowserNonClientFrameView::PaintAsActiveChanged() {
   // The toolbar top separator color (used as the stroke around the tabs and
   // the new tab button) needs to be recalculated.
