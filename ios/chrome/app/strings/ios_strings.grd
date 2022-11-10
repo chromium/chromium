@@ -3809,7 +3809,7 @@ New Search
         New
       </message>
       <message name="IDS_IOS_WHATS_NEW_IPH_TEXT" desc="An in product help message to inform the user about the feature What's New.">
-        Find out what's new in Chrome
+        Explore new features and tips in What’s New
       </message>
       <message name="IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT" desc="A message to inform the user that a credit card will be saved to their Google Account.">
         Cards are saved to your Google Account.
