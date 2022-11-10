@@ -4,6 +4,7 @@
 
 #include "content/common/webid/identity_url_loader_throttle.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -33,6 +34,7 @@ class IdentityUrlLoaderThrottleTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
   int cb_num_calls_ = 0;
   url::Origin cb_origin_;
   IdpSigninStatus cb_signin_status_ = IdpSigninStatus::kSignedOut;
@@ -89,13 +91,16 @@ TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
   throttle->WillProcessResponse(request.url, &response_head, &defer);
   EXPECT_FALSE(defer);
 
-  if (has_user_gesture) {
-    EXPECT_EQ(1, cb_num_calls_);
-    EXPECT_EQ(signin_status, cb_signin_status_);
-    EXPECT_EQ(url::Origin::Create(GURL("https://accounts.google.com/")),
-              cb_origin_);
+  EXPECT_EQ(1, cb_num_calls_);
+  EXPECT_EQ(signin_status, cb_signin_status_);
+  EXPECT_EQ(url::Origin::Create(GURL("https://accounts.google.com/")),
+            cb_origin_);
+  if (signin_status == IdpSigninStatus::kSignedIn) {
+    histogram_tester_.ExpectUniqueSample(
+        "Blink.FedCm.IdpSigninRequestInitiatedByUser", has_user_gesture, 1);
   } else {
-    EXPECT_EQ(0, cb_num_calls_);
+    histogram_tester_.ExpectUniqueSample(
+        "Blink.FedCm.IdpSignoutRequestInitiatedByUser", has_user_gesture, 1);
   }
 }
 

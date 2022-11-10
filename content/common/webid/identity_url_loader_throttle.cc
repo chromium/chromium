@@ -5,6 +5,7 @@
 #include "content/common/webid/identity_url_loader_throttle.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -84,9 +85,6 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
   if (!network::IsOriginPotentiallyTrustworthy(origin))
     return;
 
-  if (!has_user_gesture_)
-    return;
-
   // TODO(crbug.com/1357790):
   // - Limit to toplevel frames
   // - Decide whether to limit to same-origin
@@ -105,12 +103,16 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
       headers->HasHeaderValue(kIdpSigninStatusHeader, kIdpHeaderValueSignin)) {
     // Mark IDP as logged in
     VLOG(1) << "IDP signed in: " << response_url.spec();
+    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IdpSigninRequestInitiatedByUser",
+                          has_user_gesture_);
     set_idp_status_cb_.Run(origin, IdpSigninStatus::kSignedIn);
   } else if (headers->GetNormalizedHeader(kGoogleSignoutHeader, &header) ||
              headers->HasHeaderValue(kIdpSigninStatusHeader,
                                      kIdpHeaderValueSignout)) {
     // Mark IDP as logged out
     VLOG(1) << "IDP signed out: " << response_url.spec();
+    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IdpSignoutRequestInitiatedByUser",
+                          has_user_gesture_);
     set_idp_status_cb_.Run(origin, IdpSigninStatus::kSignedOut);
   }
 }

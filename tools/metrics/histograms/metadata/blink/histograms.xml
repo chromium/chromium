@@ -942,6 +942,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.IdpSigninRequestInitiatedByUser"
+    enum="BooleanYesNo" expires_after="2023-03-12">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Whenever we receive an IDP sign-in header (Google-Accounts-SignIn or
+    IdP-SignIn-Status: action=signin) in response to a non-worker HTTP request,
+    this records whether there was a transient user activation as indicated by
+    ResourceRequest::has_user_gesture.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.IdpSignoutRequestInitiatedByUser"
+    enum="BooleanYesNo" expires_after="2023-03-12">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Whenever we receive an IDP sign-in header (Google-Accounts-SignOut or
+    IdP-SignIn-Status: action=signout) in response to a non-worker HTTP request,
+    this records whether there was a transient user activation as indicated by
+    ResourceRequest::has_user_gesture.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IsSignInUser" enum="Boolean"
     expires_after="2023-03-12">
   <owner>yigu@chromium.org</owner>
