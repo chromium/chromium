@@ -257,6 +257,65 @@
     column-gap: 12px;
   }
 
+  #contentContainer.tangible-sync {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    padding-top: 120px;
+    width: 500px;
+  }
+
+  .tangible-sync #avatar {
+    height: 64px;
+    width: 64px;
+  }
+
+  .tangible-sync #syncConfirmationHeading {
+    font-size: 2.92em;
+    font-weight: 500;
+    line-height: 44px;
+    margin: 24px 0 16px;
+  }
+
+  #syncDescription {
+    font-size: 1.6em;
+    line-height: 24px;
+  }
+
+  #syncBenefitsList {
+    background: var(--google-grey-50);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    font-size: 1.05em;
+    font-weight: 400;
+    line-height: 20px;
+    margin: 24px 0 16px;
+    padding: 24px;
+    row-gap: 16px;
+    width: 452px;
+  }
+
+  .sync-benefit {
+    align-items: center;
+    column-gap: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .sync-benefit-icon {
+    color: var(--google-blue-600);
+    height: 24px;
+    width: 24px;
+  }
+
+  #syncSettingsInfo {
+    font-size: 0.95em;
+    line-height: 20px;
+  }
+
   @media (prefers-color-scheme: dark) {
     /* Modal dialog design */
     #illustration {
@@ -411,5 +470,75 @@
 </template>
 
 <template is="dom-if" if="[[isTangibleSync_]]">
-  Tangible Sync under construction.
+  <!-- TODO(crbug.com/1374702): Replace hardcoded strings -->
+  <div id="contentContainer" class="tangible-sync">
+    <!-- TODO(crbug.com/1374702): Add work badge to avatar for managed
+         accounts -->
+    <img id="avatar" alt="" src="[[accountImageSrc_]]">
+    <h1 id="syncConfirmationHeading">Turn on sync</h1>
+    <div id="syncDescription" class="secondary">
+      Back up your stuff and use it on any device
+    </div>
+    <div id="syncBenefitsList">
+      <!-- TODO(crbug.com/1374702): Transform the sync benefit item into a
+           polymer component. Replace filled icons and move repeated ones to cr
+           icons -->
+      <div class="sync-benefit">
+        <iron-icon class="sync-benefit-icon" icon="signin:star-border">
+        </iron-icon>
+        <div class="sync-benefit-text">
+          Bookmarks
+        </div>
+      </div>
+      <div class="sync-benefit">
+        <iron-icon class="sync-benefit-icon" icon="signin:assignment">
+        </iron-icon>
+        <div class="sync-benefit-text">
+          Autofill
+        </div>
+      </div>
+      <div class="sync-benefit">
+        <iron-icon class="sync-benefit-icon" icon="signin:devices"></iron-icon>
+        <div class="sync-benefit-text">
+          History
+        </div>
+      </div>
+      <div class="sync-benefit">
+        <iron-icon class="sync-benefit-icon" icon="cr:extension"></iron-icon>
+        <div class="sync-benefit-text">
+          Extensions and more
+        </div>
+      </div>
+    </div>
+    <div id="syncSettingsInfo" class="secondary">
+      You can always choose what to sync in settings. Google may personalize Search and other services based on your history.
+    </div>
+  </div>
+
+  <div class="action-row">
+    <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
+    <div id="buttonsContainer" class="action-container">
+      <cr-button id="confirmButton" class="action-button"
+          on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
+          consent-confirmation autofocus="[[isModalDialog_]]">
+        Yes, I'm in
+      </cr-button>
+      <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
+        <cr-button id="settingsButton" on-click="onGoToSettings_"
+            disabled="[[anyButtonClicked_]]" consent-confirmation>
+          Sync Settings
+        </cr-button>
+      </if>
+      <cr-button id="notNowButton" on-click="onUndo_"
+        disabled="[[anyButtonClicked_]]">
+        No, thanks
+      </cr-button>
+      <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
+        <cr-button id="settingsButton" on-click="onGoToSettings_"
+            disabled="[[anyButtonClicked_]]" consent-confirmation>
+          Sync Settings
+        </cr-button>
+      </if>
+    </div>
+  </div>
 </template>
