@@ -34,6 +34,44 @@ chromium-metrics-reviews@google.com.
   <summary>Errors from update_engine process when running in dev mode.</summary>
 </histogram>
 
+<histogram name="Installer.Postinstall.BiosType" enum="ChromeOSBiosType"
+    expires_after="2023-10-01">
+  <owner>tbrandston@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    The firmware+bootloader type targeted when installing/updating.
+
+    The main intent is to see distribution of EFI/Legacy on boards where those
+    types are both supported.
+
+    This is reported early in postinstall, only on ChromeOS, and only when
+    USE=postinst_metrics. There's also an increased risk of losing metrics
+    recorded in postinstall, see:
+    https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/installer/docs/postinst_metrics.md
+  </summary>
+</histogram>
+
+<histogram name="Installer.Postinstall.NonChromebookBiosSuccess.{BiosType}"
+    enum="BooleanSuccess" expires_after="2023-10-01">
+  <owner>tbrandston@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Success or Failure of special handling for BiosType: {BiosType}.
+
+    This is reported at the very end of postinstall, only on ChromeOS, and only
+    when USE=postinst_metrics. There's also an increased risk of losing metrics
+    recorded in postinstall, see:
+    https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/installer/docs/postinst_metrics.md
+  </summary>
+  <token key="BiosType">
+    <variant name="EFI" summary=""/>
+    <variant name="Legacy" summary=""/>
+    <variant name="Secure" summary=""/>
+    <variant name="UBoot" summary=""/>
+    <variant name="Unknown" summary=""/>
+  </token>
+</histogram>
+
 <histogram name="Installer.PowerwashCount" units="powerwashes"
     expires_after="2023-04-10">
   <owner>kimjae@chromium.org</owner>

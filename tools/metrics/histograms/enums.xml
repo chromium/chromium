@@ -15657,6 +15657,14 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="First service disabled"/>
 </enum>
 
+<enum name="ChromeOSBiosType">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kSecure"/>
+  <int value="2" label="kUBoot"/>
+  <int value="3" label="kLegacy"/>
+  <int value="4" label="kEFI"/>
+</enum>
+
 <enum name="ChromeOSBrowserProcessState">
   <int value="0" label="Running"/>
   <int value="1" label="Sleeping"/>
