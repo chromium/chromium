@@ -51,6 +51,39 @@ struct ContextMenuItem {
 // `AutofillContextMenuManager` is responsible for adding/executing Autofill
 // related context menu items. `RenderViewContextMenu` is intended to own and
 // control the lifetime of `AutofillContextMenuManager`.
+// Here is an example of the structure of the autofill related context menu
+// items:
+// ...
+// ...
+// ...
+// Fill Address Info > Alex Park, 345 Spear Street... > Alex Park
+//                                                      ___________________
+//                                                      345 Spear Street
+//                                                      San Francisco
+//                                                      94105
+//                                                      ___________________
+//                                                      +1 858 230 4000
+//                                                      alexpark@gmail.com
+//                     ______________________________
+//                     Manage Addresses
+// Fill Payment      > Mastercard **** 0952           > Alex Park
+//                                                      **** **** **** 0952
+//                                                      ___________________
+//                                                      04
+//                                                      2025
+//                     ______________________________
+//                     Manage payment methods
+// ....
+// ....
+// ....
+//
+// From the example, there are 3 layers:
+// 1. Outermost layer that distinguishes between address or payment method
+// filling. Refer to `Append Items` and `CreateSubMenuWithData` for more info.
+// 2. Profile description layer to identify which profile to use for filling.
+// Refer to `CreateSubMenuWithData` for more info.
+// 3. Profile data layer that would be used for filling a single field. See
+// `AddAddressOrCreditCardItems` for details on how this is created.
 class AutofillContextMenuManager {
  public:
   // Represents command id used to denote a row in the context menu. The
