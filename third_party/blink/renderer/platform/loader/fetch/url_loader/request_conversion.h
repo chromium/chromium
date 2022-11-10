@@ -7,7 +7,7 @@
 
 // This file consists of request conversion functions between blink and network.
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace network {
 class ResourceRequestBody;
