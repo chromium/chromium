@@ -46,7 +46,6 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gfx/presentation_feedback.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/transient_window_manager.h"
@@ -73,13 +72,13 @@ inline ui::Layer* GetLayer(views::Widget* widget) {
 // record UMA of input latency.
 void DidPresentCompositorFrame(base::TimeTicks event_time_stamp,
                                bool is_showing,
-                               const gfx::PresentationFeedback& feedback) {
-  const base::TimeTicks present_time = feedback.timestamp;
-  if (present_time.is_null() || event_time_stamp.is_null() ||
-      present_time < event_time_stamp) {
+                               base::TimeTicks presentation_timestamp) {
+  if (presentation_timestamp.is_null() || event_time_stamp.is_null() ||
+      presentation_timestamp < event_time_stamp) {
     return;
   }
-  const base::TimeDelta input_latency = present_time - event_time_stamp;
+  const base::TimeDelta input_latency =
+      presentation_timestamp - event_time_stamp;
   if (is_showing) {
     UMA_HISTOGRAM_TIMES("Apps.AppListShow.InputLatency", input_latency);
   } else {
@@ -702,7 +701,7 @@ void AppListPresenterImpl::RequestPresentationTime(
   ui::Compositor* compositor = root_window->layer()->GetCompositor();
   if (!compositor)
     return;
-  compositor->RequestPresentationTimeForNextFrame(
+  compositor->RequestSuccessfulPresentationTimeForNextFrame(
       base::BindOnce(&DidPresentCompositorFrame, event_time_stamp,
                      is_target_visibility_show_));
 }
