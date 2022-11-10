@@ -19,6 +19,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/offscreen.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
@@ -72,6 +73,13 @@ class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
  public:
   OffscreenDocumentManagerBrowserTest() = default;
   ~OffscreenDocumentManagerBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    // Add the kOffscreenDocumentTesting switch to allow the use of the
+    // `TESTING` reason in offscreen document creation.
+    command_line->AppendSwitch(switches::kOffscreenDocumentTesting);
+  }
 
   // Creates a new offscreen document with the given `extension`, `url`,
   // and `profile`, and waits for it to load.

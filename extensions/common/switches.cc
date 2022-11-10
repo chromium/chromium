@@ -75,6 +75,9 @@ const char kLoadSigninProfileTestExtension[] =
 const char kLoadGuestModeTestExtension[] = "load-guest-mode-test-extension";
 #endif
 
+// Allows the use of the `testing` reason in offscreen documents.
+const char kOffscreenDocumentTesting[] = "offscreen-document-testing";
+
 // Set the parameters for ExtensionURLLoaderThrottleBrowserTest.
 const char kSetExtensionThrottleTestParams[] =
     "set-extension-throttle-test-params";

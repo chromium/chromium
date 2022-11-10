@@ -31,6 +31,7 @@ extern const char kLoadExtension[];
 extern const char kLoadSigninProfileTestExtension[];
 extern const char kLoadGuestModeTestExtension[];
 #endif
+extern const char kOffscreenDocumentTesting[];
 extern const char kSetExtensionThrottleTestParams[];
 extern const char kShowComponentExtensionOptions[];
 extern const char kTraceAppSource[];

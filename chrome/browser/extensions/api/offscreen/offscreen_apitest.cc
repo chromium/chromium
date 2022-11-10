@@ -21,6 +21,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -101,6 +102,13 @@ class OffscreenApiTest : public ExtensionApiTest {
  public:
   OffscreenApiTest() = default;
   ~OffscreenApiTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    // Add the kOffscreenDocumentTesting switch to allow the use of the
+    // `TESTING` reason in offscreen document creation.
+    command_line->AppendSwitch(switches::kOffscreenDocumentTesting);
+  }
 
   // Creates a new offscreen document through an API call, expecting success.
   void ProgrammaticallyCreateOffscreenDocument(const Extension& extension,
@@ -453,6 +461,53 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutFeature,
       "'offscreen' requires the 'ExtensionsOffscreenDocuments' feature flag to "
       "be enabled.";
   EXPECT_THAT(string_warnings, testing::ElementsAre(kExpectedWarning));
+}
+
+class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
+ public:
+  OffscreenApiTestWithoutCommandLineFlag() = default;
+  ~OffscreenApiTestWithoutCommandLineFlag() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Explicitly don't call OffscreenApiTest's version to avoid adding the
+    // commandline flag.
+    ExtensionApiTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Tests that the `TESTING` reason is disallowed without the appropriate
+// commandline switch.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutCommandLineFlag,
+                       TestingReasonNotAllowed) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["offscreen"],
+           "background": { "service_worker": "background.js" }
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function cannotCreateDocumentWithTestingReason() {
+             await chrome.test.assertPromiseRejects(
+                 chrome.offscreen.createDocument(
+                     {
+                         url: 'offscreen.html',
+                         reasons: ['TESTING'],
+                         justification: 'testing'
+                     }),
+                 'Error: The `TESTING` reason is only available with the ' +
+                 '--offscreen-document-testing commandline switch applied.');
+             chrome.test.succeed();
+           },
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
 }  // namespace extensions

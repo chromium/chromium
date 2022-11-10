@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/offscreen/offscreen_api.h"
 
+#include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/extension_util.h"
@@ -12,6 +14,7 @@
 #include "extensions/common/api/offscreen.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -87,6 +90,15 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
 
   if (deduped_reasons.size() > 1) {
     return RespondNow(Error("Only a single `reason` is currently supported."));
+  }
+
+  if (base::Contains(deduped_reasons, api::offscreen::REASON_TESTING) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kOffscreenDocumentTesting)) {
+    return RespondNow(Error(base::StringPrintf(
+        "The `TESTING` reason is only available with the --%s "
+        "commandline switch applied.",
+        switches::kOffscreenDocumentTesting)));
   }
 
   OffscreenDocumentHost* offscreen_document = manager->CreateOffscreenDocument(
