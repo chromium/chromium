@@ -188,7 +188,7 @@ class ASH_EXPORT Desk {
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
 
   // Gets all app windows on this desk that should be closed.
-  std::vector<aura::Window*> GetAllAppWindows();
+  std::vector<aura::Window*> GetAllAppWindows() const;
 
   // Gets desk windows including floated window (if any).
   // Note that floated window isn't tracked in `windows_` but still "belongs" to

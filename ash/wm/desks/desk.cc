@@ -364,10 +364,7 @@ base::AutoReset<bool> Desk::GetScopedNotifyContentChangedDisabler() {
 }
 
 bool Desk::ContainsAppWindows() const {
-  return base::ranges::any_of(windows_, [](aura::Window* window) {
-    return window->GetProperty(aura::client::kAppType) !=
-           static_cast<int>(AppType::NON_APP);
-  });
+  return !GetAllAppWindows().empty();
 }
 
 void Desk::SetName(std::u16string new_name, bool set_by_user) {
@@ -685,7 +682,7 @@ void Desk::RecordAndResetConsecutiveDailyVisits(bool being_removed) {
   first_day_visited_ = -1;
 }
 
-std::vector<aura::Window*> Desk::GetAllAppWindows() {
+std::vector<aura::Window*> Desk::GetAllAppWindows() const {
   // We need to copy the app windows from `windows_` into `app_windows` so
   // that we do not modify `windows_` in place. This also gives us a filtered
   // list with all of the app windows that we need to remove.
@@ -695,6 +692,14 @@ std::vector<aura::Window*> Desk::GetAllAppWindows() {
                           return window->GetProperty(aura::client::kAppType) !=
                                  static_cast<int>(AppType::NON_APP);
                         });
+  // Note that floated window is also app window but needs to be handled
+  // separately since it doesn't store in desk container.
+  aura::Window* floated_window = nullptr;
+  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+      (floated_window =
+           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this))) {
+    app_windows.push_back(floated_window);
+  }
 
   return app_windows;
 }

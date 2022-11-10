@@ -58,10 +58,7 @@ gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
 bool ContainsAppWindows(Desk* desk) {
   if (!desk)
     return false;
-  bool has_floated_window =
-      chromeos::wm::features::IsFloatWindowEnabled() &&
-      Shell::Get()->float_controller()->FindFloatedWindowOfDesk(desk);
-  return desk->ContainsAppWindows() || has_floated_window ||
+  return desk->ContainsAppWindows() ||
          !DesksController::Get()->visible_on_all_desks_windows().empty();
 }
 

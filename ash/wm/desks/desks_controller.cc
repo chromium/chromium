@@ -1782,16 +1782,6 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
 
   std::vector<aura::Window*> app_windows = removed_desk->GetAllAppWindows();
 
-  // Add the floated window that belongs to the removed desk (if any) to the
-  // list of windows that will be closed.
-  aura::Window* floated_window = nullptr;
-  if (chromeos::wm::features::IsFloatWindowEnabled() &&
-      (floated_window =
-           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
-               removed_desk))) {
-    app_windows.push_back(floated_window);
-  }
-
   // We use `closing_window_tracker` to track all app windows that should be
   // closed from the removed desk, `WindowTracker` will handle windows that may
   // have already been indirectly closed due to the closure of other windows, as
@@ -1822,6 +1812,13 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
     // container are removed from the container in case we want to immediately
     // reuse that container. Since floated window doesn't belong to desk
     // container, handle it separately.
+    aura::Window* floated_window = nullptr;
+    if (chromeos::wm::features::IsFloatWindowEnabled()) {
+      floated_window =
+          Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
+              removed_desk);
+    }
+
     if (window != floated_window) {
       aura::Window* removed_desk_container =
           removed_desk->GetDeskContainerForRoot(window->GetRootWindow());
