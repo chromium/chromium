@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -41,7 +41,7 @@
 }
 
 // Main view controller for this coordinator.
-@property(nonatomic, strong) PasswordDetailsTableViewController* viewController;
+@property(nonatomic, strong) AddPasswordViewController* viewController;
 
 // Main mediator for this coordinator.
 @property(nonatomic, strong) AddPasswordMediator* mediator;
@@ -95,9 +95,8 @@
     }
   }
 
-  self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithCredentialType:CredentialTypeNew
-            syncingUserEmail:syncingUserEmail];
+  self.viewController = [[AddPasswordViewController alloc]
+      initWithSyncingUserEmail:syncingUserEmail];
 
   self.mediator = [[AddPasswordMediator alloc] initWithDelegate:self
                                            passwordCheckManager:_manager];

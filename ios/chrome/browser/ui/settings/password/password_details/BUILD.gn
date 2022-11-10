@@ -48,6 +48,9 @@ source_set("password_details_ui") {
   sources = [
     "add_password_details_consumer.h",
     "add_password_handler.h",
+    "add_password_view_controller.h",
+    "add_password_view_controller.mm",
+    "add_password_view_controller_delegate.h",
     "password_details.h",
     "password_details.mm",
     "password_details_consumer.h",
@@ -93,7 +96,10 @@ source_set("password_details_ui") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "password_details_table_view_controller_unittest.mm" ]
+  sources = [
+    "add_password_view_controller_unittest.mm",
+    "password_details_table_view_controller_unittest.mm",
+  ]
   deps = [
     ":password_details",
     ":password_details_ui",

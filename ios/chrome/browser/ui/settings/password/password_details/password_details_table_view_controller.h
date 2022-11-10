@@ -21,7 +21,6 @@ typedef NS_ENUM(NSInteger, CredentialType) {
   CredentialTypeRegular = kItemTypeEnumZero,
   CredentialTypeBlocked,
   CredentialTypeFederation,
-  CredentialTypeNew,
 };
 
 // Screen which shows password details and allows to edit it.
