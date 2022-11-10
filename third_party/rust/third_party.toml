@@ -39,19 +39,19 @@
 # resolve its dependencies.
 [workspace]
 members = [
-    "autocxx_gen/v0_22/crate",
+    "autocxx_gen/v0_23/crate",
 ]
 
 [dependencies]
 cxxbridge-cmd = "1"
 cxx = "1"
 serde = "1"
-autocxx = "0.22"
+autocxx = "0.23.1"
 memoffset = { version = "0.6", features = [ "unstable_const" ] }
 static_assertions = "1"
 
 [dependencies.autocxx-gen]
-version = "0.22"
+version = "0.23"
 features = [ "static" ]
 
 [dependencies.serde_json_lenient]
@@ -64,7 +64,7 @@ build-script-outputs = [ "host-target.txt" ]
 features = [ "static" ]
 
 [dependencies.autocxx-bindgen]
-version = "0.60"
+version = "0.62"
 build-script-outputs = [ "host-target.txt" ]
 features = [ "static" ]
 

@@ -9,7 +9,7 @@ import("//build/config/sysroot.gni")
 
 # The currently applicable semver major version of autocxx.
 # See tools/crates/crates.py for what an 'epoch' means specifically.
-autocxx_epoch = "v0_22"
+autocxx_epoch = "v0_23"
 
 # Template to build Rust/C++ bindings using autocxx tooling. This also works
 # to build bindings with cxx tooling. This is meant for use by higher level

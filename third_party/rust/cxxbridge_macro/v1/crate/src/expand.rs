@@ -172,8 +172,8 @@ fn expand_struct(strct: &Struct) -> TokenStream {
 
     quote! {
         #doc
-        #attrs
         #derives
+        #attrs
         #[repr(C)]
         #struct_def
 
@@ -342,8 +342,8 @@ fn expand_enum(enm: &Enum) -> TokenStream {
 
     quote! {
         #doc
-        #attrs
         #derives
+        #attrs
         #[repr(transparent)]
         #enum_def
 
@@ -787,6 +787,7 @@ fn expand_function_pointer_trampoline(
         prevent_unwind_label,
         None,
         Some(&efn.generics),
+        &efn.attrs,
         body_span,
     );
     let var = &var.rust;
@@ -937,6 +938,7 @@ fn expand_rust_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
         prevent_unwind_label,
         invoke,
         None,
+        &efn.attrs,
         body_span,
     )
 }
@@ -949,6 +951,7 @@ fn expand_rust_function_shim_impl(
     prevent_unwind_label: String,
     invoke: Option<&Ident>,
     outer_generics: Option<&Generics>,
+    attrs: &OtherAttrs,
     body_span: Span,
 ) -> TokenStream {
     let generics = outer_generics.unwrap_or(&sig.generics);
@@ -1123,6 +1126,7 @@ fn expand_rust_function_shim_impl(
     };
 
     quote_spanned! {span=>
+        #attrs
         #[doc(hidden)]
         #[export_name = #link_name]
         unsafe extern "C" fn #local_name #generics(#(#all_args,)* #outparam #pointer) #ret {
@@ -1273,7 +1277,7 @@ fn expand_rust_box(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
         #[export_name = #link_dealloc]
         unsafe extern "C" fn #local_dealloc #impl_generics(ptr: *mut ::cxx::core::mem::MaybeUninit<#ident #ty_generics>) {
             // No prevent_unwind: the global allocator is not allowed to panic.
-            ::cxx::alloc::boxed::Box::from_raw(ptr);
+            let _ = ::cxx::alloc::boxed::Box::from_raw(ptr);
         }
         #[doc(hidden)]
         #[export_name = #link_drop]

@@ -1,7 +1,7 @@
-diff --git a/third_party/rust/autocxx_bindgen/v0_60/BUILD.gn b/third_party/rust/autocxx_bindgen/v0_60/BUILD.gn
+diff --git a/third_party/rust/autocxx_bindgen/v0_62/BUILD.gn b/third_party/rust/autocxx_bindgen/v0_62/BUILD.gn
 index 921f25e254ce5..c583713f7792b 100644
---- a/third_party/rust/autocxx_bindgen/v0_60/BUILD.gn
-+++ b/third_party/rust/autocxx_bindgen/v0_60/BUILD.gn
+--- a/third_party/rust/autocxx_bindgen/v0_62/BUILD.gn
++++ b/third_party/rust/autocxx_bindgen/v0_62/BUILD.gn
 @@ -41,7 +41,8 @@ cargo_crate("lib") {
      "env_logger",
      "log",
@@ -12,10 +12,10 @@ index 921f25e254ce5..c583713f7792b 100644
      "static",
      "which",
      "which-rustfmt",
-diff --git a/third_party/rust/autocxx_gen/v0_22/BUILD.gn b/third_party/rust/autocxx_gen/v0_22/BUILD.gn
+diff --git a/third_party/rust/autocxx_gen/v0_23/BUILD.gn b/third_party/rust/autocxx_gen/v0_23/BUILD.gn
 index 1f0f2a58c2674..425bd8bbce132 100644
---- a/third_party/rust/autocxx_gen/v0_22/BUILD.gn
-+++ b/third_party/rust/autocxx_gen/v0_22/BUILD.gn
+--- a/third_party/rust/autocxx_gen/v0_23/BUILD.gn
++++ b/third_party/rust/autocxx_gen/v0_23/BUILD.gn
 @@ -3,3 +3,25 @@
  # found in the LICENSE file.
  
@@ -29,14 +29,14 @@ index 1f0f2a58c2674..425bd8bbce132 100644
 +  crate_root = "crate/src/main.rs"
 +  sources = [ "crate/src/main.rs" ]
 +  edition = "2018"
-+  cargo_pkg_version = "0.22.2"
++  cargo_pkg_version = "0.23.0"
 +  cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>"
 +  deps = [
-+    "//third_party/rust/autocxx_engine/v0_22:lib",
++    "//third_party/rust/autocxx_engine/v0_23:lib",
 +    "//third_party/rust/clap/v3:lib",
 +    "//third_party/rust/env_logger/v0_9:lib",
 +    "//third_party/rust/indexmap/v1:lib",
-+    "//third_party/rust/miette/v4:lib",
++    "//third_party/rust/miette/v5:lib",
 +    "//third_party/rust/pathdiff/v0_2:lib",
 +    "//third_party/rust/proc_macro2/v1:lib",
 +    "//third_party/rust/quote/v1:lib",

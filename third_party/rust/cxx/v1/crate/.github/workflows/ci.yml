@@ -5,6 +5,9 @@ on:
   pull_request:
   schedule: [cron: "40 1 * * *"]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: ${{matrix.name || format('Rust {0}', matrix.rust)}}
@@ -16,14 +19,10 @@ jobs:
           - rust: nightly
           - rust: beta
           - rust: stable
-          - rust: 1.54.0
-          - rust: 1.48.0
+          - rust: 1.60.0
           - name: macOS
             rust: nightly
             os: macos
-          - name: Windows (gnu)
-            rust: nightly-x86_64-pc-windows-gnu
-            os: windows
           - name: Windows (msvc)
             rust: nightly-x86_64-pc-windows-msvc
             os: windows
@@ -48,7 +47,7 @@ jobs:
         # builds.
         run: |
           echo RUSTFLAGS=$RUSTFLAGS >> $GITHUB_ENV
-          echo ::set-output name=exclude::--exclude cxx-test-suite ${{matrix.rust == '1.48.0' && '--exclude cxxbridge-cmd' || ''}}
+          echo exclude=--exclude cxx-test-suite >> $GITHUB_OUTPUT
         env:
           RUSTFLAGS: ${{env.RUSTFLAGS}} ${{matrix.os && github.event_name != 'schedule' && '--cfg skip_ui_tests' || ''}}
         id: testsuite
@@ -133,4 +132,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/install@cargo-outdated
-      - run: cargo outdated --exit-code 1
+      - run: cargo outdated --workspace --exit-code 1

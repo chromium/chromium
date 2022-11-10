@@ -38,10 +38,10 @@ error: missing documentation for a type alias
   --> tests/ui/deny_missing_docs.rs:49:9
    |
 49 |         pub type UndocumentedTypeAlias = crate::bindgen::UndocumentedTypeAlias;
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: missing documentation for a function
   --> tests/ui/deny_missing_docs.rs:54:9
    |
 54 |         pub fn undocumented_foreign_fn() -> u8;
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

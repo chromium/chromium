@@ -47,7 +47,7 @@ cc_library(
 
 rust_proc_macro(
     name = "cxxbridge-macro",
-    srcs = glob(["macro/src/**"]),
+    srcs = glob(["macro/src/**/*.rs"]),
     edition = "2018",
     deps = [
         "//third-party:proc-macro2",

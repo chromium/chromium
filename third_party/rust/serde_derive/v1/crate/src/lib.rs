@@ -13,9 +13,8 @@
 //!
 //! [https://serde.rs/derive.html]: https://serde.rs/derive.html
 
-#![doc(html_root_url = "https://docs.rs/serde_derive/1.0.130")]
+#![doc(html_root_url = "https://docs.rs/serde_derive/1.0.147")]
 #![allow(unknown_lints, bare_trait_objects)]
-#![deny(clippy::all, clippy::pedantic)]
 // Ignored clippy lints
 #![allow(
     // clippy false positive: https://github.com/rust-lang/rust-clippy/issues/7054
@@ -23,6 +22,7 @@
     clippy::cognitive_complexity,
     // clippy bug: https://github.com/rust-lang/rust-clippy/issues/7575
     clippy::collapsible_match,
+    clippy::derive_partial_eq_without_eq,
     clippy::enum_variant_names,
     // clippy bug: https://github.com/rust-lang/rust-clippy/issues/6797
     clippy::manual_map,
@@ -44,6 +44,7 @@
     clippy::indexing_slicing,
     clippy::items_after_statements,
     clippy::let_underscore_drop,
+    clippy::manual_assert,
     clippy::map_err_ignore,
     clippy::match_same_arms,
     // clippy bug: https://github.com/rust-lang/rust-clippy/issues/6984
@@ -60,6 +61,7 @@
     clippy::use_self,
     clippy::wildcard_imports
 )]
+#![cfg_attr(all(test, exhaustive), feature(non_exhaustive_omitted_patterns_lint))]
 
 #[macro_use]
 extern crate quote;

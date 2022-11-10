@@ -30,7 +30,7 @@
 //! # The Serializer trait
 //!
 //! [`Serializer`] implementations are provided by third-party crates, for
-//! example [`serde_json`], [`serde_yaml`] and [`bincode`].
+//! example [`serde_json`], [`serde_yaml`] and [`postcard`].
 //!
 //! A partial list of well-maintained formats is given on the [Serde
 //! website][data formats].
@@ -99,7 +99,7 @@
 //! [`LinkedHashMap<K, V>`]: https://docs.rs/linked-hash-map/*/linked_hash_map/struct.LinkedHashMap.html
 //! [`Serialize`]: ../trait.Serialize.html
 //! [`Serializer`]: ../trait.Serializer.html
-//! [`bincode`]: https://github.com/servo/bincode
+//! [`postcard`]: https://github.com/jamesmunns/postcard
 //! [`linked-hash-map`]: https://crates.io/crates/linked-hash-map
 //! [`serde_derive`]: https://crates.io/crates/serde_derive
 //! [`serde_json`]: https://github.com/serde-rs/json
@@ -314,7 +314,7 @@ pub trait Serialize {
 ///    - For example the `E::S` in `enum E { S { r: u8, g: u8, b: u8 } }`.
 ///
 /// Many Serde serializers produce text or binary data as output, for example
-/// JSON or Bincode. This is not a requirement of the `Serializer` trait, and
+/// JSON or Postcard. This is not a requirement of the `Serializer` trait, and
 /// there are serializers that do not produce text or binary output. One example
 /// is the `serde_json::value::Serializer` (distinct from the main `serde_json`
 /// serializer) that produces a `serde_json::Value` data structure in memory as
@@ -1280,13 +1280,13 @@ pub trait Serializer: Sized {
         let iter = iter.into_iter();
         let mut serializer = try!(self.serialize_seq(iterator_len_hint(&iter)));
 
-        #[cfg(iterator_try_fold)]
+        #[cfg(not(no_iterator_try_fold))]
         {
             let mut iter = iter;
             try!(iter.try_for_each(|item| serializer.serialize_element(&item)));
         }
 
-        #[cfg(not(iterator_try_fold))]
+        #[cfg(no_iterator_try_fold)]
         {
             for item in iter {
                 try!(serializer.serialize_element(&item));
@@ -1331,13 +1331,13 @@ pub trait Serializer: Sized {
         let iter = iter.into_iter();
         let mut serializer = try!(self.serialize_map(iterator_len_hint(&iter)));
 
-        #[cfg(iterator_try_fold)]
+        #[cfg(not(no_iterator_try_fold))]
         {
             let mut iter = iter;
             try!(iter.try_for_each(|(key, value)| serializer.serialize_entry(&key, &value)));
         }
 
-        #[cfg(not(iterator_try_fold))]
+        #[cfg(no_iterator_try_fold)]
         {
             for (key, value) in iter {
                 try!(serializer.serialize_entry(&key, &value));
@@ -1423,7 +1423,7 @@ pub trait Serializer: Sized {
     /// Some types have a human-readable form that may be somewhat expensive to
     /// construct, as well as a binary form that is compact and efficient.
     /// Generally text-based formats like JSON and YAML will prefer to use the
-    /// human-readable one and binary formats like Bincode will prefer the
+    /// human-readable one and binary formats like Postcard will prefer the
     /// compact one.
     ///
     /// ```edition2018

@@ -32,5 +32,5 @@ fn main() {
 
     // The same works for function-style:
     assert_eq!(hashmap().get(&0), Some(&"foo"));
-    assert_eq!(hashmap().get(&0), Some(&"bar"));
+    assert_eq!(hashmap().get(&1), Some(&"bar"));
 }

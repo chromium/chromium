@@ -1,6 +1,6 @@
 Name: cxxbridge-macro
 URL: https://crates.io/crates/cxxbridge-macro
 Description: Implementation detail of the `cxx` crate.
-Version: 1.0.68
-Security Critical: no
+Version: 1.0.81
+Security Critical: yes
 License: Apache 2.0

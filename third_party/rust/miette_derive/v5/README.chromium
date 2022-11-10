@@ -1,0 +1,6 @@
+Name: miette-derive
+URL: https://crates.io/crates/miette-derive
+Description: Derive macros for miette. Like `thiserror` for Diagnostics.
+Version: 5.4.1
+Security Critical: no
+License: Apache 2.0

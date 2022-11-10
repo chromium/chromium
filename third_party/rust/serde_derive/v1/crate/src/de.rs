@@ -1458,7 +1458,7 @@ fn deserialize_adjacently_tagged_enum(
             while let _serde::__private::Some(__k) = #next_key {
                 match __k {
                     _serde::__private::de::TagContentOtherField::Other => {
-                        try!(_serde::de::MapAccess::next_value::<_serde::de::IgnoredAny>(&mut __map));
+                        let _ = try!(_serde::de::MapAccess::next_value::<_serde::de::IgnoredAny>(&mut __map));
                         continue;
                     },
                     _serde::__private::de::TagContentOtherField::Tag => {

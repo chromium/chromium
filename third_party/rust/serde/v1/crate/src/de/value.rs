@@ -128,9 +128,7 @@ where
     type Deserializer = UnitDeserializer<E>;
 
     fn into_deserializer(self) -> UnitDeserializer<E> {
-        UnitDeserializer {
-            marker: PhantomData,
-        }
+        UnitDeserializer::new()
     }
 }
 
@@ -140,6 +138,15 @@ pub struct UnitDeserializer<E> {
 }
 
 impl_copy_clone!(UnitDeserializer);
+
+impl<E> UnitDeserializer<E> {
+    #[allow(missing_docs)]
+    pub fn new() -> Self {
+        UnitDeserializer {
+            marker: PhantomData,
+        }
+    }
+}
 
 impl<'de, E> de::Deserializer<'de> for UnitDeserializer<E>
 where
@@ -236,8 +243,15 @@ macro_rules! primitive_deserializer {
             type Deserializer = $name<E>;
 
             fn into_deserializer(self) -> $name<E> {
+                $name::new(self)
+            }
+        }
+
+        impl<E> $name<E> {
+            #[allow(missing_docs)]
+            pub fn new(value: $ty) -> Self {
                 $name {
-                    value: self,
+                    value: value,
                     marker: PhantomData,
                 }
             }
@@ -308,8 +322,15 @@ where
     type Deserializer = U32Deserializer<E>;
 
     fn into_deserializer(self) -> U32Deserializer<E> {
+        U32Deserializer::new(self)
+    }
+}
+
+impl<E> U32Deserializer<E> {
+    #[allow(missing_docs)]
+    pub fn new(value: u32) -> Self {
         U32Deserializer {
-            value: self,
+            value: value,
             marker: PhantomData,
         }
     }
@@ -390,8 +411,15 @@ where
     type Deserializer = StrDeserializer<'a, E>;
 
     fn into_deserializer(self) -> StrDeserializer<'a, E> {
+        StrDeserializer::new(self)
+    }
+}
+
+impl<'a, E> StrDeserializer<'a, E> {
+    #[allow(missing_docs)]
+    pub fn new(value: &'a str) -> Self {
         StrDeserializer {
-            value: self,
+            value: value,
             marker: PhantomData,
         }
     }
@@ -561,8 +589,16 @@ where
     type Deserializer = StringDeserializer<E>;
 
     fn into_deserializer(self) -> StringDeserializer<E> {
+        StringDeserializer::new(self)
+    }
+}
+
+#[cfg(any(feature = "std", feature = "alloc"))]
+impl<E> StringDeserializer<E> {
+    #[allow(missing_docs)]
+    pub fn new(value: String) -> Self {
         StringDeserializer {
-            value: self,
+            value: value,
             marker: PhantomData,
         }
     }
@@ -604,7 +640,7 @@ where
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
-impl<'de, 'a, E> de::EnumAccess<'de> for StringDeserializer<E>
+impl<'de, E> de::EnumAccess<'de> for StringDeserializer<E>
 where
     E: de::Error,
 {
@@ -656,8 +692,16 @@ where
     type Deserializer = CowStrDeserializer<'a, E>;
 
     fn into_deserializer(self) -> CowStrDeserializer<'a, E> {
+        CowStrDeserializer::new(self)
+    }
+}
+
+#[cfg(any(feature = "std", feature = "alloc"))]
+impl<'a, E> CowStrDeserializer<'a, E> {
+    #[allow(missing_docs)]
+    pub fn new(value: Cow<'a, str>) -> Self {
         CowStrDeserializer {
-            value: self,
+            value: value,
             marker: PhantomData,
         }
     }
@@ -1457,10 +1501,45 @@ where
     where
         T: de::DeserializeSeed<'de>,
     {
-        match self.map.next_key_seed(seed)? {
+        match try!(self.map.next_key_seed(seed)) {
             Some(key) => Ok((key, private::map_as_enum(self.map))),
             None => Err(de::Error::invalid_type(de::Unexpected::Map, &"enum")),
         }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+/// A deserializer holding an `EnumAccess`.
+#[derive(Clone, Debug)]
+pub struct EnumAccessDeserializer<A> {
+    access: A,
+}
+
+impl<A> EnumAccessDeserializer<A> {
+    /// Construct a new `EnumAccessDeserializer<A>`.
+    pub fn new(access: A) -> Self {
+        EnumAccessDeserializer { access: access }
+    }
+}
+
+impl<'de, A> de::Deserializer<'de> for EnumAccessDeserializer<A>
+where
+    A: de::EnumAccess<'de>,
+{
+    type Error = A::Error;
+
+    fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: de::Visitor<'de>,
+    {
+        visitor.visit_enum(self.access)
+    }
+
+    forward_to_deserialize_any! {
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct enum identifier ignored_any
     }
 }
 

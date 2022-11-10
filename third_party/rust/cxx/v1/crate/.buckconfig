@@ -13,7 +13,7 @@
   cxxflags = -std=c++11
 
 [rust]
-  default_edition = 2018
+  default_edition = required
   rustc_flags = \
       -Clink-arg=-fuse-ld=lld \
       -Crelocation-model=dynamic-no-pic \

@@ -65,11 +65,13 @@ pub fn pretend_used(cont: &Container, is_packed: bool) -> TokenStream {
 fn pretend_fields_used(cont: &Container, is_packed: bool) -> TokenStream {
     match &cont.data {
         Data::Enum(variants) => pretend_fields_used_enum(cont, variants),
-        Data::Struct(Style::Struct, fields) => if is_packed {
-            pretend_fields_used_struct_packed(cont, fields)
-        } else {
-            pretend_fields_used_struct(cont, fields)
-        },
+        Data::Struct(Style::Struct, fields) => {
+            if is_packed {
+                pretend_fields_used_struct_packed(cont, fields)
+            } else {
+                pretend_fields_used_struct(cont, fields)
+            }
+        }
         Data::Struct(_, _) => quote!(),
     }
 }
@@ -95,7 +97,7 @@ fn pretend_fields_used_struct_packed(cont: &Container, fields: &[Field]) -> Toke
 
     let members = fields.iter().map(|field| &field.member).collect::<Vec<_>>();
 
-    #[cfg(ptr_addr_of)]
+    #[cfg(not(no_ptr_addr_of))]
     {
         quote! {
             match _serde::__private::None::<&#type_ident #ty_generics> {
@@ -109,7 +111,7 @@ fn pretend_fields_used_struct_packed(cont: &Container, fields: &[Field]) -> Toke
         }
     }
 
-    #[cfg(not(ptr_addr_of))]
+    #[cfg(no_ptr_addr_of)]
     {
         let placeholders = (0usize..).map(|i| format_ident!("__v{}", i));
 

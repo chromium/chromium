@@ -6,22 +6,22 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = ["autocxx_gen/v0_22/crate"]
+members = ["autocxx_gen/v0_23/crate"]
 
 [dependencies]
-autocxx = "0.22"
+autocxx = "0.23.1"
 cxx = "1"
 cxxbridge-cmd = "1"
 serde = "1"
 static_assertions = "1"
 
 [dependencies.autocxx-bindgen]
-version = "0.60"
+version = "0.62"
 features = ["static"]
 build-script-outputs = ["host-target.txt"]
 
 [dependencies.autocxx-gen]
-version = "0.22"
+version = "0.23"
 features = ["static"]
 
 [dependencies.bindgen]
@@ -86,28 +86,28 @@ package = "atty"
 path = "autocfg/v1/crate"
 package = "autocfg"
 
-[patch.crates-io.autocxx-bindgen_v0_60]
-path = "autocxx_bindgen/v0_60/crate"
+[patch.crates-io.autocxx-bindgen_v0_62]
+path = "autocxx_bindgen/v0_62/crate"
 package = "autocxx-bindgen"
 
-[patch.crates-io.autocxx-engine_v0_22]
-path = "autocxx_engine/v0_22/crate"
+[patch.crates-io.autocxx-engine_v0_23]
+path = "autocxx_engine/v0_23/crate"
 package = "autocxx-engine"
 
-[patch.crates-io.autocxx-gen_v0_22]
-path = "autocxx_gen/v0_22/crate"
+[patch.crates-io.autocxx-gen_v0_23]
+path = "autocxx_gen/v0_23/crate"
 package = "autocxx-gen"
 
-[patch.crates-io.autocxx-macro_v0_22]
-path = "autocxx_macro/v0_22/crate"
+[patch.crates-io.autocxx-macro_v0_23]
+path = "autocxx_macro/v0_23/crate"
 package = "autocxx-macro"
 
-[patch.crates-io.autocxx-parser_v0_22]
-path = "autocxx_parser/v0_22/crate"
+[patch.crates-io.autocxx-parser_v0_23]
+path = "autocxx_parser/v0_23/crate"
 package = "autocxx-parser"
 
-[patch.crates-io.autocxx_v0_22]
-path = "autocxx/v0_22/crate"
+[patch.crates-io.autocxx_v0_23]
+path = "autocxx/v0_23/crate"
 package = "autocxx"
 
 [patch.crates-io.backtrace_v0_3]
@@ -169,6 +169,10 @@ package = "cxx"
 [patch.crates-io.cxxbridge-cmd_v1]
 path = "cxxbridge_cmd/v1/crate"
 package = "cxxbridge-cmd"
+
+[patch.crates-io.cxxbridge-flags_v1]
+path = "cxxbridge_flags/v1/crate"
+package = "cxxbridge-flags"
 
 [patch.crates-io.cxxbridge-macro_v1]
 path = "cxxbridge_macro/v1/crate"
@@ -266,12 +270,12 @@ package = "memchr"
 path = "memoffset/v0_6/crate"
 package = "memoffset"
 
-[patch.crates-io.miette-derive_v4]
-path = "miette_derive/v4/crate"
+[patch.crates-io.miette-derive_v5]
+path = "miette_derive/v5/crate"
 package = "miette-derive"
 
-[patch.crates-io.miette_v4]
-path = "miette/v4/crate"
+[patch.crates-io.miette_v5]
+path = "miette/v5/crate"
 package = "miette"
 
 [patch.crates-io.minimal-lexical_v0_2]

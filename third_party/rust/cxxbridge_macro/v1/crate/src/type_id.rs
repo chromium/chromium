@@ -1,6 +1,7 @@
 use crate::syntax::qualified::QualifiedName;
 use proc_macro2::{TokenStream, TokenTree};
 use quote::{format_ident, quote, ToTokens};
+use syn::ext::IdentExt;
 
 pub enum Crate {
     Cxx,
@@ -24,7 +25,7 @@ pub fn expand(krate: Crate, arg: QualifiedName) -> TokenStream {
         if !ids.is_empty() {
             ids.push(quote!(()));
         }
-        for ch in word.to_string().chars() {
+        for ch in word.unraw().to_string().chars() {
             ids.push(match ch {
                 'A'..='Z' | 'a'..='z' => {
                     let t = format_ident!("{}", ch);

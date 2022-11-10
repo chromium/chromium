@@ -12,10 +12,10 @@ pub fn wrap_in_const(
 ) -> TokenStream {
     let try_replacement = try::replacement();
 
-    let dummy_const = if cfg!(underscore_consts) {
-        format_ident!("_")
-    } else {
+    let dummy_const = if cfg!(no_underscore_consts) {
         format_ident!("_IMPL_{}_FOR_{}", trait_, unraw(ty))
+    } else {
+        format_ident!("_")
     };
 
     let use_serde = match serde_path {

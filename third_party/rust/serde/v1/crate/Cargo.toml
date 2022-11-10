@@ -10,27 +10,51 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
+rust-version = "1.13"
 name = "serde"
-version = "1.0.130"
-authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
+version = "1.0.147"
+authors = [
+    "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
+    "David Tolnay <dtolnay@gmail.com>",
+]
 build = "build.rs"
-include = ["build.rs", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+include = [
+    "build.rs",
+    "src/**/*.rs",
+    "crates-io.md",
+    "README.md",
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+]
 description = "A generic serialization/deserialization framework"
 homepage = "https://serde.rs"
 documentation = "https://docs.serde.rs/serde/"
 readme = "crates-io.md"
-keywords = ["serde", "serialization", "no_std"]
-categories = ["encoding"]
+keywords = [
+    "serde",
+    "serialization",
+    "no_std",
+]
+categories = [
+    "encoding",
+    "no-std",
+]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/serde-rs/serde"
+
+[package.metadata.playground]
+features = [
+    "derive",
+    "rc",
+]
+
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
-[package.metadata.playground]
-features = ["derive", "rc"]
 [dependencies.serde_derive]
-version = "=1.0.130"
+version = "=1.0.147"
 optional = true
+
 [dev-dependencies.serde_derive]
 version = "1.0"
 

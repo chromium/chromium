@@ -46,7 +46,7 @@ version = "1.1.0"
 
 [[package]]
 name = "autocxx"
-version = "0.22.4"
+version = "0.23.0"
 dependencies = [
  "aquamarine",
  "autocxx-macro",
@@ -56,13 +56,11 @@ dependencies = [
 
 [[package]]
 name = "autocxx-bindgen"
-version = "0.60.3"
+version = "0.62.0"
 dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "clap",
- "env_logger",
  "itertools 0.10.3",
  "lazy_static",
  "lazycell",
@@ -73,12 +71,13 @@ dependencies = [
  "regex",
  "rustc-hash",
  "shlex",
+ "syn",
  "which",
 ]
 
 [[package]]
 name = "autocxx-engine"
-version = "0.22.4"
+version = "0.23.0"
 dependencies = [
  "aquamarine",
  "autocxx-bindgen",
@@ -94,6 +93,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "regex",
+ "rustversion",
  "serde_json",
  "strum_macros",
  "syn",
@@ -104,7 +104,7 @@ dependencies = [
 
 [[package]]
 name = "autocxx-gen"
-version = "0.22.4"
+version = "0.23.0"
 dependencies = [
  "autocxx-engine",
  "clap",
@@ -117,7 +117,7 @@ dependencies = [
 
 [[package]]
 name = "autocxx-macro"
-version = "0.22.4"
+version = "0.23.0"
 dependencies = [
  "autocxx-parser",
  "proc-macro-error",
@@ -128,7 +128,7 @@ dependencies = [
 
 [[package]]
 name = "autocxx-parser"
-version = "0.22.4"
+version = "0.23.0"
 dependencies = [
  "indexmap",
  "itertools 0.10.3",
@@ -283,15 +283,16 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.68"
+version = "1.0.81"
 dependencies = [
+ "cxxbridge-flags",
  "cxxbridge-macro",
  "link-cplusplus",
 ]
 
 [[package]]
 name = "cxx-gen"
-version = "0.7.68"
+version = "0.7.81"
 dependencies = [
  "codespan-reporting",
  "proc-macro2",
@@ -311,8 +312,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "cxxbridge-flags"
+version = "1.0.81"
+
+[[package]]
 name = "cxxbridge-macro"
-version = "1.0.68"
+version = "1.0.81"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -465,7 +470,7 @@ dependencies = [
 
 [[package]]
 name = "miette"
-version = "4.3.0"
+version = "5.4.1"
 dependencies = [
  "atty",
  "backtrace",
@@ -483,7 +488,7 @@ dependencies = [
 
 [[package]]
 name = "miette-derive"
-version = "4.3.0"
+version = "5.4.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -527,7 +532,7 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.10.0"
+version = "1.16.0"
 
 [[package]]
 name = "os_str_bytes"
@@ -659,14 +664,14 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.130"
+version = "1.0.147"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.130"
+version = "1.0.147"
 dependencies = [
  "proc-macro2",
  "quote",

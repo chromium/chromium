@@ -24,4 +24,5 @@ jobs:
 
     - run: cargo run -p xtask -- ci
       env:
-        CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        MIRIFLAGS: -Zmiri-strict-provenance

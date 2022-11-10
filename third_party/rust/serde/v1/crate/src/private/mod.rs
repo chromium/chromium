@@ -1,6 +1,6 @@
-#[cfg(serde_derive)]
+#[cfg(not(no_serde_derive))]
 pub mod de;
-#[cfg(serde_derive)]
+#[cfg(not(no_serde_derive))]
 pub mod ser;
 
 pub mod size_hint;
@@ -22,7 +22,7 @@ pub use self::string::from_utf8_lossy;
 #[cfg(any(feature = "alloc", feature = "std"))]
 pub use lib::{ToString, Vec};
 
-#[cfg(core_try_from)]
+#[cfg(not(no_core_try_from))]
 pub use lib::convert::TryFrom;
 
 mod string {

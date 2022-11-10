@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.48"
 name = "cxx-gen"
-version = "0.7.68"
+version = "0.7.81"
 authors = ["Adrian Taylor <adetaylor@chromium.org>"]
 exclude = ["build.rs"]
 description = "C++ code generator for integrating `cxx` crate into higher level tools."
@@ -29,7 +29,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 version = "0.11"
 
 [dependencies.proc-macro2]
-version = "1.0.26"
+version = "1.0.39"
 features = ["span-locations"]
 default-features = false
 
@@ -38,7 +38,7 @@ version = "1.0"
 default-features = false
 
 [dependencies.syn]
-version = "1.0.70"
+version = "1.0.95"
 features = [
     "parsing",
     "printing",

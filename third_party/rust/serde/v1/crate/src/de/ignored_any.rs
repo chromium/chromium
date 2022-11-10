@@ -228,7 +228,7 @@ impl<'de> Visitor<'de> for IgnoredAny {
     where
         A: EnumAccess<'de>,
     {
-        data.variant::<IgnoredAny>()?.1.newtype_variant()
+        try!(data.variant::<IgnoredAny>()).1.newtype_variant()
     }
 }
 

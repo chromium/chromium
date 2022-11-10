@@ -206,6 +206,7 @@ mod content {
     use lib::*;
 
     use __private::size_hint;
+    use actually_private;
     use de::{
         self, Deserialize, DeserializeSeed, Deserializer, EnumAccess, Expected, IgnoredAny,
         MapAccess, SeqAccess, Unexpected, Visitor,
@@ -215,7 +216,7 @@ mod content {
     /// deserializing untagged enums and internally tagged enums.
     ///
     /// Not public API. Use serde-value instead.
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub enum Content<'de> {
         Bool(bool),
 
@@ -294,7 +295,7 @@ mod content {
             // Untagged and internally tagged enums are only supported in
             // self-describing formats.
             let visitor = ContentVisitor { value: PhantomData };
-            deserializer.deserialize_any(visitor)
+            deserializer.__deserialize_content(actually_private::T, visitor)
         }
     }
 
@@ -1261,6 +1262,17 @@ mod content {
         {
             match self.content {
                 Content::Unit => visitor.visit_unit(),
+
+                // Allow deserializing newtype variant containing unit.
+                //
+                //     #[derive(Deserialize)]
+                //     #[serde(tag = "result")]
+                //     enum Response<T> {
+                //         Success(T),
+                //     }
+                //
+                // We want {"result":"Success"} to deserialize into Response<()>.
+                Content::Map(ref v) if v.is_empty() => visitor.visit_unit(),
                 _ => Err(self.invalid_type(&visitor)),
             }
         }
@@ -1426,6 +1438,18 @@ mod content {
         {
             drop(self);
             visitor.visit_unit()
+        }
+
+        fn __deserialize_content<V>(
+            self,
+            _: actually_private::T,
+            visitor: V,
+        ) -> Result<Content<'de>, Self::Error>
+        where
+            V: Visitor<'de, Value = Content<'de>>,
+        {
+            let _ = visitor;
+            Ok(self.content)
         }
     }
 
@@ -2137,6 +2161,18 @@ mod content {
             V: Visitor<'de>,
         {
             visitor.visit_unit()
+        }
+
+        fn __deserialize_content<V>(
+            self,
+            _: actually_private::T,
+            visitor: V,
+        ) -> Result<Content<'de>, Self::Error>
+        where
+            V: Visitor<'de, Value = Content<'de>>,
+        {
+            let _ = visitor;
+            Ok(self.content.clone())
         }
     }
 

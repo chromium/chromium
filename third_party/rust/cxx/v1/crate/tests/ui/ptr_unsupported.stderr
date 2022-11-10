@@ -14,4 +14,4 @@ error: unsupported vector element type
  --> tests/ui/ptr_unsupported.rs:8:45
   |
 8 |         fn get_vector_of_ptr() -> UniquePtr<CxxVector<*mut C>>;
-  |                                             ^^^^^^^^^^^^^^^^^^
+  |                                             ^^^^^^^^^^^^^^^^^

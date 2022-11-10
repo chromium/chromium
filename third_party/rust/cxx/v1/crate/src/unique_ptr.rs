@@ -112,6 +112,10 @@ where
 unsafe impl<T> Send for UniquePtr<T> where T: Send + UniquePtrTarget {}
 unsafe impl<T> Sync for UniquePtr<T> where T: Sync + UniquePtrTarget {}
 
+// UniquePtr is not a self-referential type and is safe to move out of a Pin,
+// regardless whether the pointer's target is Unpin.
+impl<T> Unpin for UniquePtr<T> where T: UniquePtrTarget {}
+
 impl<T> Drop for UniquePtr<T>
 where
     T: UniquePtrTarget,

@@ -26,4 +26,4 @@ error: expected "quoted/path/to" or <bracketed/path/to>
  --> tests/ui/include.rs:8:18
   |
 8 |         include!(...);
-  |                  ^^^
+  |                  ^

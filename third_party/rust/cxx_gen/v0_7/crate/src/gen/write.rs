@@ -472,10 +472,10 @@ fn check_trivial_extern_type(out: &mut OutFile, alias: &TypeAlias, reasons: &[Tr
     writeln!(out, "static_assert(");
     if reasons
         .iter()
-        .all(|r| matches!(r, TrivialReason::StructField(_)))
+        .all(|r| matches!(r, TrivialReason::StructField(_) | TrivialReason::VecElement))
     {
-        // If the type is only used as a struct field and not as by-value
-        // function argument or any other use, then C array of trivially
+        // If the type is only used as a struct field or Vec element, not as
+        // by-value function argument or return value, then C array of trivially
         // relocatable type is also permissible.
         //
         //     --- means something sane:
@@ -847,17 +847,9 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     }
     writeln!(out, ";");
     if efn.throws {
-        out.include.cstring = true;
-        out.builtin.exception = true;
         writeln!(out, "        throw$.ptr = nullptr;");
         writeln!(out, "      }},");
-        writeln!(out, "      [&](const char *catch$) noexcept {{");
-        writeln!(out, "        throw$.len = ::std::strlen(catch$);");
-        writeln!(
-            out,
-            "        throw$.ptr = const_cast<char *>(::cxxbridge1$exception(catch$, throw$.len));",
-        );
-        writeln!(out, "      }});");
+        writeln!(out, "      ::rust::detail::Fail(throw$));");
         writeln!(out, "  return throw$;");
     }
     writeln!(out, "}}");

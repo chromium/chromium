@@ -264,7 +264,7 @@ fn translate_qual_type(cx: &mut Errors, enm: &Enum, qual_type: &str) -> Path {
         .unwrap()
         .span();
     let ident = Ident::new(rust_std_name, span);
-    let path = quote_spanned!(span=> ::std::os::raw::#ident);
+    let path = quote_spanned!(span=> ::cxx::core::ffi::#ident);
     parse_quote!(#path)
 }
 

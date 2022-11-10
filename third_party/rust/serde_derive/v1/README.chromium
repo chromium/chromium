@@ -1,6 +1,6 @@
 Name: serde_derive
 URL: https://crates.io/crates/serde_derive
 Description: Macros 1.1 implementation of #[derive(Serialize, Deserialize)]
-Version: 1.0.130
+Version: 1.0.147
 Security Critical: yes
 License: Apache 2.0

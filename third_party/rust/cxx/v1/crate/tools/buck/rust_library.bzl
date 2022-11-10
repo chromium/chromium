@@ -3,6 +3,7 @@ load("//tools/buck:genrule.bzl", "genrule")
 def rust_library(
         name,
         srcs,
+        edition,
         features = [],
         rustc_flags = [],
         build_script = None,
@@ -13,6 +14,7 @@ def rust_library(
             srcs = srcs + [build_script],
             crate = "build",
             crate_root = build_script,
+            edition = edition,
             features = features,
             rustc_flags = rustc_flags,
         )
@@ -28,6 +30,7 @@ def rust_library(
     native.rust_library(
         name = name,
         srcs = srcs,
+        edition = edition,
         features = features,
         rustc_flags = rustc_flags,
         **kwargs

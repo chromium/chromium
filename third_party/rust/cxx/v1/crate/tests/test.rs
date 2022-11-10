@@ -1,5 +1,6 @@
 #![allow(
     clippy::assertions_on_constants,
+    clippy::assertions_on_result_states,
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
     clippy::float_cmp,
@@ -70,6 +71,8 @@ fn test_c_return() {
             .map(|o| o.z)
             .sum(),
     );
+    assert_eq!(b"\x02\0\x02\0"[..], ffi::c_return_rust_vec_u8());
+    assert_eq!([true, true, false][..], ffi::c_return_rust_vec_bool());
     assert_eq!(2020, ffi::c_return_identity(2020));
     assert_eq!(2021, ffi::c_return_sum(2020, 1));
     match ffi::c_return_enum(0) {

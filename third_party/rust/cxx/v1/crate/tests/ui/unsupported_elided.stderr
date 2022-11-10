@@ -19,5 +19,5 @@ error[E0106]: missing lifetime specifier
   = help: this function's return type contains a borrowed value, but the signature does not say which one of `t`'s 2 lifetimes it is borrowed from
 help: consider introducing a named lifetime parameter
   |
-8 |         fn f<'a>(t: &'a T) -> &'a str;
-  |             ++++     ++        ++
+8 |         fn f<'a>(t: &'a T<'a>) -> &'a str;
+  |             ++++     ++  ++++      ++

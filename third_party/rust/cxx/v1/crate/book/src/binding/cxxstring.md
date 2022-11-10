@@ -73,6 +73,7 @@ fn main() {
 #pragma once
 #include <map>
 #include <memory>
+#include <string>
 #include <variant>
 #include <vector>
 

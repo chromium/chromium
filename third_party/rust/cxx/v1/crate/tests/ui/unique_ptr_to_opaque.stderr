@@ -1,8 +1,10 @@
 error[E0271]: type mismatch resolving `<outside::C as ExternType>::Kind == Trivial`
-  --> tests/ui/unique_ptr_to_opaque.rs:22:5
+  --> tests/ui/unique_ptr_to_opaque.rs:22:25
    |
 22 |     cxx::UniquePtr::new(outside::C { a: 4 });
-   |     ^^^^^^^^^^^^^^^^^^^ type mismatch resolving `<outside::C as ExternType>::Kind == Trivial`
+   |     ------------------- ^^^^^^^^^^^^^^^^^^^ type mismatch resolving `<outside::C as ExternType>::Kind == Trivial`
+   |     |
+   |     required by a bound introduced by this call
    |
 note: expected this to be `Trivial`
   --> tests/ui/unique_ptr_to_opaque.rs:8:21

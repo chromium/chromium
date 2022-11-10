@@ -1,0 +1,6 @@
+Name: miette
+URL: https://crates.io/crates/miette
+Description: Fancy diagnostic reporting library and protocol for us mere mortals who aren't compiler hackers.
+Version: 5.4.1
+Security Critical: no
+License: Apache 2.0

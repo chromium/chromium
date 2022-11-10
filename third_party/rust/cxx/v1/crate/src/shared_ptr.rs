@@ -101,6 +101,10 @@ where
     }
 }
 
+// SharedPtr is not a self-referential type and is safe to move out of a Pin,
+// regardless whether the pointer's target is Unpin.
+impl<T> Unpin for SharedPtr<T> where T: SharedPtrTarget {}
+
 impl<T> Drop for SharedPtr<T>
 where
     T: SharedPtrTarget,

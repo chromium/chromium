@@ -33,7 +33,7 @@ impl ToTokens for ReceiverType<'_> {
             mutability,
         } = &self.0;
         if let Some((pin, langle, _rangle)) = pin_tokens {
-            tokens.extend(quote_spanned!(pin.span=> ::std::pin::Pin));
+            tokens.extend(quote_spanned!(pin.span=> ::cxx::core::pin::Pin));
             langle.to_tokens(tokens);
         }
         ampersand.to_tokens(tokens);
@@ -61,7 +61,7 @@ impl ToTokens for ReceiverTypeSelf<'_> {
             mutability,
         } = &self.0;
         if let Some((pin, langle, _rangle)) = pin_tokens {
-            tokens.extend(quote_spanned!(pin.span=> ::std::pin::Pin));
+            tokens.extend(quote_spanned!(pin.span=> ::cxx::core::pin::Pin));
             langle.to_tokens(tokens);
         }
         ampersand.to_tokens(tokens);

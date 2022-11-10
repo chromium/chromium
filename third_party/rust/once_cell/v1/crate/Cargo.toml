@@ -10,18 +10,31 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
+edition = "2021"
+rust-version = "1.56"
 name = "once_cell"
-version = "1.10.0"
+version = "1.16.0"
 authors = ["Aleksey Kladov <aleksey.kladov@gmail.com>"]
-exclude = ["*.png", "*.svg", "/Cargo.lock.msrv", "rustfmt.toml"]
+exclude = [
+    "*.png",
+    "*.svg",
+    "/Cargo.lock.msrv",
+    "rustfmt.toml",
+]
 description = "Single assignment cells and lazy values."
 documentation = "https://docs.rs/once_cell"
 readme = "README.md"
-keywords = ["lazy", "static"]
-categories = ["rust-patterns", "memory-management"]
+keywords = [
+    "lazy",
+    "static",
+]
+categories = [
+    "rust-patterns",
+    "memory-management",
+]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/matklad/once_cell"
+
 [package.metadata.docs.rs]
 all-features = true
 
@@ -52,16 +65,29 @@ required-features = ["std"]
 [[example]]
 name = "test_synchronization"
 required-features = ["std"]
-[dependencies.atomic-polyfill]
-version = "0.1"
-optional = true
 
-[dependencies.parking_lot]
-version = "0.12"
+[dependencies.atomic_polyfill]
+version = "1"
+optional = true
+package = "atomic-polyfill"
+
+[dependencies.critical_section]
+version = "1"
+optional = true
+package = "critical-section"
+
+[dependencies.parking_lot_core]
+version = "0.9.3"
 optional = true
 default_features = false
+
+[dev-dependencies.critical_section]
+version = "1.1.1"
+features = ["std"]
+package = "critical-section"
+
 [dev-dependencies.crossbeam-utils]
-version = "0.7.2"
+version = "0.8.7"
 
 [dev-dependencies.lazy_static]
 version = "1.0.0"
@@ -71,7 +97,13 @@ version = "1.2.0"
 
 [features]
 alloc = ["race"]
+atomic-polyfill = ["critical-section"]
+critical-section = [
+    "critical_section",
+    "atomic_polyfill",
+]
 default = ["std"]
+parking_lot = ["parking_lot_core"]
 race = []
 std = ["alloc"]
 unstable = []

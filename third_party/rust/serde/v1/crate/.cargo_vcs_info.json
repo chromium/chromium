@@ -1,5 +1,6 @@
 {
   "git": {
-    "sha1": "65e1a50749938612cfbdb69b57fc4cf249f87149"
-  }
+    "sha1": "f41509261e32357e28a6bc6f46f58e98d841e7e8"
+  },
+  "path_in_vcs": "serde"
 }

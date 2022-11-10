@@ -50,7 +50,7 @@ pub fn with_where_predicates_from_fields(
         .data
         .all_fields()
         .filter_map(|field| from_field(&field.attrs))
-        .flat_map(|predicates| predicates.to_vec());
+        .flat_map(<[syn::WherePredicate]>::to_vec);
 
     let mut generics = generics.clone();
     generics.make_where_clause().predicates.extend(predicates);
@@ -72,7 +72,7 @@ pub fn with_where_predicates_from_variants(
     let predicates = variants
         .iter()
         .filter_map(|variant| from_variant(&variant.attrs))
-        .flat_map(|predicates| predicates.to_vec());
+        .flat_map(<[syn::WherePredicate]>::to_vec);
 
     let mut generics = generics.clone();
     generics.make_where_clause().predicates.extend(predicates);
@@ -184,9 +184,7 @@ pub fn with_bound(
 
                 syn::Type::Infer(_) | syn::Type::Never(_) | syn::Type::Verbatim(_) => {}
 
-                #[cfg(test)]
-                syn::Type::__TestExhaustive(_) => unimplemented!(),
-                #[cfg(not(test))]
+                #[cfg_attr(all(test, exhaustive), deny(non_exhaustive_omitted_patterns))]
                 _ => {}
             }
         }

@@ -29,3 +29,19 @@ what is available in these links, feel free to make a PR adding it to this list.
   - Tested on Windows 10 with GNU target, and on Linux
 
 ---
+
+- **<https://github.com/geekbrother/cxx-corrosion-cmake>**
+
+  - Improved rusty_cmake CMake file to use modern C++
+  - Rich examples of using different primitive types and Rust's Result return to C++
+  - MacOS and Linux only
+
+---
+
+- **<https://github.com/paandahl/cpp-with-rust>**
+
+  - Same blobstore example as the official demo, but inverted languages
+  - Minimal CMake configuration
+  - Tested on Linux, macOS, and Windows
+
+---
