@@ -148,6 +148,7 @@ HIDDetectionScreen::HIDDetectionScreen(base::WeakPtr<HIDDetectionView> view,
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+    VLOG(1) << "OOBE HID detection revamped flow started";
     const auto& hid_detection_manager_override =
         GetHidDetectionManagerOverrideForTesting();
     hid_detection_manager_ =
