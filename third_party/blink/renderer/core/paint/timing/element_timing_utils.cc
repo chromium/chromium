@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/element_timing_utils.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
 
 #include "third_party/blink/renderer/core/frame/local_frame_client_impl.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"

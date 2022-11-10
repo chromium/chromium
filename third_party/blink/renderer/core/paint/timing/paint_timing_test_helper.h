@@ -1,8 +1,8 @@
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TIMING_TEST_HELPER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TIMING_TEST_HELPER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_TEST_HELPER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_TEST_HELPER_H_
 
 #include "base/check_op.h"
-#include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 
 namespace blink {
 
@@ -33,4 +33,4 @@ class MockPaintTimingCallbackManager final
 };
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TIMING_TEST_HELPER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_TEST_HELPER_H_
