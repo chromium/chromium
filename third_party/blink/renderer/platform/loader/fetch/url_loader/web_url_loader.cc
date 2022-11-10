@@ -46,7 +46,6 @@
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -94,39 +93,6 @@ using blink::scheduler::WebResourceLoadingTaskRunnerHandle;
 namespace blink {
 
 // Utilities -------------------------------------------------------------------
-
-namespace {
-
-bool IsBannedCrossSiteAuth(
-    network::ResourceRequest* resource_request,
-    WebURLRequestExtraData* passed_url_request_extra_data) {
-  auto& request_url = resource_request->url;
-  auto& first_party = resource_request->site_for_cookies;
-
-  bool allow_cross_origin_auth_prompt = false;
-  if (passed_url_request_extra_data) {
-    WebURLRequestExtraData* url_request_extra_data =
-        static_cast<WebURLRequestExtraData*>(passed_url_request_extra_data);
-    allow_cross_origin_auth_prompt =
-        url_request_extra_data->allow_cross_origin_auth_prompt();
-  }
-
-  if (first_party.IsFirstPartyWithSchemefulMode(
-          request_url, /*compute_schemefully=*/false)) {
-    // If the first party is secure but the subresource is not, this is
-    // mixed-content. Do not allow the image.
-    if (!allow_cross_origin_auth_prompt &&
-        network::IsUrlPotentiallyTrustworthy(first_party.RepresentativeUrl()) &&
-        !network::IsUrlPotentiallyTrustworthy(request_url)) {
-      return true;
-    }
-    return false;
-  }
-
-  return !allow_cross_origin_auth_prompt;
-}
-
-}  // namespace
 
 // This inner class exists since the WebURLLoader may be deleted while inside a
 // call to WebURLLoaderClient. Refcounting is to keep the context from
@@ -337,23 +303,6 @@ void WebURLLoader::Context::Start(
   const network::mojom::RequestDestination request_destination =
       request->destination;
 
-  // TODO(yhirano): Move the logic below to blink/platform/loader.
-  if (!request->is_favicon &&
-      request_destination == network::mojom::RequestDestination::kImage &&
-      IsBannedCrossSiteAuth(request.get(),
-                            passed_url_request_extra_data.get())) {
-    // Prevent third-party image content from prompting for login, as this
-    // is often a scam to extract credentials for another domain from the
-    // user. Only block image loads, as the attack applies largely to the
-    // "src" property of the <img> tag. It is common for web properties to
-    // allow untrusted values for <img src>; this is considered a fair thing
-    // for an HTML sanitizer to do. Conversely, any HTML sanitizer that didn't
-    // filter sources for <script>, <link>, <embed>, <object>, <iframe> tags
-    // would be considered vulnerable in and of itself.
-    request->do_not_prompt_for_login = true;
-    request->load_flags |= net::LOAD_DO_NOT_USE_EMBEDDED_IDENTITY;
-  }
-
   scoped_refptr<WebURLRequestExtraData> empty_url_request_extra_data;
   WebURLRequestExtraData* url_request_extra_data;
   if (passed_url_request_extra_data) {
@@ -364,10 +313,6 @@ void WebURLLoader::Context::Start(
         base::MakeRefCounted<WebURLRequestExtraData>();
     url_request_extra_data = empty_url_request_extra_data.get();
   }
-  url_request_extra_data->CopyToResourceRequest(request.get());
-
-  if (request->load_flags & net::LOAD_PREFETCH)
-    request->corb_detachable = true;
 
   auto throttles =
       url_request_extra_data->TakeURLLoaderThrottles().ReleaseVector();

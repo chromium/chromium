@@ -12,6 +12,7 @@
 #include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -198,6 +199,32 @@ void PopulateResourceRequestBody(const EncodedFormData& src,
   }
 }
 
+bool IsBannedCrossSiteAuth(network::ResourceRequest* resource_request,
+                           WebURLRequestExtraData* url_request_extra_data) {
+  auto& request_url = resource_request->url;
+  auto& first_party = resource_request->site_for_cookies;
+
+  bool allow_cross_origin_auth_prompt = false;
+  if (url_request_extra_data) {
+    allow_cross_origin_auth_prompt =
+        url_request_extra_data->allow_cross_origin_auth_prompt();
+  }
+
+  if (first_party.IsFirstPartyWithSchemefulMode(
+          request_url, /*compute_schemefully=*/false)) {
+    // If the first party is secure but the subresource is not, this is
+    // mixed-content. Do not allow the image.
+    if (!allow_cross_origin_auth_prompt &&
+        network::IsUrlPotentiallyTrustworthy(first_party.RepresentativeUrl()) &&
+        !network::IsUrlPotentiallyTrustworthy(request_url)) {
+      return true;
+    }
+    return false;
+  }
+
+  return !allow_cross_origin_auth_prompt;
+}
+
 }  // namespace
 
 scoped_refptr<network::ResourceRequestBody> NetworkResourceRequestBodyFor(
@@ -349,6 +376,28 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   network_utils::SetAcceptHeader(dest->headers, request_destination);
 
   dest->original_destination = src.GetOriginalDestination();
+
+  if (dest->load_flags & net::LOAD_PREFETCH)
+    dest->corb_detachable = true;
+
+  if (src.GetURLRequestExtraData()) {
+    src.GetURLRequestExtraData()->CopyToResourceRequest(dest);
+  }
+
+  if (!dest->is_favicon &&
+      request_destination == network::mojom::RequestDestination::kImage &&
+      IsBannedCrossSiteAuth(dest, src.GetURLRequestExtraData().get())) {
+    // Prevent third-party image content from prompting for login, as this
+    // is often a scam to extract credentials for another domain from the
+    // user. Only block image loads, as the attack applies largely to the
+    // "src" property of the <img> tag. It is common for web properties to
+    // allow untrusted values for <img src>; this is considered a fair thing
+    // for an HTML sanitizer to do. Conversely, any HTML sanitizer that didn't
+    // filter sources for <script>, <link>, <embed>, <object>, <iframe> tags
+    // would be considered vulnerable in and of itself.
+    dest->do_not_prompt_for_login = true;
+    dest->load_flags |= net::LOAD_DO_NOT_USE_EMBEDDED_IDENTITY;
+  }
 }
 
 }  // namespace blink
