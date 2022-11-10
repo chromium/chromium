@@ -61,8 +61,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   static const char kUnmanagedSimPinUnlockSuccessHistogram[];
   static const char kUnrestrictedSimPinUnblockSuccessHistogram[];
   static const char kUnrestrictedSimPinUnlockSuccessHistogram[];
-  static const char kSimPinLockPolicyChangePinSuccessHistogram[];
-  static const char kSimPinLockPolicyRequirePinSuccessHistogram[];
+  static const char kChangePinSuccessSimPinLockPolicyHistogram[];
+  static const char kRequirePinSuccessSimPinLockPolicyHistogram[];
 
   // Histograms associated with user initiated connection success.
   static const char kESimUserInitiatedConnectionResultHistogram[];

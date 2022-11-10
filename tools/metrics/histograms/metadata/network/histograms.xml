@@ -893,6 +893,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Cellular.SimPINLockPolicy.{SimPinOperation}"
     enum="SimPinOperationResult" expires_after="2023-06-01">
+  <obsolete>
+    Replaced this with
+    &quot;Network.Cellular.{SimPinOperation}.SimPINLockPolicy&quot; which emits
+    information on whether the policy is applied or not during the operation.
+  </obsolete>
   <owner>nikhilcn@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -933,6 +938,23 @@ chromium-metrics-reviews@google.com.
   <token key="AllowSIMLock">
     <variant name="Restricted"/>
     <variant name="Unrestricted"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Cellular.{SimPinOperation}.SimPINLockPolicy"
+    enum="BooleanEnabled" expires_after="2023-06-01">
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Sim PIN Lock policy is applied by enterprise administrators when they want
+    to restrict their users from locking or changing the PIN of their SIM. This
+    metric tracks instances where users have been able to successfully execute
+    lock or change PIN operations on their SIM while this policy is turned on.
+  </summary>
+  <token key="SimPinOperation">
+    <variant name="ChangeSuccess"/>
+    <variant name="RequireLockSuccess"/>
   </token>
 </histogram>
 

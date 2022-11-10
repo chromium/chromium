@@ -92,13 +92,13 @@ const char CellularMetricsLogger::kManagedSimPinUnblockSuccessHistogram[] =
     "Network.Cellular.Pin.Managed.UnblockSuccess";
 
 // static
-const char CellularMetricsLogger::kSimPinLockPolicyChangePinSuccessHistogram[] =
-    "Network.Cellular.SimPINLockPolicy.ChangePin";
+const char CellularMetricsLogger::kChangePinSuccessSimPinLockPolicyHistogram[] =
+    "Network.Cellular.ChangePin.SimPINLockPolicy";
 
 // static
 const char
-    CellularMetricsLogger::kSimPinLockPolicyRequirePinSuccessHistogram[] =
-        "Network.Cellular.SimPINLockPolicy.RequirePin";
+    CellularMetricsLogger::kRequirePinSuccessSimPinLockPolicyHistogram[] =
+        "Network.Cellular.RequirePin.SimPINLockPolicy";
 
 // static
 const char CellularMetricsLogger::kSimPinChangeSuccessHistogram[] =
@@ -199,10 +199,8 @@ void CellularMetricsLogger::RecordSimPinOperationResult(
 
   switch (pin_operation) {
     case SimPinOperation::kRequireLock:
-      if (!allow_cellular_sim_lock) {
-        base::UmaHistogramEnumeration(
-            kSimPinLockPolicyRequirePinSuccessHistogram, result);
-      }
+      base::UmaHistogramBoolean(kRequirePinSuccessSimPinLockPolicyHistogram,
+                                allow_cellular_sim_lock);
       base::UmaHistogramEnumeration(kSimPinRequireLockSuccessHistogram, result);
       return;
     case SimPinOperation::kRemoveLock:
@@ -235,10 +233,8 @@ void CellularMetricsLogger::RecordSimPinOperationResult(
       }
       return;
     case SimPinOperation::kChange:
-      if (!allow_cellular_sim_lock) {
-        base::UmaHistogramEnumeration(
-            kSimPinLockPolicyChangePinSuccessHistogram, result);
-      }
+      base::UmaHistogramBoolean(kChangePinSuccessSimPinLockPolicyHistogram,
+                                allow_cellular_sim_lock);
       base::UmaHistogramEnumeration(kSimPinChangeSuccessHistogram, result);
       return;
   }
