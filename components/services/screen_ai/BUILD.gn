@@ -80,7 +80,10 @@ source_set("unit_tests") {
 
   # TODO(https://crbug.com/1278249): Enable after the protobuf issue is fixed.
   if (!is_win) {
-    sources += [ "proto/proto_convertor_unittest.cc" ]
+    sources += [
+      "proto/main_content_extractor_proto_convertor_unittest.cc",
+      "proto/visual_annotator_proto_convertor_unittest.cc",
+    ]
   }
 
   data = [ "//components/test/data/screen_ai/" ]

@@ -20,7 +20,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "components/services/screen_ai/proto/proto_convertor.h"
+#include "components/services/screen_ai/proto/main_content_extractor_proto_convertor.h"
+#include "components/services/screen_ai/proto/visual_annotator_proto_convertor.h"
+#include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -266,8 +268,7 @@ void ScreenAIService::AnnotateInternal(const SkBitmap& image,
   delete annotation_proto;
 
   gfx::Rect image_rect(image.width(), image.height());
-  *annotation =
-      ScreenAIVisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
+  *annotation = VisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
   ScreenAIAXTreeSerializer serializer(parent_tree_id,
                                       std::move(annotation->nodes));
   *annotation = serializer.Serialize();
@@ -320,7 +321,7 @@ void ScreenAIService::ExtractMainContentInternal(
     const ui::AXTreeUpdate& snapshot,
     std::vector<int32_t>* content_node_ids) {
   DCHECK(content_node_ids);
-  std::string serialized_snapshot = Screen2xSnapshotToViewHierarchy(snapshot);
+  std::string serialized_snapshot = SnapshotToViewHierarchy(snapshot);
 
   int32_t* node_ids = nullptr;
   uint32_t nodes_count = 0;
