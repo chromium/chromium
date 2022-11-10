@@ -82,6 +82,20 @@ CreateReportResult::CreateReportResult(
   DCHECK_EQ(limits.aggregatable_budget_per_source.has_value(),
             aggregatable_status_ == AggregatableResult::kInsufficientBudget);
 
+  DCHECK_EQ(
+      limits.rate_limits_max_attribution_reporting_origins.has_value(),
+      event_level_status_ == EventLevelResult::kExcessiveReportingOrigins ||
+          aggregatable_status_ ==
+              AggregatableResult::kExcessiveReportingOrigins);
+
+  DCHECK_EQ(limits.max_event_level_reports_per_destination.has_value(),
+            event_level_status_ ==
+                EventLevelResult::kNoCapacityForConversionDestination);
+
+  DCHECK_EQ(limits.max_aggregatable_reports_per_destination.has_value(),
+            aggregatable_status_ ==
+                AggregatableResult::kNoCapacityForConversionDestination);
+
   DCHECK_EQ(dropped_event_level_report_.has_value(),
             event_level_status_ == EventLevelResult::kPriorityTooLow ||
                 event_level_status_ == EventLevelResult::kExcessiveReports);

@@ -342,13 +342,28 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
        /*new_event_level_report=*/absl::nullopt,
        /*source=*/absl::nullopt, CreateReportResult::Limits(),
        /*dropped_event_level_report=*/absl::nullopt,
-       /*expected_report_body=*/nullptr},
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test"
+         },
+         "type": "trigger-unknown-error"
+       }])json"},
       {EventLevelResult::kNoCapacityForConversionDestination,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
-       /*source=*/SourceBuilder().BuildStored(), CreateReportResult::Limits(),
+       /*source=*/SourceBuilder().BuildStored(),
+       CreateReportResult::Limits{.max_event_level_reports_per_destination =
+                                      10},
        /*dropped_event_level_report=*/absl::nullopt,
-       /*expected_report_body=*/nullptr},
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": "10",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-event-storage-limit"
+       }])json"},
       {EventLevelResult::kNoMatchingImpressions,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
@@ -420,9 +435,19 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
       {EventLevelResult::kExcessiveReportingOrigins,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
-       /*source=*/SourceBuilder().BuildStored(), CreateReportResult::Limits(),
+       /*source=*/SourceBuilder().BuildStored(),
+       CreateReportResult::Limits{
+           .rate_limits_max_attribution_reporting_origins = 10},
        /*dropped_event_level_report=*/absl::nullopt,
-       /*expected_report_body=*/nullptr},
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": "10",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-reporting-origin-limit"
+       }])json"},
       {EventLevelResult::kNoMatchingSourceFilterData,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
@@ -526,10 +551,27 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
        /*expected_report_body=*/nullptr},
       {AggregatableResult::kInternalError,
        /*new_aggregatable_report=*/absl::nullopt, CreateReportResult::Limits(),
-       /*expected_report_body=*/nullptr},
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-unknown-error"
+       }])json"},
       {AggregatableResult::kNoCapacityForConversionDestination,
-       /*new_aggregatable_report=*/absl::nullopt, CreateReportResult::Limits(),
-       /*expected_report_body=*/nullptr},
+       /*new_aggregatable_report=*/absl::nullopt,
+       CreateReportResult::Limits{.max_aggregatable_reports_per_destination =
+                                      20},
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": "20",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-aggregate-storage-limit"
+       }])json"},
       {AggregatableResult::kExcessiveAttributions,
        /*new_aggregatable_report=*/absl::nullopt,
        CreateReportResult::Limits{.rate_limits_max_attributions = 10},
@@ -543,8 +585,18 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          "type": "trigger-attributions-per-source-destination-limit"
        }])json"},
       {AggregatableResult::kExcessiveReportingOrigins,
-       /*new_aggregatable_report=*/absl::nullopt, CreateReportResult::Limits(),
-       /*expected_report_body=*/nullptr},
+       /*new_aggregatable_report=*/absl::nullopt,
+       CreateReportResult::Limits{
+           .rate_limits_max_attribution_reporting_origins = 5},
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": "5",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-reporting-origin-limit"
+       }])json"},
       {AggregatableResult::kNoHistograms,
        /*new_aggregatable_report=*/absl::nullopt, CreateReportResult::Limits(),
        R"json([{

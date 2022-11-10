@@ -933,16 +933,18 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   absl::optional<uint64_t> dedup_key;
   if (EventLevelResult create_event_level_status = MaybeCreateEventLevelReport(
           *attribution_info, trigger, top_level_filters_match,
-          new_event_level_report, dedup_key);
+          new_event_level_report, dedup_key,
+          limits.max_event_level_reports_per_destination);
       create_event_level_status != EventLevelResult::kSuccess) {
     event_level_status = create_event_level_status;
   }
 
   if (!aggregatable_status.has_value()) {
     if (AggregatableResult create_aggregatable_status =
-            MaybeCreateAggregatableAttributionReport(*attribution_info, trigger,
-                                                     top_level_filters_match,
-                                                     new_aggregatable_report);
+            MaybeCreateAggregatableAttributionReport(
+                *attribution_info, trigger, top_level_filters_match,
+                new_aggregatable_report,
+                limits.max_aggregatable_reports_per_destination);
         create_aggregatable_status != AggregatableResult::kSuccess) {
       aggregatable_status = create_aggregatable_status;
     }
@@ -972,6 +974,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
+      limits.rate_limits_max_attribution_reporting_origins =
+          delegate_->GetRateLimits().max_attribution_reporting_origins;
       return assemble_report_result(
           EventLevelResult::kExcessiveReportingOrigins,
           AggregatableResult::kExcessiveReportingOrigins);
@@ -1128,7 +1132,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     const AttributionTrigger& trigger,
     const bool top_level_filters_match,
     absl::optional<AttributionReport>& report,
-    absl::optional<uint64_t>& dedup_key) {
+    absl::optional<uint64_t>& dedup_key,
+    absl::optional<int>& max_event_level_reports_per_destination) {
   if (attribution_info.source.attribution_logic() ==
       StoredSource::AttributionLogic::kFalsely) {
     DCHECK_EQ(attribution_info.source.active_state(),
@@ -1170,6 +1175,9 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     case ConversionCapacityStatus::kHasCapacity:
       break;
     case ConversionCapacityStatus::kNoCapacity:
+      max_event_level_reports_per_destination =
+          delegate_->GetMaxReportsPerDestination(
+              AttributionReport::Type::kEventLevel);
       return EventLevelResult::kNoCapacityForConversionDestination;
     case ConversionCapacityStatus::kError:
       return EventLevelResult::kInternalError;
@@ -2772,7 +2780,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     const AttributionInfo& attribution_info,
     const AttributionTrigger& trigger,
     bool top_level_filters_match,
-    absl::optional<AttributionReport>& report) {
+    absl::optional<AttributionReport>& report,
+    absl::optional<int>& max_aggregatable_reports_per_destination) {
   if (!top_level_filters_match)
     return AggregatableResult::kNoMatchingSourceFilterData;
 
@@ -2801,6 +2810,9 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     case ConversionCapacityStatus::kHasCapacity:
       break;
     case ConversionCapacityStatus::kNoCapacity:
+      max_aggregatable_reports_per_destination =
+          delegate_->GetMaxReportsPerDestination(
+              AttributionReport::Type::kAggregatableAttribution);
       return AggregatableResult::kNoCapacityForConversionDestination;
     case ConversionCapacityStatus::kError:
       return AggregatableResult::kInternalError;

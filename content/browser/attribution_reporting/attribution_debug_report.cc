@@ -28,8 +28,6 @@ using DebugDataType = ::content::AttributionDebugReport::DataType;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
-constexpr char kLimit[] = "limit";
-
 absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
                                                   bool is_debug_cookie_set) {
   return is_debug_cookie_set ? absl::make_optional(data_type) : absl::nullopt;
@@ -60,12 +58,18 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
                                                 bool is_debug_cookie_set) {
   switch (result) {
     case EventLevelResult::kSuccess:
-    case EventLevelResult::kInternalError:
-    case EventLevelResult::kNoCapacityForConversionDestination:
-    case EventLevelResult::kExcessiveReportingOrigins:
     case EventLevelResult::kProhibitedByBrowserPolicy:
     case EventLevelResult::kSuccessDroppedLowerPriority:
       return absl::nullopt;
+    case EventLevelResult::kInternalError:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
+                                 is_debug_cookie_set);
+    case EventLevelResult::kNoCapacityForConversionDestination:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerEventStorageLimit,
+                                 is_debug_cookie_set);
+    case EventLevelResult::kExcessiveReportingOrigins:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerReportingOriginLimit,
+                                 is_debug_cookie_set);
     case EventLevelResult::kNoMatchingImpressions:
       return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
                                  is_debug_cookie_set);
@@ -100,12 +104,18 @@ absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
                                                 bool is_debug_cookie_set) {
   switch (result) {
     case AggregatableResult::kSuccess:
-    case AggregatableResult::kInternalError:
-    case AggregatableResult::kNoCapacityForConversionDestination:
-    case AggregatableResult::kExcessiveReportingOrigins:
     case AggregatableResult::kNotRegistered:
     case AggregatableResult::kProhibitedByBrowserPolicy:
       return absl::nullopt;
+    case AggregatableResult::kInternalError:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
+                                 is_debug_cookie_set);
+    case AggregatableResult::kNoCapacityForConversionDestination:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerAggregateStorageLimit,
+                                 is_debug_cookie_set);
+    case AggregatableResult::kExcessiveReportingOrigins:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerReportingOriginLimit,
+                                 is_debug_cookie_set);
     case AggregatableResult::kNoMatchingImpressions:
       return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
                                  is_debug_cookie_set);
@@ -145,6 +155,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-attributions-per-source-destination-limit";
     case DebugDataType::kTriggerNoMatchingFilterData:
       return "trigger-no-matching-filter-data";
+    case DebugDataType::kTriggerReportingOriginLimit:
+      return "trigger-reporting-origin-limit";
     case DebugDataType::kTriggerEventDeduplicated:
       return "trigger-event-deduplicated";
     case DebugDataType::kTriggerEventNoMatchingConfigurations:
@@ -155,12 +167,18 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-event-low-prioirty";
     case DebugDataType::kTriggerEventExcessiveReports:
       return "trigger-event-excessive-reports";
+    case DebugDataType::kTriggerEventStorageLimit:
+      return "trigger-event-storage-limit";
     case DebugDataType::kTriggerAggregateDeduplicated:
       return "trigger-aggregate-deduplicated";
     case DebugDataType::kTriggerAggregateNoContributions:
       return "trigger-aggregate-no-contributions";
     case DebugDataType::kTriggerAggregateInsufficientBudget:
       return "trigger-aggregate-insufficient-budget";
+    case DebugDataType::kTriggerAggregateStorageLimit:
+      return "trigger-aggregate-storage-limit";
+    case DebugDataType::kTriggerUnknownError:
+      return "trigger-unknown-error";
   }
 }
 
@@ -176,6 +194,12 @@ void SetAttributionDestination(base::Value::Dict& data_body,
   data_body.Set("attribution_destination", destination.Serialize());
 }
 
+template <typename T>
+void SetLimit(base::Value::Dict& data_body, absl::optional<T> limit) {
+  DCHECK(limit.has_value());
+  data_body.Set("limit", base::NumberToString(*limit));
+}
+
 base::Value::Dict GetReportDataBody(
     DebugDataType data_type,
     const StorableSource& source,
@@ -189,16 +213,11 @@ base::Value::Dict GetReportDataBody(
 
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
-      DCHECK(result.max_destinations_per_source_site_reporting_origin);
-      data_body.Set(
-          kLimit,
-          base::NumberToString(
-              *result.max_destinations_per_source_site_reporting_origin));
+      SetLimit(data_body,
+               result.max_destinations_per_source_site_reporting_origin);
       break;
     case DebugDataType::kSourceStorageLimit:
-      DCHECK(result.max_sources_per_origin);
-      data_body.Set(kLimit,
-                    base::NumberToString(*result.max_sources_per_origin));
+      SetLimit(data_body, result.max_sources_per_origin);
       break;
     case DebugDataType::kSourceNoised:
     case DebugDataType::kSourceUnknownError:
@@ -206,14 +225,18 @@ base::Value::Dict GetReportDataBody(
     case DebugDataType::kTriggerNoMatchingSource:
     case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
     case DebugDataType::kTriggerNoMatchingFilterData:
+    case DebugDataType::kTriggerReportingOriginLimit:
     case DebugDataType::kTriggerEventDeduplicated:
     case DebugDataType::kTriggerEventNoMatchingConfigurations:
     case DebugDataType::kTriggerEventNoise:
     case DebugDataType::kTriggerEventLowPriority:
     case DebugDataType::kTriggerEventExcessiveReports:
+    case DebugDataType::kTriggerEventStorageLimit:
     case DebugDataType::kTriggerAggregateDeduplicated:
     case DebugDataType::kTriggerAggregateNoContributions:
     case DebugDataType::kTriggerAggregateInsufficientBudget:
+    case DebugDataType::kTriggerAggregateStorageLimit:
+    case DebugDataType::kTriggerUnknownError:
       NOTREACHED();
       return base::Value::Dict();
   }
@@ -239,17 +262,25 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerEventNoise:
     case DebugDataType::kTriggerAggregateDeduplicated:
     case DebugDataType::kTriggerAggregateNoContributions:
+    case DebugDataType::kTriggerUnknownError:
       break;
     case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
-      DCHECK(result.limits().rate_limits_max_attributions);
-      data_body.Set(kLimit, base::NumberToString(
-                                *result.limits().rate_limits_max_attributions));
+      SetLimit(data_body, result.limits().rate_limits_max_attributions);
       break;
     case DebugDataType::kTriggerAggregateInsufficientBudget:
-      DCHECK(result.limits().aggregatable_budget_per_source);
-      data_body.Set(kLimit,
-                    base::NumberToString(
-                        *result.limits().aggregatable_budget_per_source));
+      SetLimit(data_body, result.limits().aggregatable_budget_per_source);
+      break;
+    case DebugDataType::kTriggerReportingOriginLimit:
+      SetLimit(data_body,
+               result.limits().rate_limits_max_attribution_reporting_origins);
+      break;
+    case DebugDataType::kTriggerEventStorageLimit:
+      SetLimit(data_body,
+               result.limits().max_event_level_reports_per_destination);
+      break;
+    case DebugDataType::kTriggerAggregateStorageLimit:
+      SetLimit(data_body,
+               result.limits().max_aggregatable_reports_per_destination);
       break;
     case DebugDataType::kTriggerEventLowPriority:
     case DebugDataType::kTriggerEventExcessiveReports:

@@ -92,6 +92,24 @@ MATCHER_P(CreateReportAggreggatableBudgetPerSourceIs, matcher, "") {
       matcher, arg.limits().aggregatable_budget_per_source, result_listener);
 }
 
+MATCHER_P(CreateReportMaxAttributionReportingOriginsLimitIs, matcher, "") {
+  return ExplainMatchResult(
+      matcher, arg.limits().rate_limits_max_attribution_reporting_origins,
+      result_listener);
+}
+
+MATCHER_P(CreateReportMaxEventLevelReportsLimitIs, matcher, "") {
+  return ExplainMatchResult(
+      matcher, arg.limits().max_event_level_reports_per_destination,
+      result_listener);
+}
+
+MATCHER_P(CreateReportMaxAggregatableReportsLimitIs, matcher, "") {
+  return ExplainMatchResult(
+      matcher, arg.limits().max_aggregatable_reports_per_destination,
+      result_listener);
+}
+
 }  // namespace
 
 // Unit test suite for the AttributionStorage interface. All AttributionStorage
@@ -632,7 +650,9 @@ TEST_F(AttributionStorageTest, MaxEventLevelReportsPerDestination) {
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
                     CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
+                        AttributionTrigger::AggregatableResult::kSuccess),
+                    CreateReportMaxEventLevelReportsLimitIs(absl::nullopt),
+                    CreateReportMaxAggregatableReportsLimitIs(absl::nullopt)));
 
   // Verify that MaxReportsPerDestination is enforced.
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
@@ -643,7 +663,9 @@ TEST_F(AttributionStorageTest, MaxEventLevelReportsPerDestination) {
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess),
                     ReplacedEventLevelReportIs(absl::nullopt),
-                    DroppedEventLevelReportIs(absl::nullopt)));
+                    DroppedEventLevelReportIs(absl::nullopt),
+                    CreateReportMaxEventLevelReportsLimitIs(1),
+                    CreateReportMaxAggregatableReportsLimitIs(absl::nullopt)));
 }
 
 TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
@@ -659,7 +681,9 @@ TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
                     CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
+                        AttributionTrigger::AggregatableResult::kSuccess),
+                    CreateReportMaxEventLevelReportsLimitIs(absl::nullopt),
+                    CreateReportMaxAggregatableReportsLimitIs(absl::nullopt)));
 
   // Verify that MaxReportsPerDestination is enforced.
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
@@ -670,7 +694,9 @@ TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
                         AttributionTrigger::AggregatableResult::
                             kNoCapacityForConversionDestination),
                     ReplacedEventLevelReportIs(absl::nullopt),
-                    DroppedEventLevelReportIs(absl::nullopt)));
+                    DroppedEventLevelReportIs(absl::nullopt),
+                    CreateReportMaxEventLevelReportsLimitIs(absl::nullopt),
+                    CreateReportMaxAggregatableReportsLimitIs(1)));
 }
 
 TEST_F(AttributionStorageTest, ClearDataWithNoMatch_NoDelete) {
@@ -2323,7 +2349,8 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerAttribution) {
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kSuccess),
             CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kSuccess)));
+                AttributionTrigger::AggregatableResult::kSuccess),
+            CreateReportMaxAttributionReportingOriginsLimitIs(absl::nullopt)));
 
   ASSERT_THAT(
       storage()->MaybeCreateAndStoreReport(
@@ -2331,7 +2358,8 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerAttribution) {
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kSuccess),
             CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kSuccess)));
+                AttributionTrigger::AggregatableResult::kSuccess),
+            CreateReportMaxAttributionReportingOriginsLimitIs(absl::nullopt)));
 
   ASSERT_THAT(
       storage()->MaybeCreateAndStoreReport(
@@ -2341,7 +2369,8 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerAttribution) {
               AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins),
           CreateReportAggregatableStatusIs(
               AttributionTrigger::AggregatableResult::
-                  kExcessiveReportingOrigins)));
+                  kExcessiveReportingOrigins),
+          CreateReportMaxAttributionReportingOriginsLimitIs(2)));
 
   // Two event-level reports, two aggregatable reports.
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
