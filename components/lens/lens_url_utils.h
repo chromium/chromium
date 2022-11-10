@@ -33,8 +33,10 @@ extern GURL AppendOrReplaceQueryParametersForLensRequest(
 
 // Returns a query string with all relevant query parameters. Needed for when a
 // GURL is unavailable to append to.
-extern std::string GetQueryParametersForLensRequest(lens::EntryPoint ep,
-                                                    bool is_side_panel_request);
+extern std::string GetQueryParametersForLensRequest(
+    lens::EntryPoint ep,
+    bool is_side_panel_request,
+    bool is_full_screen_region_search_request);
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_URL_UTILS_H_

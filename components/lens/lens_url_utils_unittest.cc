@@ -20,7 +20,8 @@ TEST(LensUrlUtilsTest, GetRegionSearchNewTabQueryParameterTest) {
   lens::EntryPoint lens_region_search_ep =
       lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_region_search_ep, /* is_side_panel_request= */ false);
+      lens_region_search_ep, /* is_side_panel_request= */ false,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("ep=crs&re=df&s=&st=\\d+"));
 }
 
@@ -28,7 +29,8 @@ TEST(LensUrlUtilsTest, GetImageSearchNewTabQueryParameterTest) {
   lens::EntryPoint lens_image_search_ep =
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_image_search_ep, /* is_side_panel_request= */ false);
+      lens_image_search_ep, /* is_side_panel_request= */ false,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=df&s=&st=\\d+"));
 }
 
@@ -36,7 +38,8 @@ TEST(LensUrlUtilsTest, GetRegionSearchSidePanelQueryParameterTest) {
   lens::EntryPoint lens_region_search_ep =
       lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_region_search_ep, /* is_side_panel_request= */ true);
+      lens_region_search_ep, /* is_side_panel_request= */ true,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("ep=crs&re=dcsp&s=csp&st=\\d+"));
 }
 
@@ -44,7 +47,8 @@ TEST(LensUrlUtilsTest, GetImageSearchSidePanelQueryParameterTest) {
   lens::EntryPoint lens_image_search_ep =
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_image_search_ep, /* is_side_panel_request= */ true);
+      lens_image_search_ep, /* is_side_panel_request= */ true,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=dcsp&s=csp&st=\\d+"));
 }
 
@@ -52,26 +56,39 @@ TEST(LensUrlUtilsTest, GetOpenNewTabSidePanelParameterTest) {
   lens::EntryPoint lens_open_new_tab_side_panel_ep =
       lens::EntryPoint::CHROME_OPEN_NEW_TAB_SIDE_PANEL;
   std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_open_new_tab_side_panel_ep, /* is_side_panel_request= */ false);
+      lens_open_new_tab_side_panel_ep, /* is_side_panel_request= */ false,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("ep=cnts&re=df&s=&st=\\d+"));
+}
+
+TEST(LensUrlUtilsTest, GetFullscreenSearchQueryParameterTest) {
+  lens::EntryPoint lens_ep =
+      lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_ep, /* is_side_panel_request= */ false,
+      /* is_full_screen_region_search_request= */ true);
+  EXPECT_THAT(query_param, MatchesRegex("ep=cfs&re=avsf&s=&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, GetScreenshotSearchQueryParameterTest) {
   lens::EntryPoint lens_ep = lens::EntryPoint::CHROME_SCREENSHOT_SEARCH;
   std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_ep, /* is_side_panel_request= */ false);
+      lens_ep, /* is_side_panel_request= */ false,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("ep=css&re=df&s=&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, GetUnknownEntryPointTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens::EntryPoint::UNKNOWN, /* is_side_panel_request= */ false);
+      lens::EntryPoint::UNKNOWN, /* is_side_panel_request= */ false,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("re=df&s=&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, GetUnknownEntryPointSidePanelTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens::EntryPoint::UNKNOWN, /* is_side_panel_request= */ true);
+      lens::EntryPoint::UNKNOWN, /* is_side_panel_request= */ true,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+"));
 }
 
@@ -135,6 +152,17 @@ TEST(LensUrlUtilsTest, AppendOpenNewTabSidePanelParameterTest) {
   EXPECT_THAT(url.query(), MatchesRegex("ep=cnts&re=df&s=&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, AppendFullscreenSearchQueryParameterTest) {
+  lens::EntryPoint lens_ep =
+      lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM;
+  lens::RenderingEnvironment re =
+      lens::RenderingEnvironment::ONELENS_AMBIENT_VISUAL_SEARCH_WEB_FULLSCREEN;
+  GURL original_url = GURL("https://lens.google.com/");
+  GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
+      original_url, lens_ep, re, /* is_side_panel_request= */ false);
+  EXPECT_THAT(url.query(), MatchesRegex("ep=cfs&re=avsf&s=&st=\\d+"));
+}
+
 TEST(LensUrlUtilsTest, AppendScreenshotSearchQueryParameterTest) {
   lens::EntryPoint lens_ep = lens::EntryPoint::CHROME_SCREENSHOT_SEARCH;
   lens::RenderingEnvironment re =
@@ -166,9 +194,10 @@ TEST(LensUrlUtilsTest, AppendUnknownRenderingEnvironmentTest) {
 
 TEST(LensUrlUtilsTest, AppendEmptyLogsTest) {
   std::vector<lens::mojom::LatencyLogPtr> log_data;
-  std::string query_param =
-      lens::GetQueryParametersForLensRequest(lens::EntryPoint::UNKNOWN,
-                                             /* is_side_panel_request= */ true);
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens::EntryPoint::UNKNOWN,
+      /* is_side_panel_request= */ true,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+"));
   lens::AppendLogsQueryParam(&query_param, std::move(log_data));
   EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+"));
@@ -179,9 +208,10 @@ TEST(LensUrlUtilsTest, AppendPopulatedLogsTest) {
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::DOWNSCALE_START, gfx::Size(), gfx::Size(),
       lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
-  std::string query_param =
-      lens::GetQueryParametersForLensRequest(lens::EntryPoint::UNKNOWN,
-                                             /* is_side_panel_request= */ true);
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens::EntryPoint::UNKNOWN,
+      /* is_side_panel_request= */ true,
+      /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+"));
   lens::AppendLogsQueryParam(&query_param, std::move(log_data));
   EXPECT_THAT(query_param, MatchesRegex("re=dcsp&s=csp&st=\\d+&lm.+"));
