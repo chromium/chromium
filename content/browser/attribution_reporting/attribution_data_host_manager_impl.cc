@@ -560,7 +560,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
       std::move(*not_filters), data->debug_key, data->aggregatable_dedup_key,
       std::move(event_triggers), std::move(*aggregatable_trigger_data),
       std::move(*aggregatable_values), context.is_within_fenced_frame,
-      /*debug_reporting=*/false);
+      data->debug_reporting);
 
   // Handle the trigger immediately if we're not waiting for any sources to be
   // registered.

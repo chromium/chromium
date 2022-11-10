@@ -524,6 +524,11 @@ bool ParseTriggerRegistrationHeader(
   if (String s; object->GetString("aggregatable_deduplication_key", &s))
     trigger_data.aggregatable_dedup_key = ParseUint64(s);
 
+  if (bool debug_reporting;
+      object->GetBoolean("debug_reporting", &debug_reporting)) {
+    trigger_data.debug_reporting = debug_reporting;
+  }
+
   return true;
 }
 

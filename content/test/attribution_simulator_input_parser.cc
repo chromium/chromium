@@ -291,6 +291,7 @@ class AttributionSimulatorInputParser {
         aggregatable_trigger_data;
     attribution_reporting::AggregatableValues aggregatable_values;
     absl::optional<uint64_t> aggregatable_dedup_key;
+    bool debug_reporting;
 
     if (!ParseAttributionEvent(
             trigger_dict,
@@ -309,6 +310,8 @@ class AttributionSimulatorInputParser {
 
                   aggregatable_dedup_key = ParseOptionalUint64(
                       dict, "aggregatable_deduplication_key");
+
+                  debug_reporting = ParseDebugReporting(dict);
                 }))) {
       return;
     }
@@ -324,7 +327,7 @@ class AttributionSimulatorInputParser {
                 aggregatable_dedup_key, std::move(event_triggers),
                 std::move(aggregatable_trigger_data),
                 std::move(aggregatable_values),
-                /*is_within_fenced_frame=*/false, /*debug_reporting=*/false),
+                /*is_within_fenced_frame=*/false, debug_reporting),
             .time = trigger_time,
         },
         std::move(trigger));
@@ -449,6 +452,24 @@ class AttributionSimulatorInputParser {
       return absl::nullopt;
 
     return ParseInt64(value->GetIfString(), key);
+  }
+
+  bool ParseDebugReporting(const base::Value::Dict& dict) {
+    static constexpr char kKey[] = "debug_reporting";
+
+    auto context = PushContext(kKey);
+
+    const base::Value* value = dict.Find(kKey);
+    if (!value)
+      return false;
+
+    absl::optional<bool> bool_value = value->GetIfBool();
+    if (!bool_value) {
+      *Error() << "must be a boolean";
+      return false;
+    }
+
+    return *bool_value;
   }
 
   absl::optional<AttributionSourceType> ParseSourceType(

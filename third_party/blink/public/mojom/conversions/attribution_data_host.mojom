@@ -152,6 +152,9 @@ struct AttributionTriggerData {
   // Key which allows deduplication against existing aggregatable reports for
   // the same source.
   AttributionTriggerDedupKey? aggregatable_dedup_key;
+
+  // Specifies whether to enable verbose debug reporting.
+  bool debug_reporting = false;
 };
 
 struct AttributionOsSource {

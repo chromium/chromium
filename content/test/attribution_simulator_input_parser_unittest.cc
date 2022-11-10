@@ -356,7 +356,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           "key_piece": "0x1"
         }],
         "aggregatable_values": {"a": 1},
-        "aggregatable_deduplication_key": "789"
+        "aggregatable_deduplication_key": "789",
+        "debug_reporting": true
       }
     }
   ]})json";
@@ -455,7 +456,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       *attribution_reporting::AggregatableValues::Create(
                           {{"a", 1}}),
                       /*is_within_fenced_frame=*/false,
-                      /*debug_reporting=*/false),
+                      /*debug_reporting=*/true),
                   .time = kOffsetTime + base::Milliseconds(1643235574123),
               },
               _))));
@@ -1028,6 +1029,14 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"triggers":[{
           "Attribution-Reporting-Register-Trigger": {
             "aggregatable_deduplication_key": 123
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["debug_reporting"]: must be a boolean)",
+        R"json({"triggers":[{
+          "Attribution-Reporting-Register-Trigger": {
+            "debug_reporting": 123
           }
         }]})json",
     },

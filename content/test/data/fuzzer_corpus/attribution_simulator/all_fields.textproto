@@ -474,6 +474,14 @@ object_value {
                       }
                     }
                   }
+                  field {
+                    name: "debug_reporting"
+                    value {
+                      boolean_value {
+                        value: true
+                      }
+                    }
+                  }
                 }
               }
             }

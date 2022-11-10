@@ -565,7 +565,7 @@ TEST(AttributionResponseParsingTest, ParseFilterValues) {
   }
 }
 
-TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
+TEST(AttributionResponseParsingTest, ParseTriggerRegistrationHeader) {
   const auto reporting_origin =
       SecurityOrigin::CreateFromString("https://r.test");
 
@@ -582,7 +582,8 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
            WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
            WTF::HashMap<String, uint32_t>(),
            /*debug_key=*/absl::nullopt,
-           /*aggregatable_dedup_key=*/absl::nullopt)},
+           /*aggregatable_dedup_key=*/absl::nullopt,
+           /*debug_reporting=*/false)},
       {"valid_aggregatable_dedup_key",
        R"json({
         "aggregatable_deduplication_key": "3"
@@ -594,7 +595,8 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
            WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
            WTF::HashMap<String, uint32_t>(),
            /*debug_key=*/absl::nullopt,
-           /*aggregatable_dedup_key=*/3)},
+           /*aggregatable_dedup_key=*/3,
+           /*debug_reporting=*/false)},
       {"aggregatable_dedup_key_not_string",
        R"json({
         "aggregatable_deduplication_key": 3
@@ -606,7 +608,8 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
            WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
            WTF::HashMap<String, uint32_t>(),
            /*debug_key=*/absl::nullopt,
-           /*aggregatable_dedup_key=*/absl::nullopt)},
+           /*aggregatable_dedup_key=*/absl::nullopt,
+           /*debug_reporting=*/false)},
       {"invalid_aggregatable_dedup_key",
        R"json({
         "aggregatable_deduplication_key": "abc"
@@ -618,7 +621,34 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
            WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
            WTF::HashMap<String, uint32_t>(),
            /*debug_key=*/absl::nullopt,
-           /*aggregatable_dedup_key=*/absl::nullopt)},
+           /*aggregatable_dedup_key=*/absl::nullopt,
+           /*debug_reporting=*/false)},
+      {"valid_debug_reporting",
+       R"json({
+        "debug_reporting": true
+      })json",
+       mojom::blink::AttributionTriggerData::New(
+           reporting_origin, WTF::Vector<mojom::blink::EventTriggerDataPtr>(),
+           /*filters=*/mojom::blink::AttributionFilters::New(),
+           /*not_filters=*/mojom::blink::AttributionFilters::New(),
+           WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
+           WTF::HashMap<String, uint32_t>(),
+           /*debug_key=*/absl::nullopt,
+           /*aggregatable_dedup_key=*/absl::nullopt,
+           /*debug_reporting=*/true)},
+      {"debug_reporting_not_boolean",
+       R"json({
+        "debug_reporting": "true"
+      })json",
+       mojom::blink::AttributionTriggerData::New(
+           reporting_origin, WTF::Vector<mojom::blink::EventTriggerDataPtr>(),
+           /*filters=*/mojom::blink::AttributionFilters::New(),
+           /*not_filters=*/mojom::blink::AttributionFilters::New(),
+           WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
+           WTF::HashMap<String, uint32_t>(),
+           /*debug_key=*/absl::nullopt,
+           /*aggregatable_dedup_key=*/absl::nullopt,
+           /*debug_reporting=*/false)},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -635,8 +665,32 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
                 trigger_data.reporting_origin->ToUrlOrigin())
           << test_case.description;
 
+      EXPECT_EQ(test_case.expected->event_triggers, trigger_data.event_triggers)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->filters, trigger_data.filters)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->not_filters, trigger_data.not_filters)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->aggregatable_trigger_data,
+                trigger_data.aggregatable_trigger_data)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->aggregatable_values,
+                trigger_data.aggregatable_values)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->debug_key, trigger_data.debug_key)
+          << test_case.description;
+
       EXPECT_EQ(test_case.expected->aggregatable_dedup_key,
                 trigger_data.aggregatable_dedup_key)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->debug_reporting,
+                trigger_data.debug_reporting)
           << test_case.description;
     }
   }
