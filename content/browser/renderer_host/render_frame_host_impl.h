@@ -1384,6 +1384,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Sends a renderer-debug URL to the renderer process for handling.
   void HandleRendererDebugURL(const GURL& url);
 
+  // BEGIN IPC REVIEW BOUNDARY: to enforce security review for IPC, these
+  // methods are defined in render_frame_host_impl_interface_bindings.cc.
+
+  // Similar to the public `CreateMessageFilterForAssociatedReceiver()` but
+  // allows a specific message handling policy to be specified.
+  std::unique_ptr<mojo::MessageFilter>
+  CreateMessageFilterForAssociatedReceiverInternal(
+      const char* interface_name,
+      BackForwardCacheImpl::MessageHandlingPolicyWhenCached policy);
+
   // Sets up the Mojo connection between this instance and its associated render
   // frame.
   void SetUpMojoConnection();
@@ -1391,6 +1401,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Tears down the browser-side state relating to the Mojo connection between
   // this instance and its associated render frame.
   void TearDownMojoConnection();
+
+  // END IPC REVIEW BOUNDARY
 
   // Returns whether the frame is focused. A frame is considered focused when it
   // is the parent chain of the focused frame within the frame tree. In

@@ -46,5 +46,7 @@ per-file agent_scheduling_group*=dom@chromium.org
 per-file agent_scheduling_group*=kouhei@chromium.org
 per-file agent_scheduling_group*=haraken@chromium.org
 
+per-file render_frame_host_impl_interface_binders.cc=set noparent
+per-file render_frame_host_impl_interface_binders.cc=file://ipc/SECURITY_OWNERS
 per-file *_sandboxed*.*=set noparent
 per-file *_sandboxed*.*=file://ipc/SECURITY_OWNERS

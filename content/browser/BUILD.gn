@@ -1794,6 +1794,7 @@ source_set("browser") {
     "renderer_host/render_frame_host_factory.h",
     "renderer_host/render_frame_host_impl.cc",
     "renderer_host/render_frame_host_impl.h",
+    "renderer_host/render_frame_host_impl_interface_binders.cc",
     "renderer_host/render_frame_host_manager.cc",
     "renderer_host/render_frame_host_manager.h",
     "renderer_host/render_frame_host_owner.h",
