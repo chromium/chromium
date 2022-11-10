@@ -147,6 +147,7 @@ BridgeConstants.TtsBackground = {
   TARGET: 'TtsBackground',
   Action: {
     GET_CURRENT_VOICE: 'getCurrentVoice',
+    SPEAK: 'speak',
     UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
   },
 };

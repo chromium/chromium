@@ -14,6 +14,7 @@ import {BridgeHelper} from './bridge_helper.js';
 import {Command} from './command_store.js';
 import {BaseLog, SerializableLog} from './log_types.js';
 import {PanelTabMenuItemData} from './panel_menu_data.js';
+import {QueueMode, TtsSpeechProperties} from './tts_interface.js';
 
 export const BackgroundBridge = {};
 
@@ -338,6 +339,19 @@ BackgroundBridge.TtsBackground = {
     return BridgeHelper.sendMessage(
         BridgeConstants.TtsBackground.TARGET,
         BridgeConstants.TtsBackground.Action.GET_CURRENT_VOICE);
+  },
+
+  /**
+   * @param {string} textString The string of text to be spoken.
+   * @param {QueueMode} queueMode The queue mode to use for speaking.
+   * @param {TtsSpeechProperties=} properties Speech properties to use for
+   *     this utterance.
+   */
+  async speak(textString, queueMode, properties) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.TtsBackground.TARGET,
+        BridgeConstants.TtsBackground.Action.SPEAK, textString, queueMode,
+        properties);
   },
 };
 

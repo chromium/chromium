@@ -40,6 +40,11 @@ export class TtsBackground {
         BridgeConstants.TtsBackground.TARGET,
         BridgeConstants.TtsBackground.Action.GET_CURRENT_VOICE,
         () => TtsBackground.primary.currentVoice);
+    BridgeHelper.registerHandler(
+        BridgeConstants.TtsBackground.TARGET,
+        BridgeConstants.TtsBackground.Action.SPEAK,
+        (textString, queue, properties) =>
+            TtsBackground.composite.speak(textString, queue, properties));
   }
 
   /** @return {!CompositeTts} */
