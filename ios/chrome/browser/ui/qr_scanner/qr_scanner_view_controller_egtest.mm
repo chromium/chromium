@@ -169,7 +169,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
 
-  const char* body_content = nullptr;
+  std::string body_content;
   if (base::StartsWith(request.relative_url, kTestURL,
                        base::CompareCase::SENSITIVE)) {
     body_content = kTestURLResponse;
@@ -182,8 +182,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     std::string query;
     bool found = net::GetValueForKeyInQuery(url, "q", &query);
     if (found) {
-      std::string content = "Query: " + query;
-      body_content = content.c_str();
+      body_content = "Query: " + query;
     } else {
       body_content = "No query";
     }
@@ -191,10 +190,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     return nullptr;
   }
 
-  if (body_content) {
-    http_response->set_content(
-        base::StringPrintf("<html><body>%s</body></html>", body_content));
-  }
+  http_response->set_content(
+      base::StringPrintf("<html><body>%s</body></html>", body_content.c_str()));
 
   return std::move(http_response);
 }
