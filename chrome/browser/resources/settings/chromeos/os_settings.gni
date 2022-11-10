@@ -399,13 +399,14 @@ gen_web_component_files = [
 ]
 
 mojom_webui_files = [
+  "mojom-webui/audio/cros_audio_config.mojom-webui.js",
+  "mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js",
+  "mojom-webui/personalization/search.mojom-webui.js",
   "mojom-webui/routes.mojom-webui.js",
-  "mojom-webui/setting.mojom-webui.js",
   "mojom-webui/search/search.mojom-webui.js",
   "mojom-webui/search/search_result_icon.mojom-webui.js",
   "mojom-webui/search/user_action_recorder.mojom-webui.js",
-  "mojom-webui/personalization/search.mojom-webui.js",
-  "mojom-webui/audio/cros_audio_config.mojom-webui.js",
+  "mojom-webui/setting.mojom-webui.js",
 ]
 
 # Files sourced from their checked-in version under src
@@ -444,6 +445,11 @@ mojom_webui_closure_flags = [
           root_build_dir),
   "browser_resolver_prefix_replacements=\"../../mojom-webui/audio/=../../\"",
   "browser_resolver_prefix_replacements=\"../mojom-webui/audio/=../\"",
+  "js_module_root=" + rebase_path(
+          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/os_apps_page/mojom",
+          root_build_dir),
+  "browser_resolver_prefix_replacements=\"../../../mojom-webui/os_apps_page/=../../../\"",
+  "browser_resolver_prefix_replacements=\"../../mojom-webui/os_apps_page/=../../\"",
 ]
 
 # TODO(crbug.com/1315757) Remove once ChromeOS Settings is fully migrated to

@@ -38,6 +38,9 @@ js_type_check("closure_compile_module") {
 }
 
 js_library("types") {
+  deps = [
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
+  ]
 }
 
 js_library("actions") {

@@ -7,6 +7,7 @@
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody, isHidden} from './test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-supported-links-item>', () => {
   let supportedLinksItem;
@@ -25,7 +26,7 @@ suite('<app-management-supported-links-item>', () => {
 
   test('PWA - preferred -> browser', async function() {
     const pwaOptions = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: true,
       supportedLinks: ['google.com'],
     };
@@ -63,7 +64,7 @@ suite('<app-management-supported-links-item>', () => {
 
   test('ARC - browser -> preferred', async function() {
     const arcOptions = {
-      type: appManagement.mojom.AppType.kArc,
+      type: AppType.kArc,
       isPreferredApp: false,
       supportedLinks: ['google.com', 'gmail.com'],
     };
@@ -101,7 +102,7 @@ suite('<app-management-supported-links-item>', () => {
 
   test('No supported links', async function() {
     const pwaOptions = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: false,  // Cannot be preferred app if there are no links.
       supportedLinks: [],     // Explicitly empty.
     };
@@ -126,9 +127,9 @@ suite('<app-management-supported-links-item>', () => {
 
   test('Window/tab mode', async function() {
     const options = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: true,
-      windowMode: appManagement.mojom.WindowMode.kBrowser,
+      windowMode: WindowMode.kBrowser,
       supportedLinks: ['google.com'],
     };
 
@@ -158,7 +159,7 @@ suite('<app-management-supported-links-item>', () => {
   test.skip('can open and close supported link list dialog', async function() {
     const supportedLink = 'google.com';
     const pwaOptions = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: true,
       supportedLinks: [supportedLink],
     };
@@ -210,7 +211,7 @@ suite('<app-management-supported-links-item>', () => {
   // flaky.
   test.skip('overlap dialog is shown and cancelled', async function() {
     const pwaOptions = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: false,
       supportedLinks: ['google.com'],
     };
@@ -259,7 +260,7 @@ suite('<app-management-supported-links-item>', () => {
 
   test('overlap dialog is shown and accepted', async function() {
     const pwaOptions = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: false,
       supportedLinks: ['google.com'],
     };
@@ -311,13 +312,13 @@ suite('<app-management-supported-links-item>', () => {
 
   test('overlap warning isnt shown when not selected', async function() {
     const pwaOptions1 = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: true,
       supportedLinks: ['google.com', 'gmail.com'],
     };
 
     const pwaOptions2 = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: false,
       supportedLinks: ['google.com'],
     };
@@ -342,13 +343,13 @@ suite('<app-management-supported-links-item>', () => {
 
   test('overlap warning is shown', async function() {
     const pwaOptions1 = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: false,
       supportedLinks: ['google.com', 'gmail.com'],
     };
 
     const pwaOptions2 = {
-      type: appManagement.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       isPreferredApp: true,
       supportedLinks: ['google.com'],
     };

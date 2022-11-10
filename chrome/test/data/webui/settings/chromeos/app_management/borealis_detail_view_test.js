@@ -7,7 +7,7 @@
 import {PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool, Router} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<app-management-borealis-detail-view>', function() {
@@ -43,7 +43,7 @@ suite('<app-management-borealis-detail-view>', function() {
 
     // Add main app, and make it the currently selected app.
     const mainOptions = {
-      type: appManagement.mojom.AppType.kBorealis,
+      type: AppType.kBorealis,
       permissions: permissions,
     };
     const mainApp = await fakeHandler.addApp(kBorealisClientAppId, mainOptions);
@@ -112,7 +112,7 @@ suite('<app-management-borealis-detail-view>', function() {
     // Add borealis (non main) app. Note that any tests after this will
     // have the borealis app selected as default.
     const options = {
-      type: appManagement.mojom.AppType.kBorealis,
+      type: AppType.kBorealis,
     };
     const app = await fakeHandler.addApp('foo', options);
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));

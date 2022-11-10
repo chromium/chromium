@@ -10,6 +10,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 mojom("mojom") {
   sources = [ "app_notification_handler.mojom" ]
 
+  webui_module_path = "/"
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/webui/resources/cr_components/app_management:mojo_bindings",

@@ -15,7 +15,7 @@ assert(!is_android && !is_ios)
 
 mojom("mojo_bindings") {
   sources = [ "app_management.mojom" ]
-  webui_module_path = "/"
+  webui_module_path = "chrome://resources/cr_components/app_management/"
 
   public_deps = [
     "//mojo/public/mojom/base",

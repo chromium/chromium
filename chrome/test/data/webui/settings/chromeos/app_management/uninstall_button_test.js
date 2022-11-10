@@ -8,6 +8,7 @@ import 'chrome://os-settings/chromeos/os_settings.js';
 
 import {AppManagementStore} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
+import {AppType, InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-uninstall-button', () => {
   let uninstallButton;
@@ -23,7 +24,7 @@ suite('<app-management-uninstall-button', () => {
   async function setupUninstallButton(installReason) {
     // Create an ARC app options.
     const arcOptions = {
-      type: appManagement.mojom.AppType.kArc,
+      type: AppType.kArc,
       installReason: installReason,
     };
 
@@ -39,7 +40,7 @@ suite('<app-management-uninstall-button', () => {
   }
 
   test('Click uninstall', async () => {
-    await setupUninstallButton(appManagement.mojom.InstallReason.kUser);
+    await setupUninstallButton(InstallReason.kUser);
 
     uninstallButton.shadowRoot.querySelector('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
@@ -47,7 +48,7 @@ suite('<app-management-uninstall-button', () => {
   });
 
   test('Disabled by policy', async () => {
-    await setupUninstallButton(appManagement.mojom.InstallReason.kPolicy);
+    await setupUninstallButton(InstallReason.kPolicy);
     uninstallButton.shadowRoot.querySelector('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.
@@ -55,7 +56,7 @@ suite('<app-management-uninstall-button', () => {
   });
 
   test('System app, button hidden', async () => {
-    await setupUninstallButton(appManagement.mojom.InstallReason.kSystem);
+    await setupUninstallButton(InstallReason.kSystem);
     assertFalse(!!uninstallButton.shadowRoot.querySelector('#uninstallButton'));
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.

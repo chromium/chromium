@@ -100,6 +100,7 @@ import './parental_controls_page/parental_controls_page.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
 import * as crosAudioConfigMojomWebui from '../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+import * as appNotificationHandlerMojomWebui from '../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
 import * as personalizationSearchMojomWebui from '../mojom-webui/personalization/search.mojom-webui.js';
 import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
 import * as searchMojomWebui from '../mojom-webui/search/search.mojom-webui.js';
@@ -171,6 +172,7 @@ export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './settings_search_handler.js';
 export {
+  appNotificationHandlerMojomWebui,
   crosAudioConfigMojomWebui,
   personalizationSearchMojomWebui,
   routesMojomWebui,

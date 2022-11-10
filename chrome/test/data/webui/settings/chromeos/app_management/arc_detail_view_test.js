@@ -7,6 +7,7 @@
 import {AppManagementStore, FakePageHandler, PermissionType, updateSelectedAppId, getPermissionValueBool} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden, getPermissionItemByType, getPermissionCrToggleByType} from './test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-arc-detail-view>', () => {
   let arcPermissionView;
@@ -36,7 +37,7 @@ suite('<app-management-arc-detail-view>', () => {
 
     // Create an ARC app without microphone permissions.
     const arcOptions = {
-      type: appManagement.mojom.AppType.kArc,
+      type: AppType.kArc,
       permissions: FakePageHandler.createArcPermissions([
         PermissionType.kCamera,
         PermissionType.kLocation,
@@ -134,7 +135,7 @@ suite('<app-management-arc-detail-view>', () => {
 
     // Create an ARC app without any permissions.
     const arcOptions = {
-      type: appManagement.mojom.AppType.kArc,
+      type: AppType.kArc,
       permissions: FakePageHandler.createArcPermissions([]),
     };
 

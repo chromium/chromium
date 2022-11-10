@@ -6,6 +6,7 @@
 
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-app-detail-view>', () => {
   let appDetailView;
@@ -17,7 +18,7 @@ suite('<app-management-app-detail-view>', () => {
     replaceStore();
 
     // Create an ARC app.
-    const arcOptions = {type: appManagement.mojom.AppType.kArc};
+    const arcOptions = {type: AppType.kArc};
 
     // Add an app, and make it the currently selected app.
     arcApp = await fakeHandler.addApp('app1_id', arcOptions);
@@ -38,7 +39,7 @@ suite('<app-management-app-detail-view>', () => {
         'app-management-arc-detail-view'));
     assertFalse(!!appDetailView.shadowRoot.querySelector(
         'app-management-pwa-detail-view'));
-    const pwaOptions = {type: appManagement.mojom.AppType.kWeb};
+    const pwaOptions = {type: AppType.kWeb};
     // Add an second pwa app, and make it the currently selected app.
     const pwaApp = await fakeHandler.addApp('app2_id', pwaOptions);
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(pwaApp.id));

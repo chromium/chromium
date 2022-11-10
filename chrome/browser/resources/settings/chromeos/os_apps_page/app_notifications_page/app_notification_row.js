@@ -2,18 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
-import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import '/app-management/file_path.mojom-lite.js';
-import '/app-management/image.mojom-lite.js';
-import '/app-management/safe_base_name.mojom-lite.js';
-import '/app-management/types.mojom-lite.js';
-import '/app-management/app_management.mojom-lite.js';
-import '/os_apps_page/app_notification_handler.mojom-lite.js';
-
 import {TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createBoolPermissionValue, createTriStatePermissionValue, isBoolValue, isPermissionEnabled, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -8,6 +8,7 @@ import {FakePageHandler} from 'chrome://os-settings/chromeos/os_settings.js';
 import {replaceBody} from './test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-app-item>', () => {
   let appItem;
@@ -19,7 +20,7 @@ suite('<app-management-app-item>', () => {
     await flushTasks();
 
     // Create an ARC app.
-    const arcOptions = {type: appManagement.mojom.AppType.kArc};
+    const arcOptions = {type: AppType.kArc};
 
     arcApp = FakePageHandler.createApp('app1_id', arcOptions);
     appItem.app = arcApp;

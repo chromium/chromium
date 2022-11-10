@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppType, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {replaceBody, replaceStore, setupFakeHandler} from './test_util.js';
@@ -23,8 +24,8 @@ suite('<app-management-app-details-item>', () => {
 
   test('PWA type', async function() {
     const options = {
-      type: apps.mojom.AppType.kWeb,
-      installSource: apps.mojom.InstallSource.kUnknown,
+      type: AppType.kWeb,
+      installSource: InstallSource.kUnknown,
     };
 
     // Add PWA app, and make it the currently selected app.
@@ -51,8 +52,8 @@ suite('<app-management-app-details-item>', () => {
 
   test('Android type', async function() {
     const options = {
-      type: apps.mojom.AppType.kArc,
-      installSource: apps.mojom.InstallSource.kUnknown,
+      type: AppType.kArc,
+      installSource: InstallSource.kUnknown,
     };
 
     // Add Android app, and make it the currently selected app.
@@ -79,8 +80,8 @@ suite('<app-management-app-details-item>', () => {
 
   test('Chrome type', async function() {
     const options = {
-      type: apps.mojom.AppType.kChromeApp,
-      installSource: apps.mojom.InstallSource.kUnknown,
+      type: AppType.kChromeApp,
+      installSource: InstallSource.kUnknown,
     };
 
     // Add Chrome app, and make it the currently selected app.
@@ -107,8 +108,8 @@ suite('<app-management-app-details-item>', () => {
 
   test('Chrome App from web store', async function() {
     const options = {
-      type: apps.mojom.AppType.kChromeApp,
-      installSource: apps.mojom.InstallSource.kChromeWebStore,
+      type: AppType.kChromeApp,
+      installSource: InstallSource.kChromeWebStore,
     };
 
     // Add Chrome app, and make it the currently selected app.
@@ -135,8 +136,8 @@ suite('<app-management-app-details-item>', () => {
 
   test('Android App from play store', async function() {
     const options = {
-      type: apps.mojom.AppType.kArc,
-      installSource: apps.mojom.InstallSource.kPlayStore,
+      type: AppType.kArc,
+      installSource: InstallSource.kPlayStore,
     };
 
     // Add Chrome app, and make it the currently selected app.
@@ -163,7 +164,7 @@ suite('<app-management-app-details-item>', () => {
 
   test('System type', async function() {
     const options = {
-      type: apps.mojom.AppType.kSystemWeb,
+      type: AppType.kSystemWeb,
     };
 
     // Add System app, and make it the currently selected app.
@@ -190,7 +191,7 @@ suite('<app-management-app-details-item>', () => {
 
   test('system install source', async function() {
     const options = {
-      installSource: apps.mojom.InstallSource.kSystem,
+      installSource: InstallSource.kSystem,
     };
 
     // Add System app, and make it the currently selected app.
@@ -217,7 +218,7 @@ suite('<app-management-app-details-item>', () => {
 
   test('Chrome app version', async function() {
     const options = {
-      type: apps.mojom.AppType.kChromeApp,
+      type: AppType.kChromeApp,
       version: '17.2',
     };
 
@@ -243,7 +244,7 @@ suite('<app-management-app-details-item>', () => {
 
   test('Android app version', async function() {
     const options = {
-      type: apps.mojom.AppType.kArc,
+      type: AppType.kArc,
       version: '13.1.52',
     };
 
@@ -269,14 +270,14 @@ suite('<app-management-app-details-item>', () => {
 
   test('Android type storage', async function() {
     const options = {
-      type: apps.mojom.AppType.kArc,
-      installSource: apps.mojom.InstallSource.kUnknown,
+      type: AppType.kArc,
+      installSource: InstallSource.kUnknown,
       appSize: '17 MB',
     };
 
     const options2 = {
-      type: apps.mojom.AppType.kArc,
-      installSource: apps.mojom.InstallSource.kUnknown,
+      type: AppType.kArc,
+      installSource: InstallSource.kUnknown,
       appSize: '17 MB',
       dataSize: '124.6 GB',
     };

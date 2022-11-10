@@ -7,6 +7,7 @@
 import {PluginVmBrowserProxyImpl, PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 import {TestPluginVmBrowserProxy} from './test_plugin_vm_browser_proxy.js';
 import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.js';
+import {AppType, OptionalBool} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-plugin-vm-detail-view>', function() {
   /** @enum {number} */
@@ -135,7 +136,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
     // Add an app, and make it the currently selected app.
     const options = {
-      type: appManagement.mojom.AppType.kPluginVm,
+      type: AppType.kPluginVm,
       permissions: permissions,
     };
     const app = await fakeHandler.addApp(null, options);

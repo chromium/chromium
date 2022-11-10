@@ -2,36 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import '/os_apps_page/app_notification_handler.mojom-lite.js';
+import {AppNotificationsHandler, AppNotificationsHandlerInterface} from '../../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
 
 /**
- * @type {
- *    ?ash.settings.appNotification.mojom.AppNotificationsHandlerInterface
- * }
+ * @type {?AppNotificationsHandlerInterface}
  */
 let appNotificationProvider = null;
 
 /**
- * @param {
- *    !ash.settings.appNotification.mojom.AppNotificationsHandlerInterface
- * } testProvider
+ * @param {!AppNotificationsHandlerInterface} testProvider
  */
 export function setAppNotificationProviderForTesting(testProvider) {
   appNotificationProvider = testProvider;
 }
 
 /**
- * @return {
- *    !ash.settings.appNotification.mojom.AppNotificationsHandlerInterface
- * }
+ * @return {!AppNotificationsHandlerInterface}
  */
 export function getAppNotificationProvider() {
   // For testing only.
   if (appNotificationProvider) {
     return appNotificationProvider;
   }
-  appNotificationProvider =
-      ash.settings.appNotification.mojom.AppNotificationsHandler.getRemote();
+  appNotificationProvider = AppNotificationsHandler.getRemote();
   return appNotificationProvider;
 }

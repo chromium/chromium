@@ -7,6 +7,7 @@
 import {PermissionType, TriState, FakePageHandler, AppManagementStore, updateSelectedAppId, createTriStatePermission} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {setupFakeHandler, replaceStore, replaceBody, getPermissionToggleByType} from './test_util.js';
+import {AppType, InstallReason, OptionalBool} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-managed-apps>', () => {
   let appDetailView;
@@ -24,10 +25,10 @@ suite('<app-management-managed-apps>', () => {
     permissionOptions[PermissionType.kCamera] = createTriStatePermission(
         PermissionType.kCamera, TriState.kBlock, /*isManaged*/ true);
     const policyAppOptions = {
-      type: appManagement.mojom.AppType.kWeb,
-      isPinned: appManagement.mojom.OptionalBool.kTrue,
-      isPolicyPinned: appManagement.mojom.OptionalBool.kTrue,
-      installReason: appManagement.mojom.InstallReason.kPolicy,
+      type: AppType.kWeb,
+      isPinned: OptionalBool.kTrue,
+      isPolicyPinned: OptionalBool.kTrue,
+      installReason: InstallReason.kPolicy,
       permissions: FakePageHandler.createWebPermissions(permissionOptions),
     };
     const app = await fakeHandler.addApp(null, policyAppOptions);

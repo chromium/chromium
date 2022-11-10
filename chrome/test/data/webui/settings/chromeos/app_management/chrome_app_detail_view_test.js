@@ -7,6 +7,7 @@
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-chrome-app-detail-view>', () => {
   let chromeAppDetailView;
@@ -17,7 +18,7 @@ suite('<app-management-chrome-app-detail-view>', () => {
     replaceStore();
 
     const chromeOptions = {
-      type: appManagement.mojom.AppType.kExtension,
+      type: AppType.kExtension,
       permissions: {},
     };
 
