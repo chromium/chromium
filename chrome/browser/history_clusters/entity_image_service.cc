@@ -83,8 +83,8 @@ class EntityImageService::SuggestEntityImageURLFetcher {
     callback_ = std::move(callback);
 
     TemplateURLRef::SearchTermsArgs search_terms_args;
-    // TODO(tommycli): Change OTHER to a Journeys-specific page classification.
-    search_terms_args.page_classification = metrics::OmniboxEventProto::OTHER;
+    search_terms_args.page_classification =
+        metrics::OmniboxEventProto::JOURNEYS;
     search_terms_args.search_terms = search_query_;
 
     loader_ =
@@ -121,9 +121,8 @@ class EntityImageService::SuggestEntityImageURLFetcher {
       return std::move(callback_).Run(GURL());
     }
 
-    // TODO(tommycli): Change OTHER to a Journeys-specific page classification.
     AutocompleteInput input(
-        search_query_, metrics::OmniboxEventProto::OTHER,
+        search_query_, metrics::OmniboxEventProto::JOURNEYS,
         autocomplete_provider_client_->GetSchemeClassifier());
     SearchSuggestionParser::Results results;
     if (!SearchSuggestionParser::ParseSuggestResults(

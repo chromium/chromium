@@ -179,7 +179,11 @@ message OmniboxEventProto {
     // enum is used in other places too, and not only OmniboxEventProto.)
     NTP_ZPS_PREFETCH = 20;
 
-    // Note: PageClassification 21 has never been used.
+    // Used for Journeys requests in its landing page, side Panel or the NTP.
+    // Should never appear in an OmniboxEventProto or any of its derived
+    // histograms. (PageClassification enum is used in other places too, and not
+    // only OmniboxEventProto.)
+    JOURNEYS = 21;
 
     // The Search Results Page zero-prefix suggestion prefetch.
     // Used for prefetching suggestions and should never appear in an
@@ -342,13 +346,14 @@ message OmniboxEventProto {
     // The relevance score for this suggestion.
     optional int32 relevance = 3;
 
-    // How many times this result was typed in / selected from the omnibox.
+    // How many times this result was typed in / selected from the omnibox
+    // in this profile.
     // Only set for some providers and result_types.  At the time of
     // writing this comment, it is only set for HistoryURL and
     // HistoryQuickProvider matches.
     optional int32 typed_count = 5;
 
-    // Whether this item is starred (bookmarked) or not.
+    // Whether this item is starred (bookmarked) in this profile.
     optional bool is_starred = 4 [deprecated = true];
 
     // Whether this item is disabled in the UI (not clickable).
