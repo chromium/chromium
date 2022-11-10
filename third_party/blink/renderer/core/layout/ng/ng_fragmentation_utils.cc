@@ -362,17 +362,24 @@ void SetupFragmentBuilderForFragmentation(
           builder->InitialBorderBoxSize().inline_size);
       DCHECK(space.HasKnownFragmentainerBlockSize());
 
-      LayoutUnit space_left = FragmentainerSpaceLeft(space);
-      LayoutUnit previously_consumed_block_size;
-      if (previous_break_token) {
-        previously_consumed_block_size =
-            previous_break_token->ConsumedBlockSize();
-      }
+      // If max_block_size is "infinite", we can't tell for sure that it's going
+      // to fit. The calculation below will normally detect that, but it's going
+      // to be incorrect when we have reached the point where space left
+      // incorrectly seems to be enough to contain the remaining fragment when
+      // subtracting previously consumed block-size from its max size.
+      if (max_block_size != LayoutUnit::Max()) {
+        LayoutUnit space_left = FragmentainerSpaceLeft(space);
+        LayoutUnit previously_consumed_block_size;
+        if (previous_break_token) {
+          previously_consumed_block_size =
+              previous_break_token->ConsumedBlockSize();
+        }
 
-      if (max_block_size - previously_consumed_block_size <= space_left) {
-        builder->SetIsKnownToFitInFragmentainer(true);
-        if (builder->MustStayInCurrentFragmentainer())
-          requires_content_before_breaking = true;
+        if (max_block_size - previously_consumed_block_size <= space_left) {
+          builder->SetIsKnownToFitInFragmentainer(true);
+          if (builder->MustStayInCurrentFragmentainer())
+            requires_content_before_breaking = true;
+        }
       }
     }
     builder->SetRequiresContentBeforeBreaking(requires_content_before_breaking);
