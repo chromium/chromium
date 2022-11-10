@@ -122,6 +122,13 @@ function extractImage(item) {
     }
     return extractImageUrl(image);
   }
+  if (hostname.endsWith("discounttiredirect.com")) {
+    const image = item.querySelector(".cart-item__product-image");
+    if (image == null) {
+      return null;
+    }
+    return extractImageUrl(image);
+  }
   // Sometimes an item contains small icons, which need to be filtered out.
   // TODO: two pass getLargeImages() is probably too slow.
   let images = getLargeImages(item, 40);
@@ -155,9 +162,11 @@ function extractImageUrl(image) {
   if (lazyUrl != null)
     return lazyUrl;
 
-  // Special handling for Google store and America's Tire.
+  // Special handling for Google store, America's Tire and Discount
+  // Tire Direct.
   if (image.className === "bg-img"
-    || image.className.includes("product-image__image-block")) {
+    || image.className.includes("product-image__image-block")
+    || image.className.includes("cart-item__product-image")) {
     if (image.style.backgroundImage == undefined) {
       return null;
     }
@@ -215,7 +224,8 @@ function extractUrl(item) {
   // panel after clicking on each item instead of directing to product page.
   if (document.URL.includes("samsclub.com")
       || document.URL.includes("ae.com")
-      || document.URL.includes("kiehls.com")) {
+      || document.URL.includes("kiehls.com")
+      || document.URL.includes("discounttiredirect.com")) {
     return "";
   }
   let anchors;
@@ -960,6 +970,8 @@ async function extractAllItems(root) {
   } else if (document.URL.includes("americastire.com")
     || document.URL.includes("discounttire.com")) {
     items = root.querySelectorAll("[role=\"listitem\"]");
+  } else if (document.URL.includes("discounttiredirect.com")) {
+    items = root.querySelectorAll(".cart-item");
   } else {
     skipFiltering = false;
     // Generic pattern
