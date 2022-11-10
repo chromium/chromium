@@ -127,10 +127,10 @@ class PLATFORM_EXPORT TransformOperations {
 
   void clear() { operations_.clear(); }
 
-  Vector<scoped_refptr<TransformOperation>>& Operations() {
+  Vector<scoped_refptr<TransformOperation>, 2>& Operations() {
     return operations_;
   }
-  const Vector<scoped_refptr<TransformOperation>>& Operations() const {
+  const Vector<scoped_refptr<TransformOperation>, 2>& Operations() const {
     return operations_;
   }
 
@@ -160,7 +160,7 @@ class PLATFORM_EXPORT TransformOperations {
   TransformOperations Accumulate(const TransformOperations& to) const;
 
  private:
-  Vector<scoped_refptr<TransformOperation>> operations_;
+  Vector<scoped_refptr<TransformOperation>, 2> operations_;
 };
 
 }  // namespace blink
