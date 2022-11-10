@@ -804,16 +804,9 @@ void AttributionManagerImpl::GetReportsToSend() {
                 AttributionReport::Types{
                     AttributionReport::Type::kEventLevel,
                     AttributionReport::Type::kAggregatableAttribution})
-      .Then(base::BindOnce(&AttributionManagerImpl::OnGetReportsToSend,
-                           weak_factory_.GetWeakPtr()));
-}
-
-void AttributionManagerImpl::OnGetReportsToSend(
-    std::vector<AttributionReport> reports) {
-  if (reports.empty())
-    return;
-
-  SendReports(std::move(reports), /*log_metrics=*/true, base::DoNothing());
+      .Then(base::BindOnce(&AttributionManagerImpl::SendReports,
+                           weak_factory_.GetWeakPtr(),
+                           /*log_metrics=*/true, base::DoNothing()));
 }
 
 void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
@@ -830,12 +823,14 @@ void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
   }
 
   auto barrier = base::BarrierClosure(reports.size(), std::move(done));
-  SendReports(std::move(reports), /*log_metrics=*/false, std::move(barrier));
+  SendReports(
+      /*log_metrics=*/false, std::move(barrier), std::move(reports));
 }
 
-void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
-                                         bool log_metrics,
-                                         base::RepeatingClosure done) {
+void AttributionManagerImpl::SendReports(
+    bool log_metrics,
+    base::RepeatingClosure done,
+    std::vector<AttributionReport> reports) {
   const base::Time now = base::Time::Now();
   for (AttributionReport& report : reports) {
     DCHECK_LE(report.report_time(), now);

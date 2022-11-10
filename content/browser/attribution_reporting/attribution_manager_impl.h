@@ -193,14 +193,13 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                     bool is_debug_cookie_set);
 
   void GetReportsToSend();
-  void OnGetReportsToSend(std::vector<AttributionReport> reports);
 
   void OnGetReportsToSendFromWebUI(base::OnceClosure done,
                                    std::vector<AttributionReport> reports);
 
-  void SendReports(std::vector<AttributionReport> reports,
-                   bool log_metrics,
-                   base::RepeatingClosure done);
+  void SendReports(bool log_metrics,
+                   base::RepeatingClosure done,
+                   std::vector<AttributionReport> reports);
   void PrepareToSendReport(AttributionReport report,
                            bool is_debug_report,
                            ReportSentCallback callback);
