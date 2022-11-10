@@ -400,6 +400,9 @@ Config::Config() {
     should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kShouldShowAllClustersOnProminentUiSurfaces);
+
+    include_synced_visits =
+        base::FeatureList::IsEnabled(internal::kJourneysIncludeSyncedVisits);
   }
 }
 

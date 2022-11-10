@@ -174,8 +174,14 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
     if (is_clustered && recent_first_)
       continuation_params_.exhausted_unclustered_visits = true;
 
-    if (!is_clustered)
+    if (is_clustered) {
+      continue;
+    }
+
+    if ((visit.source != history::SOURCE_SYNCED) ||
+        GetConfig().include_synced_visits) {
       annotated_visits_.push_back(std::move(visit));
+    }
   }
 
   return limited_by_max_count;

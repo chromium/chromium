@@ -46,6 +46,14 @@ std::string GetDebugJSONForVisits(
     debug_visit.Set(
         "openerVisitId",
         base::NumberToString(visit.opener_visit_of_redirect_chain_start));
+    debug_visit.Set("originatorCacheGuid",
+                    visit.visit_row.originator_cache_guid);
+    debug_visit.Set(
+        "originatorReferringVisitId",
+        base::NumberToString(visit.visit_row.originator_referring_visit));
+    debug_visit.Set(
+        "originatorOpenerVisitId",
+        base::NumberToString(visit.visit_row.originator_opener_visit));
     debug_visit.Set("searchTerms", visit.content_annotations.search_terms);
     debug_visit.Set(
         "urlForDeduping",

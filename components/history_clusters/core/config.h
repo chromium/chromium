@@ -375,6 +375,9 @@ struct Config {
   bool should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
       false;
 
+  // Whether to include synced visits in clusters.
+  bool include_synced_visits = false;
+
   // Order consistently with features.h.
 
   Config();
