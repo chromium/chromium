@@ -102,6 +102,9 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 }
 
 void PartitionAllocGlobalUninitForTesting() {
+#if BUILDFLAG(ENABLE_PKEYS)
+  internal::PartitionAddressSpace::UninitPkeyPoolForTesting();
+#endif
 #if BUILDFLAG(STARSCAN)
   internal::PCScan::UninitForTesting();  // IN-TEST
 #endif                                   // BUILDFLAG(STARSCAN)

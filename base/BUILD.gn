@@ -155,6 +155,12 @@ config("perfetto_config") {
   }
 }
 
+if (enable_pkeys) {
+  config("no_stack_protector") {
+    cflags = [ "-fno-stack-protector" ]
+  }
+}
+
 buildflag_header("ios_cronet_buildflags") {
   header = "ios_cronet_buildflags.h"
   header_dir = "base/message_loop"
@@ -3832,6 +3838,18 @@ test("base_unittests") {
     } else if (is_fuchsia) {
       sources += [ "allocator/partition_allocator/partition_alloc_base/fuchsia/fuchsia_logging_pa_unittest.cc" ]
     }
+
+    if (enable_pkeys) {
+      sources += [ "allocator/partition_allocator/pkey_unittest.cc" ]
+
+      # We want to test the pkey code without access to memory that is not
+      # pkey-tagged. This will allow us to catch unintended memory accesses
+      # that could break our security assumptions. The stack protector reads a
+      # value from the TLS which won't be pkey-tagged, hence disabling it for
+      # the test.
+      configs += [ ":no_stack_protector" ]
+    }
+
     deps += [ ":partition_alloc_test_support" ]
   }
 

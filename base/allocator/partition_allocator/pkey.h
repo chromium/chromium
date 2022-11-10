@@ -55,6 +55,10 @@ bool CPUHasPkeySupport();
 // during pkey pool initialization.
 void TagGlobalsWithPkey(int pkey);
 
+int PkeyAlloc(int access_rights);
+
+void PkeyFree(int pkey);
+
 // Read the pkru register (the current pkey state).
 uint32_t Rdpkru();
 

@@ -95,6 +95,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static void InitConfigurablePool(uintptr_t pool_base, size_t size);
 #if BUILDFLAG(ENABLE_PKEYS)
   static void InitPkeyPool(int pkey);
+  static void UninitPkeyPoolForTesting();
 #endif
   static void UninitForTesting();
   static void UninitConfigurablePoolForTesting();

@@ -23,12 +23,14 @@
 
 namespace partition_alloc::internal {
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 bool CPUHasPkeySupport() {
   return base::CPU::GetInstanceNoAllocation().has_pku();
 }
 
 PkeySettings PkeySettings::settings PA_PKEY_ALIGN;
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 int PkeyMprotect(void* addr, size_t len, int prot, int pkey) {
   return syscall(SYS_pkey_mprotect, addr, len, prot, pkey);
 }
@@ -70,6 +72,16 @@ void TagGlobalsWithPkey(int pkey) {
                     ReservationOffsetTable::kReservationOffsetTableLength);
 
   TagVariableWithPkey(pkey, PkeySettings::settings);
+}
+
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+int PkeyAlloc(int access_rights) {
+  return syscall(SYS_pkey_alloc, 0, access_rights);
+}
+
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void PkeyFree(int pkey) {
+  PA_PCHECK(syscall(SYS_pkey_free, pkey) == 0);
 }
 
 uint32_t Rdpkru() {
