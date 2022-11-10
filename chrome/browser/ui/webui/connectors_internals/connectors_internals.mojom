@@ -26,6 +26,12 @@ enum KeyType {
   EC = 2,
 };
 
+// Wrapper for an optional int32.
+struct Int32Value {
+  // The int32 value.
+  int32 value;
+};
+
 struct KeyInfo {
   // Whether the key manager has loaded a key successfully.
   KeyManagerInitializedValue is_key_manager_initialized;
@@ -41,6 +47,10 @@ struct KeyInfo {
 
   // URL Base64 encoded SHA-256 hash value for the loaded key's SPKI.
   string encoded_spki_hash;
+
+  // HTTP response code of the sync key request. Can be unset if the response
+  // has not yet been received.
+  Int32Value? sync_key_response_code;
 };
 
 struct DeviceTrustState {

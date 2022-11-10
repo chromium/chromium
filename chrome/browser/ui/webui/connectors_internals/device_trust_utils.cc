@@ -58,6 +58,13 @@ std::string HashAndEncodeString(const std::string& spki_bytes) {
   return encoded_string;
 }
 
+connectors_internals::mojom::Int32ValuePtr ToMojomValue(
+    absl::optional<int> integer_value) {
+  return integer_value ? connectors_internals::mojom::Int32Value::New(
+                             integer_value.value())
+                       : nullptr;
+}
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace
@@ -74,19 +81,21 @@ connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
           connectors_internals::mojom::KeyManagerInitializedValue::KEY_LOADED,
           ParseTrustLevel(metadata->trust_level),
           AlgorithmToType(metadata->algorithm),
-          HashAndEncodeString(metadata->spki_bytes));
+          HashAndEncodeString(metadata->spki_bytes),
+          ToMojomValue(metadata->synchronization_response_code));
     } else {
       return connectors_internals::mojom::KeyInfo::New(
           connectors_internals::mojom::KeyManagerInitializedValue::NO_KEY,
           connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
-          connectors_internals::mojom::KeyType::UNKNOWN, std::string());
+          connectors_internals::mojom::KeyType::UNKNOWN, std::string(),
+          nullptr);
     }
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return connectors_internals::mojom::KeyInfo::New(
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED,
       connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
-      connectors_internals::mojom::KeyType::UNKNOWN, std::string());
+      connectors_internals::mojom::KeyType::UNKNOWN, std::string(), nullptr);
 }
 
 }  // namespace utils

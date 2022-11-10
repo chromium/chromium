@@ -4,7 +4,7 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {DeviceTrustState, KeyInfo, KeyManagerInitializedValue, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import {DeviceTrustState, Int32Value, KeyInfo, KeyManagerInitializedValue, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
 import {getTemplate} from './device_trust_connector.html.js';
 
 const TrustLevelStringMap = {
@@ -45,6 +45,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
     const trustLevelStateEl = (this.$('#key-trust-level') as HTMLElement);
     const keyTypeStateEl = (this.$('#key-type') as HTMLElement);
     const spkiHashStateEl = (this.$('#spki-hash') as HTMLElement);
+    const keySyncStateEl = (this.$('#key-sync') as HTMLElement);
 
     const initializedValue = keyInfo.isKeyManagerInitialized;
     if (initializedValue === KeyManagerInitializedValue.UNSUPPORTED) {
@@ -61,6 +62,8 @@ export class DeviceTrustConnectorElement extends CustomElement {
             this.trustLevelToString(keyInfo.trustLevel);
         keyTypeStateEl.innerText = this.keyTypeToString(keyInfo.keyType);
         spkiHashStateEl.innerText = keyInfo.encodedSpkiHash;
+        keySyncStateEl.innerText =
+            this.keySyncCodeToString(keyInfo.syncKeyResponseCode);
 
         this.showElement(metadataRowEl);
       } else {
@@ -147,6 +150,19 @@ export class DeviceTrustConnectorElement extends CustomElement {
 
   private keyTypeToString(keyType: KeyType): string {
     return KeyTypeStringMap[keyType] || 'invalid';
+  }
+
+  private keySyncCodeToString(syncKeyResponseCode: Int32Value|
+                              undefined): string {
+    if (!syncKeyResponseCode) {
+      return 'Undefined';
+    }
+
+    const value = syncKeyResponseCode.value;
+    if (value / 100 === 2) {
+      return `Success (${value})`;
+    }
+    return `Failure (${value})`;
   }
 }
 
