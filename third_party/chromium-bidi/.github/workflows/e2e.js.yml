@@ -1,50 +1,20 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# This workflow will run headful and headless e2e tests.
 
 name: e2e tests
 
 on:
   pull_request:
     branches: '*'
+  push:
+    branches: 'main'
 
 jobs:
-  e2e-headless:
+  e2e:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install chrome-dev
-        run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-unstable
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16.x
-      - name: Install npm dependencies
-        run: npm install
-      - name: Build
-        run: npm run build
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install Python dependencies
-        run: python -m pip install -r tests/requirements.txt
-      - name: Run e2e tests
-        run: CHANNEL=chrome-dev npm run e2e
-      - name: Install Python dependencies for example scripts
-        run: python -m pip install -r examples/requirements.txt
-      - name: Run examples/cross-browser.py
-        run: python examples/cross-browser.py
-
-  e2e-headful:
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        headful-argument: [ headful, headless ]
 
     steps:
       - name: Checkout
@@ -71,7 +41,7 @@ jobs:
       - name: Install Python dependencies
         run: python -m pip install -r tests/requirements.txt
       - name: Run e2e tests
-        run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run e2e-headful
+        run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run e2e-${{ matrix.headful-argument }}
 
 env:
   FORCE_COLOR: 3
