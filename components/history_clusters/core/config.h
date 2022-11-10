@@ -227,7 +227,7 @@ struct Config {
   bool keyword_filter_on_noisy_visits = false;
 
   // If enabled, adds the search terms of the visits that have them.
-  bool keyword_filter_on_search_terms = false;
+  bool keyword_filter_on_search_terms = true;
 
   // Maximum number of keywords to keep per cluster.
   size_t max_num_keywords_per_cluster = 20;

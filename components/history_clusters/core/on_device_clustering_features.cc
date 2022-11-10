@@ -32,7 +32,7 @@ BASE_FEATURE(kOnDeviceClusteringBlocklists,
 
 BASE_FEATURE(kOnDeviceClusteringKeywordFiltering,
              "JourneysKeywordFiltering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOnDeviceClusteringCategoryFiltering,
              "JourneysCategoryFiltering",
