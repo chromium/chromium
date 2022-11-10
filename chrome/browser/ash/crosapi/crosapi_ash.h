@@ -40,8 +40,8 @@ class AutomationAsh;
 class BrowserServiceHostAsh;
 class BrowserVersionServiceAsh;
 class CertDatabaseAsh;
-class ChromeAppKioskServiceAsh;
 class CertProvisioningAsh;
+class ChromeAppKioskServiceAsh;
 class ChromeAppWindowTrackerAsh;
 class ClipboardAsh;
 class ClipboardHistoryAsh;
@@ -80,6 +80,7 @@ class MessageCenterAsh;
 class MetricsReportingAsh;
 class NativeThemeServiceAsh;
 class NetworkChangeAsh;
+class NetworkSettingsServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
 class ParentAccessAsh;
@@ -106,7 +107,6 @@ class VideoCaptureDeviceFactoryAsh;
 class VirtualKeyboardAsh;
 class VolumeManagerAsh;
 class VpnExtensionObserverAsh;
-class NetworkSettingsServiceAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
 // crosapi clients, such as lacros-chrome, can call into.
@@ -129,6 +129,10 @@ class CrosapiAsh : public mojom::Crosapi {
                     base::OnceClosure disconnect_handler);
 
   // crosapi::mojom::Crosapi:
+  void BindAccountManager(
+      mojo::PendingReceiver<mojom::AccountManager> receiver) override;
+  void BindAppServiceProxy(
+      mojo::PendingReceiver<mojom::AppServiceProxy> receiver) override;
   void BindArc(mojo::PendingReceiver<mojom::Arc> receiver) override;
   void BindAudioService(
       mojo::PendingReceiver<mojom::AudioService> receiver) override;
@@ -138,22 +142,20 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::Automation> receiver) override;
   void BindAutomationFactory(
       mojo::PendingReceiver<mojom::AutomationFactory> receiver) override;
-  void BindAccountManager(
-      mojo::PendingReceiver<mojom::AccountManager> receiver) override;
-  void BindAppServiceProxy(
-      mojo::PendingReceiver<mojom::AppServiceProxy> receiver) override;
   void BindBrowserAppInstanceRegistry(
       mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver)
       override;
+  void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindBrowserServiceHost(
       mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
-  void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindBrowserVersionService(
       mojo::PendingReceiver<mojom::BrowserVersionService> receiver) override;
   void BindCertDatabase(
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindCertProvisioning(
       mojo::PendingReceiver<mojom::CertProvisioning> receiver) override;
+  void BindChromeAppKioskService(
+      mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
   void BindChromeAppPublisher(
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindChromeAppWindowTracker(
@@ -184,8 +186,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindDlp(mojo::PendingReceiver<mojom::Dlp> receiver) override;
   void BindDocumentScan(
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
-  void BindHoldingSpaceService(
-      mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) override;
   void BindDownloadController(
       mojo::PendingReceiver<mojom::DownloadController> receiver) override;
   void BindDriveIntegrationService(
@@ -198,6 +198,7 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) override;
   void BindExtensionPublisher(
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
+  void BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) override;
   void BindFieldTrialService(
       mojo::PendingReceiver<mojom::FieldTrialService> receiver) override;
   void BindFileManager(
@@ -211,6 +212,10 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::FullscreenController> receiver) override;
   void BindGeolocationService(
       mojo::PendingReceiver<mojom::GeolocationService> receiver) override;
+  void BindHidManager(
+      mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
+  void BindHoldingSpaceService(
+      mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) override;
   void BindIdentityManager(
       mojo::PendingReceiver<mojom::IdentityManager> receiver) override;
   void BindIdleService(
@@ -223,8 +228,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindKioskSessionService(
       mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
-  void BindChromeAppKioskService(
-      mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
@@ -232,6 +235,19 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::LoginScreenStorage> receiver) override;
   void BindLoginState(
       mojo::PendingReceiver<mojom::LoginState> receiver) override;
+  void BindMachineLearningService(
+      mojo::PendingReceiver<
+          chromeos::machine_learning::mojom::MachineLearningService> receiver)
+      override;
+  void BindMediaSessionAudioFocus(
+      mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
+      override;
+  void BindMediaSessionAudioFocusDebug(
+      mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
+          receiver) override;
+  void BindMediaSessionController(
+      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
+          receiver) override;
   void BindMessageCenter(
       mojo::PendingReceiver<mojom::MessageCenter> receiver) override;
   void BindMetricsReporting(
@@ -240,6 +256,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NativeThemeService> receiver) override;
   void BindNetworkChange(
       mojo::PendingReceiver<mojom::NetworkChange> receiver) override;
+  void BindNetworkSettingsService(
+      ::mojo::PendingReceiver<::crosapi::mojom::NetworkSettingsService>
+          receiver) override;
   void BindNetworkingAttributes(
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
   void BindNetworkingPrivate(
@@ -274,31 +293,11 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::SpeechRecognition> receiver) override;
   void BindStableVideoDecoderFactory(
       mojo::GenericPendingReceiver receiver) override;
-  void BindHidManager(
-      mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
-  void BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) override;
-  void OnBrowserStartup(mojom::BrowserInfoPtr browser_info) override;
-  void BindMediaSessionController(
-      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-          receiver) override;
-  void BindMediaSessionAudioFocus(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
-      override;
-  void BindMediaSessionAudioFocusDebug(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
+  void BindStructuredMetricsService(
+      ::mojo::PendingReceiver<::crosapi::mojom::StructuredMetricsService>
           receiver) override;
   void BindSyncService(
       mojo::PendingReceiver<mojom::SyncService> receiver) override;
-  void REMOVED_29(
-      mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
-  void BindVirtualKeyboard(
-      mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
-  void BindVpnService(
-      mojo::PendingReceiver<mojom::VpnService> receiver) override;
-  void BindWebAppService(
-      mojo::PendingReceiver<mojom::WebAppService> receiver) override;
-  void BindWebPageInfoFactory(
-      mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
   void BindTaskManager(
       mojo::PendingReceiver<mojom::TaskManager> receiver) override;
   void BindTelemetryProbeService(
@@ -310,28 +309,29 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindTts(mojo::PendingReceiver<mojom::Tts> receiver) override;
   void BindUrlHandler(
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
-  void BindMachineLearningService(
-      mojo::PendingReceiver<
-          chromeos::machine_learning::mojom::MachineLearningService> receiver)
-      override;
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
+  void BindVirtualKeyboard(
+      mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
   void BindVolumeManager(
       mojo::PendingReceiver<mojom::VolumeManager> receiver) override;
   void BindVpnExtensionObserver(
       mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver)
       override;
+  void BindVpnService(
+      mojo::PendingReceiver<mojom::VpnService> receiver) override;
   void BindWallpaper(
       mojo::PendingReceiver<crosapi::mojom::Wallpaper> receiver) override;
   void BindWebAppPublisher(
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
-  void BindNetworkSettingsService(
-      ::mojo::PendingReceiver<::crosapi::mojom::NetworkSettingsService>
-          receiver) override;
-  void BindStructuredMetricsService(
-      ::mojo::PendingReceiver<::crosapi::mojom::StructuredMetricsService>
-          receiver) override;
+  void BindWebAppService(
+      mojo::PendingReceiver<mojom::WebAppService> receiver) override;
+  void BindWebPageInfoFactory(
+      mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
+  void OnBrowserStartup(mojom::BrowserInfoPtr browser_info) override;
+  void REMOVED_29(
+      mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
 
   BrowserServiceHostAsh* browser_service_host_ash() {
     return browser_service_host_ash_.get();
