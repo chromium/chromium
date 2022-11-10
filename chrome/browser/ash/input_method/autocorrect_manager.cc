@@ -34,6 +34,7 @@ namespace input_method {
 
 namespace {
 
+constexpr int kMaxEditDistance = 30;
 constexpr int kDistanceUntilUnderlineHides = 3;
 constexpr int kMaxValidationTries = 4;
 constexpr base::TimeDelta kVeryFastInteractionPeriod = base::Milliseconds(200);
@@ -256,6 +257,78 @@ void LogAssistiveAutocorrectQualityBreakdown(
   }
 }
 
+// Returns the Levenshtein distance between |str1| and |str2|.
+// Which is the minimum number of single-character edits (i.e. insertions,
+// deletions or substitutions) required to change one word into the other.
+// https://en.wikipedia.org/wiki/Levenshtein_distance
+int GetLevenshteinDistance(const std::u16string& str1,
+                           const std::u16string& str2) {
+  if (str1.size() > str2.size()) {
+    return GetLevenshteinDistance(str2, str1);
+  }
+  if (ssize(str1) + kMaxEditDistance < ssize(str2)) {
+    return kMaxEditDistance;
+  }
+
+  std::vector<int> row(str1.size() + 1);
+  for (int i = 0; i < ssize(row); ++i) {
+    row[i] = i;
+  }
+
+  for (int i = 0; i < ssize(str2); ++i) {
+    ++row[0];
+    int previous = i;
+    bool under_cutoff = false;
+    for (int j = 0; j < ssize(str1); ++j) {
+      int old_row = row[j + 1];
+      int cost = str2[i] == str1[j] ? 0 : 1;
+      row[j + 1] = std::min(std::min(row[j], row[j + 1]) + 1, previous + cost);
+      if (row[j + 1] < kMaxEditDistance) {
+        under_cutoff = true;
+      }
+      previous = old_row;
+    }
+
+    if (!under_cutoff) {
+      return kMaxEditDistance;
+    }
+  }
+  return row[str1.size()];
+}
+
+void MeasureAndLogAssistiveAutocorrectEditDistance(
+    const std::u16string& original_text,
+    const std::u16string& suggested_text,
+    const bool suggestion_accepted,
+    const bool virtual_keyboard_visible) {
+  const int text_length =
+      std::min(static_cast<int>(original_text.length()), kMaxEditDistance);
+  const int distance = std::min(
+      GetLevenshteinDistance(original_text, suggested_text), kMaxEditDistance);
+  if (text_length <= 0 || distance <= 0) {
+    return;
+  }
+
+  const std::string histogram_base_name =
+      "InputMethod.Assistive.AutocorrectV2.Distance.";
+  std::string keyboard_type_extension =
+      virtual_keyboard_visible ? ".Vk" : ".Pk";
+  keyboard_type_extension += suggestion_accepted ? "Accepted" : "Rejected";
+
+  // This is a 2d array of size (kMaxEditDistance x kMaxEditDistance) that
+  // has been flattened
+  const int flattenedLengthVsDistance =
+      (text_length - 1) * kMaxEditDistance + distance - 1;
+  base::UmaHistogramSparse(
+      base::StrCat({histogram_base_name, "OriginalLengthVsLevenshteinDistance",
+                    keyboard_type_extension}),
+      flattenedLengthVsDistance);
+  base::UmaHistogramExactLinear(
+      base::StrCat(
+          {histogram_base_name, "SuggestedLength", keyboard_type_extension}),
+      suggested_text.length(), kMaxEditDistance);
+}
+
 void RecordAssistiveCoverage(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Coverage", type);
 }
@@ -449,6 +522,9 @@ void AutocorrectManager::MeasureAndLogAssistiveAutocorrectQualityBreakdown(
   LogAssistiveAutocorrectQualityBreakdown(
       AutocorrectQualityBreakdown::kSuggestionResolved, suggestion_accepted,
       virtual_keyboard_visible);
+  MeasureAndLogAssistiveAutocorrectEditDistance(original_text, suggested_text,
+                                                suggestion_accepted,
+                                                virtual_keyboard_visible);
 
   if (diacritics_insensitive_string_comparator_.Equal(original_text,
                                                       suggested_text)) {
