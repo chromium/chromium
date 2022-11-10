@@ -122,7 +122,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
   for (const auto& url_param : params->urls) {
     const storage::FileSystemURL url =
         file_system_context->CrackURLInFirstPartyContext(GURL{url_param});
-    if (!chromeos::FileSystemBackend::CanHandleURL(url)) {
+    if (!ash::FileSystemBackend::CanHandleURL(url)) {
       return RespondNow(Error(kInvalidFileUrl));
     }
     urls.push_back(url);
@@ -176,7 +176,7 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
     const GURL url{url_param};
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
-    if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))
+    if (!ash::FileSystemBackend::CanHandleURL(file_system_url))
       continue;
     urls_.push_back(url);
     local_paths_.push_back(file_system_url.path());

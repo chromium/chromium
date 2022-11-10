@@ -388,7 +388,7 @@ TEST_F(FileSystemContextTest, CanServeURLRequest) {
 // See http://crbug.com/447027
 TEST_F(FileSystemContextTest, IsolatedFileSystemsTypesHandled) {
   // This does not provide any "additional" file system handlers. In particular,
-  // on Chrome OS it does not provide chromeos::FileSystemBackend.
+  // on Chrome OS it does not provide ash::FileSystemBackend.
   scoped_refptr<FileSystemContext> file_system_context =
       CreateFileSystemContextForTest(/*external_mount_points=*/nullptr);
 

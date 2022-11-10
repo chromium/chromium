@@ -42,7 +42,7 @@ TEST(ChromeOSFileSystemBackendTest, DefaultMountPoints) {
 
   scoped_refptr<storage::ExternalMountPoints> mount_points(
       storage::ExternalMountPoints::CreateRefCounted());
-  chromeos::FileSystemBackend backend(
+  ash::FileSystemBackend backend(
       nullptr,  // profile
       nullptr,  // file_system_provider_delegate
       nullptr,  // mtp_delegate
@@ -72,15 +72,14 @@ TEST(ChromeOSFileSystemBackendTest, GetRootDirectories) {
   scoped_refptr<storage::ExternalMountPoints> system_mount_points(
       storage::ExternalMountPoints::CreateRefCounted());
 
-  chromeos::FileSystemBackend backend(
-      nullptr,  // profile
-      nullptr,  // file_system_provider_delegate
-      nullptr,  // mtp_delegate
-      nullptr,  // arc_content_delegate
-      nullptr,  // arc_documents_provider_delegate
-      nullptr,  // drivefs_delegate
-      nullptr,  // smbfs_delegate
-      mount_points.get(), system_mount_points.get());
+  ash::FileSystemBackend backend(nullptr,  // profile
+                                 nullptr,  // file_system_provider_delegate
+                                 nullptr,  // mtp_delegate
+                                 nullptr,  // arc_content_delegate
+                                 nullptr,  // arc_documents_provider_delegate
+                                 nullptr,  // drivefs_delegate
+                                 nullptr,  // smbfs_delegate
+                                 mount_points.get(), system_mount_points.get());
 
   const size_t initial_root_dirs_size = backend.GetRootDirectories().size();
 
@@ -114,15 +113,14 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
       storage::ExternalMountPoints::CreateRefCounted());
   scoped_refptr<storage::ExternalMountPoints> system_mount_points(
       storage::ExternalMountPoints::CreateRefCounted());
-  chromeos::FileSystemBackend backend(
-      nullptr,  // profile
-      nullptr,  // file_system_provider_delegate
-      nullptr,  // mtp_delegate
-      nullptr,  // arc_content_delegate
-      nullptr,  // arc_documents_provider_delegate
-      nullptr,  // drivefs_delegate
-      nullptr,  // smbfs_delegate
-      mount_points.get(), system_mount_points.get());
+  ash::FileSystemBackend backend(nullptr,  // profile
+                                 nullptr,  // file_system_provider_delegate
+                                 nullptr,  // mtp_delegate
+                                 nullptr,  // arc_content_delegate
+                                 nullptr,  // arc_documents_provider_delegate
+                                 nullptr,  // drivefs_delegate
+                                 nullptr,  // smbfs_delegate
+                                 mount_points.get(), system_mount_points.get());
 
   std::string extension("ddammdhioacbehjngdmkjcjbnfginlla");
   url::Origin origin = url::Origin::Create(
@@ -179,15 +177,14 @@ TEST(ChromeOSFileSystemBackendTest, GetVirtualPathConflictWithSystemPoints) {
       storage::ExternalMountPoints::CreateRefCounted());
   scoped_refptr<storage::ExternalMountPoints> system_mount_points(
       storage::ExternalMountPoints::CreateRefCounted());
-  chromeos::FileSystemBackend backend(
-      nullptr,  // profile
-      nullptr,  // file_system_provider_delegate
-      nullptr,  // mtp_delegate
-      nullptr,  // arc_content_delegate
-      nullptr,  // arc_documents_provider_delegate
-      nullptr,  // drivefs_delegate
-      nullptr,  // smbfs_delegate
-      mount_points.get(), system_mount_points.get());
+  ash::FileSystemBackend backend(nullptr,  // profile
+                                 nullptr,  // file_system_provider_delegate
+                                 nullptr,  // mtp_delegate
+                                 nullptr,  // arc_content_delegate
+                                 nullptr,  // arc_documents_provider_delegate
+                                 nullptr,  // drivefs_delegate
+                                 nullptr,  // smbfs_delegate
+                                 mount_points.get(), system_mount_points.get());
 
   const storage::FileSystemType type = storage::kFileSystemTypeLocal;
   const storage::FileSystemMountOption option =

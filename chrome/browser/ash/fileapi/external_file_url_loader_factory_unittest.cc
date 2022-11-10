@@ -29,7 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kExtensionId[] = "abc";
@@ -61,15 +61,14 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(profile);
 
-    auto* service = ash::file_system_provider::Service::Get(profile);
+    auto* service = file_system_provider::Service::Get(profile);
     service->RegisterProvider(
-        ash::file_system_provider::FakeExtensionProvider::Create(kExtensionId));
+        file_system_provider::FakeExtensionProvider::Create(kExtensionId));
     const auto kProviderId =
-        ash::file_system_provider::ProviderId::CreateFromExtensionId(
-            kExtensionId);
-    service->MountFileSystem(kProviderId,
-                             ash::file_system_provider::MountOptions(
-                                 kFileSystemId, "Test FileSystem"));
+        file_system_provider::ProviderId::CreateFromExtensionId(kExtensionId);
+    service->MountFileSystem(
+        kProviderId,
+        file_system_provider::MountOptions(kFileSystemId, "Test FileSystem"));
 
     // Create the URLLoaderFactory.
     url_loader_factory_.Bind(ExternalFileURLLoaderFactory::Create(
@@ -236,4 +235,4 @@ TEST_F(SubresourceExternalFileURLLoaderFactoryTest, SubresourceNotAllowed) {
             bad_message_observer.WaitForBadMessage());
 }
 
-}  // namespace chromeos
+}  // namespace ash

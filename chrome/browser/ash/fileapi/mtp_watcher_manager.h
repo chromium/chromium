@@ -14,7 +14,7 @@ class FileSystemURL;
 
 }  // namespace storage
 
-namespace chromeos {
+namespace ash {
 
 class MTPWatcherManager : public storage::WatcherManager {
  public:
@@ -35,6 +35,6 @@ class MTPWatcherManager : public storage::WatcherManager {
   DeviceMediaAsyncFileUtil* const device_media_async_file_util_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_MTP_WATCHER_MANAGER_H_

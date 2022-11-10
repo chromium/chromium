@@ -24,9 +24,9 @@ class WatcherManager;
 namespace ash {
 namespace file_system_provider {
 
-// Delegate implementation of the some methods in chromeos::FileSystemBackend
+// Delegate implementation of the some methods in FileSystemBackend
 // for provided file systems.
-class BackendDelegate : public chromeos::FileSystemBackendDelegate {
+class BackendDelegate : public FileSystemBackendDelegate {
  public:
   BackendDelegate();
 

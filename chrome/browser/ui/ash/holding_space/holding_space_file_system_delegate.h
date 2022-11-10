@@ -36,7 +36,7 @@ namespace ash {
 //    holding space items.
 class HoldingSpaceFileSystemDelegate
     : public HoldingSpaceKeyedServiceDelegate,
-      public chromeos::FileChangeServiceObserver,
+      public FileChangeServiceObserver,
       public arc::ConnectionObserver<arc::mojom::FileSystemInstance>,
       public drivefs::DriveFsHostObserver,
       public file_manager::VolumeManagerObserver {
@@ -68,7 +68,7 @@ class HoldingSpaceFileSystemDelegate
   void OnVolumeUnmounted(MountError error_code,
                          const file_manager::Volume& volume) override;
 
-  // chromeos::FileChangeServiceObserver:
+  // FileChangeServiceObserver:
   void OnFileModified(const storage::FileSystemURL& url) override;
   void OnFileMoved(const storage::FileSystemURL& src,
                    const storage::FileSystemURL& dst) override;
@@ -153,8 +153,7 @@ class HoldingSpaceFileSystemDelegate
   base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
       drivefs_host_observer_{this};
 
-  base::ScopedObservation<chromeos::FileChangeService,
-                          chromeos::FileChangeServiceObserver>
+  base::ScopedObservation<FileChangeService, FileChangeServiceObserver>
       file_change_service_observer_{this};
 
   base::ScopedObservation<file_manager::VolumeManager,

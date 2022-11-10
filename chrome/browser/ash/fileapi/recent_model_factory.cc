@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 RecentModel* RecentModelFactory::GetForProfile(Profile* profile) {
@@ -41,4 +41,4 @@ KeyedService* RecentModelFactory::BuildServiceInstanceFor(
   return new RecentModel(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

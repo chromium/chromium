@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -111,4 +111,4 @@ TEST_F(ExternalFileURLUtilTest, VirtualPathToExternalFileURL) {
                              "foo/bar/space%E3%80%80lock%F0%9F%94%92.zip");
 }
 
-}  // namespace chromeos
+}  // namespace ash

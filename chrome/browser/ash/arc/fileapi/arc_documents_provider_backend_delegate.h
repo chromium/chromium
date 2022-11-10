@@ -16,7 +16,7 @@ namespace arc {
 
 // Implements ARC documents provider filesystem.
 class ArcDocumentsProviderBackendDelegate
-    : public chromeos::FileSystemBackendDelegate {
+    : public ash::FileSystemBackendDelegate {
  public:
   ArcDocumentsProviderBackendDelegate();
 

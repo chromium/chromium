@@ -10,7 +10,7 @@
 #include "components/account_id/account_id.h"
 #include "storage/browser/file_system/file_system_operation_impl.h"
 
-namespace chromeos {
+namespace ash {
 
 // A thin extension to the default `storage::FileSystemOperationImpl` which
 // notifies the `FileChangeService` of file change events.
@@ -69,6 +69,6 @@ class ObservableFileSystemOperationImpl
   base::WeakPtrFactory<ObservableFileSystemOperationImpl> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_OBSERVABLE_FILE_SYSTEM_OPERATION_IMPL_H_

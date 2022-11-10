@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/fileapi/file_change_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace chromeos {
+namespace ash {
 
 // A service which notifies observers of file change events from external file
 // systems. This serves as a bridge to allow for observation of file system
@@ -40,6 +40,6 @@ class FileChangeService : public KeyedService {
   base::ObserverList<FileChangeServiceObserver> observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_FILE_CHANGE_SERVICE_H_

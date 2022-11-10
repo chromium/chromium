@@ -53,7 +53,7 @@ HoldingSpaceKeyedServiceFactory::HoldingSpaceKeyedServiceFactory()
           "HoldingSpaceService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(arc::ArcFileSystemBridge::GetFactory());
-  DependsOn(chromeos::FileChangeServiceFactory::GetInstance());
+  DependsOn(FileChangeServiceFactory::GetInstance());
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(file_manager::VolumeManagerFactory::GetInstance());
 }

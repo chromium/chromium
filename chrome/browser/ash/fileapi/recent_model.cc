@@ -25,7 +25,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -224,4 +224,4 @@ void RecentModel::SetForcedCutoffTimeForTest(
   forced_cutoff_time_ = forced_cutoff_time;
 }
 
-}  // namespace chromeos
+}  // namespace ash

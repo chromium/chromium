@@ -12,7 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -225,4 +225,4 @@ void ObservableFileSystemOperationImpl::Truncate(
                          std::move(callback)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

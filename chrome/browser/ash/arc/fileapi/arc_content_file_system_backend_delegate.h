@@ -11,10 +11,10 @@
 
 namespace arc {
 
-// Delegate implementation of the some methods in chromeos::FileSystemBackend
+// Delegate implementation of the some methods in ash::FileSystemBackend
 // for ARC content file system.
 class ArcContentFileSystemBackendDelegate
-    : public chromeos::FileSystemBackendDelegate {
+    : public ash::FileSystemBackendDelegate {
  public:
   ArcContentFileSystemBackendDelegate();
 

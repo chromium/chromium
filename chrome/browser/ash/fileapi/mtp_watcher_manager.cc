@@ -8,7 +8,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 MTPWatcherManager::MTPWatcherManager(
     DeviceMediaAsyncFileUtil* device_media_async_file_util)
@@ -36,4 +36,4 @@ void MTPWatcherManager::RemoveWatcher(const storage::FileSystemURL& url,
                                                std::move(callback));
 }
 
-}  // namespace chromeos
+}  // namespace ash

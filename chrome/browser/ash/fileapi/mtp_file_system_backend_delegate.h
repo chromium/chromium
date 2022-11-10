@@ -27,7 +27,7 @@ class WatcherManager;
 
 class DeviceMediaAsyncFileUtil;
 
-namespace chromeos {
+namespace ash {
 
 // This is delegate interface to inject the MTP device file system in Chrome OS
 // file API backend.
@@ -65,6 +65,6 @@ class MTPFileSystemBackendDelegate : public FileSystemBackendDelegate {
   std::unique_ptr<MTPWatcherManager> mtp_watcher_manager_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_MTP_FILE_SYSTEM_BACKEND_DELEGATE_H_

@@ -40,7 +40,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr size_t kDefaultPipeSize = 65536;
@@ -393,4 +393,4 @@ ExternalFileURLLoaderFactory::Create(void* profile_id,
   return pending_remote;
 }
 
-}  // namespace chromeos
+}  // namespace ash

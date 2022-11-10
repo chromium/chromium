@@ -15,7 +15,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 class RecentFile;
 
@@ -106,6 +106,6 @@ class RecentSource {
   RecentSource();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_RECENT_SOURCE_H_

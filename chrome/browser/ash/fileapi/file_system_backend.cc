@@ -39,7 +39,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // TODO(mtomasz): Remove this hacky allowlist.
@@ -105,11 +105,11 @@ void FileSystemBackend::AddSystemMountPoints() {
   system_mount_points_->RegisterFileSystem(
       kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
-      ash::CrosDisksClient::GetArchiveMountPoint());
+      CrosDisksClient::GetArchiveMountPoint());
   system_mount_points_->RegisterFileSystem(
       kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(storage::FlushPolicy::FLUSH_ON_COMPLETION),
-      ash::CrosDisksClient::GetRemovableDiskMountPoint());
+      CrosDisksClient::GetRemovableDiskMountPoint());
   system_mount_points_->RegisterFileSystem(
       kSystemMountNameOem, storage::kFileSystemTypeRestrictedLocal,
       storage::FileSystemMountOption(),
@@ -244,7 +244,7 @@ bool FileSystemBackend::IsAccessAllowed(
     return true;
 
   // The chrome://file-manager can access its filesystem origin.
-  if (origin.GetURL() == ash::file_manager::kChromeUIFileManagerURL) {
+  if (origin.GetURL() == file_manager::kChromeUIFileManagerURL) {
     return true;
   }
 
@@ -543,4 +543,4 @@ storage::FileSystemURL FileSystemBackend::CreateInternalURL(
       blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -27,7 +27,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 const char RecentDriveSource::kLoadHistogramName[] =
     "FileBrowser.Recent.LoadDrive";
@@ -151,4 +151,4 @@ void RecentDriveSource::GotSearchResults(
   OnComplete();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -8,7 +8,7 @@
 #include "base/time/time.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-namespace chromeos {
+namespace ash {
 
 class RecentFile {
  public:
@@ -32,6 +32,6 @@ struct RecentFileComparator {
   bool operator()(const RecentFile& a, const RecentFile& b);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_RECENT_FILE_H_

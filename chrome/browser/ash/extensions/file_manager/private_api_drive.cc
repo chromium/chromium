@@ -521,7 +521,7 @@ void FileManagerPrivateInternalGetEntryPropertiesFunction::
 
   if (error == base::File::FILE_OK) {
     properties->external_file_url =
-        chromeos::FileSystemURLToExternalFileURL(url).spec();
+        ash::FileSystemURLToExternalFileURL(url).spec();
   }
   properties_list_[index] = std::move(*properties);
 

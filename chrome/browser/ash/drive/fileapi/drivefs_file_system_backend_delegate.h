@@ -24,10 +24,9 @@ class WatcherManager;
 
 namespace drive {
 
-// Delegate implementation of the some methods in chromeos::FileSystemBackend
+// Delegate implementation of the some methods in ash::FileSystemBackend
 // for Drive file system.
-class DriveFsFileSystemBackendDelegate
-    : public chromeos::FileSystemBackendDelegate {
+class DriveFsFileSystemBackendDelegate : public ash::FileSystemBackendDelegate {
  public:
   explicit DriveFsFileSystemBackendDelegate(Profile* profile);
 

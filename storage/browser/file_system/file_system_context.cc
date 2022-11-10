@@ -222,7 +222,7 @@ FileSystemContext::FileSystemContext(
   // If the embedder's additional backends already provide support for
   // kFileSystemTypeLocal and kFileSystemTypeLocalForPlatformApp then
   // IsolatedFileSystemBackend does not need to handle them. For example, on
-  // Chrome OS the additional backend chromeos::FileSystemBackend handles these
+  // Chrome OS the additional backend ash::FileSystemBackend handles these
   // types.
   isolated_backend_ = std::make_unique<IsolatedFileSystemBackend>(
       !base::Contains(backend_map_, kFileSystemTypeLocal),

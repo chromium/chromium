@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/fileapi/file_change_service.h"
 
-namespace chromeos {
+namespace ash {
 
 FileChangeService::FileChangeService() = default;
 
@@ -35,4 +35,4 @@ void FileChangeService::NotifyFileMoved(const storage::FileSystemURL& src,
     observer.OnFileMoved(src, dst);
 }
 
-}  // namespace chromeos
+}  // namespace ash

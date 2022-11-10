@@ -72,8 +72,7 @@ file_manager::util::FileSystemURLAndHandle GetFileSystemURLAndHandle(
     const storage::FileSystemContext& context,
     const GURL& url) {
   // Obtain the absolute path in the file system.
-  const base::FilePath virtual_path =
-      chromeos::ExternalFileURLToVirtualPath(url);
+  const base::FilePath virtual_path = ash::ExternalFileURLToVirtualPath(url);
   DCHECK(!virtual_path.empty());
   // Obtain the file system URL.
   return file_manager::util::CreateIsolatedURLFromVirtualPath(
@@ -313,7 +312,7 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
   }
 
   // Check if the obtained path providing external file URL or not.
-  if (!chromeos::IsExternalFileURLType(isolated_file_system.url.type())) {
+  if (!ash::IsExternalFileURLType(isolated_file_system.url.type())) {
     LOG(ERROR) << "FileSystemURL is not of external file type.";
     UpdateNearbyShareDataHandlingFail(DataHandlingResult::kNotExternalFileType);
     NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_URL);

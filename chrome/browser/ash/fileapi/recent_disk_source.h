@@ -21,7 +21,7 @@
 #include "storage/browser/file_system/file_system_operation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // RecentSource implementation for local disks.
 // Used for Downloads and fuse-based Crostini.
@@ -85,6 +85,6 @@ class RecentDiskSource : public RecentSource {
   base::WeakPtrFactory<RecentDiskSource> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_RECENT_DISK_SOURCE_H_

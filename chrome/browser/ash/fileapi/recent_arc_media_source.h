@@ -16,7 +16,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class RecentFile;
 
@@ -62,6 +62,6 @@ class RecentArcMediaSource : public RecentSource {
   base::WeakPtrFactory<RecentArcMediaSource> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_RECENT_ARC_MEDIA_SOURCE_H_

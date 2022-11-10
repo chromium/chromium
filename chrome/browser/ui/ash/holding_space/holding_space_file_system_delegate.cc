@@ -267,7 +267,7 @@ void HoldingSpaceFileSystemDelegate::Init() {
 
   // Local file system.
   file_change_service_observer_.Observe(
-      chromeos::FileChangeServiceFactory::GetInstance()->GetService(profile()));
+      FileChangeServiceFactory::GetInstance()->GetService(profile()));
 
   // Volume manager.
   auto* const volume_manager = file_manager::VolumeManager::Get(profile());

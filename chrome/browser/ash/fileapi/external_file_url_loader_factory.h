@@ -11,7 +11,7 @@
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 // URLLoaderFactory that creates URLLoader instances for URLs with the
 // externalfile scheme.
@@ -59,6 +59,6 @@ class ExternalFileURLLoaderFactory
   const int render_process_host_id_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_EXTERNAL_FILE_URL_LOADER_FACTORY_H_

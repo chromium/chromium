@@ -144,7 +144,7 @@ absl::optional<fusebox::Moniker> ConvertToMoniker(Profile* profile,
   GURL external_file_url = arc::ArcUrlToExternalFileUrl(content_url);
 
   const base::FilePath virtual_path =
-      chromeos::ExternalFileURLToVirtualPath(external_file_url);
+      ash::ExternalFileURLToVirtualPath(external_file_url);
 
   const storage::FileSystemURL fs_url =
       file_manager::util::GetFileManagerFileSystemContext(profile)

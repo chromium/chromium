@@ -23,7 +23,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 bool IsExternalFileURLType(storage::FileSystemType type, bool force) {
   return type == storage::kFileSystemTypeDeviceMediaAsFileStorage ||
@@ -77,4 +77,4 @@ GURL CreateExternalFileURLFromPath(Profile* profile,
   return FileSystemURLToExternalFileURL(file_system_url, force);
 }
 
-}  // namespace chromeos
+}  // namespace ash

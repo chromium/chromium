@@ -123,7 +123,7 @@ bool OpenFileWithBrowser(Profile* profile,
   if (IsViewableInBrowser(file_path) || action_id == "view-pdf" ||
       (action_id == "view-in-browser" && file_path.Extension() == "")) {
     // Use external file URL if it is provided for the file system.
-    GURL page_url = chromeos::FileSystemURLToExternalFileURL(file_system_url);
+    GURL page_url = ash::FileSystemURLToExternalFileURL(file_system_url);
     if (page_url.is_empty())
       page_url = net::FilePathToFileURL(file_path);
 
@@ -137,8 +137,7 @@ bool OpenFileWithBrowser(Profile* profile,
       // is on the drive volume, ExternalFileURLRequestJob redirects the URL to
       // drive's web interface. Otherwise (e.g. MTP, FSP), the file is just
       // downloaded in a browser tab.
-      const GURL url =
-          chromeos::FileSystemURLToExternalFileURL(file_system_url);
+      const GURL url = ash::FileSystemURLToExternalFileURL(file_system_url);
       DCHECK(!url.is_empty());
       OpenNewTab(url);
     } else {

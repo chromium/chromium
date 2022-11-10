@@ -21,13 +21,15 @@
 namespace net {
 class HttpRequestHeaders;
 }
+
 namespace storage {
 class FileStreamReader;
 class FileSystemContext;
 }  // namespace storage
+
 class GURL;
 
-namespace chromeos {
+namespace ash {
 
 // Resolves an externalfile URL to a redirect or a FileStreamReader.
 class ExternalFileResolver {
@@ -86,6 +88,6 @@ class ExternalFileResolver {
   base::WeakPtrFactory<ExternalFileResolver> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_EXTERNAL_FILE_RESOLVER_H_

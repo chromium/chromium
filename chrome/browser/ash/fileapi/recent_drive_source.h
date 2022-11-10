@@ -19,7 +19,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class RecentFile;
 
@@ -63,6 +63,6 @@ class RecentDriveSource : public RecentSource {
   base::WeakPtrFactory<RecentDriveSource> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_RECENT_DRIVE_SOURCE_H_

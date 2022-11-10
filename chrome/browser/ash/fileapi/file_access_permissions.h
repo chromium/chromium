@@ -12,7 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "url/origin.h"
 
-namespace chromeos {
+namespace ash {
 
 // In a thread safe manner maintains the set of paths allowed to access for
 // each extension.
@@ -42,6 +42,6 @@ class FileAccessPermissions {
   PathAccessMap path_map_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_FILE_ACCESS_PERMISSIONS_H_

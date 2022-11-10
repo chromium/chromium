@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash {
 
 FileAccessPermissions::FileAccessPermissions() {}
 
@@ -46,4 +46,4 @@ void FileAccessPermissions::RevokePermissions(const url::Origin& origin) {
   path_map_.erase(origin);
 }
 
-}  // namespace chromeos
+}  // namespace ash

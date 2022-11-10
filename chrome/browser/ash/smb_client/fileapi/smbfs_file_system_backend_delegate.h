@@ -16,8 +16,7 @@ namespace smb_client {
 
 class SmbFsAsyncFileUtil;
 
-class SmbFsFileSystemBackendDelegate
-    : public chromeos::FileSystemBackendDelegate {
+class SmbFsFileSystemBackendDelegate : public FileSystemBackendDelegate {
  public:
   explicit SmbFsFileSystemBackendDelegate(Profile* profile);
   ~SmbFsFileSystemBackendDelegate() override;

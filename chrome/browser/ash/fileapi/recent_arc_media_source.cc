@@ -30,7 +30,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -418,4 +418,4 @@ bool RecentArcMediaSource::WillArcFileSystemOperationsRunImmediately() {
   return !runner->WillDefer();
 }
 
-}  // namespace chromeos
+}  // namespace ash

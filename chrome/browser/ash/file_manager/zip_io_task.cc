@@ -101,8 +101,7 @@ void ZipIOTask::Execute(IOTask::ProgressCallback progress_callback,
 
   // Convert the destination folder URL to absolute path.
   source_dir_ = progress_.destination_folder.path();
-  if (!chromeos::FileSystemBackend::CanHandleURL(
-          progress_.destination_folder) ||
+  if (!ash::FileSystemBackend::CanHandleURL(progress_.destination_folder) ||
       source_dir_.empty()) {
     progress_.outputs.emplace_back(progress_.destination_folder,
                                    base::File::FILE_ERROR_NOT_FOUND);
@@ -113,7 +112,7 @@ void ZipIOTask::Execute(IOTask::ProgressCallback progress_callback,
   // Convert source file URLs to relative paths.
   for (EntryStatus& source : progress_.sources) {
     const base::FilePath absolute_path = source.url.path();
-    if (!chromeos::FileSystemBackend::CanHandleURL(source.url) ||
+    if (!ash::FileSystemBackend::CanHandleURL(source.url) ||
         absolute_path.empty()) {
       source.error = base::File::FILE_ERROR_NOT_FOUND;
       Complete(State::kError);

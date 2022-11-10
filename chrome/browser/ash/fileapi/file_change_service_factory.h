@@ -12,7 +12,7 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class FileChangeService;
 
@@ -41,11 +41,6 @@ class FileChangeServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::FileChangeServiceFactory;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_FILE_CHANGE_SERVICE_FACTORY_H_

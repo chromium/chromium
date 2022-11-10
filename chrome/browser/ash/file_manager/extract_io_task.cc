@@ -55,7 +55,7 @@ ExtractIOTask::ExtractIOTask(
   for (const storage::FileSystemURL& source_url : source_urls_) {
     const base::FilePath source_path = source_url.path();
     if (source_path.MatchesExtension(".zip") &&
-        chromeos::FileSystemBackend::CanHandleURL(source_url)) {
+        ash::FileSystemBackend::CanHandleURL(source_url)) {
       progress_.sources.emplace_back(source_url, absl::nullopt);
     }
   }
@@ -282,7 +282,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_.Run(progress_);
   // If the backend can't handle the folder to unpack into or
   // there are no files to extract, finish the operation with an error.
-  if (!chromeos::FileSystemBackend::CanHandleURL(parent_folder_) ||
+  if (!ash::FileSystemBackend::CanHandleURL(parent_folder_) ||
       sizingCount_ == 0) {
     progress_.state = State::kError;
     RecordUmaExtractStatus(ExtractStatus::kUnknownError);

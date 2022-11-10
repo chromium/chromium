@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash {
 
 RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
                              const GURL& origin,
@@ -33,4 +33,4 @@ RecentSource::RecentSource() = default;
 
 RecentSource::~RecentSource() = default;
 
-}  // namespace chromeos
+}  // namespace ash

@@ -28,7 +28,7 @@ class FileSystemURL;
 class WatcherManager;
 }  // namespace storage
 
-namespace chromeos {
+namespace ash {
 
 class FileSystemBackendDelegate;
 class FileAccessPermissions;
@@ -194,6 +194,6 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
   storage::ExternalMountPoints* system_mount_points_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_FILE_SYSTEM_BACKEND_H_

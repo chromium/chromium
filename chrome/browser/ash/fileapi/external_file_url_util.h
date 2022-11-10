@@ -18,7 +18,7 @@ namespace storage {
 class FileSystemURL;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Returns whether the external file URL is provided for the |type| or not.
 // TODO(b/119597913): Remove |force| from all functions in this file
@@ -45,6 +45,6 @@ GURL CreateExternalFileURLFromPath(Profile* profile,
                                    const base::FilePath& path,
                                    bool force = false);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_EXTERNAL_FILE_URL_UTIL_H_

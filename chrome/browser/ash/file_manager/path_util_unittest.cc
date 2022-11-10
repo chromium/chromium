@@ -362,10 +362,10 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
       mount_point_drive.BaseName().value(), storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), mount_point_drive);
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), base::FilePath(kRemovableMediaPath));
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), base::FilePath(kArchiveMountPath));
   // SmbFsShare comes up with a unique stable ID for the share, it can
   // just be faked here, the mount ID is expected to appear in the mount
@@ -520,11 +520,11 @@ TEST_F(FileManagerPathUtilTest, ExtractMountNameFileSystemNameFullPath) {
                                    storage::FileSystemMountOption(), downloads);
   base::FilePath removable = base::FilePath(kRemovableMediaPath);
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), base::FilePath(kRemovableMediaPath));
   base::FilePath archive = base::FilePath(kArchiveMountPath);
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), base::FilePath(kArchiveMountPath));
   std::string relative_path_1 = "foo";
   std::string relative_path_2 = "foo/bar";

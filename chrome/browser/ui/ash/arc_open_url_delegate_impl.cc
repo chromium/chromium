@@ -148,7 +148,7 @@ GURL ConvertArcUrlToExternalFileUrlIfNeeded(const GURL& url) {
 // system. This Moniker file is readable on the Linux filesystem like any other
 // file. Returns an empty URL if a Moniker could not be created.
 GURL ConvertToMonikerFileUrl(Profile* profile, GURL content_url) {
-  const base::FilePath virtual_path = chromeos::ExternalFileURLToVirtualPath(
+  const base::FilePath virtual_path = ash::ExternalFileURLToVirtualPath(
       arc::ArcUrlToExternalFileUrl(content_url));
 
   const storage::FileSystemURL fs_url =

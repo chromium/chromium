@@ -31,7 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 class RecentDiskSourceTest : public testing::Test {
  public:
@@ -336,4 +336,4 @@ TEST_F(RecentDiskSourceTest, GetRecentFiles_UmaStats) {
   histogram_tester.ExpectTotalCount(uma_histogram_name_, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -9,7 +9,7 @@
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-namespace chromeos {
+namespace ash {
 
 MTPFileSystemBackendDelegate::MTPFileSystemBackendDelegate(
     const base::FilePath& storage_partition_path)
@@ -68,4 +68,4 @@ void MTPFileSystemBackendDelegate::GetRedirectURLForContents(
   std::move(callback).Run(GURL());
 }
 
-}  // namespace chromeos
+}  // namespace ash

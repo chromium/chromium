@@ -11,7 +11,7 @@ namespace storage {
 class FileSystemURL;
 }  // namespace storage
 
-namespace chromeos {
+namespace ash {
 
 // An interface for an observer which receives `FileChangeService` events.
 class FileChangeServiceObserver : public base::CheckedObserver {
@@ -29,6 +29,6 @@ class FileChangeServiceObserver : public base::CheckedObserver {
                            const storage::FileSystemURL& dst) {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_FILE_CHANGE_SERVICE_OBSERVER_H_

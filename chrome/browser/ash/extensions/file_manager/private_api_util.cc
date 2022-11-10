@@ -110,7 +110,7 @@ void GetSelectedFileInfoInternal(
           params->selected_files.emplace_back(file_path, base::FilePath());
 
           GURL external_file_url =
-              chromeos::CreateExternalFileURLFromPath(profile, file_path);
+              ash::CreateExternalFileURLFromPath(profile, file_path);
           if (!external_file_url.is_empty()) {
             params->selected_files.back().url.emplace(
                 std::move(external_file_url));
@@ -612,7 +612,7 @@ base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
   const storage::FileSystemURL filesystem_url(
       file_system_context->CrackURLInFirstPartyContext(url));
   base::FilePath path;
-  if (!chromeos::FileSystemBackend::CanHandleURL(filesystem_url))
+  if (!ash::FileSystemBackend::CanHandleURL(filesystem_url))
     return base::FilePath();
   return filesystem_url.path();
 }

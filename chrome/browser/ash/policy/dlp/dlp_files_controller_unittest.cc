@@ -327,7 +327,7 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_DiffFileSystem) {
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
   base::ScopedClosureRunner external_mount_points_revoker(
@@ -385,7 +385,7 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ClientNotRunning) {
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
   base::ScopedClosureRunner external_mount_points_revoker(
@@ -421,7 +421,7 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ErrorResponse) {
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
   base::ScopedClosureRunner external_mount_points_revoker(
@@ -467,7 +467,7 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_Folder) {
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
   base::ScopedClosureRunner external_mount_points_revoker(
@@ -517,7 +517,7 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_MultiFolder) {
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
   base::ScopedClosureRunner external_mount_points_revoker(
@@ -1053,7 +1053,7 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsFilesTransferRestricted) {
   mount_points->RevokeAllFileSystems();
 
   ASSERT_TRUE(mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kRemovableMediaPath)));
 
@@ -1293,7 +1293,7 @@ class DlpFilesExternalDestinationTest
         base::FilePath(file_manager::util::GetAndroidFilesPath())));
 
     ASSERT_TRUE(mount_points_->RegisterFileSystem(
-        chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
+        ash::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(),
         base::FilePath(file_manager::util::kRemovableMediaPath)));
 
@@ -1589,7 +1589,7 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   ASSERT_TRUE(mount_points);
   mount_points->RevokeAllFileSystems();
   ASSERT_TRUE(mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kRemovableMediaPath)));
 
@@ -1728,7 +1728,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
   ASSERT_TRUE(mount_points);
   mount_points->RevokeAllFileSystems();
   ASSERT_TRUE(mount_points->RegisterFileSystem(
-      chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
+      ash::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kRemovableMediaPath)));
   std::vector<FileDaemonInfo> files{

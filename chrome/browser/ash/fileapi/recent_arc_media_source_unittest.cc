@@ -26,7 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
@@ -351,4 +351,4 @@ TEST_F(RecentArcMediaSourceTest, UmaStats_Deferred) {
                                     0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

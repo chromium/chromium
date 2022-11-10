@@ -29,7 +29,7 @@ class FileSystemContext;
 
 }  // namespace storage
 
-namespace chromeos {
+namespace ash {
 
 class RecentModelFactory;
 
@@ -125,6 +125,6 @@ class RecentModel : public KeyedService {
   base::WeakPtrFactory<RecentModel> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_RECENT_MODEL_H_

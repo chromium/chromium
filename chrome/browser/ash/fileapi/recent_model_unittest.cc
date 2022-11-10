@@ -21,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -218,4 +218,4 @@ TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
   ASSERT_EQ(0u, files3.size());
 }
 
-}  // namespace chromeos
+}  // namespace ash

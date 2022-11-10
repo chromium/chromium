@@ -10,7 +10,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class RecentModel;
 
@@ -36,6 +36,6 @@ class RecentModelFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_RECENT_MODEL_FACTORY_H_

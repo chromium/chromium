@@ -26,7 +26,7 @@ class FileStreamWriter;
 class WatcherManager;
 }  // namespace storage
 
-namespace chromeos {
+namespace ash {
 
 // This is delegate interface to inject the implementation of the some methods
 // of FileSystemBackend.
@@ -64,6 +64,6 @@ class FileSystemBackendDelegate {
                                          storage::URLCallback callback) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_FILE_SYSTEM_BACKEND_DELEGATE_H_

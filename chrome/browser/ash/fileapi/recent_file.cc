@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/fileapi/recent_file.h"
 
-namespace chromeos {
+namespace ash {
 
 RecentFile::RecentFile() = default;
 
@@ -25,4 +25,4 @@ bool RecentFileComparator::operator()(const RecentFile& a,
   return storage::FileSystemURL::Comparator()(a.url(), b.url());
 }
 
-}  // namespace chromeos
+}  // namespace ash

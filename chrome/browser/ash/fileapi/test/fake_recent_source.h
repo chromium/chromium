@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ash/fileapi/recent_source.h"
 
-namespace chromeos {
+namespace ash {
 
 class RecentFile;
 
@@ -39,6 +39,6 @@ class FakeRecentSource : public RecentSource {
   std::vector<RecentFile> canned_files_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILEAPI_TEST_FAKE_RECENT_SOURCE_H_

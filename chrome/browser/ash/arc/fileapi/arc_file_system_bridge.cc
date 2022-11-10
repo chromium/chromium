@@ -96,7 +96,7 @@ file_manager::util::FileSystemURLAndHandle GetFileSystemURL(
     const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return file_manager::util::CreateIsolatedURLFromVirtualPath(
-      context, url::Origin(), chromeos::ExternalFileURLToVirtualPath(url));
+      context, url::Origin(), ash::ExternalFileURLToVirtualPath(url));
 }
 
 // Retrieves file's metadata on the IO thread, and runs the callback on the UI
@@ -553,7 +553,7 @@ base::FilePath ArcFileSystemBridge::GetLinuxVFSPathFromExternalFileURL(
     const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::FilePath virtual_path = chromeos::ExternalFileURLToVirtualPath(url);
+  base::FilePath virtual_path = ash::ExternalFileURLToVirtualPath(url);
 
   std::string mount_name, cracked_id;
   storage::FileSystemType file_system_type;

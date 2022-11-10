@@ -25,7 +25,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -273,4 +273,4 @@ storage::FileSystemURL RecentDiskSource::BuildDiskURL(
       mount_point_name_, path);
 }
 
-}  // namespace chromeos
+}  // namespace ash

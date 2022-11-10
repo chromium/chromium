@@ -23,7 +23,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kMimeTypeForRFC822[] = "message/rfc822";
@@ -263,4 +263,4 @@ void ExternalFileResolver::OnFileInfoObtained(
            std::move(stream_reader), remaining_bytes);
 }
 
-}  // namespace chromeos
+}  // namespace ash

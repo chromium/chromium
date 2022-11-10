@@ -759,7 +759,7 @@ FileManagerPrivateInternalValidatePathNameLengthFunction::Run() {
   const storage::FileSystemURL file_system_url(
       file_system_context->CrackURLInFirstPartyContext(
           GURL(params->parent_url)));
-  if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))
+  if (!ash::FileSystemBackend::CanHandleURL(file_system_url))
     return RespondNow(Error("Invalid URL"));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -1433,7 +1433,7 @@ FileManagerPrivateInternalGetDirectorySizeFunction::Run() {
           profile, render_frame_host());
   const storage::FileSystemURL file_system_url(
       file_system_context->CrackURLInFirstPartyContext(GURL(params->url)));
-  if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url)) {
+  if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
     return RespondNow(
         Error("FileSystemBackend failed to handle the entry's url."));
   }

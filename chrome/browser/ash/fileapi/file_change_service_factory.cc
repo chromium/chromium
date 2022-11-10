@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/fileapi/file_change_service.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 FileChangeServiceFactory* FileChangeServiceFactory::GetInstance() {
@@ -42,4 +42,4 @@ KeyedService* FileChangeServiceFactory::BuildServiceInstanceFor(
   return new FileChangeService();
 }
 
-}  // namespace chromeos
+}  // namespace ash

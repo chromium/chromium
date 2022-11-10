@@ -88,7 +88,7 @@ class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
   storage::FileSystemURL ExternalFileURLToFileSystemURL(const GURL& url) {
     base::FilePath mount_point_virtual_path =
         base::FilePath::FromASCII(kContentFileSystemMountPointName);
-    base::FilePath virtual_path = chromeos::ExternalFileURLToVirtualPath(url);
+    base::FilePath virtual_path = ash::ExternalFileURLToVirtualPath(url);
     base::FilePath path(kContentFileSystemMountPointPath);
     EXPECT_TRUE(
         mount_point_virtual_path.AppendRelativePath(virtual_path, &path));

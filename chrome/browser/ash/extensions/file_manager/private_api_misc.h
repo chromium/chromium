@@ -21,9 +21,9 @@
 #include "google_apis/common/api_error_codes.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-namespace chromeos {
+namespace ash {
 class RecentFile;
-}  // namespace chromeos
+}
 
 namespace crostini {
 enum class CrostiniResult;
@@ -525,7 +525,7 @@ class FileManagerPrivateInternalGetRecentFilesFunction
   ResponseAction Run() override;
   void OnGetRecentFiles(
       api::file_manager_private::SourceRestriction restriction,
-      const std::vector<chromeos::RecentFile>& files);
+      const std::vector<ash::RecentFile>& files);
   void OnConvertFileDefinitionListToEntryDefinitionList(
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);

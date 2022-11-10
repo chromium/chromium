@@ -9,7 +9,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace chromeos {
+namespace ash {
 
 TEST(FileAccessPermissionsTest, FileAccessChecks) {
   base::FilePath good_dir(FILE_PATH_LITERAL("/root/dir"));
@@ -92,4 +92,4 @@ TEST(FileAccessPermissionsTest, FileAccessChecks) {
   EXPECT_FALSE(permissions.HasAccessPermission(app_origin, bad_file));
 }
 
-}  // namespace chromeos
+}  // namespace ash

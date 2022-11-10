@@ -1203,24 +1203,24 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  chromeos::RecentModel* model = chromeos::RecentModel::GetForProfile(profile);
+  ash::RecentModel* model = ash::RecentModel::GetForProfile(profile);
 
-  chromeos::RecentModel::FileType file_type;
+  ash::RecentModel::FileType file_type;
   switch (params->file_type) {
     case api::file_manager_private::RECENT_FILE_TYPE_ALL:
-      file_type = chromeos::RecentModel::FileType::kAll;
+      file_type = ash::RecentModel::FileType::kAll;
       break;
     case api::file_manager_private::RECENT_FILE_TYPE_AUDIO:
-      file_type = chromeos::RecentModel::FileType::kAudio;
+      file_type = ash::RecentModel::FileType::kAudio;
       break;
     case api::file_manager_private::RECENT_FILE_TYPE_IMAGE:
-      file_type = chromeos::RecentModel::FileType::kImage;
+      file_type = ash::RecentModel::FileType::kImage;
       break;
     case api::file_manager_private::RECENT_FILE_TYPE_VIDEO:
-      file_type = chromeos::RecentModel::FileType::kVideo;
+      file_type = ash::RecentModel::FileType::kVideo;
       break;
     case api::file_manager_private::RECENT_FILE_TYPE_DOCUMENT:
-      file_type = chromeos::RecentModel::FileType::kDocument;
+      file_type = ash::RecentModel::FileType::kDocument;
       break;
     default:
       NOTREACHED();
@@ -1238,7 +1238,7 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
 
 void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
     api::file_manager_private::SourceRestriction restriction,
-    const std::vector<chromeos::RecentFile>& files) {
+    const std::vector<ash::RecentFile>& files) {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   file_manager::util::FileDefinitionList file_definition_list;
   for (const auto& file : files) {

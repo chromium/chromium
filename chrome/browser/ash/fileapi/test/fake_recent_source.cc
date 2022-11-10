@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "net/base/mime_util.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeRecentSource::FakeRecentSource() = default;
 
@@ -50,4 +50,4 @@ bool FakeRecentSource::MatchesFileType(const RecentFile& file,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash
