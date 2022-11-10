@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crostini/crostini_low_disk_notification.h"
@@ -976,5 +977,35 @@ class CrostiniManager : public KeyedService,
 };
 
 }  // namespace crostini
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<crostini::CrostiniManager,
+                               crostini::ContainerShutdownObserver> {
+  static void AddObserver(crostini::CrostiniManager* source,
+                          crostini::ContainerShutdownObserver* observer) {
+    source->AddContainerShutdownObserver(observer);
+  }
+  static void RemoveObserver(crostini::CrostiniManager* source,
+                             crostini::ContainerShutdownObserver* observer) {
+    source->RemoveContainerShutdownObserver(observer);
+  }
+};
+
+template <>
+struct ScopedObservationTraits<crostini::CrostiniManager,
+                               ash::VmShutdownObserver> {
+  static void AddObserver(crostini::CrostiniManager* source,
+                          ash::VmShutdownObserver* observer) {
+    source->AddVmShutdownObserver(observer);
+  }
+  static void RemoveObserver(crostini::CrostiniManager* source,
+                             ash::VmShutdownObserver* observer) {
+    source->RemoveVmShutdownObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_MANAGER_H_

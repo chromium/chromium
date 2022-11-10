@@ -15,12 +15,15 @@
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "ui/events/event_rewriter.h"
-#include "ui/events/event_source.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace ui {
+class EventSource;
+}  // namespace ui
 
 namespace arc {
 class ArcInputOverlayManagerTest;
@@ -250,11 +253,8 @@ class TouchInjector : public ui::EventRewriter {
   gfx::RectF content_bounds_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;
   std::vector<std::unique_ptr<Action>> actions_;
-  base::ScopedObservation<ui::EventSource,
-                          ui::EventRewriter,
-                          &ui::EventSource::AddEventRewriter,
-                          &ui::EventSource::RemoveEventRewriter>
-      observation_{this};
+  base::ScopedObservation<ui::EventSource, ui::EventRewriter> observation_{
+      this};
   std::unique_ptr<KeyCommand> mouse_lock_;
   std::unique_ptr<gfx::Transform> rotation_transform_;
   bool text_input_active_ = false;

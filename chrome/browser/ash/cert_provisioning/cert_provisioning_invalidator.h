@@ -12,13 +12,15 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/invalidation/public/invalidation_handler.h"
-#include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 
 class Profile;
 
-namespace ash {
-namespace cert_provisioning {
+namespace invalidation {
+class InvalidationService;
+}  // namespace invalidation
+
+namespace ash::cert_provisioning {
 
 enum class CertScope;
 
@@ -103,11 +105,8 @@ class CertProvisioningInvalidationHandler
   // Automatically unregisters `this` as an observer on destruction. Should be
   // destroyed first so the other fields are still valid and can be used during
   // the unregistration.
-  base::ScopedObservation<
-      invalidation::InvalidationService,
-      invalidation::InvalidationHandler,
-      &invalidation::InvalidationService::RegisterInvalidationHandler,
-      &invalidation::InvalidationService::UnregisterInvalidationHandler>
+  base::ScopedObservation<invalidation::InvalidationService,
+                          invalidation::InvalidationHandler>
       invalidation_service_observation_{this};
 };
 
@@ -218,7 +217,6 @@ class CertProvisioningDeviceInvalidator
   policy::AffiliatedInvalidationServiceProvider* service_provider_ = nullptr;
 };
 
-}  // namespace cert_provisioning
-}  // namespace ash
+}  // namespace ash::cert_provisioning
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_INVALIDATOR_H_

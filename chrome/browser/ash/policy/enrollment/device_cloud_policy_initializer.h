@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -21,15 +20,14 @@
 
 namespace ash {
 class InstallAttributes;
-}
+}  // namespace ash
 
-namespace chromeos {
-namespace system {
+namespace chromeos::system {
 class StatisticsProvider;
-}
-}  // namespace chromeos
+}  // namespace chromeos::system
 
 namespace policy {
+class CloudPolicyClient;
 class DeviceCloudPolicyStoreAsh;
 class DeviceManagementService;
 
@@ -94,11 +92,8 @@ class DeviceCloudPolicyInitializer
   bool policy_manager_store_ready_notified_ = false;
 
   base::CallbackListSubscription state_keys_update_subscription_;
-  base::ScopedObservation<
-      DeviceCloudPolicyManagerAsh,
-      DeviceCloudPolicyManagerAsh::Observer,
-      &DeviceCloudPolicyManagerAsh::AddDeviceCloudPolicyManagerObserver,
-      &DeviceCloudPolicyManagerAsh::RemoveDeviceCloudPolicyManagerObserver>
+  base::ScopedObservation<DeviceCloudPolicyManagerAsh,
+                          DeviceCloudPolicyManagerAsh::Observer>
       policy_manager_observer_{this};
 
   // The URLLoaderFactory set in tests.

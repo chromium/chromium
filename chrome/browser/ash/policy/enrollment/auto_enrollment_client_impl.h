@@ -18,11 +18,11 @@ class PrefService;
 
 namespace network {
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace policy::psm {
 class RlweDmserverClient;
-}
+}  // namespace policy::psm
 
 namespace policy {
 
@@ -187,9 +187,7 @@ class AutoEnrollmentClientImpl final
 
   base::ScopedObservation<
       network::NetworkConnectionTracker,
-      network::NetworkConnectionTracker::NetworkConnectionObserver,
-      &network::NetworkConnectionTracker::AddNetworkConnectionObserver,
-      &network::NetworkConnectionTracker::RemoveNetworkConnectionObserver>
+      network::NetworkConnectionTracker::NetworkConnectionObserver>
       network_connection_observer_{this};
 
   // Callback to invoke when the protocol generates a relevant event. This can

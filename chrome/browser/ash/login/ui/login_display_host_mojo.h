@@ -43,7 +43,7 @@ class WizardController;
 // A LoginDisplayHost instance that sends requests to the views-based signin
 // screen.
 class LoginDisplayHostMojo : public LoginDisplayHostCommon,
-                             public LoginScreenClientImpl::Delegate,
+                             public ::LoginScreenClientImpl::Delegate,
                              public AuthStatusConsumer,
                              public OobeUI::Observer,
                              public views::ViewObserver,

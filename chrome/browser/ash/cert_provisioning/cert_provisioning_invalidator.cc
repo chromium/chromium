@@ -11,12 +11,12 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
-namespace ash {
-namespace cert_provisioning {
+namespace ash::cert_provisioning {
 
 namespace {
 
@@ -271,5 +271,4 @@ void CertProvisioningDeviceInvalidator::OnInvalidationServiceSet(
   }
 }
 
-}  // namespace cert_provisioning
-}  // namespace ash
+}  // namespace ash::cert_provisioning

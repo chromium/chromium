@@ -9,6 +9,7 @@
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
@@ -160,5 +161,21 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
 
   base::WeakPtrFactory<LoginScreenClientImpl> weak_ptr_factory_{this};
 };
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<LoginScreenClientImpl, ash::SystemTrayObserver> {
+  static void AddObserver(LoginScreenClientImpl* source,
+                          ash::SystemTrayObserver* observer) {
+    source->AddSystemTrayObserver(observer);
+  }
+  static void RemoveObserver(LoginScreenClientImpl* source,
+                             ash::SystemTrayObserver* observer) {
+    source->RemoveSystemTrayObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_IMPL_H_

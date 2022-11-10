@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -329,5 +330,22 @@ namespace chromeos {
 using ::ash::CrosUsbDetector;
 using ::ash::CrosUsbDeviceObserver;
 }  // namespace chromeos
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::CrosUsbDetector,
+                               ash::CrosUsbDeviceObserver> {
+  static void AddObserver(ash::CrosUsbDetector* source,
+                          ash::CrosUsbDeviceObserver* observer) {
+    source->AddUsbDeviceObserver(observer);
+  }
+  static void RemoveObserver(ash::CrosUsbDetector* source,
+                             ash::CrosUsbDeviceObserver* observer) {
+    source->RemoveUsbDeviceObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_ASH_USB_CROS_USB_DETECTOR_H_

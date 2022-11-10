@@ -352,10 +352,7 @@ class CrostiniManager::CrostiniRestarter
   base::ScopedObservation<chromeos::SchedulerConfigurationManagerBase,
                           chromeos::SchedulerConfigurationManagerBase::Observer>
       scheduler_configuration_manager_observation_{this};
-  base::ScopedObservation<CrostiniManager,
-                          ash::VmShutdownObserver,
-                          &CrostiniManager::AddVmShutdownObserver,
-                          &CrostiniManager::RemoveVmShutdownObserver>
+  base::ScopedObservation<CrostiniManager, ash::VmShutdownObserver>
       vm_shutdown_observation_{this};
 
   base::WeakPtrFactory<CrostiniRestarter> weak_ptr_factory_{this};

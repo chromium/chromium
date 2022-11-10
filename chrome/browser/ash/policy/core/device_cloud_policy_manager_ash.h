@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -32,7 +33,7 @@ class MachineCertificateUploader;
 namespace reporting {
 class LoginLogoutReporter;
 class LockUnlockReporter;
-}
+}  // namespace reporting
 class InstallAttributes;
 }  // namespace ash
 
@@ -254,5 +255,24 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
 };
 
 }  // namespace policy
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<policy::DeviceCloudPolicyManagerAsh,
+                               policy::DeviceCloudPolicyManagerAsh::Observer> {
+  static void AddObserver(
+      policy::DeviceCloudPolicyManagerAsh* source,
+      policy::DeviceCloudPolicyManagerAsh::Observer* observer) {
+    source->AddDeviceCloudPolicyManagerObserver(observer);
+  }
+  static void RemoveObserver(
+      policy::DeviceCloudPolicyManagerAsh* source,
+      policy::DeviceCloudPolicyManagerAsh::Observer* observer) {
+    source->RemoveDeviceCloudPolicyManagerObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_MANAGER_ASH_H_

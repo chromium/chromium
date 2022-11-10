@@ -7,13 +7,14 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 
 namespace guest_os {
 class GuestOsFileWatcher;
-}
+}  // namespace guest_os
 
 namespace crostini {
 
@@ -51,10 +52,7 @@ class CrostiniMountProvider : public guest_os::GuestOsMountProvider,
 
   Profile* profile_;
   guest_os::GuestId container_id_;
-  base::ScopedObservation<CrostiniManager,
-                          ContainerShutdownObserver,
-                          &CrostiniManager::AddContainerShutdownObserver,
-                          &CrostiniManager::RemoveContainerShutdownObserver>
+  base::ScopedObservation<CrostiniManager, ContainerShutdownObserver>
       container_shutdown_observer_{this};
   base::CallbackListSubscription subscription_;
 

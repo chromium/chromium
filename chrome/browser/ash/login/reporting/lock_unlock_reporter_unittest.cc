@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"

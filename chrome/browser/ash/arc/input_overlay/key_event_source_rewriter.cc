@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/events/event_source.h"
 
 namespace arc {
 

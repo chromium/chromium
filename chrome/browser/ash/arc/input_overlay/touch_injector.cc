@@ -22,6 +22,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/event_source.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"

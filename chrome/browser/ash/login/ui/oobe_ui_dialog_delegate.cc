@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/ash_util.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -275,12 +276,9 @@ void OobeUIDialogDelegate::SetShouldDisplayCaptivePortal(bool should_display) {
 }
 
 void OobeUIDialogDelegate::Show() {
-  if (LoginScreenClientImpl::Get()) {
-    scoped_system_tray_observer_ = std::make_unique<base::ScopedObservation<
-        LoginScreenClientImpl, SystemTrayObserver,
-        &LoginScreenClientImpl::AddSystemTrayObserver,
-        &LoginScreenClientImpl::RemoveSystemTrayObserver>>(this);
-    scoped_system_tray_observer_->Observe(LoginScreenClientImpl::Get());
+  if (auto* client = LoginScreenClientImpl::Get()) {
+    scoped_system_tray_observer_.Reset();
+    scoped_system_tray_observer_.Observe(client);
   }
   widget_->Show();
   if (state_ == OobeDialogState::HIDDEN) {
@@ -299,7 +297,7 @@ void OobeUIDialogDelegate::ShowFullScreen() {
 }
 
 void OobeUIDialogDelegate::Hide() {
-  scoped_system_tray_observer_.reset();
+  scoped_system_tray_observer_.Reset();
   if (!widget_)
     return;
   widget_->Hide();

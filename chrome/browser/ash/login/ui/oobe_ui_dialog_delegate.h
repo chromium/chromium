@@ -12,28 +12,30 @@
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
-#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 class Accelerator;
-}
+}  // namespace ui
 
 namespace views {
+class View;
 class WebDialogView;
 class Widget;
 }  // namespace views
+
+class LoginScreenClientImpl;
 
 namespace ash {
 class CaptivePortalDialogDelegate;
@@ -157,12 +159,8 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
       captive_portal_observer_{this};
   base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observer_{this};
 
-  std::unique_ptr<
-      base::ScopedObservation<LoginScreenClientImpl,
-                              SystemTrayObserver,
-                              &LoginScreenClientImpl::AddSystemTrayObserver,
-                              &LoginScreenClientImpl::RemoveSystemTrayObserver>>
-      scoped_system_tray_observer_;
+  base::ScopedObservation<LoginScreenClientImpl, SystemTrayObserver>
+      scoped_system_tray_observer_{this};
 
   std::map<ui::Accelerator, LoginAcceleratorAction> accel_map_;
   OobeDialogState state_ = OobeDialogState::HIDDEN;

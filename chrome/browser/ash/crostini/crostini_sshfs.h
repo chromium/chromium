@@ -108,10 +108,7 @@ class CrostiniSshfs : ContainerShutdownObserver {
   };
   Profile* profile_;
 
-  base::ScopedObservation<CrostiniManager,
-                          ContainerShutdownObserver,
-                          &CrostiniManager::AddContainerShutdownObserver,
-                          &CrostiniManager::RemoveContainerShutdownObserver>
+  base::ScopedObservation<CrostiniManager, ContainerShutdownObserver>
       container_shutdown_observer_{this};
 
   std::unique_ptr<InProgressMount> in_progress_mount_;

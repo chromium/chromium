@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_ENTERPRISE_POLICY_DELEGATE_IMPL_H_
 
 #include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
-#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
-#include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -18,7 +16,12 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
-namespace ash::personalization_app {
+namespace ash {
+
+class Shell;
+class WallpaperController;
+
+namespace personalization_app {
 
 class EnterprisePolicyDelegateImpl : public EnterprisePolicyDelegate,
                                      public user_manager::UserManager::Observer,
@@ -54,11 +57,7 @@ class EnterprisePolicyDelegateImpl : public EnterprisePolicyDelegate,
 
   raw_ptr<Profile> profile_;
 
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      scoped_shell_observation_{this};
+  base::ScopedObservation<Shell, ShellObserver> scoped_shell_observation_{this};
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
@@ -70,6 +69,7 @@ class EnterprisePolicyDelegateImpl : public EnterprisePolicyDelegate,
   base::ObserverList<EnterprisePolicyDelegate::Observer> observer_list_;
 };
 
-}  // namespace ash::personalization_app
+}  // namespace personalization_app
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_ENTERPRISE_POLICY_DELEGATE_IMPL_H_

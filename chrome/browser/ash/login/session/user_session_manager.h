@@ -20,6 +20,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
@@ -678,5 +679,22 @@ using ::ash::UserSessionManager;
 using ::ash::UserSessionManagerDelegate;
 using ::ash::UserSessionStateObserver;
 }  // namespace chromeos
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::UserSessionManager,
+                               ash::UserAuthenticatorObserver> {
+  static void AddObserver(ash::UserSessionManager* source,
+                          ash::UserAuthenticatorObserver* observer) {
+    source->AddUserAuthenticatorObserver(observer);
+  }
+  static void RemoveObserver(ash::UserSessionManager* source,
+                             ash::UserAuthenticatorObserver* observer) {
+    source->RemoveUserAuthenticatorObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SESSION_USER_SESSION_MANAGER_H_

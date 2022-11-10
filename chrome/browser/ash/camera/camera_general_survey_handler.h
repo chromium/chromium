@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/timer/timer.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
@@ -78,13 +79,28 @@ class CameraGeneralSurveyHandler : public media::CameraActiveClientObserver {
   const bool is_enabled_;
   const std::unique_ptr<Delegate> delegate_;
   bool has_triggered_ = false;
-  base::ScopedObservation<Delegate,
-                          media::CameraActiveClientObserver,
-                          &Delegate::AddActiveCameraClientObserver,
-                          &Delegate::RemoveActiveCameraClientObserver>
+  base::ScopedObservation<Delegate, media::CameraActiveClientObserver>
       camera_observer_{this};
   base::WeakPtrFactory<CameraGeneralSurveyHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::CameraGeneralSurveyHandler::Delegate,
+                               media::CameraActiveClientObserver> {
+  static void AddObserver(ash::CameraGeneralSurveyHandler::Delegate* source,
+                          media::CameraActiveClientObserver* observer) {
+    source->AddActiveCameraClientObserver(observer);
+  }
+  static void RemoveObserver(ash::CameraGeneralSurveyHandler::Delegate* source,
+                             media::CameraActiveClientObserver* observer) {
+    source->RemoveActiveCameraClientObserver(observer);
+  }
+};
+
+}  // namespace base
+
 #endif  // CHROME_BROWSER_ASH_CAMERA_CAMERA_GENERAL_SURVEY_HANDLER_H_
