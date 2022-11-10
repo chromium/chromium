@@ -166,12 +166,17 @@ export class Camera extends View implements CameraViewUI {
           metrics.ShutterType.TOUCH :
           metrics.ShutterType.MOUSE;
     }
-
-    dom.get('#start-takephoto', HTMLButtonElement)
-        .addEventListener('click', (e) => {
-          const mouseEvent = assertInstanceof(e, MouseEvent);
-          this.beginTake(getShutterType(mouseEvent));
-        });
+    const photoShutter = dom.get('#start-takephoto', HTMLButtonElement);
+    photoShutter.addEventListener('click', (e) => {
+      this.beginTake(getShutterType(e));
+    });
+    function checkPhotoShutter() {
+      const disabled = state.get(state.State.CAMERA_CONFIGURING) ||
+          state.get(state.State.TAKING);
+      photoShutter.disabled = disabled;
+    }
+    state.addObserver(state.State.CAMERA_CONFIGURING, checkPhotoShutter);
+    state.addObserver(state.State.TAKING, checkPhotoShutter);
 
     dom.get('#stop-takephoto', HTMLButtonElement)
         .addEventListener('click', () => this.endTake());
@@ -179,16 +184,28 @@ export class Camera extends View implements CameraViewUI {
     const videoShutter = dom.get('#recordvideo', HTMLButtonElement);
     videoShutter.addEventListener('click', (e) => {
       if (!state.get(state.State.TAKING)) {
-        this.beginTake(getShutterType(assertInstanceof(e, MouseEvent)));
+        this.beginTake(getShutterType(e));
       } else {
         this.endTake();
       }
     });
+    function checkVideoShutter() {
+      const disabled = state.get(state.State.CAMERA_CONFIGURING) &&
+          !state.get(state.State.TAKING);
+      videoShutter.disabled = disabled;
+    }
+    state.addObserver(state.State.CAMERA_CONFIGURING, checkVideoShutter);
+    state.addObserver(state.State.TAKING, checkVideoShutter);
 
-    dom.get('#video-snapshot', HTMLButtonElement)
-        .addEventListener('click', () => {
-          this.cameraManager.takeVideoSnapshot();
-        });
+    const videoSnapshotButton = dom.get('#video-snapshot', HTMLButtonElement);
+    videoSnapshotButton.addEventListener('click', () => {
+      this.cameraManager.takeVideoSnapshot();
+    });
+    function checkVideoSnapshotButton() {
+      const disabled = state.get(state.State.SNAPSHOTTING);
+      videoSnapshotButton.disabled = disabled;
+    }
+    state.addObserver(state.State.SNAPSHOTTING, checkVideoSnapshotButton);
 
     const pauseShutter = dom.get('#pause-recordvideo', HTMLButtonElement);
     pauseShutter.addEventListener('click', () => {

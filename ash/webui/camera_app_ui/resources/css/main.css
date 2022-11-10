@@ -104,8 +104,7 @@ input[type=checkbox] {
   pointer-events: none;
 }
 
-.buttons button:active,
-.buttons input:active {
+.buttons :is(button, input):enabled:active {
   transform: scale(1.07);
 }
 
@@ -264,8 +263,7 @@ body.doc-mode-reviewing #mode-selector {
   white-space: nowrap;
 }
 
-body.taking:not(.video) #shutters-group,
-body.snapshotting #video-snapshot {
+:is(#start-takephoto, #recordvideo, #video-snapshot):disabled {
   opacity: 0.38;
 }
 
@@ -379,13 +377,11 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
   background-image: url(/images/camera_shutter_photo_start.svg);
 }
 
-body:not(.taking) #start-takephoto:hover,
-#video-snapshot:hover {
+:is(#start-takephoto, #video-snapshot):enabled:hover {
   background-image: url(/images/camera_shutter_photo_start_hover.svg);
 }
 
-body:not(.taking) #start-takephoto:active,
-#video-snapshot:active {
+:is(#start-takephoto, #video-snapshot):enabled:active {
   background-image: url(/images/camera_shutter_photo_start_active.svg);
 }
 
