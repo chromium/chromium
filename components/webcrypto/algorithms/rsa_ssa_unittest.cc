@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
@@ -65,7 +66,7 @@ void SwapDictMembers(base::Value::Dict& d, const char* a, const char* b) {
   d.Set(b, std::move(*va));
 }
 
-std::string FlipHexByte(const std::string& hex, size_t index) {
+std::string FlipHexByte(base::StringPiece hex, size_t index) {
   auto bytes = HexStringToBytes(hex);
   bytes[index] ^= 0xff;
   return base::HexEncode(base::make_span(bytes));
@@ -77,7 +78,7 @@ blink::WebCryptoAlgorithm RS256Algorithm() {
       blink::kWebCryptoAlgorithmIdSha256);
 }
 
-blink::WebCryptoKey ImportJwkRS256OrDie(const std::string& jwk) {
+blink::WebCryptoKey ImportJwkRS256OrDie(base::StringPiece jwk) {
   std::vector<uint8_t> jwk_bytes(jwk.begin(), jwk.end());
   blink::WebCryptoKey key;
   Status status =
@@ -95,7 +96,7 @@ blink::WebCryptoKey ImportJwkRS256OrDie(const base::Value::Dict& jwk) {
   return key;
 }
 
-Status ImportJwkRS256MustFail(const std::string& jwk) {
+Status ImportJwkRS256MustFail(base::StringPiece jwk) {
   std::vector<uint8_t> jwk_bytes(jwk.begin(), jwk.end());
   blink::WebCryptoKey key;
   Status status =
@@ -111,7 +112,7 @@ Status ImportJwkRS256MustFail(const base::Value::Dict& jwk) {
                               blink::kWebCryptoKeyUsageSign, &key);
 }
 
-Status ImportSpkiRS256MustFail(const std::string& spki) {
+Status ImportSpkiRS256MustFail(base::StringPiece spki) {
   auto spki_bytes = HexStringToBytes(spki);
   blink::WebCryptoKey key;
   // Note: SPKI keys can only be used for verification, not signing.
@@ -122,7 +123,7 @@ Status ImportSpkiRS256MustFail(const std::string& spki) {
   return status;
 }
 
-Status ImportPkcs8RS256MustFail(const std::string& pkcs8) {
+Status ImportPkcs8RS256MustFail(base::StringPiece pkcs8) {
   auto pkcs8_bytes = HexStringToBytes(pkcs8);
   blink::WebCryptoKey key;
   Status status =

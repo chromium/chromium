@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/strings/string_piece_forward.h"
 #include "components/webcrypto/algorithm_implementation.h"
 
 namespace webcrypto {
@@ -21,12 +22,12 @@ class AesAlgorithm : public AlgorithmImplementation {
   // is the JWK name for 128-bit AES-CBC. The |jwk_suffix| in this case would
   // be "CBC".
   AesAlgorithm(blink::WebCryptoKeyUsageMask all_key_usages,
-               const std::string& jwk_suffix);
+               base::StringPiece jwk_suffix);
 
   // This is the same as the other AesAlgorithm constructor where
   // |all_key_usages| is pre-filled to values for encryption/decryption
   // algorithms (supports usages for: encrypt, decrypt, wrap, unwrap).
-  explicit AesAlgorithm(const std::string& jwk_suffix);
+  explicit AesAlgorithm(base::StringPiece jwk_suffix);
 
   Status GenerateKey(const blink::WebCryptoAlgorithm& algorithm,
                      bool extractable,

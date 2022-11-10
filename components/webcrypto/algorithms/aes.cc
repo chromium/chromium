@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "components/webcrypto/algorithms/secret_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -20,14 +22,14 @@ namespace {
 
 // Creates an AES algorithm name for the given key size (in bytes). For
 // instance "A128CBC" is the result of suffix="CBC", keylen_bytes=16.
-std::string MakeJwkAesAlgorithmName(const std::string& suffix,
+std::string MakeJwkAesAlgorithmName(base::StringPiece suffix,
                                     size_t keylen_bytes) {
   if (keylen_bytes == 16)
-    return std::string("A128") + suffix;
+    return base::StrCat({"A128", suffix});
   if (keylen_bytes == 24)
-    return std::string("A192") + suffix;
+    return base::StrCat({"A192", suffix});
   if (keylen_bytes == 32)
-    return std::string("A256") + suffix;
+    return base::StrCat({"A256", suffix});
   return std::string();
 }
 
@@ -42,11 +44,10 @@ blink::WebCryptoAlgorithm SynthesizeImportAlgorithmForClone(
 }  // namespace
 
 AesAlgorithm::AesAlgorithm(blink::WebCryptoKeyUsageMask all_key_usages,
-                           const std::string& jwk_suffix)
-    : all_key_usages_(all_key_usages), jwk_suffix_(jwk_suffix) {
-}
+                           base::StringPiece jwk_suffix)
+    : all_key_usages_(all_key_usages), jwk_suffix_(jwk_suffix) {}
 
-AesAlgorithm::AesAlgorithm(const std::string& jwk_suffix)
+AesAlgorithm::AesAlgorithm(base::StringPiece jwk_suffix)
     : all_key_usages_(blink::kWebCryptoKeyUsageEncrypt |
                       blink::kWebCryptoKeyUsageDecrypt |
                       blink::kWebCryptoKeyUsageWrapKey |

@@ -10,6 +10,7 @@
 
 #include "base/location.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/string_piece.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/blink_key_handle.h"
 #include "components/webcrypto/status.h"

@@ -4,6 +4,7 @@
 
 #include "components/webcrypto/algorithms/secret_key_util.h"
 
+#include "base/strings/string_piece.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
 #include "components/webcrypto/generate_key_result.h"
@@ -49,7 +50,7 @@ Status CreateWebCryptoSecretKey(base::span<const uint8_t> key_data,
 }
 
 void WriteSecretKeyJwk(base::span<const uint8_t> raw_key_data,
-                       const std::string& algorithm,
+                       base::StringPiece algorithm,
                        bool extractable,
                        blink::WebCryptoKeyUsageMask usages,
                        std::vector<uint8_t>* jwk_key_data) {

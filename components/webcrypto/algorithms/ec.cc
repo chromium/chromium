@@ -156,7 +156,7 @@ Status CreateEC_KEY(blink::WebCryptoNamedCurve named_curve,
 
 // Writes an unsigned BIGNUM into |jwk|, zero-padding it to a length of
 // |padded_length|.
-Status WritePaddedBIGNUM(const std::string& member_name,
+Status WritePaddedBIGNUM(base::StringPiece member_name,
                          const BIGNUM* value,
                          size_t padded_length,
                          JwkWriter* jwk) {
@@ -169,7 +169,7 @@ Status WritePaddedBIGNUM(const std::string& member_name,
 
 // Reads a fixed length BIGNUM from a JWK.
 Status ReadPaddedBIGNUM(const JwkReader& jwk,
-                        const std::string& member_name,
+                        base::StringPiece member_name,
                         size_t expected_length,
                         bssl::UniquePtr<BIGNUM>* out) {
   std::vector<uint8_t> bytes;
