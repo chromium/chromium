@@ -6,7 +6,6 @@
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_XDG_SHELL_H_
 
 #include <xdg-shell-server-protocol.h>
-#include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
@@ -25,19 +24,6 @@ class MockXdgShell : public GlobalObject {
   MockXdgShell& operator=(const MockXdgShell&) = delete;
 
   ~MockXdgShell() override;
-
-  MOCK_METHOD1(Pong, void(uint32_t serial));
-};
-
-// Manage zxdg_shell_v6 object.
-class MockZxdgShellV6 : public GlobalObject {
- public:
-  MockZxdgShellV6();
-
-  MockZxdgShellV6(const MockZxdgShellV6&) = delete;
-  MockZxdgShellV6& operator=(const MockZxdgShellV6&) = delete;
-
-  ~MockZxdgShellV6() override;
 
   MOCK_METHOD1(Pong, void(uint32_t serial));
 };

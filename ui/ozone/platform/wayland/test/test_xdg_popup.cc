@@ -36,11 +36,6 @@ const struct xdg_popup_interface kXdgPopupImpl = {
     &Reposition,       // reposition
 };
 
-const struct zxdg_popup_v6_interface kZxdgPopupV6Impl = {
-    &DestroyResource,  // destroy
-    &Grab,             // grab
-};
-
 TestXdgPopup::TestXdgPopup(wl_resource* resource, wl_resource* surface)
     : ServerObject(resource), surface_(surface) {
   auto* mock_xdg_surface = GetUserDataAs<MockXdgSurface>(surface_);

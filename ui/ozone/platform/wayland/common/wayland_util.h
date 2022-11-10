@@ -21,7 +21,6 @@ class SkBitmap;
 class SkPath;
 
 namespace ui {
-class WaylandConnection;
 class WaylandShmBuffer;
 class WaylandWindow;
 }  // namespace ui
@@ -50,8 +49,7 @@ enum class EventDispatchPolicy {
 
 // Identifies the direction of the "hittest" for Wayland. |connection|
 // is used to identify whether values from shell v5 or v6 must be used.
-uint32_t IdentifyDirection(const ui::WaylandConnection& connection,
-                           int hittest);
+uint32_t IdentifyDirection(int hittest);
 
 // Draws |bitmap| into |out_buffer|. Returns if no errors occur, and false
 // otherwise. It assumes the bitmap fits into the buffer and buffer is

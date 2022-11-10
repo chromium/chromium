@@ -109,12 +109,7 @@ TEST_P(ZWPTextInputWrapperV1Test,
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          ZWPTextInputWrapperV1Test,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         ZWPTextInputWrapperV1Test,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
 }  // namespace
 }  // namespace ui

@@ -145,15 +145,12 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
 
   if (!seat_.Initialize(display_.get()))
     return false;
-  if (config.shell_version == ShellVersion::kV6) {
-    if (!zxdg_shell_v6_.Initialize(display_.get()))
-      return false;
-  } else {
-    if (!xdg_shell_.Initialize(display_.get()))
-      return false;
-    if (!zaura_shell_.Initialize(display_.get()))
-      return false;
-  }
+
+  if (!xdg_shell_.Initialize(display_.get()))
+    return false;
+  if (!zaura_shell_.Initialize(display_.get()))
+    return false;
+
   if (!zcr_stylus_.Initialize(display_.get()))
     return false;
   if (!zcr_text_input_extension_v1_.Initialize(display_.get()))

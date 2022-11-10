@@ -1095,12 +1095,6 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandDataDragControllerTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandDataDragControllerTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

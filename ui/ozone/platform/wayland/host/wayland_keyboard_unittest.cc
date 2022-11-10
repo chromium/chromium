@@ -347,11 +347,6 @@ TEST_P(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandKeyboardTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandKeyboardTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

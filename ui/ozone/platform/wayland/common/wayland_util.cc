@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 
 #include <xdg-shell-client-protocol.h>
-#include <xdg-shell-unstable-v6-client-protocol.h>
 
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -23,7 +22,9 @@ namespace {
 
 const SkColorType kColorType = kBGRA_8888_SkColorType;
 
-uint32_t IdentifyDirectionStable(int hittest) {
+}  // namespace
+
+uint32_t IdentifyDirection(int hittest) {
   uint32_t direction = 0;
   switch (hittest) {
     case HTBOTTOM:
@@ -57,59 +58,6 @@ uint32_t IdentifyDirectionStable(int hittest) {
       break;
   }
   return direction;
-}
-
-uint32_t IdentifyDirectionV6(int hittest) {
-  uint32_t direction = 0;
-  switch (hittest) {
-    case HTBOTTOM:
-      direction =
-          zxdg_toplevel_v6_resize_edge::ZXDG_TOPLEVEL_V6_RESIZE_EDGE_BOTTOM;
-      break;
-    case HTBOTTOMLEFT:
-      direction = zxdg_toplevel_v6_resize_edge::
-          ZXDG_TOPLEVEL_V6_RESIZE_EDGE_BOTTOM_LEFT;
-      break;
-    case HTBOTTOMRIGHT:
-      direction = zxdg_toplevel_v6_resize_edge::
-          ZXDG_TOPLEVEL_V6_RESIZE_EDGE_BOTTOM_RIGHT;
-      break;
-    case HTLEFT:
-      direction =
-          zxdg_toplevel_v6_resize_edge::ZXDG_TOPLEVEL_V6_RESIZE_EDGE_LEFT;
-      break;
-    case HTRIGHT:
-      direction =
-          zxdg_toplevel_v6_resize_edge::ZXDG_TOPLEVEL_V6_RESIZE_EDGE_RIGHT;
-      break;
-    case HTTOP:
-      direction =
-          zxdg_toplevel_v6_resize_edge::ZXDG_TOPLEVEL_V6_RESIZE_EDGE_TOP;
-      break;
-    case HTTOPLEFT:
-      direction =
-          zxdg_toplevel_v6_resize_edge::ZXDG_TOPLEVEL_V6_RESIZE_EDGE_TOP_LEFT;
-      break;
-    case HTTOPRIGHT:
-      direction =
-          zxdg_toplevel_v6_resize_edge::ZXDG_TOPLEVEL_V6_RESIZE_EDGE_TOP_RIGHT;
-      break;
-    default:
-      direction =
-          zxdg_toplevel_v6_resize_edge::ZXDG_TOPLEVEL_V6_RESIZE_EDGE_NONE;
-      break;
-  }
-  return direction;
-}
-
-}  // namespace
-
-uint32_t IdentifyDirection(const ui::WaylandConnection& connection,
-                           int hittest) {
-  if (connection.shell())
-    return IdentifyDirectionStable(hittest);
-  DCHECK(connection.shell_v6());
-  return IdentifyDirectionV6(hittest);
 }
 
 bool DrawBitmap(const SkBitmap& bitmap, ui::WaylandShmBuffer* out_buffer) {

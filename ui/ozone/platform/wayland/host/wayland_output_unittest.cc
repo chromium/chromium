@@ -49,7 +49,6 @@ TEST_P(WaylandOutputTest, NameAndDescriptionFallback) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandOutputTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

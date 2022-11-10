@@ -24,18 +24,10 @@ class WaylandConnectionTest : public WaylandTest {
 };
 
 TEST_P(WaylandConnectionTest, Ping) {
-  wl::ServerConfig config = GetParam();
-
-  PostToServerAndWait([config](wl::TestWaylandServerThread* server) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     constexpr uint32_t kSerial = 1234;
-    if (config.shell_version == wl::ShellVersion::kV6) {
-      zxdg_shell_v6_send_ping(server->zxdg_shell()->resource(), kSerial);
-      EXPECT_CALL(*server->zxdg_shell(), Pong(1234));
-    } else {
-      DCHECK_EQ(config.shell_version, wl::ShellVersion::kStable);
-      xdg_wm_base_send_ping(server->xdg_shell()->resource(), kSerial);
-      EXPECT_CALL(*server->xdg_shell(), Pong(1234));
-    }
+    xdg_wm_base_send_ping(server->xdg_shell()->resource(), kSerial);
+    EXPECT_CALL(*server->xdg_shell(), Pong(1234));
   });
 }
 
@@ -58,17 +50,10 @@ TEST_P(WaylandConnectionTest, CompositorVersionTest) {
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTest,
     WaylandConnectionTest,
-    Values(wl::ServerConfig{.shell_version = wl::ShellVersion::kStable,
-                            .compositor_version = wl::CompositorVersion::kV3}));
+    Values(wl::ServerConfig{.compositor_version = wl::CompositorVersion::kV3}));
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestCompositorV4,
     WaylandConnectionTest,
-    Values(wl::ServerConfig{.shell_version = wl::ShellVersion::kStable,
-                            .compositor_version = wl::CompositorVersion::kV4}));
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandConnectionTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+    Values(wl::ServerConfig{.compositor_version = wl::CompositorVersion::kV4}));
 
 }  // namespace ui

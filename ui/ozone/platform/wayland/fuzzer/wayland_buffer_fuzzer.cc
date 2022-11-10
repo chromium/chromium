@@ -135,7 +135,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       DRM_FORMAT_NV12,        DRM_FORMAT_YVU420};
 
   wl::TestWaylandServerThread server;
-  CHECK(server.Start({.shell_version = wl::ShellVersion::kV6}));
+  CHECK(server.Start({}));
 
   std::unique_ptr<ui::WaylandConnection> connection =
       std::make_unique<ui::WaylandConnection>();

@@ -18,7 +18,6 @@
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
-#include <xdg-shell-unstable-v6-client-protocol.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -89,7 +88,6 @@ namespace {
 constexpr uint32_t kMaxCompositorVersion = 4;
 constexpr uint32_t kMaxKeyboardExtensionVersion = 2;
 constexpr uint32_t kMaxXdgShellVersion = 5;
-constexpr uint32_t kMaxZXdgShellVersion = 1;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
@@ -273,7 +271,7 @@ bool WaylandConnection::Initialize() {
     LOG(ERROR) << "No wl_shm object";
     return false;
   }
-  if (!shell_v6_ && !shell_) {
+  if (!shell_) {
     LOG(ERROR) << "No Wayland shell found";
     return false;
   }
@@ -337,7 +335,7 @@ bool WaylandConnection::IsDragInProgress() const {
 }
 
 bool WaylandConnection::SupportsSetWindowGeometry() const {
-  return shell_ || shell_v6_;
+  return !!shell_;
 }
 
 wl::Object<wl_surface> WaylandConnection::CreateSurface() {
@@ -433,9 +431,6 @@ void WaylandConnection::Global(void* data,
   static constexpr xdg_wm_base_listener shell_listener = {
       &Ping,
   };
-  static constexpr zxdg_shell_v6_listener shell_v6_listener = {
-      &PingV6,
-  };
   static constexpr wp_presentation_listener presentation_listener = {
       &ClockId,
   };
@@ -463,20 +458,6 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind to wl_subcompositor global";
       return;
     }
-  } else if (!connection->shell_v6_ &&
-             strcmp(interface, "zxdg_shell_v6") == 0) {
-    // Check for zxdg_shell_v6 first.
-    connection->shell_v6_ = wl::Bind<zxdg_shell_v6>(
-        registry, name,
-        wl::CalculateBindVersion(version, kMaxZXdgShellVersion,
-                                 zxdg_shell_v6_interface.version));
-    if (!connection->shell_v6_) {
-      LOG(ERROR) << "Failed to bind to zxdg_shell_v6 global";
-      return;
-    }
-    zxdg_shell_v6_add_listener(connection->shell_v6_.get(), &shell_v6_listener,
-                               connection);
-    ReportShellUMA(UMALinuxWaylandShell::kXdgShellV6);
   } else if (!connection->shell_ && strcmp(interface, "xdg_wm_base") == 0) {
     connection->shell_ = wl::Bind<xdg_wm_base>(
         registry, name,
@@ -705,15 +686,6 @@ void WaylandConnection::GlobalRemove(void* data,
 }
 
 // static
-void WaylandConnection::PingV6(void* data,
-                               zxdg_shell_v6* shell_v6,
-                               uint32_t serial) {
-  WaylandConnection* connection = static_cast<WaylandConnection*>(data);
-  zxdg_shell_v6_pong(shell_v6, serial);
-  connection->Flush();
-}
-
-// static
 void WaylandConnection::Ping(void* data, xdg_wm_base* shell, uint32_t serial) {
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);
   xdg_wm_base_pong(shell, serial);
@@ -722,7 +694,7 @@ void WaylandConnection::Ping(void* data, xdg_wm_base* shell, uint32_t serial) {
 
 // static
 void WaylandConnection::ClockId(void* data,
-                                wp_presentation* shell_v6,
+                                wp_presentation* presentation,
                                 uint32_t clk_id) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);

@@ -41,7 +41,7 @@ class WaylandZAuraOutputTest : public ::testing::Test {
   void SetUp() override {
     ::testing::Test::SetUp();
 
-    ASSERT_TRUE(server_.Start({.shell_version = wl::ShellVersion::kStable}));
+    ASSERT_TRUE(server_.Start({}));
     mock_zaura_shell_.Initialize(server_.display());
 
     ASSERT_TRUE(connection_.Initialize());

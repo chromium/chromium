@@ -859,20 +859,11 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandInputMethodContextTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandInputMethodContextTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandInputMethodContextNoKeyboardTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandInputMethodContextNoKeyboardTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
 }  // namespace
 }  // namespace ui

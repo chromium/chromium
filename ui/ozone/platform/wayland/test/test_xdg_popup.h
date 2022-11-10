@@ -8,7 +8,6 @@
 #include <utility>
 
 #include <xdg-shell-server-protocol.h>
-#include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"

@@ -14,7 +14,6 @@ namespace wl {
 namespace {
 
 constexpr uint32_t kXdgShellVersion = 3;
-constexpr uint32_t kZXdgShellVersion = 1;
 
 void GetXdgSurfaceImpl(wl_client* client,
                        wl_resource* resource,
@@ -24,9 +23,7 @@ void GetXdgSurfaceImpl(wl_client* client,
                        const void* implementation) {
   auto* surface = GetUserDataAs<MockSurface>(surface_resource);
   if (surface->xdg_surface()) {
-    uint32_t xdg_error = implementation == &kMockXdgSurfaceImpl
-                             ? static_cast<uint32_t>(XDG_WM_BASE_ERROR_ROLE)
-                             : static_cast<uint32_t>(ZXDG_SHELL_V6_ERROR_ROLE);
+    uint32_t xdg_error = static_cast<uint32_t>(XDG_WM_BASE_ERROR_ROLE);
     wl_resource_post_error(resource, xdg_error, "surface already has a role");
     return;
   }
@@ -62,26 +59,6 @@ void Pong(wl_client* client, wl_resource* resource, uint32_t serial) {
   GetUserDataAs<MockXdgShell>(resource)->Pong(serial);
 }
 
-void CreatePositionerV6(wl_client* client,
-                        struct wl_resource* resource,
-                        uint32_t id) {
-  CreateResourceWithImpl<TestPositioner>(client, &zxdg_positioner_v6_interface,
-                                         wl_resource_get_version(resource),
-                                         &kTestZxdgPositionerV6Impl, id);
-}
-
-void GetXdgSurfaceV6(wl_client* client,
-                     wl_resource* resource,
-                     uint32_t id,
-                     wl_resource* surface_resource) {
-  GetXdgSurfaceImpl(client, resource, id, surface_resource,
-                    &zxdg_surface_v6_interface, &kMockZxdgSurfaceV6Impl);
-}
-
-void PongV6(wl_client* client, wl_resource* resource, uint32_t serial) {
-  GetUserDataAs<MockZxdgShellV6>(resource)->Pong(serial);
-}
-
 }  // namespace
 
 const struct xdg_wm_base_interface kMockXdgShellImpl = {
@@ -91,25 +68,11 @@ const struct xdg_wm_base_interface kMockXdgShellImpl = {
     &Pong,              // pong
 };
 
-const struct zxdg_shell_v6_interface kMockZxdgShellV6Impl = {
-    &DestroyResource,     // destroy
-    &CreatePositionerV6,  // create_positioner
-    &GetXdgSurfaceV6,     // get_xdg_surface
-    &PongV6,              // pong
-};
-
 MockXdgShell::MockXdgShell()
     : GlobalObject(&xdg_wm_base_interface,
                    &kMockXdgShellImpl,
                    kXdgShellVersion) {}
 
 MockXdgShell::~MockXdgShell() {}
-
-MockZxdgShellV6::MockZxdgShellV6()
-    : GlobalObject(&zxdg_shell_v6_interface,
-                   &kMockZxdgShellV6Impl,
-                   kZXdgShellVersion) {}
-
-MockZxdgShellV6::~MockZxdgShellV6() {}
 
 }  // namespace wl

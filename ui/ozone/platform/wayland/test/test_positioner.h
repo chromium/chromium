@@ -8,7 +8,6 @@
 #include <utility>
 
 #include <xdg-shell-server-protocol.h>
-#include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"

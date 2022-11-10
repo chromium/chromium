@@ -14,7 +14,6 @@
 #include <linux/input.h>
 #include <wayland-server-core.h>
 #include <xdg-shell-server-protocol.h>
-#include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include "base/environment.h"
 #include "base/files/file_util.h"
@@ -180,19 +179,13 @@ class WaylandWindowTest : public WaylandTest {
   void SendConfigureEventPopup(WaylandWindow* menu_window,
                                const gfx::Rect& bounds) {
     const uint32_t surface_id = menu_window->root_surface()->get_surface_id();
-    PostToServerAndWait([surface_id, bounds,
-                         shell_version = GetParam().shell_version](
-                            wl::TestWaylandServerThread* server) {
-      auto* popup = GetTestXdgPopupByWindow(server, surface_id);
-      ASSERT_TRUE(popup);
-      if (shell_version == wl::ShellVersion::kV6) {
-        zxdg_popup_v6_send_configure(popup->resource(), bounds.x(), bounds.y(),
-                                     bounds.width(), bounds.height());
-      } else {
-        xdg_popup_send_configure(popup->resource(), bounds.x(), bounds.y(),
-                                 bounds.width(), bounds.height());
-      }
-    });
+    PostToServerAndWait(
+        [surface_id, bounds](wl::TestWaylandServerThread* server) {
+          auto* popup = GetTestXdgPopupByWindow(server, surface_id);
+          ASSERT_TRUE(popup);
+          xdg_popup_send_configure(popup->resource(), bounds.x(), bounds.y(),
+                                   bounds.width(), bounds.height());
+        });
   }
 
   std::unique_ptr<WaylandWindow> CreateWaylandWindowWithParams(
@@ -526,10 +519,6 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
 // Checks that when the window gets some of its edges tiled, it notifies the
 // delegate appropriately.
 TEST_P(WaylandWindowTest, HandleTiledEdges) {
-  // Only the stable XDG shell protocol supports tiled states.
-  if (GetParam().shell_version == wl::ShellVersion::kV6)
-    GTEST_SKIP();
-
   constexpr gfx::Rect kWindowBounds{800, 600};
 
   struct {
@@ -2203,7 +2192,7 @@ TEST_P(WaylandWindowTest, DispatchWindowResize) {
   auto* wm_move_resize_handler = ui::GetWmMoveResizeHandler(*window_);
   for (const int value : hit_test_values) {
     {
-      uint32_t direction = wl::IdentifyDirection(*(connection_.get()), value);
+      uint32_t direction = wl::IdentifyDirection(value);
       PostToServerAndWait(
           [id = surface_id_, direction](wl::TestWaylandServerThread* server) {
             wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
@@ -2786,29 +2775,14 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
 TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
   PopupPosition menu_window_positioner, nested_menu_window_positioner;
 
-  if (GetParam().shell_version == wl::ShellVersion::kV6) {
-    menu_window_positioner = {gfx::Rect(439, 46, 1, 1), gfx::Size(287, 409),
-                              ZXDG_POSITIONER_V6_ANCHOR_TOP |
-                                  ZXDG_POSITIONER_V6_ANCHOR_LEFT,
-                              ZXDG_POSITIONER_V6_GRAVITY_BOTTOM |
-                                  ZXDG_POSITIONER_V6_GRAVITY_RIGHT,
-                              ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y},
-
-    nested_menu_window_positioner = {
-        gfx::Rect(285, 1, 1, 1), gfx::Size(305, 99),
-        ZXDG_POSITIONER_V6_ANCHOR_TOP | ZXDG_POSITIONER_V6_ANCHOR_LEFT,
-        ZXDG_POSITIONER_V6_GRAVITY_BOTTOM | ZXDG_POSITIONER_V6_GRAVITY_RIGHT,
-        ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y};
-  } else {
-    menu_window_positioner = {gfx::Rect(439, 46, 1, 1), gfx::Size(287, 409),
-                              XDG_POSITIONER_ANCHOR_TOP_LEFT,
-                              XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
-                              XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
-    nested_menu_window_positioner = {
-        gfx::Rect(285, 1, 1, 1), gfx::Size(305, 99),
-        XDG_POSITIONER_ANCHOR_TOP_LEFT, XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
-        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
-  }
+  menu_window_positioner = {gfx::Rect(439, 46, 1, 1), gfx::Size(287, 409),
+                            XDG_POSITIONER_ANCHOR_TOP_LEFT,
+                            XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
+                            XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
+  nested_menu_window_positioner = {gfx::Rect(285, 1, 1, 1), gfx::Size(305, 99),
+                                   XDG_POSITIONER_ANCHOR_TOP_LEFT,
+                                   XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
+                                   XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
 
   auto* toplevel_window = window_.get();
   toplevel_window->SetBoundsInDIP(gfx::Rect(739, 574));
@@ -2856,31 +2830,15 @@ TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
 TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
   PopupPosition menu_window_positioner, nested_menu_window_positioner;
 
-  if (GetParam().shell_version == wl::ShellVersion::kV6) {
-    menu_window_positioner = {gfx::Rect(468, 46, 28, 28), gfx::Size(320, 404),
-                              ZXDG_POSITIONER_V6_ANCHOR_BOTTOM |
-                                  ZXDG_POSITIONER_V6_ANCHOR_RIGHT,
-                              ZXDG_POSITIONER_V6_GRAVITY_BOTTOM |
-                                  ZXDG_POSITIONER_V6_GRAVITY_LEFT,
-                              ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y},
-
-    nested_menu_window_positioner = {
-        gfx::Rect(4, 83, 312, 1), gfx::Size(480, 294),
-        ZXDG_POSITIONER_V6_ANCHOR_TOP | ZXDG_POSITIONER_V6_ANCHOR_RIGHT,
-        ZXDG_POSITIONER_V6_GRAVITY_BOTTOM | ZXDG_POSITIONER_V6_GRAVITY_RIGHT,
-        ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y |
-            ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_X};
-  } else {
-    menu_window_positioner = {gfx::Rect(468, 46, 28, 28), gfx::Size(320, 404),
-                              XDG_POSITIONER_ANCHOR_BOTTOM_RIGHT,
-                              XDG_POSITIONER_GRAVITY_BOTTOM_LEFT,
-                              XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
-    nested_menu_window_positioner = {
-        gfx::Rect(4, 83, 312, 1), gfx::Size(480, 294),
-        XDG_POSITIONER_ANCHOR_TOP_RIGHT, XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
-        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y |
-            XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_X};
-  }
+  menu_window_positioner = {gfx::Rect(468, 46, 28, 28), gfx::Size(320, 404),
+                            XDG_POSITIONER_ANCHOR_BOTTOM_RIGHT,
+                            XDG_POSITIONER_GRAVITY_BOTTOM_LEFT,
+                            XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
+  nested_menu_window_positioner = {
+      gfx::Rect(4, 83, 312, 1), gfx::Size(480, 294),
+      XDG_POSITIONER_ANCHOR_TOP_RIGHT, XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
+      XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y |
+          XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_X};
 
   auto* toplevel_window = window_.get();
   toplevel_window->SetBoundsInDIP(gfx::Rect(508, 212));
@@ -2957,17 +2915,12 @@ TEST_P(WaylandWindowTest, SetOpaqueRegion) {
 TEST_P(WaylandWindowTest, OnCloseRequest) {
   EXPECT_CALL(delegate_, OnCloseRequest());
 
-  PostToServerAndWait(
-      [id = surface_id_, shell_version = GetParam().shell_version](
-          wl::TestWaylandServerThread* server) {
-        wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
-        ASSERT_TRUE(mock_surface);
-        wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
-        if (shell_version == wl::ShellVersion::kV6)
-          zxdg_toplevel_v6_send_close(xdg_surface->xdg_toplevel()->resource());
-        else
-          xdg_toplevel_send_close(xdg_surface->xdg_toplevel()->resource());
-      });
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
+    xdg_toplevel_send_close(xdg_surface->xdg_toplevel()->resource());
+  });
 }
 
 TEST_P(WaylandWindowTest, WaylandPopupSimpleParent) {
@@ -4351,20 +4304,10 @@ TEST_P(WaylandWindowTest, NoRoundingErrorInDIP) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandWindowTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandSubsurfaceTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandSubsurfaceTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

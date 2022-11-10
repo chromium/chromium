@@ -991,20 +991,7 @@ TEST_P(LazilyConfiguredScreenTest, DualOutput) {
   EXPECT_EQ(2u, screen_->GetAllDisplays().size());
 }
 
-// Tests that use aura-shell extension should use wl::ShellVersion::kStable.
-class WaylandAuraShellScreenTest : public WaylandScreenTest {
- public:
-  WaylandAuraShellScreenTest() = default;
-  WaylandAuraShellScreenTest(const WaylandAuraShellScreenTest&) = delete;
-  WaylandAuraShellScreenTest& operator=(const WaylandAuraShellScreenTest&) =
-      delete;
-  ~WaylandAuraShellScreenTest() override = default;
-
-  void SetUp() override {
-    ASSERT_EQ(GetParam().shell_version, wl::ShellVersion::kStable);
-    WaylandScreenTest::SetUp();
-  }
-};
+using WaylandAuraShellScreenTest = WaylandScreenTest;
 
 TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   TestDisplayObserver observer;
@@ -1181,23 +1168,14 @@ TEST_P(WaylandAuraShellScreenTest,
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandScreenTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
+                         Values(wl::ServerConfig{}));
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandAuraShellScreenTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandScreenTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          LazilyConfiguredScreenTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         LazilyConfiguredScreenTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

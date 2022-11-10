@@ -10,9 +10,6 @@
 #include "ui/ozone/platform/wayland/host/xdg_popup_wrapper_impl.h"
 #include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
-#include "ui/ozone/platform/wayland/host/zxdg_popup_v6_wrapper_impl.h"
-#include "ui/ozone/platform/wayland/host/zxdg_surface_v6_wrapper_impl.h"
-#include "ui/ozone/platform/wayland/host/zxdg_toplevel_v6_wrapper_impl.h"
 
 namespace ui {
 
@@ -34,58 +31,40 @@ ShellObjectFactory::~ShellObjectFactory() = default;
 std::unique_ptr<ShellToplevelWrapper>
 ShellObjectFactory::CreateShellToplevelWrapper(WaylandConnection* connection,
                                                WaylandWindow* wayland_window) {
-  if (connection->shell()) {
-    ReportBaseShellUMA(UMALinuxWaylandShell::kXdgWmBase);
-
-    auto surface =
-        std::make_unique<XDGSurfaceWrapperImpl>(wayland_window, connection);
-    if (!surface->Initialize())
-      return nullptr;
-
-    auto toplevel = std::make_unique<XDGToplevelWrapperImpl>(
-        std::move(surface), wayland_window, connection);
-    return toplevel->Initialize() ? std::move(toplevel) : nullptr;
-  } else if (connection->shell_v6()) {
-    ReportBaseShellUMA(UMALinuxWaylandShell::kXdgShellV6);
-
-    auto surface =
-        std::make_unique<ZXDGSurfaceV6WrapperImpl>(wayland_window, connection);
-    if (!surface->Initialize())
-      return nullptr;
-
-    auto toplevel = std::make_unique<ZXDGToplevelV6WrapperImpl>(
-        std::move(surface), wayland_window, connection);
-    return toplevel->Initialize() ? std::move(toplevel) : nullptr;
+  if (!connection->shell()) {
+    LOG(WARNING) << "Shell protocol is not available.";
+    return nullptr;
   }
-  LOG(WARNING) << "Shell protocol is not available.";
-  return nullptr;
+
+  ReportBaseShellUMA(UMALinuxWaylandShell::kXdgWmBase);
+
+  auto surface =
+      std::make_unique<XDGSurfaceWrapperImpl>(wayland_window, connection);
+  if (!surface->Initialize())
+    return nullptr;
+
+  auto toplevel = std::make_unique<XDGToplevelWrapperImpl>(
+      std::move(surface), wayland_window, connection);
+  return toplevel->Initialize() ? std::move(toplevel) : nullptr;
 }
 
 std::unique_ptr<ShellPopupWrapper> ShellObjectFactory::CreateShellPopupWrapper(
     WaylandConnection* connection,
     WaylandWindow* wayland_window,
     const ShellPopupParams& params) {
-  if (connection->shell()) {
-    auto surface =
-        std::make_unique<XDGSurfaceWrapperImpl>(wayland_window, connection);
-    if (!surface->Initialize())
-      return nullptr;
-
-    auto popup = std::make_unique<XDGPopupWrapperImpl>(
-        std::move(surface), wayland_window, connection);
-    return popup->Initialize(params) ? std::move(popup) : nullptr;
-  } else if (connection->shell_v6()) {
-    auto surface =
-        std::make_unique<ZXDGSurfaceV6WrapperImpl>(wayland_window, connection);
-    if (!surface->Initialize())
-      return nullptr;
-
-    auto popup = std::make_unique<ZXDGPopupV6WrapperImpl>(
-        std::move(surface), wayland_window, connection);
-    return popup->Initialize(params) ? std::move(popup) : nullptr;
+  if (!connection->shell()) {
+    LOG(WARNING) << "Shell protocol is not available.";
+    return nullptr;
   }
-  LOG(WARNING) << "Shell protocol is not available.";
-  return nullptr;
+
+  auto surface =
+      std::make_unique<XDGSurfaceWrapperImpl>(wayland_window, connection);
+  if (!surface->Initialize())
+    return nullptr;
+
+  auto popup = std::make_unique<XDGPopupWrapperImpl>(
+      std::move(surface), wayland_window, connection);
+  return popup->Initialize(params) ? std::move(popup) : nullptr;
 }
 
 }  // namespace ui

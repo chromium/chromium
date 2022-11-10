@@ -2783,34 +2783,22 @@ TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationInteger) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandBufferManagerTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandBufferManagerTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandBufferManagerViewportTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandBufferManagerViewportTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithoutExplicitSync,
     WaylandBufferManagerTest,
     Values(wl::ServerConfig{
-        .shell_version = wl::ShellVersion::kStable,
         .use_explicit_synchronization =
             wl::ShouldUseExplicitSynchronizationProtocol::kNone}));
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithExplicitSync,
     WaylandBufferManagerTest,
     Values(wl::ServerConfig{
-        .shell_version = wl::ShellVersion::kStable,
         .use_explicit_synchronization =
             wl::ShouldUseExplicitSynchronizationProtocol::kUse}));
 

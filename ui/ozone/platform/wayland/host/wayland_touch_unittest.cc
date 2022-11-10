@@ -503,11 +503,6 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandTouchTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandTouchTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

@@ -128,7 +128,6 @@ class WaylandConnection {
     return alpha_compositing_.get();
   }
   xdg_wm_base* shell() const { return shell_.get(); }
-  zxdg_shell_v6* shell_v6() const { return shell_v6_.get(); }
   wp_presentation* presentation() const { return presentation_.get(); }
   zwp_keyboard_shortcuts_inhibit_manager_v1*
   keyboard_shortcuts_inhibit_manager_v1() const {
@@ -356,14 +355,13 @@ class WaylandConnection {
                      uint32_t version);
   static void GlobalRemove(void* data, wl_registry* registry, uint32_t name);
 
-  // zxdg_shell_v6_listener
-  static void PingV6(void* data, zxdg_shell_v6* zxdg_shell_v6, uint32_t serial);
-
   // xdg_wm_base_listener
   static void Ping(void* data, xdg_wm_base* shell, uint32_t serial);
 
   // xdg_wm_base_listener
-  static void ClockId(void* data, wp_presentation* shell_v6, uint32_t clk_id);
+  static void ClockId(void* data,
+                      wp_presentation* presentation,
+                      uint32_t clk_id);
 
   base::flat_map<std::string, wl::GlobalObjectFactory> global_object_factories_;
 
@@ -375,7 +373,6 @@ class WaylandConnection {
   wl::Object<wl_compositor> compositor_;
   wl::Object<wl_subcompositor> subcompositor_;
   wl::Object<xdg_wm_base> shell_;
-  wl::Object<zxdg_shell_v6> shell_v6_;
   wl::Object<wp_content_type_manager_v1> content_type_manager_v1_;
   wl::Object<wp_presentation> presentation_;
   wl::Object<wp_viewporter> viewporter_;

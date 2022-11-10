@@ -39,7 +39,6 @@
 #include <xdg-foreign-unstable-v2-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
-#include <xdg-shell-unstable-v6-client-protocol.h>
 
 #include "base/logging.h"
 
@@ -286,11 +285,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_exporter_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_exported_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_output_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_output_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_popup_v6)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_positioner_v6)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_shell_v6)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_surface_v6)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_toplevel_v6)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_toplevel_decoration_v1)
 
 }  // namespace wl
