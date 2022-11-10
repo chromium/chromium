@@ -97,15 +97,11 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO (leileilei@google.com): Provide a way to disable the pop up dialog.
-    // Disable kEnhancedNetworkVoices To avoid its pop up dialog.
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kEnhancedNetworkVoices);
-
-    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Pretend that enhanced network voices dialog has been accepted so that the
+    // dialog does not block.
+    browser()->profile()->GetPrefs()->SetBoolean(
+        ash::prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
   }
 
   test::SpeechMonitor sm_;

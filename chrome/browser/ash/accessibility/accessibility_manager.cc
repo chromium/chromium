@@ -1483,6 +1483,14 @@ void AccessibilityManager::SetProfile(Profile* profile) {
         base::BindRepeating(&AccessibilityManager::OnSelectToSpeakChanged,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
+        prefs::kAccessibilitySelectToSpeakEnhancedNetworkVoices,
+        base::BindRepeating(&AccessibilityManager::UpdateEnhancedNetworkTts,
+                            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed,
+        base::BindRepeating(&AccessibilityManager::UpdateEnhancedNetworkTts,
+                            base::Unretained(this)));
+    pref_change_registrar_->Add(
         prefs::kAccessibilitySwitchAccessEnabled,
         base::BindRepeating(&AccessibilityManager::OnSwitchAccessChanged,
                             base::Unretained(this)));
@@ -1836,7 +1844,7 @@ void AccessibilityManager::OnChromeVoxPanelDestroying() {
 void AccessibilityManager::PostLoadSelectToSpeak() {
   InitializeFocusRings(extension_misc::kSelectToSpeakExtensionId);
 
-  LoadEnhancedNetworkTts();
+  UpdateEnhancedNetworkTts();
 }
 
 void AccessibilityManager::PostUnloadSelectToSpeak() {
@@ -1847,7 +1855,32 @@ void AccessibilityManager::PostUnloadSelectToSpeak() {
   RemoveFocusRings(extension_misc::kSelectToSpeakExtensionId);
   HideHighlights();
 
-  UnloadEnhancedNetworkTts();
+  UpdateEnhancedNetworkTts();
+}
+
+void AccessibilityManager::UpdateEnhancedNetworkTts() {
+  if (!profile_)
+    return;
+
+  // Load enhanced network voices if Select to Speak is running and the voices
+  // are enabled by Select to Speak policy, and either the user has already
+  // agreed to use network voices or they haven't seen the dialog at all yet.
+  // We load them if the user hasn't seen the dialog yet because this will
+  // allow the voices to be ready to go as soon as the dialog is accepted.
+  // The dialog is only shown the very first time a user triggers Select to
+  // Speak.
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed) &&
+      profile_->GetPrefs()->GetBoolean(
+          prefs::kAccessibilitySelectToSpeakEnabled) &&
+      (profile_->GetPrefs()->GetBoolean(
+           prefs::kAccessibilitySelectToSpeakEnhancedNetworkVoices) ||
+       !profile_->GetPrefs()->GetBoolean(
+           prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown))) {
+    LoadEnhancedNetworkTts();
+  } else {
+    UnloadEnhancedNetworkTts();
+  }
 }
 
 void AccessibilityManager::LoadEnhancedNetworkTts() {
@@ -1871,7 +1904,8 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
       extension_misc::kEnhancedNetworkTtsExtensionId,
       extension_misc::kEnhancedNetworkTtsManifestFilename,
       extension_misc::kEnhancedNetworkTtsGuestManifestFilename,
-      base::DoNothing());
+      base::BindOnce(&AccessibilityManager::PostLoadEnhancedNetworkTts,
+                     base::Unretained(this)));
 }
 
 void AccessibilityManager::UnloadEnhancedNetworkTts() {
@@ -1882,7 +1916,13 @@ void AccessibilityManager::UnloadEnhancedNetworkTts() {
       extensions::ExtensionSystem::Get(profile_)
           ->extension_service()
           ->component_loader();
-  component_loader->Remove(extension_misc::kEnhancedNetworkTtsExtensionId);
+  if (component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId))
+    component_loader->Remove(extension_misc::kEnhancedNetworkTtsExtensionId);
+}
+
+void AccessibilityManager::PostLoadEnhancedNetworkTts() {
+  if (enhanced_network_tts_waiter_for_test_)
+    std::move(enhanced_network_tts_waiter_for_test_).Run();
 }
 
 void AccessibilityManager::PostLoadSwitchAccess() {

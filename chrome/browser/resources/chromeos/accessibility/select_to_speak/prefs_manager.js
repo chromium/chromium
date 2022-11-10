@@ -77,6 +77,12 @@ export class PrefsManager {
      * @private {boolean}
      */
     this.voiceSwitching_ = false;
+
+    /**
+     * Used by tests to wait for settings changes to be propagated.
+     * @protected {?function()}
+     */
+    this.updateSettingsPrefsCallbackForTest_ = null;
   }
 
   /**
@@ -296,6 +302,9 @@ export class PrefsManager {
           this.voiceSwitching_ = pref.value;
           break;
       }
+    }
+    if (this.updateSettingsPrefsCallbackForTest_) {
+      this.updateSettingsPrefsCallbackForTest_();
     }
   }
 

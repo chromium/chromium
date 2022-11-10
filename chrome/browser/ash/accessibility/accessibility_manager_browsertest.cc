@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -20,11 +21,14 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
+#include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -396,6 +400,13 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
         /*triggered_by_user=*/false);
   }
 
+  void WaitForEnhancedNetworkTtsLoad() {
+    base::RunLoop runner;
+    AccessibilityManager::Get()->enhanced_network_tts_waiter_for_test_ =
+        runner.QuitClosure();
+    runner.Run();
+  }
+
   int default_autoclick_delay() const { return default_autoclick_delay_; }
 
   int default_autoclick_delay_ = 0;
@@ -749,6 +760,52 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   EXPECT_TRUE(ShouldShowAccessibilityMenu());
   SetSelectToSpeakEnabled(false);
   EXPECT_FALSE(ShouldShowAccessibilityMenu());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       EnhancedNetworkVoicesExtensionLoadedWhenNeeded) {
+  extensions::ComponentLoader* component_loader =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service()
+          ->component_loader();
+
+  // Not loaded yet.
+  EXPECT_FALSE(
+      component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId));
+
+  SetSelectToSpeakEnabled(true);
+  // Loaded the first time Select to Speak is enabled because the user hasn't
+  // seen the dialog yet, and voices are needed immediately after the dialog is
+  // accepted.
+  WaitForEnhancedNetworkTtsLoad();
+  EXPECT_TRUE(
+      component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId));
+
+  // Unloaded with Select to Speak turned off.
+  SetSelectToSpeakEnabled(false);
+  EXPECT_FALSE(
+      component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId));
+
+  // Pretend the dialog was shown but the user didn't accept it by changing the
+  // pref that the dialog was shown but not the pref to enable the voices.
+  SetSelectToSpeakEnabled(true);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
+  EXPECT_FALSE(
+      component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId));
+
+  // Pretend the user turned on the network voices setting.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilitySelectToSpeakEnhancedNetworkVoices, true);
+  WaitForEnhancedNetworkTtsLoad();
+  EXPECT_TRUE(
+      component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId));
+
+  // Now the admin disallows network voices by policy.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed, false);
+  EXPECT_FALSE(
+      component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId));
 }
 
 // Ensures that the ChromeVox panel stays in sync with ChromeVox's enabled

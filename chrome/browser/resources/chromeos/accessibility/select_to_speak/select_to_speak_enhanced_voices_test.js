@@ -37,15 +37,21 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
     await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
   }
 
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kEnhancedNetworkVoices']};
-  }
-
   // Sets the policy to allow or disallow the network voices.
-  setEnhancedNetworkVoicesPolicy(allowed) {
+  // Waits for the setting to propagate.
+  async setEnhancedNetworkVoicesPolicy(allowed) {
     chrome.settingsPrivate.setPref(
         PrefsManager.ENHANCED_VOICES_POLICY_KEY, allowed);
+    await new Promise(
+        resolve => selectToSpeak.prefsManager_
+                       .updateSettingsPrefsCallbackForTest_ = () => {
+          if (selectToSpeak.prefsManager_.enhancedNetworkVoicesAllowed_ ===
+              allowed) {
+            selectToSpeak.prefsManager_.updateSettingsPrefsCallbackForTest_ =
+                null;
+            resolve();
+          }
+        });
   }
 };
 
@@ -54,9 +60,7 @@ AX_TEST_F(
     'EnablesVoicesIfConfirmedInDialog', async function() {
       this.confirmationDialogResponse_ = true;
 
-      const root = await this.runWithLoadedTree(
-          'data:text/html;charset=utf-8,' +
-          '<p>This is some text</p>');
+      const root = await this.runWithLoadedTree('<p>This is some text</p>');
       assertFalse(this.mockTts.currentlySpeaking());
       assertEquals(this.mockTts.pendingUtterances().length, 0);
       this.mockTts.setOnSpeechCallbacks([this.newCallback(function(utterance) {
@@ -81,9 +85,8 @@ AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
     'DisablesVoicesIfCanceledInDialog', async function() {
       this.confirmationDialogResponse_ = false;
-      const root = await this.runWithLoadedTree(
-          'data:text/html;charset=utf-8,' +
-          '<p>This is some text</p>');
+
+      const root = await this.runWithLoadedTree('<p>This is some text</p>');
       assertFalse(this.mockTts.currentlySpeaking());
       assertEquals(this.mockTts.pendingUtterances().length, 0);
       this.mockTts.setOnSpeechCallbacks([this.newCallback(function(utterance) {
@@ -109,9 +112,7 @@ AX_TEST_F(
     'DisablesVoicesIfDisallowedByPolicy', async function() {
       this.confirmationDialogResponse_ = true;
 
-      const root = await this.runWithLoadedTree(
-          'data:text/html;charset=utf-8,' +
-          '<p>This is some text</p>');
+      const root = await this.runWithLoadedTree('<p>This is some text</p>');
       this.mockTts.setOnSpeechCallbacks([this.newCallback(async function(
           utterance) {
         // Network voices are enabled initially because of the
@@ -121,9 +122,7 @@ AX_TEST_F(
         assertTrue(selectToSpeak.prefsManager_.enhancedNetworkVoicesEnabled());
 
         // Sets the policy to disallow network voices.
-        this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
-        // Pref change is slow to propagate so also set directly.
-        selectToSpeak.prefsManager_.enhancedNetworkVoicesAllowed_ = false;
+        await this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
         assertFalse(selectToSpeak.prefsManager_.enhancedNetworkVoicesEnabled());
       })]);
       const textNode = this.findTextNode(root, 'This is some text');
@@ -137,11 +136,13 @@ AX_TEST_F(
 AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
     'DisablesDialogIfDisallowedByPolicy', async function() {
-      this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
+      await this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
 
-      const root = await this.runWithLoadedTree(
-          'data:text/html;charset=utf-8,' +
-          '<p>This is some text</p>');
+      // For some reason after setting enhanced network voices pref
+      // we often lose mockTts on Select to Speak. Ensure it's set.
+      chrome.tts = this.mockTts;
+
+      const root = await this.runWithLoadedTree('<p>This is some text</p>');
       assertFalse(this.mockTts.currentlySpeaking());
       assertEquals(this.mockTts.pendingUtterances().length, 0);
       this.mockTts.setOnSpeechCallbacks([this.newCallback(function(utterance) {
