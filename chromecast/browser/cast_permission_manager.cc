@@ -9,6 +9,7 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_permission_user_data.h"
 #include "chromecast/common/activity_url_filter.h"
+#include "components/cast_receiver/browser/public/permissions_manager.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -94,10 +95,21 @@ blink::mojom::PermissionStatus GetPermissionStatusInternal(
     blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  const cast_receiver::PermissionsManager* permissions_manager =
+      cast_receiver::PermissionsManager::GetInstance(*web_contents);
+  if (permissions_manager) {
+    const blink::mojom::PermissionStatus permission_status =
+        permissions_manager->GetPermissionStatus(permission, requesting_origin);
+    if (permission_status == blink::mojom::PermissionStatus::GRANTED) {
+      return permission_status;
+    }
+  }
+
   DCHECK(render_frame_host);
   CastPermissionUserData* cast_permission_user_data =
-      CastPermissionUserData::FromWebContents(
-          content::WebContents::FromRenderFrameHost(render_frame_host));
+      CastPermissionUserData::FromWebContents(web_contents);
 
   if (!cast_permission_user_data) {
     LOG(ERROR) << __func__ << ": No permission data in frame!";

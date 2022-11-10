@@ -26,6 +26,25 @@ source_set("browser") {
   friend = [ ":unit_tests" ]
 }
 
+source_set("permissions_manager") {
+  public_deps = [
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+  deps = [
+    "//base",
+    "//content",
+  ]
+  public = [
+    "public/permissions_manager.h",
+
+    # TODO(crbug.com/1359579): Limit visibility to just this component.
+    "permissions_manager_impl.h",
+  ]
+  sources = [ "permissions_manager_impl.cc" ]
+  friend = [ ":unit_tests" ]
+}
+
 # TODO(crbug.com/1359579): Limit visibility to just this component.
 source_set("page_state_observer") {
   deps = [
@@ -64,12 +83,16 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":page_state_observer",
+    ":permissions_manager",
     "//media",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/geometry",
   ]
-  sources = [ "application_client_unittest.cc" ]
+  sources = [
+    "application_client_unittest.cc",
+    "permissions_manager_impl_unittest.cc",
+  ]
 
   if (enable_cast_receiver || is_fuchsia) {
     deps += [ ":runtime" ]

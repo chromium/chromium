@@ -253,6 +253,7 @@ cast_source_set("browser") {
     "//chromecast/ui:display_settings_manager",
     "//chromecast/ui:display_settings_public",
     "//components/cast/message_port:message_port_cast",
+    "//components/cast_receiver/browser:permissions_manager",
     "//components/download/public/common:public",
     "//components/heap_profiling/multi_process",
     "//components/media_control/browser",

@@ -17,6 +17,7 @@ include_rules = [
   "+chromecast/service",
   "+chromecast/ui",
   "+components/cast",
+  "+components/cast_receiver/browser",
   "+components/cdm/browser",
   "+components/crash",
   "+components/download/public/common",
