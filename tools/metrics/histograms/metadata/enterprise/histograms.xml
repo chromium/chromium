@@ -23,16 +23,40 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="CleanupHandler">
-  <variant name="BrowsingData" summary="Handler for browsing data"/>
+  <variant name="Browser"
+      summary="Handler for open browser windows and browsing data"/>
+  <variant name="BrowsingData" summary="Handler for browsing data">
+    <obsolete>
+      Deprecated in M109. Instead use Browser variant which joins BrowsingData
+      and OpenWindows variants.
+    </obsolete>
+  </variant>
   <variant name="Clipboard" summary="Handler for clipboard"/>
   <variant name="Extension" summary="Handler for extensions"/>
   <variant name="Files" summary="Handler for files"/>
   <variant name="Lacros" summary="Handler which calls cleanup on Lacros"/>
-  <variant name="LacrosBrowsingData" summary="Handler for files on Lacros"/>
+  <variant name="LacrosBrowser"
+      summary="Handler for open browser windows and browsing data on Lacros"/>
+  <variant name="LacrosBrowsingData" summary="Handler for files on Lacros">
+    <obsolete>
+      Deprecated in M109. Instead use LacrosBrowser variant which joins
+      LacrosBrowsingData and LacrosOpenWindows variants.
+    </obsolete>
+  </variant>
   <variant name="LacrosExtension" summary="Handler for extensions on Lacros"/>
   <variant name="LacrosOpenWindows"
-      summary="Handler for open browser windows on Lacros"/>
-  <variant name="OpenWindows" summary="Handler for open browser windows"/>
+      summary="Handler for open browser windows on Lacros">
+    <obsolete>
+      Deprecated in M109. Instead use LacrosBrowser variant which joins
+      LacrosBrowsingData and LacrosOpenWindows variants.
+    </obsolete>
+  </variant>
+  <variant name="OpenWindows" summary="Handler for open browser windows">
+    <obsolete>
+      Deprecated in M109. Instead use Browser variant which joins BrowsingData
+      and OpenWindows variants.
+    </obsolete>
+  </variant>
   <variant name="PrintJobs" summary="Handler for print jobs"/>
 </variants>
 

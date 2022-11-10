@@ -4,9 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros.h"
 
-#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/browsing_data_cleanup_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/browser_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -16,12 +15,9 @@ namespace {
 
 // Must kept in sync with the CleanupHandler variant in
 // tools/metrics/histograms/metadata/enterprise/histograms.xml
-constexpr char kLacrosBrowsingDataCleanupHandlerHistogramName[] =
-    "LacrosBrowsingData";
+constexpr char kLacrosBrowserCleanupHandlerHistogramName[] = "LacrosBrowser";
 constexpr char kLacrosExtensionCleanupHandlerHistogramName[] =
     "LacrosExtension";
-constexpr char kLacrosOpenWindowsCleanupHandlerHistogramName[] =
-    "LacrosOpenWindows";
 
 }  // namespace
 
@@ -39,10 +35,8 @@ CleanupManagerLacros::CleanupManagerLacros(
 CleanupManagerLacros::~CleanupManagerLacros() = default;
 
 void CleanupManagerLacros::InitializeCleanupHandlers() {
-  cleanup_handlers_.insert({kLacrosBrowsingDataCleanupHandlerHistogramName,
-                            std::make_unique<BrowsingDataCleanupHandler>()});
-  cleanup_handlers_.insert({kLacrosOpenWindowsCleanupHandlerHistogramName,
-                            std::make_unique<OpenWindowsCleanupHandler>()});
+  cleanup_handlers_.insert({kLacrosBrowserCleanupHandlerHistogramName,
+                            std::make_unique<BrowserCleanupHandler>()});
   cleanup_handlers_.insert({kLacrosExtensionCleanupHandlerHistogramName,
                             std::make_unique<ExtensionCleanupHandler>()});
 }

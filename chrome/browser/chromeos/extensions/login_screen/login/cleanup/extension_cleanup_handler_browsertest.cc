@@ -58,7 +58,7 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
 
  protected:
   ExtensionCleanupHandlerTest() = default;
-  ~ExtensionCleanupHandlerTest() override {}
+  ~ExtensionCleanupHandlerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
