@@ -42,7 +42,7 @@ namespace {
 
 BASE_FEATURE(kVariationsAsyncNewCodePath,
              "VariationsAsyncNewCodePath",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kVariationsAsyncProcessing{
     &kVariationsAsyncNewCodePath, "Async", true};
 
