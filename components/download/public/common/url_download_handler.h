@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_DOWNLOAD_HANDLER_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_DOWNLOAD_HANDLER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/url_loader_factory_provider.h"

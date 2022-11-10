@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/web_wrapper.h"

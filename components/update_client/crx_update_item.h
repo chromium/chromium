@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/update_client/crx_downloader.h"

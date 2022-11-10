@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_model.h"

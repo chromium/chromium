@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"

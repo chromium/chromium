@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "url/gurl.h"

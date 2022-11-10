@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "components/domain_reliability/beacon.h"
 #include "components/domain_reliability/clear_mode.h"
 #include "components/domain_reliability/config.h"

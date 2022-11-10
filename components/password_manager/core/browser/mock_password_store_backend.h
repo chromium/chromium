@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 #include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"

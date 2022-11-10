@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/model_type_processor.h"

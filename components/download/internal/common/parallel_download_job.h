@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/download/internal/common/download_job_impl.h"
 #include "components/download/internal/common/download_worker.h"

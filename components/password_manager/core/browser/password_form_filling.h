@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
-
 namespace autofill {
 struct PasswordFormFillData;
 }  // namespace autofill

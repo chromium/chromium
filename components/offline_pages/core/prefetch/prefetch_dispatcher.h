@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/client_id.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"

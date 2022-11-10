@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_job.h"

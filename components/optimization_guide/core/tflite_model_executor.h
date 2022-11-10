@@ -9,7 +9,6 @@
 #include "base/callback_forward.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"

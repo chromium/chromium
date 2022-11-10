@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_RENDERER_SECURITY_INTERSTITIAL_PAGE_CONTROLLER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_RENDERER_SECURITY_INTERSTITIAL_PAGE_CONTROLLER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/wrappable.h"

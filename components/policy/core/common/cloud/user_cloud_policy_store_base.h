@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/policy_types.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_DETAILS_ACTION_H_
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 
 namespace autofill_assistant {

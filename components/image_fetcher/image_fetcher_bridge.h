@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "ui/gfx/image/image.h"
 

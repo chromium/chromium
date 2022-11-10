@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 

@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/driver/configure_context.h"

@@ -6,8 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_INPUT_CONTEXT_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform {
@@ -27,7 +26,7 @@ struct InputContext : base::RefCounted<InputContext> {
   base::flat_map<std::string, processing::ProcessedValue> metadata_args;
 
  private:
-  friend class RefCounted<InputContext>;
+  friend class base::RefCounted<InputContext>;
 
   ~InputContext();
 };
