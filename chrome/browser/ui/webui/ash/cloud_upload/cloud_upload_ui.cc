@@ -33,6 +33,10 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
 
 CloudUploadUI::~CloudUploadUI() = default;
 
+void CloudUploadUI::SetDialogArgs(mojom::DialogArgsPtr args) {
+  dialog_args_ = std::move(args);
+}
+
 void CloudUploadUI::BindInterface(
     mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver) {
   if (factory_receiver_.is_bound()) {
@@ -44,7 +48,7 @@ void CloudUploadUI::BindInterface(
 void CloudUploadUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<CloudUploadPageHandler>(
-      std::move(receiver),
+      std::move(dialog_args_), std::move(receiver),
       // base::Unretained() because |page_handler_| will not out-live |this|.
       base::BindOnce(&CloudUploadUI::RespondAndCloseDialog,
                      base::Unretained(this)));

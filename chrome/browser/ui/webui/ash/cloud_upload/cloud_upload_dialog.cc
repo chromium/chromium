@@ -13,10 +13,11 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-forward.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/common/webui_url_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash::cloud_upload {
@@ -64,18 +65,18 @@ void OpenODFSUrl(const storage::FileSystemURL& uploaded_file_url) {
 }
 
 void OnCloudSetupComplete(Profile* profile,
-                          absl::optional<storage::FileSystemURL> file_url,
-                          const UploadType upload_type,
+                          const std::vector<storage::FileSystemURL>& file_urls,
+                          const mojom::CloudProvider cloud_provider,
                           const std::string& action) {
   if (action == kUserActionUpload) {
-    if (file_url.has_value()) {
-      switch (upload_type) {
-        case UploadType::kOneDrive:
-          OneDriveUploadHandler::Upload(profile, *file_url,
+    for (const auto& file_url : file_urls) {
+      switch (cloud_provider) {
+        case mojom::CloudProvider::kOneDrive:
+          OneDriveUploadHandler::Upload(profile, file_url,
                                         base::BindOnce(&OpenODFSUrl));
           break;
-        case UploadType::kDrive:
-          DriveUploadHandler::Upload(profile, *file_url,
+        case mojom::CloudProvider::kGoogleDrive:
+          DriveUploadHandler::Upload(profile, file_url,
                                      base::BindOnce(&OpenDriveUrl));
           break;
       }
@@ -90,10 +91,10 @@ void OnCloudSetupComplete(Profile* profile,
 
 bool UploadAndOpen(Profile* profile,
                    const std::vector<storage::FileSystemURL>& file_urls,
-                   const UploadType upload_type,
+                   const mojom::CloudProvider cloud_provider,
                    bool show_dialog) {
   if (show_dialog) {
-    return CloudUploadDialog::Show(profile, file_urls, upload_type);
+    return CloudUploadDialog::Show(profile, file_urls, cloud_provider);
   }
 
   bool empty_selection = file_urls.empty();
@@ -101,8 +102,7 @@ bool UploadAndOpen(Profile* profile,
   if (empty_selection) {
     return false;
   }
-  // TODO(crbug.com/1336924) Add support for multi-file selection.
-  OnCloudSetupComplete(profile, file_urls[0], upload_type, kUserActionUpload);
+  OnCloudSetupComplete(profile, file_urls, cloud_provider, kUserActionUpload);
   return true;
 }
 
@@ -110,7 +110,7 @@ bool UploadAndOpen(Profile* profile,
 bool CloudUploadDialog::Show(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& file_urls,
-    UploadType upload_type) {
+    const mojom::CloudProvider cloud_provider) {
   // Allow no more than one upload dialog at a time. In the case of multiple
   // upload requests, they should either be handled simultaneously or queued.
   if (SystemWebDialogDelegate::HasInstance(
@@ -118,20 +118,27 @@ bool CloudUploadDialog::Show(
     return false;
   }
 
-  absl::optional<storage::FileSystemURL> file_url;
-  if (!file_urls.empty()) {
-    // TODO(crbug.com/1336924) Add support for multi-file selection.
-    file_url = file_urls[0];
+  mojom::DialogArgsPtr args = mojom::DialogArgs::New();
+  args->cloud_provider = cloud_provider;
+  for (const auto& file_url : file_urls) {
+    args->file_names.push_back(file_url.path().BaseName().value());
   }
 
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
-  CloudUploadDialog* dialog = new CloudUploadDialog(
-      file_url, upload_type,
-      base::BindOnce(&OnCloudSetupComplete, profile, file_url, upload_type));
+  UploadRequestCallback uploadCallback =
+      base::BindOnce(&OnCloudSetupComplete, profile, file_urls, cloud_provider);
+  CloudUploadDialog* dialog =
+      new CloudUploadDialog(std::move(args), std::move(uploadCallback));
 
   dialog->ShowSystemDialog();
   return true;
+}
+
+void CloudUploadDialog::OnDialogShown(content::WebUI* webui) {
+  DCHECK(dialog_args_);
+  static_cast<CloudUploadUI*>(webui->GetController())
+      ->SetDialogArgs(std::move(dialog_args_));
 }
 
 void CloudUploadDialog::OnDialogClosed(const std::string& json_retval) {
@@ -141,34 +148,14 @@ void CloudUploadDialog::OnDialogClosed(const std::string& json_retval) {
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 
-CloudUploadDialog::CloudUploadDialog(
-    absl::optional<storage::FileSystemURL> file_url,
-    const UploadType upload_type,
-    UploadRequestCallback callback)
+CloudUploadDialog::CloudUploadDialog(mojom::DialogArgsPtr args,
+                                     UploadRequestCallback callback)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUICloudUploadURL),
                               std::u16string() /* title */),
-      file_url_(std::move(file_url)),
-      upload_type_(upload_type),
+      dialog_args_(std::move(args)),
       callback_(std::move(callback)) {}
 
 CloudUploadDialog::~CloudUploadDialog() = default;
-
-std::string CloudUploadDialog::GetDialogArgs() const {
-  base::DictionaryValue args;
-  if (file_url_.has_value()) {
-    args.SetKey("fileName", base::Value(file_url_->path().BaseName().value()));
-  }
-  switch (upload_type_) {
-    case UploadType::kOneDrive:
-      args.SetKey("uploadType", base::Value("OneDrive"));
-      break;
-    case UploadType::kDrive:
-      args.SetKey("uploadType", base::Value("Drive"));
-  }
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
-}
 
 bool CloudUploadDialog::ShouldShowCloseButton() const {
   return false;

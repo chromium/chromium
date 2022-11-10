@@ -23,7 +23,8 @@ class CloudUploadPageHandler : public mojom::PageHandler {
  public:
   using RespondAndCloseCallback =
       base::OnceCallback<void(mojom::UserAction action)>;
-  explicit CloudUploadPageHandler(
+  CloudUploadPageHandler(
+      mojom::DialogArgsPtr args,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
       RespondAndCloseCallback callback);
 
@@ -33,9 +34,12 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   ~CloudUploadPageHandler() override;
 
   // mojom::PageHandler:
+  void GetDialogArgs(GetDialogArgsCallback callback) override;
   void RespondAndClose(mojom::UserAction action) override;
 
  private:
+  mojom::DialogArgsPtr dialog_args_;
+
   mojo::Receiver<PageHandler> receiver_;
   RespondAndCloseCallback callback_;
 

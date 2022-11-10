@@ -10,30 +10,35 @@ import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {OneDriveUploadPageElement} from './one_drive_upload_page.js';
 import {WelcomePageElement} from './welcome_page.js';
 
-export enum UploadType {
-  ONE_DRIVE = 0,
-  DRIVE = 1,
-}
-
 /**
  * The CloudUploadElement is the main dialog controller that aggregates all the
  * individual setup pages and determines which one to show.
  */
 export class CloudUploadElement extends HTMLElement {
+  /** Resolved once the element's shadow DOM has finished initializing. */
+  initPromise: Promise<void>;
+
   /** List of pages to show. */
-  pages: HTMLElement[];
+  pages: HTMLElement[] = [];
+
   /** The current page index into `pages`. */
   private currentPageIdx: number = 0;
-  private fileName: string|null = null;
+
+  /** The names of the files to upload. */
+  private fileNames: string[] = [];
 
   constructor() {
     super();
-    this.processDialogArgs();
     this.attachShadow({mode: 'open'});
+    this.initPromise = this.init();
+  }
+
+  async init(): Promise<void> {
+    await this.processDialogArgs();
 
     // TODO(b/251046341): Adjust this once the rest of the pages are in place.
     const oneDriveUploadPage = new OneDriveUploadPageElement();
-    oneDriveUploadPage.setFileName(this.fileName);
+    oneDriveUploadPage.setFileNames(this.fileNames);
     this.pages = [
       new WelcomePageElement(),
       oneDriveUploadPage,
@@ -77,15 +82,11 @@ export class CloudUploadElement extends HTMLElement {
   /**
    * Initialises the class members based off the given dialog arguments.
    */
-  private processDialogArgs(): void {
+  private async processDialogArgs(): Promise<void> {
     try {
-      const dialogArgs = this.proxy.getDialogArguments();
-      assert(dialogArgs);
-      const args = JSON.parse(dialogArgs);
-      assert(args);
-      if (args.fileName != null) {
-        this.fileName = args.fileName;
-      }
+      const dialogArgs = await this.proxy.handler.getDialogArgs();
+      assert(dialogArgs.args);
+      this.fileNames = dialogArgs.args.fileNames;
     } catch (e) {
       // TODO(b/243095484) Define expected behavior.
       console.error(`Unable to get dialog arguments . Error: ${e}.`);

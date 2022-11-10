@@ -18,8 +18,6 @@ export abstract class CloudUploadBrowserProxy {
   static setInstance(obj: CloudUploadBrowserProxy) {
     instance = obj;
   }
-
-  abstract getDialogArguments(): string;
 }
 
 class CloudUploadBrowserProxyImpl extends CloudUploadBrowserProxy {
@@ -27,11 +25,6 @@ class CloudUploadBrowserProxyImpl extends CloudUploadBrowserProxy {
     super();
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(this.handler.$.bindNewPipeAndPassReceiver());
-  }
-
-  // JSON-encoded dialog arguments.
-  getDialogArguments(): string {
-    return chrome.getVariableValue('dialogArguments');
   }
 }
 

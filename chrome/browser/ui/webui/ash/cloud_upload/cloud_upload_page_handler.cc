@@ -3,18 +3,24 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_page_handler.h"
-
-#include "base/files/file_path.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 
 namespace ash::cloud_upload {
 
 CloudUploadPageHandler::CloudUploadPageHandler(
+    mojom::DialogArgsPtr args,
     mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
     RespondAndCloseCallback callback)
-    : receiver_{this, std::move(pending_page_handler)},
+    : dialog_args_{std::move(args)},
+      receiver_{this, std::move(pending_page_handler)},
       callback_{std::move(callback)} {}
 
 CloudUploadPageHandler::~CloudUploadPageHandler() = default;
+
+void CloudUploadPageHandler::GetDialogArgs(GetDialogArgsCallback callback) {
+  std::move(callback).Run(dialog_args_ ? dialog_args_.Clone()
+                                       : mojom::DialogArgs::New());
+}
 
 void CloudUploadPageHandler::RespondAndClose(mojom::UserAction action) {
   if (callback_) {

@@ -14,8 +14,8 @@ import {getTemplate} from './one_drive_upload_page.html.js';
  * to upload the file to OneDrive.
  */
 export class OneDriveUploadPageElement extends BaseSetupPageElement {
-  /** The name of the file to upload. */
-  private fileName: string|null = null;
+  /** The names of the files to upload. */
+  private fileNames: string[] = [];
 
   constructor() {
     super();
@@ -26,8 +26,8 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
    * no file to upload.
    * @param fileName Name of the file to be displayed.
    */
-  setFileName(fileName: string|null) {
-    this.fileName = fileName;
+  setFileNames(fileNames: string[]) {
+    this.fileNames = fileNames;
     if (this.isConnected) {
       this.connectedCallback();
     }
@@ -48,9 +48,10 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
     const uploadButton = this.querySelector('.action-button')! as HTMLElement;
     const cancelButton = this.querySelector('.cancel-button') as HTMLElement;
 
-    if (this.fileName != null) {
+    // TODO(b/251046341): Show multiple files.
+    if (this.fileNames.length > 0) {
       fileContainerElement.hidden = false;
-      fileNameElement.innerText = `File name: ${this.fileName}`;
+      fileNameElement.innerText = `File name: ${this.fileNames[0]}`;
     }
 
     uploadButton.addEventListener('click', () => this.onUploadButtonClick());

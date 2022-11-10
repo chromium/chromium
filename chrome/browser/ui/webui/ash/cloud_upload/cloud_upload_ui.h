@@ -37,6 +37,8 @@ class CloudUploadUI : public ui::MojoWebDialogUI,
 
   ~CloudUploadUI() override;
 
+  void SetDialogArgs(mojom::DialogArgsPtr args);
+
   // Instantiates implementor of the mojom::PageHandlerFactory
   // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
@@ -49,6 +51,7 @@ class CloudUploadUI : public ui::MojoWebDialogUI,
  private:
   void RespondAndCloseDialog(mojom::UserAction action);
 
+  mojom::DialogArgsPtr dialog_args_;
   std::unique_ptr<CloudUploadPageHandler> page_handler_;
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};
 

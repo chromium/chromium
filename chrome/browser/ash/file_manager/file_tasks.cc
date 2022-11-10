@@ -55,6 +55,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
@@ -476,7 +477,8 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
       // TODO(b/247038054) Add user preference to decide whether or not the
       // dialog should be shown.
       return ash::cloud_upload::UploadAndOpen(
-          profile, file_urls, ash::cloud_upload::UploadType::kDrive,
+          profile, file_urls,
+          ash::cloud_upload::mojom::CloudProvider::kGoogleDrive,
           /*show_dialog=*/false);
     }
   } else {
@@ -575,7 +577,8 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
       // dialog should be shown.
       LOG(ERROR) << "File can be moved to ODFS";
       return ash::cloud_upload::UploadAndOpen(
-          profile, file_urls, ash::cloud_upload::UploadType::kOneDrive,
+          profile, file_urls,
+          ash::cloud_upload::mojom::CloudProvider::kOneDrive,
           /*show_dialog=*/false);
     }
   } else {
