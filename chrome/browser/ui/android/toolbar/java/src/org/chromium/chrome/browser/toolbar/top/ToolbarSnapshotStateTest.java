@@ -29,6 +29,7 @@ public class ToolbarSnapshotStateTest {
     private static final ButtonData DEFAULT_BUTTON_DATA = makeButtonDate();
     private static final @VisualState int DEFAULT_VISUAL_STATE = VisualState.NORMAL;
     private static final String DEFAULT_URL_TEXT = "https://www.example.com/";
+    private static final CharSequence DEFAULT_URL_HINT_TEXT = null;
     private static final @DrawableRes int DEFAULT_SECURITY_ICON = 0;
     private static final boolean DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE = false;
     private static final boolean DEFAULT_IS_PAINT_PREVIEW = false;
@@ -49,17 +50,17 @@ public class ToolbarSnapshotStateTest {
     public void before() {
         mDefaultColorStateList = ColorStateList.valueOf(DEFAULT_TINT);
         mDefaultToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT, DEFAULT_TAB_COUNT,
-                DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT, DEFAULT_SECURITY_ICON,
-                mDefaultColorStateList, DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE,
-                DEFAULT_IS_PAINT_PREVIEW, DEFAULT_PROGRESS,
-                DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+                DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT, DEFAULT_URL_HINT_TEXT,
+                DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
     }
 
     @Test
     public void testSameSnapshots() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
                 DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
-                DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
                 DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
                 DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.NONE,
@@ -70,7 +71,7 @@ public class ToolbarSnapshotStateTest {
     public void testDifferentTint() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(Color.RED,
                 DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
-                DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
                 DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
                 DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.TINT,
@@ -80,10 +81,10 @@ public class ToolbarSnapshotStateTest {
     @Test
     public void testDifferentTabCount() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT, 2,
-                DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT, DEFAULT_SECURITY_ICON,
-                mDefaultColorStateList, DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE,
-                DEFAULT_IS_PAINT_PREVIEW, DEFAULT_PROGRESS,
-                DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+                DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT, DEFAULT_URL_HINT_TEXT,
+                DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.TAB_COUNT,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
     }
@@ -92,7 +93,7 @@ public class ToolbarSnapshotStateTest {
     public void testDifferentOptionalButtonData() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
                 DEFAULT_TAB_COUNT, makeButtonDate(), DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
-                DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
                 DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
                 DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON_DATA,
@@ -103,7 +104,7 @@ public class ToolbarSnapshotStateTest {
     public void testDifferentVisualState() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
                 DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, VisualState.INCOGNITO, DEFAULT_URL_TEXT,
-                DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
                 DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
                 DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.VISUAL_STATE,
@@ -114,20 +115,88 @@ public class ToolbarSnapshotStateTest {
     public void testDifferentUrlText() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
                 DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE,
-                "https://www.other.com/", DEFAULT_SECURITY_ICON, mDefaultColorStateList,
-                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
-                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+                "https://www.other.com/", DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON,
+                mDefaultColorStateList, DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE,
+                DEFAULT_IS_PAINT_PREVIEW, DEFAULT_PROGRESS,
+                DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.URL_TEXT,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
     }
 
     @Test
-    public void testDifferentSecurityIcon() {
+    public void testDifferentUrlText_SameHintText() {
+        ToolbarSnapshotState initialToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                DEFAULT_URL_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
-                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT, -1,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE,
+                DEFAULT_URL_TEXT + "additional/paths/", DEFAULT_URL_TEXT, DEFAULT_SECURITY_ICON,
                 mDefaultColorStateList, DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE,
                 DEFAULT_IS_PAINT_PREVIEW, DEFAULT_PROGRESS,
                 DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+                initialToolbarSnapshotState.getAnyDifference(otherToolbarSnapshotState));
+    }
+
+    @Test
+    public void testSameUrlText_DifferentHintText() {
+        ToolbarSnapshotState initialToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                "foo", DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+        ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                DEFAULT_URL_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+                initialToolbarSnapshotState.getAnyDifference(otherToolbarSnapshotState));
+    }
+
+    @Test
+    public void testSameUrlText_BothNullHintText() {
+        ToolbarSnapshotState initialToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                null, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+        ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                null, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+                initialToolbarSnapshotState.getAnyDifference(otherToolbarSnapshotState));
+    }
+
+    @Test
+    public void testSameUrlText_NullHintText() {
+        ToolbarSnapshotState initialToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                null, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+        ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                DEFAULT_URL_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+                initialToolbarSnapshotState.getAnyDifference(otherToolbarSnapshotState));
+        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+                otherToolbarSnapshotState.getAnyDifference(initialToolbarSnapshotState));
+    }
+
+    @Test
+    public void testDifferentSecurityIcon() {
+        ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                DEFAULT_URL_HINT_TEXT, -1, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.SECURITY_ICON,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
     }
@@ -136,7 +205,7 @@ public class ToolbarSnapshotStateTest {
     public void testDifferentColorStateList() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
                 DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
-                DEFAULT_SECURITY_ICON, ColorStateList.valueOf(Color.RED),
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, ColorStateList.valueOf(Color.RED),
                 DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
                 DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.HOME_BUTTON_COLOR,
@@ -147,39 +216,42 @@ public class ToolbarSnapshotStateTest {
     public void testDifferentIsShowingUpdateBadgeDuringLastCapture() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
                 DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
-                DEFAULT_SECURITY_ICON, mDefaultColorStateList, true, DEFAULT_IS_PAINT_PREVIEW,
-                DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList, true,
+                DEFAULT_IS_PAINT_PREVIEW, DEFAULT_PROGRESS,
+                DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
     }
 
     @Test
     public void testDifferentIsPaintPreview() {
-        ToolbarSnapshotState otherToolbarSnapshotState =
-                new ToolbarSnapshotState(DEFAULT_TINT, DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA,
-                        DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT, DEFAULT_SECURITY_ICON,
-                        mDefaultColorStateList, DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE,
-                        true, DEFAULT_PROGRESS, DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
+        ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, true, DEFAULT_PROGRESS,
+                DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.PAINT_PREVIEW,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
     }
+
     @Test
     public void testDifferentProgress() {
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
                 DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
-                DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
                 DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW, 0.2f,
                 DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
         Assert.assertEquals(ToolbarSnapshotDifference.NONE,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
     }
+
     @Test
     public void testDifferentUnfocusedLocationBarLayoutWidth() {
-        ToolbarSnapshotState otherToolbarSnapshotState =
-                new ToolbarSnapshotState(DEFAULT_TINT, DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA,
-                        DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT, DEFAULT_SECURITY_ICON,
-                        mDefaultColorStateList, DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE,
-                        DEFAULT_IS_PAINT_PREVIEW, DEFAULT_PROGRESS, 100);
+        ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotState(DEFAULT_TINT,
+                DEFAULT_TAB_COUNT, DEFAULT_BUTTON_DATA, DEFAULT_VISUAL_STATE, DEFAULT_URL_TEXT,
+                DEFAULT_URL_HINT_TEXT, DEFAULT_SECURITY_ICON, mDefaultColorStateList,
+                DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW,
+                DEFAULT_PROGRESS, 100);
         Assert.assertEquals(ToolbarSnapshotDifference.LOCATION_BAR_WIDTH,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
     }

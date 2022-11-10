@@ -461,6 +461,11 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
         updateButtonVisibility();
     }
 
+    /** @see UrlBarCoordinator#getVisibleTextPrefixHint() */
+    public CharSequence getOmniboxVisibleTextPrefixHint() {
+        return mUrlCoordinator.getVisibleTextPrefixHint();
+    }
+
     /**
      * Returns the {@link LocationBarCoordinatorPhone} for this coordinator.
      *

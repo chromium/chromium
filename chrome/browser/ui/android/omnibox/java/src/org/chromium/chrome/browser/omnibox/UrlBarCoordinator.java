@@ -184,6 +184,11 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         return mUrlBar.getTextWithoutAutocomplete();
     }
 
+    /** @see UrlBar#getVisibleTextPrefixHint() */
+    public CharSequence getVisibleTextPrefixHint() {
+        return mUrlBar.getVisibleTextPrefixHint();
+    }
+
     // LocationBarLayout.UrlFocusChangeListener implementation.
     @Override
     public void onUrlFocusChange(boolean hasFocus) {

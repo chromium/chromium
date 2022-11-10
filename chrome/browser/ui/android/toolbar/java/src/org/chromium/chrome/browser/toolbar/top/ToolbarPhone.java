@@ -1623,6 +1623,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         return new ToolbarSnapshotState(getTint().getDefaultColor(),
                 mTabCountProvider.getTabCount(), mButtonData, mVisualState,
                 getToolbarDataProvider().getCurrentUrl(),
+                mLocationBar.getOmniboxVisibleTextPrefixHint(),
                 getToolbarDataProvider().getSecurityIconResource(false),
                 ImageViewCompat.getImageTintList(mHomeButton),
                 getMenuButtonCoordinator().isShowingUpdateBadge(),

@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.res.ColorStateList;
+import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
@@ -61,6 +63,8 @@ public class ToolbarSnapshotState {
     private final ButtonData mOptionalButtonData;
     private final @VisualState int mVisualState;
     private String mUrlText = "";
+    @Nullable
+    private CharSequence mVisibleTextPrefixHint;
     private final @DrawableRes int mSecurityIcon;
     private final ColorStateList mColorStateList;
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
@@ -68,7 +72,8 @@ public class ToolbarSnapshotState {
     private final int mUnfocusedLocationBarLayoutWidth;
 
     public ToolbarSnapshotState(@ColorInt int tint, int tabCount, ButtonData optionalButtonData,
-            @VisualState int visualState, String urlText, @DrawableRes int securityIcon,
+            @VisualState int visualState, String urlText,
+            @Nullable CharSequence visibleTextPrefixHint, @DrawableRes int securityIcon,
             ColorStateList colorStateList, boolean isShowingUpdateBadgeDuringLastCapture,
             boolean isPaintPreview, float progress, int unfocusedLocationBarLayoutWidth) {
         mTint = tint;
@@ -76,6 +81,7 @@ public class ToolbarSnapshotState {
         mOptionalButtonData = optionalButtonData;
         mVisualState = visualState;
         mUrlText = urlText;
+        mVisibleTextPrefixHint = visibleTextPrefixHint;
         mSecurityIcon = securityIcon;
         mColorStateList = colorStateList;
         mIsShowingUpdateBadgeDuringLastCapture = isShowingUpdateBadgeDuringLastCapture;
@@ -111,14 +117,25 @@ public class ToolbarSnapshotState {
             return ToolbarSnapshotDifference.PAINT_PREVIEW;
         } else if (mUnfocusedLocationBarLayoutWidth != that.mUnfocusedLocationBarLayoutWidth) {
             return ToolbarSnapshotDifference.LOCATION_BAR_WIDTH;
-        } else if (!Objects.equals(mUrlText, that.mUrlText)) {
+        } else if (!isVisibleUrlTextSame(that)) {
             return ToolbarSnapshotDifference.URL_TEXT;
         } else if (!Objects.equals(mColorStateList, that.mColorStateList)) {
             return ToolbarSnapshotDifference.HOME_BUTTON_COLOR;
-        } else {
-            return ToolbarSnapshotDifference.NONE;
         }
+        return ToolbarSnapshotDifference.NONE;
     }
+
+    private boolean isVisibleUrlTextSame(ToolbarSnapshotState that) {
+        if (mVisibleTextPrefixHint != null
+                && TextUtils.equals(mVisibleTextPrefixHint, that.mVisibleTextPrefixHint)) {
+            if (TextUtils.indexOf(mUrlText, mVisibleTextPrefixHint) >= 0) return true;
+            assert false : "The visible hint, " + mVisibleTextPrefixHint
+                           + ", should always be part of the URL text, "
+                           + mUrlText;
+        }
+        return TextUtils.equals(mUrlText, that.mUrlText);
+    }
+
     @ColorInt
     int getTint() {
         return mTint;
