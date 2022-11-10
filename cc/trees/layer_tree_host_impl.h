@@ -629,15 +629,23 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // equal to `frame_token`.
   void RegisterMainThreadPresentationTimeCallbackForTesting(
       uint32_t frame_token,
-      PresentationTimeCallbackBuffer::MainCallback callback);
+      PresentationTimeCallbackBuffer::Callback callback);
+
+  // Buffers `callback` until a relevant successful presentation occurs, at
+  // which point the callback will be posted to run on the main thread. A
+  // successful presentation is considered relevant if the presented frame's
+  // token is greater than or equal to `frame_token`.
+  void RegisterMainThreadSuccessfulPresentationTimeCallbackForTesting(
+      uint32_t frame_token,
+      PresentationTimeCallbackBuffer::SuccessfulCallback callback);
 
   // Buffers `callback` until a relevant successful presentation occurs, at
   // which point the callback will be run on the compositor thread. A successful
   // presentation is considered relevant if the presented frame's token is
   // greater than or equal to `frame_token`.
-  void RegisterCompositorPresentationTimeCallback(
+  void RegisterCompositorThreadSuccessfulPresentationTimeCallbackForTesting(
       uint32_t frame_token,
-      PresentationTimeCallbackBuffer::CompositorCallback callback);
+      PresentationTimeCallbackBuffer::SuccessfulCallback callback);
 
   virtual bool WillBeginImplFrame(const viz::BeginFrameArgs& args);
   virtual void DidFinishImplFrame(const viz::BeginFrameArgs& args);
@@ -863,7 +871,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // was presented.
   void NotifyDidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      std::vector<PresentationTimeCallbackBuffer::CompositorCallback> callbacks,
+      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks,
       const viz::FrameTimingDetails& details);
 
   CompositorFrameReportingController* compositor_frame_reporting_controller()
@@ -1048,6 +1056,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // Wrapper for checking and updating |contains_srgb_cache_|.
   bool CheckColorSpaceContainsSrgb(const gfx::ColorSpace& color_space) const;
+
+  // Registers callbacks, as needed, to track First Scroll Latency.
+  void ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
+                                uint32_t frame_token);
 
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.

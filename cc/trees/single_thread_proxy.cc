@@ -669,11 +669,13 @@ void SingleThreadProxy::DidPresentCompositorFrameOnImplThread(
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
   host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
-      frame_token, std::move(callbacks.compositor_thread_callbacks), details);
+      frame_token, std::move(callbacks.compositor_successful_callbacks),
+      details);
   {
     DebugScopedSetMainThread main(task_runner_provider_);
     layer_tree_host_->DidPresentCompositorFrame(
-        frame_token, std::move(callbacks.main_thread_callbacks),
+        frame_token, std::move(callbacks.main_callbacks),
+        std::move(callbacks.main_successful_callbacks),
         details.presentation_feedback);
   }
   if (scheduler_on_impl_thread_) {

@@ -313,12 +313,15 @@ class CC_EXPORT LayerTreeImpl {
   gfx::PointF TotalMaxScrollOffset() const;
 
   void AddPresentationCallbacks(
-      std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks);
-  std::vector<PresentationTimeCallbackBuffer::MainCallback>
+      std::vector<PresentationTimeCallbackBuffer::Callback> callbacks);
+  std::vector<PresentationTimeCallbackBuffer::Callback>
   TakePresentationCallbacks();
-  bool has_presentation_callbacks() const {
-    return !presentation_callbacks_.empty();
-  }
+
+  void AddSuccessfulPresentationCallbacks(
+      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+          callbacks);
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+  TakeSuccessfulPresentationCallbacks();
 
   // The following viewport related property nodes will only ever be set on the
   // main-frame's renderer (i.e. OOPIF and UI compositors will not have these
@@ -959,8 +962,9 @@ class CC_EXPORT LayerTreeImpl {
   // Display transform hint to tag frames generated from this tree.
   gfx::OverlayTransform display_transform_hint_ = gfx::OVERLAY_TRANSFORM_NONE;
 
-  std::vector<PresentationTimeCallbackBuffer::MainCallback>
-      presentation_callbacks_;
+  std::vector<PresentationTimeCallbackBuffer::Callback> presentation_callbacks_;
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+      successful_presentation_callbacks_;
 
   // Event metrics that are reported back from the main thread.
   EventMetrics::List events_metrics_from_main_thread_;

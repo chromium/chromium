@@ -10,9 +10,9 @@
 
 namespace {
 
-std::vector<cc::PresentationTimeCallbackBuffer::MainCallback>
-GenerateMainCallbacks(int num_callbacks) {
-  std::vector<cc::PresentationTimeCallbackBuffer::MainCallback> result;
+std::vector<cc::PresentationTimeCallbackBuffer::Callback> GenerateCallbacks(
+    int num_callbacks) {
+  std::vector<cc::PresentationTimeCallbackBuffer::Callback> result;
 
   while (num_callbacks-- > 0) {
     // `PresentationTimeCallbackBuffer` isn't supposed to invoke any callbacks.
@@ -26,9 +26,9 @@ GenerateMainCallbacks(int num_callbacks) {
   return result;
 }
 
-std::vector<cc::PresentationTimeCallbackBuffer::CompositorCallback>
-GenerateCompositorCallbacks(int num_callbacks) {
-  std::vector<cc::PresentationTimeCallbackBuffer::CompositorCallback> result;
+std::vector<cc::PresentationTimeCallbackBuffer::SuccessfulCallback>
+GenerateSuccessfulCallbacks(int num_callbacks) {
+  std::vector<cc::PresentationTimeCallbackBuffer::SuccessfulCallback> result;
 
   while (num_callbacks-- > 0) {
     // `PresentationTimeCallbackBuffer` isn't supposed to invoke any callbacks.
@@ -54,95 +54,253 @@ namespace cc {
 TEST(PresentationTimeCallbackBufferTest, TestNoCallbacks) {
   PresentationTimeCallbackBuffer buffer;
 
-  auto result = buffer.PopPendingCallbacks(kFrameToken1, false);
+  auto result =
+      buffer.PopPendingCallbacks(kFrameToken1, /*presentation_failed=*/false);
 
-  EXPECT_TRUE(result.main_thread_callbacks.empty());
-  EXPECT_TRUE(result.compositor_thread_callbacks.empty());
+  EXPECT_TRUE(result.main_callbacks.empty());
+  EXPECT_TRUE(result.main_successful_callbacks.empty());
+  EXPECT_TRUE(result.compositor_successful_callbacks.empty());
 }
 
-TEST(PresentationTimeCallbackBufferTest, TestOneMainThreadCallback) {
+TEST(PresentationTimeCallbackBufferTest, TestMainThreadCallbackOnSuccess) {
   PresentationTimeCallbackBuffer buffer;
 
-  buffer.RegisterMainThreadPresentationCallbacks(kFrameToken2,
-                                                 GenerateMainCallbacks(1));
+  buffer.RegisterMainThreadCallbacks(kFrameToken2, GenerateCallbacks(1));
 
   // Make sure that popping early frame tokens doesn't return irrelevant
   // entries.
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken1, false);
-    EXPECT_TRUE(result.main_thread_callbacks.empty());
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken1, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 
+  // Make sure the callback is returned on a successful presentation.
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken2, false);
-    EXPECT_EQ(result.main_thread_callbacks.size(), 1ull);
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_EQ(result.main_callbacks.size(), 1ull);
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 
   // Make sure that the buffer has removed the registration since the "pop".
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken2, false);
-    EXPECT_TRUE(result.main_thread_callbacks.empty());
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 }
 
-TEST(PresentationTimeCallbackBufferTest, TestOneCompositorThreadCallback) {
+TEST(PresentationTimeCallbackBufferTest, TestMainThreadCallbackOnFailure) {
   PresentationTimeCallbackBuffer buffer;
 
-  buffer.RegisterCompositorPresentationCallbacks(
-      kFrameToken2, GenerateCompositorCallbacks(1));
+  buffer.RegisterMainThreadCallbacks(kFrameToken2, GenerateCallbacks(1));
 
   // Make sure that popping early frame tokens doesn't return irrelevant
   // entries.
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken1, false);
-    EXPECT_TRUE(result.main_thread_callbacks.empty());
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken1, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 
+  // Make sure the callback is returned on a failed presentation.
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken2, false);
-    EXPECT_TRUE(result.main_thread_callbacks.empty());
-    EXPECT_EQ(result.compositor_thread_callbacks.size(), 1ull);
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/true);
+    EXPECT_EQ(result.main_callbacks.size(), 1ull);
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 
   // Make sure that the buffer has removed the registration since the "pop".
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken2, false);
-    EXPECT_TRUE(result.main_thread_callbacks.empty());
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 }
 
-TEST(PresentationTimeCallbackBufferTest, TestMixedCallbacks) {
+TEST(PresentationTimeCallbackBufferTest, TestMainThreadSuccessfulCallback) {
   PresentationTimeCallbackBuffer buffer;
 
-  buffer.RegisterMainThreadPresentationCallbacks(kFrameToken2,
-                                                 GenerateMainCallbacks(1));
-  buffer.RegisterCompositorPresentationCallbacks(
-      kFrameToken2, GenerateCompositorCallbacks(1));
+  buffer.RegisterMainThreadSuccessfulCallbacks(kFrameToken2,
+                                               GenerateSuccessfulCallbacks(1));
 
   // Make sure that popping early frame tokens doesn't return irrelevant
   // entries.
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken1, false);
-    EXPECT_TRUE(result.main_thread_callbacks.empty());
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken1, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 
+  // Make sure the callback is not returned on a failed presentation.
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken2, false);
-    EXPECT_EQ(result.main_thread_callbacks.size(), 1ull);
-    EXPECT_EQ(result.compositor_thread_callbacks.size(), 1ull);
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/true);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+
+  // Make sure the callback is returned on a successful presentation.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_EQ(result.main_successful_callbacks.size(), 1ull);
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+
+  // Make sure that the buffer has removed the registration since the "pop".
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+}
+
+TEST(PresentationTimeCallbackBufferTest,
+     TestCompositorThreadSuccessfulCallback) {
+  PresentationTimeCallbackBuffer buffer;
+
+  buffer.RegisterCompositorThreadSuccessfulCallbacks(
+      kFrameToken2, GenerateSuccessfulCallbacks(1));
+
+  // Make sure that popping early frame tokens doesn't return irrelevant
+  // entries.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken1, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+
+  // Make sure the callback is not returned on a failed presentation.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/true);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+
+  // Make sure the callback is returned on a successful presentation.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_EQ(result.compositor_successful_callbacks.size(), 1ull);
+  }
+
+  // Make sure that the buffer has removed the registration since the "pop".
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+}
+
+TEST(PresentationTimeCallbackBufferTest, TestMixedCallbacksOnSuccess) {
+  PresentationTimeCallbackBuffer buffer;
+
+  buffer.RegisterMainThreadCallbacks(kFrameToken2, GenerateCallbacks(1));
+  buffer.RegisterMainThreadSuccessfulCallbacks(kFrameToken2,
+                                               GenerateSuccessfulCallbacks(1));
+  buffer.RegisterCompositorThreadSuccessfulCallbacks(
+      kFrameToken2, GenerateSuccessfulCallbacks(1));
+
+  // Make sure that popping early frame tokens doesn't return irrelevant
+  // entries.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken1, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+
+  // Make sure all callbacks are returned on a successful presentation.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_EQ(result.main_callbacks.size(), 1ull);
+    EXPECT_EQ(result.main_successful_callbacks.size(), 1ull);
+    EXPECT_EQ(result.compositor_successful_callbacks.size(), 1ull);
   }
 
   // Make sure that the buffer has removed the registrations since the "pop".
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken2, false);
-    EXPECT_TRUE(result.main_thread_callbacks.empty());
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+}
+
+TEST(PresentationTimeCallbackBufferTest, TestMixedCallbacksOnFailure) {
+  PresentationTimeCallbackBuffer buffer;
+
+  buffer.RegisterMainThreadCallbacks(kFrameToken2, GenerateCallbacks(1));
+  buffer.RegisterMainThreadSuccessfulCallbacks(kFrameToken2,
+                                               GenerateSuccessfulCallbacks(1));
+  buffer.RegisterCompositorThreadSuccessfulCallbacks(
+      kFrameToken2, GenerateSuccessfulCallbacks(1));
+
+  // Make sure that popping early frame tokens doesn't return irrelevant
+  // entries.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken1, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+
+  // Make sure only feedback callbacks are returned on a failed presentation.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/true);
+    EXPECT_EQ(result.main_callbacks.size(), 1ull);
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
+  }
+
+  // Make sure time callbacks are returned on a successful presentation.
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_EQ(result.main_successful_callbacks.size(), 1ull);
+    EXPECT_EQ(result.compositor_successful_callbacks.size(), 1ull);
+  }
+
+  // Make sure that the buffer has removed the registrations since the "pop".
+  {
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken2, /*presentation_failed=*/false);
+    EXPECT_TRUE(result.main_callbacks.empty());
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 }
 
@@ -150,66 +308,18 @@ TEST(PresentationTimeCallbackBufferTest, TestCallbackBatching) {
   PresentationTimeCallbackBuffer buffer;
 
   // Register one callback for frame1, two for frame2 and two for frame4.
-  buffer.RegisterMainThreadPresentationCallbacks(kFrameToken1,
-                                                 GenerateMainCallbacks(1));
-  buffer.RegisterMainThreadPresentationCallbacks(kFrameToken2,
-                                                 GenerateMainCallbacks(2));
-  buffer.RegisterMainThreadPresentationCallbacks(kFrameToken4,
-                                                 GenerateMainCallbacks(2));
+  buffer.RegisterMainThreadCallbacks(kFrameToken1, GenerateCallbacks(1));
+  buffer.RegisterMainThreadCallbacks(kFrameToken2, GenerateCallbacks(2));
+  buffer.RegisterMainThreadCallbacks(kFrameToken4, GenerateCallbacks(2));
 
   // Pop callbacks up to and including frame3. Should be three in total; one
   // from frame1 and two from frame2.
   {
-    auto result = buffer.PopPendingCallbacks(kFrameToken3, false);
-    EXPECT_EQ(result.main_thread_callbacks.size(), 3ull);
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
-  }
-}
-
-// Tests that popping callbacks for main thread only vs. for both main and
-// compositor threads works properly.
-TEST(PresentationTimeCallbackBufferTest, PopMainCallbacksOnly) {
-  PresentationTimeCallbackBuffer buffer;
-
-  // Register callbacks for main and compositor threads of 3 frames.
-  buffer.RegisterMainThreadPresentationCallbacks(kFrameToken1,
-                                                 GenerateMainCallbacks(1));
-  buffer.RegisterCompositorPresentationCallbacks(
-      kFrameToken1, GenerateCompositorCallbacks(1));
-  buffer.RegisterMainThreadPresentationCallbacks(kFrameToken2,
-                                                 GenerateMainCallbacks(1));
-  buffer.RegisterCompositorPresentationCallbacks(
-      kFrameToken2, GenerateCompositorCallbacks(1));
-  buffer.RegisterMainThreadPresentationCallbacks(kFrameToken3,
-                                                 GenerateMainCallbacks(1));
-  buffer.RegisterCompositorPresentationCallbacks(
-      kFrameToken3, GenerateCompositorCallbacks(1));
-
-  // Pop only main thread callbacks up to and including frame1. The result
-  // should only contain 1 main thread callback of frame1 and no compositor
-  // thread callback.
-  {
-    auto result = buffer.PopPendingCallbacks(kFrameToken1, true);
-    EXPECT_EQ(result.main_thread_callbacks.size(), 1ull);
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
-  }
-
-  // Pop only main thread callbacks up to and including frame2. The result
-  // should only contain 1 main thread callback of frame2 and no compositor
-  // thread callback.
-  {
-    auto result = buffer.PopPendingCallbacks(kFrameToken2, true);
-    EXPECT_EQ(result.main_thread_callbacks.size(), 1ull);
-    EXPECT_TRUE(result.compositor_thread_callbacks.empty());
-  }
-
-  // Pop both main and compositor thread callbacks up to and including frame3.
-  // The result should contain 1 main thread callback of frame3 and all 3
-  // compositor thread callbacks of the 3 frames.
-  {
-    auto result = buffer.PopPendingCallbacks(kFrameToken3, false);
-    EXPECT_EQ(result.main_thread_callbacks.size(), 1ull);
-    EXPECT_EQ(result.compositor_thread_callbacks.size(), 3ull);
+    auto result =
+        buffer.PopPendingCallbacks(kFrameToken3, /*presentation_failed=*/false);
+    EXPECT_EQ(result.main_callbacks.size(), 3ull);
+    EXPECT_TRUE(result.main_successful_callbacks.empty());
+    EXPECT_TRUE(result.compositor_successful_callbacks.empty());
   }
 }
 

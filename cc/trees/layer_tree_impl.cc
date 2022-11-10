@@ -599,10 +599,10 @@ void LayerTreeImpl::PullPropertiesFrom(
     ForceRedrawNextActivation();
   if (commit_state.next_commit_forces_recalculate_raster_scales)
     ForceRecalculateRasterScales();
-  if (!commit_state.pending_presentation_time_callbacks.empty()) {
-    AddPresentationCallbacks(
-        std::move(commit_state.pending_presentation_time_callbacks));
-  }
+  AddPresentationCallbacks(
+      std::move(commit_state.pending_presentation_callbacks));
+  AddSuccessfulPresentationCallbacks(
+      std::move(commit_state.pending_successful_presentation_callbacks));
 
   if (commit_state.needs_full_tree_sync)
     TreeSynchronizer::SynchronizeTrees(commit_state, unsafe_state, this);
@@ -862,6 +862,9 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   target_tree->HandleScrollbarShowRequests();
   target_tree->AddPresentationCallbacks(std::move(presentation_callbacks_));
   presentation_callbacks_.clear();
+  target_tree->AddSuccessfulPresentationCallbacks(
+      std::move(successful_presentation_callbacks_));
+  successful_presentation_callbacks_.clear();
 
   if (delegated_ink_metadata_) {
     TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",
@@ -997,14 +1000,27 @@ void LayerTreeImpl::SetBackdropFilterMutated(
 }
 
 void LayerTreeImpl::AddPresentationCallbacks(
-    std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks) {
+    std::vector<PresentationTimeCallbackBuffer::Callback> callbacks) {
   base::ranges::move(callbacks, std::back_inserter(presentation_callbacks_));
 }
 
-std::vector<PresentationTimeCallbackBuffer::MainCallback>
+std::vector<PresentationTimeCallbackBuffer::Callback>
 LayerTreeImpl::TakePresentationCallbacks() {
-  std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks;
+  std::vector<PresentationTimeCallbackBuffer::Callback> callbacks;
   callbacks.swap(presentation_callbacks_);
+  return callbacks;
+}
+
+void LayerTreeImpl::AddSuccessfulPresentationCallbacks(
+    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks) {
+  base::ranges::move(callbacks,
+                     std::back_inserter(successful_presentation_callbacks_));
+}
+
+std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+LayerTreeImpl::TakeSuccessfulPresentationCallbacks() {
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks;
+  callbacks.swap(successful_presentation_callbacks_);
   return callbacks;
 }
 

@@ -897,6 +897,11 @@ void Compositor::RequestPresentationTimeForNextFrame(
   host_->RequestPresentationTimeForNextFrame(std::move(callback));
 }
 
+void Compositor::RequestSuccessfulPresentationTimeForNextFrame(
+    SuccessfulPresentationTimeCallback callback) {
+  host_->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
+}
+
 void Compositor::ReportMetricsForTracker(
     int tracker_id,
     const cc::FrameSequenceMetrics::CustomReportData& data) {

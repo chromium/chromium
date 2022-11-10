@@ -109,13 +109,24 @@ class CONTENT_EXPORT Compositor {
   // destruction.
   virtual void PreserveChildSurfaceControls() = 0;
 
-  // Registers a callback that is run when the next frame successfully makes it
-  // to the screen (it's entirely possible some frames may be dropped between
-  // the time this is called and the callback is run).
+  // Registers a callback that is run when the presentation feedback for the
+  // next submitted frame is received (it's entirely possible some frames may be
+  // dropped between the time this is called and the callback is run).
+  // Note that since this might be called on failed presentations, it is
+  // deprecated in favor of `RequestSuccessfulPresentationTimeForNextFrame()`
+  // which will be called only after a successful presentation.
   using PresentationTimeCallback =
       base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   virtual void RequestPresentationTimeForNextFrame(
       PresentationTimeCallback callback) = 0;
+
+  // Registers a callback that is run when the next frame successfully makes it
+  // to the screen (it's entirely possible some frames may be dropped between
+  // the time this is called and the callback is run).
+  using SuccessfulPresentationTimeCallback =
+      base::OnceCallback<void(base::TimeTicks)>;
+  virtual void RequestSuccessfulPresentationTimeForNextFrame(
+      SuccessfulPresentationTimeCallback callback) = 0;
 
   // Control whether `CompositorClient::DidSwapBuffers` should be called. The
   // default is false. Note this is asynchronous. Any pending callbacks may

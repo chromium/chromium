@@ -125,26 +125,35 @@ struct CC_EXPORT CommitState {
   bool next_commit_forces_redraw = false;
   uint64_t trace_id = 0;
   EventMetrics::List event_metrics;
+
   // Latency information for work done in ProxyMain::BeginMainFrame. The
   // unique_ptr is allocated in RequestMainFrameUpdate, and passed to Blink's
   // LocalFrameView that fills in the fields. This object adds the timing for
   // UpdateLayers. CC reads the data during commit, and clears the unique_ptr.
   std::unique_ptr<BeginMainFrameMetrics> begin_main_frame_metrics;
+
   // Metadata required for drawing a delegated ink trail onto the end of a
   // stroke. std::unique_ptr was specifically chosen so that it would be
   // cleared as it is forwarded along the pipeline to avoid old information
   // incorrectly sticking around and potentially being reused.
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
+
   std::unique_ptr<PendingPageScaleAnimation> pending_page_scale_animation;
   std::vector<std::pair<int, std::unique_ptr<PaintImage>>> queued_image_decodes;
+
   // Presentation time callbacks requested for the next frame are initially
   // added here.
-  std::vector<PresentationTimeCallbackBuffer::MainCallback>
-      pending_presentation_time_callbacks;
+  std::vector<PresentationTimeCallbackBuffer::Callback>
+      pending_presentation_callbacks;
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+      pending_successful_presentation_callbacks;
+
   std::vector<std::unique_ptr<MicroBenchmarkImpl>> benchmarks;
+
   // A list of view transitions that need to be transported from Blink to
   // Viz, as a CompositorFrameTransitionDirective.
   std::vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
+
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;

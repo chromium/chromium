@@ -272,10 +272,12 @@ class LayerTreeHostImplTest : public testing::Test,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,
       const viz::FrameTimingDetails& details) override {
     // We don't call main thread callbacks in this test.
-    activated.main_thread_callbacks.clear();
+    activated.main_callbacks.clear();
+    activated.main_successful_callbacks.clear();
 
     host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
-        frame_token, std::move(activated.compositor_thread_callbacks), details);
+        frame_token, std::move(activated.compositor_successful_callbacks),
+        details);
   }
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
@@ -1841,73 +1843,108 @@ gfx::PresentationFeedback ExampleFeedback() {
   return feedback;
 }
 
-class LayerTreeHostImplTestInvokeMainThreadCallbacks
+class LayerTreeHostImplTestInvokePresentationCallbacks
     : public LayerTreeHostImplTest {
  public:
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,
       const viz::FrameTimingDetails& details) override {
-    auto main_thread_callbacks = std::move(activated.main_thread_callbacks);
     host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
-        frame_token, std::move(activated.compositor_thread_callbacks), details);
-    for (auto& callback : main_thread_callbacks)
+        frame_token, std::move(activated.compositor_successful_callbacks),
+        details);
+    for (auto& callback : activated.main_callbacks)
       std::move(callback).Run(details.presentation_feedback);
+    for (auto& callback : activated.main_successful_callbacks)
+      std::move(callback).Run(details.presentation_feedback.timestamp);
   }
 };
 
 // Tests that, when the LayerTreeHostImpl receives presentation feedback, the
 // feedback gets routed to a properly registered callback.
-TEST_F(LayerTreeHostImplTestInvokeMainThreadCallbacks,
+TEST_F(LayerTreeHostImplTestInvokePresentationCallbacks,
        PresentationFeedbackCallbacksFire) {
-  bool compositor_thread_callback_fired = false;
-  bool main_thread_callback_fired = false;
-  base::TimeTicks presentation_time_seen_by_compositor_thread_callback;
-  gfx::PresentationFeedback feedback_seen_by_main_thread_callback;
+  bool compositor_successful_callback_fired = false;
+  bool main_callback_fired = false;
+  bool main_successful_callback_fired = false;
+  base::TimeTicks compositor_successful_callback_presentation_timestamp;
+  gfx::PresentationFeedback main_callback_presentation_feedback;
+  base::TimeTicks main_successful_callback_presentation_timestamp;
 
-  // Register a compositor-thread callback to run when the frame for
-  // |frame_token_1| gets presented.
   constexpr uint32_t frame_token_1 = 1;
-  host_impl_->RegisterCompositorPresentationTimeCallback(
-      frame_token_1,
-      base::BindLambdaForTesting([&](base::TimeTicks presentation_timestamp) {
-        DCHECK(presentation_time_seen_by_compositor_thread_callback.is_null());
-        DCHECK(!presentation_timestamp.is_null());
-        compositor_thread_callback_fired = true;
-        presentation_time_seen_by_compositor_thread_callback =
-            presentation_timestamp;
-      }));
-
-  // Register a main-thread callback to run when the frame for |frame_token_2|
-  // gets presented.
   constexpr uint32_t frame_token_2 = 2;
-  ASSERT_GT(frame_token_2, frame_token_1);
+  constexpr uint32_t frame_token_3 = 3;
+
+  // Register a compositor-thread successful presentation callback to run when
+  // the frame for `frame_token_1` gets presented.
+  host_impl_
+      ->RegisterCompositorThreadSuccessfulPresentationTimeCallbackForTesting(
+          frame_token_1,
+          base::BindLambdaForTesting(
+              [&](base::TimeTicks presentation_timestamp) {
+                DCHECK(compositor_successful_callback_presentation_timestamp
+                           .is_null());
+                DCHECK(!presentation_timestamp.is_null());
+                compositor_successful_callback_fired = true;
+                compositor_successful_callback_presentation_timestamp =
+                    presentation_timestamp;
+              }));
+
+  // Register a main-thread presentation callback to run when the presentation
+  // feedback for `frame_token_2` is received.
   host_impl_->RegisterMainThreadPresentationTimeCallbackForTesting(
       frame_token_2, base::BindLambdaForTesting(
                          [&](const gfx::PresentationFeedback& feedback) {
-                           main_thread_callback_fired = true;
-                           feedback_seen_by_main_thread_callback = feedback;
+                           main_callback_fired = true;
+                           main_callback_presentation_feedback = feedback;
                          }));
 
+  // Register a main-thread successful presentation callback to run when the
+  // frame for `frame_token_2` gets presented.
+  host_impl_->RegisterMainThreadSuccessfulPresentationTimeCallbackForTesting(
+      frame_token_2,
+      base::BindLambdaForTesting([&](base::TimeTicks presentation_timestamp) {
+        DCHECK(main_successful_callback_presentation_timestamp.is_null());
+        DCHECK(!presentation_timestamp.is_null());
+        main_successful_callback_fired = true;
+        main_successful_callback_presentation_timestamp =
+            presentation_timestamp;
+      }));
+
+  // Present frame for `frame_token_1` successfully.
   viz::FrameTimingDetails mock_details;
   mock_details.presentation_feedback = ExampleFeedback();
-
   host_impl_->DidPresentCompositorFrame(frame_token_1, mock_details);
 
-  EXPECT_TRUE(compositor_thread_callback_fired);
-  EXPECT_EQ(presentation_time_seen_by_compositor_thread_callback,
+  // Only callbacks registered for `frame_token_1` should be called.
+  EXPECT_TRUE(compositor_successful_callback_fired);
+  EXPECT_FALSE(main_callback_fired);
+  EXPECT_FALSE(main_successful_callback_fired);
+  EXPECT_EQ(compositor_successful_callback_presentation_timestamp,
             mock_details.presentation_feedback.timestamp);
+  EXPECT_EQ(main_callback_presentation_feedback, gfx::PresentationFeedback());
+  EXPECT_TRUE(main_successful_callback_presentation_timestamp.is_null());
 
-  // Since |frame_token_2| is strictly greater than |frame_token_1|, the
-  // main-thread callback must remain queued for now.
-  EXPECT_FALSE(main_thread_callback_fired);
-  EXPECT_EQ(feedback_seen_by_main_thread_callback, gfx::PresentationFeedback());
-
+  // Fail presentation of frame for `frame_token_2`.
+  mock_details.presentation_feedback = gfx::PresentationFeedback::Failure();
   host_impl_->DidPresentCompositorFrame(frame_token_2, mock_details);
 
-  EXPECT_TRUE(main_thread_callback_fired);
-  EXPECT_EQ(feedback_seen_by_main_thread_callback,
+  // Only callbacks that are allowed to run on failed presentations should be
+  // called.
+  EXPECT_TRUE(main_callback_fired);
+  EXPECT_FALSE(main_successful_callback_fired);
+  EXPECT_EQ(main_callback_presentation_feedback,
             mock_details.presentation_feedback);
+  EXPECT_TRUE(main_successful_callback_presentation_timestamp.is_null());
+
+  // Present frame for `frame_token_2` successfully.
+  mock_details.presentation_feedback = ExampleFeedback();
+  host_impl_->DidPresentCompositorFrame(frame_token_3, mock_details);
+
+  // Now the callbacks for successful presentation should be called, too.
+  EXPECT_TRUE(main_successful_callback_fired);
+  EXPECT_EQ(main_successful_callback_presentation_timestamp,
+            mock_details.presentation_feedback.timestamp);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, NonFastScrollableRegionBasic) {

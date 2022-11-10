@@ -1019,6 +1019,11 @@ void CompositorImpl::RequestPresentationTimeForNextFrame(
   host_->RequestPresentationTimeForNextFrame(std::move(callback));
 }
 
+void CompositorImpl::RequestSuccessfulPresentationTimeForNextFrame(
+    SuccessfulPresentationTimeCallback callback) {
+  host_->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
+}
+
 void CompositorImpl::SetDidSwapBuffersCallbackEnabled(bool enable) {
   if (enable_swap_completion_callbacks_ == enable)
     return;

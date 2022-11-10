@@ -18,14 +18,15 @@ namespace cc {
 // Maintains a queue of callbacks and compositor frame times that we want to
 // buffer until a relevant frame is presented.
 //
-// Callbacks are queued through |RegisterMainThreadPresentationCallbacks| and
-// |RegisterCompositorPresentationCallbacks| if the callback is to be run on
-// the main thread or compositor thread respectively.
+// Callbacks are queued through `RegisterMainThreadCallbacks()` or
+// `RegisterMainThreadSuccessfulCallbacks()` if the they are to be run on the
+// main thread and `RegisterCompositorThreadSuccessfulCallbacks()` if they are
+// to be run on the compositor thread.
 //
 // Once a frame is presented, users of this class can call
-// |PopPendingCallbacks| to get their callbacks back. This class never runs
-// callbacks itself so it's up to calling code to |PostTask| or call |Run()| as
-// needed.
+// `PopPendingCallbacks()` to get their callbacks back. This class never runs
+// callbacks itself so it's up to calling code to `PostTask()` or call `Run()`
+// as needed.
 //
 // This class is thread unsafe so concurrent access would require external
 // synchronization. In practice, however, instances of this class are only used
@@ -40,15 +41,8 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
   // don't expect many presentation callbacks waiting for a frame presentation.
   static constexpr size_t kMaxBufferSize = 60u;
 
-  // TODO(crbug.com/1199373): Compositor thread callbacks are only run for
-  // successful presentations and only need the presentation timestamp. On the
-  // other hand, main thread callbacks can be run on both successful and failed
-  // presentations and need a full `gfx::PresentationFeedback`. Conceptually,
-  // main thread callbacks should only be run for successful presentations, too,
-  // in which case the two callback signatures can be unified.
-  using MainCallback =
-      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
-  using CompositorCallback = base::OnceCallback<void(base::TimeTicks)>;
+  using Callback = base::OnceCallback<void(const gfx::PresentationFeedback&)>;
+  using SuccessfulCallback = base::OnceCallback<void(base::TimeTicks)>;
 
   PresentationTimeCallbackBuffer();
 
@@ -62,19 +56,25 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
 
   ~PresentationTimeCallbackBuffer();
 
-  // Buffers the given |callbacks| in preparation for a GPU frame swap at or
-  // after the given |frame_token|. Calling code posts these callbacks to the
-  // main thread once they're popped.
-  void RegisterMainThreadPresentationCallbacks(
-      uint32_t frame_token,
-      std::vector<MainCallback> callbacks);
+  // Buffers the given `callbacks` in preparation for a presentation at or after
+  // the given `frame_token`. The presentation is not necessarily successful.
+  // Calling code posts these callbacks to the main thread once they're popped.
+  void RegisterMainThreadCallbacks(uint32_t frame_token,
+                                   std::vector<Callback> callbacks);
 
-  // Buffers the given |callbacks| in preparation for a GPU frame swap at or
-  // after the given |frame_token|. Calling code invokes these callbacks on the
-  // compositor thread once they're popped.
-  void RegisterCompositorPresentationCallbacks(
+  // Buffers the given `callbacks` in preparation for a successful presentation
+  // at or after the given `frame_token`. Calling code posts these callbacks to
+  // the main thread once they're popped.
+  void RegisterMainThreadSuccessfulCallbacks(
       uint32_t frame_token,
-      std::vector<CompositorCallback> callbacks);
+      std::vector<SuccessfulCallback> callbacks);
+
+  // Buffers the given `callbacks` in preparation for a successful presentation
+  // at or after the given `frame_token`. Calling code invokes these callbacks
+  // on the compositor thread once they're popped.
+  void RegisterCompositorThreadSuccessfulCallbacks(
+      uint32_t frame_token,
+      std::vector<SuccessfulCallback> callbacks);
 
   // Structured return value for |PopPendingCallbacks|. CC_EXPORT is only
   // needed for testing.
@@ -90,20 +90,33 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
     ~PendingCallbacks();
 
     // Holds callbacks registered through
-    // |RegisterMainThreadPresentationCallbacks|.
-    std::vector<MainCallback> main_thread_callbacks;
+    // `RegisterMainThreadPresentationCallbacks()`.
+    std::vector<Callback> main_callbacks;
 
     // Holds callbacks registered through
-    // |RegisterCompositorPresentationCallbacks|.
-    std::vector<CompositorCallback> compositor_thread_callbacks;
+    // `RegisterMainThreadSuccessfulPresentationCallbacks()`.
+    std::vector<SuccessfulCallback> main_successful_callbacks;
+
+    // Holds callbacks registered through
+    // `RegisterCompositorThreadSuccessfulPresentationCallbacks()`.
+    std::vector<SuccessfulCallback> compositor_successful_callbacks;
   };
 
   // Call this once the presentation for the given `frame_token` has completed.
   // Yields any pending callbacks that were registered against a frame token
-  // that was less than or equal to the given `frame_token`. If `main_only` is
-  // true, only callbacks for the main thread are returned. It is the caller's
-  // responsibility to run the callbacks on the right threads/sequences.
-  PendingCallbacks PopPendingCallbacks(uint32_t frame_token, bool main_only);
+  // that was less than or equal to the given `frame_token`. If
+  // `presentation_failed` is true, successful presentation time callbacks are
+  // not returned. They are only returned on successful presentations. Note that
+  // since failed presentation feedbacks can arrive out of order (i.e. earlier
+  // than previous frames that might get presented successfully), when called on
+  // a failed presentation, this might return callbacks for previous frames that
+  // are still in flight. This is okay for now as we aim to only allow
+  // registering callbacks for successful presentations which will make this a
+  // non-issue.
+  // It is the caller's responsibility to run the callbacks on the right
+  // threads/sequences.
+  PendingCallbacks PopPendingCallbacks(uint32_t frame_token,
+                                       bool presentation_failed);
 
  private:
   // Stores information needed once we get a response for a particular
@@ -120,11 +133,14 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
     // presentation feedback with the relevant compositor frame.
     uint32_t token;
 
-    // The callbacks to send back to the main thread.
-    std::vector<MainCallback> main_thread_callbacks;
+    // The presentation callbacks to send back to the main thread.
+    std::vector<Callback> main_callbacks;
 
-    // The callbacks to invoke on the compositor thread.
-    std::vector<CompositorCallback> compositor_thread_callbacks;
+    // The successful presentation callbacks to send back to the main thread.
+    std::vector<SuccessfulCallback> main_successful_callbacks;
+
+    // The successful presentation callbacks to invoke on the compositor thread.
+    std::vector<SuccessfulCallback> compositor_successful_callbacks;
   };
 
   // Returns a reference to a |FrameTokenInfo| with the given |frame_token|.

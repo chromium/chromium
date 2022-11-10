@@ -401,11 +401,20 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // remains blocked until the pending tree is activated.
   void SetNextCommitWaitsForActivation();
 
+  // Registers a callback that is run when the presentation feedback for the
+  // next submitted frame is received (it's entirely possible some frames may be
+  // dropped between the time this is called and the callback is run).
+  // Note that since this might be called on failed presentations, it is
+  // deprecated in favor of `RequestSuccessfulPresentationTimeForNextFrame()`
+  // which will be called only after a successful presentation.
+  void RequestPresentationTimeForNextFrame(
+      PresentationTimeCallbackBuffer::Callback callback);
+
   // Registers a callback that is run when the next frame successfully makes it
   // to the screen (it's entirely possible some frames may be dropped between
   // the time this is called and the callback is run).
-  void RequestPresentationTimeForNextFrame(
-      PresentationTimeCallbackBuffer::MainCallback callback);
+  void RequestSuccessfulPresentationTimeForNextFrame(
+      PresentationTimeCallbackBuffer::SuccessfulCallback callback);
 
   // Registers a callback that is run when any ongoing scroll-animation ends. If
   // there are no ongoing animations, then the callback is run immediately.
@@ -732,7 +741,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool UpdateLayers();
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks,
+      std::vector<PresentationTimeCallbackBuffer::Callback>
+          presentation_callbacks,
+      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+          successful_presentation_callbacks,
       const gfx::PresentationFeedback& feedback);
   // Called when the compositor completed page scale animation.
   void DidCompletePageScaleAnimation();

@@ -468,10 +468,14 @@ void ProxyMain::DidCompleteCommit(CommitTimestamps commit_timestamps) {
 
 void ProxyMain::DidPresentCompositorFrame(
     uint32_t frame_token,
-    std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks,
+    std::vector<PresentationTimeCallbackBuffer::Callback>
+        presentation_callbacks,
+    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+        sucessful_presentation_callbacks,
     const gfx::PresentationFeedback& feedback) {
-  layer_tree_host_->DidPresentCompositorFrame(frame_token, std::move(callbacks),
-                                              feedback);
+  layer_tree_host_->DidPresentCompositorFrame(
+      frame_token, std::move(presentation_callbacks),
+      std::move(sucessful_presentation_callbacks), feedback);
 }
 
 void ProxyMain::NotifyThroughputTrackerResults(CustomTrackerResults results) {

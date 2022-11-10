@@ -200,41 +200,6 @@ void PopulateMetadataContentColorUsage(
   }
 }
 
-// Registers callbacks, as needed, to track First Scroll Latency.
-void ApplyFirstScrollTracking(const ui::LatencyInfo* latency,
-                              uint32_t frame_token,
-                              LayerTreeHostImpl* impl) {
-  base::TimeTicks creation_timestamp;
-  // If |latency| isn't tracking a scroll, we don't need to do extra
-  // first-scroll tracking.
-  auto scroll_update_started =
-      ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT;
-  auto scroll_update_continued =
-      ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT;
-  if (!latency->FindLatency(scroll_update_started, &creation_timestamp) &&
-      !latency->FindLatency(scroll_update_continued, &creation_timestamp)) {
-    return;
-  }
-
-  // Construct a callback that, given a successful presentation timestamp, will
-  // report the time span between the scroll input-event creation and the
-  // presentation timestamp.
-  PresentationTimeCallbackBuffer::CompositorCallback presentation_callback =
-      base::BindOnce(
-          [](base::TimeTicks event_creation,
-             LayerTreeHostImpl* layer_tree_host_impl,
-             base::TimeTicks presentation_timestamp) {
-            layer_tree_host_impl->DidObserveScrollDelay(
-                presentation_timestamp - event_creation, event_creation);
-          },
-          creation_timestamp, impl);
-
-  // Tell the |LayerTreeHostImpl| to run our callback with the presentation
-  // feedback corresponding to the given |frame_token|.
-  impl->RegisterCompositorPresentationTimeCallback(
-      frame_token, std::move(presentation_callback));
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SourceIdConsistency : int {
@@ -2205,14 +2170,9 @@ void LayerTreeHostImpl::DidReceiveCompositorFrameAck() {
 void LayerTreeHostImpl::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
-  // Presentation callbacks registered on the compositor thread are expected to
-  // be called on the first successful presentation. So, if the presentation is
-  // failed, we only pop main thread callbacks at this point and leave
-  // compositor thread callbacks alone until a successful presentation.
-  const bool main_callbacks_only = details.presentation_feedback.failed();
   PresentationTimeCallbackBuffer::PendingCallbacks activated_callbacks =
-      presentation_time_callbacks_.PopPendingCallbacks(frame_token,
-                                                       main_callbacks_only);
+      presentation_time_callbacks_.PopPendingCallbacks(
+          frame_token, details.presentation_feedback.failed());
 
   // Send all tasks to the client so that it can decide which tasks
   // should run on which thread.
@@ -2372,10 +2332,11 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   metadata.root_background_color = active_tree_->background_color();
   metadata.may_throttle_if_undrawn_frames = may_throttle_if_undrawn_frames_;
 
-  if (active_tree_->has_presentation_callbacks()) {
-    presentation_time_callbacks_.RegisterMainThreadPresentationCallbacks(
-        metadata.frame_token, active_tree_->TakePresentationCallbacks());
-  }
+  presentation_time_callbacks_.RegisterMainThreadCallbacks(
+      metadata.frame_token, active_tree_->TakePresentationCallbacks());
+  presentation_time_callbacks_.RegisterMainThreadSuccessfulCallbacks(
+      metadata.frame_token,
+      active_tree_->TakeSuccessfulPresentationCallbacks());
 
   if (GetDrawMode() == DRAW_MODE_RESOURCELESS_SOFTWARE) {
     // TODO(savella) : Change to check for ActivelyScrollingType::kNone
@@ -2815,9 +2776,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   if (!CommitToActiveTree() && !metadata.latency_info.empty()) {
     base::TimeTicks draw_time = base::TimeTicks::Now();
 
+    ApplyFirstScrollTracking(metadata.latency_info.front(),
+                             metadata.frame_token);
     ukm::SourceId exemplar = metadata.latency_info.front().ukm_source_id();
-    ApplyFirstScrollTracking(&metadata.latency_info.front(),
-                             metadata.frame_token, this);
     bool all_valid = true;
     bool all_unique = true;
     for (auto& latency : metadata.latency_info) {
@@ -3016,19 +2977,30 @@ ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {
 
 void LayerTreeHostImpl::RegisterMainThreadPresentationTimeCallbackForTesting(
     uint32_t frame_token,
-    PresentationTimeCallbackBuffer::MainCallback callback) {
-  std::vector<PresentationTimeCallbackBuffer::MainCallback> as_vector;
+    PresentationTimeCallbackBuffer::Callback callback) {
+  std::vector<PresentationTimeCallbackBuffer::Callback> as_vector;
   as_vector.push_back(std::move(callback));
-  presentation_time_callbacks_.RegisterMainThreadPresentationCallbacks(
+  presentation_time_callbacks_.RegisterMainThreadCallbacks(
       frame_token, std::move(as_vector));
 }
 
-void LayerTreeHostImpl::RegisterCompositorPresentationTimeCallback(
-    uint32_t frame_token,
-    PresentationTimeCallbackBuffer::CompositorCallback callback) {
-  std::vector<PresentationTimeCallbackBuffer::CompositorCallback> as_vector;
+void LayerTreeHostImpl::
+    RegisterMainThreadSuccessfulPresentationTimeCallbackForTesting(
+        uint32_t frame_token,
+        PresentationTimeCallbackBuffer::SuccessfulCallback callback) {
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> as_vector;
   as_vector.push_back(std::move(callback));
-  presentation_time_callbacks_.RegisterCompositorPresentationCallbacks(
+  presentation_time_callbacks_.RegisterMainThreadSuccessfulCallbacks(
+      frame_token, std::move(as_vector));
+}
+
+void LayerTreeHostImpl::
+    RegisterCompositorThreadSuccessfulPresentationTimeCallbackForTesting(
+        uint32_t frame_token,
+        PresentationTimeCallbackBuffer::SuccessfulCallback callback) {
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> as_vector;
+  as_vector.push_back(std::move(callback));
+  presentation_time_callbacks_.RegisterCompositorThreadSuccessfulCallbacks(
       frame_token, std::move(as_vector));
 }
 
@@ -5226,7 +5198,7 @@ void LayerTreeHostImpl::SetUkmSmoothnessDestination(
 
 void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,
-    std::vector<PresentationTimeCallbackBuffer::CompositorCallback> callbacks,
+    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks,
     const viz::FrameTimingDetails& details) {
   frame_trackers_.NotifyFramePresented(frame_token,
                                        details.presentation_feedback);
@@ -5262,6 +5234,40 @@ void LayerTreeHostImpl::RequestImplSideInvalidationForRerasterTiling() {
 
 base::WeakPtr<LayerTreeHostImpl> LayerTreeHostImpl::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void LayerTreeHostImpl::ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
+                                                 uint32_t frame_token) {
+  base::TimeTicks creation_timestamp;
+
+  // If `latency` isn't tracking a scroll, we don't need to do extra
+  // first-scroll tracking.
+  if (!latency.FindLatency(
+          ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
+          &creation_timestamp) &&
+      !latency.FindLatency(
+          ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
+          &creation_timestamp)) {
+    return;
+  }
+
+  // Construct a callback that, given a successful presentation timestamp, will
+  // report the time span between the scroll input-event creation and the
+  // presentation timestamp.
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks;
+  callbacks.push_back(base::BindOnce(
+      [](base::TimeTicks event_creation,
+         LayerTreeHostImpl* layer_tree_host_impl,
+         base::TimeTicks presentation_timestamp) {
+        layer_tree_host_impl->DidObserveScrollDelay(
+            presentation_timestamp - event_creation, event_creation);
+      },
+      creation_timestamp, this));
+
+  // Register the callback to run with the presentation timestamp corresponding
+  // to the given `frame_token`.
+  presentation_time_callbacks_.RegisterCompositorThreadSuccessfulCallbacks(
+      frame_token, std::move(callbacks));
 }
 
 }  // namespace cc

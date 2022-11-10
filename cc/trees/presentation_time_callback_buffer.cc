@@ -37,26 +37,37 @@ PresentationTimeCallbackBuffer::FrameTokenInfo::operator=(FrameTokenInfo&&) =
     default;
 PresentationTimeCallbackBuffer::FrameTokenInfo::~FrameTokenInfo() = default;
 
-void PresentationTimeCallbackBuffer::RegisterMainThreadPresentationCallbacks(
+void PresentationTimeCallbackBuffer::RegisterMainThreadCallbacks(
     uint32_t frame_token,
-    std::vector<MainCallback> callbacks) {
+    std::vector<Callback> callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  FrameTokenInfo& frame_info = GetOrMakeRegistration(frame_token);
 
-  // Splice the given |callbacks| onto the vector of existing callbacks.
-  auto& sink = frame_info.main_thread_callbacks;
+  // Splice the given `callbacks` onto the vector of existing callbacks.
+  auto& sink = GetOrMakeRegistration(frame_token).main_callbacks;
   sink.reserve(sink.size() + callbacks.size());
-  std::move(callbacks.begin(), callbacks.end(), std::back_inserter(sink));
+  base::ranges::move(callbacks, std::back_inserter(sink));
 }
 
-void PresentationTimeCallbackBuffer::RegisterCompositorPresentationCallbacks(
+void PresentationTimeCallbackBuffer::RegisterMainThreadSuccessfulCallbacks(
     uint32_t frame_token,
-    std::vector<CompositorCallback> callbacks) {
-  // Splice the given |callbacks| onto the vector of existing callbacks.
-  std::vector<CompositorCallback>& sink =
-      GetOrMakeRegistration(frame_token).compositor_thread_callbacks;
+    std::vector<SuccessfulCallback> callbacks) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Splice the given `callbacks` onto the vector of existing callbacks.
+  auto& sink = GetOrMakeRegistration(frame_token).main_successful_callbacks;
   sink.reserve(sink.size() + callbacks.size());
-  std::move(callbacks.begin(), callbacks.end(), std::back_inserter(sink));
+  base::ranges::move(callbacks, std::back_inserter(sink));
+}
+
+void PresentationTimeCallbackBuffer::
+    RegisterCompositorThreadSuccessfulCallbacks(
+        uint32_t frame_token,
+        std::vector<SuccessfulCallback> callbacks) {
+  // Splice the given |callbacks| onto the vector of existing callbacks.
+  std::vector<SuccessfulCallback>& sink =
+      GetOrMakeRegistration(frame_token).compositor_successful_callbacks;
+  sink.reserve(sink.size() + callbacks.size());
+  base::ranges::move(callbacks, std::back_inserter(sink));
 }
 
 PresentationTimeCallbackBuffer::PendingCallbacks::PendingCallbacks() = default;
@@ -69,7 +80,7 @@ PresentationTimeCallbackBuffer::PendingCallbacks::~PendingCallbacks() = default;
 
 PresentationTimeCallbackBuffer::PendingCallbacks
 PresentationTimeCallbackBuffer::PopPendingCallbacks(uint32_t frame_token,
-                                                    bool main_only) {
+                                                    bool presentation_failed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   PendingCallbacks result;
@@ -79,20 +90,26 @@ PresentationTimeCallbackBuffer::PopPendingCallbacks(uint32_t frame_token,
     if (viz::FrameTokenGT(info->token, frame_token))
       break;
 
-    std::move(info->main_thread_callbacks.begin(),
-              info->main_thread_callbacks.end(),
-              std::back_inserter(result.main_thread_callbacks));
-    info->main_thread_callbacks.clear();
+    // Presentation time callbacks should be run whether presentation was
+    // successful or not.
+    base::ranges::move(info->main_callbacks,
+                       std::back_inserter(result.main_callbacks));
+    info->main_callbacks.clear();
 
-    const bool should_keep_callbacks =
-        main_only && !info->compositor_thread_callbacks.empty();
+    const bool should_keep_info =
+        presentation_failed && (!info->main_successful_callbacks.empty() ||
+                                !info->compositor_successful_callbacks.empty());
 
-    if (should_keep_callbacks) {
+    if (should_keep_info) {
       ++info;
     } else {
-      std::move(info->compositor_thread_callbacks.begin(),
-                info->compositor_thread_callbacks.end(),
-                std::back_inserter(result.compositor_thread_callbacks));
+      // Successful presentation time callbacks should only be run when the
+      // presentation was successful.
+      base::ranges::move(info->main_successful_callbacks,
+                         std::back_inserter(result.main_successful_callbacks));
+      base::ranges::move(
+          info->compositor_successful_callbacks,
+          std::back_inserter(result.compositor_successful_callbacks));
       info = frame_token_infos_.erase(info);
     }
   }

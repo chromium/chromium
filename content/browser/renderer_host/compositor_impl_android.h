@@ -125,6 +125,8 @@ class CONTENT_EXPORT CompositorImpl
   void PreserveChildSurfaceControls() override;
   void RequestPresentationTimeForNextFrame(
       PresentationTimeCallback callback) override;
+  void RequestSuccessfulPresentationTimeForNextFrame(
+      SuccessfulPresentationTimeCallback callback) override;
   void SetDidSwapBuffersCallbackEnabled(bool enable) override;
 
   // LayerTreeHostClient implementation.

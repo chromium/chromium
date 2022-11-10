@@ -847,11 +847,16 @@ bool LayerTreeHost::UpdateLayers() {
 
 void LayerTreeHost::DidPresentCompositorFrame(
     uint32_t frame_token,
-    std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks,
+    std::vector<PresentationTimeCallbackBuffer::Callback>
+        presentation_callbacks,
+    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+        successful_presentation_callbacks,
     const gfx::PresentationFeedback& feedback) {
   DCHECK(IsMainThread());
-  for (auto& callback : callbacks)
+  for (auto& callback : presentation_callbacks)
     std::move(callback).Run(feedback);
+  for (auto& callback : successful_presentation_callbacks)
+    std::move(callback).Run(feedback.timestamp);
   client_->DidPresentCompositorFrame(frame_token, feedback);
 }
 
@@ -1248,8 +1253,14 @@ bool LayerTreeHost::IsThreaded() const {
 }
 
 void LayerTreeHost::RequestPresentationTimeForNextFrame(
-    PresentationTimeCallbackBuffer::MainCallback callback) {
-  pending_commit_state()->pending_presentation_time_callbacks.push_back(
+    PresentationTimeCallbackBuffer::Callback callback) {
+  pending_commit_state()->pending_presentation_callbacks.push_back(
+      std::move(callback));
+}
+
+void LayerTreeHost::RequestSuccessfulPresentationTimeForNextFrame(
+    PresentationTimeCallbackBuffer::SuccessfulCallback callback) {
+  pending_commit_state()->pending_successful_presentation_callbacks.push_back(
       std::move(callback));
 }
 

@@ -326,14 +326,25 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
                                            host_->DeferMainFrameUpdate());
   }
 
-  // Registers a callback that is run when the next frame successfully makes it
-  // to the screen (it's entirely possible some frames may be dropped between
-  // the time this is called and the callback is run).
+  // Registers a callback that is run when the presentation feedback for the
+  // next submitted frame is received (it's entirely possible some frames may be
+  // dropped between the time this is called and the callback is run).
   // See ui/gfx/presentation_feedback.h for details on the args (TimeTicks is
   // always non-zero).
+  // Note that since this might be called on failed presentations, it is
+  // deprecated in favor of `RequestSuccessfulPresentationTimeForNextFrame()`
+  // which will be called only after a successful presentation.
   using PresentationTimeCallback =
       base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   void RequestPresentationTimeForNextFrame(PresentationTimeCallback callback);
+
+  // Registers a callback that is run when the next frame successfully makes it
+  // to the screen (it's entirely possible some frames may be dropped between
+  // the time this is called and the callback is run).
+  using SuccessfulPresentationTimeCallback =
+      base::OnceCallback<void(base::TimeTicks)>;
+  void RequestSuccessfulPresentationTimeForNextFrame(
+      SuccessfulPresentationTimeCallback callback);
 
   void IssueExternalBeginFrame(
       const viz::BeginFrameArgs& args,

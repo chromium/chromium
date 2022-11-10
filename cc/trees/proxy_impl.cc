@@ -652,14 +652,15 @@ void ProxyImpl::DidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,
     PresentationTimeCallbackBuffer::PendingCallbacks activated,
     const viz::FrameTimingDetails& details) {
-  auto main_thread_callbacks = std::move(activated.main_thread_callbacks);
   host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
-      frame_token, std::move(activated.compositor_thread_callbacks), details);
+      frame_token, std::move(activated.compositor_successful_callbacks),
+      details);
 
   MainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ProxyMain::DidPresentCompositorFrame,
                                 proxy_main_weak_ptr_, frame_token,
-                                std::move(main_thread_callbacks),
+                                std::move(activated.main_callbacks),
+                                std::move(activated.main_successful_callbacks),
                                 details.presentation_feedback));
   if (scheduler_)
     scheduler_->DidPresentCompositorFrame(frame_token, details);
