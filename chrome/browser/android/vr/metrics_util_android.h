@@ -12,16 +12,6 @@ namespace vr {
 // A utility class containing static functions for metrics logging.
 class MetricsUtilAndroid {
  public:
-  // TODO(klausw): Move this to gvr_scheduler_delegate.
-  enum class XRRenderPath : int {
-    kClientWait = 0,
-    kGpuFence = 1,
-    kSharedBuffer = 2,
-
-    // This must be last.
-    kCount
-  };
-
   static void LogVrViewerType(gvr::ViewerType viewer_type);
 };
 

@@ -264,26 +264,23 @@ void GvrSchedulerDelegate::ConnectPresentingService(
 device::mojom::XRPresentationTransportOptionsPtr
 GvrSchedulerDelegate::GetWebXrFrameTransportOptions(
     const device::mojom::XRRuntimeSessionOptionsPtr& options) {
-  DVLOG(1) << __func__;
-
-  MetricsUtilAndroid::XRRenderPath render_path =
-      MetricsUtilAndroid::XRRenderPath::kClientWait;
   webxr_use_shared_buffer_draw_ = false;
   webxr_use_gpu_fence_ = false;
 
-  // Use SharedBuffer if supported, otherwise fall back to GpuFence or
-  // ClientWait.
+  // Use SharedBuffer if supported, otherwise fall back to GpuFence, or
+  // ClientWait if that also isn't available.
   if (gl::GLFence::IsGpuFenceSupported()) {
     webxr_use_gpu_fence_ = true;
     if (base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
       webxr_use_shared_buffer_draw_ = true;
-      render_path = MetricsUtilAndroid::XRRenderPath::kSharedBuffer;
-    } else {
-      render_path = MetricsUtilAndroid::XRRenderPath::kGpuFence;
     }
   }
 
-  DVLOG(1) << __func__ << ": render_path=" << static_cast<int>(render_path);
+  // Identify the synchronization method used for debugging purposes.
+  // (This corresponds to the retired XRRenderPath metric.)
+  DVLOG(1) << __func__
+           << ": use_shared_buffer_draw=" << webxr_use_shared_buffer_draw_
+           << " use_gpu_fence=" << webxr_use_gpu_fence_;
 
   device::mojom::XRPresentationTransportOptionsPtr transport_options =
       device::mojom::XRPresentationTransportOptions::New();
