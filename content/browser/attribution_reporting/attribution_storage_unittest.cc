@@ -28,6 +28,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -135,7 +136,7 @@ class AttributionStorageTest : public testing::Test {
     // values.
     auto event_trigger = base::ranges::find_if(
         conversion.event_triggers(),
-        [&](const AttributionTrigger::EventTriggerData& event_trigger) {
+        [&](const attribution_reporting::EventTriggerData& event_trigger) {
           return AttributionFiltersMatch(source.common_info().filter_data(),
                                          source.common_info().source_type(),
                                          event_trigger.filters,
@@ -2612,7 +2613,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
           /*not_filters=*/AttributionFilters(),
           /*debug_key=*/absl::nullopt,
           /*aggregatable_dedup_key=*/absl::nullopt,
-          {AttributionTrigger::EventTriggerData(
+          {attribution_reporting::EventTriggerData(
               /*data=*/11,
               /*priority=*/12,
               /*dedup_key=*/13,
@@ -2641,9 +2642,9 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .Build());
 
-  const std::vector<AttributionTrigger::EventTriggerData> event_triggers = {
+  const std::vector<attribution_reporting::EventTriggerData> event_triggers = {
       // Filters don't match.
-      AttributionTrigger::EventTriggerData(
+      attribution_reporting::EventTriggerData(
           /*data=*/11,
           /*priority=*/12,
           /*dedup_key=*/13,
@@ -2654,7 +2655,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*not_filters=*/AttributionFilters()),
 
       // Filters match, but negated filters do not.
-      AttributionTrigger::EventTriggerData(
+      attribution_reporting::EventTriggerData(
           /*data=*/21,
           /*priority=*/22,
           /*dedup_key=*/23,
@@ -2668,7 +2669,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           })),
 
       // Filters and negated filters match.
-      AttributionTrigger::EventTriggerData(
+      attribution_reporting::EventTriggerData(
           /*data=*/31,
           /*priority=*/32,
           /*dedup_key=*/33,
@@ -2683,7 +2684,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
 
       // Filters and negated filters match, but not the first event
       // trigger to match.
-      AttributionTrigger::EventTriggerData(
+      attribution_reporting::EventTriggerData(
           /*data=*/41,
           /*priority=*/42,
           /*dedup_key=*/43,

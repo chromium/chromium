@@ -19,6 +19,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
@@ -501,7 +502,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     return;
   }
 
-  std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+  std::vector<attribution_reporting::EventTriggerData> event_triggers;
   event_triggers.reserve(data->event_triggers.size());
 
   for (auto& event_trigger : data->event_triggers) {

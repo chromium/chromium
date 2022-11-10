@@ -25,6 +25,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
@@ -286,7 +287,7 @@ class AttributionSimulatorInputParser {
     absl::optional<uint64_t> debug_key;
     attribution_reporting::Filters filters;
     attribution_reporting::Filters not_filters;
-    std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+    std::vector<attribution_reporting::EventTriggerData> event_triggers;
     std::vector<attribution_reporting::AggregatableTriggerData>
         aggregatable_trigger_data;
     attribution_reporting::AggregatableValues aggregatable_values;
@@ -333,9 +334,9 @@ class AttributionSimulatorInputParser {
         std::move(trigger));
   }
 
-  std::vector<AttributionTrigger::EventTriggerData> ParseEventTriggers(
+  std::vector<attribution_reporting::EventTriggerData> ParseEventTriggers(
       const base::Value::Dict& cfg) {
-    std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+    std::vector<attribution_reporting::EventTriggerData> event_triggers;
 
     static constexpr char kKey[] = "event_trigger_data";
 

@@ -16,6 +16,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -388,7 +389,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       /*debug_key=*/14,
                       /*aggregatable_dedup_key=*/absl::nullopt,
                       {
-                          AttributionTrigger::EventTriggerData(
+                          attribution_reporting::EventTriggerData(
                               /*data=*/10,
                               /*priority=*/-5,
                               /*dedup_key=*/123,
@@ -400,7 +401,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               *AttributionFilters::Create({
                                   {"z", {}},
                               })),
-                          AttributionTrigger::EventTriggerData(
+                          attribution_reporting::EventTriggerData(
                               /*data=*/0,
                               /*priority=*/0,
                               /*dedup_key=*/absl::nullopt,

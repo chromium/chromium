@@ -58,6 +58,7 @@
 
 namespace attribution_reporting {
 class AggregatableTriggerData;
+struct EventTriggerData;
 }  // namespace attribution_reporting
 
 namespace mojo {
@@ -635,9 +636,6 @@ class ReportBuilder {
   std::vector<AggregatableHistogramContribution> contributions_;
 };
 
-bool operator==(const AttributionTrigger::EventTriggerData& a,
-                const AttributionTrigger::EventTriggerData& b);
-
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
 
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
@@ -674,10 +672,6 @@ std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::AggregatableResult status);
 
 std::ostream& operator<<(std::ostream& out, RateLimitResult result);
-
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionTrigger::EventTriggerData& event_trigger);
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion);
@@ -904,7 +898,7 @@ struct EventTriggerDataMatcherConfig {
   ::testing::Matcher<const attribution_reporting::Filters&> not_filters;
 
   EventTriggerDataMatcherConfig() = delete;
-  EventTriggerDataMatcherConfig(
+  explicit EventTriggerDataMatcherConfig(
       ::testing::Matcher<uint64_t> data = ::testing::_,
       ::testing::Matcher<int64_t> priority = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> dedup_key = ::testing::_,
@@ -915,7 +909,7 @@ struct EventTriggerDataMatcherConfig {
   ~EventTriggerDataMatcherConfig();
 };
 
-::testing::Matcher<const AttributionTrigger::EventTriggerData&>
+::testing::Matcher<const attribution_reporting::EventTriggerData&>
 EventTriggerDataMatches(const EventTriggerDataMatcherConfig&);
 
 struct AttributionTriggerMatcherConfig {
@@ -924,7 +918,8 @@ struct AttributionTriggerMatcherConfig {
   ::testing::Matcher<const attribution_reporting::Filters&> filters =
       ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
-  ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
+  ::testing::Matcher<
+      const std::vector<attribution_reporting::EventTriggerData>&>
       event_triggers = ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
       ::testing::_;
@@ -938,8 +933,9 @@ struct AttributionTriggerMatcherConfig {
       ::testing::Matcher<const attribution_reporting::Filters&> filters =
           ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
-      ::testing::Matcher<const std::vector<
-          AttributionTrigger::EventTriggerData>&> event_triggers = ::testing::_,
+      ::testing::Matcher<
+          const std::vector<attribution_reporting::EventTriggerData>&>
+          event_triggers = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
           ::testing::_,
       ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_,

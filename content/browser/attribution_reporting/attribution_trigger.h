@@ -17,6 +17,7 @@
 
 namespace attribution_reporting {
 class AggregatableTriggerData;
+struct EventTriggerData;
 }  // namespace attribution_reporting
 
 namespace content {
@@ -72,37 +73,6 @@ class CONTENT_EXPORT AttributionTrigger {
     kMaxValue = kDeduplicated,
   };
 
-  struct CONTENT_EXPORT EventTriggerData {
-    // Data associated with trigger.
-    // Will be sanitized to a lower entropy by the `AttributionStorageDelegate`
-    // before storage.
-    uint64_t data;
-
-    // Priority specified in conversion redirect. Used to prioritize which
-    // reports to send among multiple different reports for the same attribution
-    // source. Defaults to 0 if not provided.
-    int64_t priority;
-
-    // Key specified in conversion redirect for deduplication against existing
-    // conversions with the same source. If absent, no deduplication is
-    // performed.
-    absl::optional<uint64_t> dedup_key;
-
-    // The filters used to determine whether this `EventTriggerData'`s fields
-    // are used.
-    attribution_reporting::Filters filters;
-
-    // The negated filters used to determine whether this `EventTriggerData'`s
-    // fields are used.
-    attribution_reporting::Filters not_filters;
-
-    EventTriggerData(uint64_t data,
-                     int64_t priority,
-                     absl::optional<uint64_t> dedup_key,
-                     attribution_reporting::Filters filters,
-                     attribution_reporting::Filters not_filters);
-  };
-
   // Should only be created with values that the browser process has already
   // validated. |conversion_destination| should be filled by a navigation origin
   // known by the browser process.
@@ -113,7 +83,7 @@ class CONTENT_EXPORT AttributionTrigger {
       attribution_reporting::Filters not_filters,
       absl::optional<uint64_t> debug_key,
       absl::optional<uint64_t> aggregatable_dedup_key,
-      std::vector<EventTriggerData> event_triggers,
+      std::vector<attribution_reporting::EventTriggerData> event_triggers,
       std::vector<attribution_reporting::AggregatableTriggerData>
           aggregatable_trigger_data,
       attribution_reporting::AggregatableValues aggregatable_values,
@@ -144,7 +114,8 @@ class CONTENT_EXPORT AttributionTrigger {
 
   void ClearDebugKey() { debug_key_ = absl::nullopt; }
 
-  const std::vector<EventTriggerData>& event_triggers() const {
+  const std::vector<attribution_reporting::EventTriggerData>& event_triggers()
+      const {
     return event_triggers_;
   }
 
@@ -179,7 +150,7 @@ class CONTENT_EXPORT AttributionTrigger {
   // the same source. If absent, no deduplication is performed.
   absl::optional<uint64_t> aggregatable_dedup_key_;
 
-  std::vector<EventTriggerData> event_triggers_;
+  std::vector<attribution_reporting::EventTriggerData> event_triggers_;
 
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data_;

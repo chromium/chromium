@@ -17,6 +17,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -1022,14 +1023,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       /*debug_key=*/1,
       /*aggregatable_dedup_key=*/18,
       {
-          AttributionTrigger::EventTriggerData(
+          attribution_reporting::EventTriggerData(
               /*data=*/2,
               /*priority=*/3,
               /*dedup_key=*/absl::nullopt,
               /*filters=*/
               *AttributionFilters::Create({{"c", {"d"}}}),
               /*not_filters=*/AttributionFilters()),
-          AttributionTrigger::EventTriggerData(
+          attribution_reporting::EventTriggerData(
               /*data=*/4,
               /*priority=*/5,
               /*dedup_key=*/6,

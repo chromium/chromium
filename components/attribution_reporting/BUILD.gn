@@ -19,6 +19,8 @@ component("attribution_reporting") {
     "aggregation_keys.cc",
     "aggregation_keys.h",
     "constants.h",
+    "event_trigger_data.cc",
+    "event_trigger_data.h",
     "filters.cc",
     "filters.h",
     "os_registration.cc",

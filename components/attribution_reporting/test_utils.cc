@@ -10,6 +10,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -142,6 +143,24 @@ std::ostream& operator<<(std::ostream& out,
 
   return out << "],filters=" << trigger_data.filters()
              << ",not_filters=" << trigger_data.not_filters() << "}";
+}
+
+bool operator==(const EventTriggerData& a, const EventTriggerData& b) {
+  const auto tie = [](const EventTriggerData& t) {
+    return std::make_tuple(t.data, t.priority, t.dedup_key, t.filters,
+                           t.not_filters);
+  };
+  return tie(a) == tie(b);
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const EventTriggerData& event_trigger) {
+  out << "{data=" << event_trigger.data
+      << ",priority=" << event_trigger.priority << ",dedup_key=";
+  WriteOptional(out, event_trigger.dedup_key)
+      << ",filters=" << event_trigger.filters
+      << ",not_filters=" << event_trigger.not_filters << "}";
+  return out;
 }
 
 }  // namespace attribution_reporting

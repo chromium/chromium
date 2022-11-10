@@ -28,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -1150,7 +1151,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
 
   auto event_trigger = base::ranges::find_if(
       trigger.event_triggers(),
-      [&](const AttributionTrigger::EventTriggerData& event_trigger) {
+      [&](const attribution_reporting::EventTriggerData& event_trigger) {
         return AttributionFiltersMatch(common_info.filter_data(), source_type,
                                        event_trigger.filters,
                                        event_trigger.not_filters);

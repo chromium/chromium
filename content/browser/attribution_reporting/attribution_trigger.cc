@@ -9,21 +9,10 @@
 
 #include "base/check.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {
-
-AttributionTrigger::EventTriggerData::EventTriggerData(
-    uint64_t data,
-    int64_t priority,
-    absl::optional<uint64_t> dedup_key,
-    attribution_reporting::Filters filters,
-    attribution_reporting::Filters not_filters)
-    : data(data),
-      priority(priority),
-      dedup_key(dedup_key),
-      filters(std::move(filters)),
-      not_filters(std::move(not_filters)) {}
 
 AttributionTrigger::AttributionTrigger(
     url::Origin destination_origin,
@@ -32,7 +21,7 @@ AttributionTrigger::AttributionTrigger(
     attribution_reporting::Filters not_filters,
     absl::optional<uint64_t> debug_key,
     absl::optional<uint64_t> aggregatable_dedup_key,
-    std::vector<EventTriggerData> event_triggers,
+    std::vector<attribution_reporting::EventTriggerData> event_triggers,
     std::vector<attribution_reporting::AggregatableTriggerData>
         aggregatable_trigger_data,
     attribution_reporting::AggregatableValues aggregatable_values,

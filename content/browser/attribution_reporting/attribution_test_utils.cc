@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -695,7 +696,7 @@ TriggerBuilder& TriggerBuilder::SetDebugReporting(bool debug_reporting) {
 
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
-  std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+  std::vector<attribution_reporting::EventTriggerData> event_triggers;
 
   if (generate_event_trigger_data) {
     event_triggers.emplace_back(
@@ -805,15 +806,6 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
       /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
           contributions_, aggregatable_attribution_report_id_, report_time_));
-}
-
-bool operator==(const AttributionTrigger::EventTriggerData& a,
-                const AttributionTrigger::EventTriggerData& b) {
-  const auto tie = [](const AttributionTrigger::EventTriggerData& t) {
-    return std::make_tuple(t.data, t.priority, t.dedup_key, t.filters,
-                           t.not_filters);
-  };
-  return tie(a) == tie(b);
 }
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
@@ -1063,18 +1055,6 @@ std::ostream& operator<<(std::ostream& out,
       break;
   }
   return out;
-}
-
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionTrigger::EventTriggerData& event_trigger) {
-  return out << "{data=" << event_trigger.data
-             << ",priority=" << event_trigger.priority << ",dedup_key="
-             << (event_trigger.dedup_key
-                     ? base::NumberToString(*event_trigger.dedup_key)
-                     : "null")
-             << ",filters=" << event_trigger.filters
-             << ",not_filters=" << event_trigger.not_filters << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -1333,17 +1313,18 @@ EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(
 
 EventTriggerDataMatcherConfig::~EventTriggerDataMatcherConfig() = default;
 
-::testing::Matcher<const AttributionTrigger::EventTriggerData&>
+::testing::Matcher<const attribution_reporting::EventTriggerData&>
 EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
-  return AllOf(
-      Field("data", &AttributionTrigger::EventTriggerData::data, cfg.data),
-      Field("priority", &AttributionTrigger::EventTriggerData::priority,
+  return ::testing::AllOf(
+      Field("data", &attribution_reporting::EventTriggerData::data, cfg.data),
+      Field("priority", &attribution_reporting::EventTriggerData::priority,
             cfg.priority),
-      Field("dedup_key", &AttributionTrigger::EventTriggerData::dedup_key,
+      Field("dedup_key", &attribution_reporting::EventTriggerData::dedup_key,
             cfg.dedup_key),
-      Field("filters", &AttributionTrigger::EventTriggerData::filters,
+      Field("filters", &attribution_reporting::EventTriggerData::filters,
             cfg.filters),
-      Field("not_filters", &AttributionTrigger::EventTriggerData::not_filters,
+      Field("not_filters",
+            &attribution_reporting::EventTriggerData::not_filters,
             cfg.not_filters));
 }
 
@@ -1352,7 +1333,8 @@ AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
     ::testing::Matcher<const url::Origin&> reporting_origin,
     ::testing::Matcher<const attribution_reporting::Filters&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
-    ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
+    ::testing::Matcher<
+        const std::vector<attribution_reporting::EventTriggerData>&>
         event_triggers,
     ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key,
     ::testing::Matcher<bool> is_within_fenced_frame,
