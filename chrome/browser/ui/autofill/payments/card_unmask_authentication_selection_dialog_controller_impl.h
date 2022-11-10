@@ -47,8 +47,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
 
   // CardUnmaskAuthenticationSelectionDialogController:
   void OnDialogClosed(bool user_closed_dialog, bool server_success) override;
-  void OnOkButtonClicked(
-      const std::string& selected_challenge_option_id) override;
+  void OnOkButtonClicked() override;
   std::u16string GetWindowTitle() const override;
   std::u16string GetContentHeaderText() const override;
   const std::vector<CardUnmaskChallengeOption>& GetChallengeOptions()
@@ -60,12 +59,26 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   std::u16string GetContentFooterText() const override;
   std::u16string GetOkButtonLabel() const override;
   std::u16string GetProgressLabel() const override;
+  void SetSelectedChallengeOptionId(
+      const std::string& selected_challenge_option_id) override;
 
-#if defined(UNIT_TEST)
   CardUnmaskAuthenticationSelectionDialogView* GetDialogViewForTesting() {
     return dialog_view_;
   }
-#endif
+
+  const std::string& GetSelectedChallengeOptionIdForTesting() const {
+    return selected_challenge_option_id_;
+  }
+
+  CardUnmaskChallengeOptionType GetSelectedChallengeOptionTypeForTesting()
+      const {
+    return selected_challenge_option_type_;
+  }
+
+  void SetSelectedChallengeOptionsForTesting(
+      std::vector<CardUnmaskChallengeOption> challenge_options) {
+    challenge_options_ = challenge_options;
+  }
 
  protected:
   explicit CardUnmaskAuthenticationSelectionDialogControllerImpl(
@@ -90,6 +103,18 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   // Tracks whether a challenge option was selected in the current
   // |dialog_view_|.
   bool challenge_option_selected_ = false;
+
+  // Contains the currently selected challenge option ID from the Card Unmask
+  // Authentication Selection Dialog View. Defaults to the first challenge
+  // option, but can change depending on user selection.
+  std::string selected_challenge_option_id_;
+
+  // Contains the challenge option type selected by the user. Currently only
+  // kCvc and kSmsOtp are supported.
+  // TODO(crbug.com/1381804) Update to use a StrongAlias in
+  // card_unmask_authentication_selection_dialog_controller_impl.h
+  CardUnmaskChallengeOptionType selected_challenge_option_type_ =
+      CardUnmaskChallengeOptionType::kUnknownType;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

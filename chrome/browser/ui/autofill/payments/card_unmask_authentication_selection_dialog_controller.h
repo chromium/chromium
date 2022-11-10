@@ -36,9 +36,7 @@ class CardUnmaskAuthenticationSelectionDialogController {
   // sent the OTP, and we can move on to the OTP Input Dialog.
   virtual void OnDialogClosed(bool user_closed_dialog, bool server_success) = 0;
 
-  // Event handler function. Invoked when the OK button is clicked.
-  virtual void OnOkButtonClicked(
-      const std::string& selected_challenge_option_id) = 0;
+  virtual void OnOkButtonClicked() = 0;
 
   virtual std::u16string GetWindowTitle() const = 0;
 
@@ -68,6 +66,15 @@ class CardUnmaskAuthenticationSelectionDialogController {
 
   // Return the text shown along with the progress throbber.
   virtual std::u16string GetProgressLabel() const = 0;
+
+  // Sets the currently selected challenge option id based on which
+  // challenge option radio button is selected by the user in the view. If there
+  // is only one challenge option presented to the user, the selected challenge
+  // option id is by default set to it. If there are multiple, it is by default
+  // initialized to the first challenge option presented to the user, but may
+  // change based on the user's selection.
+  virtual void SetSelectedChallengeOptionId(
+      const std::string& selected_challenge_option_id) = 0;
 };
 
 }  // namespace autofill

@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -22,30 +21,6 @@
 #include "ui/views/style/typography.h"
 
 namespace autofill {
-
-namespace {
-// Radio button view with an associated CardUnmaskChallengeOption.
-class ChallengeOptionRadioButton : public views::RadioButton {
- public:
-  ChallengeOptionRadioButton(
-      CardUnmaskAuthenticationSelectionDialogController* controller,
-      const CardUnmaskChallengeOption challenge_option);
-
-  ~ChallengeOptionRadioButton() override;
-
- private:
-  // The challenge option that the radio button corresponds to in the view.
-  CardUnmaskChallengeOption challenge_option_;
-};
-
-ChallengeOptionRadioButton::ChallengeOptionRadioButton(
-    CardUnmaskAuthenticationSelectionDialogController* controller,
-    CardUnmaskChallengeOption challenge_option)
-    : challenge_option_(challenge_option) {}
-
-ChallengeOptionRadioButton::~ChallengeOptionRadioButton() = default;
-
-}  // namespace
 
 CardUnmaskAuthenticationSelectionDialogViews::
     CardUnmaskAuthenticationSelectionDialogViews(
@@ -97,11 +72,14 @@ void CardUnmaskAuthenticationSelectionDialogViews::Dismiss(
   GetWidget()->Close();
 }
 
-bool CardUnmaskAuthenticationSelectionDialogViews::Accept() {
+void CardUnmaskAuthenticationSelectionDialogViews::UpdateContent() {
   ReplaceContentWithProgressThrobber();
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+}
+
+bool CardUnmaskAuthenticationSelectionDialogViews::Accept() {
   DCHECK(!controller_->GetChallengeOptions().empty());
-  controller_->OnOkButtonClicked(controller_->GetChallengeOptions()[0].id);
+  controller_->OnOkButtonClicked();
   return false;
 }
 
@@ -157,53 +135,75 @@ void CardUnmaskAuthenticationSelectionDialogViews::AddChallengeOptionsViews() {
                  views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
-  for (size_t i = 0; i < controller_->GetChallengeOptions().size(); i++) {
-    static_cast<views::TableLayout*>(
-        challenge_options_section->GetLayoutManager())
-        ->AddRows(1, views::TableLayout::kFixedSize);
-    if (controller_->GetChallengeOptions().size() > 1) {
-      // When there are multiple challenge options, provide the user with radio
-      // buttons to select.
-      challenge_options_section->AddChildView(
-          std::make_unique<ChallengeOptionRadioButton>(
-              controller_, controller_->GetChallengeOptions()[i]));
+  const std::vector<CardUnmaskChallengeOption>& challenge_options =
+      controller_->GetChallengeOptions();
 
-      // Only add padding if it isn't the last challenge option to display.
-      if (i < controller_->GetChallengeOptions().size() - 1) {
+  static_cast<views::TableLayout*>(
+      challenge_options_section->GetLayoutManager())
+      ->AddRows(1, views::TableLayout::kFixedSize);
+  if (challenge_options.size() > 1) {
+    for (auto it = challenge_options.begin(); it != challenge_options.end();
+         it++) {
+      // When there are multiple challenge options, provide the user with
+      // radio buttons to select.
+      auto* challenge_option_radio_button =
+          challenge_options_section->AddChildView(
+              CreateChallengeOptionRadioButton(*it));
+
+      // Set the first challenge option radio button to be automatically
+      // checked.
+      if (it == challenge_options.begin()) {
+        challenge_option_radio_button->SetChecked(true);
+        controller_->SetSelectedChallengeOptionId((*it).id);
+      }
+
+      // Only add padding and another row if it isn't the last challenge option
+      // to display.
+      if (std::next(it) != challenge_options.end()) {
         static_cast<views::TableLayout*>(
             challenge_options_section->GetLayoutManager())
             ->AddPaddingRow(views::TableLayout::kFixedSize,
                             ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+                                views::DISTANCE_UNRELATED_CONTROL_VERTICAL))
+            .AddRows(1, views::TableLayout::kFixedSize);
       }
-    } else {
-      // Instead of a radio button, create the left side image of the challenge
-      // option.
-      challenge_options_section->AddChildView(
-          std::make_unique<views::ImageView>(
-              controller_->GetAuthenticationModeIcon(
-                  controller_->GetChallengeOptions()[i])));
-    }
 
-    // Creates the right side of the challenge option (label and information
-    // such as masked phone number, masked email, etc...) and adds it to the
-    // current challenge option.
-    auto* challenge_option_details = challenge_options_section->AddChildView(
-        std::make_unique<views::BoxLayoutView>());
-    challenge_option_details->SetCrossAxisAlignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
-    challenge_option_details->SetOrientation(
-        views::BoxLayout::Orientation::kVertical);
-    challenge_option_details->AddChildView(std::make_unique<views::Label>(
-        controller_->GetAuthenticationModeLabel(
-            controller_->GetChallengeOptions()[i]),
-        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-        views::style::STYLE_PRIMARY));
-    challenge_option_details->AddChildView(std::make_unique<views::Label>(
-        controller_->GetChallengeOptions()[i].challenge_info,
-        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-        views::style::STYLE_SECONDARY));
+      AddChallengeOptionDetails(*it, challenge_options_section);
+    }
+  } else {
+    // Instead of a radio button, create the left side image of the
+    // challenge option.
+    challenge_options_section->AddChildView(std::make_unique<views::ImageView>(
+        controller_->GetAuthenticationModeIcon(challenge_options[0])));
+
+    // Since there's only one challenge option, the selected challenge
+    // option id will always be the first one.
+    controller_->SetSelectedChallengeOptionId(challenge_options[0].id);
+
+    AddChallengeOptionDetails(challenge_options[0], challenge_options_section);
   }
+}
+
+void CardUnmaskAuthenticationSelectionDialogViews::AddChallengeOptionDetails(
+    const CardUnmaskChallengeOption& challenge_option,
+    views::View* challenge_options_section) {
+  // Creates the right side of the challenge option (label and information
+  // such as masked phone number, masked email, etc...) and adds it to the
+  // current challenge option.
+  auto* challenge_option_details = challenge_options_section->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  challenge_option_details->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  challenge_option_details->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  challenge_option_details->AddChildView(std::make_unique<views::Label>(
+      controller_->GetAuthenticationModeLabel(challenge_option),
+      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+      views::style::STYLE_PRIMARY));
+  challenge_option_details->AddChildView(std::make_unique<views::Label>(
+      challenge_option.challenge_info,
+      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+      views::style::STYLE_SECONDARY));
 }
 
 void CardUnmaskAuthenticationSelectionDialogViews::AddFooterText() {
@@ -220,6 +220,20 @@ void CardUnmaskAuthenticationSelectionDialogViews::
   RemoveAllChildViews();
   AddChildView(std::make_unique<ProgressBarWithTextView>(
       controller_->GetProgressLabel()));
+}
+
+std::unique_ptr<views::RadioButton>
+CardUnmaskAuthenticationSelectionDialogViews::CreateChallengeOptionRadioButton(
+    CardUnmaskChallengeOption challenge_option) {
+  auto radio_button = std::make_unique<views::RadioButton>();
+  radio_button->SetCallback(
+      base::BindRepeating(&CardUnmaskAuthenticationSelectionDialogController::
+                              SetSelectedChallengeOptionId,
+                          base::Unretained(controller_), challenge_option.id));
+  radio_button->SetAccessibleName(
+      controller_->GetAuthenticationModeLabel(challenge_option) + u". " +
+      challenge_option.challenge_info);
+  return radio_button;
 }
 
 }  // namespace autofill

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CARD_UNMASK_CHALLENGE_OPTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CARD_UNMASK_CHALLENGE_OPTION_H_
 
+#include <string>
+
 namespace autofill {
 
 // Indicates the type of challenge option used in card unmasking.
@@ -33,7 +35,8 @@ enum class CvcPosition {
 };
 
 // The struct used by Autofill components to represent a card unmask challenge
-// option.
+// option. User must select a challenge option to unmask their credit card.
+// Currently, only CVC and SMS OTP are supported.
 struct CardUnmaskChallengeOption {
   // The unique identifier for the challenge option.
   std::string id = std::string();

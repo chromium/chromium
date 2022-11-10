@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_is_test.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
@@ -25,9 +26,10 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::
   // but the reference to controller is not reset. This reference needs to be
   // reset via CardUnmaskAuthenticationSelectionDialogView::Dismiss() to avoid a
   // crash.
-  if (dialog_view_)
+  if (dialog_view_) {
     dialog_view_->Dismiss(/*user_closed_dialog=*/true,
                           /*server_success=*/false);
+  }
 }
 
 // Static
@@ -51,7 +53,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
   if (dialog_view_)
     return;
 
-  DCHECK(!challenge_options.empty());
+  CHECK(!challenge_options.empty());
   challenge_options_ =
       base::FeatureList::IsEnabled(features::kAutofillEnableCvcForVcnYellowPath)
           ? challenge_options
@@ -92,7 +94,8 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
     // |cancel_unmasking_closure_| can be null in tests.
     if (cancel_unmasking_closure_)
       std::move(cancel_unmasking_closure_).Run();
-  } else {
+  } else if (selected_challenge_option_type_ ==
+             CardUnmaskChallengeOptionType::kSmsOtp) {
     AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogResultMetric(
         server_success
             ? AutofillMetrics::
@@ -102,21 +105,58 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
                   CardUnmaskAuthenticationSelectionDialogResultMetric::
                       kDismissedByServerRequestFailure);
   }
+  // TODO(crbug.com/1381892): Add OnDialogClosed metrics for Card Unmask Auth
+  // Select Dialog flow for CVC.
 
   challenge_option_selected_ = false;
   dialog_view_ = nullptr;
   confirm_unmasking_method_callback_.Reset();
   cancel_unmasking_closure_.Reset();
+  selected_challenge_option_id_ = std::string();
+  selected_challenge_option_type_ = CardUnmaskChallengeOptionType::kUnknownType;
 }
 
-void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnOkButtonClicked(
-    const std::string& selected_challenge_option_id) {
-  // |confirm_unmasking_method_callback_| can be null in tests.
-  if (confirm_unmasking_method_callback_) {
-    std::move(confirm_unmasking_method_callback_)
-        .Run(selected_challenge_option_id);
-  }
+void CardUnmaskAuthenticationSelectionDialogControllerImpl::
+    OnOkButtonClicked() {
+  DCHECK(!selected_challenge_option_id_.empty());
+
+  auto selected_challenge_option = std::find_if(
+      challenge_options_.begin(), challenge_options_.end(),
+      [this](const CardUnmaskChallengeOption challenge_option) {
+        return challenge_option.id == selected_challenge_option_id_;
+      });
+
+  DCHECK(selected_challenge_option != challenge_options_.end());
+  selected_challenge_option_type_ = (*selected_challenge_option).type;
+
+  DCHECK(selected_challenge_option_type_ !=
+         CardUnmaskChallengeOptionType::kUnknownType);
   challenge_option_selected_ = true;
+
+  if (!confirm_unmasking_method_callback_) {
+    CHECK_IS_TEST();
+  } else {
+    std::move(confirm_unmasking_method_callback_)
+        .Run(selected_challenge_option_id_);
+  }
+
+  if (dialog_view_) {
+    switch (selected_challenge_option_type_) {
+      case CardUnmaskChallengeOptionType::kCvc:
+        // For CVC flow, skip the OTP pending dialog since we go straight to the
+        // Card Unmask Prompt.
+        dialog_view_->Dismiss(/*user_closed_dialog=*/false,
+                              /*server_success=*/false);
+        break;
+      case CardUnmaskChallengeOptionType::kSmsOtp:
+        // Show the OTP pending dialog.
+        dialog_view_->UpdateContent();
+        break;
+      case CardUnmaskChallengeOptionType::kUnknownType:
+        NOTREACHED();
+        break;
+    }
+  }
 }
 
 std::u16string
@@ -192,6 +232,12 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetProgressLabel()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE);
+}
+
+void CardUnmaskAuthenticationSelectionDialogControllerImpl::
+    SetSelectedChallengeOptionId(
+        const std::string& selected_challenge_option_id) {
+  selected_challenge_option_id_ = selected_challenge_option_id;
 }
 
 CardUnmaskAuthenticationSelectionDialogControllerImpl::

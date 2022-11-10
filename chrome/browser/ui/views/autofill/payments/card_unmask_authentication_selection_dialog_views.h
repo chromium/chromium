@@ -10,16 +10,19 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/window/dialog_delegate.h"
 
 namespace autofill {
 
 class CardUnmaskAuthenticationSelectionDialogController;
 
+// TODO(crbug.com/1382856):  Rename CardUnmaskAuthenticationSelectionDialogViews
+// to CardUnmaskAuthenticationSelectionDialogView
 class CardUnmaskAuthenticationSelectionDialogViews
     : public CardUnmaskAuthenticationSelectionDialogView,
-      public views::DialogDelegateView {
+      public views::BubbleDialogDelegateView {
  public:
   explicit CardUnmaskAuthenticationSelectionDialogViews(
       CardUnmaskAuthenticationSelectionDialogController* controller);
@@ -31,6 +34,7 @@ class CardUnmaskAuthenticationSelectionDialogViews
 
   // CardUnmaskAuthenticationSelectionDialogView:
   void Dismiss(bool user_closed_dialog, bool server_success) override;
+  void UpdateContent() override;
 
   // views::DialogDelegateView:
   bool Accept() override;
@@ -48,12 +52,26 @@ class CardUnmaskAuthenticationSelectionDialogViews
   // as a text message or a phone number.
   void AddChallengeOptionsViews();
 
+  void AddChallengeOptionDetails(
+      const CardUnmaskChallengeOption& challenge_option,
+      views::View* challenge_options_section);
+
   void AddFooterText();
 
   // Replace the contents with a progress throbber. Invoked whenever the OK
   // button is clicked.
   void ReplaceContentWithProgressThrobber();
 
+  // Sets the selected challenge option id in the
+  // CardUnmaskAuthenticationSelectionDialogController.
+  void SetSelectedChallengeOptionId(std::string selected_challenge_option_id);
+
+  // Creates a radio button with a callback to SetSelectedChallengeOptionId.
+  std::unique_ptr<views::RadioButton> CreateChallengeOptionRadioButton(
+      CardUnmaskChallengeOption challenge_option);
+
+  // Controller that owns functionality of the
+  // CardUnmaskAuthenticationSelectionDialogView.
   raw_ptr<CardUnmaskAuthenticationSelectionDialogController> controller_ =
       nullptr;
 };
