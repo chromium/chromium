@@ -13,7 +13,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/cpu.h"                     // nogncheck
 #include "base/no_destructor.h"           // nogncheck
-#include "third_party/re2/src/re2/re2.h"  // nogncheck
 #endif
 
 #include "base/bind.h"
@@ -26,7 +25,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -77,39 +75,16 @@ bool IsHardwareVP8EncodingSupported(
     base::StringPiece receiver_model_name,
     const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
         profiles) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // NOTE: the hardware encoder on some Chrome OS devices does not play well
-  // with Vizio TVs. See https://crbug.com/1238774 for more information.
-  // Vizio uses the TV model string for the receiver model name.
-  const char* kVizioRegex =
-      R"(^(?i)(([DEMPV]|OLED)\d\d\w*-[A-Z]\w*)|(.*Vizio.*)$)";
-
-  if (RE2::FullMatch(re2::StringPiece(receiver_model_name.data(),
-                                      receiver_model_name.size()),
-                     RE2(kVizioRegex))) {
-    return false;
-  }
-#endif
-
-#if (BUILDFLAG(IS_CHROMEOS) && ARCH_CPU_X86_64) || \
-    (BUILDFLAG(IS_CHROMEOS_ASH) && ARCH_CPU_ARM_FAMILY)
-  // The encoder also doesn't work well with some first party Chromecast
-  // devices. See https://crbug.com/1342276 for more information.
-  if (base::StartsWith(receiver_model_name, "Chromecast")) {
-    return false;
-  }
-  // Sabrina devices sometimes advertise as Eureka Dongle
-  if (base::StartsWith(receiver_model_name, "Eureka Dongle")) {
-    return false;
-  }
-#endif
-
+// The hardware encoder on ChromeOS has major issues when connecting to a
+// variety of first and third party devices. See https://crbug.com/1382591.
+#if !BUILDFLAG(IS_CHROMEOS)
   for (const auto& vea_profile : profiles) {
     if (vea_profile.profile >= media::VP8PROFILE_MIN &&
         vea_profile.profile <= media::VP8PROFILE_MAX) {
       return true;
     }
   }
+#endif
 
   return false;
 }  // namespace
