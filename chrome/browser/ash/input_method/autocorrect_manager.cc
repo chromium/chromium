@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -33,11 +32,6 @@ namespace ash {
 namespace input_method {
 
 namespace {
-
-constexpr int kDistanceUntilUnderlineHides = 3;
-constexpr int kMaxValidationTries = 4;
-constexpr base::TimeDelta kVeryFastInteractionPeriod = base::Milliseconds(200);
-constexpr base::TimeDelta kFastInteractionPeriod = base::Milliseconds(500);
 
 bool IsVkAutocorrect() {
   return ChromeKeyboardControllerClient::HasInstance() &&
@@ -73,99 +67,6 @@ AutocorrectPreference GetPhysicalKeyboardAutocorrectPref(
   if (autocorrect_setting->GetIfInt().value() > 0)
     return AutocorrectPreference::kEnabled;
   return AutocorrectPreference::kDisabled;
-}
-
-AutocorrectCompatibilitySummary ConvertActionToCompatibilitySummary(
-    AutocorrectActions action) {
-  switch (action) {
-    case AutocorrectActions::kWindowShown:
-      return AutocorrectCompatibilitySummary::kWindowShown;
-    case AutocorrectActions::kUnderlined:
-      return AutocorrectCompatibilitySummary::kUnderlined;
-    case AutocorrectActions::kReverted:
-      return AutocorrectCompatibilitySummary::kReverted;
-    case AutocorrectActions::kUserAcceptedAutocorrect:
-      return AutocorrectCompatibilitySummary::kUserAcceptedAutocorrect;
-    case AutocorrectActions::kUserActionClearedUnderline:
-      return AutocorrectCompatibilitySummary::kUserActionClearedUnderline;
-    case AutocorrectActions::kUserExitedTextFieldWithUnderline:
-      return AutocorrectCompatibilitySummary::kUserExitedTextFieldWithUnderline;
-    case AutocorrectActions::kInvalidRange:
-      return AutocorrectCompatibilitySummary::kInvalidRange;
-    default:
-      LOG(ERROR) << "Invalid AutocorrectActions: action=" << (int)action;
-      return AutocorrectCompatibilitySummary::kInvalidRange;
-  }
-}
-
-void RecordAppCompatibilityUkm(
-    ukm::SourceId source_id,
-    bool virtual_keyboard,
-    AutocorrectCompatibilitySummary compatibility_summary) {
-  if (virtual_keyboard) {
-    ukm::builders::InputMethod_Assistive_AutocorrectV2(source_id)
-        .SetCompatibilitySummary_VK(static_cast<int>(compatibility_summary))
-        .Record(ukm::UkmRecorder::Get());
-  } else {
-    ukm::builders::InputMethod_Assistive_AutocorrectV2(source_id)
-        .SetCompatibilitySummary_PK(static_cast<int>(compatibility_summary))
-        .Record(ukm::UkmRecorder::Get());
-  }
-}
-
-void LogAutocorrectAppCompatibilityUkm(AutocorrectActions action,
-                                       base::TimeDelta time_delta,
-                                       bool virtual_keyboard_visible) {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context) {
-    return;
-  }
-
-  ukm::SourceId sourceId = input_context->GetClientSourceForMetrics();
-  if (sourceId == ukm::kInvalidSourceId) {
-    return;
-  }
-
-  // Record base interactions.
-  RecordAppCompatibilityUkm(sourceId, virtual_keyboard_visible,
-                            ConvertActionToCompatibilitySummary(action));
-
-  if (time_delta > kFastInteractionPeriod) {
-    return;
-  }
-
-  bool is_very_fast = time_delta <= kVeryFastInteractionPeriod;
-
-  AutocorrectCompatibilitySummary latency_compatibility;
-
-  // Convert latency of important interaction to CompatibilitySummary.
-  switch (action) {
-    case AutocorrectActions::kUserAcceptedAutocorrect:
-      latency_compatibility =
-          is_very_fast
-              ? AutocorrectCompatibilitySummary::kVeryFastAcceptedAutocorrect
-              : AutocorrectCompatibilitySummary::kFastAcceptedAutocorrect;
-      break;
-    case AutocorrectActions::kReverted:
-    case AutocorrectActions::kUserActionClearedUnderline:
-    case AutocorrectActions::kInvalidRange:
-      latency_compatibility =
-          is_very_fast
-              ? AutocorrectCompatibilitySummary::kVeryFastRejectedAutocorrect
-              : AutocorrectCompatibilitySummary::kFastRejectedAutocorrect;
-      break;
-    case AutocorrectActions::kUserExitedTextFieldWithUnderline:
-      latency_compatibility =
-          is_very_fast ? AutocorrectCompatibilitySummary::kVeryFastExitField
-                       : AutocorrectCompatibilitySummary::kFastExitField;
-      break;
-    default:
-      return;
-  }
-
-  RecordAppCompatibilityUkm(sourceId, virtual_keyboard_visible,
-                            latency_compatibility);
 }
 
 void LogAssistiveAutocorrectDelay(base::TimeDelta delay) {
@@ -301,6 +202,9 @@ bool IsAutocorrectSuggestionInSurroundingText(
                                  autocorrect_range.length()) == suggested_text;
 }
 
+constexpr int kDistanceUntilUnderlineHides = 3;
+constexpr int kMaxValidationTries = 4;
+
 }  // namespace
 
 AutocorrectManager::AutocorrectManager(
@@ -353,7 +257,6 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
 
   LogAssistiveAutocorrectInternalState(
       AutocorrectInternalStates::kHandleSetRange);
-
   input_context->SetAutocorrectRange(
       autocorrect_range,
       base::BindOnce(&AutocorrectManager::ProcessSetAutocorrectRangeDone,
@@ -395,13 +298,9 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
                                 action);
 
   if (pending_autocorrect_.has_value()) {
-    base::TimeDelta latency =
-        base::TimeTicks::Now() - pending_autocorrect_->start_time;
     LogAssistiveAutocorrectActionLatency(
-        action, latency, pending_autocorrect_->virtual_keyboard_visible);
-
-    LogAutocorrectAppCompatibilityUkm(
-        action, latency, pending_autocorrect_->virtual_keyboard_visible);
+        action, base::TimeTicks::Now() - pending_autocorrect_->start_time,
+        pending_autocorrect_->virtual_keyboard_visible);
   }
 
   if (pending_autocorrect_.has_value() &&

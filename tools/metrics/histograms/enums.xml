@@ -51576,22 +51576,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="INVALID_RANGE"/>
 </enum>
 
-<enum name="IMEAutocorrectCompatibilitySummary">
-  <int value="0" label="WINDOW_SHOWN"/>
-  <int value="1" label="UNDERLINED"/>
-  <int value="2" label="REVERTED"/>
-  <int value="3" label="USER_ACCEPTED_AUTOCORRECT"/>
-  <int value="4" label="USER_ACTION_CLEARED_UNDERLINE"/>
-  <int value="5" label="USER_EXITED_TEXT_FIELD_WITH_UNDERLINE"/>
-  <int value="6" label="INVALID_RANGE"/>
-  <int value="7" label="VERY_FAST_ACCEPTED_AUTOCORRECT"/>
-  <int value="8" label="FAST_ACCEPTED_AUTOCORRECT"/>
-  <int value="9" label="VERY_FAST_REJECTED_AUTOCORRECT"/>
-  <int value="10" label="FAST_REJECTED_AUTOCORRECT"/>
-  <int value="11" label="VERY_FAST_EXIT_FIELD"/>
-  <int value="12" label="FAST_EXIT_FIELD"/>
-</enum>
-
 <enum name="IMEAutocorrectInternalStates">
   <int value="0" label="HANDLE_EMPTY_RANGE"/>
   <int value="1" label="HANDLE_UNCLEARED_RANGE"/>
