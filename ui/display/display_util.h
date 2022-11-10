@@ -29,6 +29,9 @@ class DISPLAY_EXPORT DisplayUtil {
   // Compute the orientation type of the display assuming it is a desktop.
   static display::mojom::ScreenOrientation GetOrientationTypeForDesktop(
       const display::Display& display);
+
+  // Report audio formats supported (based on display EDID).
+  static uint32_t GetAudioFormats();
 };
 
 }  // namespace display

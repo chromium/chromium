@@ -21,6 +21,9 @@ if (enable_library_cdms) {
 buildflag_header("media_buildflags") {
   header = "media_buildflags.h"
 
+  enable_passthrough_audio_codecs =
+      enable_platform_dts_audio && (is_win || is_linux)
+
   flags = [
     "ALTERNATE_CDM_STORAGE_ID_KEY=\"$alternate_cdm_storage_id_key\"",
     "CHROME_WIDE_ECHO_CANCELLATION=$chrome_wide_echo_cancellation_supported",
@@ -45,6 +48,8 @@ buildflag_header("media_buildflags") {
     "ENABLE_MEDIA_REMOTING=$enable_media_remoting",
     "ENABLE_MEDIA_REMOTING_RPC=$enable_media_remoting_rpc",
     "ENABLE_OPENH264=$media_use_openh264",
+    "ENABLE_PASSTHROUGH_AUDIO_CODECS=$enable_passthrough_audio_codecs",
+    "ENABLE_PLATFORM_DTS_AUDIO=$enable_platform_dts_audio",
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
     "USE_ARC_PROTECTED_MEDIA=$use_arc_protected_media",
@@ -52,7 +57,6 @@ buildflag_header("media_buildflags") {
     "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
-    "ENABLE_PLATFORM_DTS_AUDIO=$enable_platform_dts_audio",
   ]
 
   if (enable_library_cdms) {

@@ -137,4 +137,18 @@ mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForDesktop(
              : mojom::ScreenOrientation::kLandscapeSecondary;
 }
 
+// static
+uint32_t DisplayUtil::GetAudioFormats() {
+  // Audio passthrough is only supported with a single display. If multiple
+  // displays are attached, audio passthrough will not be enabled.
+  Screen* screen = Screen::GetScreen();
+  if (screen) {
+    auto display = screen->GetAllDisplays();
+    if (display.size() == 1) {
+      return display.front().audio_formats();
+    }
+  }
+  return 0;
+}
+
 }  // namespace display

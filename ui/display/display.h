@@ -254,6 +254,11 @@ class DISPLAY_EXPORT Display final {
     display_frequency_ = display_frequency;
   }
 
+  uint32_t audio_formats() const { return audio_formats_; }
+  void set_audio_formats(uint32_t audio_formats) {
+    audio_formats_ = audio_formats;
+  }
+
   // A user-friendly label, determined by the platform.
   const std::string& label() const { return label_; }
   void set_label(const std::string& label) { label_ = label; }
@@ -282,6 +287,7 @@ class DISPLAY_EXPORT Display final {
   bool is_monochrome_ = false;
   int display_frequency_ = 0;
   std::string label_;
+  uint32_t audio_formats_ = 0;
 };
 
 }  // namespace display

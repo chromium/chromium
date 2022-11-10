@@ -266,6 +266,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
           gfx::ScaleToEnclosingRect(crtc_bounds, 1.0f / scale));
     }
 
+    display.set_audio_formats(edid_parser.audio_formats());
     switch (crtc->rotation) {
       case x11::RandR::Rotation::Rotate_0:
         display.set_rotation(display::Display::ROTATE_0);

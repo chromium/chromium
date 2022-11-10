@@ -67,11 +67,6 @@ constexpr int kFallbackBufferSize = 2048;
 
 namespace {
 
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-// Passthrough flags as defined in audio_edid_scan_win.h
-uint32_t bitstream_passthrough_bitmask_;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-
 int NumberOfWaveOutBuffers() {
   // Use the user provided buffer count if provided.
   int buffers = 0;
@@ -410,14 +405,14 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
 
   AudioParameters::HardwareCapabilities hardware_capabilities(min_buffer_size,
                                                               max_buffer_size);
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   hardware_capabilities.bitstream_formats = 0;
   hardware_capabilities.require_encapsulation = false;
   if (WASAPIAudioOutputStream::GetShareMode() == AUDCLNT_SHAREMODE_EXCLUSIVE) {
-    hardware_capabilities.bitstream_formats = bitstream_passthrough_bitmask_;
+    hardware_capabilities.bitstream_formats = GetPassthroughAudioFormats();
     hardware_capabilities.require_encapsulation = true;
   }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          channel_layout_config, sample_rate, buffer_size,
                          hardware_capabilities);
@@ -433,11 +428,5 @@ std::unique_ptr<AudioManager> CreateAudioManager(
   return std::make_unique<AudioManagerWin>(std::move(audio_thread),
                                            audio_log_factory);
 }
-
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-void AudioManagerWin::SetBitstreamPassthroughBitmask(uint32_t bitmask) {
-  bitstream_passthrough_bitmask_ = bitmask;
-}
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 }  // namespace media

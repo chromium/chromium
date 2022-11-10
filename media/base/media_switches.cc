@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/system_media_controls/linux/buildflags/buildflags.h"
@@ -20,13 +21,13 @@ namespace switches {
 // Allow users to specify a custom buffer size for debugging purpose.
 const char kAudioBufferSize[] = "audio-buffer-size";
 
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 // Audio codecs supported by the HDMI sink is retrieved from the audio
 // service process. EDID contains the Short Audio Descriptors, which list
 // the audio decoders supported, and the information is presented as a
 // bitmask of supported audio codecs.
 const char kAudioCodecsFromEDID[] = "audio-codecs-from-edid";
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 
 // Set a timeout (in milliseconds) for the audio service to quit if there are no
 // client connections to it. If the value is negative the service never quits.
@@ -1266,5 +1267,25 @@ bool IsMediaFoundationD3D11VideoCaptureEnabled() {
   return base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCapture);
 }
 #endif
+
+// Return bitmask of audio formats supported by EDID.
+uint32_t GetPassthroughAudioFormats() {
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
+  // Return existing value if codec_bitmask has previously been retrieved,
+  static const uint32_t codec_bitmask = []() {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    uint32_t value = 0;
+    if (command_line->HasSwitch(switches::kAudioCodecsFromEDID)) {
+      base::StringToUint(
+          command_line->GetSwitchValueASCII(switches::kAudioCodecsFromEDID),
+          &value);
+    }
+    return value;
+  }();
+  return codec_bitmask;
+#else
+  return 0;
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
+}
 
 }  // namespace media

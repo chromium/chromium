@@ -22,6 +22,7 @@
 #include "content/public/common/content_switches.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/audio_system_to_service_adapter.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
@@ -29,11 +30,17 @@
 #include "services/audio/service_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-#include "media/audio/win/audio_manager_win.h"
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 #include "ui/display/util/edid_parser.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/display/display_util.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/audio_edid_scan.h"
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 
 namespace content {
 
@@ -100,18 +107,13 @@ void BindStreamFactoryFromAnySequence(
 }
 
 void LaunchAudioServiceInProcess(
-    mojo::PendingReceiver<audio::mojom::AudioService> receiver,
-    uint32_t codec_bitmask) {
+    mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
   // NOTE: If BrowserMainLoop is uninitialized, we have no AudioManager. In
   // this case we discard the receiver. The remote will always discard
   // messages. This is to work around unit testing environments where no
   // BrowserMainLoop is initialized.
   if (!BrowserMainLoop::GetInstance())
     return;
-
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
-  media::AudioManagerWin::SetBitstreamPassthroughBitmask(codec_bitmask);
-#endif
 
   // TODO(https://crbug.com/853254): Remove
   // BrowserMainLoop::GetAudioManager().
@@ -141,11 +143,11 @@ void LaunchAudioServiceOutOfProcess(
 #elif BUILDFLAG(IS_WIN)
   if (GetContentClient()->browser()->ShouldEnableAudioProcessHighPriority())
     switches.push_back(switches::kAudioProcessHighPriority);
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   switches.push_back(base::StrCat({switches::kAudioCodecsFromEDID, "=",
                                    base::NumberToString(codec_bitmask)}));
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   ServiceProcessHost::Launch(
       std::move(receiver),
       ServiceProcessHost::Options()
@@ -162,15 +164,14 @@ void LaunchAudioService(
   if (IsAudioServiceOutOfProcess()) {
     LaunchAudioServiceOutOfProcess(std::move(receiver), codec_bitmask);
   } else {
-    LaunchAudioServiceInProcess(std::move(receiver), codec_bitmask);
+    LaunchAudioServiceInProcess(std::move(receiver));
   }
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 // Convert the EDID supported audio bitstream formats into media codec bitmasks.
-uint32_t ScanEdidBitstreams() {
+uint32_t ConvertEdidBitstreams(uint32_t formats) {
   uint32_t codec_bitmask = 0;
-  uint32_t formats = display::win::ScanEdidBitstreams();
   if (formats & display::EdidParser::kAudioBitstreamPcmLinear)
     codec_bitmask |= media::AudioParameters::AUDIO_PCM_LINEAR;
   if (formats & display::EdidParser::kAudioBitstreamDts)
@@ -179,7 +180,14 @@ uint32_t ScanEdidBitstreams() {
     codec_bitmask |= media::AudioParameters::AUDIO_BITSTREAM_DTS_HD;
   return codec_bitmask;
 }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN)
+// Convert the EDID supported audio bitstream formats into media codec bitmasks.
+uint32_t ScanEdidBitstreams() {
+  return ConvertEdidBitstreams(display::win::ScanEdidBitstreams());
+}
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 
 }  // namespace
 
@@ -196,7 +204,7 @@ audio::mojom::AudioService& GetAudioService() {
   auto& remote = remote_slot.GetOrCreateValue();
   if (!remote) {
     auto receiver = remote.BindNewPipeAndPassReceiver();
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) && BUILDFLAG(IS_WIN)
     // The EDID scan is done in a COM STA thread and the result
     // passed to the audio service launcher.
     base::ThreadPool::CreateCOMSTATaskRunner(
@@ -205,9 +213,13 @@ audio::mojom::AudioService& GetAudioService() {
         ->PostTaskAndReplyWithResult(
             FROM_HERE, base::BindOnce(&ScanEdidBitstreams),
             base::BindOnce(&LaunchAudioService, std::move(receiver)));
+#elif BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) && BUILDFLAG(IS_LINUX)
+    LaunchAudioService(
+        std::move(receiver),
+        ConvertEdidBitstreams(display::DisplayUtil::GetAudioFormats()));
 #else
     LaunchAudioService(std::move(receiver), 0);
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) && BUILDFLAG(IS_WIN)
     if (IsAudioServiceOutOfProcess()) {
       auto idle_timeout = GetAudioServiceProcessIdleTimeout();
       if (idle_timeout)

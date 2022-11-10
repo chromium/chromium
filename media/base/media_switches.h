@@ -24,9 +24,9 @@ namespace switches {
 
 MEDIA_EXPORT extern const char kAudioBufferSize[];
 
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 MEDIA_EXPORT extern const char kAudioCodecsFromEDID[];
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 
 MEDIA_EXPORT extern const char kAudioServiceQuitTimeoutMs[];
 
@@ -362,6 +362,9 @@ enum class kCrosGlobalMediaControlsPinOptions {
 // CrOS.
 MEDIA_EXPORT extern const base::FeatureParam<kCrosGlobalMediaControlsPinOptions>
     kCrosGlobalMediaControlsPinParam;
+
+// Return bitmask of audio formats supported by EDID.
+MEDIA_EXPORT uint32_t GetPassthroughAudioFormats();
 
 }  // namespace media
 
