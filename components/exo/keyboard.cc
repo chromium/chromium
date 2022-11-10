@@ -246,8 +246,9 @@ void Keyboard::AckKeyboardKey(uint32_t serial, bool handled) {
   if (it == pending_key_acks_.end())
     return;
 
-  if (!handled && focus_)
-    ProcessAccelerator(focus_, &it->second.first);
+  auto* key_event = &it->second.first;
+  if (!handled && !key_event->handled() && focus_)
+    ProcessAccelerator(focus_, key_event);
   pending_key_acks_.erase(serial);
 }
 
@@ -362,10 +363,17 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
           uint32_t serial = delegate_->OnKeyboardKey(event->time_stamp(),
                                                      it->second.code, false);
           if (AreKeyboardKeyAcksNeeded()) {
-            pending_key_acks_.insert(
-                {serial,
-                 {*event, base::TimeTicks::Now() +
-                              expiration_delay_for_pending_key_acks_}});
+            auto ack_it =
+                pending_key_acks_
+                    .insert(
+                        {serial,
+                         {*event, base::TimeTicks::Now() +
+                                      expiration_delay_for_pending_key_acks_}})
+                    .first;
+            // Handled is not copied with Event's copy ctor, so explicitly copy
+            // here.
+            if (event->handled())
+              ack_it->second.first.SetHandled();
             event->SetHandled();
           }
         }
