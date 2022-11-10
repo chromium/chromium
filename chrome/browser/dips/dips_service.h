@@ -12,12 +12,18 @@
 #include "chrome/browser/dips/dips_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class Profile;
+
 namespace content {
 class BrowserContext;
 }
 
 namespace content_settings {
 class CookieSettings;
+}
+
+namespace signin {
+class PersistentRepeatingTimer;
 }
 
 class DIPSService : public KeyedService {
@@ -39,6 +45,8 @@ class DIPSService : public KeyedService {
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;
   explicit DIPSService(content::BrowserContext* context);
+  std::unique_ptr<signin::PersistentRepeatingTimer> CreateTimer(
+      Profile* profile);
   void Shutdown() override;
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
@@ -47,6 +55,7 @@ class DIPSService : public KeyedService {
 
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
 
   base::WeakPtrFactory<DIPSService> weak_factory_{this};

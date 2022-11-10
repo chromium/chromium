@@ -6,13 +6,18 @@
 
 #include <set>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 
@@ -45,11 +50,26 @@ DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
+      repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))),
       storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner())) {
   // TODO(crbug.com/1342228): Persist DB to disk for non-OTR profiles.
   storage_.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
-  // TODO: Prevent use of the DB until prepopulation starts.
+  // TODO(rtarpine): Prevent use of the DB until prepopulation starts.
   InitializeStorageWithEngagedSites();
+  repeating_timer_->Start();
+}
+
+std::unique_ptr<signin::PersistentRepeatingTimer> DIPSService::CreateTimer(
+    Profile* profile) {
+  DCHECK(profile);
+  // TODO(crbug.com/1375302):
+  // - Make this periodic delay configurable via a Finch parameter.
+  // - Add RepeatingCallback to trigger logging of UKM when this timer fires.
+  // --- Add grace period for this, making it also  configurable via a Finch
+  // --- parameter.
+  return std::make_unique<signin::PersistentRepeatingTimer>(
+      profile->GetPrefs(), prefs::kDIPSTimerLastUpdate, base::Hours(24),
+      base::DoNothing());
 }
 
 DIPSService::~DIPSService() = default;

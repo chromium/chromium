@@ -3635,4 +3635,8 @@ const char kVirtualKeyboardResizesLayoutByDefault[] =
 const char kAccessControlAllowMethodsInCORSPreflightSpecConformant[] =
     "access_control_allow_methods_in_cors_preflight_spec_conformant";
 
+// A time preference keeping track of the last time the DIPS service performed
+// DIPS-related repeated actions (logging metrics, clearing state, etc).
+const char kDIPSTimerLastUpdate[] = "dips_timer_last_update";
+
 }  // namespace prefs
