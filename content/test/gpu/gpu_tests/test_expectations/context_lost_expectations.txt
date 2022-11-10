@@ -154,12 +154,10 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 crbug.com/1284424 [ mac ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 
 # Flakily not getting WebGL blocked on context loss
-crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 
 # Failing on android N5
 
 # Flaking on Linux FYI Release
-crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ RetryOnFailure ]
 
 #######################################################################
