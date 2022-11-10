@@ -173,10 +173,11 @@ class TestSignChrome(unittest.TestCase):
             set([p.path for p in parts.get_parts(config).values()]),
             set(signed_paths))
 
-        # Make sure that the framework and the app are the last two parts that
-        # are signed.
-        self.assertEqual(signed_paths[-2:], [
+        # Make sure that the framework, helper, and the app are the last three
+        # parts that are signed.
+        self.assertEqual(signed_paths[-3:], [
             'App Product.app/Contents/Frameworks/Product Framework.framework',
+            'App Product.app/Contents/Library/LaunchServices/test.signing.bundle_id.UpdaterPrivilegedHelper',
             'App Product.app'
         ])
 
@@ -250,7 +251,10 @@ class TestSignChrome(unittest.TestCase):
         signed_paths = [
             call[1][2].path for call in kwargs['sign_part'].mock_calls
         ]
-        self.assertEqual(signed_paths, ['App Product.app'])
+        self.assertEqual(signed_paths, [
+            'App Product.app/Contents/Library/LaunchServices/test.signing.bundle_id.UpdaterPrivilegedHelper',
+            'App Product.app'
+        ])
 
         self.assertEqual(kwargs['run_command'].mock_calls, [
             mock.call.run_command([
