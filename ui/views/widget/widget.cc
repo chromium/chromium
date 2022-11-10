@@ -1830,7 +1830,7 @@ const Widget* Widget::AsWidget() const {
 
 bool Widget::SetInitialFocus(ui::WindowShowState show_state) {
   FocusManager* focus_manager = GetFocusManager();
-  if (!focus_manager)
+  if (!focus_manager || !widget_delegate_)
     return false;
   View* v = widget_delegate_->GetInitiallyFocusedView();
   if (!focus_on_creation_ || show_state == ui::SHOW_STATE_INACTIVE ||

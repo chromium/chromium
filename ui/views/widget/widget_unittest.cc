@@ -1200,6 +1200,11 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, GetAllOwnedWidgets) {
   Widget::GetAllOwnedWidgets(widget()->GetNativeView(), &widgets);
 }
 
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, GetAndSetZOrderLevel) {
+  widget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+  widget()->GetZOrderLevel();
+}
+
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
        GetClientAreaBoundsInScreen) {
   widget()->GetClientAreaBoundsInScreen();
@@ -1671,8 +1676,16 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, RunShellDrag) {
                          ui::mojom::DragEventSource::kMouse);
 }
 
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ScheduleLayout) {
+  widget()->ScheduleLayout();
+}
+
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SchedulePaintInRect) {
   widget()->SchedulePaintInRect(gfx::Rect(0, 0, 1, 2));
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetAspectRatio) {
+  widget()->SetAspectRatio(gfx::SizeF(1.0, 1.0));
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetBounds) {
@@ -1683,8 +1696,43 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetBoundsConstrained) {
   widget()->SetBoundsConstrained(gfx::Rect(0, 0, 120, 140));
 }
 
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       SetCanAppearInExistingFullscreenSpaces) {
+  widget()->SetCanAppearInExistingFullscreenSpaces(false);
+}
+
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetCapture) {
   widget()->SetCapture(widget()->GetRootView());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetContentsView) {
+  View view;
+  EXPECT_DCHECK_DEATH(widget()->SetContentsView(std::make_unique<View>()));
+  EXPECT_DCHECK_DEATH(widget()->SetContentsView(&view));
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetCursor) {
+  widget()->SetCursor(ui::Cursor());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       SetFocusTraversableParent) {
+  std::unique_ptr<Widget> another_widget = CreateTestWidget();
+  widget()->SetFocusTraversableParent(another_widget->GetFocusTraversable());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       SetFocusTraversableParentView) {
+  std::unique_ptr<Widget> another_widget = CreateTestWidget();
+  widget()->SetFocusTraversableParentView(another_widget->GetContentsView());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetFullscreen) {
+  widget()->SetFullscreen(true);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetInitialFocus) {
+  widget()->SetInitialFocus(ui::SHOW_STATE_INACTIVE);
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
@@ -1696,6 +1744,13 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetOpacity) {
   widget()->SetOpacity(0.f);
 }
 
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetShape) {
+  auto rects = std::make_unique<Widget::ShapeRects>();
+  rects->emplace_back(40, 0, 20, 100);
+  rects->emplace_back(0, 40, 100, 20);
+  widget()->SetShape(std::move(rects));
+}
+
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetSize) {
   widget()->SetSize(gfx::Size(10, 11));
 }
@@ -1705,13 +1760,101 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
   widget()->SetVisibilityChangedAnimationsEnabled(false);
 }
 
-TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, GetAndSetZOrderLevel) {
-  widget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);
-  widget()->GetZOrderLevel();
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       SetVisibilityAnimationDuration) {
+  widget()->SetVisibilityAnimationDuration(base::Seconds(1));
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       SetVisibilityAnimationTransition) {
+  widget()->SetVisibilityAnimationTransition(Widget::ANIMATE_BOTH);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetVisible) {
+  widget()->SetVisibilityAnimationTransition(Widget::ANIMATE_BOTH);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       SetVisibleOnAllWorkspaces) {
+  widget()->SetVisibleOnAllWorkspaces(true);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       ShouldDescendIntoChildForEventHandling) {
+  widget()->ShouldDescendIntoChildForEventHandling(nullptr, gfx::NativeView(),
+                                                   nullptr, gfx::Point(0, 0));
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       ShouldHandleNativeWidgetActivationChanged) {
+  widget()->ShouldHandleNativeWidgetActivationChanged(true);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ShouldPaintAsActive) {
+  widget()->ShouldPaintAsActive();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ShouldUseNativeFrame) {
+  widget()->ShouldUseNativeFrame();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       ShouldWindowContentsBeTransparent) {
+  widget()->ShouldWindowContentsBeTransparent();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Show) {
+  widget()->Show();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ShowEmojiPanel) {
+  widget()->ShowEmojiPanel();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ShowInactive) {
+  widget()->ShowInactive();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, StackAbove) {
+  std::unique_ptr<Widget> another_widget = CreateTestWidget();
+  widget()->StackAbove(another_widget->GetNativeView());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, StackAboveWidget) {
+  std::unique_ptr<Widget> another_widget = CreateTestWidget();
+  widget()->StackAboveWidget(another_widget.get());
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, StackAtTop) {
   widget()->StackAtTop();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
+       SynthesizeMouseMoveEvent) {
+  widget()->SynthesizeMouseMoveEvent();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ThemeChanged) {
+  widget()->ThemeChanged();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, UnlockPaintAsActive) {
+  // UnlockPaintAsActive() is called in the destructor of PaintAsActiveLock.
+  // External invocation is not allowed.
+  EXPECT_DCHECK_DEATH(widget()->UnlockPaintAsActive());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, UpdateWindowIcon) {
+  widget()->UpdateWindowIcon();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, UpdateWindowTitle) {
+  widget()->UpdateWindowTitle();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ViewHierarchyChanged) {
+  widget()->ViewHierarchyChanged(
+      ViewHierarchyChangedDetails(true, nullptr, nullptr, nullptr));
 }
 
 INSTANTIATE_TEST_SUITE_P(

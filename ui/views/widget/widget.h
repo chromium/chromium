@@ -1060,7 +1060,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // returned lock can safely outlive the associated widget.
   std::unique_ptr<PaintAsActiveLock> LockPaintAsActive();
 
-  // Undoes LockPaintAsActive(). Called by PaintAsActiveLock destructor.
+  // Undoes LockPaintAsActive(). This should never be called outside of
+  // PaintAsActiveLock destructor.
   void UnlockPaintAsActive();
 
   // Returns true if the window should paint as active.

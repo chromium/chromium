@@ -225,7 +225,8 @@ RootView::~RootView() {
 
 void RootView::SetContentsView(View* contents_view) {
   DCHECK(contents_view && GetWidget()->native_widget())
-      << "Can't be called until after the native widget is created!";
+      << "Can't be called because the widget is not initialized or is "
+         "destroyed";
   // The ContentsView must be set up _after_ the window is created so that its
   // Widget pointer is valid.
   SetUseDefaultFillLayout(true);
