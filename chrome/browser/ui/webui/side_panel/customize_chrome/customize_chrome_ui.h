@@ -14,8 +14,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
-class Profile;
 class CustomizeChromePageHandler;
+class Profile;
 
 // WebUI controller for chrome://customize-chrome-side-panel.top-chrome
 class CustomizeChromeUI : public ui::MojoBubbleWebUIController {
@@ -23,10 +23,11 @@ class CustomizeChromeUI : public ui::MojoBubbleWebUIController {
   explicit CustomizeChromeUI(content::WebUI* web_ui);
   CustomizeChromeUI(const CustomizeChromeUI&) = delete;
   CustomizeChromeUI& operator=(const CustomizeChromeUI&) = delete;
+
   ~CustomizeChromeUI() override;
 
   // Instantiates the implementor of the
-  // mojom::CustomizeChromePageHandlerFactory mojo interface passing the pending
+  // mojom::CustomizeChromePageHandler mojo interface passing the pending
   // receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>

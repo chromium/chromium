@@ -12,7 +12,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
         receiver,
     Profile* profile)
-    : receiver_(this, std::move(receiver)), profile_(profile) {}
+    : profile_(profile), receiver_(this, std::move(receiver)) {}
 
 CustomizeChromePageHandler::~CustomizeChromePageHandler() = default;
 

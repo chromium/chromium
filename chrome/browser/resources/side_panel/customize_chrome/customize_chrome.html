@@ -1,10 +1,12 @@
 <!doctype html>
+<!-- TODO(crbug.com/1381220): Use colors from color pipeline/mixer. -->
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   </head>
   <body>
-    <p>Testing, empty page for Customize Chrome Side Panel WebUI!</p>
+    <customize-chrome-app></customize-chrome-app>
+    <script type="module" src="app.js"></script>
   </body>
 </html>
