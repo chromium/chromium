@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
@@ -51,7 +52,9 @@ class FakeDetailedViewDelegate : public DetailedViewDelegate {
   ~FakeDetailedViewDelegate() override = default;
 
   // DetailedViewDelegate:
-  void CloseBubble() override {}
+  void CloseBubble() override { ++close_bubble_count_; }
+
+  int close_bubble_count_ = 0;
 };
 
 }  // namespace
@@ -76,11 +79,33 @@ class BluetoothDetailedViewImplTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  views::Button* GetSettingsButton() {
+    return bluetooth_detailed_view_->settings_button_;
+  }
+
   std::unique_ptr<views::Widget> widget_;
   FakeBluetoothDetailedViewDelegate bluetooth_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  BluetoothDetailedView* bluetooth_detailed_view_ = nullptr;
+  BluetoothDetailedViewImpl* bluetooth_detailed_view_ = nullptr;
 };
+
+TEST_F(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {
+  views::Button* settings_button = GetSettingsButton();
+
+  // Clicking the button at the lock screen does nothing.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  LeftClickOn(settings_button);
+  EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_EQ(0, detailed_view_delegate_.close_bubble_count_);
+
+  // Clicking the button in an active user session opens OS settings.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  LeftClickOn(settings_button);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_EQ(1, detailed_view_delegate_.close_bubble_count_);
+}
 
 TEST_F(BluetoothDetailedViewImplTest, SelectingDeviceListItemNotifiesDelegate) {
   bluetooth_detailed_view_->UpdateBluetoothEnabledState(true);

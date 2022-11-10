@@ -8,7 +8,12 @@
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+
+namespace views {
+class Button;
+}  // namespace views
 
 namespace ash {
 
@@ -28,9 +33,6 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
       delete;
   ~BluetoothDetailedViewImpl() override;
 
- private:
-  friend class BluetoothDetailedViewImplTest;
-
   // BluetoothDetailedView:
   views::View* GetAsView() override;
   void UpdateBluetoothEnabledState(bool enabled) override;
@@ -43,6 +45,9 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
 
+ private:
+  friend class BluetoothDetailedViewImplTest;
+
   // Creates and configures the title section settings button.
   void CreateTitleSettingsButton();
 
@@ -53,9 +58,15 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   // and the device list.
   void CreateMainContainer();
 
+  // Attempts to close the quick settings and open the Bluetooth settings.
+  void OnSettingsClicked();
+
   // Owned by views hierarchy.
+  views::Button* settings_button_ = nullptr;
   RoundedContainer* main_container_ = nullptr;
   views::View* device_list_ = nullptr;
+
+  base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};
 };
 
 }  // namespace ash

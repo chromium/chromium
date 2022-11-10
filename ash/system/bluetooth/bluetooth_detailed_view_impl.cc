@@ -7,14 +7,20 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/system_tray_client.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_container.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -78,7 +84,18 @@ void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
 }
 
 void BluetoothDetailedViewImpl::CreateTitleSettingsButton() {
-  // TODO(b/252872600): Implement.
+  DCHECK(!settings_button_);
+
+  tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
+
+  settings_button_ = CreateSettingsButton(
+      base::BindRepeating(&BluetoothDetailedViewImpl::OnSettingsClicked,
+                          weak_factory_.GetWeakPtr()),
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS);
+  settings_button_->SetState(TrayPopupUtils::CanOpenWebUISettings()
+                                 ? views::Button::STATE_NORMAL
+                                 : views::Button::STATE_DISABLED);
+  tri_view()->AddView(TriView::Container::END, settings_button_);
 }
 
 void BluetoothDetailedViewImpl::CreateTopContainer() {
@@ -98,6 +115,11 @@ void BluetoothDetailedViewImpl::CreateMainContainer() {
   device_list_ = main_container_->AddChildView(std::make_unique<views::View>());
   device_list_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+}
+
+void BluetoothDetailedViewImpl::OnSettingsClicked() {
+  CloseBubble();  // Deletes |this|.
+  Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
 }
 
 BEGIN_METADATA(BluetoothDetailedViewImpl, TrayDetailedView)
