@@ -202,10 +202,14 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
         return;
       }
 
-      // Otherwise add install source before returning the result.
-      // TODO: Investigate re-install of the app instead at all times.
-      // https://crbug.com/1300321
-      {
+      // TODO(crbug.com/1300321): Investigate re-install of the app for all
+      // WebAppManagement sources.
+      if (ConvertExternalInstallSourceToSource(
+              install_options.install_source) == WebAppManagement::kPolicy) {
+        StartInstallationTask(std::move(front));
+        return;
+      } else {
+        // Add install source before returning the result.
         ScopedRegistryUpdate update(sync_bridge());
         WebApp* app_to_update = update->UpdateApp(app_id.value());
         app_to_update->AddSource(ConvertExternalInstallSourceToSource(

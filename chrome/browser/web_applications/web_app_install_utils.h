@@ -126,7 +126,8 @@ void MaybeUnregisterOsUninstall(const WebApp* web_app,
 
 // Updates |web_app| using |web_app_info|
 void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
-                             WebApp& web_app);
+                             WebApp& web_app,
+                             bool skip_icons_on_download_failure = false);
 
 // Possibly updates |options| to disable OS-integrations based on the
 // configuration of the given app.

@@ -215,8 +215,9 @@ void WebAppInstallFinalizer::FinalizeInstall(
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id, options);
 
   if (options.overwrite_existing_manifest_fields || !existing_web_app) {
-    SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
-                                        std::move(commit_callback));
+    SetWebAppManifestFieldsAndWriteData(
+        web_app_info, std::move(web_app), std::move(commit_callback),
+        options.skip_icon_writes_on_download_failure);
   } else {
     // Updates the web app with an additional source.
     CommitToSyncBridge(std::move(web_app), std::move(commit_callback),
@@ -337,9 +338,13 @@ void WebAppInstallFinalizer::FinalizeUpdate(
       GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info.Clone());
 
   // Prepare copy-on-write to update existing app.
+  // This is not reached unless the data obtained from the manifest
+  // update process is valid, so an invariant of the system is that
+  // icons are valid here.
   SetWebAppManifestFieldsAndWriteData(
       web_app_info, std::make_unique<WebApp>(*existing_web_app),
-      std::move(commit_callback));
+      std::move(commit_callback),
+      /*skip_icon_writes_on_download_failure=*/false);
 }
 
 void WebAppInstallFinalizer::Start() {
@@ -380,28 +385,39 @@ void WebAppInstallFinalizer::SetSubsystems(
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
     const WebAppInstallInfo& web_app_info,
     std::unique_ptr<WebApp> web_app,
-    CommitCallback commit_callback) {
-  SetWebAppManifestFields(web_app_info, *web_app);
+    CommitCallback commit_callback,
+    bool skip_icon_writes_on_download_failure) {
+  SetWebAppManifestFields(web_app_info, *web_app,
+                          skip_icon_writes_on_download_failure);
 
   AppId app_id = web_app->app_id();
-  IconBitmaps icon_bitmaps = web_app_info.icon_bitmaps;
-  ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps =
-      web_app_info.shortcuts_menu_icon_bitmaps;
-  IconsMap other_icon_bitmaps = web_app_info.other_icon_bitmaps;
-
   auto write_translations_callback = base::BindOnce(
       &WebAppInstallFinalizer::WriteTranslations,
       weak_ptr_factory_.GetWeakPtr(), app_id, web_app_info.translations);
   auto commit_to_sync_bridge_callback =
       base::BindOnce(&WebAppInstallFinalizer::CommitToSyncBridge,
                      weak_ptr_factory_.GetWeakPtr(), std::move(web_app));
-
-  icon_manager_->WriteData(
-      app_id, std::move(icon_bitmaps), std::move(shortcuts_menu_icon_bitmaps),
-      std::move(other_icon_bitmaps),
+  auto on_icon_write_complete_callback =
       base::BindOnce(std::move(write_translations_callback),
                      base::BindOnce(std::move(commit_to_sync_bridge_callback),
-                                    std::move(commit_callback))));
+                                    std::move(commit_callback)));
+
+  // Do not overwrite the icon data in the DB if icon downloading has failed. We
+  // skip directly to writing translations and then writing the app via the
+  // WebAppSyncBridge.
+  if (skip_icon_writes_on_download_failure) {
+    std::move(on_icon_write_complete_callback).Run(/*success=*/true);
+  } else {
+    IconBitmaps icon_bitmaps = web_app_info.icon_bitmaps;
+    ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps =
+        web_app_info.shortcuts_menu_icon_bitmaps;
+    IconsMap other_icon_bitmaps = web_app_info.other_icon_bitmaps;
+
+    icon_manager_->WriteData(app_id, std::move(icon_bitmaps),
+                             std::move(shortcuts_menu_icon_bitmaps),
+                             std::move(other_icon_bitmaps),
+                             std::move(on_icon_write_complete_callback));
+  }
 }
 
 void WebAppInstallFinalizer::WriteTranslations(
@@ -415,7 +431,6 @@ void WebAppInstallFinalizer::WriteTranslations(
     std::move(commit_callback).Run(success);
     return;
   }
-
   translation_manager_->WriteTranslations(app_id, translations,
                                           std::move(commit_callback));
 }

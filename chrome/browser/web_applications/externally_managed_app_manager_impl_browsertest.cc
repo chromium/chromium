@@ -662,16 +662,8 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
 
   // Reinstall policy app
   InstallApp(install_options);
-  // The success codes will vary as per the storage, as prefs will stay
-  // after deletion, but the web_app values are wiped on every uninstall.
-  if (base::FeatureList::IsEnabled(
-          features::kUseWebAppDBInsteadOfExternalPrefs)) {
-    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
-              result_code_.value());
-  } else {
-    ASSERT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
-              result_code_.value());
-  }
+  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
   ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
 }
 

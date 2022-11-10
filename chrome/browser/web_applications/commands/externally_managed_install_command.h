@@ -84,6 +84,7 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
   base::WeakPtr<content::WebContents> web_contents_;
 
   bool bypass_service_worker_check_ = false;
+  bool icon_download_failed_ = false;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;

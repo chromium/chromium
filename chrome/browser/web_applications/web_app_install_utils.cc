@@ -963,7 +963,8 @@ void MaybeUnregisterOsUninstall(const WebApp* web_app,
 }
 
 void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
-                             WebApp& web_app) {
+                             WebApp& web_app,
+                             bool skip_icons_on_download_failure) {
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title));
 
@@ -1000,24 +1001,25 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   sync_fallback_data.icon_infos = web_app_info.manifest_icons;
   web_app.SetSyncFallbackData(std::move(sync_fallback_data));
 
-  web_app.SetManifestIcons(web_app_info.manifest_icons);
-  web_app.SetDownloadedIconSizes(
-      IconPurpose::ANY, GetSquareSizePxs(web_app_info.icon_bitmaps.any));
-  web_app.SetDownloadedIconSizes(
-      IconPurpose::MASKABLE,
-      GetSquareSizePxs(web_app_info.icon_bitmaps.maskable));
-  web_app.SetDownloadedIconSizes(
-      IconPurpose::MONOCHROME,
-      GetSquareSizePxs(web_app_info.icon_bitmaps.monochrome));
-  web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
+  if (!skip_icons_on_download_failure) {
+    web_app.SetManifestIcons(web_app_info.manifest_icons);
+    web_app.SetDownloadedIconSizes(
+        IconPurpose::ANY, GetSquareSizePxs(web_app_info.icon_bitmaps.any));
+    web_app.SetDownloadedIconSizes(
+        IconPurpose::MASKABLE,
+        GetSquareSizePxs(web_app_info.icon_bitmaps.maskable));
+    web_app.SetDownloadedIconSizes(
+        IconPurpose::MONOCHROME,
+        GetSquareSizePxs(web_app_info.icon_bitmaps.monochrome));
+    web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
+    web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
+    web_app.SetDownloadedShortcutsMenuIconsSizes(
+        GetDownloadedShortcutsMenuIconsSizes(
+            web_app_info.shortcuts_menu_icon_bitmaps));
+  }
 
   web_app.SetStorageIsolated(web_app_info.is_storage_isolated);
   web_app.SetPermissionsPolicy(web_app_info.permissions_policy);
-
-  web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
-  web_app.SetDownloadedShortcutsMenuIconsSizes(
-      GetDownloadedShortcutsMenuIconsSizes(
-          web_app_info.shortcuts_menu_icon_bitmaps));
 
   if (web_app.file_handler_approval_state() == ApiApprovalState::kAllowed &&
       !AreNewFileHandlersASubsetOfOld(web_app.file_handlers(),

@@ -67,6 +67,7 @@ class WebAppInstallFinalizer {
     const webapps::WebappInstallSource install_surface;
     bool locally_installed = true;
     bool overwrite_existing_manifest_fields = true;
+    bool skip_icon_writes_on_download_failure = false;
 
     absl::optional<WebAppChromeOsData> chromeos_data;
     absl::optional<ash::SystemWebAppData> system_web_app_data;
@@ -181,7 +182,8 @@ class WebAppInstallFinalizer {
   void SetWebAppManifestFieldsAndWriteData(
       const WebAppInstallInfo& web_app_info,
       std::unique_ptr<WebApp> web_app,
-      CommitCallback commit_callback);
+      CommitCallback commit_callback,
+      bool skip_icon_writes_on_download_failure);
 
   void WriteTranslations(
       const AppId& app_id,
