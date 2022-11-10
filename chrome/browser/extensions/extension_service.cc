@@ -821,8 +821,9 @@ bool ExtensionService::UninstallExtension(
     if (!GetExtensionFileTaskRunner()->PostTaskAndReply(
             FROM_HERE,
             base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
-                           extension->id(), profile_, install_directory_,
-                           extension->path()),
+                           extension->id(),
+                           base::UnsafeDanglingUntriaged(profile_),
+                           install_directory_, extension->path()),
             subtask_done_callback))
       NOTREACHED();
   }
