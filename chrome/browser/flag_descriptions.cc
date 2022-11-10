@@ -6497,7 +6497,8 @@ const char kDcheckIsFatalDescription[] =
 #if BUILDFLAG(ENABLE_JXL_DECODER)
 const char kEnableJXLName[] = "Enable JXL image format";
 const char kEnableJXLDescription[] =
-    "Adds image decoding support for the JPEG XL image format.";
+    "Adds image decoding support for the JPEG XL image format. NOTE: JPEG XL "
+    "format will be removed in Chrome 110 release.";
 #endif  // BUILDFLAG(ENABLE_JXL_DECODER)
 
 #if BUILDFLAG(ENABLE_NACL)
