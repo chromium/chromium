@@ -6500,7 +6500,6 @@ test("unit_tests") {
       "../browser/touch_to_fill/touch_to_fill_controller_unittest.cc",
       "../browser/translate/android/translate_bridge_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_android_unittest.cc",
-      "../browser/ui/android/autofill/save_card_message_controller_android_unittest.cc",
       "../browser/ui/android/device_dialog/usb_chooser_dialog_android_unittest.cc",
       "../browser/ui/android/fast_checkout/ui_view_android_utils_unittest.cc",
       "../browser/ui/android/tab_model/tab_model_list_unittest.cc",

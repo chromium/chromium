@@ -51,10 +51,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/messages/android/messages_feature.h"
-#endif
-
 namespace autofill {
 
 namespace {
@@ -847,13 +843,6 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
   switch (user_decision) {
     case AutofillClient::SaveCardOfferUserDecision::kAccepted:
-
-#if BUILDFLAG(IS_ANDROID)
-      if (messages::IsSaveCardMessagesUiEnabled()) {
-        OnUserDidAcceptUploadHelper(user_provided_card_details);
-        break;
-      }
-#endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       // On mobile, requesting cardholder name is a two step flow.

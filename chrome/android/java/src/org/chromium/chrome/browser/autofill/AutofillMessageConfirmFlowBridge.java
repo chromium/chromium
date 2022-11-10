@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.autofill.AutofillExpirationDateFixFlowPrompt.AutofillExpirationDateFixFlowPromptDelegate;
 import org.chromium.chrome.browser.autofill.AutofillNameFixFlowPrompt.AutofillNameFixFlowPromptDelegate;
@@ -48,39 +47,23 @@ public class AutofillMessageConfirmFlowBridge
         if (mNativeSaveCardMessageConfirmDelegate == 0) {
             return;
         }
-        AutofillMessageConfirmFlowBridgeJni.get().dialogDismissed(
-                mNativeSaveCardMessageConfirmDelegate);
     }
 
+    // TODO(crbug.com/1379485): remove following empty methods.
     @Override
-    public void onUserConfirmedCard() {
-        AutofillMessageConfirmFlowBridgeJni.get().onSaveCardConfirmed(
-                mNativeSaveCardMessageConfirmDelegate);
-    }
+    public void onUserConfirmedCard() {}
 
     @Override
-    public void onUserAcceptCardholderName(String name) {
-        AutofillMessageConfirmFlowBridgeJni.get().onNameConfirmed(
-                mNativeSaveCardMessageConfirmDelegate, name);
-    }
+    public void onUserAcceptCardholderName(String name) {}
 
     @Override
-    public void onUserAcceptExpirationDate(String month, String year) {
-        AutofillMessageConfirmFlowBridgeJni.get().onDateConfirmed(
-                mNativeSaveCardMessageConfirmDelegate, month, year);
-    }
+    public void onUserAcceptExpirationDate(String month, String year) {}
 
     @Override
-    public void onUserDismiss() {
-        AutofillMessageConfirmFlowBridgeJni.get().onUserDismiss(
-                mNativeSaveCardMessageConfirmDelegate);
-    }
+    public void onUserDismiss() {}
 
     @Override
-    public void onLinkClicked(String url) {
-        AutofillMessageConfirmFlowBridgeJni.get().onLinkClicked(
-                mNativeSaveCardMessageConfirmDelegate, url);
-    }
+    public void onLinkClicked(String url) {}
 
     @CalledByNative
     private static AutofillMessageConfirmFlowBridge create(
@@ -180,15 +163,5 @@ public class AutofillMessageConfirmFlowBridge
     @CalledByNative
     private void addLinkToLastLegalMessageLine(int start, int end, String url) {
         mLegalMessageLines.getLast().links.add(new LegalMessageLine.Link(start, end, url));
-    }
-
-    @NativeMethods
-    interface Natives {
-        void onDateConfirmed(long nativeSaveCardMessageConfirmDelegate, String month, String year);
-        void onNameConfirmed(long nativeSaveCardMessageConfirmDelegate, String name);
-        void onSaveCardConfirmed(long nativeSaveCardMessageConfirmDelegate);
-        void onUserDismiss(long nativeSaveCardMessageConfirmDelegate);
-        void onLinkClicked(long nativeSaveCardMessageConfirmDelegate, String url);
-        void dialogDismissed(long nativeSaveCardMessageConfirmDelegate);
     }
 }

@@ -20,7 +20,6 @@ include_rules = [
   "+components/version_info",
   "+components/webdata/common",
   "+components/webdata_services",
-  "+components/messages/android/messages_feature.h",
   "+crypto/hkdf.h",
   "+crypto/random.h",
   "+google_apis/gaia",

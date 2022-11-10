@@ -81,17 +81,6 @@ BASE_FEATURE(kMessagesForAndroidSaveCard,
              "MessagesForAndroidSaveCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<bool>
-    kMessagesForAndroidSaveCard_UseFollowupButtonText{
-        &kMessagesForAndroidSaveCard,
-        "save_card_message_use_followup_button_text", false};
-
-constexpr base::FeatureParam<bool> kMessagesForAndroidSaveCard_UseGPayIcon{
-    &kMessagesForAndroidSaveCard, "save_card_message_use_gpay_icon", true};
-
-constexpr base::FeatureParam<bool> kMessagesForAndroidSaveCard_UseDialogV2{
-    &kMessagesForAndroidSaveCard, "save_card_dialog_v2_enabled", false};
-
 BASE_FEATURE(kMessagesForAndroidStackingAnimation,
              "MessagesForAndroidStackingAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -155,18 +144,6 @@ bool IsPermissionUpdateMessagesUiEnabled() {
 
 int GetSavePasswordMessageDismissDurationMs() {
   return kMessagesForAndroidPasswords_MessageDismissDurationMs.Get();
-}
-
-bool UseFollowupButtonTextForSaveCardMessage() {
-  return kMessagesForAndroidSaveCard_UseFollowupButtonText.Get();
-}
-
-bool UseGPayIconForSaveCardMessage() {
-  return kMessagesForAndroidSaveCard_UseGPayIcon.Get();
-}
-
-bool UseDialogV2ForSaveCardMessage() {
-  return kMessagesForAndroidSaveCard_UseDialogV2.Get();
 }
 
 static jboolean JNI_MessageFeatureList_IsEnabled(
