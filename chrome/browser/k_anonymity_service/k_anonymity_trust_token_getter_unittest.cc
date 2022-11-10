@@ -845,3 +845,12 @@ TEST_F(KAnonymityTrustTokenGetterTest, RecordTokenLatency) {
       "Chrome.KAnonymityService.TrustTokenGetter.Latency", base::Seconds(3), 1);
   hist.ExpectTotalCount("Chrome.KAnonymityService.TrustTokenGetter.Latency", 2);
 }
+
+// Apparently the IdentityManager is sometimes NULL, so we should handle this.
+TEST_F(KAnonymityTrustTokenGetterTest, HandlesMissingServices) {
+  KAnonymityTrustTokenGetter getter(nullptr, nullptr, nullptr);
+  getter.TryGetTrustTokenAndKey(base::BindLambdaForTesting(
+      [](absl::optional<KeyAndNonUniqueUserId> result) {
+        EXPECT_FALSE(result);
+      }));
+}
