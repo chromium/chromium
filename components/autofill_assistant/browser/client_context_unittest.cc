@@ -250,5 +250,17 @@ TEST_F(ClientContextTest, AnnotateDomSwitchForcesSemanticSelection) {
   EXPECT_TRUE(model_context.force_semantic_selection());
 }
 
+TEST(GetPlatformType, ReturnsCorrectPlatform) {
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(ClientContext::GetPlatformType(),
+              ClientContextProto::PLATFORM_TYPE_ANDROID);
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_THAT(ClientContext::GetPlatformType(),
+              ClientContextProto::PLATFORM_TYPE_DESKTOP);
+#endif
+}
+
 }  // namespace
 }  // namespace autofill_assistant

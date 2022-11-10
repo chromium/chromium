@@ -22,6 +22,7 @@
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/autofill_assistant/browser/base_browsertest.h"
+#include "components/autofill_assistant/browser/client_context.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
@@ -448,6 +449,26 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest, NonDebugModeIsDefault) {
 
   ASSERT_THAT(js_return_value, NotNull());
   EXPECT_EQ(js_return_value->GetIfBool(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest,
+                       PlatformTypeIsPassedCorrectly) {
+  const std::string js_flow = "return PLATFORM_TYPE;";
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(switches::kAutofillAssistantDebugMode);
+  command_line->AppendSwitchASCII(switches::kAutofillAssistantDebugMode,
+                                  "false");
+
+  std::unique_ptr<base::Value> js_return_value;
+  ASSERT_THAT(RunTest(js_flow, js_return_value),
+              Property(&ClientStatus::proto_status, ACTION_APPLIED));
+
+  ASSERT_THAT(js_return_value, NotNull());
+  const absl::optional<int> platform_type_int = js_return_value->GetIfInt();
+  ASSERT_TRUE(platform_type_int.has_value());
+  EXPECT_EQ(static_cast<ClientContextProto::PlatformType>(*platform_type_int),
+            ClientContext::GetPlatformType());
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest,

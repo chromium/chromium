@@ -24,6 +24,8 @@ class ClientContext {
   virtual void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded) {}
   // Returns the proto representation of this client context.
   virtual ClientContextProto AsProto() const = 0;
+
+  static ClientContextProto::PlatformType GetPlatformType();
 };
 
 // Represents the client context for a given |client| instance.

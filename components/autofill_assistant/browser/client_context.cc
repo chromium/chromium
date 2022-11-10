@@ -17,15 +17,7 @@ ClientContextImpl::ClientContextImpl(const Client* client) : client_(client) {
       version_info::GetProductNameAndVersionForUserAgent());
   proto_.set_locale(client->GetLocale());
   proto_.set_country(client->GetLatestCountryCode());
-// TODO(crbug.com/1321034): Once PlatformDependencies exist and are exposed to
-// |Client|, move this check to calls of type |client->IsDesktop()|.
-#if BUILDFLAG(IS_ANDROID)
-  proto_.set_platform_type(ClientContextProto::PLATFORM_TYPE_ANDROID);
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
-  proto_.set_platform_type(ClientContextProto::PLATFORM_TYPE_DESKTOP);
-#endif
+  proto_.set_platform_type(GetPlatformType());
 
   base::FieldTrial::ActiveGroups active_groups;
   base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
@@ -109,6 +101,19 @@ ClientContextProto ClientContextImpl::AsProto() const {
 
 ClientContextProto EmptyClientContext::AsProto() const {
   return ClientContextProto();
+}
+
+ClientContextProto::PlatformType ClientContext::GetPlatformType() {
+// TODO(crbug.com/1321034): Once PlatformDependencies exist and are exposed to
+// |Client|, move this check to calls of type |client->IsDesktop()|.
+#if BUILDFLAG(IS_ANDROID)
+  return ClientContextProto::PLATFORM_TYPE_ANDROID;
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+  return ClientContextProto::PLATFORM_TYPE_DESKTOP;
+#else
+  return ClientContextProto::PLATFORM_TYPE_UNDEFINED;
+#endif
 }
 
 }  // namespace autofill_assistant

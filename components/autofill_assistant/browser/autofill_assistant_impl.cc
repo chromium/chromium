@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill_assistant/browser/client_context.h"
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
 #include "components/autofill_assistant/browser/headless/client_headless.h"
@@ -156,14 +157,7 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
   client_context.set_locale(dependencies_->GetLocale());
   client_context.mutable_chrome()->set_chrome_version(
       version_info::GetProductNameAndVersionForUserAgent());
-
-#if BUILDFLAG(IS_ANDROID)
-  client_context.set_platform_type(ClientContextProto::PLATFORM_TYPE_ANDROID);
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
-  client_context.set_platform_type(ClientContextProto::PLATFORM_TYPE_DESKTOP);
-#endif
+  client_context.set_platform_type(ClientContext::GetPlatformType());
 
   request_sender_->SendRequest(
       script_server_url_,
