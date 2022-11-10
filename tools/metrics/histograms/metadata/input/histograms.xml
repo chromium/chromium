@@ -100,6 +100,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="InputMethod.Assistive.AutocorrectV2.Distance.OriginalLengthVsLevenshteinDistance.{Keyboard}{Interaction}"
+    units="Distance" expires_after="2023-05-01">
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This records the length of the original word alligned with distance between
+    the original and suggested new word in the form of a flattened 2d array. The
+    two variables are stored as '(length-1)*MAX_LENGTH + (distance-1)'. The data
+    is expected to be fairly sparse and it is guaranteed that all values will be
+    in the range (0, 1000) (assuming MAX_LENGTH is not increased over 31). The
+    metric is recorded once an autocorrect is accepted or rejected by user
+    interactions.
+  </summary>
+  <token key="Keyboard">
+    <variant name="PK" summary="physical keyboard"/>
+    <variant name="VK" summary="virtual keyboard"/>
+  </token>
+  <token key="Interaction">
+    <variant name="Accepted" summary="accepted"/>
+    <variant name="Rejected" summary="rejected"/>
+  </token>
+</histogram>
+
+<histogram
+    name="InputMethod.Assistive.AutocorrectV2.Distance.SuggestedLength.{Keyboard}{Interaction}"
+    units="chars" expires_after="2023-05-01">
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This records the length of the word suggested by autocorrect. The metric is
+    recorded once an autocorrect is accepted or rejected by user interactions.
+  </summary>
+  <token key="Keyboard">
+    <variant name="PK" summary="physical keyboard"/>
+    <variant name="VK" summary="virtual keyboard"/>
+  </token>
+  <token key="Interaction">
+    <variant name="Accepted" summary="accepted"/>
+    <variant name="Rejected" summary="rejected"/>
+  </token>
+</histogram>
+
 <histogram name="InputMethod.Assistive.AutocorrectV2.Internal.PkState"
     enum="IMEAutocorrectInternalStates" expires_after="2023-03-26">
   <owner>mehrab@google.com</owner>
