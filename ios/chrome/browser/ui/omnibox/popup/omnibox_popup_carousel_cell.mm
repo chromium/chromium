@@ -30,7 +30,7 @@ UIScrollView* CarouselScrollView() {
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.showsVerticalScrollIndicator = NO;
-  scrollView.showsHorizontalScrollIndicator = YES;
+  scrollView.showsHorizontalScrollIndicator = NO;
   scrollView.backgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   return scrollView;
@@ -87,7 +87,6 @@ UIStackView* CarouselStackView() {
 
 - (void)didMoveToWindow {
   if (self.window) {
-    [self.scrollView flashScrollIndicators];
     // Reset scroll to the left edge.
     CGRect scrollViewLeft = CGRectMake(0, 0, 1, 1);
     [self.scrollView scrollRectToVisible:scrollViewLeft animated:NO];
