@@ -122,6 +122,7 @@ export class SettingsReviewNotificationPermissionsElement extends
   private toastText_: string|null;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private shouldRefocusExpandButton_: boolean = false;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -325,6 +326,7 @@ export class SettingsReviewNotificationPermissionsElement extends
         assertNotReached();
     }
 
+    this.shouldRefocusExpandButton_ = true;
     this.$.undoToast.hide();
   }
 
@@ -371,10 +373,22 @@ export class SettingsReviewNotificationPermissionsElement extends
    * trigger the update of the display list.
    */
   private async onSitesChanged_() {
+    assert(this.sites_);
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckNotificationPermissionReviewPrimaryLabel',
-            this.sites_!.length);
+            this.sites_.length);
+    /**
+     * Focus on the expand button after the undo button is clicked and sites are
+     * loaded again.
+     */
+    if (this.sites_.length !== 0 && this.shouldRefocusExpandButton_) {
+      this.shouldRefocusExpandButton_ = false;
+      const expandButton =
+          this.shadowRoot!.querySelector<HTMLElement>('#expandButton');
+      assert(expandButton);
+      expandButton.focus();
+    }
   }
 
   private getMoreActionsAriaLabel_(origin: string): string {
