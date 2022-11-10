@@ -473,6 +473,8 @@ int LibcurlNetworkFetcher::CurlTransferCallback(void* userp,
 
 }  // namespace
 
+class NetworkFetcherFactory::Impl {};
+
 NetworkFetcherFactory::NetworkFetcherFactory(
     absl::optional<PolicyServiceProxyConfiguration>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;

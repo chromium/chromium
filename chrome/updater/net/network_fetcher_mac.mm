@@ -286,6 +286,7 @@ class SequencedTaskRunner;
 }
 
 namespace updater {
+namespace {
 
 class NetworkFetcher : public update_client::NetworkFetcher {
  public:
@@ -396,6 +397,10 @@ void NetworkFetcher::DownloadToFile(
       [session downloadTaskWithRequest:urlRequest];
   [downloadTask resume];
 }
+
+}  // namespace
+
+class NetworkFetcherFactory::Impl {};
 
 NetworkFetcherFactory::NetworkFetcherFactory(
     absl::optional<PolicyServiceProxyConfiguration>) {}

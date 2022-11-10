@@ -13,20 +13,13 @@
 #include "components/update_client/network.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "components/winhttp/scoped_hinternet.h"
-
-namespace winhttp {
-class ProxyConfiguration;
-}
-
-#endif  // IS_WIN
-
 namespace updater {
 
 struct PolicyServiceProxyConfiguration;
 
-// Network fetcher factory for WinHTTP.
+// Creates instances of `NetworkFetcher`. Because of idiosyncrasies of how
+// the Windows implementation works, the instance of the factory class must
+// outlive the lives of the network fetchers it creates.
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
   explicit NetworkFetcherFactory(absl::optional<PolicyServiceProxyConfiguration>
@@ -40,15 +33,10 @@ class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
   ~NetworkFetcherFactory() override;
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
+  class Impl;
 
-// TODO(crbug.com/1382551) - remove platform dependend code from this header.
-#if BUILDFLAG(IS_WIN)
-  // Proxy configuration for WinHTTP must be initialized before the session
-  // handle.
-  scoped_refptr<winhttp::ProxyConfiguration> proxy_configuration_;
-  winhttp::ScopedHInternet session_handle_;
-#endif  // IS_WIN
+  SEQUENCE_CHECKER(sequence_checker_);
+  std::unique_ptr<Impl> impl_;
 };
 
 }  // namespace updater

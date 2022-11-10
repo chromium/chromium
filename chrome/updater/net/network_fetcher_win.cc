@@ -27,6 +27,7 @@
 #include "components/update_client/network.h"
 #include "components/winhttp/network_fetcher.h"
 #include "components/winhttp/proxy_configuration.h"
+#include "components/winhttp/scoped_hinternet.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -251,24 +252,38 @@ void NetworkFetcher::DownloadToFileComplete(int /*response_code*/) {
 
 }  // namespace
 
+class NetworkFetcherFactory::Impl {
+ public:
+  explicit Impl(absl::optional<PolicyServiceProxyConfiguration>
+                    policy_service_proxy_configuration)
+      : proxy_configuration_(
+            GetProxyConfiguration(policy_service_proxy_configuration)),
+        session_handle_(winhttp::CreateSessionHandle(
+            L"Chrome Updater",
+            proxy_configuration_->access_type())) {}
+
+  std::unique_ptr<update_client::NetworkFetcher> Create() {
+    return session_handle_.get()
+               ? std::make_unique<NetworkFetcher>(session_handle_.get(),
+                                                  proxy_configuration_)
+               : nullptr;
+  }
+
+ private:
+  scoped_refptr<winhttp::ProxyConfiguration> proxy_configuration_;
+  winhttp::ScopedHInternet session_handle_;
+};
+
 NetworkFetcherFactory::NetworkFetcherFactory(
     absl::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration)
-    : proxy_configuration_(
-          GetProxyConfiguration(policy_service_proxy_configuration)),
-      session_handle_(
-          winhttp::CreateSessionHandle(L"Chrome Updater",
-                                       proxy_configuration_->access_type())) {}
-
+    : impl_(std::make_unique<Impl>(policy_service_proxy_configuration)) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return session_handle_.get()
-             ? std::make_unique<NetworkFetcher>(session_handle_.get(),
-                                                proxy_configuration_)
-             : nullptr;
+  return impl_->Create();
 }
 
 }  // namespace updater
