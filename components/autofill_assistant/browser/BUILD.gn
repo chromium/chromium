@@ -580,6 +580,8 @@ source_set("unit_tests") {
     "js_flow_util_unittest.cc",
     "mock_client_context.cc",
     "mock_client_context.h",
+    "mock_script_executor_ui_delegate.cc",
+    "mock_script_executor_ui_delegate.h",
     "parse_jspb_unittest.cc",
     "preference_manager_unittest.cc",
     "protocol_utils_unittest.cc",
