@@ -15,7 +15,6 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 import '../../components/dialogs/oobe_loading_dialog.m.js';
 import '../../components/dialogs/oobe_modal_dialog.m.js';
 
@@ -26,6 +25,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
 import {getSelectedValue} from '../../components/oobe_select.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
@@ -64,7 +64,7 @@ const ArcTermsOfserviceBase = mixinBehaviors(
  *   arcLocationServicePopup: OobeModalDialogElement,
  *   arcMetricsPopup: OobeModalDialogElement,
  *   arcTosAcceptButton: OobeTextButton,
- *   arcTosDialog: OobeAdaptiveDialogElement,
+ *   arcTosDialog: OobeAdaptiveDialog,
  *   arcTosNextButton: OobeTextButton,
  *   arcTosOverlayPrivacyPolicy: OobeModalDialogElement,
  *   arcTosOverlayWebview: WebView,
@@ -73,7 +73,7 @@ const ArcTermsOfserviceBase = mixinBehaviors(
  *   arcPaiPopup: OobeModalDialogElement,
  * }}
  */
- ArcTermsOfserviceBase.$;
+ArcTermsOfserviceBase.$;
 
 /**
  * @polymer

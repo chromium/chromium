@@ -13,7 +13,6 @@ import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 import '../../components/dialogs/oobe_loading_dialog.m.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
@@ -23,6 +22,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
 
 // Enum that describes the current state of the Terms Of Service screen
@@ -50,11 +50,11 @@ const ManagedTermsOfServiceBase = mixinBehaviors(
 
 /**
  * @typedef {{
- *   termsOfServiceDialog:  OobeAdaptiveDialogElement,
+ *   termsOfServiceDialog:  OobeAdaptiveDialog,
  *   termsOfServiceFrame:  WebView,
  * }}
  */
- ManagedTermsOfServiceBase.$;
+ManagedTermsOfServiceBase.$;
 
 /**
  * @polymer

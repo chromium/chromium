@@ -20,7 +20,7 @@ const FamilyLinkScreenElementBase = Polymer.mixinBehaviors(
 
 /**
  * @typedef {{
- *   familyLinkDialog:  OobeAdaptiveDialogElement,
+ *   familyLinkDialog:  OobeAdaptiveDialog,
  * }}
  */
 FamilyLinkScreenElementBase.$;

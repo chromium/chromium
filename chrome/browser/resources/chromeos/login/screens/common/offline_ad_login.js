@@ -17,7 +17,6 @@ import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
@@ -26,6 +25,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeA11yOption} from '../../components/oobe_a11y_option.js';
 import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '../../components/oobe_select.m.js';
 
@@ -80,7 +80,7 @@ const OfflineAdLoginBase = mixinBehaviors(
 
 /**
  * @typedef {{
- *   marketingOptInOverviewDialog:  OobeAdaptiveDialogElement,
+ *   marketingOptInOverviewDialog:  OobeAdaptiveDialog,
  *   chromebookUpdatesOption:  CrToggleElement,
  *   a11yNavButtonToggle:  OobeA11yOption,
  * }}

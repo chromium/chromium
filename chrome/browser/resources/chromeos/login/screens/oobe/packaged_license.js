@@ -20,7 +20,7 @@ const PackagedLicenseScreenBase = Polymer.mixinBehaviors(
 
 /**
  * @typedef {{
- *   packagedLicenseDialog:  OobeAdaptiveDialogElement,
+ *   packagedLicenseDialog:  OobeAdaptiveDialog,
  * }}
  */
 PackagedLicenseScreenBase.$;

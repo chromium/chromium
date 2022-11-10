@@ -14,7 +14,7 @@ import '../../components/oobe_icons.m.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.m.js';
 import '../../components/oobe_carousel.js';
 import '../../components/oobe_slide.js';

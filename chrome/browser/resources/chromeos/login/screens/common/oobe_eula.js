@@ -10,7 +10,6 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 import '../../components/dialogs/oobe_modal_dialog.m.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_text_button.js';
@@ -22,6 +21,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {WebViewHelper} from '../../components/web_view_helper.m.js';
 import {Oobe} from '../../cr_ui.m.js';
 
@@ -290,9 +290,9 @@ const EulaScreenBase = mixinBehaviors(
  *   additionalToS: OobeModalDialogElement,
  *   closeAdditionalTos: PolymerElement,
  *   crosEulaFrame: WebView,
- *   eulaDialog:  OobeAdaptiveDialogElement,
+ *   eulaDialog:  OobeAdaptiveDialog,
  *   learnMore: HTMLElement,
- *   securitySettings: OobeAdaptiveDialogElement,
+ *   securitySettings: OobeAdaptiveDialog,
  * }}
  */
 EulaScreenBase.$;

@@ -33,7 +33,7 @@ const RecommendAppsElementBase = Polymer.mixinBehaviors(
 
 /**
  * @typedef {{
- *   appsDialog:  OobeAdaptiveDialogElement,
+ *   appsDialog:  OobeAdaptiveDialog,
  *   appView:  WebView,
  *   appsList: OobeAppsList,
  *   installButton:  OobeTextButton,
