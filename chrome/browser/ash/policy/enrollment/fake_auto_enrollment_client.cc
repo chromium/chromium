@@ -51,12 +51,12 @@ FakeAutoEnrollmentClient::FactoryImpl::CreateForInitialEnrollment(
 FakeAutoEnrollmentClient::FakeAutoEnrollmentClient(
     const ProgressCallback& progress_callback)
     : progress_callback_(progress_callback),
-      state_(AUTO_ENROLLMENT_STATE_IDLE) {}
+      state_(AutoEnrollmentState::kIdle) {}
 
 FakeAutoEnrollmentClient::~FakeAutoEnrollmentClient() {}
 
 void FakeAutoEnrollmentClient::Start() {
-  SetState(AUTO_ENROLLMENT_STATE_PENDING);
+  SetState(AutoEnrollmentState::kPending);
 }
 
 void FakeAutoEnrollmentClient::Retry() {}

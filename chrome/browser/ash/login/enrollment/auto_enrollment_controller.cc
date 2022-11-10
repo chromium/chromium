@@ -64,9 +64,9 @@ const int kMaxRequestStateKeysTries = 10;
 // Note that this encompasses all steps `AutoEnrollmentController` performs in
 // order to determine if the device should be auto-enrolled.
 // If `kSafeguardTimeout` after `Start()` has been called,
-// `AutoEnrollmentController::state()` is still AUTO_ENROLLMENT_STATE_PENDING,
+// `AutoEnrollmentController::state()` is still AutoEnrollmentState::kPending,
 // the AutoEnrollmentController will switch to
-// AUTO_ENROLLMENT_STATE_NO_ENROLLMENT or AUTO_ENROLLMENT_STATE_CONNECTION_ERROR
+// AutoEnrollmentState::kNoEnrollment or AutoEnrollmentState::kConnectionError
 // (see `AutoEnrollmentController::Timeout`). Note that this timeout should not
 // be too short, because one of the steps `AutoEnrollmentController` performs -
 // downloading identifier hash buckets - can be non-negligible, especially on 2G
@@ -113,21 +113,19 @@ int GetSanitizedArg(const std::string& switch_name) {
 
 std::string AutoEnrollmentStateToString(policy::AutoEnrollmentState state) {
   switch (state) {
-    case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_IDLE:
+    case policy::AutoEnrollmentState::kIdle:
       return "Not started";
-    case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_PENDING:
+    case policy::AutoEnrollmentState::kPending:
       return "Pending";
-    case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR:
+    case policy::AutoEnrollmentState::kConnectionError:
       return "Connection error";
-    case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_SERVER_ERROR:
+    case policy::AutoEnrollmentState::kServerError:
       return "Server error";
-    case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT:
-      return "Trigger enrollment";
-    case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
+    case policy::AutoEnrollmentState::kEnrollment:
+      return "Enrollment";
+    case policy::AutoEnrollmentState::kNoEnrollment:
       return "No enrollment";
-    case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH:
-      return "Zero-Touch enrollment";
-    case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_DISABLED:
+    case policy::AutoEnrollmentState::kDisabled:
       return "Device disabled";
   }
 }
@@ -178,19 +176,18 @@ AutoEnrollmentController::~AutoEnrollmentController() {}
 void AutoEnrollmentController::Start() {
   LOG(WARNING) << "Starting auto-enrollment controller.";
   switch (state_) {
-    case policy::AUTO_ENROLLMENT_STATE_PENDING:
+    case policy::AutoEnrollmentState::kPending:
       // Abort re-start if the check is still running.
       return;
-    case policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
-    case policy::AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT:
-    case policy::AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH:
-    case policy::AUTO_ENROLLMENT_STATE_DISABLED:
+    case policy::AutoEnrollmentState::kNoEnrollment:
+    case policy::AutoEnrollmentState::kEnrollment:
+    case policy::AutoEnrollmentState::kDisabled:
       // Abort re-start when there's already a final decision.
       return;
 
-    case policy::AUTO_ENROLLMENT_STATE_IDLE:
-    case policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR:
-    case policy::AUTO_ENROLLMENT_STATE_SERVER_ERROR:
+    case policy::AutoEnrollmentState::kIdle:
+    case policy::AutoEnrollmentState::kConnectionError:
+    case policy::AutoEnrollmentState::kServerError:
       // Continue (re-)start.
       break;
   }
@@ -220,7 +217,7 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
           system::StatisticsProvider::GetInstance());
   if (auto_enrollment_check_type_ ==
       policy::AutoEnrollmentTypeChecker::CheckType::kNone) {
-    UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+    UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
     return;
   }
   // If waiting for system clock synchronization has been triggered, wait until
@@ -238,7 +235,7 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
     // Set state before waiting for the system clock sync, because
     // `WaitForSystemClockSync` may invoke its callback synchronously if the
     // system clock sync status is already known.
-    UpdateState(policy::AUTO_ENROLLMENT_STATE_PENDING);
+    UpdateState(policy::AutoEnrollmentState::kPending);
 
     // Use `client_start_weak_factory_` so the callback is not invoked if
     // `Timeout` has been called in the meantime (after `kSafeguardTimeout`).
@@ -251,7 +248,7 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
   }
 
   // Start by checking if the device has already been owned.
-  UpdateState(policy::AUTO_ENROLLMENT_STATE_PENDING);
+  UpdateState(policy::AutoEnrollmentState::kPending);
   DeviceSettingsService::Get()->GetOwnershipStatusAsync(
       base::BindOnce(&AutoEnrollmentController::OnOwnershipStatusCheckDone,
                      client_start_weak_factory_.GetWeakPtr()));
@@ -318,11 +315,11 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
       return;
     case DeviceSettingsService::OWNERSHIP_TAKEN:
       LOG(WARNING) << "Device already owned, skipping auto-enrollment check.";
-      UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+      UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
       return;
     case DeviceSettingsService::OWNERSHIP_UNKNOWN:
       LOG(ERROR) << "Ownership unknown, skipping auto-enrollment check.";
-      UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+      UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
       return;
   }
 }
@@ -350,7 +347,7 @@ void AutoEnrollmentController::StartClientForFRE(
               base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
                              client_start_weak_factory_.GetWeakPtr()));
     } else {
-      UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+      UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
     }
     return;
   }
@@ -390,14 +387,14 @@ void AutoEnrollmentController::OnSystemClockSyncResult(
                                              : "failed to synchronize");
   // Only call StartWithSystemClockSyncState() to determine the auto-enrollment
   // type if the system clock could synchronize successfully. Otherwise, return
-  // an AUTO_ENROLLMENT_STATE_CONNECTION_ERROR to show an error screen and not
+  // an AutoEnrollmentState::kConnectionError to show an error screen and not
   // proceeding with the auto-enrollment checks until
   // AutoEnrollmentController::Start() is called again by a network state
   // change or network selection.
   if (system_clock_sync_state_ == SystemClockSyncState::kSynchronized) {
     StartWithSystemClockSyncState();
   } else {
-    UpdateState(policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+    UpdateState(policy::AutoEnrollmentState::kConnectionError);
   }
 }
 
@@ -449,15 +446,14 @@ void AutoEnrollmentController::UpdateState(
 
   // Stop the safeguard timer once a result comes in.
   switch (state_) {
-    case policy::AUTO_ENROLLMENT_STATE_IDLE:
-    case policy::AUTO_ENROLLMENT_STATE_PENDING:
+    case policy::AutoEnrollmentState::kIdle:
+    case policy::AutoEnrollmentState::kPending:
       break;
-    case policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR:
-    case policy::AUTO_ENROLLMENT_STATE_SERVER_ERROR:
-    case policy::AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT:
-    case policy::AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH:
-    case policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
-    case policy::AUTO_ENROLLMENT_STATE_DISABLED:
+    case policy::AutoEnrollmentState::kConnectionError:
+    case policy::AutoEnrollmentState::kServerError:
+    case policy::AutoEnrollmentState::kEnrollment:
+    case policy::AutoEnrollmentState::kNoEnrollment:
+    case policy::AutoEnrollmentState::kDisabled:
       safeguard_timer_.Stop();
       ReportTimeoutUMA(
           AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
@@ -467,7 +463,7 @@ void AutoEnrollmentController::UpdateState(
   // Device disabling mode is relying on device state stored in install
   // attributes. In case that file is corrupted, this should prevent device
   // re-enabling.
-  if (state_ == policy::AUTO_ENROLLMENT_STATE_DISABLED) {
+  if (state_ == policy::AutoEnrollmentState::kDisabled) {
     policy::DeviceMode device_mode = InstallAttributes::Get()->GetMode();
     if (device_mode == policy::DeviceMode::DEVICE_MODE_PENDING ||
         device_mode == policy::DeviceMode::DEVICE_MODE_NOT_SET) {
@@ -476,7 +472,7 @@ void AutoEnrollmentController::UpdateState(
     }
   }
 
-  if (state_ == policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT) {
+  if (state_ == policy::AutoEnrollmentState::kNoEnrollment) {
     StartCleanupForcedReEnrollment();
   } else {
     progress_callbacks_.Notify(state_);
@@ -493,7 +489,7 @@ void AutoEnrollmentController::StartCleanupForcedReEnrollment() {
 
 void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
     bool service_is_ready) {
-  DCHECK_EQ(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
+  DCHECK_EQ(policy::AutoEnrollmentState::kNoEnrollment, state_);
   if (!service_is_ready) {
     LOG(ERROR) << "Failed waiting for cryptohome D-Bus service availability.";
     progress_callbacks_.Notify(state_);
@@ -526,7 +522,7 @@ void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
 
 void AutoEnrollmentController::StartClearForcedReEnrollmentVpd(
     bool service_is_ready) {
-  DCHECK_EQ(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
+  DCHECK_EQ(policy::AutoEnrollmentState::kNoEnrollment, state_);
   if (!service_is_ready) {
     LOG(ERROR)
         << "Failed waiting for session_manager D-Bus service availability.";
@@ -561,14 +557,14 @@ void AutoEnrollmentController::Timeout() {
     // pending, there's a bug in the code running on the device. No use in
     // retrying anything, need to fix that bug.
     LOG(ERROR) << "Failed to start auto-enrollment check, fix the code!";
-    UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+    UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
     ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeout);
   } else {
     // This can actually happen in some cases, for example when state key
     // generation is waiting for time sync or the server just doesn't reply and
     // keeps the connection open.
     LOG(ERROR) << "AutoEnrollmentClient didn't complete within time limit.";
-    UpdateState(policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+    UpdateState(policy::AutoEnrollmentState::kConnectionError);
     ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutFRE);
   }
 

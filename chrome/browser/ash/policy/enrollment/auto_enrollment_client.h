@@ -25,25 +25,22 @@ namespace policy {
 
 class DeviceManagementService;
 
-// Indicates the current state of the auto-enrollment check. (Numeric values
-// are just to make reading of log files easier.)
-enum AutoEnrollmentState {
+// Indicates the current state of the auto-enrollment check.
+enum class AutoEnrollmentState {
   // Not yet started.
-  AUTO_ENROLLMENT_STATE_IDLE = 0,
+  kIdle = 0,
   // Working, another event will be fired eventually.
-  AUTO_ENROLLMENT_STATE_PENDING = 1,
+  kPending = 1,
   // Failed to connect to DMServer or to synchronize the system clock.
-  AUTO_ENROLLMENT_STATE_CONNECTION_ERROR = 2,
+  kConnectionError = 2,
   // Connection successful, but the server failed to generate a valid reply.
-  AUTO_ENROLLMENT_STATE_SERVER_ERROR = 3,
+  kServerError = 3,
   // Check completed successfully, enrollment should be triggered.
-  AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT = 4,
+  kEnrollment = 4,
   // Check completed successfully, enrollment not applicable.
-  AUTO_ENROLLMENT_STATE_NO_ENROLLMENT = 5,
-  // Check completed successfully, zero-touch enrollment should be triggered.
-  AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH = 6,
+  kNoEnrollment = 5,
   // Check completed successfully, device is disabled.
-  AUTO_ENROLLMENT_STATE_DISABLED = 7,
+  kDisabled = 6,
 };
 
 // Interacts with the device management service and determines whether this

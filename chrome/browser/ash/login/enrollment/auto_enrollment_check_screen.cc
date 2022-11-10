@@ -55,7 +55,7 @@ void AutoEnrollmentCheckScreen::ClearState() {
   connect_request_subscription_ = {};
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 
-  auto_enrollment_state_ = policy::AUTO_ENROLLMENT_STATE_IDLE;
+  auto_enrollment_state_ = policy::AutoEnrollmentState::kIdle;
   captive_portal_state_ = NetworkState::PortalState::kUnknown;
 }
 
@@ -103,9 +103,9 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   // IsCompleted() would still return false, and Show would not report result
   // early. In that case auto-enrollment check should be retried.
   if (auto_enrollment_controller_->state() ==
-          policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR ||
+          policy::AutoEnrollmentState::kConnectionError ||
       auto_enrollment_controller_->state() ==
-          policy::AUTO_ENROLLMENT_STATE_SERVER_ERROR) {
+          policy::AutoEnrollmentState::kServerError) {
     // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
     // in the logs.
     LOG(WARNING) << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
@@ -160,7 +160,7 @@ void AutoEnrollmentCheckScreen::UpdateState(
 
   // Update the connecting indicator.
   error_screen_->ShowConnectingIndicator(new_auto_enrollment_state ==
-                                         policy::AUTO_ENROLLMENT_STATE_PENDING);
+                                         policy::AutoEnrollmentState::kPending);
 
   // Determine whether a retry is in order.
   bool retry =
@@ -207,28 +207,23 @@ bool AutoEnrollmentCheckScreen::UpdateCaptivePortalState(
 bool AutoEnrollmentCheckScreen::UpdateAutoEnrollmentState(
     policy::AutoEnrollmentState new_auto_enrollment_state) {
   switch (new_auto_enrollment_state) {
-    case policy::AUTO_ENROLLMENT_STATE_IDLE:
-    case policy::AUTO_ENROLLMENT_STATE_PENDING:
-    case policy::AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT:
-    case policy::AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH:
-    case policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
-    case policy::AUTO_ENROLLMENT_STATE_DISABLED:
+    case policy::AutoEnrollmentState::kIdle:
+    case policy::AutoEnrollmentState::kPending:
+    case policy::AutoEnrollmentState::kEnrollment:
+    case policy::AutoEnrollmentState::kNoEnrollment:
+    case policy::AutoEnrollmentState::kDisabled:
       return false;
-    case policy::AUTO_ENROLLMENT_STATE_SERVER_ERROR:
+    case policy::AutoEnrollmentState::kServerError:
       if (!ShouldBlockOnServerError())
         return false;
 
       // Fall to the same behavior like any connection error if the device is
       // enrolled.
       [[fallthrough]];
-    case policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR:
+    case policy::AutoEnrollmentState::kConnectionError:
       ShowErrorScreen(NetworkError::ERROR_STATE_OFFLINE);
       return true;
   }
-
-  // Return is required to avoid compiler warning.
-  NOTREACHED() << "bad state " << new_auto_enrollment_state;
-  return false;
 }
 
 void AutoEnrollmentCheckScreen::ShowErrorScreen(
@@ -278,17 +273,16 @@ void AutoEnrollmentCheckScreen::SignalCompletion() {
 
 bool AutoEnrollmentCheckScreen::IsCompleted() const {
   switch (auto_enrollment_controller_->state()) {
-    case policy::AUTO_ENROLLMENT_STATE_IDLE:
-    case policy::AUTO_ENROLLMENT_STATE_PENDING:
-    case policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR:
+    case policy::AutoEnrollmentState::kIdle:
+    case policy::AutoEnrollmentState::kPending:
+    case policy::AutoEnrollmentState::kConnectionError:
       return false;
-    case policy::AUTO_ENROLLMENT_STATE_SERVER_ERROR:
+    case policy::AutoEnrollmentState::kServerError:
       // Server errors should block OOBE for enrolled devices.
       return !ShouldBlockOnServerError();
-    case policy::AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT:
-    case policy::AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH:
-    case policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
-    case policy::AUTO_ENROLLMENT_STATE_DISABLED:
+    case policy::AutoEnrollmentState::kEnrollment:
+    case policy::AutoEnrollmentState::kNoEnrollment:
+    case policy::AutoEnrollmentState::kDisabled:
       // Decision made, ready to proceed.
       return true;
   }
