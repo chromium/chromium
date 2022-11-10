@@ -209,10 +209,12 @@ using base::UserMetricsAction;
       sel_isEqual(action, @selector(keyCommand_showLastTab))) {
     return self.tabsCount > 0;
   }
-  if (sel_isEqual(action, @selector(keyCommand_find)) ||
-      sel_isEqual(action, @selector(keyCommand_findNext)) ||
-      sel_isEqual(action, @selector(keyCommand_findPrevious))) {
+  if (sel_isEqual(action, @selector(keyCommand_find))) {
     return self.findInPageAvailable;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_findNext)) ||
+      sel_isEqual(action, @selector(keyCommand_findPrevious))) {
+    return [self isFindInPageActive];
   }
   if (sel_isEqual(action, @selector(keyCommand_close))) {
     return self.canDismissModals;
@@ -526,6 +528,17 @@ using base::UserMetricsAction;
 
   FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
   return (helper && helper->CurrentPageSupportsFindInPage());
+}
+
+- (BOOL)isFindInPageActive {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!currentWebState) {
+    return NO;
+  }
+
+  FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
+  return (helper && helper->IsFindUIActive());
 }
 
 - (NSUInteger)tabsCount {

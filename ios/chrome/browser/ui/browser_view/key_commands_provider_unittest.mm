@@ -227,18 +227,14 @@ TEST_F(KeyCommandsProviderTest, CanPerform_TabsActions) {
 }
 
 // Checks whether KeyCommandsProvider can perform the actions that are only
-// available when there are tabs and Find in Page is available.
+// available when there are tabs and Find in Page is available. Ensure that Find
+// Next and Find Previous are not shown.
 TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
   // No tabs.
   ASSERT_EQ(web_state_list_->count(), 0);
-  NSArray<NSString*>* actions = @[
-    @"keyCommand_find",
-    @"keyCommand_findNext",
-    @"keyCommand_findPrevious",
-  ];
-  for (NSString* action in actions) {
-    EXPECT_FALSE(CanPerform(action));
-  }
+  EXPECT_FALSE(CanPerform(@"keyCommand_find"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_findNext"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_findPrevious"));
 
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
@@ -247,21 +243,27 @@ TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
 
   // No Find in Page.
   web_state->SetContentIsHTML(false);
-  for (NSString* action in actions) {
-    EXPECT_FALSE(CanPerform(action));
-  }
+  EXPECT_FALSE(CanPerform(@"keyCommand_find"));
 
   // Can Find in Page.
   web_state->SetContentIsHTML(true);
-  for (NSString* action in actions) {
-    EXPECT_TRUE(CanPerform(action));
-  }
+  EXPECT_TRUE(CanPerform(@"keyCommand_find"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_findNext"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_findPrevious"));
+
+  // Find UI active.
+  FindTabHelper* helper = FindTabHelper::FromWebState(web_state);
+  helper->SetFindUIActive(YES);
+  EXPECT_TRUE(CanPerform(@"keyCommand_findNext"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_findPrevious"));
+
+  helper->SetFindUIActive(NO);
+  EXPECT_FALSE(CanPerform(@"keyCommand_findNext"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_findPrevious"));
 
   // Close the tab.
   CloseWebState(0);
-  for (NSString* action in actions) {
-    EXPECT_FALSE(CanPerform(action));
-  }
+  EXPECT_FALSE(CanPerform(@"keyCommand_find"));
 }
 
 // Checks whether KeyCommandsProvider can perform the actions that are only
