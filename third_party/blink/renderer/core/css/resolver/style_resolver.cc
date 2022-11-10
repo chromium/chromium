@@ -187,15 +187,16 @@ ElementAnimations* GetElementAnimations(const StyleResolverState& state) {
 }
 
 bool HasAnimationsOrTransitions(const StyleResolverState& state) {
-  return state.Style()->Animations() || state.Style()->Transitions() ||
+  return state.StyleBuilder().Animations() ||
+         state.StyleBuilder().Transitions() ||
          (state.GetAnimatingElement() &&
           state.GetAnimatingElement()->HasAnimations());
 }
 
 bool HasTimelines(const StyleResolverState& state) {
-  if (!state.Style()->ScrollTimelineName().empty())
+  if (!state.StyleBuilder().ScrollTimelineName().empty())
     return true;
-  if (!state.Style()->ViewTimelineName().empty())
+  if (!state.StyleBuilder().ViewTimelineName().empty())
     return true;
   if (ElementAnimations* element_animations = GetElementAnimations(state))
     return element_animations->CssAnimations().HasTimelines();

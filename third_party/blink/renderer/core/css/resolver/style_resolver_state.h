@@ -100,6 +100,7 @@ class CORE_EXPORT StyleResolverState {
     return *Style();
   }
   ComputedStyleBuilder& StyleBuilder() { return style_builder_; }
+  const ComputedStyleBuilder& StyleBuilder() const { return style_builder_; }
   scoped_refptr<ComputedStyle> TakeStyle();
 
   const CSSToLengthConversionData& CssToLengthConversionData() const {

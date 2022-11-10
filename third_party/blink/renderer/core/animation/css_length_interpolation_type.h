@@ -25,7 +25,9 @@ class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
                                   StyleResolverState&) const final;
 
  private:
-  float EffectiveZoom(const ComputedStyle&) const;
+  float EffectiveZoom(float effective_zoom) const {
+    return is_zoomed_length_ ? effective_zoom : 1;
+  }
 
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
@@ -46,6 +48,7 @@ class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
                                  const StyleResolverState&) const final;
 
   const Length::ValueRange value_range_;
+  bool is_zoomed_length_;
 };
 
 }  // namespace blink

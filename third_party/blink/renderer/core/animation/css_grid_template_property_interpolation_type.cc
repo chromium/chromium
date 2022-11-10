@@ -259,7 +259,7 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::MaybeConvertValue(
   return InterpolationValue(
       CreateInterpolableGridTrackList(
           computed_grid_track_list.track_sizes.NGTrackList(),
-          state->Style()->EffectiveZoom()),
+          state->StyleBuilder().EffectiveZoom()),
       CSSGridTrackListNonInterpolableValue::Create(
           computed_grid_track_list.named_grid_lines,
           computed_grid_track_list.ordered_named_grid_lines));
@@ -277,11 +277,10 @@ void CSSGridTemplatePropertyInterpolationType::ApplyStandardPropertyValue(
   double progress = interpolable_grid_track_list.GetProgress();
   bool is_for_columns = property_id_ == CSSPropertyID::kGridTemplateColumns;
   ComputedStyleBuilder& builder = state.StyleBuilder();
-  ComputedStyle* style = state.Style();
   CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
   ComputedGridTrackList computed_grid_track_list(
-      is_for_columns ? style->GridTemplateColumns()
-                     : style->GridTemplateRows());
+      is_for_columns ? builder.GridTemplateColumns()
+                     : builder.GridTemplateRows());
 
   computed_grid_track_list.track_sizes.SetNGGridTrackList(
       interpolable_grid_track_list.CreateNGGridTrackList(conversion_data));

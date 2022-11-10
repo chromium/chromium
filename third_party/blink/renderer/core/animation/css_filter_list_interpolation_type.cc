@@ -157,7 +157,7 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
   conversion_checkers.push_back(std::make_unique<InheritedFilterListChecker>(
       CssProperty(), inherited_filter_operations));
   return ConvertFilterList(inherited_filter_operations,
-                           state.Style()->EffectiveZoom());
+                           state.StyleBuilder().EffectiveZoom());
 }
 
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(

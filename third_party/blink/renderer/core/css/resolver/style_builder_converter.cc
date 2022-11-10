@@ -387,7 +387,7 @@ scoped_refptr<FontPalette> StyleBuilderConverter::ConvertFontPalette(
 
 float MathScriptScaleFactor(StyleResolverState& state) {
   int a = state.ParentStyle()->MathDepth();
-  int b = state.Style()->MathDepth();
+  int b = state.StyleBuilder().MathDepth();
   if (b == a)
     return 1.0;
   bool invertScaleFactor = false;
@@ -1426,7 +1426,7 @@ TabSize StyleBuilderConverter::ConvertLengthOrTabSpaces(
 
 static CSSToLengthConversionData LineHeightToLengthConversionData(
     StyleResolverState& state) {
-  float multiplier = state.Style()->EffectiveZoom();
+  float multiplier = state.StyleBuilder().EffectiveZoom();
   if (LocalFrame* frame = state.GetDocument().GetFrame())
     multiplier *= frame->TextZoomFactor();
   return state.CssToLengthConversionData().CopyWithAdjustedZoom(multiplier);

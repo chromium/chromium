@@ -24,14 +24,9 @@ CSSLengthInterpolationType::CSSLengthInterpolationType(
     PropertyHandle property,
     const PropertyRegistration* registration)
     : CSSInterpolationType(property, registration),
-      value_range_(LengthPropertyFunctions::GetValueRange(CssProperty())) {}
-
-float CSSLengthInterpolationType::EffectiveZoom(
-    const ComputedStyle& style) const {
-  return LengthPropertyFunctions::IsZoomedLength(CssProperty())
-             ? style.EffectiveZoom()
-             : 1;
-}
+      value_range_(LengthPropertyFunctions::GetValueRange(CssProperty())),
+      is_zoomed_length_(
+          LengthPropertyFunctions::IsZoomedLength(CssProperty())) {}
 
 class InheritedLengthChecker
     : public CSSInterpolationType::CSSConversionChecker {
@@ -86,7 +81,7 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
     return nullptr;
   }
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      inherited_length, EffectiveZoom(*state.ParentStyle())));
+      inherited_length, EffectiveZoom(state.ParentStyle()->EffectiveZoom())));
 }
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
@@ -120,7 +115,7 @@ CSSLengthInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
                                           underlying_length))
     return nullptr;
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      underlying_length, EffectiveZoom(style)));
+      underlying_length, EffectiveZoom(style.EffectiveZoom())));
 }
 
 const CSSValue* CSSLengthInterpolationType::CreateCSSValue(
@@ -135,9 +130,8 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  ComputedStyle& style = *state.Style();
   ComputedStyleBuilder& builder = state.StyleBuilder();
-  float zoom = EffectiveZoom(style);
+  float zoom = EffectiveZoom(builder.EffectiveZoom());
   CSSToLengthConversionData conversion_data =
       state.CssToLengthConversionData().CopyWithAdjustedZoom(zoom);
   Length length = To<InterpolableLength>(interpolable_value)
