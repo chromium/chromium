@@ -1322,17 +1322,19 @@ void StyleResolver::ApplyBaseStyleNoCache(
   const MatchResult& match_result = collector.MatchedResult();
 
   if (match_result.HasFlag(MatchFlag::kAffectedByDrag))
-    state.Style()->SetAffectedByDrag();
+    state.StyleBuilder().SetAffectedByDrag();
   if (match_result.HasFlag(MatchFlag::kAffectedByFocusWithin))
-    state.Style()->SetAffectedByFocusWithin();
+    state.StyleBuilder().SetAffectedByFocusWithin();
   if (match_result.HasFlag(MatchFlag::kAffectedByHover))
-    state.Style()->SetAffectedByHover();
+    state.StyleBuilder().SetAffectedByHover();
   if (match_result.HasFlag(MatchFlag::kAffectedByActive))
-    state.Style()->SetAffectedByActive();
+    state.StyleBuilder().SetAffectedByActive();
   if (match_result.DependsOnSizeContainerQueries())
     state.Style()->SetDependsOnSizeContainerQueries(true);
   if (match_result.DependsOnStyleContainerQueries())
     state.Style()->SetDependsOnStyleContainerQueries(true);
+  if (match_result.FirstLineDependsOnSizeContainerQueries())
+    state.StyleBuilder().SetFirstLineDependsOnSizeContainerQueries(true);
   if (match_result.DependsOnStaticViewportUnits())
     state.Style()->SetHasStaticViewportUnits();
   if (match_result.DependsOnDynamicViewportUnits())
@@ -1341,6 +1343,10 @@ void StyleResolver::ApplyBaseStyleNoCache(
     state.Style()->SetHasRemUnits();
   if (match_result.ConditionallyAffectsAnimations())
     state.SetCanAffectAnimations();
+  if (match_result.HasNonUniversalHighlightPseudoStyles())
+    state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(true);
+  if (match_result.HasNonUaHighlightPseudoStyles())
+    state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(true);
   if (!match_result.CustomHighlightNames().empty()) {
     state.StyleBuilder().SetCustomHighlightNames(
         match_result.CustomHighlightNames());
@@ -1941,9 +1947,9 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       // so CopyNonInheritedFromCached will clobber them despite custom_copy.
       // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
       // can remove the cache-busting for ::highlight() in IsStyleCacheable
-      state.Style()->SetHasNonUniversalHighlightPseudoStyles(
+      state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(
           non_universal_highlights);
-      state.Style()->SetHasNonUaHighlightPseudoStyles(non_ua_highlights);
+      state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(non_ua_highlights);
 
       // If the child style is a cache hit, we'll never reach StyleBuilder::
       // ApplyProperty, hence we'll never set the flag on the parent.

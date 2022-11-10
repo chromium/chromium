@@ -167,6 +167,12 @@ class CORE_EXPORT MatchResult {
   bool DependsOnStyleContainerQueries() const {
     return depends_on_size_container_queries_;
   }
+  void SetFirstLineDependsOnSizeContainerQueries() {
+    first_line_depends_on_size_container_queries_ = true;
+  }
+  bool FirstLineDependsOnSizeContainerQueries() const {
+    return first_line_depends_on_size_container_queries_;
+  }
   void SetDependsOnStaticViewportUnits() {
     depends_on_static_viewport_units_ = true;
   }
@@ -190,6 +196,18 @@ class CORE_EXPORT MatchResult {
   }
   bool ConditionallyAffectsAnimations() const {
     return conditionally_affects_animations_;
+  }
+  void SetHasNonUniversalHighlightPseudoStyles() {
+    has_non_universal_highlight_pseudo_styles_ = true;
+  }
+  bool HasNonUniversalHighlightPseudoStyles() const {
+    return has_non_universal_highlight_pseudo_styles_;
+  }
+  void SetHasNonUaHighlightPseudoStyles() {
+    has_non_ua_highlight_pseudo_styles_ = true;
+  }
+  bool HasNonUaHighlightPseudoStyles() const {
+    return has_non_ua_highlight_pseudo_styles_;
   }
 
   bool HasFlag(MatchFlag flag) const {
@@ -216,10 +234,13 @@ class CORE_EXPORT MatchResult {
   HashSet<AtomicString> custom_highlight_names_;
   bool is_cacheable_{true};
   bool depends_on_size_container_queries_{false};
+  bool first_line_depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};
   bool depends_on_dynamic_viewport_units_{false};
   bool depends_on_rem_container_queries_{false};
   bool conditionally_affects_animations_{false};
+  bool has_non_universal_highlight_pseudo_styles_{false};
+  bool has_non_ua_highlight_pseudo_styles_{false};
   MatchFlags flags_{0};
   CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
   uint16_t current_tree_order_{0};

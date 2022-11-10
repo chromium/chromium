@@ -887,10 +887,10 @@ void ElementRuleCollector::DidMatchRule(
       }
 
       if (!universal)
-        style_->SetHasNonUniversalHighlightPseudoStyles(true);
+        result_.SetHasNonUniversalHighlightPseudoStyles();
 
       if (!matching_ua_rules_)
-        style_->SetHasNonUaHighlightPseudoStyles(true);
+        result_.SetHasNonUaHighlightPseudoStyles();
 
       if (dynamic_pseudo == kPseudoIdHighlight) {
         DCHECK(result.custom_highlight_name);
@@ -898,7 +898,7 @@ void ElementRuleCollector::DidMatchRule(
             AtomicString(result.custom_highlight_name));
       }
     } else if (dynamic_pseudo == kPseudoIdFirstLine && container_query) {
-      style_->SetFirstLineDependsOnSizeContainerQueries(true);
+      result_.SetFirstLineDependsOnSizeContainerQueries();
     }
   } else {
     matched_rules_.push_back(MatchedRule(rule_data, layer_order, proximity,

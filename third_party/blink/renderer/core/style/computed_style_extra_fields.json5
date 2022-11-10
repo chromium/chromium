@@ -119,7 +119,6 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
-      writable: true,
     },
     {
       name: "AffectedByHover",
@@ -127,7 +126,6 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
-      writable: true,
     },
     {
       name: "AffectedByActive",
@@ -135,7 +133,6 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
-      writable: true,
     },
     {
       name: "AffectedByDrag",
@@ -143,7 +140,6 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
-      writable: true,
     },
     // A non-inherited property references a variable or @apply is used
     {
@@ -270,7 +266,6 @@
       type_name: "bool",
       custom_copy: true,
       custom_compare: true,
-      writable: true,
     },
     // Whether any highlight pseudo selectors were found when collecting non-UA
     // rules for the originating element. Stored in the *originating* style, and
@@ -283,7 +278,6 @@
       type_name: "bool",
       custom_copy: true,
       custom_compare: true,
-      writable: true,
     },
     // Used by ::highlight
     {
@@ -1130,7 +1124,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      writable: true,
     },
     {
       name: "BaseData",

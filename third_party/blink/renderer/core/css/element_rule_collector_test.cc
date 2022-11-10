@@ -328,7 +328,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
       args.Append("{}");
     args.Append(")");
 
-    return style->HasNonUniversalHighlightPseudoStyles();
+    return result.HasNonUniversalHighlightPseudoStyles();
   };
 
   Element& body = *GetDocument().body();
