@@ -12,7 +12,10 @@
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -24,6 +27,19 @@ class WebView;
 }  // namespace views
 
 namespace nearby_share {
+
+class NearbyShareDialogUI;
+
+// WebUIConfig for chrome://nearby
+class NearbyShareDialogUIConfig
+    : public content::DefaultWebUIConfig<NearbyShareDialogUI> {
+ public:
+  NearbyShareDialogUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUINearbyShareHost) {}
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // The WebUI controller for chrome://nearby.
 class NearbyShareDialogUI : public ui::MojoWebUIController,

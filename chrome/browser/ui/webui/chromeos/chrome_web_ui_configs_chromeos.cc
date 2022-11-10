@@ -47,6 +47,8 @@
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
+#include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
+#include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
@@ -105,6 +107,9 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::MultideviceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<
                      ash::multidevice_setup::MultiDeviceSetupDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NearbyInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<nearby_share::NearbyShareDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NetworkUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
   map.AddWebUIConfig(

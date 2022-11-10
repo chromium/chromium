@@ -54,6 +54,14 @@ enum class CloseReason {
   kMax = kRejected
 };
 
+bool NearbyShareDialogUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  if (browser_context->IsOffTheRecord())
+    return false;
+  return NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+      browser_context);
+}
+
 NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);

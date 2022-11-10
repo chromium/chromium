@@ -993,12 +993,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsOffTheRecord()) {
     return &NewWebUI<ash::multidevice::ProximityAuthUI>;
   }
-  if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
-          profile) &&
-      url.host_piece() == chrome::kChromeUINearbyShareHost &&
-      !profile->IsOffTheRecord()) {
-    return &NewWebUI<nearby_share::NearbyShareDialogUI>;
-  }
   if (url.host_piece() == ash::kChromeUIProjectorAppHost &&
       IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorUI>;
@@ -1008,8 +1002,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorAnnotatorUI>;
   }
-  if (url.host_piece() == chrome::kChromeUINearbyInternalsHost)
-    return &NewWebUI<NearbyInternalsUI>;
   if (arc::IsArcAllowedForProfile(profile)) {
     if (url.host_piece() == chrome::kChromeUIArcGraphicsTracingHost) {
       return &NewWebUI<
