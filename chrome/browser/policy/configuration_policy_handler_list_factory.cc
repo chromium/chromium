@@ -1745,7 +1745,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kOffsetParentNewSpecBehaviorEnabled,
     policy_prefs::kOffsetParentNewSpecBehaviorEnabled,
     base::Value::Type::BOOLEAN},
-  { key::kSendMouseEventsDsbldFormControlsEnabled,
+  { key::kSendMouseEventsDisabledFormControlsEnabled,
     policy_prefs::kSendMouseEventsDisabledFormControlsEnabled,
     base::Value::Type::BOOLEAN},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
